@@ -120,33 +120,18 @@ void common_interpolate_checks(
     check_same_dtype(&fp, &out, names);
     check_has_dtype(&idx, td_ns::typenum_t::INT64, names);
 
-    auto array_types = td_ns::usm_ndarray_types();
-    int fp_type_id = array_types.typenum_to_lookup_id(fp.get_typenum());
-
     auto left_v = left ? &left.value() : nullptr;
     if (left_v) {
         names.insert({left_v, "left"});
         check_num_dims(left_v, 0, names);
-
-        int left_type_id =
-            array_types.typenum_to_lookup_id(left_v->get_typenum());
-        if (left_type_id != fp_type_id) {
-            throw py::value_error(
-                "left must have the same dtype as fp and out");
-        }
+        check_same_dtype(left_v, &fp, names);
     }
 
     auto right_v = right ? &right.value() : nullptr;
     if (right_v) {
         names.insert({right_v, "right"});
         check_num_dims(right_v, 0, names);
-
-        int right_type_id =
-            array_types.typenum_to_lookup_id(right_v->get_typenum());
-        if (right_type_id != fp_type_id) {
-            throw py::value_error(
-                "right must have the same dtype as fp and out");
-        }
+        check_same_dtype(right_v, &fp, names);
     }
 
     common_checks({&x, &xp, &fp, left_v, right_v}, {&out}, names);
