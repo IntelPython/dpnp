@@ -145,6 +145,15 @@ inline void check_num_dims(const array_ptr &arr,
     }
 }
 
+inline void check_num_dims(const std::vector<array_ptr> &arrays,
+                           const size_t ndim,
+                           const array_names &names)
+{
+    for (const auto &arr : arrays) {
+        check_num_dims(arr, ndim, names);
+    }
+}
+
 inline void check_max_dims(const array_ptr &arr,
                            const size_t max_ndim,
                            const array_names &names)

@@ -136,11 +136,7 @@ void common_interpolate_checks(
 
     common_checks({&x, &xp, &fp, left_v, right_v}, {&out}, names);
 
-    if (x.get_ndim() != 1 || xp.get_ndim() != 1 || fp.get_ndim() != 1 ||
-        idx.get_ndim() != 1 || out.get_ndim() != 1)
-    {
-        throw py::value_error("All arrays must be one-dimensional");
-    }
+    check_num_dims({&x, &xp, &fp, &idx, &out}, 1, names);
 
     if (xp.get_size() != fp.get_size()) {
         throw py::value_error("xp and fp must have the same size");

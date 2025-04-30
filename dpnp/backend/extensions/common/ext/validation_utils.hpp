@@ -57,6 +57,9 @@ void check_no_overlap(const std::vector<array_ptr> &inputs,
 void check_num_dims(const array_ptr &arr,
                     const size_t ndim,
                     const array_names &names);
+void check_num_dims(const std::vector<array_ptr> &arrays,
+                    const size_t ndim,
+                    const array_names &names);
 void check_max_dims(const array_ptr &arr,
                     const size_t max_ndim,
                     const array_names &names);
