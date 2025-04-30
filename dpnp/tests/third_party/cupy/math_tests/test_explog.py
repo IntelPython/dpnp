@@ -16,8 +16,12 @@ class TestExplog:
         a = testing.shaped_arange((2, 3), xp, dtype)
         return getattr(xp, name)(a)
 
+    # rtol=1e-3 is added for dpnp to pass the test when dtype is int8/unint8
+    # for such a case, output dtype is float16
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
+    @testing.numpy_cupy_allclose(
+        rtol=1e-3, atol=1e-5, type_check=has_support_aspect64()
+    )
     def check_binary(self, name, xp, dtype, no_complex=False):
         if no_complex:
             if numpy.dtype(dtype).kind == "c":

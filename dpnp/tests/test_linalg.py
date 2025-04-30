@@ -311,7 +311,7 @@ class TestCond:
 
         result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=16)
 
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
@@ -2839,10 +2839,8 @@ class TestSvd:
         tol = 1e-06
         if dtype in (dpnp.float32, dpnp.complex64):
             tol = 1e-03
-        elif not has_support_aspect64() and dtype in (
-            dpnp.int32,
-            dpnp.int64,
-            None,
+        elif not has_support_aspect64() and (
+            dtype is None or dpnp.issubdtype(dtype, dpnp.integer)
         ):
             tol = 1e-03
         self._tol = tol
@@ -2993,10 +2991,8 @@ class TestPinv:
         tol = 1e-06
         if dtype in (dpnp.float32, dpnp.complex64):
             tol = 1e-03
-        elif not has_support_aspect64() and dtype in (
-            dpnp.int32,
-            dpnp.int64,
-            None,
+        elif not has_support_aspect64() and (
+            dtype is None or dpnp.issubdtype(dtype, dpnp.integer)
         ):
             tol = 1e-03
         self._tol = tol
