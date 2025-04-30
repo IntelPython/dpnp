@@ -47,6 +47,7 @@ using ext::common::value_type_of;
 using ext::validation::array_names;
 using ext::validation::array_ptr;
 using ext::validation::check_has_dtype;
+using ext::validation::check_num_dims;
 using ext::validation::check_same_dtype;
 using ext::validation::common_checks;
 
@@ -125,9 +126,7 @@ void common_interpolate_checks(
     auto left_v = left ? &left.value() : nullptr;
     if (left_v) {
         names.insert({left_v, "left"});
-        if (left_v->get_ndim() != 0) {
-            throw py::value_error("left must be a zero-dimensional array");
-        }
+        check_num_dims(left_v, 0, names);
 
         int left_type_id =
             array_types.typenum_to_lookup_id(left_v->get_typenum());
@@ -140,9 +139,7 @@ void common_interpolate_checks(
     auto right_v = right ? &right.value() : nullptr;
     if (right_v) {
         names.insert({right_v, "right"});
-        if (right_v->get_ndim() != 0) {
-            throw py::value_error("right must be a zero-dimensional array");
-        }
+        check_num_dims(right_v, 0, names);
 
         int right_type_id =
             array_types.typenum_to_lookup_id(right_v->get_typenum());
