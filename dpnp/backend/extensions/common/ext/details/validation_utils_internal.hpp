@@ -31,6 +31,9 @@
 #include "ext/validation_utils.hpp"
 #include "utils/memory_overlap.hpp"
 
+namespace td_ns = dpctl::tensor::type_dispatch;
+namespace common = ext::common;
+
 namespace ext::validation
 {
 inline sycl::queue get_queue(const std::vector<array_ptr> &inputs,
@@ -168,6 +171,30 @@ inline void check_size_at_least(const array_ptr &arr,
     }
 }
 
+inline void check_has_dtype(const array_ptr &arr,
+                            const typenum_t dtype,
+                            const array_names &names)
+{
+    if (arr == nullptr) {
+        return;
+    }
+
+    auto array_types = td_ns::usm_ndarray_types();
+    int array_type_id = array_types.typenum_to_lookup_id(arr->get_typenum());
+    int expected_type_id = static_cast<int>(dtype);
+
+    if (array_type_id != expected_type_id) {
+        py::dtype actual_dtype = common::dtype_from_typenum(array_type_id);
+        py::dtype dtype_py = common::dtype_from_typenum(expected_type_id);
+
+        std::string msg = "Array " + name_of(arr, names) + " must have dtype " +
+                          std::string(py::str(dtype_py)) + ", but got " +
+                          std::string(py::str(actual_dtype));
+
+        throw py::value_error(msg);
+    }
+}
+
 inline void check_same_dtype(const array_ptr &arr1,
                              const array_ptr &arr2,
                              const array_names &names)
@@ -176,14 +203,13 @@ inline void check_same_dtype(const array_ptr &arr1,
         return;
     }
 
-    auto array_types = dpctl::tensor::type_dispatch::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     int first_type_id = array_types.typenum_to_lookup_id(arr1->get_typenum());
     int second_type_id = array_types.typenum_to_lookup_id(arr2->get_typenum());
 
     if (first_type_id != second_type_id) {
-        py::dtype first_dtype = ext::common::dtype_from_typenum(first_type_id);
-        py::dtype second_dtype =
-            ext::common::dtype_from_typenum(second_type_id);
+        py::dtype first_dtype = common::dtype_from_typenum(first_type_id);
+        py::dtype second_dtype = common::dtype_from_typenum(second_type_id);
 
         std::string msg = "Arrays " + name_of(arr1, names) + " and " +
                           name_of(arr2, names) +

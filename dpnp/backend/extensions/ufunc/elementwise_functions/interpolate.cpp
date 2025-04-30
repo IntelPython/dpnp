@@ -46,6 +46,7 @@ namespace type_utils = dpctl::tensor::type_utils;
 using ext::common::value_type_of;
 using ext::validation::array_names;
 using ext::validation::array_ptr;
+using ext::validation::check_has_dtype;
 using ext::validation::check_same_dtype;
 using ext::validation::common_checks;
 
@@ -116,14 +117,10 @@ void common_interpolate_checks(
 
     check_same_dtype(&x, &xp, names);
     check_same_dtype(&fp, &out, names);
+    check_has_dtype(&idx, td_ns::typenum_t::INT64, names);
 
     auto array_types = td_ns::usm_ndarray_types();
-    int idx_type_id = array_types.typenum_to_lookup_id(idx.get_typenum());
     int fp_type_id = array_types.typenum_to_lookup_id(fp.get_typenum());
-
-    if (idx_type_id != static_cast<int>(td_ns::typenum_t::INT64)) {
-        throw py::value_error("The type of idx must be int64");
-    }
 
     auto left_v = left ? &left.value() : nullptr;
     if (left_v) {
