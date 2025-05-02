@@ -2205,7 +2205,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     return dpnp.get_result_array(usm_res, out=out)
 
 
-def take_along_axis(a, indices, axis, mode="wrap"):
+def take_along_axis(a, indices, axis=-1, mode="wrap"):
     """
     Take values from the input array by matching 1d index and data slices.
 
@@ -2230,6 +2230,8 @@ def take_along_axis(a, indices, axis, mode="wrap"):
         The axis to take 1d slices along. If axis is ``None``, the input
         array is treated as if it had first been flattened to 1d,
         for consistency with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.
+
+        Default: ``-1``.
     mode : {"wrap", "clip"}, optional
         Specifies how out-of-bounds indices will be handled. Possible values
         are:
@@ -2274,8 +2276,8 @@ def take_along_axis(a, indices, axis, mode="wrap"):
     array([[10, 20, 30],
            [40, 50, 60]])
 
-    The same works for max and min, if you maintain the trivial dimension
-    with ``keepdims``:
+    The same works for :obj:`dpnp.max` and :obj:`dpnp.min`, if you maintain
+    the trivial dimension with ``keepdims``:
 
     >>> np.max(a, axis=1, keepdims=True)
     array([[30],

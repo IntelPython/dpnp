@@ -28,6 +28,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Updated Python Array API specification version supported to `2024.12` [#2416](https://github.com/IntelPython/dpnp/pull/2416)
 * Removed `einsum_call` keyword from `dpnp.einsum_path` signature [#2421](https://github.com/IntelPython/dpnp/pull/2421)
 * Changed `"max dimensions"` to `None` in array API capabilities [#2432](https://github.com/IntelPython/dpnp/pull/2432)
+* The parameter `axis` in `dpnp.take_along_axis` function has now a default value of `-1` []()
 
 ### Fixed
 
