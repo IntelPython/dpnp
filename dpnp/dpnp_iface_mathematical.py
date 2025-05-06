@@ -2813,7 +2813,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
         Default: ``fp[-1]``.
 
-    period : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
+    period : {None, scalar}, optional
         A period for the x-coordinates. This parameter allows the proper
         interpolation of angular x-coordinates. Parameters `left` and `right`
         are ignored if `period` is specified.
@@ -2902,9 +2902,12 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     fp = dpnp.asarray(fp, dtype=out_dtype, order="C")
 
     if period is not None:
-        period = _validate_interp_param(period, "period", exec_q, usm_type)
+        if not dpnp.isscalar(period):
+            raise TypeError(f"period must be a scalar, but got {type(period)}")
         if period == 0:
             raise ValueError("period must be a non-zero value")
+        period = _validate_interp_param(period, "period", exec_q, usm_type)
+
         period = dpnp.abs(period)
 
         # left/right are ignored when period is specified

@@ -1311,21 +1311,6 @@ class TestInterp:
             ]
         )
 
-    @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
-    @pytest.mark.parametrize("usm_type_period", list_of_usm_types)
-    def test_period(self, usm_type_x, usm_type_period):
-        x = dpnp.linspace(0.1, 9.9, 20, usm_type=usm_type_x)
-        xp = dpnp.linspace(0.0, 10.0, 5, usm_type=usm_type_x)
-        fp = dpnp.array(xp * 2 + 1, usm_type=usm_type_x)
-        period = dpnp.array(10.0, usm_type=usm_type_period)
-
-        result = dpnp.interp(x, xp, fp, period=period)
-
-        assert period.usm_type == usm_type_period
-        assert result.usm_type == du.get_coerced_usm_type(
-            [x.usm_type, xp.usm_type, fp.usm_type, period.usm_type]
-        )
-
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
 class TestLinAlgebra:

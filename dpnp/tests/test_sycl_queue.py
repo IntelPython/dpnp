@@ -1464,9 +1464,7 @@ def test_interp(device, left, right, period):
 
     l = None if left is None else dpnp.array(left, sycl_queue=x.sycl_queue)
     r = None if right is None else dpnp.array(right, sycl_queue=x.sycl_queue)
-    p = None if period is None else dpnp.array(period, sycl_queue=x.sycl_queue)
-
-    result = dpnp.interp(x, xp, fp, left=l, right=r, period=p)
+    result = dpnp.interp(x, xp, fp, left=l, right=r, period=period)
 
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
