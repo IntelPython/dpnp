@@ -229,7 +229,7 @@ $(function(){initNavTree('common_2ext_2common_8hpp_source.html',''); initResizab
 <div class="foldopen" id="foldopen00119" data-start="{" data-end="};">
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="structext_1_1common_1_1value__type__of__impl_3_01_t_00_01true_01_4.html">  119</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structext_1_1common_1_1value__type__of__impl.html">value_type_of_impl</a>&lt;T, true&gt;</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>{</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keyword">using </span>type = <span class="keyword">typename</span> std::remove_cv_t&lt;T&gt;::value_type;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keyword">using </span>type = <span class="keyword">typename</span> T::value_type;</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>};</div>
 </div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>

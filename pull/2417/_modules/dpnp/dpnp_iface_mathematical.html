@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev1+56.g289a04d189c documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev1+62.g2accbe4df11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=46d70a08"></script>
+      <script src="../../_static/documentation_options.js?v=b8686fb3"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2930,7 +2930,7 @@
 
 <span class="sd">        Default: ``fp[-1]``.</span>
 
-<span class="sd">    period : {None, scalar, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    period : {None, scalar}, optional</span>
 <span class="sd">        A period for the x-coordinates. This parameter allows the proper</span>
 <span class="sd">        interpolation of angular x-coordinates. Parameters `left` and `right`</span>
 <span class="sd">        are ignored if `period` is specified.</span>
@@ -3019,9 +3019,12 @@
     <span class="n">fp</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">out_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">period</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">period</span> <span class="o">=</span> <span class="n">_validate_interp_param</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="s2">&quot;period&quot;</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">period</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;period must be a scalar, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">period</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">period</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;period must be a non-zero value&quot;</span><span class="p">)</span>
+        <span class="n">period</span> <span class="o">=</span> <span class="n">_validate_interp_param</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="s2">&quot;period&quot;</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">)</span>
+
         <span class="n">period</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">period</span><span class="p">)</span>
 
         <span class="c1"># left/right are ignored when period is specified</span>
