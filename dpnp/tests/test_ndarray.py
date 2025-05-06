@@ -333,7 +333,7 @@ def test_print_dpnp_special_character(character):
 def test_print_dpnp_1d():
     dtype = dpnp.default_float_type()
     result = repr(dpnp.arange(10000, dtype=dtype))
-    expected = "array([0.000e+00, 1.000e+00, 2.000e+00, ..., 9.997e+03, 9.998e+03,\n       9.999e+03])"
+    expected = "array([0.000e+00, 1.000e+00, 2.000e+00, ..., 9.997e+03, 9.998e+03,\n       9.999e+03], shape=(10000,))"
     if not has_support_aspect64():
         expected = expected[:-1] + ", dtype=float32)"
     assert result == expected
@@ -361,9 +361,9 @@ def test_print_dpnp_2d():
 def test_print_dpnp_zero_shape():
     result = repr(dpnp.empty(shape=(0, 0)))
     if has_support_aspect64():
-        expected = "array([])"
+        expected = "array([], shape=(0, 0), dtype=float64)"
     else:
-        expected = "array([], dtype=float32)"
+        expected = "array([], shape=(0, 0), dtype=float32)"
     assert result == expected
 
     result = str(dpnp.empty(shape=(0, 0)))

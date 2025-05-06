@@ -29,6 +29,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Removed `einsum_call` keyword from `dpnp.einsum_path` signature [#2421](https://github.com/IntelPython/dpnp/pull/2421)
 * Updated `dpnp.vdot` to return a 0-D array when one of the inputs is a scalar [#2295](https://github.com/IntelPython/dpnp/pull/2295)
 * Updated `dpnp.outer` to return the same dtype as NumPy when multiplying an array with a scalar [#2295](https://github.com/IntelPython/dpnp/pull/2295)
+* Changed `"max dimensions"` to `None` in array API capabilities [#2432](https://github.com/IntelPython/dpnp/pull/2432)
 
 ### Fixed
 
