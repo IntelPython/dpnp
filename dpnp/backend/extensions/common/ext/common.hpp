@@ -118,7 +118,7 @@ struct value_type_of_impl<T, false>
 template <typename T>
 struct value_type_of_impl<T, true>
 {
-    using type = typename std::remove_cv_t<T>::value_type;
+    using type = typename T::value_type;
 };
 
 template <typename T>
