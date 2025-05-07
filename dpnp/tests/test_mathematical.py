@@ -1150,7 +1150,7 @@ class TestInterp:
     @pytest.mark.parametrize(
         "dtype_xp", get_all_dtypes(no_complex=True, no_none=True)
     )
-    @pytest.mark.parametrize("dtype_y", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype_y", get_all_dtypes())
     def test_all_dtypes(self, dtype_x, dtype_xp, dtype_y):
         x = numpy.linspace(0.1, 9.9, 20).astype(dtype_x)
         xp = numpy.linspace(0.0, 10.0, 5).astype(dtype_xp)
@@ -1182,7 +1182,7 @@ class TestInterp:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)
     )
     def test_left_right_args(self, dtype):
         x = numpy.array([-1, 0, 1, 2, 3, 4, 5, 6], dtype=dtype)

@@ -2891,9 +2891,13 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     x = dpnp.astype(x, x_float_type, order="C", casting="safe", copy=False)
     xp = dpnp.astype(xp, x_float_type, order="C", casting="safe", copy=False)
 
-    out_dtype = dpnp.common_type(x, xp, fp)
+    if fp.dtype == dpnp.bool:
+        # Handle bool type for `fp` to follow NumPy behavior
+        out_dtype = x_float_type
+    else:
+        out_dtype = dpnp.common_type(x, xp, fp)
 
-    fp = dpnp.asarray(fp, dtype=out_dtype, order="C")
+    fp = dpnp.astype(fp, out_dtype, order="C", casting="safe", copy=False)
 
     if period is not None:
         if not dpnp.isscalar(period):
