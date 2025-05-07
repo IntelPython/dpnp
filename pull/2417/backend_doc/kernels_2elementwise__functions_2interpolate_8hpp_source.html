@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.18.0dev1</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.18.0dev2</span>
    </div>
    <div id="projectbrief">Data Parallel Extension for NumPy*</div>
   </td>
@@ -158,7 +158,7 @@ $(function(){initNavTree('kernels_2elementwise__functions_2interpolate_8hpp_sour
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            TValue right_val = right ? *right : fp[xp_size - 1];</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            TCoord x_val = x[i];</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            std::int64_t x_idx = idx[i] - 1;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            TIdx x_idx = idx[i] - 1;</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TCoord&gt;::isnan</a>(x_val)) {</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                out[i] = x_val;</div>
@@ -169,7 +169,7 @@ $(function(){initNavTree('kernels_2elementwise__functions_2interpolate_8hpp_sour
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (x_val == xp[xp_size - 1]) {</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                out[i] = fp[xp_size - 1];</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            }</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (x_idx &gt;= <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(xp_size - 1)) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (x_idx &gt;= <span class="keyword">static_cast&lt;</span>TIdx<span class="keyword">&gt;</span>(xp_size - 1)) {</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                out[i] = right_val;</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            }</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordflow">else</span> {</div>

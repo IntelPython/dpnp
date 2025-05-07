@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.interp &mdash; Data Parallel Extension for NumPy 0.18.0dev1+62.g2accbe4df11 documentation</title>
+  <title>dpnp.interp &mdash; Data Parallel Extension for NumPy 0.18.0dev2+54.g1b32582d3e3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b8686fb3"></script>
+      <script src="../../_static/documentation_options.js?v=8c09bb68"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -141,9 +141,11 @@ with given discrete data points (<cite>xp</cite>, <cite>fp</cite>), evaluated at
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input 1-D array. The x-coordinates at which to evaluate
-the interpolated values.</p></li>
-<li><p><strong>xp</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input 1-D array. The x-coordinates of the data points,
+<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input 1-D array, expected to have a real-valued
+floating-point data type. The x-coordinates at which
+to evaluate the interpolated values.</p></li>
+<li><p><strong>xp</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input 1-D array, expected to have a real-valued
+floating-point data type. The x-coordinates of the data points,
 must be increasing if argument <cite>period</cite> is not specified.
 Otherwise, <cite>xp</cite> is internally sorted after normalizing
 the periodic boundaries with <code class="docutils literal notranslate"><span class="pre">xp</span> <span class="pre">=</span> <span class="pre">xp</span> <span class="pre">%</span> <span class="pre">period</span></code>.</p></li>
@@ -166,13 +168,13 @@ are ignored if <cite>period</cite> is specified.</p>
 <dd class="field-even"><p><strong>y</strong> -- The interpolated values, same shape as <cite>x</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>{dpnp.ndarray, usm_ndarray}</p>
+<dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The x-coordinate sequence is expected to be increasing, but this is not
-explicitly enforced.  However, if the sequence <cite>xp</cite> is non-increasing,
+explicitly enforced. However, if the sequence <cite>xp</cite> is non-increasing,
 interpolation results are meaningless.</p>
 <p>Note that, since NaN is unsortable, <cite>xp</cite> also cannot contain NaNs.</p>
 <p>A simple check for <cite>xp</cite> being strictly increasing is:</p>
