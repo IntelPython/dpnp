@@ -354,7 +354,7 @@ def _validate_interp_param(param, name, exec_q, usm_type, dtype=None):
     """
     Validate and convert optional parameters for interpolation.
 
-    Returns a USM array or None if the input is None.
+    Returns a dpnp.ndarray or None if the input is None.
     """
     if param is None:
         return None
@@ -372,10 +372,10 @@ def _validate_interp_param(param, name, exec_q, usm_type, dtype=None):
             )
         if dtype is not None:
             param = param.astype(dtype)
-        return param.get_array()
+        return param
 
     if dpnp.isscalar(param):
-        return dpt.asarray(
+        return dpnp.asarray(
             param, dtype=dtype, sycl_queue=exec_q, usm_type=usm_type
         )
 
@@ -2924,17 +2924,16 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         fp = dpnp.concatenate((fp[-1:], fp, fp[0:1]))
 
     idx = dpnp.searchsorted(xp, x, side="right")
-    left_usm = _validate_interp_param(left, "left", exec_q, usm_type, fp.dtype)
-    right_usm = _validate_interp_param(
-        right, "right", exec_q, usm_type, fp.dtype
-    )
+    left = _validate_interp_param(left, "left", exec_q, usm_type, fp.dtype)
+    right = _validate_interp_param(right, "right", exec_q, usm_type, fp.dtype)
 
-    usm_type, exec_q = get_usm_allocations(
-        [x, xp, fp, period, left_usm, right_usm]
-    )
+    usm_type, exec_q = get_usm_allocations([x, xp, fp, period, left, right])
     output = dpnp.empty(
         x.shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
     )
+
+    left_usm = left.get_array() if left is not None else None
+    right_usm = right.get_array() if right is not None else None
 
     _manager = dpu.SequentialOrderManager[exec_q]
     mem_ev, ht_ev = ufi._interpolate(
