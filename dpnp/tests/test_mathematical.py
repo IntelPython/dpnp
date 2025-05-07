@@ -1145,12 +1145,15 @@ class TestI0:
 
 class TestInterp:
     @pytest.mark.parametrize(
-        "dtype_x", get_all_dtypes(no_bool=True, no_complex=True)
+        "dtype_x", get_all_dtypes(no_complex=True, no_none=True)
+    )
+    @pytest.mark.parametrize(
+        "dtype_xp", get_all_dtypes(no_complex=True, no_none=True)
     )
     @pytest.mark.parametrize("dtype_y", get_all_dtypes(no_bool=True))
-    def test_all_dtypes(self, dtype_x, dtype_y):
+    def test_all_dtypes(self, dtype_x, dtype_xp, dtype_y):
         x = numpy.linspace(0.1, 9.9, 20).astype(dtype_x)
-        xp = numpy.linspace(0.0, 10.0, 5).astype(dtype_x)
+        xp = numpy.linspace(0.0, 10.0, 5).astype(dtype_xp)
         fp = (xp * 1.5 + 1).astype(dtype_y)
 
         ix = dpnp.array(x)
@@ -1162,7 +1165,7 @@ class TestInterp:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "dtype_x", get_all_dtypes(no_bool=True, no_complex=True)
+        "dtype_x", get_all_dtypes(no_complex=True, no_none=True)
     )
     @pytest.mark.parametrize("dtype_y", get_complex_dtypes())
     def test_complex_fp(self, dtype_x, dtype_y):
@@ -1179,7 +1182,7 @@ class TestInterp:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
     )
     def test_left_right_args(self, dtype):
         x = numpy.array([-1, 0, 1, 2, 3, 4, 5, 6], dtype=dtype)
@@ -1263,6 +1266,10 @@ class TestInterp:
         xp = dpnp.array([0.0, 2.0])
         fp = dpnp.array([0.0, 1.0])
         assert_raises(TypeError, dpnp.interp, x_complex, xp, fp)
+
+        # xp complex
+        xp_complex = dpnp.array([0 + 1j, 2 + 1j])
+        assert_raises(TypeError, dpnp.interp, x, xp_complex, fp)
 
         # period is zero
         x = dpnp.array([1.0])
