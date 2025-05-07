@@ -2888,8 +2888,10 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     usm_type, exec_q = get_usm_allocations([x, xp, fp])
 
     x_float_type = dpnp.default_float_type(exec_q)
-    x = dpnp.astype(x, x_float_type, order="C", casting="safe", copy=False)
-    xp = dpnp.astype(xp, x_float_type, order="C", casting="safe", copy=False)
+    x = dpnp.astype(x, x_float_type, order="C", casting="same_kind", copy=False)
+    xp = dpnp.astype(
+        xp, x_float_type, order="C", casting="same_kind", copy=False
+    )
 
     if fp.dtype == dpnp.bool:
         # Handle bool type for `fp` to follow NumPy behavior
@@ -2897,7 +2899,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     else:
         out_dtype = dpnp.common_type(x, xp, fp)
 
-    fp = dpnp.astype(fp, out_dtype, order="C", casting="safe", copy=False)
+    fp = dpnp.astype(fp, out_dtype, order="C", casting="same_kind", copy=False)
 
     if period is not None:
         if not dpnp.isscalar(period):
