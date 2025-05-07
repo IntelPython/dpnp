@@ -118,27 +118,24 @@ void common_interpolate_checks(
 {
     array_names names = {{&x, "x"}, {&xp, "xp"}, {&fp, "fp"}, {&out, "out"}};
 
-    check_same_dtype(&x, &xp, names);
-    check_same_dtype(&fp, &out, names);
-    check_has_dtype(&idx, td_ns::typenum_t::INT64, names);
-
     auto left_v = left ? &left.value() : nullptr;
     if (left_v) {
         names.insert({left_v, "left"});
-        check_num_dims(left_v, 0, names);
-        check_same_dtype(left_v, &fp, names);
     }
 
     auto right_v = right ? &right.value() : nullptr;
     if (right_v) {
         names.insert({right_v, "right"});
-        check_num_dims(right_v, 0, names);
-        check_same_dtype(right_v, &fp, names);
     }
+
+    check_same_dtype(&x, &xp, names);
+    check_same_dtype({&fp, left_v, right_v, &out}, names);
+    check_has_dtype(&idx, td_ns::typenum_t::INT64, names);
 
     common_checks({&x, &xp, &fp, left_v, right_v}, {&out}, names);
 
     check_num_dims({&x, &xp, &fp, &idx, &out}, 1, names);
+    check_num_dims({left_v, right_v}, 0, names);
 
     check_same_size(&xp, &fp, names);
     check_same_size({&x, &idx, &out}, names);
@@ -160,10 +157,6 @@ std::pair<sycl::event, sycl::event>
                    const std::vector<sycl::event> &depends)
 {
     common_interpolate_checks(x, idx, xp, fp, out, left, right);
-
-    if (x.get_size() == 0) {
-        return {sycl::event(), sycl::event()};
-    }
 
     int out_typenum = out.get_typenum();
 

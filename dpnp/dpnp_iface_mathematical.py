@@ -42,6 +42,7 @@ it contains:
 # pylint: disable=no-name-in-module
 
 
+import builtins
 import warnings
 
 import dpctl.tensor as dpt
@@ -2790,11 +2791,13 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input 1-D array. The x-coordinates at which to evaluate
-        the interpolated values.
+        Input 1-D array, expected to have a real-valued
+        floating-point data type. The x-coordinates at which
+        to evaluate the interpolated values.
 
     xp : {dpnp.ndarray, usm_ndarray}
-        Input 1-D array. The x-coordinates of the data points,
+        Input 1-D array, expected to have a real-valued
+        floating-point data type. The x-coordinates of the data points,
         must be increasing if argument `period` is not specified.
         Otherwise, `xp` is internally sorted after normalizing
         the periodic boundaries with ``xp = xp % period``.
@@ -2822,14 +2825,14 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
     Returns
     -------
-    y : {dpnp.ndarray, usm_ndarray}
+    y : dpnp.ndarray
         The interpolated values, same shape as `x`.
 
 
     Warnings
     --------
     The x-coordinate sequence is expected to be increasing, but this is not
-    explicitly enforced.  However, if the sequence `xp` is non-increasing,
+    explicitly enforced. However, if the sequence `xp` is non-increasing,
     interpolation results are meaningless.
 
     Note that, since NaN is unsortable, `xp` also cannot contain NaNs.
@@ -2884,18 +2887,9 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
     usm_type, exec_q = get_usm_allocations([x, xp, fp])
 
-    x_dtype = dpnp.common_type(x, xp)
     x_float_type = dpnp.default_float_type(exec_q)
-
-    if not dpnp.can_cast(x_dtype, x_float_type):
-        raise TypeError(
-            "Cannot cast array data from"
-            f" {x_dtype} to {x_float_type} "
-            "according to the rule 'safe'"
-        )
-
-    x = dpnp.asarray(x, dtype=x_float_type, order="C")
-    xp = dpnp.asarray(xp, dtype=x_float_type, order="C")
+    x = dpnp.astype(x, x_float_type, order="C", casting="safe", copy=False)
+    xp = dpnp.astype(xp, x_float_type, order="C", casting="safe", copy=False)
 
     out_dtype = dpnp.common_type(x, xp, fp)
 
@@ -2903,12 +2897,14 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
     if period is not None:
         if not dpnp.isscalar(period):
-            raise TypeError(f"period must be a scalar, but got {type(period)}")
+            raise TypeError(
+                "period must be a scalar or None, " f"but got {type(period)}"
+            )
         if period == 0:
             raise ValueError("period must be a non-zero value")
-        period = _validate_interp_param(period, "period", exec_q, usm_type)
-
-        period = dpnp.abs(period)
+        period = _validate_interp_param(
+            builtins.abs(period), "period", exec_q, usm_type
+        )
 
         # left/right are ignored when period is specified
         left = None
