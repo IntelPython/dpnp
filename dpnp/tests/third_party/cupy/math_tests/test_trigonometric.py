@@ -1,5 +1,7 @@
 import unittest
 
+import pytest
+
 from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
@@ -76,12 +78,26 @@ class TestUnwrap(unittest.TestCase):
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_unwrap_1dim_with_period(self, xp, dtype):
+        if not has_support_aspect64() and dtype in [xp.uint8, xp.uint16]:
+            # The unwrap function relies on the remainder function, and the
+            # result of remainder can vary significantly between float32 and
+            # float64. This discrepancy causes test failures when numpy uses
+            # float64 and dpnp uses float32, especially with uint8/uint16
+            # dtypes where overflow occurs
+            pytest.skip("skipping due to large difference of result")
         a = testing.shaped_random((5,), xp, dtype)
         return xp.unwrap(a, period=1.2)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_unwrap_1dim_with_discont_and_period(self, xp, dtype):
+        if not has_support_aspect64() and dtype in [xp.uint8, xp.uint16]:
+            # The unwrap function relies on the remainder function, and the
+            # result of remainder can vary significantly between float32 and
+            # float64. This discrepancy causes test failures when numpy uses
+            # float64 and dpnp uses float32, especially with uint8/uint16
+            # dtypes where overflow occurs
+            pytest.skip("skipping due to large difference of result")
         a = testing.shaped_random((5,), xp, dtype)
         return xp.unwrap(a, discont=1.0, period=1.2)
 
