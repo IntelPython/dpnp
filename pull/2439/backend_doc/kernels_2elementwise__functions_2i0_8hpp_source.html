@@ -133,10 +133,10 @@ $(function(){initNavTree('kernels_2elementwise__functions_2i0_8hpp_source.html',
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#define __SYCL_COMPILER_BESSEL_I0_SUPPORT 20241208L</span></div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment">// The &lt;sycl/ext/intel/math.hpp&gt; header and related types like</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment">// _iml_half_internal are not compatible with NVIDIA GPUs and cause compilation</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment">// errors when building with -fsycl-targets=nvptx64-nvidia-cuda.</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#if !defined(__NVPTX__) &amp;&amp;                                                     \</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment">// Include &lt;sycl/ext/intel/math.hpp&gt; only when targeting Intel devices.</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment">// This header relies on intel-specific types like _iml_half_internal,</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment">// which are not supported on non-intel backends (e.g., CUDA, AMD)</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#if defined(__SPIR__) &amp;&amp; defined(__INTEL_LLVM_COMPILER) &amp;&amp;                     \</span></div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="preprocessor">    (__SYCL_COMPILER_VERSION &gt;= __SYCL_COMPILER_BESSEL_I0_SUPPORT)</span></div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#include &lt;sycl/ext/intel/math.hpp&gt;</span></div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="preprocessor">#endif</span></div>
@@ -341,7 +341,7 @@ $(function(){initNavTree('kernels_2elementwise__functions_2i0_8hpp_source.html',
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    resT operator()(<span class="keyword">const</span> argT &amp;x)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span><span class="preprocessor">#if !defined(__NVPTX__) &amp;&amp;                                                     \</span></div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span><span class="preprocessor">#if defined(__SPIR__) &amp;&amp; defined(__INTEL_LLVM_COMPILER) &amp;&amp;                     \</span></div>
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span><span class="preprocessor">    (__SYCL_COMPILER_VERSION &gt;= __SYCL_COMPILER_BESSEL_I0_SUPPORT)</span></div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keyword">using </span>sycl::ext::intel::math::cyl_bessel_i0;</div>
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span><span class="preprocessor">#else</span></div>
