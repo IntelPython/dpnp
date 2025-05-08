@@ -1047,10 +1047,6 @@ class TestRfft2:
     )
     def test_irfft2(self, xp, dtype, order, enable_nd):
         # assert config.enable_nd_planning == enable_nd
-
-        if self.s is None and self.axes in [None, (-2, -1)]:
-            pytest.skip("Input is not Hermitian Symmetric")
-
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -1137,10 +1133,6 @@ class TestRfftn:
     )
     def test_irfftn(self, xp, dtype, order, enable_nd):
         # assert config.enable_nd_planning == enable_nd
-
-        if self.s is None and self.axes in [None, (-2, -1)]:
-            pytest.skip("Input is not Hermitian Symmetric")
-
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)

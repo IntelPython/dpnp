@@ -285,23 +285,28 @@ def _copy_array(x, complex_input):
             dtype = map_dtype_to_device(dpnp.float64, x.sycl_device)
 
     if copy_flag:
-        x_copy = dpnp.empty_like(x, dtype=dtype, order="C")
-
-        exec_q = x.sycl_queue
-        _manager = dpu.SequentialOrderManager[exec_q]
-        dep_evs = _manager.submitted_events
-
-        ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=dpnp.get_usm_ndarray(x),
-            dst=x_copy.get_array(),
-            sycl_queue=exec_q,
-            depends=dep_evs,
-        )
-        _manager.add_event_pair(ht_copy_ev, copy_ev)
-        x = x_copy
+        x = _copy_kernel(x, dtype)
 
     # if copying is done, FFT can be in-place (copy_flag = in_place flag)
     return x, copy_flag
+
+
+def _copy_kernel(x, dtype):
+    x_copy = dpnp.empty_like(x, dtype=dtype, order="C")
+
+    exec_q = x.sycl_queue
+    _manager = dpu.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+
+    ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=dpnp.get_usm_ndarray(x),
+        dst=x_copy.get_array(),
+        sycl_queue=exec_q,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(ht_copy_ev, copy_ev)
+
+    return x_copy
 
 
 def _extract_axes_chunk(a, s, chunk_size=3):
@@ -433,6 +438,41 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
     return result
 
 
+def _make_array_hermitian(a, n, copy_needed):
+    """
+    For `dpnp.fft.irfft`, the input array should be Hermitian. If it is not,
+    the behavior is undefined. This function makes necessary changes to make
+    sure the given array is Hermitian.
+
+    It is assumed that this function is called after `_cook_nd_args` and so
+    `n` is always ``None``. It is also assumed that it is called after
+    `_truncate_or_pad`, so the array has enough length.
+    """
+
+    length_is_even = n % 2 == 0
+    hermitian = dpnp.all(a[0].imag == 0)
+    assert n is not None
+    if length_is_even:
+        # Nyquist mode (n//2+1 mode) is n//2-th element
+        f_ny = n // 2
+        assert a.shape[0] > f_ny
+        hermitian = hermitian and dpnp.all(a[f_ny].imag == 0)
+    else:
+        # No Nyquist mode
+        pass
+
+    if not hermitian:
+        if copy_needed:
+            a = _copy_kernel(a, a.dtype)
+
+        a[0].imag = 0
+        if length_is_even:
+            f_ny = n // 2
+            a[f_ny].imag = 0
+
+    return a
+
+
 def _scale_result(res, a_shape, norm, forward, index):
     """Scale the result of the FFT according to `norm`."""
     if res.dtype in [dpnp.float32, dpnp.complex64]:
@@ -559,6 +599,7 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
     """Calculates 1-D FFT of the input array along axis"""
 
     _check_norm(norm)
+    a_orig = a
     a_ndim = a.ndim
     if a_ndim == 0:
         raise ValueError("Input array must be at least 1D")
@@ -591,6 +632,14 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
     if a.size == 0:
         return dpnp.get_result_array(a, out=out, casting="same_kind")
 
+    if c2r:
+        # input array should be Hermitian for c2r FFT
+        a = dpnp.moveaxis(a, axis, 0)
+        a = _make_array_hermitian(
+            a, a.shape[0], dpnp.are_same_logical_tensors(a, a_orig)
+        )
+        a = dpnp.moveaxis(a, 0, axis)
+
     return _fft(
         a,
         norm=norm,
@@ -607,6 +656,7 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
 def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
     """Calculates N-D FFT of the input array along axes"""
 
+    a_orig = a
     if isinstance(axes, Sequence) and len(axes) == 0:
         if real:
             raise IndexError("Empty axes.")
@@ -636,8 +686,14 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
     len_axes = len(axes)
     if len_axes == 1:
         a = _truncate_or_pad(a, (s[-1],), (axes[-1],))
+        if c2r:
+            a = dpnp.moveaxis(a, axes[-1], 0)
+            a = _make_array_hermitian(
+                a, a.shape[0], dpnp.are_same_logical_tensors(a, a_orig)
+            )
+            a = dpnp.moveaxis(a, 0, axes[-1])
         return _fft(
-            a, norm, out, forward, in_place and c2c, c2c, axes[0], a.ndim != 1
+            a, norm, out, forward, in_place and c2c, c2c, axes[-1], a.ndim != 1
         )
 
     if r2c:
@@ -686,6 +742,12 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
             batch_fft=a.ndim != len_axes - 1,
         )
         a = _truncate_or_pad(a, (s[-1],), (axes[-1],))
+        if c2r:
+            a = dpnp.moveaxis(a, axes[-1], 0)
+            a = _make_array_hermitian(
+                a, a.shape[0], dpnp.are_same_logical_tensors(a, a_orig)
+            )
+            a = dpnp.moveaxis(a, 0, axes[-1])
         return _fft(
             a, norm, out, forward, in_place and c2c, c2c, axes[-1], a.ndim != 1
         )
