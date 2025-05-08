@@ -133,7 +133,7 @@ $(function(){initNavTree('kernels_2elementwise__functions_2i0_8hpp_source.html',
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#define __SYCL_COMPILER_BESSEL_I0_SUPPORT 20241208L</span></div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#if !defined(__NVPTX__)</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#if defined(__SPIR__) &amp;&amp; defined(__INTEL_LLVM_COMPILER)</span></div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="preprocessor">#define __SYCL_EXT_INTEL_MATH_SUPPORT</span></div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
@@ -142,7 +142,8 @@ $(function(){initNavTree('kernels_2elementwise__functions_2i0_8hpp_source.html',
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="preprocessor">#include &lt;sycl/ext/intel/math.hpp&gt;</span></div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">namespace </span>dpnp::kernels::i0</div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="namespacedpnp_1_1kernels_1_1i0.html">   52</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacedpnp_1_1kernels_1_1i0.html">dpnp::kernels::i0</a></div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>{</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="preprocessor">#if defined(__SYCL_EXT_INTEL_MATH_SUPPORT) &amp;&amp;                                  \</span></div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="preprocessor">    (__SYCL_COMPILER_VERSION &gt;= __SYCL_COMPILER_BESSEL_I0_SUPPORT)</span></div>
@@ -362,9 +363,11 @@ $(function(){initNavTree('kernels_2elementwise__functions_2i0_8hpp_source.html',
 <div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>};</div>
 </div>
 <div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>} <span class="comment">// namespace dpnp::kernels::i0</span></div>
+</div>
 <div class="ttc" id="anamespacedpnp_1_1kernels_1_1i0_1_1impl_html_a4797a054c5eb5eb061445fb926910af3"><div class="ttname"><a href="namespacedpnp_1_1kernels_1_1i0_1_1impl.html#a4797a054c5eb5eb061445fb926910af3">dpnp::kernels::i0::impl::cyl_bessel_i0</a></div><div class="ttdeci">Tp cyl_bessel_i0(Tp x)</div><div class="ttdoc">Return the regular modified Bessel function of order 0.</div><div class="ttdef"><b>Definition</b> <a href="#l00236">i0.hpp:236</a></div></div>
 <div class="ttc" id="anamespacedpnp_1_1kernels_1_1i0_1_1impl_html_aeee5c0bbacb0edac7266c3953ce0c72e"><div class="ttname"><a href="namespacedpnp_1_1kernels_1_1i0_1_1impl.html#aeee5c0bbacb0edac7266c3953ce0c72e">dpnp::kernels::i0::impl::cyl_bessel_ij_0_series</a></div><div class="ttdeci">Tp cyl_bessel_ij_0_series(const Tp x, const unsigned int max_iter)</div><div class="ttdoc">This routine returns the cylindrical Bessel functions of order 0 by series expansion.</div><div class="ttdef"><b>Definition</b> <a href="#l00074">i0.hpp:74</a></div></div>
 <div class="ttc" id="anamespacedpnp_1_1kernels_1_1i0_1_1impl_html_af983672857d109bc8bbe77a8dbcf0358"><div class="ttname"><a href="namespacedpnp_1_1kernels_1_1i0_1_1impl.html#af983672857d109bc8bbe77a8dbcf0358">dpnp::kernels::i0::impl::bessel_ik_0</a></div><div class="ttdeci">Tp bessel_ik_0(Tp x)</div><div class="ttdoc">Compute the modified Bessel functions.</div><div class="ttdef"><b>Definition</b> <a href="#l00101">i0.hpp:101</a></div></div>
+<div class="ttc" id="anamespacedpnp_1_1kernels_1_1i0_html"><div class="ttname"><a href="namespacedpnp_1_1kernels_1_1i0.html">dpnp::kernels::i0</a></div><div class="ttdef"><b>Definition</b> <a href="#l00052">i0.hpp:53</a></div></div>
 <div class="ttc" id="astructdpnp_1_1kernels_1_1i0_1_1_i0_functor_html"><div class="ttname"><a href="structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html">dpnp::kernels::i0::I0Functor</a></div><div class="ttdef"><b>Definition</b> <a href="#l00263">i0.hpp:264</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
