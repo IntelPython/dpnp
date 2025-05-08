@@ -40,10 +40,10 @@
 #define __SYCL_COMPILER_BESSEL_I0_SUPPORT 20241208L
 #endif
 
-// The <sycl/ext/intel/math.hpp> header and related types like
-// _iml_half_internal are not compatible with NVIDIA GPUs and cause compilation
-// errors when building with -fsycl-targets=nvptx64-nvidia-cuda.
-#if !defined(__NVPTX__) &&                                                     \
+// Include <sycl/ext/intel/math.hpp> only when targeting Intel devices.
+// This header relies on intel-specific types like _iml_half_internal,
+// which are not supported on non-intel backends (e.g., CUDA, AMD)
+#if defined(__SPIR__) && defined(__INTEL_LLVM_COMPILER) &&                     \
     (__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT)
 #include <sycl/ext/intel/math.hpp>
 #endif
@@ -78,7 +78,7 @@ public:
 
     void operator()(sycl::id<1> id) const
     {
-#if !defined(__NVPTX__) &&                                                     \
+#if defined(__SPIR__) && defined(__INTEL_LLVM_COMPILER) &&                     \
     (__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT)
         using sycl::ext::intel::math::cyl_bessel_i0;
 #else
