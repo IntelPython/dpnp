@@ -25,7 +25,8 @@
 # *****************************************************************************
 
 """
-TODO: add mdoule docstring
+Interface of an ndarray representing a multidimensional tensor of numeric
+elements stored in a USM allocation on a SYCL device.
 
 """
 
