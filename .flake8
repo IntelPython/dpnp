@@ -24,8 +24,6 @@ extend-ignore =
     D105,
     # missing docstring in __init__:
     D107,
-    # TODO: remove:
-    D200, D403,
     # no blank lines allowed after function docstring:
     D202,
     # 1 blank line required between summary line and description:
