@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.18.0dev1+6.ga82a2d3747c documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.18.0dev2+8.g3d2841b8c54 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5617bae6"></script>
+      <script src="../../_static/documentation_options.js?v=43b4c7ae"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -110,7 +110,8 @@
 <span class="c1"># *****************************************************************************</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">TODO: add mdoule docstring</span>
+<span class="sd">Interface of an ndarray representing a multidimensional tensor of numeric</span>
+<span class="sd">elements stored in a USM allocation on a SYCL device.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -195,162 +196,6 @@
             <span class="n">array_namespace</span><span class="o">=</span><span class="n">dpnp</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">__sycl_usm_array_interface__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Give ``__sycl_usm_array_interface__`` dictionary describing the array.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__sycl_usm_array_interface__</span>
-
-<div class="viewcode-block" id="dpnp_array.get_array">
-<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.get_array.html#dpnp.dpnp_array.dpnp_array.get_array">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get :class:`dpctl.tensor.usm_ndarray` object.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span></div>
-
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">T</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        View of the transposed array.</span>
-
-<span class="sd">        Same as ``self.transpose()``.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        :obj:`dpnp.transpose` : Equivalent function.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">        &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
-<span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([[1, 2],</span>
-<span class="sd">            [3, 4]])</span>
-<span class="sd">        &gt;&gt;&gt; a.T</span>
-<span class="sd">        array([[1, 3],</span>
-<span class="sd">            [2, 4]])</span>
-
-<span class="sd">        &gt;&gt;&gt; a = np.array([1, 2, 3, 4])</span>
-<span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([1, 2, 3, 4])</span>
-<span class="sd">        &gt;&gt;&gt; a.T</span>
-<span class="sd">        array([1, 2, 3, 4])</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">mT</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        View of the matrix transposed array.</span>
-
-<span class="sd">        The matrix transpose is the transpose of the last two dimensions, even</span>
-<span class="sd">        if the array is of higher dimension.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        ValueError</span>
-<span class="sd">            If the array is of dimension less than ``2``.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">        &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
-<span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([[1, 2],</span>
-<span class="sd">               [3, 4]])</span>
-<span class="sd">        &gt;&gt;&gt; a.mT</span>
-<span class="sd">        array([[1, 3],</span>
-<span class="sd">               [2, 4]])</span>
-
-<span class="sd">        &gt;&gt;&gt; a = np.arange(8).reshape((2, 2, 2))</span>
-<span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([[[0, 1],</span>
-<span class="sd">                [2, 3]],</span>
-<span class="sd">               [[4, 5],</span>
-<span class="sd">                [6, 7]]])</span>
-<span class="sd">        &gt;&gt;&gt; a.mT</span>
-<span class="sd">        array([[[0, 2],</span>
-<span class="sd">                [1, 3]],</span>
-<span class="sd">               [[4, 6],</span>
-<span class="sd">                [5, 7]]])</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;matrix transpose with ndim &lt; 2 is undefined&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">mT</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return :class:`dpctl.tensor.Device` object representing residence of</span>
-<span class="sd">        the array data.</span>
-
-<span class="sd">        The ``Device`` object represents Array API notion of the device, and</span>
-<span class="sd">        contains :class:`dpctl.SyclQueue` associated with this array. Hence,</span>
-<span class="sd">        ``.device`` property provides information distinct from ``.sycl_device``</span>
-<span class="sd">        property.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">        &gt;&gt;&gt; x = np.ones(10)</span>
-<span class="sd">        &gt;&gt;&gt; x.device</span>
-<span class="sd">        Device(level_zero:gpu:0)</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">device</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sycl_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return :class:`dpctl.SyclContext` object to which USM data is bound.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">sycl_context</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sycl_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return :class:`dpctl.SyclDevice` object on which USM data was</span>
-<span class="sd">        allocated.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">sycl_device</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sycl_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return :class:`dpctl.SyclQueue` object associated with USM data.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">sycl_queue</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">usm_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        USM type of underlying memory. Possible values are:</span>
-
-<span class="sd">        * ``&quot;device&quot;``</span>
-<span class="sd">            USM-device allocation in device memory, only accessible to kernels</span>
-<span class="sd">            executed on the device</span>
-<span class="sd">        * ``&quot;shared&quot;``</span>
-<span class="sd">            USM-shared allocation in device memory, accessible both from the</span>
-<span class="sd">            device and from the host</span>
-<span class="sd">        * ``&quot;host&quot;``</span>
-<span class="sd">            USM-host allocation in host memory, accessible both from the device</span>
-<span class="sd">            and from the host</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">usm_type</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__abs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return :math:`|self|`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -371,7 +216,7 @@
 <span class="sd">        :class:`dpnp.ndarray` instance into NumPy array with data type `object`</span>
 <span class="sd">        and every element being zero-dimensional :class:`dpnp.ndarray`.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: D403</span>
 
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="s2">&quot;Implicit conversion to a NumPy array is not allowed. &quot;</span>
@@ -803,6 +648,14 @@
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="c1"># &#39;__subclasshook__&#39;,</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__sycl_usm_array_interface__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Give ``__sycl_usm_array_interface__`` dictionary describing the array.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: D200</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__sycl_usm_array_interface__</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return :math:`self/value`.&quot;&quot;&quot;</span>
@@ -1268,6 +1121,28 @@
 
     <span class="c1"># &#39;data&#39;,</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return :class:`dpctl.tensor.Device` object representing residence of</span>
+<span class="sd">        the array data.</span>
+
+<span class="sd">        The ``Device`` object represents Array API notion of the device, and</span>
+<span class="sd">        contains :class:`dpctl.SyclQueue` associated with this array. Hence,</span>
+<span class="sd">        ``.device`` property provides information distinct from ``.sycl_device``</span>
+<span class="sd">        property.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; x = np.ones(10)</span>
+<span class="sd">        &gt;&gt;&gt; x.device</span>
+<span class="sd">        Device(level_zero:gpu:0)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">device</span>
+
 <div class="viewcode-block" id="dpnp_array.diagonal">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.diagonal.html#dpnp.dpnp_array.dpnp_array.diagonal">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">diagonal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -1324,7 +1199,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns NumPy&#39;s dtype corresponding to the type of the array elements.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: D200</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">dtype</span>
 
@@ -1376,7 +1251,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a flat iterator, or set a flattened version of self to value.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: D200</span>
 
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">flatiter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -1425,6 +1300,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dpnp_array.get_array">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.get_array.html#dpnp.dpnp_array.dpnp_array.get_array">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get :class:`dpctl.tensor.usm_ndarray` object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span></div>
 
 
     <span class="c1"># &#39;getfield&#39;,</span>
@@ -1598,6 +1480,49 @@
             <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
         <span class="p">)</span></div>
 
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mT</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View of the matrix transposed array.</span>
+
+<span class="sd">        The matrix transpose is the transpose of the last two dimensions, even</span>
+<span class="sd">        if the array is of higher dimension.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the array is of dimension less than ``2``.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">        &gt;&gt;&gt; a</span>
+<span class="sd">        array([[1, 2],</span>
+<span class="sd">               [3, 4]])</span>
+<span class="sd">        &gt;&gt;&gt; a.mT</span>
+<span class="sd">        array([[1, 3],</span>
+<span class="sd">               [2, 4]])</span>
+
+<span class="sd">        &gt;&gt;&gt; a = np.arange(8).reshape((2, 2, 2))</span>
+<span class="sd">        &gt;&gt;&gt; a</span>
+<span class="sd">        array([[[0, 1],</span>
+<span class="sd">                [2, 3]],</span>
+<span class="sd">               [[4, 5],</span>
+<span class="sd">                [6, 7]]])</span>
+<span class="sd">        &gt;&gt;&gt; a.mT</span>
+<span class="sd">        array([[[0, 2],</span>
+<span class="sd">                [1, 3]],</span>
+<span class="sd">               [[4, 6],</span>
+<span class="sd">                [5, 7]]])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;matrix transpose with ndim &lt; 2 is undefined&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">mT</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2142,6 +2067,63 @@
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">axis2</span><span class="p">)</span></div>
 
 
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sycl_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return :class:`dpctl.SyclContext` object to which USM data is bound.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: D200</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">sycl_context</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sycl_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return :class:`dpctl.SyclDevice` object on which USM data was</span>
+<span class="sd">        allocated.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">sycl_device</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sycl_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return :class:`dpctl.SyclQueue` object associated with USM data.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: D200</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">sycl_queue</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">T</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        View of the transposed array.</span>
+
+<span class="sd">        Same as ``self.transpose()``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.transpose` : Equivalent function.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">        &gt;&gt;&gt; a</span>
+<span class="sd">        array([[1, 2],</span>
+<span class="sd">            [3, 4]])</span>
+<span class="sd">        &gt;&gt;&gt; a.T</span>
+<span class="sd">        array([[1, 3],</span>
+<span class="sd">            [2, 4]])</span>
+
+<span class="sd">        &gt;&gt;&gt; a = np.array([1, 2, 3, 4])</span>
+<span class="sd">        &gt;&gt;&gt; a</span>
+<span class="sd">        array([1, 2, 3, 4])</span>
+<span class="sd">        &gt;&gt;&gt; a.T</span>
+<span class="sd">        array([1, 2, 3, 4])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+
 <div class="viewcode-block" id="dpnp_array.take">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.take.html#dpnp.dpnp_array.dpnp_array.take">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
@@ -2327,11 +2309,29 @@
             <span class="n">mean</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span>
             <span class="n">correction</span><span class="o">=</span><span class="n">correction</span><span class="p">,</span>
         <span class="p">)</span></div>
-</div>
 
 
+    <span class="c1"># &#39;view&#39;</span>
 
-<span class="c1"># &#39;view&#39;</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">usm_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        USM type of underlying memory. Possible values are:</span>
+
+<span class="sd">        * ``&quot;device&quot;``</span>
+<span class="sd">            USM-device allocation in device memory, only accessible to kernels</span>
+<span class="sd">            executed on the device</span>
+<span class="sd">        * ``&quot;shared&quot;``</span>
+<span class="sd">            USM-shared allocation in device memory, accessible both from the</span>
+<span class="sd">            device and from the host</span>
+<span class="sd">        * ``&quot;host&quot;``</span>
+<span class="sd">            USM-host allocation in host memory, accessible both from the device</span>
+<span class="sd">            and from the host</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">usm_type</span></div>
+
 </pre></div>
 
            </div>
