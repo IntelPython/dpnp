@@ -113,159 +113,6 @@ class dpnp_array:
             array_namespace=dpnp,
         )
 
-    @property
-    def __sycl_usm_array_interface__(self):
-        """
-        Give ``__sycl_usm_array_interface__`` dictionary describing the array.
-
-        """
-        return self._array_obj.__sycl_usm_array_interface__
-
-    def get_array(self):
-        """Get :class:`dpctl.tensor.usm_ndarray` object."""
-        return self._array_obj
-
-    @property
-    def T(self):
-        """
-        View of the transposed array.
-
-        Same as ``self.transpose()``.
-
-        See Also
-        --------
-        :obj:`dpnp.transpose` : Equivalent function.
-
-        Examples
-        --------
-        >>> import dpnp as np
-        >>> a = np.array([[1, 2], [3, 4]])
-        >>> a
-        array([[1, 2],
-            [3, 4]])
-        >>> a.T
-        array([[1, 3],
-            [2, 4]])
-
-        >>> a = np.array([1, 2, 3, 4])
-        >>> a
-        array([1, 2, 3, 4])
-        >>> a.T
-        array([1, 2, 3, 4])
-
-        """
-
-        return self.transpose()
-
-    @property
-    def mT(self):
-        """
-        View of the matrix transposed array.
-
-        The matrix transpose is the transpose of the last two dimensions, even
-        if the array is of higher dimension.
-
-        Raises
-        ------
-        ValueError
-            If the array is of dimension less than ``2``.
-
-        Examples
-        --------
-        >>> import dpnp as np
-        >>> a = np.array([[1, 2], [3, 4]])
-        >>> a
-        array([[1, 2],
-               [3, 4]])
-        >>> a.mT
-        array([[1, 3],
-               [2, 4]])
-
-        >>> a = np.arange(8).reshape((2, 2, 2))
-        >>> a
-        array([[[0, 1],
-                [2, 3]],
-               [[4, 5],
-                [6, 7]]])
-        >>> a.mT
-        array([[[0, 2],
-                [1, 3]],
-               [[4, 6],
-                [5, 7]]])
-
-        """
-
-        if self.ndim < 2:
-            raise ValueError("matrix transpose with ndim < 2 is undefined")
-
-        return dpnp_array._create_from_usm_ndarray(self._array_obj.mT)
-
-    @property
-    def device(self):
-        """
-        Return :class:`dpctl.tensor.Device` object representing residence of
-        the array data.
-
-        The ``Device`` object represents Array API notion of the device, and
-        contains :class:`dpctl.SyclQueue` associated with this array. Hence,
-        ``.device`` property provides information distinct from ``.sycl_device``
-        property.
-
-        Examples
-        --------
-        >>> import dpnp as np
-        >>> x = np.ones(10)
-        >>> x.device
-        Device(level_zero:gpu:0)
-
-        """
-
-        return self._array_obj.device
-
-    @property
-    def sycl_context(self):
-        """
-        Return :class:`dpctl.SyclContext` object to which USM data is bound.
-
-        """
-        return self._array_obj.sycl_context
-
-    @property
-    def sycl_device(self):
-        """
-        Return :class:`dpctl.SyclDevice` object on which USM data was
-        allocated.
-
-        """
-        return self._array_obj.sycl_device
-
-    @property
-    def sycl_queue(self):
-        """
-        Return :class:`dpctl.SyclQueue` object associated with USM data.
-
-        """
-        return self._array_obj.sycl_queue
-
-    @property
-    def usm_type(self):
-        """
-        USM type of underlying memory. Possible values are:
-
-        * ``"device"``
-            USM-device allocation in device memory, only accessible to kernels
-            executed on the device
-        * ``"shared"``
-            USM-shared allocation in device memory, accessible both from the
-            device and from the host
-        * ``"host"``
-            USM-host allocation in host memory, accessible both from the device
-            and from the host
-
-        """
-
-        return self._array_obj.usm_type
-
     def __abs__(self):
         """Return :math:`|self|`."""
         return dpnp.abs(self)
@@ -721,6 +568,14 @@ class dpnp_array:
 
     # '__subclasshook__',
 
+    @property
+    def __sycl_usm_array_interface__(self):
+        """
+        Give ``__sycl_usm_array_interface__`` dictionary describing the array.
+
+        """
+        return self._array_obj.__sycl_usm_array_interface__
+
     def __truediv__(self, other):
         """Return :math:`self/value`."""
         return dpnp.true_divide(self, other)
@@ -1148,6 +1003,28 @@ class dpnp_array:
 
         return dpm.create_data(self._array_obj)
 
+    @property
+    def device(self):
+        """
+        Return :class:`dpctl.tensor.Device` object representing residence of
+        the array data.
+
+        The ``Device`` object represents Array API notion of the device, and
+        contains :class:`dpctl.SyclQueue` associated with this array. Hence,
+        ``.device`` property provides information distinct from ``.sycl_device``
+        property.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.ones(10)
+        >>> x.device
+        Device(level_zero:gpu:0)
+
+        """
+
+        return self._array_obj.device
+
     def diagonal(self, offset=0, axis1=0, axis2=1):
         """
         Return specified diagonals.
@@ -1294,6 +1171,10 @@ class dpnp_array:
         """
 
         return self.reshape(-1, order=order, copy=True)
+
+    def get_array(self):
+        """Get :class:`dpctl.tensor.usm_ndarray` object."""
+        return self._array_obj
 
     # 'getfield',
 
@@ -1454,6 +1335,49 @@ class dpnp_array:
             initial=initial,
             where=where,
         )
+
+    @property
+    def mT(self):
+        """
+        View of the matrix transposed array.
+
+        The matrix transpose is the transpose of the last two dimensions, even
+        if the array is of higher dimension.
+
+        Raises
+        ------
+        ValueError
+            If the array is of dimension less than ``2``.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([[1, 2], [3, 4]])
+        >>> a
+        array([[1, 2],
+               [3, 4]])
+        >>> a.mT
+        array([[1, 3],
+               [2, 4]])
+
+        >>> a = np.arange(8).reshape((2, 2, 2))
+        >>> a
+        array([[[0, 1],
+                [2, 3]],
+               [[4, 5],
+                [6, 7]]])
+        >>> a.mT
+        array([[[0, 2],
+                [1, 3]],
+               [[4, 6],
+                [5, 7]]])
+
+        """
+
+        if self.ndim < 2:
+            raise ValueError("matrix transpose with ndim < 2 is undefined")
+
+        return dpnp_array._create_from_usm_ndarray(self._array_obj.mT)
 
     @property
     def nbytes(self):
@@ -1956,6 +1880,63 @@ class dpnp_array:
 
         return dpnp.swapaxes(self, axis1=axis1, axis2=axis2)
 
+    @property
+    def sycl_context(self):
+        """
+        Return :class:`dpctl.SyclContext` object to which USM data is bound.
+
+        """
+        return self._array_obj.sycl_context
+
+    @property
+    def sycl_device(self):
+        """
+        Return :class:`dpctl.SyclDevice` object on which USM data was
+        allocated.
+
+        """
+        return self._array_obj.sycl_device
+
+    @property
+    def sycl_queue(self):
+        """
+        Return :class:`dpctl.SyclQueue` object associated with USM data.
+
+        """
+        return self._array_obj.sycl_queue
+
+    @property
+    def T(self):
+        """
+        View of the transposed array.
+
+        Same as ``self.transpose()``.
+
+        See Also
+        --------
+        :obj:`dpnp.transpose` : Equivalent function.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([[1, 2], [3, 4]])
+        >>> a
+        array([[1, 2],
+            [3, 4]])
+        >>> a.T
+        array([[1, 3],
+            [2, 4]])
+
+        >>> a = np.array([1, 2, 3, 4])
+        >>> a
+        array([1, 2, 3, 4])
+        >>> a.T
+        array([1, 2, 3, 4])
+
+        """
+
+        return self.transpose()
+
     def take(self, indices, axis=None, out=None, mode="wrap"):
         """
         Take elements from an array along an axis.
@@ -2251,3 +2232,22 @@ class dpnp_array:
             buffer=self,
             strides=new_strides,
         )
+
+    @property
+    def usm_type(self):
+        """
+        USM type of underlying memory. Possible values are:
+
+        * ``"device"``
+            USM-device allocation in device memory, only accessible to kernels
+            executed on the device
+        * ``"shared"``
+            USM-shared allocation in device memory, accessible both from the
+            device and from the host
+        * ``"host"``
+            USM-host allocation in host memory, accessible both from the device
+            and from the host
+
+        """
+
+        return self._array_obj.usm_type
