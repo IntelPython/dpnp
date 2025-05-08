@@ -134,7 +134,7 @@ class dpnp_array:
         :class:`dpnp.ndarray` instance into NumPy array with data type `object`
         and every element being zero-dimensional :class:`dpnp.ndarray`.
 
-        """
+        """  # noqa: D403
 
         raise TypeError(
             "Implicit conversion to a NumPy array is not allowed. "
@@ -574,7 +574,7 @@ class dpnp_array:
         """
         Give ``__sycl_usm_array_interface__`` dictionary describing the array.
 
-        """
+        """  # noqa: D200
         return self._array_obj.__sycl_usm_array_interface__
 
     def __truediv__(self, other):
@@ -1076,7 +1076,7 @@ class dpnp_array:
         """
         Returns NumPy's dtype corresponding to the type of the array elements.
 
-        """
+        """  # noqa: D200
 
         return self._array_obj.dtype
 
@@ -1125,7 +1125,7 @@ class dpnp_array:
         """
         Return a flat iterator, or set a flattened version of self to value.
 
-        """
+        """  # noqa: D200
 
         return dpnp.flatiter(self)
 
@@ -1886,7 +1886,7 @@ class dpnp_array:
         """
         Return :class:`dpctl.SyclContext` object to which USM data is bound.
 
-        """
+        """  # noqa: D200
         return self._array_obj.sycl_context
 
     @property
@@ -1903,7 +1903,7 @@ class dpnp_array:
         """
         Return :class:`dpctl.SyclQueue` object associated with USM data.
 
-        """
+        """  # noqa: D200
         return self._array_obj.sycl_queue
 
     @property
