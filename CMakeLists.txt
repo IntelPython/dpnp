@@ -107,11 +107,13 @@ if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
 else()
     set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
 
-    if (DPNP_SYCL_TARGETS MATCHES "nvptx64-nvidia-cuda")
+    if (${DPNP_SYCL_TARGETS} MATCHES "nvptx64-nvidia-cuda")
+        set(_use_onemkl_interfaces ON)
         set(_use_onemkl_interfaces_cuda ON)
     endif()
 
-    if (DPNP_SYCL_TARGETS MATCHES "amdgcn-amd-amdhsa")
+    if (${DPNP_SYCL_TARGETS} MATCHES "amdgcn-amd-amdhsa")
+        set(_use_onemkl_interfaces ON)
         set(_use_onemkl_interfaces_hip ON)
 
         if (NOT "x${HIP_TARGETS}" STREQUAL "x")
