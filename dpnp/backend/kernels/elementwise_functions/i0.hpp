@@ -35,7 +35,11 @@
 #define __SYCL_COMPILER_BESSEL_I0_SUPPORT 20241208L
 #endif
 
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT
+// Include <sycl/ext/intel/math.hpp> only when targeting Intel devices.
+// This header relies on intel-specific types like _iml_half_internal,
+// which are not supported on non-intel backends (e.g., CUDA, AMD)
+#if defined(__SPIR__) && defined(__INTEL_LLVM_COMPILER) &&                     \
+    (__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT)
 #include <sycl/ext/intel/math.hpp>
 #endif
 
@@ -253,7 +257,8 @@ struct I0Functor
 
     resT operator()(const argT &x) const
     {
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT
+#if defined(__SPIR__) && defined(__INTEL_LLVM_COMPILER) &&                     \
+    (__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT)
         using sycl::ext::intel::math::cyl_bessel_i0;
 #else
         using impl::cyl_bessel_i0;
