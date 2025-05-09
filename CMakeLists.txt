@@ -78,15 +78,12 @@ option(DPNP_USE_ONEMKL_INTERFACES
 set(HIP_TARGETS "" CACHE STRING "HIP architecture for target")
 
 set(_dpnp_sycl_targets)
-set(_dpnp_amd_targets)
 set(_use_onemkl_interfaces OFF)
 set(_use_onemkl_interfaces_cuda OFF)
 set(_use_onemkl_interfaces_hip OFF)
 
 set(_dpnp_sycl_target_compile_options)
 set(_dpnp_sycl_target_link_options)
-set(_dpnp_sycl_mkl_target_compile_options)
-set(_dpnp_sycl_mkl_target_link_options)
 
 if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
     if(DPNP_TARGET_CUDA)
@@ -95,32 +92,36 @@ if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
     endif()
 
     if (NOT "x${HIP_TARGETS}" STREQUAL "x")
-        set(_dpnp_amd_targets ${HIP_TARGETS})
         set(_use_onemkl_interfaces_hip ON)
 
         if ("x${_dpnp_sycl_targets}" STREQUAL "x")
-            set(_dpnp_sycl_targets "amdgcn-amd-amdhsa,spir64-unknown-unknown")
+            set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},spir64-unknown-unknown")
         else()
-            set(_dpnp_sycl_targets "amdgcn-amd-amdhsa,${_dpnp_sycl_targets}")
+            set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},${_dpnp_sycl_targets}")
         endif()
     endif()
 else()
     set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
 
-    if (${DPNP_SYCL_TARGETS} MATCHES "nvptx64-nvidia-cuda")
+    if ("${DPNP_SYCL_TARGETS}" MATCHES "nvptx64-nvidia-cuda")
         set(_use_onemkl_interfaces ON)
         set(_use_onemkl_interfaces_cuda ON)
     endif()
 
-    if (${DPNP_SYCL_TARGETS} MATCHES "amdgcn-amd-amdhsa")
+    if ("${DPNP_SYCL_TARGETS}" MATCHES "amd_gpu_")
         set(_use_onemkl_interfaces ON)
         set(_use_onemkl_interfaces_hip ON)
 
-        if (NOT "x${HIP_TARGETS}" STREQUAL "x")
-            set(_dpnp_amd_targets ${HIP_TARGETS})
-        else()
+        if ("x${HIP_TARGETS}" STREQUAL "x")
             message(FATAL_ERROR "HIP_TARGETS must be specified when using HIP backend")
         endif()
+    endif()
+
+    if ("${DPNP_SYCL_TARGETS}" MATCHES "amdgcn-amd-amdhsa")
+        message(FATAL_ERROR
+            "Legacy target 'amdgcn-amd-amdhsa' is not supported. "
+            "Use alias form 'amd_gpu_<arch>' instead"
+        )
     endif()
 endif()
 
@@ -128,20 +129,6 @@ if (_dpnp_sycl_targets)
    message(STATUS "Compiling for -fsycl-targets=${_dpnp_sycl_targets}")
    list(APPEND _dpnp_sycl_target_compile_options -fsycl-targets=${_dpnp_sycl_targets})
    list(APPEND _dpnp_sycl_target_link_options -fsycl-targets=${_dpnp_sycl_targets})
-   list(APPEND _dpnp_sycl_mkl_target_compile_options -fsycl-targets=${_dpnp_sycl_targets})
-   list(APPEND _dpnp_sycl_mkl_target_link_options -fsycl-targets=${_dpnp_sycl_targets})
-   if(_dpnp_amd_targets)
-      set(_dpnp_hip_compile_options -Xsycl-target-backend=amdgcn-amd-amdhsa --offload-arch=${_dpnp_amd_targets})
-      set(_dpnp_hip_mkl_compile_options -Xsycl-target-backend --offload-arch=${_dpnp_amd_targets})
-
-      # Append HIP-specific flags for general SYCL modules
-      list(APPEND _dpnp_sycl_target_compile_options ${_dpnp_hip_compile_options})
-      list(APPEND _dpnp_sycl_target_link_options ${_dpnp_hip_compile_options})
-
-      # Append HIP-specific flags for MKL modules
-      list(APPEND _dpnp_sycl_mkl_target_compile_options -fsycl-unnamed-lambda ${_dpnp_hip_mkl_compile_options})
-      list(APPEND _dpnp_sycl_mkl_target_link_options ${_dpnp_hip_mkl_compile_options})
-   endif()
 endif()
 
 if(DPNP_USE_ONEMKL_INTERFACES)
