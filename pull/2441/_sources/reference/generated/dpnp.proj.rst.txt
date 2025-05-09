@@ -1,0 +1,10 @@
+﻿
+
+dpnp.proj
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: proj
