@@ -34,6 +34,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Resolved an issue with an incorrect result returned due to missing dependency from the strided kernel on a copy event in `dpnp.erf` [#2378](https://github.com/IntelPython/dpnp/pull/2378)
 * Updated `conda create` commands build and install instructions of `Quick start guide` to avoid a compilation error [#2395](https://github.com/IntelPython/dpnp/pull/2395)
 * Added handling of empty string passed to a test env variable defining data type scope as a `False` value [#2415](https://github.com/IntelPython/dpnp/pull/2415)
+* Resolved build issues on non-Intel targets in `dpnp.i0` and `dpnp.kaiser` [#2439](https://github.com/IntelPython/dpnp/pull/2439)
 
 
 ## [0.17.0] - 02/26/2025
