@@ -2227,9 +2227,10 @@ def take_along_axis(a, indices, axis=-1, mode="wrap"):
         dimension of the input array, but dimensions ``Ni`` and ``Nj``
         only need to broadcast against `a`.
     axis : {None, int}
-        The axis to take 1d slices along. If axis is ``None``, the input
-        array is treated as if it had first been flattened to 1d,
-        for consistency with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.
+        The axis to take 1d slices along. If axis is ``None``, the input array
+        is treated as if it had first been flattened to 1d. The default is
+        ``-1``, which takes 1d slices along the last axis. These behaviors are
+        consistent with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.
 
         Default: ``-1``.
     mode : {"wrap", "clip"}, optional
