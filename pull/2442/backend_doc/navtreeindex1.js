@@ -79,6 +79,7 @@ var NAVTREEINDEX1 =
 "log1p_8hpp_source.html":[3,0,0,8,26],
 "log2_8hpp_source.html":[3,0,0,8,27],
 "mul_8hpp_source.html":[3,0,0,8,28],
+"namespacedpnp_1_1kernels_1_1i0.html":[1,0,0,0,0],
 "namespacedpnp_1_1kernels_1_1i0_1_1impl.html":[1,0,0,0,0,0],
 "namespacedpnp_1_1kernels_1_1i0_1_1impl.html#a4797a054c5eb5eb061445fb926910af3":[1,0,0,0,0,0,1],
 "namespacedpnp_1_1kernels_1_1i0_1_1impl.html#aeee5c0bbacb0edac7266c3953ce0c72e":[1,0,0,0,0,0,2],
@@ -211,6 +212,5 @@ var NAVTREEINDEX1 =
 "vm_2common_8hpp_source.html":[3,0,0,8,11],
 "window_2common_8hpp_source.html":[3,0,0,9,2],
 "":[1,0,0],
-"":[1,0,0,0],
-"":[1,0,0,0,0]
+"":[1,0,0,0]
 };
