@@ -1150,7 +1150,7 @@ class TestInterp:
     @pytest.mark.parametrize(
         "dtype_xp", get_all_dtypes(no_complex=True, no_none=True)
     )
-    @pytest.mark.parametrize("dtype_y", get_all_dtypes())
+    @pytest.mark.parametrize("dtype_y", get_all_dtypes(no_none=True))
     def test_all_dtypes(self, dtype_x, dtype_xp, dtype_y):
         x = numpy.linspace(0.1, 9.9, 20).astype(dtype_x)
         xp = numpy.linspace(0.0, 10.0, 5).astype(dtype_xp)
@@ -1281,7 +1281,7 @@ class TestInterp:
         assert_raises(TypeError, dpnp.interp, x, xp, fp, period=[180])
 
         # left is not scalar or 0-dim
-        left = dpnp.array([1.0])
+        left = [1]
         assert_raises(ValueError, dpnp.interp, x, xp, fp, left=left)
 
         # left is 1-d array

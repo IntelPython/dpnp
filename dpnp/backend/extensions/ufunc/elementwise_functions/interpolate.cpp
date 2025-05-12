@@ -47,6 +47,7 @@ using ext::common::value_type_of;
 using ext::validation::array_names;
 using ext::validation::array_ptr;
 
+using ext::common::dtype_from_typenum;
 using ext::validation::check_has_dtype;
 using ext::validation::check_num_dims;
 using ext::validation::check_same_dtype;
@@ -165,7 +166,10 @@ std::pair<sycl::event, sycl::event>
 
     auto fn = interpolate_dispatch_vector[out_type_id];
     if (!fn) {
-        throw py::type_error("Unsupported dtype");
+        py::dtype out_dtype_py = dtype_from_typenum(out_type_id);
+        std::string msg = "Unsupported dtype for interpolation: " +
+                          std::string(py::str(out_dtype_py));
+        throw py::type_error(msg);
     }
 
     std::size_t n = x.get_size();
@@ -207,7 +211,6 @@ template <typename T>
 struct InterpolateOutputType
 {
     using value_type = typename std::disjunction<
-        td_ns::TypeMapResultEntry<T, sycl::half>,
         td_ns::TypeMapResultEntry<T, float>,
         td_ns::TypeMapResultEntry<T, double>,
         td_ns::TypeMapResultEntry<T, std::complex<float>>,
