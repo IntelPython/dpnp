@@ -1,5 +1,5 @@
 # cython: language_level=3
-# cython: linetrace=True
+# cython: linetrace=False
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2025, Intel Corporation
