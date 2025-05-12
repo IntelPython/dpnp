@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.18.0dev2+6.ge3920dbb711 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.18.0dev2+7.gdfc2d36141b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4d701729"></script>
+      <script src="../../_static/documentation_options.js?v=9736b909"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2377,9 +2377,10 @@
 <span class="sd">        dimension of the input array, but dimensions ``Ni`` and ``Nj``</span>
 <span class="sd">        only need to broadcast against `a`.</span>
 <span class="sd">    axis : {None, int}</span>
-<span class="sd">        The axis to take 1d slices along. If axis is ``None``, the input</span>
-<span class="sd">        array is treated as if it had first been flattened to 1d,</span>
-<span class="sd">        for consistency with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.</span>
+<span class="sd">        The axis to take 1d slices along. If axis is ``None``, the input array</span>
+<span class="sd">        is treated as if it had first been flattened to 1d. The default is</span>
+<span class="sd">        ``-1``, which takes 1d slices along the last axis. These behaviors are</span>
+<span class="sd">        consistent with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.</span>
 
 <span class="sd">        Default: ``-1``.</span>
 <span class="sd">    mode : {&quot;wrap&quot;, &quot;clip&quot;}, optional</span>
