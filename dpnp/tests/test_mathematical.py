@@ -1282,7 +1282,7 @@ class TestInterp:
 
         # left is not scalar or 0-dim
         left = [1]
-        assert_raises(ValueError, dpnp.interp, x, xp, fp, left=left)
+        assert_raises(TypeError, dpnp.interp, x, xp, fp, left=left)
 
         # left is 1-d array
         left = dpnp.array([1.0])
