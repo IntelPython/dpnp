@@ -2681,6 +2681,8 @@ i0 = DPNPI0(
     ufi._i0_result_type,
     ufi._i0,
     _I0_DOCSTRING,
+    mkl_fn_to_call="_mkl_i0_to_call",
+    mkl_impl_fn="_i0",
 )
 
 

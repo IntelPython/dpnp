@@ -567,12 +567,16 @@ class DPNPI0(DPNPUnaryFunc):
         result_type_resolver_fn,
         unary_dp_impl_fn,
         docs,
+        mkl_fn_to_call=None,
+        mkl_impl_fn=None,
     ):
         super().__init__(
             name,
             result_type_resolver_fn,
             unary_dp_impl_fn,
             docs,
+            mkl_fn_to_call=mkl_fn_to_call,
+            mkl_impl_fn=mkl_impl_fn,
         )
 
     def __call__(self, x, out=None, order="K"):

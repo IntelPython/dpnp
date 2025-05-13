@@ -53,6 +53,7 @@
 #include "fmin.hpp"
 #include "fmod.hpp"
 #include "hypot.hpp"
+#include "i0.hpp"
 #include "ln.hpp"
 #include "log10.hpp"
 #include "log1p.hpp"
@@ -103,6 +104,7 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_fmin(m);
     vm_ns::init_fmod(m);
     vm_ns::init_hypot(m);
+    vm_ns::init_i0(m);
     vm_ns::init_ln(m);
     vm_ns::init_log10(m);
     vm_ns::init_log1p(m);
