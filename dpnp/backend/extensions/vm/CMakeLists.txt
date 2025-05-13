@@ -38,6 +38,7 @@ if(NOT _use_onemkl_interfaces)
         ${CMAKE_CURRENT_SOURCE_DIR}/cbrt.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ceil.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conj.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/copysign.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cos.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cosh.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/div.cpp

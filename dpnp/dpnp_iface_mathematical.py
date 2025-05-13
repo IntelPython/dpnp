@@ -874,6 +874,8 @@ copysign = DPNPBinaryFunc(
     ti._copysign_result_type,
     ti._copysign,
     _COPYSIGN_DOCSTRING,
+    mkl_fn_to_call="_mkl_copysign_to_call",
+    mkl_impl_fn="_copysign",
 )
 
 

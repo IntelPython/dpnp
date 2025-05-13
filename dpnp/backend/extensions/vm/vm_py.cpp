@@ -41,6 +41,7 @@
 #include "cbrt.hpp"
 #include "ceil.hpp"
 #include "conj.hpp"
+#include "copysign.hpp"
 #include "cos.hpp"
 #include "cosh.hpp"
 #include "div.hpp"
@@ -90,6 +91,7 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_cbrt(m);
     vm_ns::init_ceil(m);
     vm_ns::init_conj(m);
+    vm_ns::init_copysign(m);
     vm_ns::init_cos(m);
     vm_ns::init_cosh(m);
     vm_ns::init_div(m);
