@@ -13,7 +13,7 @@ requirements:
       - python
       - setuptools
       - numpy >=1.23
-      - cython <3.1
+      - cython
       - cmake >=3.21
       - ninja
       - git

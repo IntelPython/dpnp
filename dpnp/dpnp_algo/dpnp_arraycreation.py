@@ -32,8 +32,8 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
-import dpnp.dpnp_utils as utils
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import get_usm_allocations, map_dtype_to_device
 
 __all__ = [
     "dpnp_geomspace",
@@ -60,7 +60,7 @@ def dpnp_geomspace(
     endpoint=True,
     axis=0,
 ):
-    usm_type_alloc, sycl_queue_alloc = utils.get_usm_allocations([start, stop])
+    usm_type_alloc, sycl_queue_alloc = get_usm_allocations([start, stop])
 
     if sycl_queue is None and device is None:
         sycl_queue = sycl_queue_alloc
@@ -77,7 +77,7 @@ def dpnp_geomspace(
     stop = _as_usm_ndarray(stop, _usm_type, sycl_queue_normalized)
 
     dt = numpy.result_type(start, stop, float(num))
-    dt = utils.map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
+    dt = map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
     if dtype is None:
         dtype = dt
 
@@ -144,7 +144,7 @@ def dpnp_linspace(
     retstep=False,
     axis=0,
 ):
-    usm_type_alloc, sycl_queue_alloc = utils.get_usm_allocations([start, stop])
+    usm_type_alloc, sycl_queue_alloc = get_usm_allocations([start, stop])
 
     if sycl_queue is None and device is None:
         sycl_queue = sycl_queue_alloc
@@ -164,7 +164,7 @@ def dpnp_linspace(
         stop = _as_usm_ndarray(stop, _usm_type, sycl_queue_normalized)
 
     dt = numpy.result_type(start, stop, float(num))
-    dt = utils.map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
+    dt = map_dtype_to_device(dt, sycl_queue_normalized.sycl_device)
     if dtype is None:
         dtype = dt
 
@@ -251,7 +251,7 @@ def dpnp_logspace(
     axis=0,
 ):
     if not dpnp.isscalar(base):
-        usm_type_alloc, sycl_queue_alloc = utils.get_usm_allocations(
+        usm_type_alloc, sycl_queue_alloc = get_usm_allocations(
             [start, stop, base]
         )
 
