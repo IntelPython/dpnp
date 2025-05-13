@@ -3969,6 +3969,8 @@ remainder = DPNPBinaryFunc(
     ti._remainder,
     _REMAINDER_DOCSTRING,
     binary_inplace_fn=ti._remainder_inplace,
+    # mkl_vm::remainder() isn't implemented, because it follows C's modulo
+    # operator, but Python's one is expected acc to Python Array API spec
 )
 
 mod = remainder
