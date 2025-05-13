@@ -1197,6 +1197,23 @@ class TestInterp:
         result = dpnp.interp(ix, ixp, ifp, left=-40, right=40)
         assert_dtype_allclose(result, expected)
 
+        # left and right as ndarray
+        expected = numpy.interp(
+            x,
+            xp,
+            fp,
+            left=numpy.array(-40, dtype=dtype),
+            right=numpy.array(40, dtype=dtype),
+        )
+        result = dpnp.interp(
+            ix,
+            ixp,
+            ifp,
+            left=dpnp.array(-40, dtype=dtype),
+            right=dpnp.array(40, dtype=dtype),
+        )
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("val", [numpy.nan, numpy.inf, -numpy.inf])
     def test_naninf(self, val):
         x = numpy.array([0, 1, 2, val])
