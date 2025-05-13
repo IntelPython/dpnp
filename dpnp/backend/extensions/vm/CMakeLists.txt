@@ -29,6 +29,7 @@ if(NOT _use_onemkl_interfaces)
         ${CMAKE_CURRENT_SOURCE_DIR}/acos.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/acosh.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/add.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/arg.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/asin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/asinh.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/atan.cpp

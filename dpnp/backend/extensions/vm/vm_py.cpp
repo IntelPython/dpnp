@@ -32,6 +32,7 @@
 #include "acos.hpp"
 #include "acosh.hpp"
 #include "add.hpp"
+#include "arg.hpp"
 #include "asin.hpp"
 #include "asinh.hpp"
 #include "atan.hpp"
@@ -80,6 +81,7 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_acos(m);
     vm_ns::init_acosh(m);
     vm_ns::init_add(m);
+    vm_ns::init_arg(m);
     vm_ns::init_asin(m);
     vm_ns::init_asinh(m);
     vm_ns::init_atan(m);

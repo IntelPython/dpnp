@@ -561,6 +561,8 @@ angle = DPNPAngle(
     ti._angle_result_type,
     ti._angle,
     _ANGLE_DOCSTRING,
+    mkl_fn_to_call="_mkl_arg_to_call",
+    mkl_impl_fn="_arg",
 )
 
 
