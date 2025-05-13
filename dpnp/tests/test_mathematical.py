@@ -1184,7 +1184,10 @@ class TestInterp:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)
     )
-    def test_left_right_args(self, dtype):
+    @pytest.mark.parametrize(
+        "left, right", [[-40, 40], [dpnp.array(-40), dpnp.array(40)]]
+    )
+    def test_left_right_args(self, dtype, left, right):
         x = numpy.array([-1, 0, 1, 2, 3, 4, 5, 6], dtype=dtype)
         xp = numpy.array([0, 3, 6], dtype=dtype)
         fp = numpy.array([0, 9, 18], dtype=dtype)
@@ -1193,25 +1196,14 @@ class TestInterp:
         ixp = dpnp.array(xp)
         ifp = dpnp.array(fp)
 
-        expected = numpy.interp(x, xp, fp, left=-40, right=40)
-        result = dpnp.interp(ix, ixp, ifp, left=-40, right=40)
-        assert_dtype_allclose(result, expected)
-
-        # left and right as ndarray
         expected = numpy.interp(
             x,
             xp,
             fp,
-            left=numpy.array(-40, dtype=dtype),
-            right=numpy.array(40, dtype=dtype),
+            left=get_array(numpy, left),
+            right=get_array(numpy, right),
         )
-        result = dpnp.interp(
-            ix,
-            ixp,
-            ifp,
-            left=dpnp.array(-40, dtype=dtype),
-            right=dpnp.array(40, dtype=dtype),
-        )
+        result = dpnp.interp(ix, ixp, ifp, left=left, right=right)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("val", [numpy.nan, numpy.inf, -numpy.inf])
