@@ -51,6 +51,7 @@ if(NOT _use_onemkl_interfaces)
         ${CMAKE_CURRENT_SOURCE_DIR}/fmod.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/hypot.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/i0.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/inv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ln.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/log10.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/log1p.cpp
