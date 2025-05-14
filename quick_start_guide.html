@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.18.0dev2+7.ged06b34e9d1 documentation</title>
+  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.18.0dev2+8.g61672caa160 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=18e5bde1"></script>
+      <script src="_static/documentation_options.js?v=80afd420"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -127,12 +127,19 @@ in the next installation section.</p>
 <h3>Install Package from Intel(R) channel<a class="headerlink" href="#install-package-from-intel-r-channel" title="Link to this heading"></a></h3>
 <p>You will need one of the commands below:</p>
 <ul class="simple">
-<li><p>Conda: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">dpnp</span> <span class="pre">-c</span> <span class="pre">https://software.repos.intel.com/python/conda/</span> <span class="pre">-c</span> <span class="pre">conda-forge</span></code></p></li>
+<li><p>Conda: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">dpnp</span> <span class="pre">-c</span> <span class="pre">https://software.repos.intel.com/python/conda/</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">--override-channels</span></code></p></li>
 <li><p>Pip: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--index-url</span> <span class="pre">https://software.repos.intel.com/python/pypi</span> <span class="pre">dpnp</span></code></p></li>
 </ul>
 <p>These commands install dpnp package along with its dependencies, including
 <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> package with <a class="reference external" href="https://intelpython.github.io/dpctl/latest/index.html">Data Parallel Control Library</a> and all required
 compiler runtimes and OneMKL.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Packages from the Intel channel are meant to be used together with dependencies from the <strong>conda-forge</strong> channel, and might not
+work correctly when used in an environment where packages from the <code class="docutils literal notranslate"><span class="pre">anaconda</span></code> default channel have been installed. It is
+advisable to use the <a class="reference external" href="https://github.com/conda-forge/miniforge">miniforge</a> installer for <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code>, as it comes with
+<code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> as the only default channel.</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Before installing with conda or pip it is strongly advised to update <code class="docutils literal notranslate"><span class="pre">conda</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code> to latest versions</p>
@@ -146,7 +153,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
 <p>And to build dpnp package from the sources:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels
 </pre></div>
 </div>
 <p>Finally, to install the result package:</p>
@@ -162,14 +169,14 @@ build environment by command below depending on hosting OS.</p>
 <p>On Linux:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_linux-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span><span class="se">\</span>
 <span class="w">      </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>intel-gpu-ocl-icd-system<span class="w">     </span><span class="se">\</span>
-<span class="w">      </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge
+<span class="w">      </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels
 conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
 <p>On Windows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_win-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span><span class="se">\</span>
 <span class="w">      </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>intel-gpu-ocl-icd-system<span class="w">   </span><span class="se">\</span>
-<span class="w">      </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge
+<span class="w">      </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels
 conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
