@@ -42,13 +42,19 @@ Install Package from Intel(R) channel
 
 You will need one of the commands below:
 
-* Conda: ``conda install dpnp -c https://software.repos.intel.com/python/conda/ -c conda-forge``
+* Conda: ``conda install dpnp -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels``
 
 * Pip: ``python -m pip install --index-url https://software.repos.intel.com/python/pypi dpnp``
 
 These commands install dpnp package along with its dependencies, including
 ``dpctl`` package with `Data Parallel Control Library`_ and all required
 compiler runtimes and OneMKL.
+
+.. warning::
+    Packages from the Intel channel are meant to be used together with dependencies from the **conda-forge** channel, and might not
+    work correctly when used in an environment where packages from the ``anaconda`` default channel have been installed. It is
+    advisable to use the `miniforge <https://github.com/conda-forge/miniforge>`__ installer for ``conda``/``mamba``, as it comes with
+    ``conda-forge`` as the only default channel.
 
 .. note::
    Before installing with conda or pip it is strongly advised to update ``conda`` and ``pip`` to latest versions
@@ -68,7 +74,7 @@ And to build dpnp package from the sources:
 
 .. code-block:: bash
 
-    conda build conda-recipe -c https://software.repos.intel.com/python/conda/ -c conda-forge
+    conda build conda-recipe -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
 
 Finally, to install the result package:
 
@@ -90,7 +96,7 @@ On Linux:
 
     conda create -n build-env dpctl cython dpcpp_linux-64 mkl-devel-dpcpp tbb-devel \
           onedpl-devel cmake scikit-build ninja pytest intel-gpu-ocl-icd-system     \
-          -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge
+          -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
     conda activate build-env
 
 On Windows:
@@ -99,7 +105,7 @@ On Windows:
 
     conda create -n build-env dpctl cython dpcpp_win-64 mkl-devel-dpcpp tbb-devel \
           onedpl-devel cmake scikit-build ninja pytest intel-gpu-ocl-icd-system   \
-          -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge
+          -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
     conda activate build-env
 
 To build and install the package on Linux OS, run:
