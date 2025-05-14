@@ -433,26 +433,23 @@ def _make_array_hermitian(a, axis, copy_needed):
 
     a = dpnp.moveaxis(a, axis, 0)
     n = a.shape[0]
-    length_is_even = n % 2 == 0
-    hermitian = dpnp.all(a[0].imag == 0)
+
+    # TODO: if the input array is already Hermitian, the following steps are
+    # not needed, however, validating the input array is hermitian results in
+    # synchronization of the SYCL queue, find an alternative.
+    if copy_needed:
+        a = a.astype(a.dtype, order="C", copy=True)
+
+    a[0].imag = 0
     assert n is not None
-    if length_is_even:
+    if n % 2 == 0:
         # Nyquist mode (n//2+1 mode) is n//2-th element
         f_ny = n // 2
         assert a.shape[0] > f_ny
-        hermitian = hermitian and dpnp.all(a[f_ny].imag == 0)
+        a[f_ny].imag = 0
     else:
         # No Nyquist mode
         pass
-
-    if not hermitian:
-        if copy_needed:
-            a = a.astype(a.dtype, order="C", copy=True)
-
-        a[0].imag = 0
-        if length_is_even:
-            f_ny = n // 2
-            a[f_ny].imag = 0
 
     return dpnp.moveaxis(a, 0, axis)
 
