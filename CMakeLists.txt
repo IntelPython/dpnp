@@ -117,16 +117,16 @@ if(_use_onemkl_interfaces)
     endif()
 
     if(DPNP_ONEMKL_INTERFACES_DIR)
-        FetchContent_Declare(onemkl_interfaces_library SOURCE_DIR "${DPNP_ONEMKL_INTERFACES_DIR}")
+        FetchContent_Declare(onemath_library SOURCE_DIR "${DPNP_ONEMKL_INTERFACES_DIR}")
     else()
         FetchContent_Declare(
-                onemkl_interfaces_library
+            onemath_library
                 GIT_REPOSITORY https://github.com/uxlfoundation/oneMath.git
-                GIT_TAG 8f4312ef966420b9b8b4b82b9d5c22e2c91a1fe7  # v0.6
+                GIT_TAG 20ba6fd7ae4af6ed693246cfd22c343e6522edbe  # v0.7
         )
     endif()
 
-    FetchContent_MakeAvailable(onemkl_interfaces_library)
+    FetchContent_MakeAvailable(onemath_library)
     if(TARGET onemath)
         set(MKL_INTERFACES_LIB "onemath" CACHE INTERNAL "OneMath lib target")
     elseif(TARGET onemkl)
