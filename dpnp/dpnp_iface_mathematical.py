@@ -370,9 +370,7 @@ def _validate_interp_param(param, name, exec_q, usm_type, dtype=None):
                 f"input arrays and {name} must be allocated "
                 "on the same SYCL queue"
             )
-        param = param.astype(dtype)
-
-        return param
+        return param.astype(dtype)
 
     if dpnp.isscalar(param):
         return dpnp.asarray(
