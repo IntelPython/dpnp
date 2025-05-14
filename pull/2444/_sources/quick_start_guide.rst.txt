@@ -24,7 +24,7 @@ Follow device driver installation instructions to complete the step.
 Python Interpreter
 ==================
 
-You will need Python 3.8, 3.9, or 3.10 installed on your system. If you
+You will need Python 3.9, 3.10, 3.11 or 3.12 installed on your system. If you
 do not have one yet the easiest way to do that is to install
 `Intel Distribution for Python*`_. It installs all essential Python numerical
 and machine learning packages optimized for the Intel hardware, including
