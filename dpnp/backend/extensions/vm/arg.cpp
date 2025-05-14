@@ -118,7 +118,7 @@ void init_arg(py::module_ m)
     };
     m.def("_arg", arg_pyapi,
           "Call `arg` function from OneMKL VM library to compute "
-          "the inverse tangent of vector elements",
+          "the argument of vector elements",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 

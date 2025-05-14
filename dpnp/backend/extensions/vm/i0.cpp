@@ -118,7 +118,7 @@ void init_i0(py::module_ m)
     };
     m.def("_i0", i0_pyapi,
           "Call `i0` function from OneMKL VM library to compute "
-          "the inverse tangent of vector elements",
+          "the element-wise regular modified cylindrical Bessel function of order 0",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 

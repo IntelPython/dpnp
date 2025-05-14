@@ -118,7 +118,7 @@ void init_inv(py::module_ m)
     };
     m.def("_inv", inv_pyapi,
           "Call `inv` function from OneMKL VM library to compute "
-          "the inverse tangent of vector elements",
+          "the element-wise multiplicative inverse (or reciprocal) of vector elements",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 
