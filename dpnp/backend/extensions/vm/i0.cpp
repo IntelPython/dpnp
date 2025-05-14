@@ -117,8 +117,9 @@ void init_i0(py::module_ m)
             td_ns::NullPtrVector<impl::unary_strided_impl_fn_ptr_t>{});
     };
     m.def("_i0", i0_pyapi,
-          "Call `i0` function from OneMKL VM library to compute "
-          "the element-wise regular modified cylindrical Bessel function of order 0",
+          "Call `i0` function from OneMKL VM library to compute the "
+          "element-wise regular modified cylindrical Bessel function "
+          "of order 0",
           py::arg("sycl_queue"), py::arg("src"), py::arg("dst"),
           py::arg("depends") = py::list());
 

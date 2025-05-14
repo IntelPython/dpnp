@@ -143,10 +143,9 @@ void init_copysign(py::module_ m)
     };
     m.def(
         "_copysign", copysign_pyapi,
-        "Call `copysign` function from OneMKL VM library to return `dst` of "
-        "elements containing the next representable floating-point values "
-        "following the values from the elements of `src1` in the direction of "
-        "the corresponding elements of `src2`",
+        "Call `copysign` function from OneMKL VM library to return `dst` with "
+        "the elements of `src1` with the sign changed to match the sign "
+        "of the corresponding elements of `src2`",
         py::arg("sycl_queue"), py::arg("src1"), py::arg("src2"), py::arg("dst"),
         py::arg("depends") = py::list());
 
