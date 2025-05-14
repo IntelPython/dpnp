@@ -596,6 +596,8 @@ angle = DPNPAngle(
     ti._angle_result_type,
     ti._angle,
     _ANGLE_DOCSTRING,
+    mkl_fn_to_call="_mkl_arg_to_call",
+    mkl_impl_fn="_arg",
 )
 
 
@@ -907,6 +909,8 @@ copysign = DPNPBinaryFunc(
     ti._copysign_result_type,
     ti._copysign,
     _COPYSIGN_DOCSTRING,
+    mkl_fn_to_call="_mkl_copysign_to_call",
+    mkl_impl_fn="_copysign",
 )
 
 
@@ -2712,6 +2716,8 @@ i0 = DPNPI0(
     ufi._i0_result_type,
     ufi._i0,
     _I0_DOCSTRING,
+    mkl_fn_to_call="_mkl_i0_to_call",
+    mkl_impl_fn="_i0",
 )
 
 
@@ -4173,6 +4179,8 @@ remainder = DPNPBinaryFunc(
     ti._remainder,
     _REMAINDER_DOCSTRING,
     binary_inplace_fn=ti._remainder_inplace,
+    # mkl_vm::remainder() isn't implemented, because it follows C's modulo
+    # operator, but Python's one is expected acc to Python Array API spec
 )
 
 mod = remainder
