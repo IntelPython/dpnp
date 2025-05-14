@@ -16,6 +16,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Added implementation of `dpnp.bartlett` [#2366](https://github.com/IntelPython/dpnp/pull/2366)
 * Added implementation of `dpnp.convolve` [#2205](https://github.com/IntelPython/dpnp/pull/2205)
 * Added implementation of `dpnp.kaiser` [#2387](https://github.com/IntelPython/dpnp/pull/2387)
+* Support for compiling `dpnp` for specified AMD GPU architecture with use of [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/amd/home/) [#2302](https://github.com/IntelPython/dpnp/pull/2302)
 
 ### Changed
 
@@ -28,6 +29,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Updated Python Array API specification version supported to `2024.12` [#2416](https://github.com/IntelPython/dpnp/pull/2416)
 * Removed `einsum_call` keyword from `dpnp.einsum_path` signature [#2421](https://github.com/IntelPython/dpnp/pull/2421)
 * Changed `"max dimensions"` to `None` in array API capabilities [#2432](https://github.com/IntelPython/dpnp/pull/2432)
+* Updated kernel header `i0.hpp` to expose `cyl_bessel_i0` function depending on build target [#2440](https://github.com/IntelPython/dpnp/pull/2440)
 
 ### Fixed
 
