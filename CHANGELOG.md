@@ -16,6 +16,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Added implementation of `dpnp.bartlett` [#2366](https://github.com/IntelPython/dpnp/pull/2366)
 * Added implementation of `dpnp.convolve` [#2205](https://github.com/IntelPython/dpnp/pull/2205)
 * Added implementation of `dpnp.kaiser` [#2387](https://github.com/IntelPython/dpnp/pull/2387)
+* Added implementation of `dpnp.interp` [#2417](https://github.com/IntelPython/dpnp/pull/2417)
 
 ### Changed
 
@@ -30,12 +31,19 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Updated `dpnp.vdot` to return a 0-D array when one of the inputs is a scalar [#2295](https://github.com/IntelPython/dpnp/pull/2295)
 * Updated `dpnp.outer` to return the same dtype as NumPy when multiplying an array with a scalar [#2295](https://github.com/IntelPython/dpnp/pull/2295)
 * Changed `"max dimensions"` to `None` in array API capabilities [#2432](https://github.com/IntelPython/dpnp/pull/2432)
+* Updated kernel header `i0.hpp` to expose `cyl_bessel_i0` function depending on build target [#2440](https://github.com/IntelPython/dpnp/pull/2440)
+* Added MKL functions `arg`, `copysign`, `i0`, and `inv` from VM namespace to be used by implementation of the appropriate element-wise functions [#2445](https://github.com/IntelPython/dpnp/pull/2445)
+* Clarified details about conda install instructions in `Quick start quide` and `README` [#2446](https://github.com/IntelPython/dpnp/pull/2446)
+* Bumped oneMKL version up to `0.7` [#2448](https://github.com/IntelPython/dpnp/pull/2448)
+* The parameter `axis` in `dpnp.take_along_axis` function has now a default value of `-1` [#2442](https://github.com/IntelPython/dpnp/pull/2442)
+* Updates the list of required python versions documented in `Quick Start Guide` [#2449](https://github.com/IntelPython/dpnp/pull/2449)
 
 ### Fixed
 
 * Resolved an issue with an incorrect result returned due to missing dependency from the strided kernel on a copy event in `dpnp.erf` [#2378](https://github.com/IntelPython/dpnp/pull/2378)
 * Updated `conda create` commands build and install instructions of `Quick start guide` to avoid a compilation error [#2395](https://github.com/IntelPython/dpnp/pull/2395)
 * Added handling of empty string passed to a test env variable defining data type scope as a `False` value [#2415](https://github.com/IntelPython/dpnp/pull/2415)
+* Resolved build issues on non-Intel targets in `dpnp.i0` and `dpnp.kaiser` [#2439](https://github.com/IntelPython/dpnp/pull/2439)
 
 
 ## [0.17.0] - 02/26/2025
