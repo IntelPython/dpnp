@@ -912,7 +912,8 @@ class TestRfft:
         atol=2e-6,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=has_support_aspect64(),
+        # TODO: replace with has_support_aspect64() when mkl_fft-gh-180 is merged
+        type_check=False,
     )
     def test_irfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
@@ -1043,7 +1044,8 @@ class TestRfft2:
         atol=1e-7,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=has_support_aspect64(),
+        # TODO: replace with has_support_aspect64() when mkl_fft-gh-180 is merged
+        type_check=False,
     )
     def test_irfft2(self, xp, dtype, order, enable_nd):
         # assert config.enable_nd_planning == enable_nd
@@ -1129,7 +1131,8 @@ class TestRfftn:
         atol=1e-7,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=has_support_aspect64(),
+        # TODO: replace with has_support_aspect64() when mkl_fft-gh-180 is merged
+        type_check=False,
     )
     def test_irfftn(self, xp, dtype, order, enable_nd):
         # assert config.enable_nd_planning == enable_nd
@@ -1323,7 +1326,8 @@ class TestHfft:
         atol=2e-6,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=has_support_aspect64(),
+        # TODO: replace with has_support_aspect64() when mkl_fft-gh-180 is merged
+        type_check=False,
     )
     def test_hfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
