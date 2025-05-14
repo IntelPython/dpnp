@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev2+5.gd75c842f69c documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev2+6.gacfc6788e7b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=f12a5740"></script>
+      <script src="../../_static/documentation_options.js?v=cab0a883"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -646,6 +646,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_angle_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_angle</span><span class="p">,</span>
     <span class="n">_ANGLE_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_arg_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_arg&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -963,6 +965,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_copysign_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_copysign</span><span class="p">,</span>
     <span class="n">_COPYSIGN_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_copysign_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_copysign&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2792,6 +2796,8 @@
     <span class="n">ufi</span><span class="o">.</span><span class="n">_i0_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_i0</span><span class="p">,</span>
     <span class="n">_I0_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_i0_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_i0&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -4090,6 +4096,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_remainder</span><span class="p">,</span>
     <span class="n">_REMAINDER_DOCSTRING</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_remainder_inplace</span><span class="p">,</span>
+    <span class="c1"># mkl_vm::remainder() isn&#39;t implemented, because it follows C&#39;s modulo</span>
+    <span class="c1"># operator, but Python&#39;s one is expected acc to Python Array API spec</span>
 <span class="p">)</span>
 
 <span class="n">mod</span> <span class="o">=</span> <span class="n">remainder</span>
