@@ -640,11 +640,11 @@ def ifft(a, n=None, axis=-1, norm=None, out=None):
     :obj:`dpnp.fft.fft`, i.e.,
 
     * ``a[0]`` should contain the zero frequency term,
-    * ``a[1:n//2]`` should contain the positive-frequency terms,
+    * ``a[1:(n+1)//2]`` should contain the positive-frequency terms,
     * ``a[n//2 + 1:]`` should contain the negative-frequency terms, in
       increasing order starting from the most negative frequency.
 
-    For an even number of input points, ``A[n//2]`` represents the sum of
+    For an even number of input points, ``a[n//2]`` represents the sum of
     the values at the positive and negative Nyquist frequencies, as the two
     are aliased together.
 
@@ -1062,7 +1062,7 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
 
     This function computes the inverse of the one-dimensional *n*-point
     discrete Fourier Transform of real input computed by :obj:`dpnp.fft.rfft`.
-    In other words, ``irfft(rfft(a), len(a)) == a`` to within numerical
+    In other words, ``irfft(rfft(a), n=len(a)) == a`` to within numerical
     accuracy. (See Notes below for why ``len(a)`` is necessary here.)
 
     The input is expected to be in the form returned by :obj:`dpnp.fft.rfft`,
@@ -1265,9 +1265,9 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
     This function computes the inverse of the *N*-dimensional discrete Fourier
     Transform for real input over any number of axes in an *M*-dimensional
     array by means of the Fast Fourier Transform (FFT). In other words,
-    ``irfftn(rfftn(a), a.shape) == a`` to within numerical accuracy. (The
-    ``a.shape`` is necessary like ``len(a)`` is for :obj:`dpnp.fft.irfft`,
-    and for the same reason.)
+    ``irfftn(rfftn(a), s=a.shape, axes=range(a.ndim)) == a`` to within
+    numerical accuracy. (The ``a.shape`` is necessary like ``len(a)`` is for
+    :obj:`dpnp.fft.irfft`, and for the same reason.)
 
     The input should be ordered in the same way as is returned by
     :obj:`dpnp.fft.rfftn`, i.e. as for :obj:`dpnp.fft.irfft` for the final
