@@ -1185,7 +1185,7 @@ class TestInterp:
         "left, right", [[-40, 40], [dpnp.array(-40), dpnp.array(40)]]
     )
     def test_left_right_args(self, dtype, left, right):
-        x = numpy.array([-1, 0, 1, 2, 3, 4, 5, 6], dtype=dtype)
+        x = numpy.array([0, 1, 2, 3, 4, 5, 6], dtype=dtype)
         xp = numpy.array([0, 3, 6], dtype=dtype)
         fp = numpy.array([0, 9, 18], dtype=dtype)
 

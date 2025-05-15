@@ -37,6 +37,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Bumped oneMKL version up to `0.7` [#2448](https://github.com/IntelPython/dpnp/pull/2448)
 * The parameter `axis` in `dpnp.take_along_axis` function has now a default value of `-1` [#2442](https://github.com/IntelPython/dpnp/pull/2442)
 * Updates the list of required python versions documented in `Quick Start Guide` [#2449](https://github.com/IntelPython/dpnp/pull/2449)
+* Updated FFT module to ensure an input array is Hermitian before calling complex-to-real FFT [#2444](https://github.com/IntelPython/dpnp/pull/2444)
 
 ### Fixed
 
