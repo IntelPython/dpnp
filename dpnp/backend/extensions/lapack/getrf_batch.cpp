@@ -116,7 +116,7 @@ static sycl::event getrf_batch_impl(sycl::queue &exec_q,
         auto error_matrices_ids_size = error_matrices_ids.size();
         auto dev_info_size = static_cast<std::size_t>(py::len(dev_info));
         if (error_matrices_ids_size != dev_info_size) {
-            throw py::value_error("The size of `dev_info` must be equal to" +
+            throw py::value_error("The size of `dev_info` must be equal to " +
                                   std::to_string(error_matrices_ids_size) +
                                   ", but currently it is " +
                                   std::to_string(dev_info_size) + ".");
