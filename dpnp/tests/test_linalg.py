@@ -6,7 +6,6 @@ from dpctl.tensor._numpy_helper import AxisError
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
-    assert_almost_equal,
     assert_array_equal,
     assert_equal,
     assert_raises,
@@ -20,12 +19,13 @@ from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
-    get_complex_dtypes,
     get_float_complex_dtypes,
     get_integer_float_dtypes,
     has_support_aspect64,
     is_cpu_device,
     is_cuda_device,
+    is_gpu_device,
+    is_win_platform,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -334,6 +334,12 @@ class TestCond:
         # while OneMKL returns nans
         if is_cuda_device() and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]:
             pytest.skip("Different behavior on CUDA")
+        elif (
+            is_gpu_device()
+            and is_win_platform()
+            and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]
+        ):
+            pytest.skip("SAT-7966")
         a = generate_random_numpy_array((2, 2, 2, 2))
         a[0, 0] = 0
         a[1, 1] = 0
