@@ -427,6 +427,10 @@ def is_intel_numpy():
     build_deps = numpy.show_config(mode="dicts")["Build Dependencies"]
     blas = build_deps["blas"]
     lapack = build_deps["lapack"]
+
+    if numpy_version() < "2.0.0":
+        # numpy 1.26.4 has LAPACK name equals to 'dep140030038112336'
+        return "mkl-dynamic" in blas["name"]
     return all("mkl-dynamic" in dep["name"] for dep in [blas, lapack])
 
 
