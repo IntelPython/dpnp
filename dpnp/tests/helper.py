@@ -419,8 +419,8 @@ def is_intel_numpy():
     Return True if Intel NumPy is used during testing.
 
     The check is based on MKL backend name stored in Build Dependencies, where
-    in case of Intel Numpy there "mkl-dynamic" is expected to be a part of the
-    name for both BLAS and LAPACK (the full name is "mkl-dynamic-ilp64-iomp").
+    in case of Intel Numpy there "mkl" is expected at the beginning of the name
+    for both BLAS and LAPACK (the full name is "mkl-dynamic-ilp64-iomp").
 
     """
 
@@ -430,8 +430,8 @@ def is_intel_numpy():
 
     if numpy_version() < "2.0.0":
         # numpy 1.26.4 has LAPACK name equals to 'dep140030038112336'
-        return "mkl-dynamic" in blas["name"]
-    return all("mkl-dynamic" in dep["name"] for dep in [blas, lapack])
+        return blas["name"].startswith("mkl")
+    return all(dep["name"].startswith("mkl") for dep in [blas, lapack])
 
 
 def is_win_platform():
