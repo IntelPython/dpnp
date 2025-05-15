@@ -32,6 +32,7 @@
 #include "acos.hpp"
 #include "acosh.hpp"
 #include "add.hpp"
+#include "arg.hpp"
 #include "asin.hpp"
 #include "asinh.hpp"
 #include "atan.hpp"
@@ -40,6 +41,7 @@
 #include "cbrt.hpp"
 #include "ceil.hpp"
 #include "conj.hpp"
+#include "copysign.hpp"
 #include "cos.hpp"
 #include "cosh.hpp"
 #include "div.hpp"
@@ -51,6 +53,8 @@
 #include "fmin.hpp"
 #include "fmod.hpp"
 #include "hypot.hpp"
+#include "i0.hpp"
+#include "inv.hpp"
 #include "ln.hpp"
 #include "log10.hpp"
 #include "log1p.hpp"
@@ -80,6 +84,7 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_acos(m);
     vm_ns::init_acosh(m);
     vm_ns::init_add(m);
+    vm_ns::init_arg(m);
     vm_ns::init_asin(m);
     vm_ns::init_asinh(m);
     vm_ns::init_atan(m);
@@ -88,6 +93,7 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_cbrt(m);
     vm_ns::init_ceil(m);
     vm_ns::init_conj(m);
+    vm_ns::init_copysign(m);
     vm_ns::init_cos(m);
     vm_ns::init_cosh(m);
     vm_ns::init_div(m);
@@ -99,6 +105,8 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_fmin(m);
     vm_ns::init_fmod(m);
     vm_ns::init_hypot(m);
+    vm_ns::init_i0(m);
+    vm_ns::init_inv(m);
     vm_ns::init_ln(m);
     vm_ns::init_log10(m);
     vm_ns::init_log1p(m);

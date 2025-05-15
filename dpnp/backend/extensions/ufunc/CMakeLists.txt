@@ -36,6 +36,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/gcd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/heaviside.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/i0.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/interpolate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/lcm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/ldexp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/logaddexp2.cpp
@@ -69,6 +70,7 @@ endif()
 set_target_properties(${python_module_name} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../)
+target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../common)
 
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIR})
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})

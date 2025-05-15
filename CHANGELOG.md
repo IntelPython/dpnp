@@ -16,7 +16,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Added implementation of `dpnp.bartlett` [#2366](https://github.com/IntelPython/dpnp/pull/2366)
 * Added implementation of `dpnp.convolve` [#2205](https://github.com/IntelPython/dpnp/pull/2205)
 * Added implementation of `dpnp.kaiser` [#2387](https://github.com/IntelPython/dpnp/pull/2387)
-* Support for compiling `dpnp` for specified AMD GPU architecture with use of [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/amd/home/) [#2302](https://github.com/IntelPython/dpnp/pull/2302)
+* Added implementation of `dpnp.interp` [#2417](https://github.com/IntelPython/dpnp/pull/2417)
 
 ### Changed
 
@@ -30,6 +30,12 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Removed `einsum_call` keyword from `dpnp.einsum_path` signature [#2421](https://github.com/IntelPython/dpnp/pull/2421)
 * Changed `"max dimensions"` to `None` in array API capabilities [#2432](https://github.com/IntelPython/dpnp/pull/2432)
 * Updated kernel header `i0.hpp` to expose `cyl_bessel_i0` function depending on build target [#2440](https://github.com/IntelPython/dpnp/pull/2440)
+* Added MKL functions `arg`, `copysign`, `i0`, and `inv` from VM namespace to be used by implementation of the appropriate element-wise functions [#2445](https://github.com/IntelPython/dpnp/pull/2445)
+* Clarified details about conda install instructions in `Quick start quide` and `README` [#2446](https://github.com/IntelPython/dpnp/pull/2446)
+* Bumped oneMKL version up to `0.7` [#2448](https://github.com/IntelPython/dpnp/pull/2448)
+* The parameter `axis` in `dpnp.take_along_axis` function has now a default value of `-1` [#2442](https://github.com/IntelPython/dpnp/pull/2442)
+* Updates the list of required python versions documented in `Quick Start Guide` [#2449](https://github.com/IntelPython/dpnp/pull/2449)
+* Updated FFT module to ensure an input array is Hermitian before calling complex-to-real FFT [#2444](https://github.com/IntelPython/dpnp/pull/2444)
 
 ### Fixed
 
