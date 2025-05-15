@@ -104,12 +104,10 @@ else()
     set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
 
     if ("${DPNP_SYCL_TARGETS}" MATCHES "nvptx64-nvidia-cuda")
-        set(_use_onemkl_interfaces ON)
         set(_use_onemkl_interfaces_cuda ON)
     endif()
 
     if ("${DPNP_SYCL_TARGETS}" MATCHES "amd_gpu_")
-        set(_use_onemkl_interfaces ON)
         set(_use_onemkl_interfaces_hip ON)
 
         if ("x${HIP_TARGETS}" STREQUAL "x")
@@ -178,6 +176,13 @@ if(_use_onemkl_interfaces)
     endif()
     message(STATUS "MKL interfaces lib target used: ${MKL_INTERFACES_LIB}")
     set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
+else()
+    if(_use_onemkl_interfaces_cuda OR _use_onemkl_interfaces_hip)
+        message(FATAL_ERROR
+            "CUDA or HIP targets are enabled, but oneMKL Interfaces are not. "
+            "Please set DPNP_USE_ONEMKL_INTERFACES=ON to enable them."
+        )
+    endif()
 endif()
 
 if(WIN32)
