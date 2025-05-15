@@ -232,17 +232,9 @@ struct KthElementF
     {
 
         uint32_t group_size = 128;
-        auto e = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(deps);
-
-            constexpr uint32_t WorkPI = 1; // empirically found number
-
-            auto work_range = make_ndrange(state.n, group_size, WorkPI);
-            submit_partition_one_pivot<T, WorkPI>(cgh, work_range, in, out,
-                                                  state);
-        });
-
-        return e;
+        constexpr uint32_t WorkPI = 4;
+        return run_partition_one_pivot_cpu<T, WorkPI>(
+            exec_q, in, out, state, deps, group_size);
     }
 
     static sycl::event run_kth_element(sycl::queue &exec_q,
