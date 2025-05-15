@@ -17,6 +17,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Added implementation of `dpnp.convolve` [#2205](https://github.com/IntelPython/dpnp/pull/2205)
 * Added implementation of `dpnp.kaiser` [#2387](https://github.com/IntelPython/dpnp/pull/2387)
 * Added implementation of `dpnp.interp` [#2417](https://github.com/IntelPython/dpnp/pull/2417)
+* Added support to build `dpnp` for specified AMD GPU architecture using [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/amd/home/) [#2302](https://github.com/IntelPython/dpnp/pull/2302)
 
 ### Changed
 
