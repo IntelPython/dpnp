@@ -1,6 +1,11 @@
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_equal, assert_raises
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal,
+    assert_equal,
+    assert_raises,
+)
 
 import dpnp
 
@@ -36,7 +41,8 @@ class TestAllAny:
         out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = getattr(dpnp, func)(dp_array, out=out)
         assert out is result
-        assert_allclose(result, expected)
+        # out kwarg is not used with NumPy, dtype may differ
+        assert_array_equal(result, expected, strict=False)
 
     @pytest.mark.parametrize("func", ["all", "any"])
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])

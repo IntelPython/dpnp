@@ -28,6 +28,8 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Updated `dpnp.einsum` to add support for `order=None` [#2411](https://github.com/IntelPython/dpnp/pull/2411)
 * Updated Python Array API specification version supported to `2024.12` [#2416](https://github.com/IntelPython/dpnp/pull/2416)
 * Removed `einsum_call` keyword from `dpnp.einsum_path` signature [#2421](https://github.com/IntelPython/dpnp/pull/2421)
+* Updated `dpnp.vdot` to return a 0-D array when one of the inputs is a scalar [#2295](https://github.com/IntelPython/dpnp/pull/2295)
+* Updated `dpnp.outer` to return the same dtype as NumPy when multiplying an array with a scalar [#2295](https://github.com/IntelPython/dpnp/pull/2295)
 * Changed `"max dimensions"` to `None` in array API capabilities [#2432](https://github.com/IntelPython/dpnp/pull/2432)
 * Updated kernel header `i0.hpp` to expose `cyl_bessel_i0` function depending on build target [#2440](https://github.com/IntelPython/dpnp/pull/2440)
 * Added MKL functions `arg`, `copysign`, `i0`, and `inv` from VM namespace to be used by implementation of the appropriate element-wise functions [#2445](https://github.com/IntelPython/dpnp/pull/2445)

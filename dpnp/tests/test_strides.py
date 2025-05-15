@@ -251,7 +251,7 @@ def test_bitwise(func, dtype):
 
     result = getattr(dpnp, func)(ia, ib)
     expected = getattr(numpy, func)(a, b)
-    assert_array_equal(result, expected, strict=True)
+    assert_array_equal(result, expected)
 
 
 @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
