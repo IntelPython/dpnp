@@ -87,6 +87,7 @@ def assert_array_almost_equal(
         decimal=decimal,
         err_msg=err_msg,
         verbose=verbose,
+        strict=False,
     )
 
 

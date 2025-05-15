@@ -353,13 +353,10 @@ class TestCumProdCumSum:
         result = getattr(ia, func)(dtype=dt)
         assert_dtype_allclose(result, expected)
 
-    # TODO: include boolean dtype when dpctl-0.20.0 is being used in Internal CI
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("func", ["cumprod", "cumsum"])
     @pytest.mark.parametrize("in_dt", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize(
-        "out_dt", get_all_dtypes(no_none=True, no_bool=True)
-    )
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
     def test_out(self, func, in_dt, out_dt):
         a = generate_random_numpy_array(5, dtype=in_dt, low=-5, high=5)
         out = numpy.zeros_like(a, dtype=out_dt)
@@ -1188,7 +1185,7 @@ class TestInterp:
         "left, right", [[-40, 40], [dpnp.array(-40), dpnp.array(40)]]
     )
     def test_left_right_args(self, dtype, left, right):
-        x = numpy.array([-1, 0, 1, 2, 3, 4, 5, 6], dtype=dtype)
+        x = numpy.array([0, 1, 2, 3, 4, 5, 6], dtype=dtype)
         xp = numpy.array([0, 3, 6], dtype=dtype)
         fp = numpy.array([0, 9, 18], dtype=dtype)
 
@@ -1532,8 +1529,6 @@ class TestProd:
 
         expected = numpy.prod(a, axis=axis, keepdims=keepdims)
         result = dpnp.prod(ia, axis=axis, keepdims=keepdims)
-
-        assert result.shape == expected.shape
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])

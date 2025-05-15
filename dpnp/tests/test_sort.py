@@ -407,7 +407,6 @@ class TestSortComplex:
         result = dpnp.sort_complex(ia)
         expected = numpy.sort_complex(a)
         assert_equal(result, expected)
-        assert result.dtype == expected.dtype
 
 
 @pytest.mark.parametrize("kth", [0, 1])

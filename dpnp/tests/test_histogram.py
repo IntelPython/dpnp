@@ -733,7 +733,8 @@ class TestHistogramDd:
         expected_hist, expected_edges = numpy.histogramdd(v, bins)
         result_hist, result_edges = dpnp.histogramdd(iv, bins_dpnp)
         assert_allclose(result_hist, expected_hist)
-        assert_allclose(result_edges, expected_edges)
+        for x, y in zip(result_edges, expected_edges):
+            assert_allclose(x, y)
 
     def test_no_side_effects(self):
         v = dpnp.array([[1.3, 2.5, 2.3]])
@@ -752,7 +753,8 @@ class TestHistogramDd:
         result_hist, result_edges = dpnp.histogramdd(ia)
 
         assert_allclose(result_hist, expected_hist)
-        assert_allclose(result_edges, expected_edges)
+        for x, y in zip(result_edges, expected_edges):
+            assert_allclose(x, y)
 
     def test_3d(self):
         a = dpnp.ones((10, 10, 10))
@@ -822,7 +824,10 @@ class TestHistogramDd:
         )
         result_hist, result_edges = dpnp.histogramdd(ione_nan, bins=[[0, 1]])
         assert_allclose(result_hist, expected_hist)
-        assert_allclose(result_edges, expected_edges)
+        # dpnp returns both result_hist and result_edges as float64 while
+        # numpy returns result_hist as float64 but result_edges as int64
+        for x, y in zip(result_edges, expected_edges):
+            assert_allclose(x, y, strict=False)
 
         # NaN is not counted
         expected_hist, expected_edges = numpy.histogramdd(
@@ -830,7 +835,10 @@ class TestHistogramDd:
         )
         result_hist, result_edges = dpnp.histogramdd(iall_nan, bins=[[0, 1]])
         assert_allclose(result_hist, expected_hist)
-        assert_allclose(result_edges, expected_edges)
+        # dpnp returns both result_hist and result_edges as float64 while
+        # numpy returns result_hist as float64 but result_edges as int64
+        for x, y in zip(result_edges, expected_edges):
+            assert_allclose(x, y, strict=False)
 
     def test_bins_another_sycl_queue(self):
         v = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
@@ -866,7 +874,10 @@ class TestHistogramDd:
         expected_hist, expected_edges = numpy.histogramdd(v, bins=[bins_count])
         result_hist, result_edges = dpnp.histogramdd(iv, bins=[bins_count])
         assert_array_equal(result_hist, expected_hist)
-        assert_allclose(result_edges, expected_edges)
+        # dpnp returns both result_hist and result_edges as float64 while
+        # numpy returns result_hist as float64 but result_edges as float32
+        for x, y in zip(result_edges, expected_edges):
+            assert_allclose(x, y, strict=False)
 
 
 class TestHistogram2d:
@@ -1045,8 +1056,10 @@ class TestHistogram2d:
             ione_nan, ione_nan, bins=[[0, 1]] * 2
         )
         assert_allclose(result_hist, expected_hist)
-        assert_allclose(result_edges_x, expected_edges_x)
-        assert_allclose(result_edges_y, expected_edges_y)
+        # dpnp returns both result_hist and result_edges as float64 while
+        # numpy returns result_hist as float64 but result_edges as int64
+        assert_allclose(result_edges_x, expected_edges_x, strict=False)
+        assert_allclose(result_edges_y, expected_edges_y, strict=False)
 
         # NaN is not counted
         expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
@@ -1056,8 +1069,10 @@ class TestHistogram2d:
             iall_nan, iall_nan, bins=[[0, 1]] * 2
         )
         assert_allclose(result_hist, expected_hist)
-        assert_allclose(result_edges_x, expected_edges_x)
-        assert_allclose(result_edges_y, expected_edges_y)
+        # dpnp returns both result_hist and result_edges as float64 while
+        # numpy returns result_hist as float64 but result_edges as int64
+        assert_allclose(result_edges_x, expected_edges_x, strict=False)
+        assert_allclose(result_edges_y, expected_edges_y, strict=False)
 
     def test_bins_another_sycl_queue(self):
         x = y = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
@@ -1107,5 +1122,11 @@ class TestHistogram2d:
             ix, iy, bins=bins_count
         )
         assert_array_equal(result_hist, expected_hist)
-        assert_allclose(result_edges_x, expected_edges_x, rtol=1e-6)
-        assert_allclose(result_edges_y, expected_edges_y, rtol=1e-6)
+        # dpnp returns both result_hist and result_edges as float64 while
+        # numpy returns result_hist as float64 but result_edges as float32
+        assert_allclose(
+            result_edges_x, expected_edges_x, rtol=1e-6, strict=False
+        )
+        assert_allclose(
+            result_edges_y, expected_edges_y, rtol=1e-6, strict=False
+        )

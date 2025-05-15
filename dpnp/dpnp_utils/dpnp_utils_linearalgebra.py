@@ -1108,7 +1108,7 @@ def dpnp_multiplication(
                 result = dpnp.moveaxis(result, (-2, -1), axes_res)
             elif len(axes_res) == 1:
                 result = dpnp.moveaxis(result, (-1,), axes_res)
-            return dpnp.ascontiguousarray(result)
+            return result
 
         return dpnp.asarray(result, order=order)
 

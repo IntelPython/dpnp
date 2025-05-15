@@ -10,13 +10,29 @@ import dpnp
 from . import config
 
 
+def _assert_dtype(a_dt, b_dt, check_only_type_kind=False):
+    if check_only_type_kind:
+        assert a_dt.kind == b_dt.kind, f"{a_dt.kind} != {b_dt.kind}"
+    else:
+        assert a_dt == b_dt, f"{a_dt} != {b_dt}"
+
+
+def _assert_shape(a, b):
+    # it is assumed `a` is a `dpnp.ndarray` and so it has shape attribute
+    if hasattr(b, "shape"):
+        assert a.shape == b.shape, f"{a.shape} != {b.shape}"
+    else:
+        # numpy output is scalar, then dpnp is 0-D array
+        assert a.shape == (), f"{a.shape} != ()"
+
+
 def assert_dtype_allclose(
     dpnp_arr,
     numpy_arr,
     check_type=True,
     check_only_type_kind=False,
     factor=8,
-    relative_factor=None,
+    check_shape=True,
 ):
     """
     Assert DPNP and NumPy array based on maximum dtype resolution of input arrays
@@ -37,10 +53,13 @@ def assert_dtype_allclose(
     for all data types supported by DPNP when set to True.
     It is effective only when 'check_type' is also set to True.
     The parameter `factor` scales the resolution used for comparing the arrays.
+    The parameter `check_shape`, when True (default), asserts the shape of input arrays is the same.
 
     """
 
-    list_64bit_types = [numpy.float64, numpy.complex128]
+    if check_shape:
+        _assert_shape(dpnp_arr, numpy_arr)
+
     is_inexact = lambda x: hasattr(x, "dtype") and dpnp.issubdtype(
         x.dtype, dpnp.inexact
     )
@@ -57,34 +76,32 @@ def assert_dtype_allclose(
             else -dpnp.inf
         )
         tol = factor * max(tol_dpnp, tol_numpy)
-        assert_allclose(dpnp_arr.asnumpy(), numpy_arr, atol=tol, rtol=tol)
+        assert_allclose(dpnp_arr, numpy_arr, atol=tol, rtol=tol, strict=False)
         if check_type:
+            list_64bit_types = [numpy.float64, numpy.complex128]
             numpy_arr_dtype = numpy_arr.dtype
             dpnp_arr_dtype = dpnp_arr.dtype
             dpnp_arr_dev = dpnp_arr.sycl_device
 
             if check_only_type_kind:
-                assert dpnp_arr_dtype.kind == numpy_arr_dtype.kind
+                _assert_dtype(dpnp_arr_dtype, numpy_arr_dtype, True)
             else:
                 is_np_arr_f2 = numpy_arr_dtype == numpy.float16
 
                 if is_np_arr_f2:
                     if has_support_aspect16(dpnp_arr_dev):
-                        assert dpnp_arr_dtype == numpy_arr_dtype
+                        _assert_dtype(dpnp_arr_dtype, numpy_arr_dtype)
                 elif (
                     numpy_arr_dtype not in list_64bit_types
                     or has_support_aspect64(dpnp_arr_dev)
                 ):
-                    assert dpnp_arr_dtype == numpy_arr_dtype
+                    _assert_dtype(dpnp_arr_dtype, numpy_arr_dtype)
                 else:
-                    assert dpnp_arr_dtype.kind == numpy_arr_dtype.kind
+                    _assert_dtype(dpnp_arr_dtype, numpy_arr_dtype, True)
     else:
-        assert_array_equal(dpnp_arr.asnumpy(), numpy_arr)
+        assert_array_equal(dpnp_arr, numpy_arr, strict=False)
         if check_type and hasattr(numpy_arr, "dtype"):
-            if check_only_type_kind:
-                assert dpnp_arr.dtype.kind == numpy_arr.dtype.kind
-            else:
-                assert dpnp_arr.dtype == numpy_arr.dtype
+            _assert_dtype(dpnp_arr.dtype, numpy_arr.dtype, check_only_type_kind)
 
 
 def generate_random_numpy_array(

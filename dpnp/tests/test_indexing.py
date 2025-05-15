@@ -292,7 +292,7 @@ class TestIndexing:
 
         slices = (slice(None), dpnp.array([0, 1, 2, 3]))
         arr[slices] = 10
-        assert_array_equal(arr, 10.0)
+        assert_equal(arr, 10.0, strict=False)
 
 
 class TestIx:

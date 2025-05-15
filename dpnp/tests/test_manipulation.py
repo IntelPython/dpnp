@@ -1089,7 +1089,6 @@ class TestRequire:
         assert expected.flags["C"] == result.flags["C"]
         assert expected.flags["F"] == result.flags["F"]
         assert expected.flags["W"] == result.flags["W"]
-        assert expected.dtype == result.dtype
         assert_array_equal(result, expected)
 
     def test_C_and_F_simul(self):
