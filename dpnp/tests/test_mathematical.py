@@ -32,6 +32,7 @@ from .helper import (
     get_integer_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
+    is_intel_numpy,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -1751,11 +1752,11 @@ class TestSpacing:
 
         result = dpnp.spacing(ia)
         expected = numpy.spacing(a)
-        if numpy_version() < "2.0.0":
+        if is_intel_numpy():
             assert_allclose(result, expected)
         else:
-            # numpy.spacing(-0.0) == numpy.spacing(0.0), i.e. NumPy returns
-            # positive value (looks as a bug in NumPy), because for any other
+            # numpy.spacing(-0.0) == numpy.spacing(0.0), i.e. the stock NumPy
+            # returns positive value (looks as a bug), because for any other
             # negative input the NumPy result will be also a negative value.
             expected[1] *= -1
             assert_allclose(result, expected)

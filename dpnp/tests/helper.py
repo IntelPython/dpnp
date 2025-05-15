@@ -414,6 +414,26 @@ def is_gpu_device(device=None):
     return dev.has_aspect_gpu
 
 
+def is_intel_numpy():
+    """
+    Return True if Intel NumPy is used during testing.
+
+    The check is based on MKL backend name stored in Build Dependencies, where
+    in case of Intel Numpy there "mkl" is expected at the beginning of the name
+    for both BLAS and LAPACK (the full name is "mkl-dynamic-ilp64-iomp").
+
+    """
+
+    build_deps = numpy.show_config(mode="dicts")["Build Dependencies"]
+    blas = build_deps["blas"]
+    lapack = build_deps["lapack"]
+
+    if numpy_version() < "2.0.0":
+        # numpy 1.26.4 has LAPACK name equals to 'dep140030038112336'
+        return blas["name"].startswith("mkl")
+    return all(dep["name"].startswith("mkl") for dep in [blas, lapack])
+
+
 def is_win_platform():
     """
     Return True if a test is running on Windows OS, False otherwise.
