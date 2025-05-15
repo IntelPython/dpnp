@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.ndarray.flags
+==================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: ndarray.flags
