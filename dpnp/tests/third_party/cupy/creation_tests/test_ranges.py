@@ -226,10 +226,13 @@ class TestRanges(unittest.TestCase):
         # TODO (ev-br): np 2.0: check if can re-enable float16
         # TODO (ev-br): np 2.0: had to bump the default rtol on Windows
         #               and numpy 1.26+weak promotion from 0 to 5e-6
-        if xp.dtype(dtype_range).kind in "u":
+        if xp.dtype(dtype_range).kind == "u":
             # to avoid overflow, limit `val` to be smaller
             # than xp.iinfo(dtype).max
-            if dtype_range in [xp.uint8, xp.uint16] or dtype_out == xp.uint8:
+            if dtype_range in [xp.uint8, xp.uint16] or dtype_out in [
+                xp.int8,
+                xp.uint8,
+            ]:
                 val = 125
             else:
                 val = 160
