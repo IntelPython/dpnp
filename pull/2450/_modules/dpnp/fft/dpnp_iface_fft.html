@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.18.0dev2+11.g128e6bff98e documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.18.0dev2+15.gfb2a9b4c7d1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=7a3f7ea8"></script>
+      <script src="../../../_static/documentation_options.js?v=d1ea83c5"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -745,11 +745,11 @@
 <span class="sd">    :obj:`dpnp.fft.fft`, i.e.,</span>
 
 <span class="sd">    * ``a[0]`` should contain the zero frequency term,</span>
-<span class="sd">    * ``a[1:n//2]`` should contain the positive-frequency terms,</span>
+<span class="sd">    * ``a[1:(n+1)//2]`` should contain the positive-frequency terms,</span>
 <span class="sd">    * ``a[n//2 + 1:]`` should contain the negative-frequency terms, in</span>
 <span class="sd">      increasing order starting from the most negative frequency.</span>
 
-<span class="sd">    For an even number of input points, ``A[n//2]`` represents the sum of</span>
+<span class="sd">    For an even number of input points, ``a[n//2]`` represents the sum of</span>
 <span class="sd">    the values at the positive and negative Nyquist frequencies, as the two</span>
 <span class="sd">    are aliased together.</span>
 
@@ -1182,7 +1182,7 @@
 
 <span class="sd">    This function computes the inverse of the one-dimensional *n*-point</span>
 <span class="sd">    discrete Fourier Transform of real input computed by :obj:`dpnp.fft.rfft`.</span>
-<span class="sd">    In other words, ``irfft(rfft(a), len(a)) == a`` to within numerical</span>
+<span class="sd">    In other words, ``irfft(rfft(a), n=len(a)) == a`` to within numerical</span>
 <span class="sd">    accuracy. (See Notes below for why ``len(a)`` is necessary here.)</span>
 
 <span class="sd">    The input is expected to be in the form returned by :obj:`dpnp.fft.rfft`,</span>
@@ -1391,9 +1391,9 @@
 <span class="sd">    This function computes the inverse of the *N*-dimensional discrete Fourier</span>
 <span class="sd">    Transform for real input over any number of axes in an *M*-dimensional</span>
 <span class="sd">    array by means of the Fast Fourier Transform (FFT). In other words,</span>
-<span class="sd">    ``irfftn(rfftn(a), a.shape) == a`` to within numerical accuracy. (The</span>
-<span class="sd">    ``a.shape`` is necessary like ``len(a)`` is for :obj:`dpnp.fft.irfft`,</span>
-<span class="sd">    and for the same reason.)</span>
+<span class="sd">    ``irfftn(rfftn(a), s=a.shape, axes=range(a.ndim)) == a`` to within</span>
+<span class="sd">    numerical accuracy. (The ``a.shape`` is necessary like ``len(a)`` is for</span>
+<span class="sd">    :obj:`dpnp.fft.irfft`, and for the same reason.)</span>
 
 <span class="sd">    The input should be ordered in the same way as is returned by</span>
 <span class="sd">    :obj:`dpnp.fft.rfftn`, i.e. as for :obj:`dpnp.fft.irfft` for the final</span>

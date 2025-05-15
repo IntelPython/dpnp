@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.irfft &mdash; Data Parallel Extension for NumPy 0.18.0dev2+11.g128e6bff98e documentation</title>
+  <title>dpnp.fft.irfft &mdash; Data Parallel Extension for NumPy 0.18.0dev2+15.gfb2a9b4c7d1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=7a3f7ea8"></script>
+      <script src="../../_static/documentation_options.js?v=d1ea83c5"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -129,7 +129,7 @@
 <dd><p>Computes the inverse of <a class="reference internal" href="dpnp.fft.rfft.html#dpnp.fft.rfft" title="dpnp.fft.rfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfft</span></code></a>.</p>
 <p>This function computes the inverse of the one-dimensional <em>n</em>-point
 discrete Fourier Transform of real input computed by <a class="reference internal" href="dpnp.fft.rfft.html#dpnp.fft.rfft" title="dpnp.fft.rfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfft</span></code></a>.
-In other words, <code class="docutils literal notranslate"><span class="pre">irfft(rfft(a),</span> <span class="pre">len(a))</span> <span class="pre">==</span> <span class="pre">a</span></code> to within numerical
+In other words, <code class="docutils literal notranslate"><span class="pre">irfft(rfft(a),</span> <span class="pre">n=len(a))</span> <span class="pre">==</span> <span class="pre">a</span></code> to within numerical
 accuracy. (See Notes below for why <code class="docutils literal notranslate"><span class="pre">len(a)</span></code> is necessary here.)</p>
 <p>The input is expected to be in the form returned by <a class="reference internal" href="dpnp.fft.rfft.html#dpnp.fft.rfft" title="dpnp.fft.rfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfft</span></code></a>,
 i.e. the real zero-frequency term followed by the complex positive
