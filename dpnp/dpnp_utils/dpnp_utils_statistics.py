@@ -194,7 +194,6 @@ def dpnp_cov(
 
 
 def native_median(a):
-
     partitioned = dpnp.empty_like(a)
     a_usm = dpnp.get_usm_ndarray(a)
     partitioned_usm = dpnp.get_usm_ndarray(partitioned)

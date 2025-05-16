@@ -278,11 +278,17 @@ struct KthElementF
     {
         uint32_t items_to_sort = 127;
         uint32_t limit = 4 * (items_to_sort + 1);
-        uint32_t iterations =
-            std::ceil(-std::log(double(state.n) / limit) / std::log(0.536)) + 1;
-        // Ensure iterations are odd so the final result is always stored in
-        // 'partitioned'
-        iterations += 1 - iterations % 2;
+
+        uint32_t iterations = 1;
+
+        if (state.n > limit) {
+            iterations = std::ceil(
+                -std::log(double(state.n) / limit) / std::log(0.536)) + 1;
+
+            // Ensure iterations are odd so the final result is always stored in
+            // 'partitioned'
+            iterations += 1 - iterations % 2;
+        }
 
         auto prev = run_pick_pivot(exec_q, const_cast<T *>(in), partitioned, k,
                                    state, items_to_sort, limit, depends);
