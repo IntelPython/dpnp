@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.ifft &mdash; Data Parallel Extension for NumPy 0.18.0dev2+9.gb56b1677ed4 documentation</title>
+  <title>dpnp.fft.ifft &mdash; Data Parallel Extension for NumPy 0.18.0dev3+9.geab244855a2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=deb58547"></script>
+      <script src="../../_static/documentation_options.js?v=dfdbffa4"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -136,11 +136,11 @@ see <a class="reference internal" href="../fft.html#module-dpnp.fft" title="dpnp
 <a class="reference internal" href="dpnp.fft.fft.html#dpnp.fft.fft" title="dpnp.fft.fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.fft</span></code></a>, i.e.,</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">a[0]</span></code> should contain the zero frequency term,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">a[1:n//2]</span></code> should contain the positive-frequency terms,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">a[1:(n+1)//2]</span></code> should contain the positive-frequency terms,</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">a[n//2</span> <span class="pre">+</span> <span class="pre">1:]</span></code> should contain the negative-frequency terms, in
 increasing order starting from the most negative frequency.</p></li>
 </ul>
-<p>For an even number of input points, <code class="docutils literal notranslate"><span class="pre">A[n//2]</span></code> represents the sum of
+<p>For an even number of input points, <code class="docutils literal notranslate"><span class="pre">a[n//2]</span></code> represents the sum of
 the values at the positive and negative Nyquist frequencies, as the two
 are aliased together.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.ifft.html#numpy.fft.ifft" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.ifft</span></code></a>.</p>

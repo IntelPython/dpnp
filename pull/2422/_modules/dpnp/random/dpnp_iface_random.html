@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.random.dpnp_iface_random &mdash; Data Parallel Extension for NumPy 0.18.0dev2+9.gb56b1677ed4 documentation</title>
+  <title>dpnp.random.dpnp_iface_random &mdash; Data Parallel Extension for NumPy 0.18.0dev3+9.geab244855a2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=deb58547"></script>
+      <script src="../../../_static/documentation_options.js?v=dfdbffa4"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -1867,7 +1867,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># update a mt19937 random number for both RandomState and legacy functionality</span>
-    <span class="k">global</span> <span class="n">_dpnp_random_states</span>
+    <span class="k">global</span> <span class="n">_dpnp_random_states</span>  <span class="c1"># noqa: F824</span>
 
     <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>

@@ -122,5 +122,8 @@ var hierarchy =
     [ "dpnp::extensions::lapack::types::UngqrTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::helper::value_type_of< T >", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of.html", null ],
     [ "dpnp::extensions::lapack::helper::value_type_of< std::complex< T > >", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
+    [ "ext::common::value_type_of_impl< T, hasValueType >", "structext_1_1common_1_1value__type__of__impl.html", null ],
+    [ "ext::common::value_type_of_impl< T, false >", "structext_1_1common_1_1value__type__of__impl_3_01_t_00_01false_01_4.html", null ],
+    [ "ext::common::value_type_of_impl< T, true >", "structext_1_1common_1_1value__type__of__impl_3_01_t_00_01true_01_4.html", null ],
     [ "statistics::histogram::Weights< T >", "structstatistics_1_1histogram_1_1_weights.html", null ]
 ];

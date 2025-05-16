@@ -24,7 +24,7 @@ Follow device driver installation instructions to complete the step.
 Python Interpreter
 ==================
 
-You will need Python 3.8, 3.9, or 3.10 installed on your system. If you
+You will need Python 3.9, 3.10, 3.11 or 3.12 installed on your system. If you
 do not have one yet the easiest way to do that is to install
 `Intel Distribution for Python*`_. It installs all essential Python numerical
 and machine learning packages optimized for the Intel hardware, including
@@ -42,13 +42,19 @@ Install Package from Intel(R) channel
 
 You will need one of the commands below:
 
-* Conda: ``conda install dpnp -c https://software.repos.intel.com/python/conda/ -c conda-forge``
+* Conda: ``conda install dpnp -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels``
 
 * Pip: ``python -m pip install --index-url https://software.repos.intel.com/python/pypi dpnp``
 
 These commands install dpnp package along with its dependencies, including
 ``dpctl`` package with `Data Parallel Control Library`_ and all required
 compiler runtimes and OneMKL.
+
+.. warning::
+    Packages from the Intel channel are meant to be used together with dependencies from the **conda-forge** channel, and might not
+    work correctly when used in an environment where packages from the ``anaconda`` default channel have been installed. It is
+    advisable to use the `miniforge <https://github.com/conda-forge/miniforge>`__ installer for ``conda``/``mamba``, as it comes with
+    ``conda-forge`` as the only default channel.
 
 .. note::
    Before installing with conda or pip it is strongly advised to update ``conda`` and ``pip`` to latest versions
@@ -68,7 +74,7 @@ And to build dpnp package from the sources:
 
 .. code-block:: bash
 
-    conda build conda-recipe -c https://software.repos.intel.com/python/conda/ -c conda-forge
+    conda build conda-recipe -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
 
 Finally, to install the result package:
 
@@ -90,7 +96,7 @@ On Linux:
 
     conda create -n build-env dpctl cython dpcpp_linux-64 mkl-devel-dpcpp tbb-devel \
           onedpl-devel cmake scikit-build ninja pytest intel-gpu-ocl-icd-system     \
-          -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge
+          -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
     conda activate build-env
 
 On Windows:
@@ -99,7 +105,7 @@ On Windows:
 
     conda create -n build-env dpctl cython dpcpp_win-64 mkl-devel-dpcpp tbb-devel \
           onedpl-devel cmake scikit-build ninja pytest intel-gpu-ocl-icd-system   \
-          -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge
+          -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
     conda activate build-env
 
 To build and install the package on Linux OS, run:
@@ -130,17 +136,51 @@ Building ``dpnp`` for these targets requires that these CodePlay plugins be inst
 installation layout of compatible version. The following plugins from CodePlay are supported:
 
     - `oneAPI for NVIDIA(R) GPUs <codeplay_nv_plugin_>`_
+    - `oneAPI for AMD GPUs <codeplay_amd_plugin_>`_
 
 .. _codeplay_nv_plugin: https://developer.codeplay.com/products/oneapi/nvidia/
+.. _codeplay_amd_plugin: https://developer.codeplay.com/products/oneapi/amd/
 
 Building ``dpnp`` also requires `building Data Parallel Control Library for custom SYCL targets.
 <https://intelpython.github.io/dpctl/latest/beginners_guides/installation.html#building-for-custom-sycl-targets>`_
 
-Build ``dpnp`` as follows:
+``dpnp`` can be built for CUDA devices as follows:
 
 .. code-block:: bash
 
     python scripts/build_locally.py --target=cuda
+
+And for AMD devices:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --target-hip=<arch>
+
+Note that the *oneAPI for AMD GPUs* plugin requires the architecture be specified and only
+one architecture can be specified at a time.
+
+To determine the architecture code (``<arch>``) for your AMD GPU, run:
+
+.. code-block:: bash
+
+    rocminfo | grep 'Name: *gfx.*'
+
+This will print names like ``gfx90a``, ``gfx1030``, etc.
+You can then use one of them as the argument to ``--target-hip``.
+
+For example:
+
+.. code-block:: bash
+    python scripts/build_locally.py --target-hip=gfx90a
+
+
+It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
+architecture all at once:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --target=cuda --target-hip=gfx90a
+
 
 Testing
 =======
