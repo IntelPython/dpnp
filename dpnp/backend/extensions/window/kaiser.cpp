@@ -32,18 +32,6 @@
 
 #include <sycl/sycl.hpp>
 
-/**
- * Version of SYCL DPC++ 2025.1 compiler where an issue with
- * sycl::ext::intel::math::cyl_bessel_i0(x) is fully resolved.
- */
-#ifndef __SYCL_COMPILER_BESSEL_I0_SUPPORT
-#define __SYCL_COMPILER_BESSEL_I0_SUPPORT 20241208L
-#endif
-
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT
-#include <sycl/ext/intel/math.hpp>
-#endif
-
 #include "../kernels/elementwise_functions/i0.hpp"
 
 namespace dpnp::extensions::window
@@ -74,11 +62,7 @@ public:
 
     void operator()(sycl::id<1> id) const
     {
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT
-        using sycl::ext::intel::math::cyl_bessel_i0;
-#else
-        using dpnp::kernels::i0::impl::cyl_bessel_i0;
-#endif
+        using dpnp::kernels::i0::cyl_bessel_i0;
 
         const auto i = id.get(0);
         const T alpha = (N - 1) / T(2);

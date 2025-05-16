@@ -35,12 +35,28 @@
 #define __SYCL_COMPILER_BESSEL_I0_SUPPORT 20241208L
 #endif
 
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT
+/**
+ * Include <sycl/ext/intel/math.hpp> only when targeting to Intel devices.
+ * This header relies on intel-specific types like _iml_half_internal,
+ * which are not suppose to work with other targets (e.g., CUDA, AMD).
+ */
+#if defined(__SPIR__) && defined(__INTEL_LLVM_COMPILER)
+#define __SYCL_EXT_INTEL_MATH_SUPPORT
+#endif
+
+#if defined(__SYCL_EXT_INTEL_MATH_SUPPORT) &&                                  \
+    (__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT)
 #include <sycl/ext/intel/math.hpp>
 #endif
 
 namespace dpnp::kernels::i0
 {
+#if defined(__SYCL_EXT_INTEL_MATH_SUPPORT) &&                                  \
+    (__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT)
+using sycl::ext::intel::math::cyl_bessel_i0;
+
+#else
+
 /**
  * The below implementation of Bessel function of order 0
  * is based on the source code from https://github.com/gcc-mirror/gcc
@@ -239,6 +255,10 @@ inline Tp cyl_bessel_i0(Tp x)
 }
 } // namespace impl
 
+using impl::cyl_bessel_i0;
+
+#endif
+
 template <typename argT, typename resT>
 struct I0Functor
 {
@@ -253,12 +273,6 @@ struct I0Functor
 
     resT operator()(const argT &x) const
     {
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT
-        using sycl::ext::intel::math::cyl_bessel_i0;
-#else
-        using impl::cyl_bessel_i0;
-#endif
-
         if constexpr (std::is_same_v<resT, sycl::half>) {
             return static_cast<resT>(cyl_bessel_i0<float>(float(x)));
         }

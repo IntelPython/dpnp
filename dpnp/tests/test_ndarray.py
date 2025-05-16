@@ -23,7 +23,7 @@ from .third_party.cupy import testing
 class TestAsType:
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("res_dtype", get_all_dtypes())
-    @pytest.mark.parametrize("arr_dtype", get_all_dtypes())
+    @pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "arr",
         [[-2, -1, 0, 1, 2], [[-2, -1], [1, 2]], []],
@@ -35,7 +35,7 @@ class TestAsType:
 
         expected = a.astype(res_dtype)
         result = ia.astype(res_dtype)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
     def test_subok_error(self):
         x = dpnp.ones(4)
@@ -88,18 +88,18 @@ def test_create_from_usm_ndarray_error(arr):
         dpnp.ndarray._create_from_usm_ndarray(arr)
 
 
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes())
+@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_none=True))
 @pytest.mark.parametrize(
     "arr",
     [[-2, -1, 0, 1, 2], [[-2, -1], [1, 2]], []],
     ids=["[-2, -1, 0, 1, 2]", "[[-2, -1], [1, 2]]", "[]"],
 )
 def test_flatten(arr, arr_dtype):
-    numpy_array = get_abs_array(arr, arr_dtype)
-    dpnp_array = dpnp.array(numpy_array)
-    expected = numpy_array.flatten()
-    result = dpnp_array.flatten()
-    assert_array_equal(expected, result)
+    a = get_abs_array(arr, arr_dtype)
+    ia = dpnp.array(a)
+    expected = a.flatten()
+    result = ia.flatten()
+    assert_array_equal(result, expected)
 
 
 @pytest.mark.parametrize(
@@ -110,17 +110,16 @@ def test_flatten(arr, arr_dtype):
 @pytest.mark.parametrize("order", ["C", "F"])
 def test_flags(shape, order):
     usm_array = dpt.usm_ndarray(shape, order=order)
-    numpy_array = numpy.ndarray(shape, order=order)
-    dpnp_array = dpnp.ndarray(shape, order=order)
-    assert usm_array.flags == dpnp_array.flags
-    assert numpy_array.flags.c_contiguous == dpnp_array.flags.c_contiguous
-    assert numpy_array.flags.f_contiguous == dpnp_array.flags.f_contiguous
+    a = numpy.ndarray(shape, order=order)
+    ia = dpnp.ndarray(shape, order=order)
+    assert usm_array.flags == ia.flags
+    assert a.flags.c_contiguous == ia.flags.c_contiguous
+    assert a.flags.f_contiguous == ia.flags.f_contiguous
 
 
 @pytest.mark.parametrize(
     "dtype",
     [numpy.complex64, numpy.float32, numpy.int64, numpy.int32, numpy.bool_],
-    ids=["complex64", "float32", "int64", "int32", "bool"],
 )
 @pytest.mark.parametrize("strides", [(1, 4), (4, 1)], ids=["(1, 4)", "(4, 1)"])
 @pytest.mark.parametrize("order", ["C", "F"])
@@ -130,13 +129,11 @@ def test_flags_strides(dtype, order, strides):
     usm_array = dpt.usm_ndarray(
         (4, 4), dtype=dtype, order=order, strides=strides
     )
-    numpy_array = numpy.ndarray(
-        (4, 4), dtype=dtype, order=order, strides=numpy_strides
-    )
-    dpnp_array = dpnp.ndarray((4, 4), dtype=dtype, order=order, strides=strides)
-    assert usm_array.flags == dpnp_array.flags
-    assert numpy_array.flags.c_contiguous == dpnp_array.flags.c_contiguous
-    assert numpy_array.flags.f_contiguous == dpnp_array.flags.f_contiguous
+    a = numpy.ndarray((4, 4), dtype=dtype, order=order, strides=numpy_strides)
+    ia = dpnp.ndarray((4, 4), dtype=dtype, order=order, strides=strides)
+    assert usm_array.flags == ia.flags
+    assert a.flags.c_contiguous == ia.flags.c_contiguous
+    assert a.flags.f_contiguous == ia.flags.f_contiguous
 
 
 def test_flags_writable():
@@ -336,7 +333,7 @@ def test_print_dpnp_special_character(character):
 def test_print_dpnp_1d():
     dtype = dpnp.default_float_type()
     result = repr(dpnp.arange(10000, dtype=dtype))
-    expected = "array([0.000e+00, 1.000e+00, 2.000e+00, ..., 9.997e+03, 9.998e+03,\n       9.999e+03])"
+    expected = "array([0.000e+00, 1.000e+00, 2.000e+00, ..., 9.997e+03, 9.998e+03,\n       9.999e+03], shape=(10000,))"
     if not has_support_aspect64():
         expected = expected[:-1] + ", dtype=float32)"
     assert result == expected
@@ -364,9 +361,9 @@ def test_print_dpnp_2d():
 def test_print_dpnp_zero_shape():
     result = repr(dpnp.empty(shape=(0, 0)))
     if has_support_aspect64():
-        expected = "array([])"
+        expected = "array([], shape=(0, 0), dtype=float64)"
     else:
-        expected = "array([], dtype=float32)"
+        expected = "array([], shape=(0, 0), dtype=float32)"
     assert result == expected
 
     result = str(dpnp.empty(shape=(0, 0)))
@@ -383,9 +380,9 @@ def test_print_dpnp_zero_shape():
     "dtype", get_all_dtypes(no_float16=False, no_complex=True)
 )
 def test_scalar_type_casting(func, shape, dtype):
-    numpy_array = numpy.full(shape, 5, dtype=dtype)
-    dpnp_array = dpnp.full(shape, 5, dtype=dtype)
-    assert func(numpy_array) == func(dpnp_array)
+    a = numpy.full(shape, 5, dtype=dtype)
+    ia = dpnp.full(shape, 5, dtype=dtype)
+    assert func(a) == func(ia)
 
 
 # Numpy will raise an error when converting a.ndim > 0 to a scalar
@@ -396,12 +393,12 @@ def test_scalar_type_casting(func, shape, dtype):
 )
 @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
 @pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_float16=False, no_complex=True, no_none=True)
+    "dtype", get_all_dtypes(no_float16=False, no_complex=True)
 )
 def test_scalar_type_casting_by_method(method, shape, dtype):
-    numpy_array = numpy.full(shape, 4.7, dtype=dtype)
-    dpnp_array = dpnp.full(shape, 4.7, dtype=dtype)
-    assert getattr(numpy_array, method)() == getattr(dpnp_array, method)()
+    a = numpy.full(shape, 4.7, dtype=dtype)
+    ia = dpnp.full(shape, 4.7, dtype=dtype)
+    assert_allclose(getattr(a, method)(), getattr(ia, method)(), rtol=1e-06)
 
 
 @pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
@@ -452,18 +449,18 @@ def test_ravel():
 
 
 def test_repeat():
-    numpy_array = numpy.arange(4).repeat(3)
-    dpnp_array = dpnp.arange(4).repeat(3)
-    assert_array_equal(numpy_array, dpnp_array)
+    a = numpy.arange(4).repeat(3)
+    ia = dpnp.arange(4).repeat(3)
+    assert_array_equal(a, ia)
 
 
 def test_clip():
-    numpy_array = numpy.arange(10)
-    dpnp_array = dpnp.arange(10)
-    result = dpnp.clip(dpnp_array, 3, 7)
-    expected = numpy.clip(numpy_array, 3, 7)
+    a = numpy.arange(10)
+    ia = dpnp.arange(10)
+    result = dpnp.clip(ia, 3, 7)
+    expected = numpy.clip(a, 3, 7)
 
-    assert_array_equal(expected, result)
+    assert_array_equal(result, expected)
 
 
 def test_rmatmul_dpnp_array():

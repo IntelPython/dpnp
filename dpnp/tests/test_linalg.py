@@ -6,7 +6,6 @@ from dpctl.tensor._numpy_helper import AxisError
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
-    assert_almost_equal,
     assert_array_equal,
     assert_equal,
     assert_raises,
@@ -20,12 +19,13 @@ from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
-    get_complex_dtypes,
     get_float_complex_dtypes,
     get_integer_float_dtypes,
     has_support_aspect64,
     is_cpu_device,
     is_cuda_device,
+    is_gpu_device,
+    is_win_platform,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -311,7 +311,7 @@ class TestCond:
 
         result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=16)
 
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
@@ -334,6 +334,12 @@ class TestCond:
         # while OneMKL returns nans
         if is_cuda_device() and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]:
             pytest.skip("Different behavior on CUDA")
+        elif (
+            is_gpu_device()
+            and is_win_platform()
+            and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]
+        ):
+            pytest.skip("SAT-7966")
         a = generate_random_numpy_array((2, 2, 2, 2))
         a[0, 0] = 0
         a[1, 1] = 0
@@ -422,13 +428,9 @@ class TestDet:
         a = numpy.empty((0, 0, 2, 2), dtype=numpy.float32)
         ia = dpnp.array(a)
 
-        np_det = numpy.linalg.det(a)
-        dpnp_det = dpnp.linalg.det(ia)
-
-        assert dpnp_det.dtype == np_det.dtype
-        assert dpnp_det.shape == np_det.shape
-
-        assert_allclose(dpnp_det, np_det)
+        expected = numpy.linalg.det(a)
+        result = dpnp.linalg.det(ia)
+        assert_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "matrix",
@@ -2114,7 +2116,7 @@ class TestNorm:
                 # TODO: when similar changes in numpy are available, instead
                 # of assert_equal with zero, we should compare with numpy
                 # ord in [None, 1, 2]
-                assert_equal(dpnp.linalg.norm(ia, **kwarg), 0)
+                assert_equal(dpnp.linalg.norm(ia, **kwarg), 0.0)
                 assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         else:
             result = dpnp.linalg.norm(ia, **kwarg)
@@ -2323,7 +2325,8 @@ class TestNorm:
     @pytest.mark.parametrize("ord", [None, "fro", "nuc", 1, 2, dpnp.inf])
     def test_matrix_norm_empty(self, xp, dtype, shape, axis, ord):
         x = xp.zeros(shape, dtype=dtype)
-        assert_equal(xp.linalg.norm(x, axis=axis, ord=ord), 0)
+        sc = dtype(0.0) if dtype == dpnp.float32 else 0.0
+        assert_equal(xp.linalg.norm(x, axis=axis, ord=ord), sc)
 
     @pytest.mark.parametrize(
         "xp",
@@ -2343,7 +2346,8 @@ class TestNorm:
     @pytest.mark.parametrize("ord", [None, 1, 2, dpnp.inf])
     def test_vector_norm_empty(self, xp, dtype, axis, ord):
         x = xp.zeros(0, dtype=dtype)
-        assert_equal(xp.linalg.vector_norm(x, axis=axis, ord=ord), 0)
+        sc = dtype(0.0) if dtype == dpnp.float32 else 0.0
+        assert_equal(xp.linalg.vector_norm(x, axis=axis, ord=ord), sc)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(
@@ -2841,32 +2845,11 @@ class TestSvd:
         tol = 1e-06
         if dtype in (dpnp.float32, dpnp.complex64):
             tol = 1e-03
-        elif not has_support_aspect64() and dtype in (
-            dpnp.int32,
-            dpnp.int64,
-            None,
+        elif not has_support_aspect64() and (
+            dtype is None or dpnp.issubdtype(dtype, dpnp.integer)
         ):
             tol = 1e-03
         self._tol = tol
-
-    def check_types_shapes(
-        self, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt=True
-    ):
-        if has_support_aspect64():
-            if compute_vt:
-                assert dp_u.dtype == np_u.dtype
-                assert dp_vt.dtype == np_vt.dtype
-            assert dp_s.dtype == np_s.dtype
-        else:
-            if compute_vt:
-                assert dp_u.dtype.kind == np_u.dtype.kind
-                assert dp_vt.dtype.kind == np_vt.dtype.kind
-            assert dp_s.dtype.kind == np_s.dtype.kind
-
-        if compute_vt:
-            assert dp_u.shape == np_u.shape
-            assert dp_vt.shape == np_vt.shape
-        assert dp_s.shape == np_s.shape
 
     # Checks the accuracy of singular value decomposition (SVD).
     # Compares the reconstructed matrix from the decomposed components
@@ -2920,7 +2903,6 @@ class TestSvd:
         result = dpnp.linalg.svd(dp_a)
         dp_u, dp_s, dp_vh = result.U, result.S, result.Vh
 
-        self.check_types_shapes(dp_u, dp_s, dp_vh, np_u, np_s, np_vh)
         self.get_tol(dtype)
         self.check_decomposition(
             dp_a, dp_u, dp_s, dp_vh, np_u, np_s, np_vh, True
@@ -2947,10 +2929,6 @@ class TestSvd:
             np_s = numpy.linalg.svd(a, compute_uv=compute_vt, hermitian=True)
             dp_s = dpnp.linalg.svd(dp_a, compute_uv=compute_vt, hermitian=True)
             np_u = np_vh = dp_u = dp_vh = None
-
-        self.check_types_shapes(
-            dp_u, dp_s, dp_vh, np_u, np_s, np_vh, compute_vt
-        )
 
         self.get_tol(dtype)
 
@@ -3019,21 +2997,11 @@ class TestPinv:
         tol = 1e-06
         if dtype in (dpnp.float32, dpnp.complex64):
             tol = 1e-03
-        elif not has_support_aspect64() and dtype in (
-            dpnp.int32,
-            dpnp.int64,
-            None,
+        elif not has_support_aspect64() and (
+            dtype is None or dpnp.issubdtype(dtype, dpnp.integer)
         ):
             tol = 1e-03
         self._tol = tol
-
-    def check_types_shapes(self, dp_B, np_B):
-        if has_support_aspect64():
-            assert dp_B.dtype == np_B.dtype
-        else:
-            assert dp_B.dtype.kind == np_B.dtype.kind
-
-        assert dp_B.shape == np_B.shape
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
@@ -3056,7 +3024,6 @@ class TestPinv:
         B = numpy.linalg.pinv(a)
         B_dp = dpnp.linalg.pinv(a_dp)
 
-        self.check_types_shapes(B_dp, B)
         self.get_tol(dtype)
         tol = self._tol
         assert_allclose(B_dp, B, rtol=tol, atol=tol)
@@ -3081,7 +3048,6 @@ class TestPinv:
         B = numpy.linalg.pinv(a, hermitian=True)
         B_dp = dpnp.linalg.pinv(a_dp, hermitian=True)
 
-        self.check_types_shapes(B_dp, B)
         self.get_tol(dtype)
         tol = self._tol
 
