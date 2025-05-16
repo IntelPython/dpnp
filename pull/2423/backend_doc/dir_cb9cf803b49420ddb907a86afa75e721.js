@@ -6,6 +6,8 @@ var dir_cb9cf803b49420ddb907a86afa75e721 =
     [ "histogramdd.hpp", "histogramdd_8hpp_source.html", null ],
     [ "kth_element1d.hpp", "kth__element1d_8hpp_source.html", null ],
     [ "partitioning.hpp", "partitioning_8hpp_source.html", null ],
+    [ "partitioning_one_pivot_kernel_cpu.hpp", "partitioning__one__pivot__kernel__cpu_8hpp_source.html", null ],
+    [ "partitioning_one_pivot_kernel_gpu.hpp", "partitioning__one__pivot__kernel__gpu_8hpp_source.html", null ],
     [ "sliding_dot_product1d.hpp", "sliding__dot__product1d_8hpp_source.html", null ],
     [ "sliding_window1d.hpp", "sliding__window1d_8hpp_source.html", null ]
 ];

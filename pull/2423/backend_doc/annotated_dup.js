@@ -99,7 +99,7 @@ var annotated_dup =
         [ "heaviside", null, [
           [ "HeavisideFunctor", "structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html", null ]
         ] ],
-        [ "i0", null, [
+        [ "i0", "namespacedpnp_1_1kernels_1_1i0.html", [
           [ "I0Functor", "structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html", null ]
         ] ],
         [ "lcm", null, [
@@ -138,7 +138,10 @@ var annotated_dup =
         [ "one_of< T, std::tuple< Top > >", "structext_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html", null ],
         [ "one_of< T, std::tuple< Top, Rest... > >", "structext_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html", null ],
         [ "TableBuilder", "structext_1_1common_1_1_table_builder.html", "structext_1_1common_1_1_table_builder" ],
-        [ "TableBuilder2", "structext_1_1common_1_1_table_builder2.html", "structext_1_1common_1_1_table_builder2" ]
+        [ "TableBuilder2", "structext_1_1common_1_1_table_builder2.html", "structext_1_1common_1_1_table_builder2" ],
+        [ "value_type_of_impl", "structext_1_1common_1_1value__type__of__impl.html", null ],
+        [ "value_type_of_impl< T, false >", "structext_1_1common_1_1value__type__of__impl_3_01_t_00_01false_01_4.html", null ],
+        [ "value_type_of_impl< T, true >", "structext_1_1common_1_1value__type__of__impl_3_01_t_00_01true_01_4.html", null ]
       ] ]
     ] ],
     [ "statistics", null, [
@@ -160,7 +163,8 @@ var annotated_dup =
       [ "partitioning", null, [
         [ "Counters", "structstatistics_1_1partitioning_1_1_counters.html", null ],
         [ "KthElement1d", "structstatistics_1_1partitioning_1_1_kth_element1d.html", null ],
-        [ "partition_one_pivot_kernel", "classstatistics_1_1partitioning_1_1partition__one__pivot__kernel.html", null ],
+        [ "partition_one_pivot_kernel_cpu", "structstatistics_1_1partitioning_1_1partition__one__pivot__kernel__cpu.html", null ],
+        [ "partition_one_pivot_kernel_gpu", "structstatistics_1_1partitioning_1_1partition__one__pivot__kernel__gpu.html", null ],
         [ "PartitionState", "structstatistics_1_1partitioning_1_1_partition_state.html", null ],
         [ "State", "structstatistics_1_1partitioning_1_1_state.html", null ]
       ] ],

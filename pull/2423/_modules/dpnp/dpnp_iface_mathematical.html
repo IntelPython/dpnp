@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev1+12.g1051c8f07aa documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev3+12.g99ea09d52fa documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=911ffb89"></script>
+      <script src="../../_static/documentation_options.js?v=24e6dac6"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -127,6 +127,7 @@
 <span class="c1"># pylint: disable=no-name-in-module</span>
 
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
@@ -196,8 +197,9 @@
     <span class="s2">&quot;gcd&quot;</span><span class="p">,</span>
     <span class="s2">&quot;gradient&quot;</span><span class="p">,</span>
     <span class="s2">&quot;heaviside&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;imag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;i0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;imag&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;interp&quot;</span><span class="p">,</span>
     <span class="s2">&quot;lcm&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ldexp&quot;</span><span class="p">,</span>
     <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
@@ -433,6 +435,39 @@
     <span class="k">return</span> <span class="n">arg</span><span class="p">,</span> <span class="n">usm_type</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_interp_param</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate and convert optional parameters for interpolation.</span>
+
+<span class="sd">    Returns a dpnp.ndarray or None if the input is None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;a </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> value must be 0-dimensional, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">-dim&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpu</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">([</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;input arrays and </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be allocated &quot;</span>
+                <span class="s2">&quot;on the same SYCL queue&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">param</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">param</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+        <span class="p">)</span>
+
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;a </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> value must be a scalar or 0-d supported array, &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">param</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+
 <span class="n">_ABS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the absolute value for each element :math:`x_i` of input array `x`.</span>
 
@@ -646,6 +681,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_angle_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_angle</span><span class="p">,</span>
     <span class="n">_ANGLE_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_arg_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_arg&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -963,6 +1000,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_copysign_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_copysign</span><span class="p">,</span>
     <span class="n">_COPYSIGN_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_copysign_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_copysign&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2792,6 +2831,8 @@
     <span class="n">ufi</span><span class="o">.</span><span class="n">_i0_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_i0</span><span class="p">,</span>
     <span class="n">_I0_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_i0_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_i0&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2855,6 +2896,184 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_imag</span><span class="p">,</span>
     <span class="n">_IMAG_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<div class="viewcode-block" id="interp">
+<a class="viewcode-back" href="../../reference/generated/dpnp.interp.html#dpnp.interp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">interp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    One-dimensional linear interpolation.</span>
+
+<span class="sd">    Returns the one-dimensional piecewise linear interpolant to a function</span>
+<span class="sd">    with given discrete data points (`xp`, `fp`), evaluated at `x`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.interp`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input 1-D array, expected to have a real-valued</span>
+<span class="sd">        floating-point data type. The x-coordinates at which</span>
+<span class="sd">        to evaluate the interpolated values.</span>
+
+<span class="sd">    xp : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input 1-D array, expected to have a real-valued</span>
+<span class="sd">        floating-point data type. The x-coordinates of the data points,</span>
+<span class="sd">        must be increasing if argument `period` is not specified.</span>
+<span class="sd">        Otherwise, `xp` is internally sorted after normalizing</span>
+<span class="sd">        the periodic boundaries with ``xp = xp % period``.</span>
+
+<span class="sd">    fp : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input 1-D array. The y-coordinates of the data points,</span>
+<span class="sd">        same length as `xp`.</span>
+
+<span class="sd">    left : {None, scalar, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Value to return for `x &lt; xp[0]`.</span>
+
+<span class="sd">        Default: ``fp[0]``.</span>
+
+<span class="sd">    right : {None, scalar, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Value to return for `x &gt; xp[-1]`.</span>
+
+<span class="sd">        Default: ``fp[-1]``.</span>
+
+<span class="sd">    period : {None, scalar}, optional</span>
+<span class="sd">        A period for the x-coordinates. This parameter allows the proper</span>
+<span class="sd">        interpolation of angular x-coordinates. Parameters `left` and `right`</span>
+<span class="sd">        are ignored if `period` is specified.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : dpnp.ndarray</span>
+<span class="sd">        The interpolated values, same shape as `x`.</span>
+
+
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
+<span class="sd">    The x-coordinate sequence is expected to be increasing, but this is not</span>
+<span class="sd">    explicitly enforced. However, if the sequence `xp` is non-increasing,</span>
+<span class="sd">    interpolation results are meaningless.</span>
+
+<span class="sd">    Note that, since NaN is unsortable, `xp` also cannot contain NaNs.</span>
+
+<span class="sd">    A simple check for `xp` being strictly increasing is::</span>
+
+<span class="sd">        import dpnp as np</span>
+<span class="sd">        np.all(np.diff(xp) &gt; 0)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; xp = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; fp = np.array([3 ,2 ,0])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([2.5])</span>
+<span class="sd">    &gt;&gt;&gt; np.interp(x, xp, fp)</span>
+<span class="sd">    array([1.])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([0, 1, 1.5, 2.72, 3.14])</span>
+<span class="sd">    &gt;&gt;&gt; np.interp(x, xp, fp)</span>
+<span class="sd">    array([3.  , 3.  , 2.5 , 0.56, 0.  ])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([3.14])</span>
+<span class="sd">    &gt;&gt;&gt; UNDEF = -99.0</span>
+<span class="sd">    &gt;&gt;&gt; np.interp(x, xp, fp, right=UNDEF)</span>
+<span class="sd">    array([-99.])</span>
+
+<span class="sd">    Interpolation with periodic x-coordinates:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([-180, -170, -185, 185, -10, -5, 0, 365])</span>
+<span class="sd">    &gt;&gt;&gt; xp = np.array([190, -190, 350, -350])</span>
+<span class="sd">    &gt;&gt;&gt; fp = np.array([5, 10, 3, 4])</span>
+<span class="sd">    &gt;&gt;&gt; np.interp(x, xp, fp, period=360)</span>
+<span class="sd">    array([7.5 , 5.  , 8.75, 6.25, 3.  , 3.25, 3.5 , 3.75])</span>
+
+<span class="sd">    Complex interpolation:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([1.5, 4.0])</span>
+<span class="sd">    &gt;&gt;&gt; xp = np.array([2,3,5])</span>
+<span class="sd">    &gt;&gt;&gt; fp = np.array([1.0j, 0, 2+3j])</span>
+<span class="sd">    &gt;&gt;&gt; np.interp(x, xp, fp)</span>
+<span class="sd">    array([0.+1.j , 1.+1.5j])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">xp</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">fp</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;xp and fp must be 1D arrays&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xp</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">fp</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;fp and xp are not of the same length&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xp</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;array of sample points is empty&quot;</span><span class="p">)</span>
+
+    <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">fp</span><span class="p">])</span>
+
+    <span class="n">x_float_type</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">exec_q</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_float_type</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">xp</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+        <span class="n">xp</span><span class="p">,</span> <span class="n">x_float_type</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">fp</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+        <span class="c1"># Handle bool type for `fp` to follow NumPy behavior</span>
+        <span class="n">out_dtype</span> <span class="o">=</span> <span class="n">x_float_type</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">common_type</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+
+    <span class="n">fp</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">out_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">period</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">period</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;period must be a scalar or None, &quot;</span> <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">period</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">period</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;period must be a non-zero value&quot;</span><span class="p">)</span>
+        <span class="n">period</span> <span class="o">=</span> <span class="n">_validate_interp_param</span><span class="p">(</span>
+            <span class="n">builtins</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">period</span><span class="p">),</span> <span class="s2">&quot;period&quot;</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span>
+        <span class="p">)</span>
+
+        <span class="c1"># left/right are ignored when period is specified</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># normalizing periodic boundaries</span>
+        <span class="n">x</span> <span class="o">%=</span> <span class="n">period</span>
+        <span class="n">xp</span> <span class="o">%=</span> <span class="n">period</span>
+        <span class="n">asort_xp</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">xp</span><span class="p">)</span>
+        <span class="n">xp</span> <span class="o">=</span> <span class="n">xp</span><span class="p">[</span><span class="n">asort_xp</span><span class="p">]</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">fp</span><span class="p">[</span><span class="n">asort_xp</span><span class="p">]</span>
+        <span class="n">xp</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">xp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">period</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">xp</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">period</span><span class="p">))</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">fp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:],</span> <span class="n">fp</span><span class="p">,</span> <span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">xp</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
+    <span class="n">left</span> <span class="o">=</span> <span class="n">_validate_interp_param</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">fp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="n">_validate_interp_param</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">fp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">xp</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">])</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">out_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+    <span class="p">)</span>
+
+    <span class="n">left_usm</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">right_usm</span> <span class="o">=</span> <span class="n">right</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span> <span class="k">if</span> <span class="n">right</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+    <span class="n">mem_ev</span><span class="p">,</span> <span class="n">ht_ev</span> <span class="o">=</span> <span class="n">ufi</span><span class="o">.</span><span class="n">_interpolate</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
+        <span class="n">idx</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
+        <span class="n">xp</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
+        <span class="n">left_usm</span><span class="p">,</span>
+        <span class="n">right_usm</span><span class="p">,</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
+        <span class="n">exec_q</span><span class="p">,</span>
+        <span class="n">depends</span><span class="o">=</span><span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">mem_ev</span><span class="p">,</span> <span class="n">ht_ev</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
 
 
 <span class="n">_LCM_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
@@ -4090,6 +4309,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_remainder</span><span class="p">,</span>
     <span class="n">_REMAINDER_DOCSTRING</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_remainder_inplace</span><span class="p">,</span>
+    <span class="c1"># mkl_vm::remainder() isn&#39;t implemented, because it follows C&#39;s modulo</span>
+    <span class="c1"># operator, but Python&#39;s one is expected acc to Python Array API spec</span>
 <span class="p">)</span>
 
 <span class="n">mod</span> <span class="o">=</span> <span class="n">remainder</span>

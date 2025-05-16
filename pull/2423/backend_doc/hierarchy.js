@@ -97,7 +97,8 @@ var hierarchy =
     [ "ext::common::one_of< T, std::tuple< Top, Rest... > >", "structext_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::extensions::lapack::types::OrgqrBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::OrgqrTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_type_pair_support_factory.html", null ],
-    [ "statistics::partitioning::partition_one_pivot_kernel< T >", "classstatistics_1_1partitioning_1_1partition__one__pivot__kernel.html", null ],
+    [ "statistics::partitioning::partition_one_pivot_kernel_cpu< T, WorkPI >", "structstatistics_1_1partitioning_1_1partition__one__pivot__kernel__cpu.html", null ],
+    [ "statistics::partitioning::partition_one_pivot_kernel_gpu< T >", "structstatistics_1_1partitioning_1_1partition__one__pivot__kernel__gpu.html", null ],
     [ "statistics::partitioning::PartitionState< T >", "structstatistics_1_1partitioning_1_1_partition_state.html", null ],
     [ "dpnp::extensions::lapack::types::PotrfBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::PotrfTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html", null ],
@@ -127,5 +128,8 @@ var hierarchy =
     [ "dpnp::extensions::lapack::types::UngqrTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::helper::value_type_of< T >", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of.html", null ],
     [ "dpnp::extensions::lapack::helper::value_type_of< std::complex< T > >", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
+    [ "ext::common::value_type_of_impl< T, hasValueType >", "structext_1_1common_1_1value__type__of__impl.html", null ],
+    [ "ext::common::value_type_of_impl< T, false >", "structext_1_1common_1_1value__type__of__impl_3_01_t_00_01false_01_4.html", null ],
+    [ "ext::common::value_type_of_impl< T, true >", "structext_1_1common_1_1value__type__of__impl_3_01_t_00_01true_01_4.html", null ],
     [ "statistics::histogram::Weights< T >", "structstatistics_1_1histogram_1_1_weights.html", null ]
 ];
