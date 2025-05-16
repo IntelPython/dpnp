@@ -27,10 +27,12 @@ import warnings
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.utils as dpu
 from dpctl.tensor._numpy_helper import normalize_axis_tuple
 from dpctl.utils import ExecutionPlacementError
 
 import dpnp
+import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
 from dpnp.dpnp_array import dpnp_array
 
 __all__ = ["dpnp_cov", "dpnp_median"]
@@ -191,6 +193,43 @@ def dpnp_cov(
     return c.squeeze()
 
 
+def native_median(a):
+    partitioned = dpnp.empty_like(a)
+    a_usm = dpnp.get_usm_ndarray(a)
+    partitioned_usm = dpnp.get_usm_ndarray(partitioned)
+
+    _manager = dpu.SequentialOrderManager[a.sycl_queue]
+
+    result = dpnp.empty_like(a, shape=1)
+    k = a.shape[0] // 2
+
+    found, buff_offset, elems_offset, num_elems, nan_count = (
+        statistics_ext.kth_element(
+            a_usm,
+            partitioned_usm,
+            k,
+            depends=_manager.submitted_events,
+        )
+    )
+
+    if found:
+        if a.shape[0] % 2 == 0:
+            # even number of elements
+            result[0] = (partitioned[0] + partitioned[1]) / 2
+        else:
+            result[0] = partitioned[0]
+    else:
+        partitioned[buff_offset : buff_offset + num_elems].sort()
+        kth_idx = buff_offset + k - elems_offset
+        if a.shape[0] % 2 == 0:
+            # even number of elements
+            result[0] = (partitioned[kth_idx] + partitioned[kth_idx + 1]) / 2
+        else:
+            result[0] = partitioned[kth_idx]
+
+    return result
+
+
 def dpnp_median(
     a,
     axis=None,
@@ -222,6 +261,9 @@ def dpnp_median(
                 a, _axis, overwrite_input
             )
         axis = -1
+
+    if not ignore_nan and a_ndim == 1:
+        return native_median(a)
 
     if overwrite_input:
         if isinstance(a, dpt.usm_ndarray):
