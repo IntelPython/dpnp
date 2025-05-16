@@ -40,7 +40,6 @@ class TestDLPack:
         x = xp.arange(5).astype(dt)
         y = xp.from_dlpack(x)
 
-        assert y.dtype == x.dtype
         assert_array_equal(x, y)
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])

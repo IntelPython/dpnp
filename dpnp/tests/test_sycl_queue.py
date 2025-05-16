@@ -1454,6 +1454,22 @@ def test_choose(device):
 
 
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+@pytest.mark.parametrize("left", [None, -1.0])
+@pytest.mark.parametrize("right", [None, 99.0])
+@pytest.mark.parametrize("period", [None, 180.0])
+def test_interp(device, left, right, period):
+    x = dpnp.linspace(0.1, 9.9, 20, device=device)
+    xp = dpnp.linspace(0.0, 10.0, 5, sycl_queue=x.sycl_queue)
+    fp = dpnp.array(xp * 2 + 1, sycl_queue=x.sycl_queue)
+
+    l = None if left is None else dpnp.array(left, sycl_queue=x.sycl_queue)
+    r = None if right is None else dpnp.array(right, sycl_queue=x.sycl_queue)
+    result = dpnp.interp(x, xp, fp, left=l, right=r, period=period)
+
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 class TestLinAlgebra:
     @pytest.mark.parametrize(
         "data, is_empty",

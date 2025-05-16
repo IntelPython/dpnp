@@ -1672,7 +1672,7 @@ def seed(seed=None, device=None, sycl_queue=None):
     """
 
     # update a mt19937 random number for both RandomState and legacy functionality
-    global _dpnp_random_states
+    global _dpnp_random_states  # noqa: F824
 
     sycl_queue = dpnp.get_normalized_queue_device(
         device=device, sycl_queue=sycl_queue

@@ -449,6 +449,7 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
     return (common_sycl_queue.sycl_device, common_usm_type, common_sycl_queue)
 
 
+@cython.linetrace(False)
 cdef (DPNPFuncType, void *) get_ret_type_and_func(DPNPFuncData kernel_data,
                                                   cpp_bool has_aspect_fp64):
     """

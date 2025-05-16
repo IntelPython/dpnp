@@ -20,32 +20,6 @@ from .helper import (
 from .third_party.cupy import testing
 
 
-def _make_array_Hermitian(a, n):
-    """
-    For `dpnp.fft.irfft` and `dpnp.fft.hfft`, the input array should be Hermitian.
-    If it is not, the behavior is undefined. This function makes necessary changes
-    to make sure the given array is Hermitian.
-    """
-
-    a[0] = a[0].real
-    if n is None:
-        # last element is Nyquist mode
-        a[-1] = a[-1].real
-    elif n % 2 == 0:
-        # Nyquist mode (n//2+1 mode) is n//2-th element
-        f_ny = n // 2
-        if a.shape[0] > f_ny:
-            a[f_ny] = a[f_ny].real
-            a[f_ny + 1 :] = 0  # no data needed after Nyquist mode
-    else:
-        # No Nyquist mode
-        f_ny = n // 2
-        if a.shape[0] > f_ny:
-            a[f_ny + 1 :] = 0  # no data needed for the second half
-
-    return a
-
-
 class TestFft:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("n", [None, 5, 20])
@@ -577,13 +551,14 @@ class TestFftshift:
 
 
 class TestHfft:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    # TODO: include boolean dtype when mkl_fft-gh-180 is merged
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
     @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_basic(self, dtype, n, norm):
         a = generate_random_numpy_array(11, dtype)
-        if numpy.issubdtype(dtype, numpy.complexfloating):
-            a = _make_array_Hermitian(a, n)
         ia = dpnp.array(a)
 
         result = dpnp.fft.hfft(ia, n=n, norm=norm)
@@ -626,8 +601,6 @@ class TestIrfft:
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_basic(self, dtype, n, norm):
         a = generate_random_numpy_array(11)
-        if numpy.issubdtype(dtype, numpy.complexfloating):
-            a = _make_array_Hermitian(a, n)
         ia = dpnp.array(a)
 
         result = dpnp.fft.irfft(ia, n=n, norm=norm)
@@ -644,10 +617,6 @@ class TestIrfft:
     def test_2d_array(self, dtype, n, axis, norm, order):
         a = generate_random_numpy_array((3, 4), dtype=dtype, order=order)
         ia = dpnp.array(a)
-        # For dpnp, each 1-D array of input should be Hermitian
-        ia = dpnp.moveaxis(ia, axis, 0)
-        ia = _make_array_Hermitian(ia, n)
-        ia = dpnp.moveaxis(ia, 0, axis)
 
         result = dpnp.fft.irfft(ia, n=n, axis=axis, norm=norm)
         expected = numpy.fft.irfft(a, n=n, axis=axis, norm=norm)
@@ -661,10 +630,6 @@ class TestIrfft:
     def test_3d_array(self, dtype, n, axis, norm, order):
         a = generate_random_numpy_array((4, 5, 6), dtype, order)
         ia = dpnp.array(a)
-        # For dpnp, each 1-D array of input should be Hermitian
-        ia = dpnp.moveaxis(ia, axis, 0)
-        ia = _make_array_Hermitian(ia, n)
-        ia = dpnp.moveaxis(ia, 0, axis)
 
         result = dpnp.fft.irfft(ia, n=n, axis=axis, norm=norm)
         expected = numpy.fft.irfft(a, n=n, axis=axis, norm=norm)
@@ -674,7 +639,6 @@ class TestIrfft:
     def test_usm_ndarray(self, n):
         a = generate_random_numpy_array(11, dtype=numpy.complex64)
         a_usm = dpt.asarray(a)
-        a_usm = _make_array_Hermitian(a_usm, n)
 
         expected = numpy.fft.irfft(a, n=n)
         out = dpt.empty(expected.shape, dtype=a_usm.real.dtype)
@@ -688,7 +652,6 @@ class TestIrfft:
     def test_out(self, dtype, n, norm):
         a = generate_random_numpy_array(11, dtype=dtype)
         ia = dpnp.array(a)
-        ia = _make_array_Hermitian(ia, n)
 
         expected = numpy.fft.irfft(a, n=n, norm=norm)
         out = dpnp.empty(expected.shape, dtype=a.real.dtype)
@@ -704,9 +667,6 @@ class TestIrfft:
     def test_2d_array_out(self, dtype, n, axis, norm, order):
         a = generate_random_numpy_array((3, 4), dtype=dtype, order=order)
         ia = dpnp.array(a)
-        ia = dpnp.moveaxis(ia, axis, 0)
-        ia = _make_array_Hermitian(ia, n)
-        ia = dpnp.moveaxis(ia, 0, axis)
 
         expected = numpy.fft.irfft(a, n=n, axis=axis, norm=norm)
         out = dpnp.empty(expected.shape, dtype=expected.dtype)
@@ -994,5 +954,7 @@ class TestRfftn:
 
         result = dpnp.fft.irfftn(ia)
         expected = numpy.fft.irfftn(a)
-        flag = True if numpy_version() < "2.0.0" else False
+        # TODO: change to the commented line when mkl_fft-gh-180 is merged
+        flag = True
+        # flag = True if numpy_version() < "2.0.0" else False
         assert_dtype_allclose(result, expected, check_only_type_kind=flag)

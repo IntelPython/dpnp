@@ -100,7 +100,7 @@ class TestNormal:
     @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.float64, None])
     @pytest.mark.parametrize("usm_type", list_of_usm_types)
     def test_scale(self, dtype, usm_type):
-        mean = 7.0
+        mean = dtype(7.0) if dtype == dpnp.float32 else 7.0
         rs = RandomState(39567)
         func = lambda scale: rs.normal(
             loc=mean, scale=scale, dtype=dtype, usm_type=usm_type
@@ -135,7 +135,7 @@ class TestNormal:
     )
     def test_inf_loc(self, loc):
         a = RandomState(6531).normal(loc=loc, scale=1, size=1000)
-        assert_equal(a, get_default_floating()(loc))
+        assert_equal(a, get_default_floating()(loc), strict=False)
 
     def test_inf_scale(self):
         a = RandomState().normal(0, numpy.inf, size=1000)
@@ -427,8 +427,8 @@ class TestRandInt:
         assert -5 <= rs.randint(-5, -1) < -1
 
         x = rs.randint(-7, -1, 5)
-        assert_equal(-7 <= x, True)
-        assert_equal(x < -1, True)
+        assert_equal(-7 <= x, True, strict=False)
+        assert_equal(x < -1, True, strict=False)
 
     def test_bounds_checking(self):
         dtype = dpnp.int32
@@ -466,13 +466,13 @@ class TestRandInt:
             )
 
         tgt = high - 1
-        assert_equal(func(tgt, tgt + 1, size=1000), tgt)
+        assert_equal(func(tgt, tgt + 1, size=1000), tgt, strict=False)
 
         tgt = low
-        assert_equal(func(tgt, tgt + 1, size=1000), tgt)
+        assert_equal(func(tgt, tgt + 1, size=1000), tgt, strict=False)
 
         tgt = (low + high) // 2
-        assert_equal(func(tgt, tgt + 1, size=1000), tgt)
+        assert_equal(func(tgt, tgt + 1, size=1000), tgt, strict=False)
 
     def test_full_range(self):
         dtype = dpnp.int32
@@ -972,31 +972,29 @@ class TestUniform:
         dtype = get_default_floating() if dtype is None else dtype
         if sycl_queue.sycl_device.is_cpu:
             if dtype != dpnp.int32:
-                expected = numpy.array(
-                    [
-                        [4.023770128630567, 8.87456423597643],
-                        [2.888630247435067, 4.823004481580574],
-                        [2.030351535445079, 4.533497077834326],
-                    ]
-                )
+                data = [
+                    [4.023770128630567, 8.87456423597643],
+                    [2.888630247435067, 4.823004481580574],
+                    [2.030351535445079, 4.533497077834326],
+                ]
+                expected = numpy.array(data, dtype=dtype)
                 precision = dpnp.finfo(dtype).precision
                 assert_array_almost_equal(actual, expected, decimal=precision)
             else:
-                expected = numpy.array([[3, 8], [2, 4], [1, 4]])
+                expected = numpy.array([[3, 8], [2, 4], [1, 4]], dtype=dtype)
                 assert_array_equal(actual, expected)
         else:
             if dtype != dpnp.int32:
-                expected = numpy.array(
-                    [
-                        [1.230000000452886, 4.889115418092382],
-                        [6.084098950993071, 1.682066500463302],
-                        [3.316473517549554, 8.428297791221597],
-                    ]
-                )
+                data = [
+                    [1.230000000452886, 4.889115418092382],
+                    [6.084098950993071, 1.682066500463302],
+                    [3.316473517549554, 8.428297791221597],
+                ]
+                expected = numpy.array(data, dtype=dtype)
                 precision = dpnp.finfo(dtype).precision
                 assert_array_almost_equal(actual, expected, decimal=precision)
             else:
-                expected = numpy.array([[1, 4], [5, 1], [3, 7]])
+                expected = numpy.array([[1, 4], [5, 1], [3, 7]], dtype=dtype)
                 assert_array_equal(actual, expected)
 
         # check if compute follows data isn't broken

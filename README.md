@@ -41,7 +41,7 @@ To get the library from the latest release, follow the instructions from
 To install `dpnp` from the Intel(R) conda channel, use the following command:
 
 ```bash
-conda install dpnp -c https://software.repos.intel.com/python/conda/ -c conda-forge
+conda install dpnp -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
 ```
 
 ## Pip
@@ -60,7 +60,7 @@ To try out the latest features, install `dpnp` using our development channel on
 Anaconda cloud:
 
 ```bash
-conda install dpnp -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge
+conda install dpnp -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
 ```
 
 

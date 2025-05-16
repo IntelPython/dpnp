@@ -52,8 +52,12 @@
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
+#include "ext/common.hpp"
+
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+
+using ext::common::value_type_of;
 
 // declare pybind11 wrappers in py_internal namespace
 namespace dpnp::extensions::ufunc
@@ -61,18 +65,6 @@ namespace dpnp::extensions::ufunc
 
 namespace impl
 {
-
-template <typename T>
-struct value_type_of
-{
-    using type = T;
-};
-
-template <typename T>
-struct value_type_of<std::complex<T>>
-{
-    using type = T;
-};
 
 template <typename T>
 using value_type_of_t = typename value_type_of<T>::type;

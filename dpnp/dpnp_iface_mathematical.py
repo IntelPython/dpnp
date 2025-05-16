@@ -42,6 +42,7 @@ it contains:
 # pylint: disable=no-name-in-module
 
 
+import builtins
 import warnings
 
 import dpctl.tensor as dpt
@@ -111,8 +112,9 @@ __all__ = [
     "gcd",
     "gradient",
     "heaviside",
-    "imag",
     "i0",
+    "imag",
+    "interp",
     "lcm",
     "ldexp",
     "maximum",
@@ -348,6 +350,39 @@ def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
     return arg, usm_type
 
 
+def _validate_interp_param(param, name, exec_q, usm_type, dtype=None):
+    """
+    Validate and convert optional parameters for interpolation.
+
+    Returns a dpnp.ndarray or None if the input is None.
+    """
+    if param is None:
+        return None
+
+    if dpnp.is_supported_array_type(param):
+        if param.ndim != 0:
+            raise ValueError(
+                f"a {name} value must be 0-dimensional, "
+                f"but got {param.ndim}-dim"
+            )
+        if dpu.get_execution_queue([exec_q, param.sycl_queue]) is None:
+            raise ValueError(
+                f"input arrays and {name} must be allocated "
+                "on the same SYCL queue"
+            )
+        return param.astype(dtype)
+
+    if dpnp.isscalar(param):
+        return dpnp.asarray(
+            param, dtype=dtype, sycl_queue=exec_q, usm_type=usm_type
+        )
+
+    raise TypeError(
+        f"a {name} value must be a scalar or 0-d supported array, "
+        f"but got {type(param)}"
+    )
+
+
 _ABS_DOCSTRING = """
 Calculates the absolute value for each element :math:`x_i` of input array `x`.
 
@@ -561,6 +596,8 @@ angle = DPNPAngle(
     ti._angle_result_type,
     ti._angle,
     _ANGLE_DOCSTRING,
+    mkl_fn_to_call="_mkl_arg_to_call",
+    mkl_impl_fn="_arg",
 )
 
 
@@ -872,6 +909,8 @@ copysign = DPNPBinaryFunc(
     ti._copysign_result_type,
     ti._copysign,
     _COPYSIGN_DOCSTRING,
+    mkl_fn_to_call="_mkl_copysign_to_call",
+    mkl_impl_fn="_copysign",
 )
 
 
@@ -2677,6 +2716,8 @@ i0 = DPNPI0(
     ufi._i0_result_type,
     ufi._i0,
     _I0_DOCSTRING,
+    mkl_fn_to_call="_mkl_i0_to_call",
+    mkl_impl_fn="_i0",
 )
 
 
@@ -2740,6 +2781,181 @@ imag = DPNPImag(
     ti._imag,
     _IMAG_DOCSTRING,
 )
+
+
+def interp(x, xp, fp, left=None, right=None, period=None):
+    """
+    One-dimensional linear interpolation.
+
+    Returns the one-dimensional piecewise linear interpolant to a function
+    with given discrete data points (`xp`, `fp`), evaluated at `x`.
+
+    For full documentation refer to :obj:`numpy.interp`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array, expected to have a real-valued
+        floating-point data type. The x-coordinates at which
+        to evaluate the interpolated values.
+
+    xp : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array, expected to have a real-valued
+        floating-point data type. The x-coordinates of the data points,
+        must be increasing if argument `period` is not specified.
+        Otherwise, `xp` is internally sorted after normalizing
+        the periodic boundaries with ``xp = xp % period``.
+
+    fp : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array. The y-coordinates of the data points,
+        same length as `xp`.
+
+    left : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
+        Value to return for `x < xp[0]`.
+
+        Default: ``fp[0]``.
+
+    right : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
+        Value to return for `x > xp[-1]`.
+
+        Default: ``fp[-1]``.
+
+    period : {None, scalar}, optional
+        A period for the x-coordinates. This parameter allows the proper
+        interpolation of angular x-coordinates. Parameters `left` and `right`
+        are ignored if `period` is specified.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    y : dpnp.ndarray
+        The interpolated values, same shape as `x`.
+
+
+    Warnings
+    --------
+    The x-coordinate sequence is expected to be increasing, but this is not
+    explicitly enforced. However, if the sequence `xp` is non-increasing,
+    interpolation results are meaningless.
+
+    Note that, since NaN is unsortable, `xp` also cannot contain NaNs.
+
+    A simple check for `xp` being strictly increasing is::
+
+        import dpnp as np
+        np.all(np.diff(xp) > 0)
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> xp = np.array([1, 2, 3])
+    >>> fp = np.array([3 ,2 ,0])
+    >>> x = np.array([2.5])
+    >>> np.interp(x, xp, fp)
+    array([1.])
+    >>> x = np.array([0, 1, 1.5, 2.72, 3.14])
+    >>> np.interp(x, xp, fp)
+    array([3.  , 3.  , 2.5 , 0.56, 0.  ])
+    >>> x = np.array([3.14])
+    >>> UNDEF = -99.0
+    >>> np.interp(x, xp, fp, right=UNDEF)
+    array([-99.])
+
+    Interpolation with periodic x-coordinates:
+
+    >>> x = np.array([-180, -170, -185, 185, -10, -5, 0, 365])
+    >>> xp = np.array([190, -190, 350, -350])
+    >>> fp = np.array([5, 10, 3, 4])
+    >>> np.interp(x, xp, fp, period=360)
+    array([7.5 , 5.  , 8.75, 6.25, 3.  , 3.25, 3.5 , 3.75])
+
+    Complex interpolation:
+
+    >>> x = np.array([1.5, 4.0])
+    >>> xp = np.array([2,3,5])
+    >>> fp = np.array([1.0j, 0, 2+3j])
+    >>> np.interp(x, xp, fp)
+    array([0.+1.j , 1.+1.5j])
+
+    """
+
+    dpnp.check_supported_arrays_type(x, xp, fp)
+
+    if xp.ndim != 1 or fp.ndim != 1:
+        raise ValueError("xp and fp must be 1D arrays")
+    if xp.size != fp.size:
+        raise ValueError("fp and xp are not of the same length")
+    if xp.size == 0:
+        raise ValueError("array of sample points is empty")
+
+    usm_type, exec_q = get_usm_allocations([x, xp, fp])
+
+    x_float_type = dpnp.default_float_type(exec_q)
+    x = dpnp.astype(x, x_float_type, order="C", casting="same_kind", copy=False)
+    xp = dpnp.astype(
+        xp, x_float_type, order="C", casting="same_kind", copy=False
+    )
+
+    if fp.dtype == dpnp.bool:
+        # Handle bool type for `fp` to follow NumPy behavior
+        out_dtype = x_float_type
+    else:
+        out_dtype = dpnp.common_type(x, xp, fp)
+
+    fp = dpnp.astype(fp, out_dtype, order="C", casting="same_kind", copy=False)
+
+    if period is not None:
+        if not dpnp.isscalar(period):
+            raise TypeError(
+                "period must be a scalar or None, " f"but got {type(period)}"
+            )
+        if period == 0:
+            raise ValueError("period must be a non-zero value")
+        period = _validate_interp_param(
+            builtins.abs(period), "period", exec_q, usm_type
+        )
+
+        # left/right are ignored when period is specified
+        left = None
+        right = None
+
+        # normalizing periodic boundaries
+        x %= period
+        xp %= period
+        asort_xp = dpnp.argsort(xp)
+        xp = xp[asort_xp]
+        fp = fp[asort_xp]
+        xp = dpnp.concatenate((xp[-1:] - period, xp, xp[0:1] + period))
+        fp = dpnp.concatenate((fp[-1:], fp, fp[0:1]))
+
+    idx = dpnp.searchsorted(xp, x, side="right")
+    left = _validate_interp_param(left, "left", exec_q, usm_type, fp.dtype)
+    right = _validate_interp_param(right, "right", exec_q, usm_type, fp.dtype)
+
+    usm_type, exec_q = get_usm_allocations([x, xp, fp, period, left, right])
+    output = dpnp.empty(
+        x.shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
+    )
+
+    left_usm = left.get_array() if left is not None else None
+    right_usm = right.get_array() if right is not None else None
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+    mem_ev, ht_ev = ufi._interpolate(
+        x.get_array(),
+        idx.get_array(),
+        xp.get_array(),
+        fp.get_array(),
+        left_usm,
+        right_usm,
+        output.get_array(),
+        exec_q,
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(mem_ev, ht_ev)
+
+    return output
 
 
 _LCM_DOCSTRING = r"""
@@ -3963,6 +4179,8 @@ remainder = DPNPBinaryFunc(
     ti._remainder,
     _REMAINDER_DOCSTRING,
     binary_inplace_fn=ti._remainder_inplace,
+    # mkl_vm::remainder() isn't implemented, because it follows C's modulo
+    # operator, but Python's one is expected acc to Python Array API spec
 )
 
 mod = remainder

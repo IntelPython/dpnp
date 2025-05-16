@@ -23,8 +23,16 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+
+#include "ext/common.hpp"
+
 #include "ext/validation_utils.hpp"
 #include "utils/memory_overlap.hpp"
+
+namespace td_ns = dpctl::tensor::type_dispatch;
+namespace common = ext::common;
 
 namespace ext::validation
 {
@@ -137,6 +145,15 @@ inline void check_num_dims(const array_ptr &arr,
     }
 }
 
+inline void check_num_dims(const std::vector<array_ptr> &arrays,
+                           const size_t ndim,
+                           const array_names &names)
+{
+    for (const auto &arr : arrays) {
+        check_num_dims(arr, ndim, names);
+    }
+}
+
 inline void check_max_dims(const array_ptr &arr,
                            const size_t max_ndim,
                            const array_names &names)
@@ -160,6 +177,103 @@ inline void check_size_at_least(const array_ptr &arr,
                               " must have at least " + std::to_string(size) +
                               " elements, but got " + std::to_string(arr_size) +
                               " elements.");
+    }
+}
+
+inline void check_has_dtype(const array_ptr &arr,
+                            const typenum_t dtype,
+                            const array_names &names)
+{
+    if (arr == nullptr) {
+        return;
+    }
+
+    auto array_types = td_ns::usm_ndarray_types();
+    int array_type_id = array_types.typenum_to_lookup_id(arr->get_typenum());
+    int expected_type_id = static_cast<int>(dtype);
+
+    if (array_type_id != expected_type_id) {
+        py::dtype actual_dtype = common::dtype_from_typenum(array_type_id);
+        py::dtype dtype_py = common::dtype_from_typenum(expected_type_id);
+
+        std::string msg = "Array " + name_of(arr, names) + " must have dtype " +
+                          std::string(py::str(dtype_py)) + ", but got " +
+                          std::string(py::str(actual_dtype));
+
+        throw py::value_error(msg);
+    }
+}
+
+inline void check_same_dtype(const array_ptr &arr1,
+                             const array_ptr &arr2,
+                             const array_names &names)
+{
+    if (arr1 == nullptr || arr2 == nullptr) {
+        return;
+    }
+
+    auto array_types = td_ns::usm_ndarray_types();
+    int first_type_id = array_types.typenum_to_lookup_id(arr1->get_typenum());
+    int second_type_id = array_types.typenum_to_lookup_id(arr2->get_typenum());
+
+    if (first_type_id != second_type_id) {
+        py::dtype first_dtype = common::dtype_from_typenum(first_type_id);
+        py::dtype second_dtype = common::dtype_from_typenum(second_type_id);
+
+        std::string msg = "Arrays " + name_of(arr1, names) + " and " +
+                          name_of(arr2, names) +
+                          " must have the same dtype, but got " +
+                          std::string(py::str(first_dtype)) + " and " +
+                          std::string(py::str(second_dtype));
+
+        throw py::value_error(msg);
+    }
+}
+
+inline void check_same_dtype(const std::vector<array_ptr> &arrays,
+                             const array_names &names)
+{
+    if (arrays.empty()) {
+        return;
+    }
+
+    const auto *first = arrays[0];
+    for (size_t i = 1; i < arrays.size(); ++i) {
+        check_same_dtype(first, arrays[i], names);
+    }
+}
+
+inline void check_same_size(const array_ptr &arr1,
+                            const array_ptr &arr2,
+                            const array_names &names)
+{
+    if (arr1 == nullptr || arr2 == nullptr) {
+        return;
+    }
+
+    auto size1 = arr1->get_size();
+    auto size2 = arr2->get_size();
+
+    if (size1 != size2) {
+        std::string msg =
+            "Arrays " + name_of(arr1, names) + " and " + name_of(arr2, names) +
+            " must have the same size, but got " + std::to_string(size1) +
+            " and " + std::to_string(size2);
+
+        throw py::value_error(msg);
+    }
+}
+
+inline void check_same_size(const std::vector<array_ptr> &arrays,
+                            const array_names &names)
+{
+    if (arrays.empty()) {
+        return;
+    }
+
+    auto first = arrays[0];
+    for (size_t i = 1; i < arrays.size(); ++i) {
+        check_same_size(first, arrays[i], names);
     }
 }
 

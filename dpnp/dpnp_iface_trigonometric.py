@@ -2102,6 +2102,8 @@ reciprocal = DPNPUnaryFunc(
     ti._reciprocal_result_type,
     ti._reciprocal,
     _RECIPROCAL_DOCSTRING,
+    mkl_fn_to_call="_mkl_inv_to_call",
+    mkl_impl_fn="_inv",
 )
 
 

@@ -75,27 +75,60 @@ option(DPNP_USE_ONEMKL_INTERFACES
     "Build DPNP with oneMKL Interfaces"
     OFF
 )
+set(HIP_TARGETS "" CACHE STRING "HIP architecture for target")
+
 set(_dpnp_sycl_targets)
-set(_use_onemkl_interfaces_cuda OFF)
-if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
-   if(DPNP_TARGET_CUDA)
-      set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
-      set(_use_onemkl_interfaces_cuda ON)
-   else()
-      if(DEFINED ENV{DPNP_TARGET_CUDA})
-          set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
-          set(_use_onemkl_interfaces_cuda ON)
-      endif()
-   endif()
-else()
-   set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
-endif()
-
-if(_dpnp_sycl_targets)
-   message(STATUS "Compiling for -fsycl-targets=${_dpnp_sycl_targets}")
-endif()
-
 set(_use_onemkl_interfaces OFF)
+set(_use_onemkl_interfaces_cuda OFF)
+set(_use_onemkl_interfaces_hip OFF)
+
+set(_dpnp_sycl_target_compile_options)
+set(_dpnp_sycl_target_link_options)
+
+if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
+    if(DPNP_TARGET_CUDA)
+        set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
+        set(_use_onemkl_interfaces_cuda ON)
+    endif()
+
+    if (NOT "x${HIP_TARGETS}" STREQUAL "x")
+        set(_use_onemkl_interfaces_hip ON)
+
+        if ("x${_dpnp_sycl_targets}" STREQUAL "x")
+            set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},spir64-unknown-unknown")
+        else()
+            set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},${_dpnp_sycl_targets}")
+        endif()
+    endif()
+else()
+    set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
+
+    if ("${DPNP_SYCL_TARGETS}" MATCHES "nvptx64-nvidia-cuda")
+        set(_use_onemkl_interfaces_cuda ON)
+    endif()
+
+    if ("${DPNP_SYCL_TARGETS}" MATCHES "amd_gpu_")
+        set(_use_onemkl_interfaces_hip ON)
+
+        if ("x${HIP_TARGETS}" STREQUAL "x")
+            message(FATAL_ERROR "HIP_TARGETS must be specified when using HIP backend")
+        endif()
+    endif()
+
+    if ("${DPNP_SYCL_TARGETS}" MATCHES "amdgcn-amd-amdhsa")
+        message(FATAL_ERROR
+            "Legacy target 'amdgcn-amd-amdhsa' is not supported. "
+            "Use alias form 'amd_gpu_<arch>' instead"
+        )
+    endif()
+endif()
+
+if (_dpnp_sycl_targets)
+   message(STATUS "Compiling for -fsycl-targets=${_dpnp_sycl_targets}")
+   list(APPEND _dpnp_sycl_target_compile_options -fsycl-targets=${_dpnp_sycl_targets})
+   list(APPEND _dpnp_sycl_target_link_options -fsycl-targets=${_dpnp_sycl_targets})
+endif()
+
 if(DPNP_USE_ONEMKL_INTERFACES)
     set(_use_onemkl_interfaces ON)
 else()
@@ -107,26 +140,33 @@ endif()
 if(_use_onemkl_interfaces)
     set(BUILD_FUNCTIONAL_TESTS False)
     set(BUILD_EXAMPLES False)
+    set(ENABLE_MKLGPU_BACKEND True)
+    set(ENABLE_MKLCPU_BACKEND True)
+
     if(_use_onemkl_interfaces_cuda)
         set(ENABLE_CUBLAS_BACKEND True)
         set(ENABLE_CUSOLVER_BACKEND True)
         set(ENABLE_CUFFT_BACKEND True)
         # set(ENABLE_CURAND_BACKEND True)
-        set(ENABLE_MKLGPU_BACKEND True)
-        set(ENABLE_MKLCPU_BACKEND True)
+    endif()
+    if(_use_onemkl_interfaces_hip)
+        set(ENABLE_ROCBLAS_BACKEND True)
+        set(ENABLE_ROCSOLVER_BACKEND True)
+        set(ENABLE_ROCFFT_BACKEND True)
+        # set(ENABLE_ROCRAND_BACKEND True)
     endif()
 
     if(DPNP_ONEMKL_INTERFACES_DIR)
-        FetchContent_Declare(onemkl_interfaces_library SOURCE_DIR "${DPNP_ONEMKL_INTERFACES_DIR}")
+        FetchContent_Declare(onemath_library SOURCE_DIR "${DPNP_ONEMKL_INTERFACES_DIR}")
     else()
         FetchContent_Declare(
-                onemkl_interfaces_library
+            onemath_library
                 GIT_REPOSITORY https://github.com/uxlfoundation/oneMath.git
-                GIT_TAG 8f4312ef966420b9b8b4b82b9d5c22e2c91a1fe7  # v0.6
+                GIT_TAG 20ba6fd7ae4af6ed693246cfd22c343e6522edbe  # v0.7
         )
     endif()
 
-    FetchContent_MakeAvailable(onemkl_interfaces_library)
+    FetchContent_MakeAvailable(onemath_library)
     if(TARGET onemath)
         set(MKL_INTERFACES_LIB "onemath" CACHE INTERNAL "OneMath lib target")
     elseif(TARGET onemkl)
@@ -136,6 +176,13 @@ if(_use_onemkl_interfaces)
     endif()
     message(STATUS "MKL interfaces lib target used: ${MKL_INTERFACES_LIB}")
     set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
+else()
+    if(_use_onemkl_interfaces_cuda OR _use_onemkl_interfaces_hip)
+        message(FATAL_ERROR
+            "CUDA or HIP targets are enabled, but oneMKL Interfaces are not. "
+            "Please set DPNP_USE_ONEMKL_INTERFACES=ON to enable them."
+        )
+    endif()
 endif()
 
 if(WIN32)

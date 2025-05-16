@@ -292,7 +292,7 @@ class TestIndexing:
 
         slices = (slice(None), dpnp.array([0, 1, 2, 3]))
         arr[slices] = 10
-        assert_array_equal(arr, 10.0)
+        assert_equal(arr, 10.0, strict=False)
 
 
 class TestIx:
@@ -804,7 +804,7 @@ class TestTakeAlongAxis:
         # a = dpnp.random.random(size=(3, 4, 5))
         a = dpnp.asarray(numpy.random.random(size=(3, 4, 5)))
 
-        for axis in list(range(a.ndim)) + [None]:
+        for axis in list(range(a.ndim)) + [None, -1]:
             a_func = func(a, axis=axis, **kwargs)
             ai_func = argfunc(a, axis=axis, **kwargs)
             assert_array_equal(

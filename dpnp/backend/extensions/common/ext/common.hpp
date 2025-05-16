@@ -106,6 +106,27 @@ struct IsNan
     }
 };
 
+template <typename T, bool hasValueType>
+struct value_type_of_impl;
+
+template <typename T>
+struct value_type_of_impl<T, false>
+{
+    using type = T;
+};
+
+template <typename T>
+struct value_type_of_impl<T, true>
+{
+    using type = typename T::value_type;
+};
+
+template <typename T>
+using value_type_of = value_type_of_impl<T, type_utils::is_complex_v<T>>;
+
+template <typename T>
+using value_type_of_t = typename value_type_of<T>::type;
+
 size_t get_max_local_size(const sycl::device &device);
 size_t get_max_local_size(const sycl::device &device,
                           int cpu_local_size_limit,

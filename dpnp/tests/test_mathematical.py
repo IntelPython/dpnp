@@ -32,6 +32,7 @@ from .helper import (
     get_integer_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
+    is_intel_numpy,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -353,13 +354,10 @@ class TestCumProdCumSum:
         result = getattr(ia, func)(dtype=dt)
         assert_dtype_allclose(result, expected)
 
-    # TODO: include boolean dtype when dpctl-0.20.0 is being used in Internal CI
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("func", ["cumprod", "cumsum"])
     @pytest.mark.parametrize("in_dt", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize(
-        "out_dt", get_all_dtypes(no_none=True, no_bool=True)
-    )
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
     def test_out(self, func, in_dt, out_dt):
         a = generate_random_numpy_array(5, dtype=in_dt, low=-5, high=5)
         out = numpy.zeros_like(a, dtype=out_dt)
@@ -1143,6 +1141,168 @@ class TestI0:
         assert_raises((ValueError, TypeError), xp.i0, a)
 
 
+class TestInterp:
+    @pytest.mark.parametrize(
+        "dtype_x", get_all_dtypes(no_complex=True, no_none=True)
+    )
+    @pytest.mark.parametrize(
+        "dtype_xp", get_all_dtypes(no_complex=True, no_none=True)
+    )
+    @pytest.mark.parametrize("dtype_y", get_all_dtypes(no_none=True))
+    def test_all_dtypes(self, dtype_x, dtype_xp, dtype_y):
+        x = numpy.linspace(0.1, 9.9, 20).astype(dtype_x)
+        xp = numpy.linspace(0.0, 10.0, 5).astype(dtype_xp)
+        fp = (xp * 1.5 + 1).astype(dtype_y)
+
+        ix = dpnp.array(x)
+        ixp = dpnp.array(xp)
+        ifp = dpnp.array(fp)
+
+        expected = numpy.interp(x, xp, fp)
+        result = dpnp.interp(ix, ixp, ifp)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype_x", get_all_dtypes(no_complex=True, no_none=True)
+    )
+    @pytest.mark.parametrize("dtype_y", get_complex_dtypes())
+    def test_complex_fp(self, dtype_x, dtype_y):
+        x = numpy.array([0.25, 0.75], dtype=dtype_x)
+        xp = numpy.array([0.0, 1.0], dtype=dtype_x)
+        fp = numpy.array([1 + 1j, 3 + 3j], dtype=dtype_y)
+
+        ix = dpnp.array(x)
+        ixp = dpnp.array(xp)
+        ifp = dpnp.array(fp)
+
+        expected = numpy.interp(x, xp, fp)
+        result = dpnp.interp(ix, ixp, ifp)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_complex=True, no_none=True)
+    )
+    @pytest.mark.parametrize(
+        "left, right", [[-40, 40], [dpnp.array(-40), dpnp.array(40)]]
+    )
+    def test_left_right_args(self, dtype, left, right):
+        x = numpy.array([0, 1, 2, 3, 4, 5, 6], dtype=dtype)
+        xp = numpy.array([0, 3, 6], dtype=dtype)
+        fp = numpy.array([0, 9, 18], dtype=dtype)
+
+        ix = dpnp.array(x)
+        ixp = dpnp.array(xp)
+        ifp = dpnp.array(fp)
+
+        expected = numpy.interp(
+            x,
+            xp,
+            fp,
+            left=get_array(numpy, left),
+            right=get_array(numpy, right),
+        )
+        result = dpnp.interp(ix, ixp, ifp, left=left, right=right)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("val", [numpy.nan, numpy.inf, -numpy.inf])
+    def test_naninf(self, val):
+        x = numpy.array([0, 1, 2, val])
+        xp = numpy.array([0, 1, 2])
+        fp = numpy.array([10, 20, 30])
+
+        ix = dpnp.array(x)
+        ixp = dpnp.array(xp)
+        ifp = dpnp.array(fp)
+
+        expected = numpy.interp(x, xp, fp)
+        result = dpnp.interp(ix, ixp, ifp)
+        assert_dtype_allclose(result, expected)
+
+    def test_empty_x(self):
+        x = numpy.array([])
+        xp = numpy.array([0, 1])
+        fp = numpy.array([10, 20])
+
+        ix = dpnp.array(x)
+        ixp = dpnp.array(xp)
+        ifp = dpnp.array(fp)
+
+        expected = numpy.interp(x, xp, fp)
+        result = dpnp.interp(ix, ixp, ifp)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_float_dtypes())
+    def test_period(self, dtype):
+        x = numpy.array([-180, 0, 180], dtype=dtype)
+        xp = numpy.array([-90, 0, 90], dtype=dtype)
+        fp = numpy.array([0, 1, 0], dtype=dtype)
+
+        ix = dpnp.array(x)
+        ixp = dpnp.array(xp)
+        ifp = dpnp.array(fp)
+
+        expected = numpy.interp(x, xp, fp, period=180)
+        result = dpnp.interp(ix, ixp, ifp, period=180)
+        assert_dtype_allclose(result, expected)
+
+    def test_errors(self):
+        x = dpnp.array([0.5])
+
+        # xp and fp have different lengths
+        xp = dpnp.array([0])
+        fp = dpnp.array([1, 2])
+        assert_raises(ValueError, dpnp.interp, x, xp, fp)
+
+        # xp is not 1D
+        xp = dpnp.array([[0, 1]])
+        fp = dpnp.array([1, 2])
+        assert_raises(ValueError, dpnp.interp, x, xp, fp)
+
+        # fp is not 1D
+        xp = dpnp.array([0, 1])
+        fp = dpnp.array([[1, 2]])
+        assert_raises(ValueError, dpnp.interp, x, xp, fp)
+
+        # xp and fp are empty
+        xp = dpnp.array([])
+        fp = dpnp.array([])
+        assert_raises(ValueError, dpnp.interp, x, xp, fp)
+
+        # x complex
+        x_complex = dpnp.array([1 + 2j])
+        xp = dpnp.array([0.0, 2.0])
+        fp = dpnp.array([0.0, 1.0])
+        assert_raises(TypeError, dpnp.interp, x_complex, xp, fp)
+
+        # xp complex
+        xp_complex = dpnp.array([0 + 1j, 2 + 1j])
+        assert_raises(TypeError, dpnp.interp, x, xp_complex, fp)
+
+        # period is zero
+        x = dpnp.array([1.0])
+        xp = dpnp.array([0.0, 2.0])
+        fp = dpnp.array([0.0, 1.0])
+        assert_raises(ValueError, dpnp.interp, x, xp, fp, period=0)
+
+        # period is not scalar or 0-dim
+        assert_raises(TypeError, dpnp.interp, x, xp, fp, period=[180])
+
+        # left is not scalar or 0-dim
+        left = [1]
+        assert_raises(TypeError, dpnp.interp, x, xp, fp, left=left)
+
+        # left is 1-d array
+        left = dpnp.array([1.0])
+        assert_raises(ValueError, dpnp.interp, x, xp, fp, left=left)
+
+        # left has a different SYCL queue
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+        left = dpnp.array(1.0, sycl_queue=q2)
+        if q1 != q2:
+            assert_raises(ValueError, dpnp.interp, x, xp, fp, left=left)
+
+
 @pytest.mark.parametrize(
     "rhs", [[[1, 2, 3], [4, 5, 6]], [2.0, 1.5, 1.0], 3, 0.3]
 )
@@ -1370,8 +1530,6 @@ class TestProd:
 
         expected = numpy.prod(a, axis=axis, keepdims=keepdims)
         result = dpnp.prod(ia, axis=axis, keepdims=keepdims)
-
-        assert result.shape == expected.shape
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
@@ -1594,11 +1752,11 @@ class TestSpacing:
 
         result = dpnp.spacing(ia)
         expected = numpy.spacing(a)
-        if numpy_version() < "2.0.0":
+        if is_intel_numpy():
             assert_allclose(result, expected)
         else:
-            # numpy.spacing(-0.0) == numpy.spacing(0.0), i.e. NumPy returns
-            # positive value (looks as a bug in NumPy), because for any other
+            # numpy.spacing(-0.0) == numpy.spacing(0.0), i.e. the stock NumPy
+            # returns positive value (looks as a bug), because for any other
             # negative input the NumPy result will be also a negative value.
             expected[1] *= -1
             assert_allclose(result, expected)

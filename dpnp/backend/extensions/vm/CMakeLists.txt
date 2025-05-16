@@ -29,6 +29,7 @@ if(NOT _use_onemkl_interfaces)
         ${CMAKE_CURRENT_SOURCE_DIR}/acos.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/acosh.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/add.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/arg.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/asin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/asinh.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/atan.cpp
@@ -37,6 +38,7 @@ if(NOT _use_onemkl_interfaces)
         ${CMAKE_CURRENT_SOURCE_DIR}/cbrt.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ceil.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/conj.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/copysign.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cos.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cosh.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/div.cpp
@@ -48,6 +50,8 @@ if(NOT _use_onemkl_interfaces)
         ${CMAKE_CURRENT_SOURCE_DIR}/fmin.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/fmod.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/hypot.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/i0.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/inv.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ln.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/log10.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/log1p.cpp
