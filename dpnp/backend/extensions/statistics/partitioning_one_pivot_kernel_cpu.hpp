@@ -49,7 +49,10 @@ template <typename T, uint32_t WorkPI>
 struct partition_one_pivot_kernel_cpu;
 
 template <typename T, uint32_t WorkPI>
-auto partition_one_pivot_func_cpu(sycl::handler &cgh, T *in, T *out, PartitionState<T> &state)
+auto partition_one_pivot_func_cpu(sycl::handler &cgh,
+                                  T *in,
+                                  T *out,
+                                  PartitionState<T> &state)
 {
     auto loc_counters =
         sycl::local_accessor<uint32_t, 1>(sycl::range<1>(4), cgh);
@@ -79,8 +82,7 @@ auto partition_one_pivot_func_cpu(sycl::handler &cgh, T *in, T *out, PartitionSt
         uint32_t sbg_size = sbg.get_max_local_range()[0];
 
         uint64_t i_base =
-            (item.get_global_linear_id() - sbg.get_local_linear_id()) *
-            WorkPI;
+            (item.get_global_linear_id() - sbg.get_local_linear_id()) * WorkPI;
 
         if (group.leader()) {
             loc_counters[0] = 0;
@@ -117,50 +119,48 @@ auto partition_one_pivot_func_cpu(sycl::handler &cgh, T *in, T *out, PartitionSt
             sycl::reduce_over_group(sbg, less_count, sycl::plus<>());
         auto sbg_equal =
             sycl::reduce_over_group(sbg, equal_count, sycl::plus<>());
-        auto sbg_greater = sycl::reduce_over_group(sbg, greater_equal_count,
-                                                    sycl::plus<>());
+        auto sbg_greater =
+            sycl::reduce_over_group(sbg, greater_equal_count, sycl::plus<>());
 
         uint32_t local_less_offset = 0;
         uint32_t local_gr_offset = 0;
         if (sbg.leader()) {
             sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed,
-                                sycl::memory_scope::work_group>
+                             sycl::memory_scope::work_group>
                 gr_less_eq(loc_counters[0]);
             local_less_offset = gr_less_eq.fetch_add(sbg_less_equal);
 
             sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed,
-                                sycl::memory_scope::work_group>
+                             sycl::memory_scope::work_group>
                 gr_eq(loc_counters[1]);
             gr_eq += sbg_equal;
 
             sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed,
-                                sycl::memory_scope::work_group>
+                             sycl::memory_scope::work_group>
                 gr_greater(loc_counters[2]);
             local_gr_offset = gr_greater.fetch_add(sbg_greater);
         }
 
-        local_less_offset =
-            sycl::select_from_group(sbg, local_less_offset, 0);
+        local_less_offset = sycl::select_from_group(sbg, local_less_offset, 0);
         local_gr_offset = sycl::select_from_group(sbg, local_gr_offset, 0);
 
         sycl::group_barrier(group);
 
         if (group.leader()) {
             sycl::atomic_ref<uint64_t, sycl::memory_order::relaxed,
-                                sycl::memory_scope::device>
+                             sycl::memory_scope::device>
                 glbl_less_eq(state.iteration_counters.less_count[0]);
             auto global_less_eq_offset =
                 glbl_less_eq.fetch_add(loc_counters[0]);
 
             sycl::atomic_ref<uint64_t, sycl::memory_order::relaxed,
-                                sycl::memory_scope::device>
+                             sycl::memory_scope::device>
                 glbl_eq(state.iteration_counters.equal_count[0]);
             glbl_eq += loc_counters[1];
 
             sycl::atomic_ref<uint64_t, sycl::memory_order::relaxed,
-                                sycl::memory_scope::device>
-                glbl_greater(
-                    state.iteration_counters.greater_equal_count[0]);
+                             sycl::memory_scope::device>
+                glbl_greater(state.iteration_counters.greater_equal_count[0]);
             auto global_gr_offset = glbl_greater.fetch_add(loc_counters[2]);
 
             loc_counters[0] = global_less_eq_offset;
@@ -183,20 +183,17 @@ auto partition_one_pivot_func_cpu(sycl::handler &cgh, T *in, T *out, PartitionSt
                 sycl::exclusive_scan_over_group(sbg, less, sycl::plus<>());
             auto ge_pos = sbg.get_local_linear_id() - le_pos;
 
-            auto total_le =
-                sycl::reduce_over_group(sbg, less, sycl::plus<>());
+            auto total_le = sycl::reduce_over_group(sbg, less, sycl::plus<>());
             auto total_nan =
                 sycl::reduce_over_group(sbg, is_nan, sycl::plus<>());
             auto total_gr = sbg_size - total_le - total_nan;
 
             if (_i < actual_count) {
                 if (less) {
-                    out[sbg_less_offset + le_item_offset + le_pos] =
-                        values[_i];
+                    out[sbg_less_offset + le_item_offset + le_pos] = values[_i];
                 }
                 else if (!is_nan) {
-                    out[sbg_gr_offset + gr_item_offset + ge_pos] =
-                        values[_i];
+                    out[sbg_gr_offset + gr_item_offset + ge_pos] = values[_i];
                 }
                 le_item_offset += total_le;
                 gr_item_offset += total_gr;
@@ -219,7 +216,8 @@ sycl::event run_partition_one_pivot_cpu(sycl::queue &exec_q,
         auto work_range = make_ndrange(state.n, group_size, WorkPI);
 
         cgh.parallel_for<partition_one_pivot_kernel_cpu<T, WorkPI>>(
-            work_range, partition_one_pivot_func_cpu<T, WorkPI>(cgh, in, out, state));
+            work_range,
+            partition_one_pivot_func_cpu<T, WorkPI>(cgh, in, out, state));
     });
 
     return e;

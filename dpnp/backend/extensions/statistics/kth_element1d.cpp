@@ -110,148 +110,145 @@ struct KthElementF
             auto scratch = sycl::local_accessor<std::byte, 1>(
                 sycl::range<1>(temp_memory_size), cgh);
 
-            cgh.parallel_for<pick_pivot_kernel<T>>(
-                work_sz, [=](sycl::nd_item<1> item) {
-                    auto group = item.get_group();
+            cgh.parallel_for<pick_pivot_kernel<T>>(work_sz, [=](sycl::nd_item<1>
+                                                                    item) {
+                auto group = item.get_group();
 
-                    if (state.stop[0])
-                        return;
+                if (state.stop[0])
+                    return;
 
-                    auto llid = item.get_local_linear_id();
-                    auto local_size = item.get_group_range(0);
+                auto llid = item.get_local_linear_id();
+                auto local_size = item.get_group_range(0);
 
-                    uint64_t num_elems = 0;
-                    bool target_found = false;
+                uint64_t num_elems = 0;
+                bool target_found = false;
 
-                    T *_in = nullptr;
-                    if (group.leader()) {
-                        state.update_counters();
-                        auto less_count = state.counters.less_count[0];
-                        bool left = target < less_count;
-                        state.left[0] = left;
+                T *_in = nullptr;
+                if (group.leader()) {
+                    state.update_counters();
+                    auto less_count = state.counters.less_count[0];
+                    bool left = target < less_count;
+                    state.left[0] = left;
 
-                        if (left) {
-                            _in = in;
-                            num_elems = state.iteration_counters.less_count[0];
-                            if (target + 1 == less_count) {
-                                _in[num_elems] = state.pivot[0];
-                                state.counters.less_count[0] += 1;
-                                num_elems += 1;
-                            }
+                    if (left) {
+                        _in = in;
+                        num_elems = state.iteration_counters.less_count[0];
+                        if (target + 1 == less_count) {
+                            _in[num_elems] = state.pivot[0];
+                            state.counters.less_count[0] += 1;
+                            num_elems += 1;
                         }
-                        else {
-                            num_elems =
-                                state.iteration_counters.greater_equal_count[0];
-                            _in = in + state.n - num_elems;
-
-                            if (target + 1 <
-                                less_count +
-                                    state.iteration_counters.equal_count[0]) {
-                                state.values[0] = state.pivot[0];
-                                state.values[1] = state.pivot[0];
-
-                                state.stop[0] = true;
-                                state.target_found[0] = true;
-                                target_found = true;
-                            }
-                        }
-                        state.reset_iteration_counters();
                     }
+                    else {
+                        num_elems =
+                            state.iteration_counters.greater_equal_count[0];
+                        _in = in + state.n - num_elems;
 
-                    target_found =
-                        sycl::group_broadcast(group, target_found, 0);
-                    _in = sycl::group_broadcast(group, _in, 0);
-                    num_elems = sycl::group_broadcast(group, num_elems, 0);
-
-                    if (target_found) {
-                        return;
-                    }
-
-                    if (num_elems <= limit) {
-                        auto gh = sycl_exp::group_with_scratchpad(
-                            group, sycl::span{&scratch[0], temp_memory_size});
-                        if (num_elems > 0)
-                            sycl_exp::joint_sort(gh, &_in[0], &_in[num_elems],
-                                                 Less<T>{});
-
-                        if (group.leader()) {
-                            uint64_t offset = state.counters.less_count[0];
-                            if (state.left[0]) {
-                                offset =
-                                    state.counters.less_count[0] - num_elems;
-                            }
-
-                            int64_t idx = target - offset;
-
-                            state.values[0] = _in[idx];
-                            state.values[1] = _in[idx + 1];
+                        if (target + 1 <
+                            less_count +
+                                state.iteration_counters.equal_count[0]) {
+                            state.values[0] = state.pivot[0];
+                            state.values[1] = state.pivot[0];
 
                             state.stop[0] = true;
                             state.target_found[0] = true;
-                        }
-
-                        return;
-                    }
-
-                    uint64_t step = num_elems / items_to_sort;
-                    for (uint32_t i = llid; i < items_to_sort; i += local_size)
-                    {
-                        loc_items[i] = std::numeric_limits<T>::max();
-                        uint32_t idx = i * step;
-                        if (idx < num_elems) {
-                            loc_items[i] = _in[idx];
+                            target_found = true;
                         }
                     }
+                    state.reset_iteration_counters();
+                }
 
-                    sycl::group_barrier(group);
+                target_found = sycl::group_broadcast(group, target_found, 0);
+                _in = sycl::group_broadcast(group, _in, 0);
+                num_elems = sycl::group_broadcast(group, num_elems, 0);
 
+                if (target_found) {
+                    return;
+                }
+
+                if (num_elems <= limit) {
                     auto gh = sycl_exp::group_with_scratchpad(
                         group, sycl::span{&scratch[0], temp_memory_size});
-                    sycl_exp::joint_sort(gh, &loc_items[0],
-                                         &loc_items[0] + items_to_sort,
-                                         Less<T>{});
+                    if (num_elems > 0)
+                        sycl_exp::joint_sort(gh, &_in[0], &_in[num_elems],
+                                             Less<T>{});
 
-                    state.num_elems[0] = num_elems;
-
-                    T new_pivot = loc_items[items_to_sort / 2];
-                    if (new_pivot != state.pivot[0] && !IsNan<T>::isnan(new_pivot)) {
-                        if (group.leader()) {
-                            state.pivot[0] = new_pivot;
-                        }
-                        return;
-                    }
-
-                    auto start = llid + items_to_sort / 2 + 1;
-                    uint32_t index = start;
-                    for (uint32_t i = start; i < items_to_sort; i += local_size)
-                    {
-                        if (loc_items[i] != new_pivot && !IsNan<T>::isnan(loc_items[i])) {
-                            index = i;
-                            break;
-                        }
-                    }
-
-                    index = sycl::reduce_over_group(group, index,
-                                                    sycl::minimum<>());
                     if (group.leader()) {
-                        if (loc_items[index] != new_pivot || !IsNan<T>::isnan(loc_items[index]))
-                        {
-                            // if all values are Nan just use it as pivot
-                            // to filter out all the Nans
-                            state.pivot[0] = loc_items[index];
+                        uint64_t offset = state.counters.less_count[0];
+                        if (state.left[0]) {
+                            offset = state.counters.less_count[0] - num_elems;
                         }
-                        else {
-                            // we are going to filter out new_pivot
-                            // but we need to keep at least one since it
-                            // could be our target (but not target + 1)
-                            out[state.n - 1] = new_pivot;
-                            state.iteration_counters.greater_equal_count[0] += 1;
-                            state.counters.less_count[0] -= 1;
-                            new_pivot = NextAfter(new_pivot);
-                            state.pivot[0] = new_pivot;
-                        }
+
+                        int64_t idx = target - offset;
+
+                        state.values[0] = _in[idx];
+                        state.values[1] = _in[idx + 1];
+
+                        state.stop[0] = true;
+                        state.target_found[0] = true;
                     }
-                });
+
+                    return;
+                }
+
+                uint64_t step = num_elems / items_to_sort;
+                for (uint32_t i = llid; i < items_to_sort; i += local_size) {
+                    loc_items[i] = std::numeric_limits<T>::max();
+                    uint32_t idx = i * step;
+                    if (idx < num_elems) {
+                        loc_items[i] = _in[idx];
+                    }
+                }
+
+                sycl::group_barrier(group);
+
+                auto gh = sycl_exp::group_with_scratchpad(
+                    group, sycl::span{&scratch[0], temp_memory_size});
+                sycl_exp::joint_sort(gh, &loc_items[0],
+                                     &loc_items[0] + items_to_sort, Less<T>{});
+
+                state.num_elems[0] = num_elems;
+
+                T new_pivot = loc_items[items_to_sort / 2];
+                if (new_pivot != state.pivot[0] && !IsNan<T>::isnan(new_pivot))
+                {
+                    if (group.leader()) {
+                        state.pivot[0] = new_pivot;
+                    }
+                    return;
+                }
+
+                auto start = llid + items_to_sort / 2 + 1;
+                uint32_t index = start;
+                for (uint32_t i = start; i < items_to_sort; i += local_size) {
+                    if (loc_items[i] != new_pivot &&
+                        !IsNan<T>::isnan(loc_items[i])) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                index =
+                    sycl::reduce_over_group(group, index, sycl::minimum<>());
+                if (group.leader()) {
+                    if (loc_items[index] != new_pivot ||
+                        !IsNan<T>::isnan(loc_items[index])) {
+                        // if all values are Nan just use it as pivot
+                        // to filter out all the Nans
+                        state.pivot[0] = loc_items[index];
+                    }
+                    else {
+                        // we are going to filter out new_pivot
+                        // but we need to keep at least one since it
+                        // could be our target (but not target + 1)
+                        out[state.n - 1] = new_pivot;
+                        state.iteration_counters.greater_equal_count[0] += 1;
+                        state.counters.less_count[0] -= 1;
+                        new_pivot = NextAfter(new_pivot);
+                        state.pivot[0] = new_pivot;
+                    }
+                }
+            });
         });
 
         return e;
@@ -266,8 +263,8 @@ struct KthElementF
 
         uint32_t group_size = 128;
         constexpr uint32_t WorkPI = 4;
-        return run_partition_one_pivot_cpu<T, WorkPI>(
-            exec_q, in, out, state, deps, group_size);
+        return run_partition_one_pivot_cpu<T, WorkPI>(exec_q, in, out, state,
+                                                      deps, group_size);
     }
 
     static sycl::event run_kth_element(sycl::queue &exec_q,

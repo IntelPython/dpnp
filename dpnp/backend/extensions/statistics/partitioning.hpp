@@ -213,14 +213,15 @@ sycl::event run_partition_one_pivot(sycl::queue &exec_q,
         constexpr uint32_t WorkPI = 8;
         constexpr uint32_t group_size = 128;
 
-        return run_partition_one_pivot_gpu<T>(exec_q, in, out, state, deps, group_size, WorkPI);
+        return run_partition_one_pivot_gpu<T>(exec_q, in, out, state, deps,
+                                              group_size, WorkPI);
     }
     else {
         constexpr uint32_t WorkPI = 4;
         constexpr uint32_t group_size = 128;
 
         return run_partition_one_pivot_cpu<T, WorkPI>(exec_q, in, out, state,
-                                                     deps, group_size);
+                                                      deps, group_size);
     }
 }
-}
+} // namespace statistics::partitioning
