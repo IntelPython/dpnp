@@ -56,6 +56,31 @@ namespace
 {
 
 template <typename T>
+T NextAfter(T x)
+{
+    if constexpr (std::is_floating_point<T>::value) {
+        return sycl::nextafter(x, std::numeric_limits<T>::infinity());
+    }
+    else if constexpr (std::is_integral<T>::value) {
+        if (x < std::numeric_limits<T>::max())
+            return x + 1;
+        else
+            return x;
+    }
+    else if constexpr (type_utils::is_complex_v<T>) {
+        if (x.imag() != std::numeric_limits<T>::infinity()) {
+            return T{x.real(), NextAfter(x.imag())};
+        }
+        else if (x.real() != std::numeric_limits<T>::infinity()) {
+            return T{NextAfter(x.real()), -x.imag()};
+        }
+        else {
+            return x;
+        }
+    }
+}
+
+template <typename T>
 struct pick_pivot_kernel;
 
 template <typename T>
@@ -85,12 +110,6 @@ struct KthElementF
             auto scratch = sycl::local_accessor<std::byte, 1>(
                 sycl::range<1>(temp_memory_size), cgh);
 
-            // std::cout << "temp_memory_size: " << temp_memory_size
-            //     << " items_to_sort: " << items_to_sort
-            //     << " limit: " << limit
-            //     << " group_size: " << group_size << "\n";
-
-            // auto str = sycl::stream(8192, 1024, cgh);
             cgh.parallel_for<pick_pivot_kernel<T>>(
                 work_sz, [=](sycl::nd_item<1> item) {
                     auto group = item.get_group();
@@ -192,12 +211,12 @@ struct KthElementF
                                          &loc_items[0] + items_to_sort,
                                          Less<T>{});
 
-                    T new_pivot = loc_items[items_to_sort / 2];
+                    state.num_elems[0] = num_elems;
 
-                    if (new_pivot != state.pivot[0]) {
+                    T new_pivot = loc_items[items_to_sort / 2];
+                    if (new_pivot != state.pivot[0] && !IsNan<T>::isnan(new_pivot)) {
                         if (group.leader()) {
                             state.pivot[0] = new_pivot;
-                            state.num_elems[0] = num_elems;
                         }
                         return;
                     }
@@ -206,7 +225,7 @@ struct KthElementF
                     uint32_t index = start;
                     for (uint32_t i = start; i < items_to_sort; i += local_size)
                     {
-                        if (loc_items[i] != new_pivot) {
+                        if (loc_items[i] != new_pivot && !IsNan<T>::isnan(loc_items[i])) {
                             index = i;
                             break;
                         }
@@ -215,8 +234,22 @@ struct KthElementF
                     index = sycl::reduce_over_group(group, index,
                                                     sycl::minimum<>());
                     if (group.leader()) {
-                        state.pivot[0] = loc_items[index];
-                        state.num_elems[0] = num_elems;
+                        if (loc_items[index] != new_pivot || !IsNan<T>::isnan(loc_items[index]))
+                        {
+                            // if all values are Nan just use it as pivot
+                            // to filter out all the Nans
+                            state.pivot[0] = loc_items[index];
+                        }
+                        else {
+                            // we are going to filter out new_pivot
+                            // but we need to keep at least one since it
+                            // could be our target (but not target + 1)
+                            out[state.n - 1] = new_pivot;
+                            state.iteration_counters.greater_equal_count[0] += 1;
+                            state.counters.less_count[0] -= 1;
+                            new_pivot = NextAfter(new_pivot);
+                            state.pivot[0] = new_pivot;
+                        }
                     }
                 });
         });
@@ -280,7 +313,6 @@ struct KthElementF
                                    const size_t k,
                                    const std::vector<sycl::event> &depends)
     {
-        auto start = std::chrono::high_resolution_clock::now();
         const T *ain = static_cast<const T *>(v_ain);
         T *partitioned = static_cast<T *>(v_partitioned);
 
@@ -312,10 +344,10 @@ struct KthElementF
         copy_evt =
             exec_queue.copy(state.counters.nan_count, &nan_count, 1, copy_evt);
 
+        copy_evt.wait();
+
         uint64_t buff_offset = 0;
         uint64_t elems_offset = less_count;
-
-        copy_evt.wait();
 
         if (!found) {
             if (left) {
@@ -332,14 +364,6 @@ struct KthElementF
 
         state.cleanup(exec_queue);
 
-        auto end = std::chrono::high_resolution_clock::now();
-
-        auto duration =
-            std::chrono::duration_cast<std::chrono::microseconds>(end - start)
-                .count();
-
-        std::cout << "KthElement1d took " << duration << " microseconds"
-                  << std::endl;
         return {found, buff_offset, elems_offset, num_elems, nan_count};
     }
 };
