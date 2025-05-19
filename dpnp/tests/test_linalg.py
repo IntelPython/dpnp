@@ -1753,7 +1753,7 @@ class TestInv:
         assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.inv, a_dp)
 
     # TODO: remove skipif when Intel MKL 2025.2 is released
-    @pytest.mark.skipif(get_intel_mkl_version < "2025.2", reason="mkl<2025.2")
+    @pytest.mark.skipif(get_intel_mkl_version() < "2025.2", reason="mkl<2025.2")
     def test_inv_singular_matrix_3D(self):
         a_np = numpy.array(
             [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
@@ -2778,7 +2778,7 @@ class TestSlogdet:
     # TODO: remove skipif when Intel MKL 2025.2 is released
     # Skip running on cpu because dpnp uses _getrf_batch only on cpu.
     @pytest.mark.skipif(
-        is_cpu_device() and get_intel_mkl_version < "2025.2",
+        is_cpu_device() and get_intel_mkl_version() < "2025.2",
         reason="mkl<2025.2",
     )
     @pytest.mark.parametrize(
