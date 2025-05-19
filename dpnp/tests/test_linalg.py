@@ -334,11 +334,7 @@ class TestCond:
         # while OneMKL returns nans
         if is_cuda_device() and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]:
             pytest.skip("Different behavior on CUDA")
-        elif (
-            is_gpu_device()
-            and is_win_platform()
-            and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]
-        ):
+        elif p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]:
             pytest.skip("SAT-7966")
         a = generate_random_numpy_array((2, 2, 2, 2))
         a[0, 0] = 0
