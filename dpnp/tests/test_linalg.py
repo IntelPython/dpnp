@@ -2820,6 +2820,13 @@ class TestSlogdet:
         assert_allclose(sign_result, sign_expected)
         assert_allclose(logdet_result, logdet_expected)
 
+    # TODO: remove skipif when Intel MKL 2025.2 is released
+    # Skip running on CPU because dpnp uses _getrf_batch only on CPU
+    # for dpnp.linalg.det/slogdet.
+    @pytest.mark.skipif(
+        is_cpu_device() and not requires_intel_mkl_version("2025.2"),
+        reason="mkl<2025.2",
+    )
     def test_slogdet_singular_matrix_3D(self):
         a_np = numpy.array(
             [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
