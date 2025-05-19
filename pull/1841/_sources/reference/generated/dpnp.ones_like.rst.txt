@@ -1,6 +1,10 @@
-﻿dpnp.ones\_like
+﻿
+
+dpnp.ones\_like
 ===============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: ones_like

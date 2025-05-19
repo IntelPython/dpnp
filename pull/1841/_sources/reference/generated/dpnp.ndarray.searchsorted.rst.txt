@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.searchsorted
+:orphan:
+
+dpnp.ndarray.searchsorted
 =========================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.searchsorted

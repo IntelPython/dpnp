@@ -1,6 +1,10 @@
-﻿dpnp.logspace
+﻿
+
+dpnp.logspace
 =============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: logspace

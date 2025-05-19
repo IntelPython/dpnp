@@ -1,7 +1,11 @@
 var searchData=
 [
-  ['set_5faxes_0',['set_axes',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga87a0b53a5ae1b69762f201cd6521e210',1,'DPNPC_id']]],
-  ['set_5faxis_1',['set_axis',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae4294907d97ba7d7a630d5097b435d0a',1,'DPNPC_id']]],
-  ['sum_5fmean_2',['sum_mean',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1sum__mean.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['syevdtypepairsupportfactory_3',['SyevdTypePairSupportFactory',['../structdpnp_1_1backend_1_1ext_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html',1,'dpnp::backend::ext::lapack::types']]]
+  ['paddedspan_0',['PaddedSpan',['../classstatistics_1_1sliding__window1d_1_1_padded_span.html',1,'statistics::sliding_window1d']]],
+  ['potrfbatchtypepairsupportfactory_1',['PotrfBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['potrftypepairsupportfactory_2',['PotrfTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['precisiontype_3',['PrecisionType',['../structdpnp_1_1extensions_1_1fft_1_1_precision_type.html',1,'dpnp::extensions::fft']]],
+  ['precisiontype_3c_20mkl_5fdft_3a_3aprecision_3a_3adouble_20_3e_4',['PrecisionType&lt; mkl_dft::precision::DOUBLE &gt;',['../structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html',1,'dpnp::extensions::fft']]],
+  ['precisiontype_3c_20mkl_5fdft_3a_3aprecision_3a_3asingle_20_3e_5',['PrecisionType&lt; mkl_dft::precision::SINGLE &gt;',['../structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html',1,'dpnp::extensions::fft']]],
+  ['ptr_6',['ptr',['../struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d',1,'DPNPFuncData']]],
+  ['ptr_5fno_5ffp64_7',['ptr_no_fp64',['../struct_d_p_n_p_func_data.html#aa88f90ce507ebffe7462bba4d2df6c76',1,'DPNPFuncData']]]
 ];

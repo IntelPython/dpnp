@@ -1,6 +1,10 @@
-﻿dpnp.sort\_complex
+﻿
+
+dpnp.sort\_complex
 ==================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: sort_complex

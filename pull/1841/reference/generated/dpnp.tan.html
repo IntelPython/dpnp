@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -13,20 +15,17 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.tan &mdash; Data Parallel Extension for NumPy 0.16.0dev0+49.g17d3775370 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+  <title>dpnp.tan &mdash; Data Parallel Extension for NumPy 0.18.0dev3+7.gc2c6dde4e4a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=29928358"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=0617ca60"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -45,9 +44,6 @@
           <a href="../../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.16.0dev0+49.g17d3775370
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -76,7 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -116,22 +112,24 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.tan">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">tan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.tan" title="Link to this definition"></a></dt>
-<dd><p>Computes tangent for each element <cite>x_i</cite> for input array <cite>x</cite>.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tan.html#numpy.tan" title="(in NumPy v2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tan</span></code></a>.</p>
+<dd><p>Computes the tangent for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tan.html#numpy.tan" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tan</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array, expected to have numeric data type.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Output array to populate.
-Array must have the correct shape and the expected data type.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- Memory layout of the newly output array, if parameter <cite>out</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Default: <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>.</p></li>
+<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array, expected to have a floating-point data type.</p></li>
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array to populate.
+Array must have the correct shape and the expected data type.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>order</strong> (<em>{None</em><em>, </em><em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- <p>Memory layout of the newly output array, if parameter <cite>out</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- An array containing the element-wise tangent. The data type
-of the returned array is determined by the Type Promotion Rules.</p>
+<dd class="field-even"><p><strong>out</strong> -- An array containing the element-wise tangent, in radians. The data type of
+the returned array is determined by the Type Promotion Rules.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
@@ -144,7 +142,7 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.arctan.html#dpnp.arctan" title="dpnp.arctan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arctan</span></code></a></dt><dd><p>Trigonometric inverse tangent, element-wise.</p>
+<dt><a class="reference internal" href="dpnp.atan.html#dpnp.atan" title="dpnp.atan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atan</span></code></a></dt><dd><p>Trigonometric inverse tangent, element-wise.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.sin.html#dpnp.sin" title="dpnp.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sin</span></code></a></dt><dd><p>Trigonometric sine, element-wise.</p>
 </dd>
@@ -155,7 +153,7 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 </dl>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="go">array([1.22460635e-16, 1.63317787e+16, -1.22460635e-16])</span>
@@ -176,7 +174,7 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

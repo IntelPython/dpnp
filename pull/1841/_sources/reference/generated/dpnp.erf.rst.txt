@@ -1,6 +1,10 @@
-﻿dpnp.erf
+﻿
+
+dpnp.erf
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: erf

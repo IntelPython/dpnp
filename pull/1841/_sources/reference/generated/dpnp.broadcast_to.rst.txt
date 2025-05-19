@@ -1,6 +1,10 @@
-﻿dpnp.broadcast\_to
+﻿
+
+dpnp.broadcast\_to
 ==================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: broadcast_to

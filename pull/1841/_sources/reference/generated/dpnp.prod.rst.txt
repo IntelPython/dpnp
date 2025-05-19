@@ -1,6 +1,10 @@
-﻿dpnp.prod
+﻿
+
+dpnp.prod
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: prod

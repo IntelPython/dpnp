@@ -1,9 +1,7 @@
-.. module:: dpnp.random
-
-Random Sampling (``dpnp.random``)
+Random sampling (``dpnp.random``)
 =================================
 
-.. https://docs.scipy.org/doc/numpy/reference/random/legacy.html
+.. https://numpy.org/doc/stable/reference/random/legacy.html
 
 
 Simple random data

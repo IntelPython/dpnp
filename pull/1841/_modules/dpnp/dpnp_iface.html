@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -12,20 +14,16 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.16.0dev0+49.g17d3775370 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.18.0dev3+7.gc2c6dde4e4a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=29928358"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=0617ca60"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -42,9 +40,6 @@
           <a href="../../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.16.0dev0+49.g17d3775370
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -90,7 +85,7 @@
   <h1>Source code for dpnp.dpnp_iface</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2025, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -126,77 +121,81 @@
 <span class="sd"> - The functions parameters check</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=protected-access</span>
+<span class="c1"># pylint: disable=redefined-outer-name</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._device</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_queue_device</span>
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dpu</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._device</span> <span class="kn">import</span> <span class="n">normalize_queue_device</span>
-
-<span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span> <span class="nn">dpnp.fft</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.linalg</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.random</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_algo</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.fft</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.random</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;array_equal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;are_same_logical_tensors&quot;</span><span class="p">,</span>
     <span class="s2">&quot;asnumpy&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;astype&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;as_usm_ndarray&quot;</span><span class="p">,</span>
     <span class="s2">&quot;check_limitations&quot;</span><span class="p">,</span>
     <span class="s2">&quot;check_supported_arrays_type&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;convert_single_elem_array_to_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;default_float_type&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;from_dlpack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_dpnp_descriptor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_include&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_normalized_queue_device&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_result_array&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_usm_ndarray&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_usm_ndarray_or_scalar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_cuda_backend&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_supported_array_or_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_supported_array_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;synchronize_array_data&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="n">float64</span><span class="p">,</span> <span class="n">isscalar</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__arraycreation</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_bitwise</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_bitwise</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__bitwise</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__counting</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_histograms</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_histograms</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__histograms</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_indexing</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_indexing</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__indexing</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_libmath</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_libmath</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__libmath</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_linearalgebra</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_linearalgebra</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__linearalgebra</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_logic</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_logic</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__logic</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_manipulation</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_manipulation</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__manipulation</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_mathematical</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_mathematical</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__mathematical</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_nanfunctions</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_nanfunctions</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__nanfunctions</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_searching</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_searching</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__searching</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_sorting</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_sorting</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__sorting</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_statistics</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_statistics</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__statistics</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__trigonometric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_arraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_arraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__arraycreation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_bitwise</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_bitwise</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__bitwise</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_counting</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_counting</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__counting</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_functional</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__functional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_histograms</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_histograms</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__histograms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_indexing</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_indexing</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__indexing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_libmath</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_libmath</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__libmath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__linearalgebra</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_logic</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__logic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_manipulation</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_manipulation</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__manipulation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_mathematical</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_mathematical</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__mathematical</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_nanfunctions</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_nanfunctions</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__nanfunctions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_searching</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_searching</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__searching</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_sorting</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__sorting</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_statistics</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__statistics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_trigonometric</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_trigonometric</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__trigonometric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_window</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_window</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__window</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_descriptor</span><span class="p">,</span>
     <span class="n">map_dtype_to_device</span><span class="p">,</span>
     <span class="n">use_origin_backend</span><span class="p">,</span>
@@ -205,6 +204,7 @@
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__arraycreation</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__bitwise</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__counting</span>
+<span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__functional</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__histograms</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__indexing</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__libmath</span>
@@ -217,32 +217,53 @@
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__sorting</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__statistics</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__trigonometric</span>
+<span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__window</span>
 
 
-<div class="viewcode-block" id="array_equal">
-<a class="viewcode-back" href="../../reference/generated/dpnp.array_equal.html#dpnp.array_equal">[docs]</a>
-<span class="k">def</span> <span class="nf">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">are_same_logical_tensors</span><span class="p">(</span><span class="n">ar1</span><span class="p">,</span> <span class="n">ar2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    True if two arrays have the same shape and elements, False otherwise.</span>
+<span class="sd">    Check if two arrays are logical views into the same memory.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.array_equal`.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ar1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        First input array.</span>
+<span class="sd">    ar2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Second input array.</span>
 
-<span class="sd">    See Also</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : bool</span>
+<span class="sd">        ``True`` if two arrays are logical views into the same memory,</span>
+<span class="sd">        ``False`` otherwise.</span>
+
+<span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.allclose` : Returns True if two arrays are element-wise equal</span>
-<span class="sd">                           within a tolerance.</span>
-<span class="sd">    :obj:`dpnp.array_equiv` : Returns True if input arrays are shape consistent</span>
-<span class="sd">                              and all elements equal.</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; b = a[:]</span>
+<span class="sd">    &gt;&gt;&gt; a is b</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; np.are_same_logical_tensors(a, b)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; b[0] = 0</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([0, 2, 3])</span>
+
+<span class="sd">    &gt;&gt;&gt; c = a.copy()</span>
+<span class="sd">    &gt;&gt;&gt; np.are_same_logical_tensors(a, c)</span>
+<span class="sd">    False</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="n">equal_nan</span><span class="p">)</span></div>
-
+    <span class="k">return</span> <span class="n">ti</span><span class="o">.</span><span class="n">_same_logical_tensors</span><span class="p">(</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">ar1</span><span class="p">),</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">ar2</span><span class="p">)</span>
+    <span class="p">)</span>
 
 
 <div class="viewcode-block" id="asnumpy">
 <a class="viewcode-back" href="../../reference/generated/dpnp.asnumpy.html#dpnp.asnumpy">[docs]</a>
-<span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">asnumpy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the NumPy array with input data.</span>
 
@@ -250,11 +271,13 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {array_like}</span>
 <span class="sd">        Arbitrary object that can be converted to :obj:`numpy.ndarray`.</span>
-<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}</span>
+<span class="sd">    order : {None, &#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}, optional</span>
 <span class="sd">        The desired memory layout of the converted array.</span>
-<span class="sd">        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses</span>
-<span class="sd">        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely</span>
-<span class="sd">        as possible.</span>
+<span class="sd">        When `order` is ``&#39;A&#39;``, it uses ``&#39;F&#39;`` if `a` is column-major and</span>
+<span class="sd">        uses ``&#39;C&#39;`` otherwise. And when `order` is ``&#39;K&#39;``, it keeps strides</span>
+<span class="sd">        as closely as possible.</span>
+
+<span class="sd">        Default: ``&#39;C&#39;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -277,87 +300,79 @@
 
 
 
-<span class="c1"># pylint: disable=redefined-outer-name</span>
-<div class="viewcode-block" id="astype">
-<a class="viewcode-back" href="../../reference/generated/dpnp.astype.html#dpnp.astype">[docs]</a>
-<span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">as_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Copy the array with data type casting.</span>
+<span class="sd">    Return :class:`dpctl.tensor.usm_ndarray` from input object `a`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x1 : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Array data type casting.</span>
-<span class="sd">    dtype : dtype</span>
-<span class="sd">        Target data type.</span>
-<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}</span>
-<span class="sd">        Row-major (C-style) or column-major (Fortran-style) order.</span>
-<span class="sd">        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses</span>
-<span class="sd">        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely</span>
-<span class="sd">        as possible.</span>
-<span class="sd">    copy : bool</span>
-<span class="sd">        If it is ``False`` and no cast happens, then this method returns</span>
-<span class="sd">        the array itself. Otherwise, a copy is returned.</span>
-<span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
-<span class="sd">        Controls what kind of data casting may occur. Defaults to ``unsafe``</span>
-<span class="sd">        for backwards compatibility.</span>
+<span class="sd">    a : {array_like, scalar}</span>
+<span class="sd">        Input array or scalar.</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
+<span class="sd">        The desired dtype for the result array if new array is creating. If not</span>
+<span class="sd">        given, a default dtype will be used that can represent the values (by</span>
+<span class="sd">        considering Promotion Type Rule and device capabilities when necessary).</span>
 
-<span class="sd">            - &#39;no&#39; means the data types should not be cast at all.</span>
-<span class="sd">            - &#39;equiv&#39; means only byte-order changes are allowed.</span>
-<span class="sd">            - &#39;safe&#39; means only casts which can preserve values are allowed.</span>
-<span class="sd">            - &#39;same_kind&#39; means only safe casts or casts within a kind, like</span>
-<span class="sd">              float64 to float32, are allowed.</span>
-<span class="sd">            - &#39;unsafe&#39; means any data conversions may be done.</span>
-
-<span class="sd">    copy : {bool}, optional</span>
-<span class="sd">        By default, ``astype`` always returns a newly allocated array. If this</span>
-<span class="sd">        is set to ``False``, and the `dtype`, `order`, and `subok` requirements</span>
-<span class="sd">        are satisfied, the input array is returned instead of a copy.</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
-<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property. Default: ``None``.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+<span class="sd">        If the value is ``None``, returned array is created on the same device</span>
+<span class="sd">        as `a`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the result array if new array</span>
+<span class="sd">        is created.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for result array allocation if required.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    arr_t : dpnp.ndarray</span>
-<span class="sd">        Unless `copy` is ``False`` and the other conditions for returning</span>
-<span class="sd">        the input array are satisfied, `arr_t` is a new array of the same shape</span>
-<span class="sd">        as the input array, with dtype, order given by dtype, order.</span>
+<span class="sd">    out : usm_ndarray</span>
+<span class="sd">        A dpctl USM ndarray from input array or scalar `a`.</span>
+<span class="sd">        If `a` is instance of :class:`dpnp.ndarray`</span>
+<span class="sd">        or :class:`dpctl.tensor.usm_ndarray`, no array allocation will be done</span>
+<span class="sd">        and `dtype`, `device`, `usm_type`, `sycl_queue` keywords</span>
+<span class="sd">        will be ignored.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span>
+    <span class="k">if</span> <span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-    <span class="n">x1_obj</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
-    <span class="n">array_obj</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-        <span class="n">x1_obj</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
     <span class="p">)</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">array_obj</span> <span class="ow">is</span> <span class="n">x1_obj</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
-        <span class="c1"># return x1 if dpctl returns a zero copy of x1_obj</span>
-        <span class="k">return</span> <span class="n">x1</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">array_obj</span><span class="p">)</span></div>
 
-
-
-<span class="k">def</span> <span class="nf">check_limitations</span><span class="p">(</span>
-    <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_limitations</span><span class="p">(</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">subok_linalg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">signature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checking limitation kwargs for their supported values.</span>
 
-<span class="sd">    Parameter `order` is only supported with values ``&quot;C&quot;``, ``&quot;F&quot;``</span>
-<span class="sd">    and ``None``.</span>
-<span class="sd">    Parameter `subok` is only supported with default value ``False``.</span>
+<span class="sd">    Parameter `subok` for array creation functions is only supported with</span>
+<span class="sd">    default value ``False``.</span>
 <span class="sd">    Parameter `like` is only supported with default value ``None``.</span>
 <span class="sd">    Parameter `initial` is only supported with default value ``None``.</span>
 <span class="sd">    Parameter `where` is only supported with default value ``True``.</span>
+<span class="sd">    Parameter `subok` for linear algebra functions, named as `subok_linalg`</span>
+<span class="sd">    here, and is only supported with default value ``True``.</span>
+<span class="sd">    Parameter `signature` is only supported with default value ``None``.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -366,39 +381,39 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;Keyword argument `order` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;values ``&#39;C&#39;`` and ``&#39;F&#39;``, but got </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Unrecognized `order` keyword value, expecting &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;``&#39;C&#39;`` or ``&#39;F&#39;``, but got </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
     <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Keyword argument `like` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">like</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">like</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Keyword argument `subok` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``False``, but got </span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``False``, but got </span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Keyword argument `initial` is only supported with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">initial</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">initial</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Keyword argument `where` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``True``, but got </span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``True``, but got </span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">subok_linalg</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;keyword argument `subok` is only supported with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``True``, but got </span><span class="si">{</span><span class="n">subok_linalg</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">signature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;keyword argument `signature` is only supported with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">signature</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return ``True`` if each array has either type of scalar,</span>
 <span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
@@ -406,12 +421,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    arrays : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    arrays : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input arrays to check for supported types.</span>
-<span class="sd">    scalar_type : {bool}, optional</span>
+<span class="sd">    scalar_type : bool, optional</span>
 <span class="sd">        A scalar type is also considered as supported if flag is ``True``.</span>
-<span class="sd">    all_scalars : {bool}, optional</span>
+
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    all_scalars : bool, optional</span>
 <span class="sd">        All the input arrays can be scalar if flag is ``True``.</span>
+
+<span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -447,35 +466,30 @@
     <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert array with single element to scalar.&quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">keepdims</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-
-    <span class="k">return</span> <span class="n">obj</span>
-
-
-<span class="k">def</span> <span class="nf">default_float_type</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_float_type</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a floating type used by default in DPNP depending on device</span>
 <span class="sd">    capabilities.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
-<span class="sd">        An array API concept of device where an array of default floating type</span>
-<span class="sd">        might be created. The `device` can be ``None`` (the default), an OneAPI</span>
-<span class="sd">        filter selector string, an instance of :class:`dpctl.SyclDevice`</span>
-<span class="sd">        corresponding to a non-partitioned SYCL device, an instance of</span>
-<span class="sd">        :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 <span class="sd">        The value ``None`` is interpreted as to use a default device.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue which might be used to create an array of default floating</span>
 <span class="sd">        type. The `sycl_queue` can be ``None`` (the default), which is</span>
 <span class="sd">        interpreted as to get the SYCL queue from `device` keyword if present</span>
 <span class="sd">        or to use a default queue.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -487,38 +501,10 @@
     <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">get_normalized_queue_device</span><span class="p">(</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">float64</span><span class="p">,</span> <span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="from_dlpack">
-<a class="viewcode-back" href="../../reference/generated/dpnp.from_dlpack.html#dpnp.from_dlpack">[docs]</a>
-<span class="k">def</span> <span class="nf">from_dlpack</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create a dpnp array from a Python object implementing the ``__dlpack__``</span>
-<span class="sd">    protocol.</span>
-
-<span class="sd">    See https://dmlc.github.io/dlpack/latest/ for more details.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    obj : object</span>
-<span class="sd">        A Python object representing an array that implements the ``__dlpack__``</span>
-<span class="sd">        and ``__dlpack_device__`` methods.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp_array</span>
-<span class="sd">        Returns a new dpnp array containing the data from another array</span>
-<span class="sd">        (obj) with the ``__dlpack__`` method on the same device as object.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">usm_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">)</span></div>
-
-
-
-<span class="k">def</span> <span class="nf">get_dpnp_descriptor</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_dpnp_descriptor</span><span class="p">(</span>
     <span class="n">ext_obj</span><span class="p">,</span>
     <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -542,7 +528,7 @@
 
     <span class="c1"># If input object is a scalar, it means it was allocated on host memory.</span>
     <span class="c1"># We need to copy it to USM memory according to compute follows data.</span>
-    <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">):</span>
         <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span>
             <span class="n">ext_obj</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">alloc_dtype</span><span class="p">,</span>
@@ -595,7 +581,7 @@
 
 <div class="viewcode-block" id="get_include">
 <a class="viewcode-back" href="../../reference/generated/dpnp.get_include.html#dpnp.get_include">[docs]</a>
-<span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_include</span><span class="p">():</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the directory that contains \*.h header files of dpnp C++ backend.</span>
 
@@ -608,7 +594,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">get_normalized_queue_device</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_normalized_queue_device</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Utility to process complementary keyword arguments &#39;device&#39; and &#39;sycl_queue&#39;</span>
 <span class="sd">    in subsequent calls of functions from `dpctl.tensor` module.</span>
@@ -626,16 +612,24 @@
 <span class="sd">        and implementing `__sycl_usm_array_interface__` protocol, an instance</span>
 <span class="sd">        of `numpy.ndarray`, an object supporting Python buffer protocol,</span>
 <span class="sd">        a Python scalar, or a (possibly nested) sequence of Python scalars.</span>
-<span class="sd">    sycl_queue : class:`dpctl.SyclQueue`, optional</span>
+<span class="sd">    sycl_queue : {None, class:`dpctl.SyclQueue`}, optional</span>
 <span class="sd">        A queue which explicitly indicates where USM allocation is done</span>
 <span class="sd">        and the population code (if any) is executed.</span>
 <span class="sd">        Value ``None`` is interpreted as to get the SYCL queue from either</span>
 <span class="sd">        `obj` parameter if not ``None`` or from `device` keyword,</span>
 <span class="sd">        or to use default queue.</span>
-<span class="sd">    device : {string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,</span>
-<span class="sd">              :class:`dpctl.tensor.Device`}, optional</span>
-<span class="sd">        An array-API keyword indicating non-partitioned SYCL device</span>
-<span class="sd">        where array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+<span class="sd">        The value ``None`` is interpreted as to use the same device as `obj`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -659,7 +653,7 @@
     <span class="k">return</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">get_result_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_result_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    If `out` is provided, value of `a` array will be copied into the</span>
 <span class="sd">    `out` array according to ``safe`` casting rule.</span>
@@ -667,48 +661,53 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    out : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        If provided, value of `a` array will be copied into it</span>
 <span class="sd">        according to ``safe`` casting rule.</span>
 <span class="sd">        It should be of the appropriate shape.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur.</span>
 
+<span class="sd">        Default: ``&#39;safe&#39;``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : {dpnp_array}</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        Return `out` if provided, otherwise return `a`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">a</span>
 
-    <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="n">out</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="n">out</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">are_same_logical_tensors</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">out</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Output array of shape </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-
     <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">out</span>
 
 
-<span class="k">def</span> <span class="nf">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return :class:`dpctl.tensor.usm_ndarray` from input array `a`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array of supported type :class:`dpnp.ndarray`</span>
 <span class="sd">        or :class:`dpctl.tensor.usm_ndarray`.</span>
 
@@ -733,7 +732,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return scalar or :class:`dpctl.tensor.usm_ndarray` from input object `a`.</span>
 
@@ -756,10 +755,46 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">a</span> <span class="k">if</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">else</span> <span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">else</span> <span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_cuda_backend</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks that object has a CUDA backend.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : {Device, SyclDevice, SyclQueue, dpnp.ndarray, usm_ndarray, None},</span>
+<span class="sd">          optional</span>
+<span class="sd">        An input object with sycl_device property to check device backend.</span>
+<span class="sd">        If `obj` is ``None``, device backend will be checked for the default</span>
+<span class="sd">        queue.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : bool</span>
+<span class="sd">        Return ``True`` if data of the input object resides on a CUDA backend,</span>
+<span class="sd">        otherwise ``False``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sycl_device</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_default_device</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">):</span>
+        <span class="n">sycl_device</span> <span class="o">=</span> <span class="n">obj</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sycl_device</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;sycl_device&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">sycl_device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">sycl_device</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">backend_type</span><span class="o">.</span><span class="n">cuda</span>
+    <span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return ``True`` if `a` is a scalar or an array of either</span>
 <span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` type,</span>
@@ -778,17 +813,17 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return ``True`` if an array of either type :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray` type, ``False`` otherwise.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a : {dpnp_array, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        An input array to check the type.</span>
 
 <span class="sd">    Returns</span>
@@ -802,7 +837,7 @@
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">synchronize_array_data</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">synchronize_array_data</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The dpctl interface was reworked to make asynchronous execution.</span>
 <span class="sd">    That function makes a synchronization call to ensure array data is valid</span>
@@ -810,9 +845,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dpu</span><span class="p">,</span> <span class="s2">&quot;SequentialOrderManager&quot;</span><span class="p">):</span>
-        <span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">]</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">]</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
 </pre></div>
 
            </div>
@@ -822,7 +856,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

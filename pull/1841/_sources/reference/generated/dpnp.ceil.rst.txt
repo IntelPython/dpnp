@@ -1,6 +1,10 @@
-﻿dpnp.ceil
+﻿
+
+dpnp.ceil
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: ceil

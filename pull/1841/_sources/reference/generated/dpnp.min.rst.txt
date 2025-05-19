@@ -1,6 +1,10 @@
-﻿dpnp.min
+﻿
+
+dpnp.min
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: min

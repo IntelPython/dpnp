@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.max
+:orphan:
+
+dpnp.ndarray.max
 ================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.max

@@ -1,6 +1,10 @@
-﻿dpnp.asfarray
+﻿
+
+dpnp.asfarray
 =============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: asfarray

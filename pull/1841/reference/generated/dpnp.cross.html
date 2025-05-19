@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -13,25 +15,22 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.cross &mdash; Data Parallel Extension for NumPy 0.16.0dev0+49.g17d3775370 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+  <title>dpnp.cross &mdash; Data Parallel Extension for NumPy 0.18.0dev3+7.gc2c6dde4e4a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=29928358"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=0617ca60"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.logsumexp" href="dpnp.logsumexp.html" />
-    <link rel="prev" title="dpnp.trapz" href="dpnp.trapz.html" /> 
+    <link rel="next" title="dpnp.trapezoid" href="dpnp.trapezoid.html" />
+    <link rel="prev" title="dpnp.gradient" href="dpnp.gradient.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,9 +44,6 @@
           <a href="../../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.16.0dev0+49.g17d3775370
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -63,15 +59,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../math.html">Mathematical Functions</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../math.html">Mathematical functions</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../math.html#trigonometric-functions">Trigonometric functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#hyperbolic-functions">Hyperbolic functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#rounding">Rounding</a></li>
@@ -82,19 +79,22 @@
 <li class="toctree-l4"><a class="reference internal" href="../math.html#rational-routines">Rational routines</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#arithmetic-operations">Arithmetic operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#handling-complex-numbers">Handling complex numbers</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#extrema-finding">Extrema Finding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#extrema-finding">Extrema finding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -119,7 +119,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
-          <li class="breadcrumb-item"><a href="../math.html">Mathematical Functions</a></li>
+          <li class="breadcrumb-item"><a href="../math.html">Mathematical functions</a></li>
       <li class="breadcrumb-item active">dpnp.cross</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.cross.rst.txt" rel="nofollow"> View page source</a>
@@ -136,19 +136,34 @@
 <dt class="sig sig-object py" id="dpnp.cross">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">cross</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axisa</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axisb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axisc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#cross"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.cross" title="Link to this definition"></a></dt>
 <dd><p>Return the cross product of two (arrays of) vectors.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.cross.html#numpy.cross" title="(in NumPy v2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.cross</span></code></a>.</p>
+<p>The cross product of <cite>a</cite> and <cite>b</cite> in <span class="math notranslate nohighlight">\(R^3\)</span> is a vector perpendicular
+to both <cite>a</cite> and <cite>b</cite>. If <cite>a</cite> and <cite>b</cite> are arrays of vectors, the vectors
+are defined by the last axis of <cite>a</cite> and <cite>b</cite> by default, and these axes
+can have dimensions 2 or 3. Where the dimension of either <cite>a</cite> or <cite>b</cite> is
+2, the third component of the input vector is assumed to be zero and the
+cross product calculated accordingly. In cases where both input vectors
+have dimension 2, the z-component of the cross product is returned.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.cross.html#numpy.cross" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.cross</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- First input array.</p></li>
 <li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Second input array.</p></li>
-<li><p><strong>axisa</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- Axis of <cite>a</cite> that defines the vector(s).  By default, the last axis.</p></li>
-<li><p><strong>axisb</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- Axis of <cite>b</cite> that defines the vector(s).  By default, the last axis.</p></li>
-<li><p><strong>axisc</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- Axis of <cite>c</cite> containing the cross product vector(s).  Ignored if
-both input vectors have dimension 2, as the return is scalar.
-By default, the last axis.</p></li>
-<li><p><strong>axis</strong> (<em>{int</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) -- If defined, the axis of <cite>a</cite>, <cite>b</cite> and <cite>c</cite> that defines the vector(s)
-and cross product(s).  Overrides <cite>axisa</cite>, <cite>axisb</cite> and <cite>axisc</cite>.</p></li>
+<li><p><strong>axisa</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>Axis of <cite>a</cite> that defines the vector(s). By default, the last axis.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+</p></li>
+<li><p><strong>axisb</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>Axis of <cite>b</cite> that defines the vector(s). By default, the last axis.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+</p></li>
+<li><p><strong>axisc</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>Axis of <cite>c</cite> containing the cross product vector(s). Ignored if both
+input vectors have dimension <code class="docutils literal notranslate"><span class="pre">2</span></code>, as the return is scalar. By default,
+the last axis.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+</p></li>
+<li><p><strong>axis</strong> (<em>{int</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) -- <p>If defined, the axis of <cite>a</cite>, <cite>b</cite> and <cite>c</cite> that defines the vector(s)
+and cross product(s). Overrides <cite>axisa</cite>, <cite>axisb</cite> and <cite>axisc</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -161,6 +176,8 @@ and cross product(s).  Overrides <cite>axisa</cite>, <cite>axisb</cite> and <cit
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
+<dt><a class="reference internal" href="dpnp.linalg.cross.html#dpnp.linalg.cross" title="dpnp.linalg.cross"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.cross</span></code></a></dt><dd><p>Array API compatible version.</p>
+</dd>
 <dt><a class="reference internal" href="dpnp.inner.html#dpnp.inner" title="dpnp.inner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.inner</span></code></a></dt><dd><p>Inner product.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.outer.html#dpnp.outer" title="dpnp.outer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.outer</span></code></a></dt><dd><p>Outer product.</p>
@@ -169,7 +186,7 @@ and cross product(s).  Overrides <cite>axisa</cite>, <cite>axisb</cite> and <cit
 </div>
 <p class="rubric">Examples</p>
 <p>Vector cross-product.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -234,14 +251,14 @@ product vector is defined by the <em>right-hand rule</em>.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.trapz.html" class="btn btn-neutral float-left" title="dpnp.trapz" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.logsumexp.html" class="btn btn-neutral float-right" title="dpnp.logsumexp" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.gradient.html" class="btn btn-neutral float-left" title="dpnp.gradient" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.trapezoid.html" class="btn btn-neutral float-right" title="dpnp.trapezoid" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

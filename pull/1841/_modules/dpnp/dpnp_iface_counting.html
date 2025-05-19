@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -12,20 +14,16 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_counting &mdash; Data Parallel Extension for NumPy 0.16.0dev0+49.g17d3775370 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+  <title>dpnp.dpnp_iface_counting &mdash; Data Parallel Extension for NumPy 0.18.0dev3+7.gc2c6dde4e4a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=29928358"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=0617ca60"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -42,9 +40,6 @@
           <a href="../../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.16.0dev0+49.g17d3775370
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -90,7 +85,7 @@
   <h1>Source code for dpnp.dpnp_iface_counting</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2025, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -127,34 +122,50 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 
-<span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;count_nonzero&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="count_nonzero">
 <a class="viewcode-back" href="../../reference/generated/dpnp.count_nonzero.html#dpnp.count_nonzero">[docs]</a>
-<span class="k">def</span> <span class="nf">count_nonzero</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">count_nonzero</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Counts the number of non-zero values in the array `a`.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.count_nonzero`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        The array for which to count non-zeros.</span>
+<span class="sd">    axis : {None, int, tuple}, optional</span>
+<span class="sd">        Axis or tuple of axes along which to count non-zeros.</span>
+<span class="sd">        Default value means that non-zeros will be counted along a flattened</span>
+<span class="sd">        version of `a`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
+<span class="sd">        If this is set to ``True``, the axes that are counted are left in the</span>
+<span class="sd">        result as dimensions with size one. With this option, the result will</span>
+<span class="sd">        broadcast correctly against the input array.</span>
+
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        The array into which the result is written. The data type of `out` must</span>
+<span class="sd">        match the expected shape and the expected data type of the result.</span>
+<span class="sd">        If ``None`` then a new array is returned.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        Number of non-zero values in the array along a given axis.</span>
-<span class="sd">        Otherwise, a zero-dimensional array with the total number of</span>
-<span class="sd">        non-zero values in the array is returned.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `a` is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Otherwise ``TypeError`` exception will be raised.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">        Otherwise, a zero-dimensional array with the total number of non-zero</span>
+<span class="sd">        values in the array is returned.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -179,11 +190,13 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># TODO: might be improved by implementing an extension</span>
-    <span class="c1"># with `count_nonzero` kernel</span>
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
+    <span class="n">usm_out</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span>
+        <span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">usm_out</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
 
 </pre></div>
 
@@ -194,7 +207,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

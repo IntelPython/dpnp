@@ -1,11 +1,17 @@
 var searchData=
 [
-  ['index_5fon_5faxis_0',['index_on_axis',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['index_5fon_5faxis_3c_20idx_2c_20dispatcht_2c_20matcher_2c_20std_3a_3atuple_3c_20axisdata_2e_2e_2e_20_3e_20_3e_1',['index_on_axis&lt; idx, DispatchT, Matcher, std::tuple&lt; AxisData... &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis_3_01idx_00_01_dispatch_t_00_01_matc014615cac12293ef2d15243fdee2c449.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['index_5fon_5faxis_3c_20idx_2c_20dispatcht_2c_20matcher_2c_20std_3a_3atuple_3c_20t_20_3e_20_3e_2',['index_on_axis&lt; idx, DispatchT, Matcher, std::tuple&lt; T &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1index__on__axis_3_01idx_00_01_dispatch_t_00_01_matcafd2cf8593c2aa4d8a9103f019cc37b1.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['interface_20api_3',['interface api',['../group___b_a_c_k_e_n_d___a_p_i.html',1,'Backend C++ library interface API'],['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html',1,'Backend C++ library runtime interface API']]],
-  ['interface_20fft_20api_4',['Backend C++ library interface FFT API',['../group___b_a_c_k_e_n_d___f_f_t___a_p_i.html',1,'']]],
-  ['interface_20random_20api_5',['Backend C++ library interface RANDOM API',['../group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html',1,'']]],
-  ['is_5fany_6',['is_any',['../structis__any.html',1,'']]],
-  ['is_5fcomplex_7',['is_complex',['../structis__complex.html',1,'']]]
+  ['hammingfactory_0',['HammingFactory',['../structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_factory.html',1,'dpnp::extensions::window::kernels']]],
+  ['hammingfunctor_1',['HammingFunctor',['../classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html',1,'dpnp::extensions::window::kernels']]],
+  ['hanningfactory_2',['HanningFactory',['../structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_factory.html',1,'dpnp::extensions::window::kernels']]],
+  ['hanningfunctor_3',['HanningFunctor',['../classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_functor.html',1,'dpnp::extensions::window::kernels']]],
+  ['heavisidefunctor_4',['HeavisideFunctor',['../structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html',1,'dpnp::kernels::heaviside']]],
+  ['heevdtypepairsupportfactory_5',['HeevdTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['histglobalmemory_6',['HistGlobalMemory',['../structstatistics_1_1histogram_1_1_hist_global_memory.html',1,'statistics::histogram']]],
+  ['histlocaltype_7',['HistLocalType',['../structstatistics_1_1histogram_1_1_hist_local_type.html',1,'statistics::histogram']]],
+  ['histlocaltype_3c_20int64_5ft_20_3e_8',['HistLocalType&lt; int64_t &gt;',['../structstatistics_1_1histogram_1_1_hist_local_type_3_01int64__t_01_4.html',1,'statistics::histogram']]],
+  ['histlocaltype_3c_20uint64_5ft_20_3e_9',['HistLocalType&lt; uint64_t &gt;',['../structstatistics_1_1histogram_1_1_hist_local_type_3_01uint64__t_01_4.html',1,'statistics::histogram']]],
+  ['histogram_10',['Histogram',['../structstatistics_1_1histogram_1_1_histogram.html',1,'statistics::histogram']]],
+  ['histogram_5fkernel_11',['histogram_kernel',['../classstatistics_1_1histogram_1_1histogram__kernel.html',1,'statistics::histogram']]],
+  ['histogramdd_12',['Histogramdd',['../structstatistics_1_1histogram_1_1_histogramdd.html',1,'statistics::histogram']]],
+  ['histwithlocalcopies_13',['HistWithLocalCopies',['../structstatistics_1_1histogram_1_1_hist_with_local_copies.html',1,'statistics::histogram']]]
 ];

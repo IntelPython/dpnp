@@ -1,6 +1,10 @@
-﻿dpnp.mgrid
+﻿
+
+dpnp.mgrid
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autodata:: mgrid

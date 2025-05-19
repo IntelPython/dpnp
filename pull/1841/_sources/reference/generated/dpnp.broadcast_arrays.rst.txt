@@ -1,6 +1,10 @@
-﻿dpnp.broadcast\_arrays
+﻿
+
+dpnp.broadcast\_arrays
 ======================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: broadcast_arrays

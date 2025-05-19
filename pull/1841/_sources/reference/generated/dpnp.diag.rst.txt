@@ -1,6 +1,10 @@
-﻿dpnp.diag
+﻿
+
+dpnp.diag
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: diag

@@ -1,10 +1,8 @@
 var searchData=
 [
-  ['mcg59_5fstruct_0',['mcg59_struct',['../structmcg59__struct.html',1,'']]],
-  ['merge_5ftwo_5finner_5ftuple_5ftypes_1',['merge_two_inner_tuple_types',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__inner__tuple__types.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['merge_5ftwo_5finner_5ftuple_5ftypes_3c_20std_3a_3atuple_3c_20firsttupleargs_2e_2e_2e_20_3e_2c_20std_3a_3atuple_3c_20secondtupleargs_2e_2e_2e_20_3e_20_3e_2',['merge_two_inner_tuple_types&lt; std::tuple&lt; FirstTupleArgs... &gt;, std::tuple&lt; SecondTupleArgs... &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__inner__tuple__types_3_01std_1_1tuple_3_0138ac4b60360159f3bcb33d2fa44168.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['merge_5ftwo_5finner_5ftuple_5ftypes_3c_20std_3a_3atuple_3c_20std_3a_3atuple_3c_20firsttupleargs_2e_2e_2e_20_3e_20_3e_2c_20std_3a_3atuple_3c_20std_3a_3atuple_3c_20secondtupleargs_2e_2e_2e_20_3e_20_3e_20_3e_3',['merge_two_inner_tuple_types&lt; std::tuple&lt; std::tuple&lt; FirstTupleArgs... &gt; &gt;, std::tuple&lt; std::tuple&lt; SecondTupleArgs... &gt; &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__inner__tuple__types_3_01std_1_1tuple_3_61a32514aa73a4b8a3b7c6a5b4f77028.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['merge_5ftwo_5ftuple_5ftypes_4',['merge_two_tuple_types',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__tuple__types.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['merge_5ftwo_5ftuple_5ftypes_3c_20std_3a_3atuple_3c_20firsttupleargs_2e_2e_2e_20_3e_2c_20std_3a_3atuple_3c_20secondtupleargs_2e_2e_2e_20_3e_20_3e_5',['merge_two_tuple_types&lt; std::tuple&lt; FirstTupleArgs... &gt;, std::tuple&lt; SecondTupleArgs... &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1merge__two__tuple__types_3_01std_1_1tuple_3_01_firsbb11e9f600ace9f62066d6e14ad141b6.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['mt19937_5fstruct_6',['mt19937_struct',['../structmt19937__struct.html',1,'']]]
+  ['lcmfunctor_0',['LcmFunctor',['../structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html',1,'dpnp::kernels::lcm']]],
+  ['ldexpfunctor_1',['LdexpFunctor',['../structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html',1,'dpnp::kernels::ldexp']]],
+  ['less_2',['Less',['../structext_1_1common_1_1_less.html',1,'ext::common']]],
+  ['linalgerror_3',['LinAlgError',['../classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html',1,'dpnp::extensions::lapack']]],
+  ['logaddexp2functor_4',['Logaddexp2Functor',['../structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html',1,'dpnp::kernels::logaddexp2']]]
 ];

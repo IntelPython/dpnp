@@ -3,7 +3,7 @@
 Data type routines
 ==================
 
-.. https://docs.scipy.org/doc/numpy/reference/routines.dtype.html
+.. https://numpy.org/doc/stable/reference/routines.dtype.html
 
 .. autosummary::
    :toctree: generated/
@@ -14,7 +14,6 @@ Data type routines
    dpnp.min_scalar_type
    dpnp.result_type
    dpnp.common_type
-   dpnp.obj2sctype
 
 Creating data types
 -------------------
@@ -40,10 +39,8 @@ Data type testing
    :toctree: generated/
    :nosignatures:
 
-   dpnp.issctype
+   dpnp.isdtype
    dpnp.issubdtype
-   dpnp.issubsctype
-   dpnp.issubclass_
 
 Miscellaneous
 -------------
@@ -52,6 +49,4 @@ Miscellaneous
    :nosignatures:
 
    dpnp.typename
-   dpnp.sctype2char
    dpnp.mintypecode
-   dpnp.maximum_sctype

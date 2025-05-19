@@ -1,6 +1,10 @@
-﻿dpnp.finfo
+﻿
+
+dpnp.finfo
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: finfo

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -13,25 +15,22 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.unwrap &mdash; Data Parallel Extension for NumPy 0.16.0dev0+49.g17d3775370 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+  <title>dpnp.unwrap &mdash; Data Parallel Extension for NumPy 0.18.0dev3+7.gc2c6dde4e4a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=29928358"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=0617ca60"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpnp.reduce_hypot" href="dpnp.reduce_hypot.html" />
-    <link rel="prev" title="dpnp.radians" href="dpnp.radians.html" /> 
+    <link rel="prev" title="Mathematical functions" href="../math.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,9 +44,6 @@
           <a href="../../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.16.0dev0+49.g17d3775370
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -63,15 +59,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../math.html">Mathematical Functions</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../math.html">Mathematical functions</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="../math.html#trigonometric-functions">Trigonometric functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#hyperbolic-functions">Hyperbolic functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#rounding">Rounding</a></li>
@@ -82,19 +79,22 @@
 <li class="toctree-l4"><a class="reference internal" href="../math.html#rational-routines">Rational routines</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#arithmetic-operations">Arithmetic operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#handling-complex-numbers">Handling complex numbers</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#extrema-finding">Extrema Finding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#extrema-finding">Extrema finding</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -119,7 +119,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
-          <li class="breadcrumb-item"><a href="../math.html">Mathematical Functions</a></li>
+          <li class="breadcrumb-item"><a href="../math.html">Mathematical functions</a></li>
       <li class="breadcrumb-item active">dpnp.unwrap</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.unwrap.rst.txt" rel="nofollow"> View page source</a>
@@ -134,12 +134,43 @@
 <h1>dpnp.unwrap<a class="headerlink" href="#dpnp-unwrap" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.unwrap">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">unwrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#unwrap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.unwrap" title="Link to this definition"></a></dt>
-<dd><p>Unwrap by changing deltas between values to 2*pi complement.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.unwrap.html#numpy.unwrap" title="(in NumPy v2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.unwrap</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Input array data types are limited by supported DPNP <a class="reference internal" href="../dtypes_table.html#data-types"><span class="std std-ref">Available array data types</span></a>.</p>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">unwrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discont</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.283185307179586</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#unwrap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.unwrap" title="Link to this definition"></a></dt>
+<dd><p>Unwrap by taking the complement of large deltas with respect to the period.</p>
+<p>This unwraps a signal <cite>p</cite> by changing elements which have an absolute
+difference from their predecessor of more than
+<span class="math notranslate nohighlight">\(\max(discont, \frac{period}{2})\)</span> to their <cite>period</cite>-complementary
+values.</p>
+<p>For the default case where <cite>period</cite> is <span class="math notranslate nohighlight">\(2\pi\)</span> and <cite>discont</cite> is
+<span class="math notranslate nohighlight">\(\pi\)</span>, this unwraps a radian phase <cite>p</cite> such that adjacent differences
+are never greater than <span class="math notranslate nohighlight">\(\pi\)</span> by adding <span class="math notranslate nohighlight">\(2k\pi\)</span> for some integer
+<span class="math notranslate nohighlight">\(k\)</span>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.unwrap.html#numpy.unwrap" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.unwrap</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
+<li><p><strong>discont</strong> (<em>{float</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) -- <p>Maximum discontinuity between values, default is <code class="docutils literal notranslate"><span class="pre">None</span></code> which is an
+alias for <span class="math notranslate nohighlight">\(\frac{period}{2}\)</span>. Values below
+<span class="math notranslate nohighlight">\(\frac{period}{2}\)</span> are treated as if they were
+<span class="math notranslate nohighlight">\(\frac{period}{2}\)</span>. To have an effect different from the default,
+<cite>discont</cite> should be larger than <span class="math notranslate nohighlight">\(\frac{period}{2}\)</span>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>Axis along which unwrap will operate, default is the last axis.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+</p></li>
+<li><p><strong>period</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) -- <p>Size of the range over which the input wraps.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">pi</span></code>.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> -- Output array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -149,14 +180,40 @@ Input array data types are limited by supported DPNP <a class="reference interna
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>If the discontinuity in <cite>p</cite> is smaller than <span class="math notranslate nohighlight">\(\frac{period}{2}\)</span>, but
+larger than <cite>discont</cite>, no unwrapping is done because taking the complement
+would only make the discontinuity larger.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">phase</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
-<span class="go">[0.0, 0.78539816, 1.57079633, 5.49778714, 6.28318531]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span>
+<span class="go">array([0.        , 0.78539816, 1.57079633, 5.49778714, 6.28318531])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+<span class="go">array([ 0.        ,  0.78539816,  1.57079633, -0.78539816,  0.        ])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">array([0, 1, 2, 3, 4])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="go">array([1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">array([2, 3, 4, 5, 6, 7, 8, 9])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">phase_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span> <span class="p">,</span><span class="mi">720</span><span class="p">,</span> <span class="mi">19</span><span class="p">),</span> <span class="mi">360</span><span class="p">)</span> <span class="o">-</span> <span class="mi">180</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">phase_deg</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">360</span><span class="p">)</span>
+<span class="go">array([-180., -140., -100.,  -60.,  -20.,   20.,   60.,  100.,  140.,</span>
+<span class="go">        180.,  220.,  260.,  300.,  340.,  380.,  420.,  460.,  500.,</span>
+<span class="go">        540.])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -167,14 +224,14 @@ Input array data types are limited by supported DPNP <a class="reference interna
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.radians.html" class="btn btn-neutral float-left" title="dpnp.radians" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../math.html" class="btn btn-neutral float-left" title="Mathematical functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="dpnp.reduce_hypot.html" class="btn btn-neutral float-right" title="dpnp.reduce_hypot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

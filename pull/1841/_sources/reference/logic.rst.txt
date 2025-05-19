@@ -1,7 +1,7 @@
-Logic Functions
+Logic functions
 ===============
 
-.. https://docs.scipy.org/doc/numpy/reference/routines.logic.html
+.. https://numpy.org/doc/stable/reference/routines.logic.html
 
 Truth value testing
 -------------------
@@ -12,12 +12,10 @@ Truth value testing
 
    dpnp.all
    dpnp.any
-   dpnp.in1d
-   dpnp.isin
 
 
-Infinities and NaNs
--------------------
+Array contents
+--------------
 
 .. autosummary::
    :toctree: generated/
@@ -45,8 +43,8 @@ Array type testing
    dpnp.isscalar
 
 
-Logic operations
-----------------
+Logical operations
+------------------
 
 .. autosummary::
    :toctree: generated/
@@ -68,6 +66,7 @@ Comparison
    dpnp.allclose
    dpnp.isclose
    dpnp.array_equal
+   dpnp.array_equiv
    dpnp.greater
    dpnp.greater_equal
    dpnp.less

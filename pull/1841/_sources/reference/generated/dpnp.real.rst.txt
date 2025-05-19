@@ -1,6 +1,10 @@
-﻿dpnp.real
+﻿
+
+dpnp.real
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: real

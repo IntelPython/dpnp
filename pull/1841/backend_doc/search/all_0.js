@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['api_0',['api',['../group___b_a_c_k_e_n_d___a_p_i.html',1,'Backend C++ library interface API'],['../group___b_a_c_k_e_n_d___f_f_t___a_p_i.html',1,'Backend C++ library interface FFT API'],['../group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html',1,'Backend C++ library interface RANDOM API'],['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html',1,'Backend C++ library runtime interface API']]],
-  ['are_5fsame_1',['are_same',['../structare__same.html',1,'']]]
+  ['_5fregistrydatastorage_0',['_RegistryDataStorage',['../classstatistics_1_1sliding__window1d_1_1___registry_data_storage.html',1,'statistics::sliding_window1d']]],
+  ['_5fregistrydatastorage_3c_20t_2c_201_20_3e_1',['_RegistryDataStorage&lt; T, 1 &gt;',['../classstatistics_1_1sliding__window1d_1_1___registry_data_storage.html',1,'statistics::sliding_window1d']]]
 ];

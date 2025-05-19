@@ -1,6 +1,10 @@
-﻿dpnp.trunc
+﻿
+
+dpnp.trunc
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: trunc

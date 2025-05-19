@@ -1,7 +1,7 @@
-Statistical Functions
-=====================
+Statistics
+==========
 
-.. https://docs.scipy.org/doc/numpy/reference/routines.statistics.html
+.. https://numpy.org/doc/stable/reference/routines.statistics.html
 
 Order statistics
 ----------------
@@ -29,9 +29,10 @@ Averages and variances
    dpnp.mean
    dpnp.std
    dpnp.var
+   dpnp.nanmedian
    dpnp.nanmean
-   dpnp.nanvar
    dpnp.nanstd
+   dpnp.nanvar
 
 
 Correlations
@@ -42,8 +43,8 @@ Correlations
    :nosignatures:
 
    dpnp.corrcoef
-   dpnp.cov
    dpnp.correlate
+   dpnp.cov
 
 
 Histograms

@@ -1,6 +1,10 @@
-﻿dpnp.sinh
+﻿
+
+dpnp.sinh
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: sinh

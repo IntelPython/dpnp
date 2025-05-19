@@ -1,6 +1,10 @@
-﻿dpnp.amin
+﻿
+
+dpnp.amin
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: amin

@@ -1,6 +1,10 @@
-﻿dpnp.take\_along\_axis
+﻿
+
+dpnp.take\_along\_axis
 ======================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: take_along_axis

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -13,20 +15,16 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.atleast_3d &mdash; Data Parallel Extension for NumPy 0.16.0dev0+49.g17d3775370 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+  <title>dpnp.atleast_3d &mdash; Data Parallel Extension for NumPy 0.18.0dev3+7.gc2c6dde4e4a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=29928358"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=0617ca60"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -45,9 +43,6 @@
           <a href="../../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.16.0dev0+49.g17d3775370
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -63,36 +58,40 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#basic-operations">Basic operations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-array-shape">Changing array shape</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#transpose-like-operations">Transpose-like operations</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#joining-arrays">Joining arrays</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#splitting-arrays">Splitting arrays</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#tiling-arrays">Tiling arrays</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#adding-and-removing-elements">Adding and removing elements</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#rearranging-elements">Rearranging elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#basic-operations">Basic operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#changing-array-shape">Changing array shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#transpose-like-operations">Transpose-like operations</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../array-manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#joining-arrays">Joining arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#splitting-arrays">Splitting arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#tiling-arrays">Tiling arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#adding-and-removing-elements">Adding and removing elements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#rearranging-elements">Rearranging elements</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -117,7 +116,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
-          <li class="breadcrumb-item"><a href="../manipulation.html">Array Manipulation Routines</a></li>
+          <li class="breadcrumb-item"><a href="../array-manipulation.html">Array manipulation routines</a></li>
       <li class="breadcrumb-item active">dpnp.atleast_3d</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.atleast_3d.rst.txt" rel="nofollow"> View page source</a>
@@ -134,7 +133,7 @@
 <dt class="sig sig-object py" id="dpnp.atleast_3d">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">atleast_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#atleast_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.atleast_3d" title="Link to this definition"></a></dt>
 <dd><p>View inputs as arrays with at least three dimensions.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.atleast_3d.html#numpy.atleast_3d" title="(in NumPy v2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.atleast_3d</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.atleast_3d.html#numpy.atleast_3d" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.atleast_3d</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>arys</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- One or more array-like sequences. Arrays that already have three or more
@@ -159,7 +158,7 @@ returned.</p>
 </dl>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="go">array([[[3.]]])</span>
@@ -190,7 +189,7 @@ returned.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

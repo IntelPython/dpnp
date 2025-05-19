@@ -1,6 +1,10 @@
-﻿dpnp.squeeze
+﻿
+
+dpnp.squeeze
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: squeeze

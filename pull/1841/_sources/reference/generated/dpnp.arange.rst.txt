@@ -1,6 +1,10 @@
-﻿dpnp.arange
+﻿
+
+dpnp.arange
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: arange

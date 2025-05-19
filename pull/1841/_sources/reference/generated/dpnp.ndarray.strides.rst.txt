@@ -1,6 +1,14 @@
-﻿dpnp.ndarray.strides
+
+:orphan:
+
+
+dpnp.ndarray.strides
 ====================
 
 .. currentmodule:: dpnp
+
+
+property
+
 
 .. autoproperty:: ndarray.strides

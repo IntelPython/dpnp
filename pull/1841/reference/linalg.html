@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -13,26 +15,21 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Linear Algebra &mdash; Data Parallel Extension for NumPy 0.16.0dev0+49.g17d3775370 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+  <title>Linear algebra &mdash; Data Parallel Extension for NumPy 0.18.0dev3+7.gc2c6dde4e4a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=29928358"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=0617ca60"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="dpnp.dot" href="generated/dpnp.dot.html" />
-    <link rel="prev" title="dpnp.fft.ifftshift" href="generated/dpnp.fft.ifftshift.html" /> 
+    <link rel="prev" title="dpnp.iterable" href="generated/dpnp.iterable.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,9 +43,6 @@
           <a href="../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.16.0dev0+49.g17d3775370
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -64,31 +58,37 @@
 <li class="toctree-l2"><a class="reference internal" href="ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="creation.html">Array creation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array Manipulation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="indexing.html">Array Indexing Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fft.html">FFT Functions</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Linear Algebra</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Linear algebra</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#matrix-and-vector-products">Matrix and vector products</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#decompositions">Decompositions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#matrix-eigenvalues">Matrix eigenvalues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#norms-and-other-numbers">Norms and other numbers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#solving-linear-equations">Solving linear equations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#other-matrix-operations">Other matrix operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exceptions">Exceptions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -113,7 +113,7 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="routines.html">Routines</a></li>
-      <li class="breadcrumb-item active">Linear Algebra</li>
+      <li class="breadcrumb-item active">Linear algebra</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/reference/linalg.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -124,7 +124,7 @@
            <div itemprop="articleBody">
              
   <section id="linear-algebra">
-<h1>Linear Algebra<a class="headerlink" href="#linear-algebra" title="Link to this heading"></a></h1>
+<span id="module-dpnp.linalg"></span><span id="routines-linalg"></span><h1>Linear algebra<a class="headerlink" href="#linear-algebra" title="Link to this heading"></a></h1>
 <section id="matrix-and-vector-products">
 <h2>Matrix and vector products<a class="headerlink" href="#matrix-and-vector-products" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
@@ -138,6 +138,12 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.vdot.html#dpnp.vdot" title="dpnp.vdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vdot</span></code></a></p></td>
 <td><p>Return the dot product of two vectors.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.vecdot.html#dpnp.vecdot" title="dpnp.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vecdot</span></code></a></p></td>
+<td><p>Computes the vector dot product.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.vecdot.html#dpnp.linalg.vecdot" title="dpnp.linalg.vecdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.vecdot</span></code></a></p></td>
+<td><p>Computes the vector dot product.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.inner.html#dpnp.inner" title="dpnp.inner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.inner</span></code></a></p></td>
 <td><p>Returns the inner product of two arrays.</p></td>
 </tr>
@@ -147,20 +153,35 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.matmul.html#dpnp.matmul" title="dpnp.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.matmul</span></code></a></p></td>
 <td><p>Matrix product of two arrays.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.tensordot.html#dpnp.tensordot" title="dpnp.tensordot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tensordot</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.matmul.html#dpnp.linalg.matmul" title="dpnp.linalg.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.matmul</span></code></a></p></td>
+<td><p>Computes the matrix product.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.matvec.html#dpnp.matvec" title="dpnp.matvec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.matvec</span></code></a></p></td>
+<td><p>Matrix-vector dot product of two arrays.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.vecmat.html#dpnp.vecmat" title="dpnp.vecmat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vecmat</span></code></a></p></td>
+<td><p>Vector-matrix dot product of two arrays.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.tensordot.html#dpnp.tensordot" title="dpnp.tensordot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tensordot</span></code></a></p></td>
+<td><p>Compute tensor dot product along specified axes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.tensordot.html#dpnp.linalg.tensordot" title="dpnp.linalg.tensordot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.tensordot</span></code></a></p></td>
 <td><p>Compute tensor dot product along specified axes.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.einsum.html#dpnp.einsum" title="dpnp.einsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum</span></code></a></p></td>
-<td><p>Evaluates the Einstein summation convention on the operands.</p></td>
+<td><p>einsum(subscripts, <a href="#id1"><span class="problematic" id="id2">*</span></a>operands, out=None, dtype=None, order=&quot;K&quot;,         casting=&quot;same_kind&quot;, optimize=False)</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.einsum_path.html#dpnp.einsum_path" title="dpnp.einsum_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum_path</span></code></a></p></td>
-<td><p>Evaluates the lowest cost contraction order for an einsum expression by considering the creation of intermediate arrays.</p></td>
+<td><p>einsum_path(subscripts, <a href="#id3"><span class="problematic" id="id4">*</span></a>operands, optimize=&quot;greedy&quot;)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.matrix_power.html#dpnp.linalg.matrix_power" title="dpnp.linalg.matrix_power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.matrix_power</span></code></a></p></td>
 <td><p>Raise a square matrix to the (integer) power <cite>n</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.kron.html#dpnp.kron" title="dpnp.kron"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.kron</span></code></a></p></td>
 <td><p>Kronecker product of two arrays.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.cross.html#dpnp.linalg.cross" title="dpnp.linalg.cross"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.cross</span></code></a></p></td>
+<td><p>Returns the cross product of 3-element vectors.</p></td>
 </tr>
 </tbody>
 </table>
@@ -172,11 +193,17 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.cholesky.html#dpnp.linalg.cholesky" title="dpnp.linalg.cholesky"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.cholesky</span></code></a></p></td>
 <td><p>Cholesky decomposition.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.qr.html#dpnp.linalg.qr" title="dpnp.linalg.qr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.qr</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.outer.html#dpnp.linalg.outer" title="dpnp.linalg.outer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.outer</span></code></a></p></td>
+<td><p>Compute the outer product of two vectors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.qr.html#dpnp.linalg.qr" title="dpnp.linalg.qr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.qr</span></code></a></p></td>
 <td><p>Compute the qr factorization of a matrix.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.svd.html#dpnp.linalg.svd" title="dpnp.linalg.svd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.svd</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.svd.html#dpnp.linalg.svd" title="dpnp.linalg.svd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.svd</span></code></a></p></td>
 <td><p>Singular Value Decomposition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.svdvals.html#dpnp.linalg.svdvals" title="dpnp.linalg.svdvals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.svdvals</span></code></a></p></td>
+<td><p>Returns the singular values of a matrix (or a stack of matrices) <cite>x</cite>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -207,6 +234,12 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.norm.html#dpnp.linalg.norm" title="dpnp.linalg.norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.norm</span></code></a></p></td>
 <td><p>Matrix or vector norm.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.matrix_norm.html#dpnp.linalg.matrix_norm" title="dpnp.linalg.matrix_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.matrix_norm</span></code></a></p></td>
+<td><p>Computes the matrix norm of a matrix (or a stack of matrices) <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.vector_norm.html#dpnp.linalg.vector_norm" title="dpnp.linalg.vector_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.vector_norm</span></code></a></p></td>
+<td><p>Computes the vector norm of a vector (or batch of vectors) <cite>x</cite>.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.cond.html#dpnp.linalg.cond" title="dpnp.linalg.cond"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.cond</span></code></a></p></td>
 <td><p>Compute the condition number of a matrix.</p></td>
 </tr>
@@ -221,6 +254,9 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.trace.html#dpnp.trace" title="dpnp.trace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.trace</span></code></a></p></td>
 <td><p>Return the sum along diagonals of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.trace.html#dpnp.linalg.trace" title="dpnp.linalg.trace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.trace</span></code></a></p></td>
+<td><p>Returns the sum along the specified diagonals of a matrix (or a stack of matrices) <cite>x</cite>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -250,20 +286,43 @@
 </tbody>
 </table>
 </section>
+<section id="other-matrix-operations">
+<h2>Other matrix operations<a class="headerlink" href="#other-matrix-operations" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.diagonal.html#dpnp.diagonal" title="dpnp.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diagonal</span></code></a></p></td>
+<td><p>Return specified diagonals.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.diagonal.html#dpnp.linalg.diagonal" title="dpnp.linalg.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.diagonal</span></code></a></p></td>
+<td><p>Returns specified diagonals of a matrix (or a stack of matrices) <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.matrix_transpose.html#dpnp.linalg.matrix_transpose" title="dpnp.linalg.matrix_transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.matrix_transpose</span></code></a></p></td>
+<td><p>Transposes a matrix (or a stack of matrices) <cite>x</cite>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+</tbody>
+</table>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="generated/dpnp.fft.ifftshift.html" class="btn btn-neutral float-left" title="dpnp.fft.ifftshift" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/dpnp.iterable.html" class="btn btn-neutral float-left" title="dpnp.iterable" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="generated/dpnp.dot.html" class="btn btn-neutral float-right" title="dpnp.dot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -1,7 +1,7 @@
-Mathematical Functions
+Mathematical functions
 ======================
 
-.. https://docs.scipy.org/doc/numpy/reference/routines.math.html
+.. https://numpy.org/doc/stable/reference/routines.math.html
 
 Trigonometric functions
 -----------------------
@@ -14,10 +14,14 @@ Trigonometric functions
    dpnp.cos
    dpnp.tan
    dpnp.arcsin
+   dpnp.asin
    dpnp.arccos
+   dpnp.acos
    dpnp.arctan
+   dpnp.atan
    dpnp.hypot
    dpnp.arctan2
+   dpnp.atan2
    dpnp.degrees
    dpnp.radians
    dpnp.unwrap
@@ -37,8 +41,11 @@ Hyperbolic functions
    dpnp.cosh
    dpnp.tanh
    dpnp.arcsinh
+   dpnp.asinh
    dpnp.arccosh
+   dpnp.acosh
    dpnp.arctanh
+   dpnp.atanh
 
 
 Rounding
@@ -48,8 +55,8 @@ Rounding
    :toctree: generated/
    :nosignatures:
 
-   dpnp.around
    dpnp.round
+   dpnp.around
    dpnp.rint
    dpnp.fix
    dpnp.floor
@@ -68,6 +75,8 @@ Sums, products, differences
    dpnp.sum
    dpnp.nanprod
    dpnp.nansum
+   dpnp.cumulative_sum
+   dpnp.cumulative_prod
    dpnp.cumprod
    dpnp.cumsum
    dpnp.nancumprod
@@ -75,8 +84,8 @@ Sums, products, differences
    dpnp.diff
    dpnp.ediff1d
    dpnp.gradient
-   dpnp.trapz
    dpnp.cross
+   dpnp.trapezoid
 
 
 Exponents and logarithms
@@ -127,6 +136,7 @@ Floating point routines
 
 Rational routines
 -----------------
+
 .. autosummary::
    :toctree: generated/
    :nosignatures:
@@ -144,15 +154,17 @@ Arithmetic operations
 
    dpnp.add
    dpnp.reciprocal
-   dpnp.negative
    dpnp.positive
+   dpnp.negative
    dpnp.multiply
    dpnp.divide
    dpnp.power
+   dpnp.pow
    dpnp.subtract
    dpnp.true_divide
    dpnp.floor_divide
-   dpnp.floor_power
+   dpnp.float_power
+
    dpnp.fmod
    dpnp.mod
    dpnp.modf
@@ -175,7 +187,7 @@ Handling complex numbers
    dpnp.proj
 
 
-Extrema Finding
+Extrema finding
 ---------------
 
 .. autosummary::
@@ -187,6 +199,7 @@ Extrema Finding
    dpnp.amax
    dpnp.fmax
    dpnp.nanmax
+
    dpnp.minimum
    dpnp.min
    dpnp.amin
@@ -203,17 +216,19 @@ Miscellaneous
 
    dpnp.convolve
    dpnp.clip
+
    dpnp.sqrt
    dpnp.cbrt
    dpnp.square
    dpnp.rsqrt
+
    dpnp.abs
    dpnp.absolute
    dpnp.fabs
    dpnp.sign
+   dpnp.heaviside
+
    dpnp.nan_to_num
-   dpnp.bartlett
-   dpnp.blackman
-   dpnp.hamming
-   dpnp.hanning
-   dpnp.kaiser
+   dpnp.real_if_close
+
+   dpnp.interp

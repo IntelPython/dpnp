@@ -4,24 +4,27 @@ Routines
 
 The following pages describe NumPy-compatible routines.
 These functions cover a subset of
-`NumPy routines <https://docs.scipy.org/doc/numpy/reference/routines.html>`_.
+`NumPy routines <https://numpy.org/doc/stable/reference/routines.html>`_.
 
 .. currentmodule:: dpnp
 
 .. toctree::
    :maxdepth: 2
 
-   creation
-   manipulation
-   indexing
-   binary
+   array-creation
+   array-manipulation
+   bitwise
    dtype
    fft
+   functional
+   indexing
    linalg
    logic
    math
-   .. pad
+   other
    .. polynomials
    random
-   sorting
+   set
+   sort
    statistics
+   window

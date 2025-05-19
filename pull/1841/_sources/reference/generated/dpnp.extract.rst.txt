@@ -1,6 +1,10 @@
-﻿dpnp.extract
+﻿
+
+dpnp.extract
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: extract

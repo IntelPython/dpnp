@@ -5,7 +5,7 @@ Data Parallel Extension for NumPy*
 ==================================
 
 .. module:: dpnp
-    :noindex:
+    :no-index:
 
 .. toctree::
    :maxdepth: 2

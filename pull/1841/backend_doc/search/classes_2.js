@@ -1,13 +1,10 @@
 var searchData=
 [
-  ['cartesian_5fproduct_0',['cartesian_product',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['cartesian_5fproduct_3c_20std_3a_3atuple_3c_20std_3a_3atuple_3c_20firsttupleargs_2e_2e_2e_20_3e_20_3e_20_3e_1',['cartesian_product&lt; std::tuple&lt; std::tuple&lt; FirstTupleArgs... &gt; &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product_3_01std_1_1tuple_3_01std_1_1tupl8eeb66d10f7723d0fc0b38e3d181763c.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['cartesian_5fproduct_3c_20std_3a_3atuple_3c_20tuples_2e_2e_2e_20_3e_20_3e_2',['cartesian_product&lt; std::tuple&lt; Tuples... &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product_3_01std_1_1tuple_3_01_tuples_8_8_8_01_4_01_4.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['cartesian_5fproduct_5fimpl_3',['cartesian_product_impl',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['cartesian_5fproduct_5fimpl_3c_20std_3a_3atuple_3c_20std_3a_3atuple_3c_20t_20_3e_20_3e_2c_20std_3a_3atuple_3c_20secondtupleargs_2e_2e_2e_20_3e_20_3e_4',['cartesian_product_impl&lt; std::tuple&lt; std::tuple&lt; T &gt; &gt;, std::tuple&lt; SecondTupleArgs... &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_17b2e4d9f422d6a255a67e036ce4e46b3.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['cartesian_5fproduct_5fimpl_3c_20std_3a_3atuple_3c_20std_3a_3atuple_3c_20t_20_3e_2c_20firsttupleargs_2e_2e_2e_20_3e_2c_20std_3a_3atuple_3c_20secondtupleargs_2e_2e_2e_20_3e_20_3e_5',['cartesian_product_impl&lt; std::tuple&lt; std::tuple&lt; T &gt;, FirstTupleArgs... &gt;, std::tuple&lt; SecondTupleArgs... &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1cartesian__product__impl_3_01std_1_1tuple_3_01std_1eacc8a58f076baec98f1eb11bc1030e3.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['cartesiandispatcher_6',['CartesianDispatcher',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1_cartesian_dispatcher.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['coord_5fin_5fspace_7',['coord_in_space',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['coord_5fin_5fspace_3c_20dispatcht_2c_20matcher_2c_20std_3a_3atuple_3c_20axes_2e_2e_2e_20_3e_20_3e_8',['coord_in_space&lt; DispatchT, Matcher, std::tuple&lt; Axes... &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_05165243a6f8dde008b6a09f3e23101f7.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['coord_5fin_5fspace_3c_20dispatcht_2c_20matcher_2c_20std_3a_3atuple_3c_20currentaxis_20_3e_20_3e_9',['coord_in_space&lt; DispatchT, Matcher, std::tuple&lt; CurrentAxis &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1coord__in__space_3_01_dispatch_t_00_01_matcher_00_09145d8edb59d4cea6805114cb85ebe7b.html',1,'dpnp::backend::ext::sycl_ext']]]
+  ['backend_5fsycl_0',['backend_sycl',['../classbackend__sycl.html',1,'']]],
+  ['bartlettfactory_1',['BartlettFactory',['../structdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_factory.html',1,'dpnp::extensions::window::kernels']]],
+  ['bartlettfunctor_2',['BartlettFunctor',['../classdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_functor.html',1,'dpnp::extensions::window::kernels']]],
+  ['bincount_3',['Bincount',['../structstatistics_1_1histogram_1_1_bincount.html',1,'statistics::histogram']]],
+  ['bitwisecountfunctor_4',['BitwiseCountFunctor',['../structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html',1,'dpnp::kernels::bitwise_count']]],
+  ['blackmanfactory_5',['BlackmanFactory',['../structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html',1,'dpnp::extensions::window::kernels']]],
+  ['blackmanfunctor_6',['BlackmanFunctor',['../classdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_functor.html',1,'dpnp::extensions::window::kernels']]]
 ];

@@ -1,6 +1,10 @@
-﻿dpnp.linalg.cholesky
+﻿
+
+dpnp.linalg.cholesky
 ====================
 
 .. currentmodule:: dpnp.linalg
+
+
 
 .. autofunction:: cholesky

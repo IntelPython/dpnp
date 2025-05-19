@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -13,20 +15,16 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.einsum_path &mdash; Data Parallel Extension for NumPy 0.16.0dev0+49.g17d3775370 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+  <title>dpnp.einsum_path &mdash; Data Parallel Extension for NumPy 0.18.0dev3+7.gc2c6dde4e4a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=29928358"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=0617ca60"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -45,9 +43,6 @@
           <a href="../../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.16.0dev0+49.g17d3775370
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -63,31 +58,37 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../linalg.html">Linear Algebra</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../linalg.html">Linear algebra</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="../linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#decompositions">Decompositions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#norms-and-other-numbers">Norms and other numbers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#solving-linear-equations">Solving linear equations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#other-matrix-operations">Other matrix operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#exceptions">Exceptions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -112,7 +113,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
-          <li class="breadcrumb-item"><a href="../linalg.html">Linear Algebra</a></li>
+          <li class="breadcrumb-item"><a href="../linalg.html">Linear algebra</a></li>
       <li class="breadcrumb-item active">dpnp.einsum_path</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.einsum_path.rst.txt" rel="nofollow"> View page source</a>
@@ -130,15 +131,15 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">einsum_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subscripts</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">operands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'greedy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_linearalgebra.html#einsum_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.einsum_path" title="Link to this definition"></a></dt>
 <dd><p>Evaluates the lowest cost contraction order for an einsum expression
 by considering the creation of intermediate arrays.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.einsum_path.html#numpy.einsum_path" title="(in NumPy v2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.einsum_path</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.einsum_path.html#numpy.einsum_path" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.einsum_path</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>subscripts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) -- Specifies the subscripts for summation.</p></li>
+<li><p><strong>subscripts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) -- Specifies the subscripts for summation.</p></li>
 <li><p><strong>*operands</strong> (<em>sequence</em><em> of </em><em>arrays</em>) -- These are the arrays for the operation in any form that can be
 converted to an array. This includes scalars, lists, lists of
 tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</p></li>
-<li><p><strong>optimize</strong> (<em>{bool</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em>, </em><em>None</em><em>, </em><em>&quot;greedy&quot;</em><em>, </em><em>&quot;optimal&quot;}</em>) -- <p>Choose the type of path. If a tuple is provided, the second argument is
+<li><p><strong>optimize</strong> (<em>{bool</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>, </em><em>None</em><em>, </em><em>&quot;greedy&quot;</em><em>, </em><em>&quot;optimal&quot;}</em>) -- <p>Choose the type of path. If a tuple is provided, the second argument is
 assumed to be the maximum intermediate size created. If only a single
 argument is provided the largest input or output array size is used
 as a maximum intermediate size.</p>
@@ -146,7 +147,7 @@ as a maximum intermediate size.</p>
 <li><p>if a list is given that starts with <code class="docutils literal notranslate"><span class="pre">einsum_path</span></code>, uses this as the
 contraction path</p></li>
 <li><p>if <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> no optimization is taken</p></li>
-<li><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code> defaults to the &quot;greedy&quot; algorithm</p></li>
+<li><p>if <code class="docutils literal notranslate"><span class="pre">True</span></code> defaults to the <code class="docutils literal notranslate"><span class="pre">&quot;greedy&quot;</span></code> algorithm</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;optimal&quot;</span></code> is an algorithm that combinatorially explores all
 possible ways of contracting the listed tensors and chooses the
 least costly path. Scales exponentially with the number of terms
@@ -157,7 +158,7 @@ Hadamard, and then outer products at each step. Scales cubically with
 the number of terms in the contraction. Equivalent to the
 <code class="docutils literal notranslate"><span class="pre">&quot;optimal&quot;</span></code> path for most contractions.</p></li>
 </ul>
-<p>Default is <code class="docutils literal notranslate"><span class="pre">&quot;greedy&quot;</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;greedy&quot;</span></code>.</p>
 </p></li>
 </ul>
 </dd>
@@ -191,11 +192,10 @@ intermediate contractions are complete.</p>
 </div>
 <p class="rubric">Examples</p>
 <p>We can begin with a chain dot example. In this case, it is optimal to
-contract the <code class="docutils literal notranslate"><span class="pre">b</span></code> and <code class="docutils literal notranslate"><span class="pre">c</span></code> tensors first as represented by the first
-element of the path <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">2)</span></code>. The resulting tensor is added to the end
-of the contraction and the remaining contraction <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code> is then
-completed.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+contract the <cite>b</cite> and <cite>c</cite> tensors first as represented by the first element
+of the path <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">2)</span></code>. The resulting tensor is added to the end of the
+contraction and the remaining contraction <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code> is then completed.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
@@ -262,7 +262,7 @@ completed.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

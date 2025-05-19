@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.\_\_add\_\_
+﻿:orphan:
+
+dpnp.ndarray.\_\_add\_\_
 ========================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.__add__

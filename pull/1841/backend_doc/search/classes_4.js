@@ -1,9 +1,18 @@
 var searchData=
 [
-  ['elements_5fcount_0',['elements_count',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1elements__count.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['elements_5fcount_3c_20std_3a_3atuple_3c_20t_20_3e_20_3e_1',['elements_count&lt; std::tuple&lt; T &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1elements__count_3_01std_1_1tuple_3_01_t_01_4_01_4.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['elements_5fcount_3c_20std_3a_3atuple_3c_20t_2c_20axis_2e_2e_2e_20_3e_20_3e_2',['elements_count&lt; std::tuple&lt; T, Axis... &gt; &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1elements__count_3_01std_1_1tuple_3_01_t_00_01_axis_8_8_8_01_4_01_4.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['engine_5fstruct_3',['engine_struct',['../structengine__struct.html',1,'']]],
-  ['extend_5ftuple_5ftype_4',['extend_tuple_type',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1extend__tuple__type.html',1,'dpnp::backend::ext::sycl_ext']]],
-  ['extend_5ftuple_5ftype_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_2c_20t_20_3e_5',['extend_tuple_type&lt; std::tuple&lt; Args... &gt;, T &gt;',['../structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1extend__tuple__type_3_01std_1_1tuple_3_01_args_8_8_8_01_4_00_01_t_01_4.html',1,'dpnp::backend::ext::sycl_ext']]]
+  ['degreesfunctor_0',['DegreesFunctor',['../structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html',1,'dpnp::kernels::degrees']]],
+  ['descriptorwrapper_1',['DescriptorWrapper',['../classdpnp_1_1extensions_1_1fft_1_1_descriptor_wrapper.html',1,'dpnp::extensions::fft']]],
+  ['dispatchtable_2',['DispatchTable',['../classext_1_1common_1_1_dispatch_table.html',1,'ext::common']]],
+  ['dispatchtable2_3',['DispatchTable2',['../classext_1_1common_1_1_dispatch_table2.html',1,'ext::common']]],
+  ['dotccontigfactory_4',['DotcContigFactory',['../structdpnp_1_1extensions_1_1blas_1_1_dotc_contig_factory.html',1,'dpnp::extensions::blas']]],
+  ['dotcontigfactory_5',['DotContigFactory',['../structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html',1,'dpnp::extensions::blas']]],
+  ['dotctypepairsupportfactory_6',['DotcTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
+  ['dottypepairsupportfactory_7',['DotTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
+  ['dotucontigfactory_8',['DotuContigFactory',['../structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html',1,'dpnp::extensions::blas']]],
+  ['dotutypepairsupportfactory_9',['DotuTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
+  ['dpnp_5fless_5fcomp_10',['dpnp_less_comp',['../classdpnp__less__comp.html',1,'']]],
+  ['dpnp_5fusm_5fiterator_11',['DPNP_USM_iterator',['../class_d_p_n_p___u_s_m__iterator.html',1,'']]],
+  ['dpnpc_5fid_12',['DPNPC_id',['../class_d_p_n_p_c__id.html',1,'']]],
+  ['dpnpc_5fptr_5fadapter_13',['DPNPC_ptr_adapter',['../class_d_p_n_p_c__ptr__adapter.html',1,'']]],
+  ['dpnpfuncdata_14',['DPNPFuncData',['../struct_d_p_n_p_func_data.html',1,'']]]
 ];

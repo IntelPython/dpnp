@@ -1,9 +1,11 @@
-.. module:: dpnp.fft
+.. _routines.fft:
 
-FFT Functions
-=============
+.. py:module:: dpnp.fft
 
-.. https://docs.scipy.org/doc/numpy/reference/routines.fft.html
+Discrete Fourier Transform
+==========================
+
+.. https://numpy.org/doc/stable/reference/routines.fft.html
 
 Standard FFTs
 -------------
@@ -63,3 +65,6 @@ Helper routines
    .. dpnp.fft.config.set_cufft_gpus
    .. dpnp.fft.config.get_plan_cache
    .. dpnp.fft.config.show_plan_cache_info
+
+.. automodule:: dpnp.fft
+    :no-index:
