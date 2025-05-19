@@ -108,8 +108,9 @@ static sycl::event getri_batch_impl(sycl::queue &exec_q,
         // Get the indices of matrices within the batch that encountered an
         // error
         auto error_matrices_ids = be.ids();
-        // Get the indices of the first zero diagonal elements of these matrices
-        auto error_info = be.exceptions();
+        // List of exception pointers corresponding to
+        // each failed matrix in the batch.
+        auto error_exceptions = be.exceptions();
 
         auto error_matrices_ids_size = error_matrices_ids.size();
         auto dev_info_size = static_cast<std::size_t>(py::len(dev_info));
@@ -121,10 +122,16 @@ static sycl::event getri_batch_impl(sycl::queue &exec_q,
                                   std::to_string(dev_info_size) + ".");
         }
 
+        // MKL returns an empty exception list (MKLD-17226)
+        // which makes it impossible to extract specific error types.
+        // Workaround: mark the failed matrices in dev_info with 1
+        // to indicate a failure (singular matrix).
+
+        // TODO: Once be.exceptions() returns a valid list,
+        // fill dev_info only based on the caught exception type
+        // mkl_lapack::computation_error -> dev_info = any positive values
         for (size_t i = 0; i < error_matrices_ids.size(); ++i) {
-            // Assign the index of the first zero diagonal element in each
-            // error matrix to the corresponding index in 'dev_info'
-            dev_info[error_matrices_ids[i]] = error_info[i];
+            dev_info[error_matrices_ids[i]] = 1;
         }
     } catch (mkl_lapack::exception const &e) {
         is_exception_caught = true;
