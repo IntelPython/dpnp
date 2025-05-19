@@ -6,8 +6,8 @@ import pytest
 import dpnp as cupy
 from dpnp.tests.helper import (
     assert_dtype_allclose,
-    get_intel_mkl_version,
     has_support_aspect64,
+    requires_intel_mkl_version,
 )
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
@@ -215,7 +215,9 @@ class TestInvInvalid(unittest.TestCase):
                 xp.linalg.inv(a)
 
     # TODO: remove skipif when Intel MKL 2025.2 is released
-    @pytest.mark.skipif(get_intel_mkl_version() < "2025.2", reason="mkl<2025.2")
+    @pytest.mark.skipif(
+        not requires_intel_mkl_version("2025.2"), reason="mkl<2025.2"
+    )
     @testing.for_dtypes("ifdFD")
     def test_batched_inv(self, dtype):
         for xp in (numpy, cupy):
