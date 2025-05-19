@@ -372,24 +372,6 @@ def get_integer_float_dtypes(
     return dtypes
 
 
-def get_intel_mkl_version():
-    """
-    Return the version of Intel MKL used by NumPy during testing.
-
-    The check is based on MKL backend name stored in Build Dependencies
-    and only applies if Intel NumPy is detected.
-    The version is extracted from the BLAS section of NumPy's build
-    information.
-
-    Return None if Intel MKL is not used.
-    """
-    if not is_intel_numpy():
-        return None
-
-    build_deps = numpy.show_config(mode="dicts")["Build Dependencies"]
-    return build_deps["blas"]["version"]
-
-
 def has_support_aspect16(device=None):
     """
     Return True if the device supports 16-bit precision floating point operations,
@@ -461,3 +443,20 @@ def is_win_platform():
 
 def numpy_version():
     return numpy.lib.NumpyVersion(numpy.__version__)
+
+
+def requires_intel_mkl_version(version):
+    """
+    Check if Intel MKL is used and its version is greater than or
+    equal to the specified one.
+
+    The check is based on MKL backend name stored in Build Dependencies
+    and only applies if Intel NumPy is detected.
+    The version is extracted from the BLAS section of NumPy's build
+    information and compared to the given version string.
+    """
+    if not is_intel_numpy():
+        return False
+
+    build_deps = numpy.show_config(mode="dicts")["Build Dependencies"]
+    return build_deps["blas"]["version"] >= version
