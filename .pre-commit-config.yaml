@@ -54,11 +54,13 @@ repos:
     rev: 25.1.0
     hooks:
     -   id: black
+        exclude: "dpnp/_version.py"
 -   repo: https://github.com/pycqa/isort
     rev: 6.0.1
     hooks:
     -   id: isort
         name: isort (python)
+        exclude: "dpnp/_version.py"
     -   id: isort
         name: isort (cython)
         types: [cython]
