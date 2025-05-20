@@ -70,18 +70,14 @@ readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.9,<3.13"
 
 [project.optional-dependencies]
-coverage = ["Cython", "pytest", "pytest-cov", "coverage", "tomli"]
+coverage = ["Cython", "pytest", "pytest-cov", "coverage", "tomli", "llvm"]
 docs = [
   "Cython",
-  "graphviz",
-  "pydot",
-  "furo",
+  "cupy",
   "sphinx",
-  "sphinx-copybutton",
-  "sphinx-design",
+  "sphinx_rtd_theme",
+  "pyenchant",
   "sphinxcontrib-googleanalytics",
-  "sphinxcontrib-jsmath",
-  "sphinxcontrib-programoutput",
   "sphinxcontrib-spelling"
 ]
 
