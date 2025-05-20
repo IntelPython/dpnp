@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.18.0dev3+8.gef501dc77d7 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.18.0dev3+10.g006def9616a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=12f48a23"></script>
+      <script src="../../../_static/documentation_options.js?v=77297748"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -276,14 +276,6 @@
 
 <span class="sd">        Default: ``None``.</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This function raises :class:`dpnp.linalg.LinAlgError` for singular input</span>
-<span class="sd">    matrices when using norm orders:</span>
-<span class="sd">    ``1``, ``-1``, ``inf``, ``-inf``, or ``&#39;fro&#39;``.</span>
-<span class="sd">    In contrast, :obj:`numpy.linalg.cond` returns ``inf``for each singular</span>
-<span class="sd">    matrix in the input regardless of the norm order.</span>
-
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
@@ -292,6 +284,14 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.linalg.norm` : Matrix or vector norm.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function will raise :class:`dpnp.linalg.LinAlgError` on singular input</span>
+<span class="sd">    when using any of the norm: ``1``, ``-1``, ``inf``, ``-inf``, or ``&#39;fro&#39;``.</span>
+<span class="sd">    In contrast, :obj:`numpy.linalg.cond` will fill the result array with</span>
+<span class="sd">    ``inf`` values for every 2D batch in the input array that is singular</span>
+<span class="sd">    when using these norms.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>

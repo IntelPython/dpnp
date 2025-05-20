@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.cond &mdash; Data Parallel Extension for NumPy 0.18.0dev3+8.gef501dc77d7 documentation</title>
+  <title>dpnp.linalg.cond &mdash; Data Parallel Extension for NumPy 0.18.0dev3+10.g006def9616a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=12f48a23"></script>
+      <script src="../../_static/documentation_options.js?v=77297748"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -142,19 +142,11 @@ the root-of-sum-of-squares norm.</p>
 </p></li>
 </ul>
 </dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This function raises <code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.linalg.LinAlgError</span></code> for singular input
-matrices when using norm orders:
-<code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">-1</span></code>, <code class="docutils literal notranslate"><span class="pre">inf</span></code>, <code class="docutils literal notranslate"><span class="pre">-inf</span></code>, or <code class="docutils literal notranslate"><span class="pre">'fro'</span></code>.
-In contrast, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.cond.html#numpy.linalg.cond" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.cond</span></code></a> returns <a href="#id1"><span class="problematic" id="id2">``</span></a>inf``for each singular
-matrix in the input regardless of the norm order.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>out</strong> -- The condition number of the matrix. May be infinite.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> -- The condition number of the matrix. May be infinite.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dpnp.ndarray</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -164,6 +156,12 @@ matrix in the input regardless of the norm order.</p>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>This function will raise <code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.linalg.LinAlgError</span></code> on singular input
+when using any of the norm: <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">-1</span></code>, <code class="docutils literal notranslate"><span class="pre">inf</span></code>, <code class="docutils literal notranslate"><span class="pre">-inf</span></code>, or <code class="docutils literal notranslate"><span class="pre">'fro'</span></code>.
+In contrast, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.cond.html#numpy.linalg.cond" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.cond</span></code></a> will fill the result array with
+<code class="docutils literal notranslate"><span class="pre">inf</span></code> values for every 2D batch in the input array that is singular
+when using these norms.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
