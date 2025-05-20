@@ -24,10 +24,30 @@
 # *****************************************************************************
 
 import skbuild
-
 import versioneer
 
 skbuild.setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
+    packages=[
+        "dpnp",
+        "dpnp.dpnp_algo",
+        "dpnp.dpnp_utils",
+        "dpnp.fft",
+        "dpnp.linalg",
+        "dpnp.random",
+    ],
+    package_data={
+        "dpnp": [
+            "backend/include/*.hpp",
+            "libdpnp_backend_c.so",
+            "dpnp_backend_c.lib",
+            "dpnp_backend_c.dll",
+            "tests/*.*",
+            "tests/testing/*.py",
+            "tests/third_party/cupy/*.py",
+            "tests/third_party/cupy/*/*.py",
+        ]
+    },
+    include_package_data=False,
 )

@@ -174,29 +174,6 @@ norecursedirs = [
   "conda-recipe"
 ]
 
-[tool.setuptools]
-include-package-data = true
-packages = [
-  "dpnp",
-  "dpnp.dpnp_algo",
-  "dpnp.dpnp_utils",
-  "dpnp.fft",
-  "dpnp.linalg",
-  "dpnp.random"
-]
-
-[tool.setuptools.package-data]
-"dpnp" = [
-  "backend/include/*.hpp",
-  "libdpnp_backend_c.so",
-  "dpnp_backend_c.lib",
-  "dpnp_backend_c.dll",
-  "tests/*.*",
-  "tests/testing/*.py",
-  "tests/third_party/cupy/*.py",
-  "tests/third_party/cupy/*/*.py"
-]
-
 [tool.versioneer]
 VCS = "git"
 parentdir_prefix = "dpnp-"
