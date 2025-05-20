@@ -326,29 +326,62 @@ class TestCond:
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
-    def test_nan(self, p):
+    def test_singular_2D(self, p):
+        a = numpy.ones((2, 2))
+        ia = dpnp.array(a)
+
+        # Unlike NumPy which returns `inf` for all norm orders,
+        # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
+        # due to use of gesv in 2D case.
+        # For None, 2, and -2 DPNP matches NumPy behavior.
+        if p in [None, 2, -2]:
+            result = dpnp.linalg.cond(ia, p=p)
+            expected = numpy.linalg.cond(a, p=p)
+            assert_dtype_allclose(result, expected)
+        else:
+            assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p)
+
+    @pytest.mark.parametrize("shape", [(2, 2, 2), (2, 2, 2, 2)])
+    @pytest.mark.parametrize(
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+    )
+    def test_singular_ND(self, shape, p):
         # dpnp.linalg.cond uses dpnp.linalg.inv()
         # for the case when p is not None or p != -2 or p != 2
         # For singular matrices cuSolver raises an error
-        # while OneMKL returns nans
-        if is_cuda_device() and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]:
+        # while OneMKL < 2025.2 returns nans
+        # TODO: remove it when mkl=2025.2 is released
+        if (
+            is_cuda_device()
+            and not requires_intel_mkl_version("2025.2")
+            and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]
+        ):
             pytest.skip("Different behavior on CUDA")
-        elif requires_intel_mkl_version("2025.2") and p in [
-            -dpnp.inf,
-            -1,
-            1,
-            dpnp.inf,
-            "fro",
-        ]:
-            pytest.skip("SAT-7966")
-        a = generate_random_numpy_array((2, 2, 2, 2))
-        a[0, 0] = 0
-        a[1, 1] = 0
+        a = numpy.ones((shape))
         ia = dpnp.array(a)
 
-        result = dpnp.linalg.cond(ia, p=p)
-        expected = numpy.linalg.cond(a, p=p)
-        assert_dtype_allclose(result, expected)
+        # Unlike NumPy which returns `inf` for all norm orders,
+        # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
+        # due to use of dpnp.linalg.inv() with OneMKL >= 2025.2.
+        # For None, 2, and -2 DPNP matches NumPy behavior.
+        if requires_intel_mkl_version("2025.2"):
+            if p in [None, 2, -2]:
+                result = dpnp.linalg.cond(ia, p=p)
+                expected = numpy.linalg.cond(a, p=p)
+                assert_dtype_allclose(result, expected)
+            else:
+                assert_raises(
+                    dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p
+                )
+        else:
+            # For OneMKL < 2025.2:
+            # dpnp.linalg.inv() uses getrf_batch + getri_batch
+            # which do not raise LinAlgError.
+            # Instead, the result may contain `inf` or `nan`
+            # depending on singularity.
+            result = dpnp.linalg.cond(ia, p=p)
+            expected = numpy.linalg.cond(a, p=p)
+            assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
