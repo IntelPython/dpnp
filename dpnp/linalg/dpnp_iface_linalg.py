@@ -186,14 +186,6 @@ def cond(x, p=None):
 
         Default: ``None``.
 
-    Notes
-    -----
-    This function raises :class:`dpnp.linalg.LinAlgError` for singular input
-    matrices when using norm orders:
-    ``1``, ``-1``, ``inf``, ``-inf``, or ``'fro'``.
-    In contrast, :obj:`numpy.linalg.cond` returns ``inf``for each singular
-    matrix in the input regardless of the norm order.
-
     Returns
     -------
     out : dpnp.ndarray
@@ -202,6 +194,14 @@ def cond(x, p=None):
     See Also
     --------
     :obj:`dpnp.linalg.norm` : Matrix or vector norm.
+
+    Notes
+    -----
+    This function will raise :class:`dpnp.linalg.LinAlgError` on singular input
+    when using any of the norm: ``1``, ``-1``, ``inf``, ``-inf``, or ``'fro'``.
+    In contrast, :obj:`numpy.linalg.cond` will fill the result array with
+    ``inf`` values for every 2D batch in the input array that is singular
+    when using these norms.
 
     Examples
     --------
