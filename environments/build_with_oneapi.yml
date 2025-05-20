@@ -9,3 +9,4 @@ dependencies:
   - pytest
   - setuptools
   - scikit-build
+  - versioneer
