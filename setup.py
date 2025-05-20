@@ -1,88 +1,33 @@
-import importlib.machinery as imm
-import os
+# *****************************************************************************
+# Copyright (c) 2025, Intel Corporation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# - Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
+# - Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+# THE POSSIBILITY OF SUCH DAMAGE.
+# *****************************************************************************
 
-from skbuild import setup
+import skbuild
 
 import versioneer
 
-"""
-Get the project version
-"""
-thefile_path = os.path.abspath(os.path.dirname(__file__))
-version_mod = imm.SourceFileLoader(
-    "version", os.path.join(thefile_path, "dpnp", "_version.py")
-).load_module()
-__version__ = version_mod.get_versions()["version"]
-
-"""
-Set project auxiliary data like readme and licence files
-"""
-with open("README.md") as f:
-    __readme_file__ = f.read()
-
-
-def _get_cmdclass():
-    return versioneer.get_cmdclass()
-
-
-CLASSIFIERS = """\
-Development Status :: 4 - Beta
-Intended Audience :: Science/Research
-Intended Audience :: Developers
-License :: OSI Approved :: Apache Software License
-Programming Language :: C++
-Programming Language :: Cython
-Programming Language :: Python
-Programming Language :: Python :: 3
-Programming Language :: Python :: 3.9
-Programming Language :: Python :: 3.10
-Programming Language :: Python :: 3.11
-Programming Language :: Python :: 3.12
-Programming Language :: Python :: 3.13
-Programming Language :: Python :: Implementation :: CPython
-Topic :: Software Development
-Topic :: Scientific/Engineering
-Operating System :: Microsoft :: Windows
-Operating System :: POSIX :: Linux
-Operating System :: POSIX
-Operating System :: Unix
-"""
-
-
-setup(
-    name="dpnp",
-    version=__version__,
-    cmdclass=_get_cmdclass(),
-    description="Data Parallel Extension for NumPy",
-    long_description=__readme_file__,
-    long_description_content_type="text/markdown",
-    license="Apache 2.0",
-    classifiers=[_f for _f in CLASSIFIERS.split("\n") if _f],
-    keywords="sycl numpy python3 intel mkl oneapi gpu dpcpp",
-    platforms=["Linux", "Windows"],
-    author="Intel Corporation",
-    url="https://github.com/IntelPython/dpnp",
-    packages=[
-        "dpnp",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.random",
-    ],
-    package_data={
-        "dpnp": [
-            "backend/include/*.hpp",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "tests/*.*",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-        ]
-    },
-    include_package_data=False,
-    python_requires=">=3.9,<3.14",
-    install_requires=["dpctl >= 0.20.0dev0", "numpy"],
+skbuild.setup(
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
 )
