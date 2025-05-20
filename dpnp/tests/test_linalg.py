@@ -330,14 +330,17 @@ class TestCond:
         a = numpy.ones((2, 2))
         ia = dpnp.array(a)
 
-        # Unlike NumPy which returns `inf` for all norm orders,
+        # NumPy returns `inf` for most norms on singular matrices,
+        # and large (often meaningless) values for [None, 2, -2].
         # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
         # due to use of gesv in 2D case.
-        # For None, 2, and -2 DPNP matches NumPy behavior.
+        # DPNP matches NumPy behavior for [None, 2, -2].
         if p in [None, 2, -2]:
+            # Only ensure the function runs and returns non-infinite values.
             result = dpnp.linalg.cond(ia, p=p)
             expected = numpy.linalg.cond(a, p=p)
-            assert_dtype_allclose(result, expected)
+            assert not dpnp.any(dpnp.isinf(result))
+            assert not numpy.any(numpy.isinf(expected))
         else:
             assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p)
 
@@ -360,15 +363,19 @@ class TestCond:
         a = numpy.ones((shape))
         ia = dpnp.array(a)
 
-        # Unlike NumPy which returns `inf` for all norm orders,
+        # NumPy returns `inf` for most norms on singular matrices,
+        # and large (often meaningless) values for [None, 2, -2].
         # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
-        # due to use of dpnp.linalg.inv() with OneMKL >= 2025.2.
-        # For None, 2, and -2 DPNP matches NumPy behavior.
+        # due to use of dpnp.linalg.inv() with oneMKL >= 2025.2.
+        # DPNP matches NumPy behavior for [None, 2, -2].
         if requires_intel_mkl_version("2025.2"):
             if p in [None, 2, -2]:
+                # Only ensure the function runs and
+                # returns non-infinite values.
                 result = dpnp.linalg.cond(ia, p=p)
                 expected = numpy.linalg.cond(a, p=p)
-                assert_dtype_allclose(result, expected)
+                assert not dpnp.any(dpnp.isinf(result))
+                assert not numpy.any(numpy.isinf(expected))
             else:
                 assert_raises(
                     dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p
