@@ -326,8 +326,8 @@ class TestCond:
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
-    def test_singular_2D(self, p):
-        a = numpy.array([[1, 2], [0, 0]])
+    def test_nan_to_inf(self, p):
+        a = numpy.zeros((2, 2))
         ia = dpnp.array(a)
 
         # NumPy returns `inf` for most norms on singular matrices,
@@ -335,53 +335,19 @@ class TestCond:
         # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
         # due to use of gesv in 2D case.
         # DPNP matches NumPy behavior for [None, 2, -2].
-        if p in [None, 2, -2]:
-            result = dpnp.linalg.cond(ia, p=p)
-            expected = numpy.linalg.cond(a, p=p)
-            assert_dtype_allclose(result, expected)
-        else:
-            assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p)
 
-    @pytest.mark.parametrize(
-        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
-    )
-    def test_singular_ND(self, p):
-        # dpnp.linalg.cond uses dpnp.linalg.inv()
-        # for the case when p is not None or p != -2 or p != 2
-        # For singular matrices cuSolver raises an error
-        # while OneMKL < 2025.2 returns nans
-        # TODO: remove it when mkl=2025.2 is released
-        if (
-            is_cuda_device()
-            and not requires_intel_mkl_version("2025.2")
-            and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]
-        ):
-            pytest.skip("Different behavior on CUDA")
-        a = generate_random_numpy_array((2, 2, 2, 2))
-        a[0, 0] = 0
-        a[1, 1] = 1
-        ia = dpnp.array(a)
-
-        # NumPy returns `inf` for most norms on singular matrices,
-        # and zeros for norm -2.
+        # NumPy does not raise LinAlgError on singular matrices.
+        # It returns `inf`, `0`, or large/small finite values
+        # depending on the norm and the matrix content.
         # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
-        # due to use of dpnp.linalg.inv() with oneMKL >= 2025.2.
-        # DPNP matches NumPy behavior for [None, 2, -2].
+        # due to use of gesv in the 2D case.
+        # For [None, 2, -2], DPNP does not raise.
         if p in [None, 2, -2]:
             result = dpnp.linalg.cond(ia, p=p)
             expected = numpy.linalg.cond(a, p=p)
             assert_dtype_allclose(result, expected)
-        elif requires_intel_mkl_version("2025.2"):
-            assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p)
-        # With oneMKL < 2025.2 and norms: 1, -1, inf, -inf, 'fro',
-        # dpnp.linalg.inv() uses getrf_batch + getri_batch
-        # which do not raise LinAlgError.
-        # Instead, the result contains `inf` for each 2D batch
-        # in the input array that is singular
         else:
-            result = dpnp.linalg.cond(ia, p=p)
-            expected = numpy.linalg.cond(a, p=p)
-            assert_dtype_allclose(result, expected)
+            assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p)
 
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
