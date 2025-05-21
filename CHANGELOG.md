@@ -39,6 +39,8 @@ This release achieves 100% compliance with Python Array API specification (revis
 * The parameter `axis` in `dpnp.take_along_axis` function has now a default value of `-1` [#2442](https://github.com/IntelPython/dpnp/pull/2442)
 * Updates the list of required python versions documented in `Quick Start Guide` [#2449](https://github.com/IntelPython/dpnp/pull/2449)
 * Updated FFT module to ensure an input array is Hermitian before calling complex-to-real FFT [#2444](https://github.com/IntelPython/dpnp/pull/2444)
+* Aligned `black` configuration with the list of supported python versions [#2457](https://github.com/IntelPython/dpnp/pull/2457)
+* Use `pyproject.toml` instead of `setup.py` aligning with current packaging best practices [#2462](https://github.com/IntelPython/dpnp/pull/2462)
 
 ### Fixed
 
@@ -46,6 +48,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Updated `conda create` commands build and install instructions of `Quick start guide` to avoid a compilation error [#2395](https://github.com/IntelPython/dpnp/pull/2395)
 * Added handling of empty string passed to a test env variable defining data type scope as a `False` value [#2415](https://github.com/IntelPython/dpnp/pull/2415)
 * Resolved build issues on non-Intel targets in `dpnp.i0` and `dpnp.kaiser` [#2439](https://github.com/IntelPython/dpnp/pull/2439)
+* Ensure consistency in the `dpnp.linalg.LinAlgError` exception raised on singular input matrices for both non-batched and batched cases in `dpnp.linalg.inv` [#2458] (https://github.com/IntelPython/dpnp/pull/2458)
 
 
 ## [0.17.0] - 02/26/2025

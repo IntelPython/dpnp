@@ -170,10 +170,6 @@ class TestDet(unittest.TestCase):
             with pytest.raises(xp.linalg.LinAlgError):
                 xp.linalg.det(a)
 
-    # TODO: remove skipif when MKLD-13852 is resolved
-    # _getrf_batch does not raise an error with singular matrices.
-    # Skip running on cpu because dpnp uses _getrf_batch only on cpu.
-    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-13852")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det_singular(self, xp, dtype):

@@ -12,19 +12,38 @@ export ICPXCFG
 ICXCFG="$(pwd)/icpx_for_conda.cfg"
 export ICXCFG
 
-export CMAKE_GENERATOR="Ninja"
-export TBB_ROOT_HINT=$PREFIX
-export DPL_ROOT_HINT=$PREFIX
-export MKL_ROOT_HINT=$PREFIX
-SKBUILD_ARGS=(-- "-DCMAKE_C_COMPILER:PATH=icx" "-DCMAKE_CXX_COMPILER:PATH=icpx" "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON")
-SKBUILD_ARGS=("${SKBUILD_ARGS[@]}" "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON")
-SKBUILD_ARGS=("${SKBUILD_ARGS[@]}" "-DDPNP_WITH_REDIST:BOOL=ON")
+read -r GLIBC_MAJOR GLIBC_MINOR <<<"$(conda list '^sysroot_linux-64$' \
+    | tail -n 1 | awk '{print $2}' | grep -oP '\d+' | head -n 2 | tr '\n' ' ')"
 
-# Build wheel package
-WHEELS_BUILD_ARGS=("-p" "manylinux_2_28_x86_64")
-if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
-    $PYTHON setup.py install bdist_wheel "${WHEELS_BUILD_ARGS[@]}" "${SKBUILD_ARGS[@]}"
-    cp dist/dpnp*.whl "${WHEELS_OUTPUT_FOLDER}"
-else
-    $PYTHON setup.py install "${SKBUILD_ARGS[@]}"
+if [ -e "_skbuild" ]; then
+    ${PYTHON} setup.py clean --all
+fi
+
+export CC=icx
+export CXX=icpx
+
+export CMAKE_GENERATOR=Ninja
+# Make CMake verbose
+export VERBOSE=1
+
+CMAKE_ARGS="${CMAKE_ARGS} -DDPNP_WITH_REDIST:BOOL=ON"
+
+# -wnx flags mean: --wheel --no-isolation --skip-dependency-check
+${PYTHON} -m build -w -n -x
+
+${PYTHON} -m wheel tags --remove --build "$GIT_DESCRIBE_NUMBER" \
+    --platform-tag "manylinux_${GLIBC_MAJOR}_${GLIBC_MINOR}_x86_64" \
+    dist/dpnp*.whl
+
+${PYTHON} -m pip install dist/dpnp*.whl \
+    --no-build-isolation \
+    --no-deps \
+    --only-binary :all: \
+    --no-index \
+    --prefix "${PREFIX}" \
+    -vv
+
+# Copy wheel package
+if [[ -d "${WHEELS_OUTPUT_FOLDER}" ]]; then
+    cp dist/dpnp*.whl "${WHEELS_OUTPUT_FOLDER[@]}"
 fi

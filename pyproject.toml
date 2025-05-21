@@ -1,6 +1,98 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  # TODO: keep in sync with [project.dependencies]
+  "build>=1.2.2",
+  "cmake>=3.31.6",
+  "cython>=3.0.12",
+  # WARNING: use only dpctl version available on PyPi
+  "dpctl>=0.19.0",
+  "ninja>=1.11.1; platform_system!='Windows'",
+  # NOTE: no DPNP restriction on NumPy version, so follow NumPy's drop schedule
+  "numpy>=1.25.0",
+  "scikit-build>=0.18.1",
+  "setuptools>=79.0.1",
+  "wheel>=0.45.1",
+  # WARNING: check with doc how to upgrade
+  "versioneer[toml]==0.29"
+]
+
+[project]
+authors = [{name = "Intel Corporation"}]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "Programming Language :: C++",
+  "Programming Language :: Cython",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Topic :: Software Development",
+  "Topic :: Scientific/Engineering",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: POSIX",
+  "Operating System :: Unix"
+]
+dependencies = [
+  # TODO: keep in sync with [build-system.requires] and conda-recipe/meta.yaml
+  # This restrictions are for dependabot, actual restrictions are set with
+  # conda.
+  # TODO: populate it during build process
+  # TODO: do we have to set sycl runtime dependencies here
+  # "dpcpp-cpp-rt>=0.59.0",
+  # "intel-cmplr-lib-rt>=0.59.0"
+  # WARNING: use the latest dpctl dev version, otherwise stable w/f will fail
+  "dpctl>=0.20.0dev0",
+  "numpy>=1.25.0"
+]
+description = "Data Parallel Extension for NumPy"
+dynamic = ["version"]
+keywords = [
+  "dpnp",
+  "sycl",
+  "numpy",
+  "python3",
+  "intel",
+  "mkl",
+  "oneapi",
+  "gpu",
+  "dpcpp"
+]
+license = {text = "Apache 2.0"}
+maintainers = [{name = "Intel Corporation"}]
+name = "dpnp"
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.9,<3.13"
+
+[project.optional-dependencies]
+coverage = ["Cython", "pytest", "pytest-cov", "coverage", "tomli", "llvm"]
+docs = [
+  "Cython",
+  "cupy",
+  "sphinx",
+  "sphinx_rtd_theme",
+  "pyenchant",
+  "sphinxcontrib-googleanalytics",
+  "sphinxcontrib-spelling"
+]
+
+[project.urls]
+Changelog = "https://github.com/IntelPython/dpnp/blob/master/CHANGELOG.md"
+Documentation = "https://intelpython.github.io/dpnp"
+Homepage = "https://github.com/IntelPython/dpnp"
+Issues = "https://github.com/IntelPython/dpnp/issues"
+Repository = "https://github.com/IntelPython/dpnp.git"
+
 [tool.black]
 line-length = 80
-target-version = ['py38', 'py39', 'py310']
+target-version = ['py39', 'py310', 'py311', 'py312']
 
 [tool.codespell]
 builtin = "clear,rare,informal,names"
@@ -79,3 +171,10 @@ norecursedirs = [
   "dist",
   "conda-recipe"
 ]
+
+[tool.versioneer]
+VCS = "git"
+parentdir_prefix = "dpnp-"
+style = "pep440"
+versionfile_build = "dpnp/_version.py"
+versionfile_source = "dpnp/_version.py"
