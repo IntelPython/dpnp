@@ -200,7 +200,7 @@ def cond(x, p=None):
     This function will raise :class:`dpnp.linalg.LinAlgError` on singular input
     when using any of the norm: ``1``, ``-1``, ``inf``, ``-inf``, or ``'fro'``.
     In contrast, :obj:`numpy.linalg.cond` will fill the result array with
-    ``inf`` values for every 2D batch in the input array that is singular
+    ``inf`` values for each 2D batch in the input array that is singular
     when using these norms.
 
     Examples

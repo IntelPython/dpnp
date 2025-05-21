@@ -327,28 +327,25 @@ class TestCond:
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
     def test_singular_2D(self, p):
-        a = numpy.ones((2, 2))
+        a = numpy.array([[1, 2], [0, 0]])
         ia = dpnp.array(a)
 
         # NumPy returns `inf` for most norms on singular matrices,
-        # and large (often meaningless) values for [None, 2, -2].
+        # and zero for norm -2.
         # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
         # due to use of gesv in 2D case.
         # DPNP matches NumPy behavior for [None, 2, -2].
         if p in [None, 2, -2]:
-            # Only ensure the function runs and returns non-infinite values.
             result = dpnp.linalg.cond(ia, p=p)
             expected = numpy.linalg.cond(a, p=p)
-            assert not dpnp.any(dpnp.isinf(result))
-            assert not numpy.any(numpy.isinf(expected))
+            assert_dtype_allclose(result, expected)
         else:
             assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p)
 
-    @pytest.mark.parametrize("shape", [(2, 2, 2), (2, 2, 2, 2)])
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
-    def test_singular_ND(self, shape, p):
+    def test_singular_ND(self, p):
         # dpnp.linalg.cond uses dpnp.linalg.inv()
         # for the case when p is not None or p != -2 or p != 2
         # For singular matrices cuSolver raises an error
@@ -360,32 +357,28 @@ class TestCond:
             and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]
         ):
             pytest.skip("Different behavior on CUDA")
-        a = numpy.ones((shape))
+        a = generate_random_numpy_array((2, 2, 2, 2))
+        a[0, 0] = 0
+        a[1, 1] = 1
         ia = dpnp.array(a)
 
         # NumPy returns `inf` for most norms on singular matrices,
-        # and large (often meaningless) values for [None, 2, -2].
+        # and zeros for norm -2.
         # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
         # due to use of dpnp.linalg.inv() with oneMKL >= 2025.2.
         # DPNP matches NumPy behavior for [None, 2, -2].
-        if requires_intel_mkl_version("2025.2"):
-            if p in [None, 2, -2]:
-                # Only ensure the function runs and
-                # returns non-infinite values.
-                result = dpnp.linalg.cond(ia, p=p)
-                expected = numpy.linalg.cond(a, p=p)
-                assert not dpnp.any(dpnp.isinf(result))
-                assert not numpy.any(numpy.isinf(expected))
-            else:
-                assert_raises(
-                    dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p
-                )
+        if p in [None, 2, -2]:
+            result = dpnp.linalg.cond(ia, p=p)
+            expected = numpy.linalg.cond(a, p=p)
+            assert_dtype_allclose(result, expected)
+        elif requires_intel_mkl_version("2025.2"):
+            assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p)
+        # With oneMKL < 2025.2 and norms: 1, -1, inf, -inf, 'fro',
+        # dpnp.linalg.inv() uses getrf_batch + getri_batch
+        # which do not raise LinAlgError.
+        # Instead, the result contains `inf` for each 2D batch
+        # in the input array that is singular
         else:
-            # For OneMKL < 2025.2:
-            # dpnp.linalg.inv() uses getrf_batch + getri_batch
-            # which do not raise LinAlgError.
-            # Instead, the result may contain `inf` or `nan`
-            # depending on singularity.
             result = dpnp.linalg.cond(ia, p=p)
             expected = numpy.linalg.cond(a, p=p)
             assert_dtype_allclose(result, expected)
