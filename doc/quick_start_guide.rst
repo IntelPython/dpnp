@@ -94,8 +94,8 @@ On Linux:
 
 .. code-block:: bash
 
-    conda create -n build-env dpctl cython dpcpp_linux-64 mkl-devel-dpcpp tbb-devel \
-          onedpl-devel cmake scikit-build ninja pytest intel-gpu-ocl-icd-system     \
+    conda create -n build-env dpctl cython dpcpp_linux-64 mkl-devel-dpcpp tbb-devel        \
+          onedpl-devel cmake scikit-build ninja versioneer pytest intel-gpu-ocl-icd-system \
           -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
     conda activate build-env
 
@@ -103,8 +103,8 @@ On Windows:
 
 .. code-block:: bash
 
-    conda create -n build-env dpctl cython dpcpp_win-64 mkl-devel-dpcpp tbb-devel \
-          onedpl-devel cmake scikit-build ninja pytest intel-gpu-ocl-icd-system   \
+    conda create -n build-env dpctl cython dpcpp_win-64 mkl-devel-dpcpp tbb-devel          \
+          onedpl-devel cmake scikit-build ninja versioneer pytest intel-gpu-ocl-icd-system \
           -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
     conda activate build-env
 

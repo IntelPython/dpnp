@@ -7,5 +7,6 @@ dependencies:
   - ninja
   - numpy
   - pytest
-  - setuptools=79.0.1
+  - setuptools
   - scikit-build
+  - versioneer
