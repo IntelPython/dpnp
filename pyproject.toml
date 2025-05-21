@@ -21,7 +21,6 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: Apache Software License",
   "Programming Language :: C++",
   "Programming Language :: Cython",
   "Programming Language :: Python",
