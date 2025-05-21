@@ -1,6 +1,6 @@
 REM A workaround for activate-dpcpp.bat issue to be addressed in 2021.4
-SET "LIB=%BUILD_PREFIX%\Library\lib;%BUILD_PREFIX%\compiler\lib;%LIB%"
-SET "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
+set "LIB=%BUILD_PREFIX%\Library\lib;%BUILD_PREFIX%\compiler\lib;%LIB%"
+set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 
 "%PYTHON%" setup.py clean --all
 
@@ -8,18 +8,15 @@ set "MKLROOT=%PREFIX%/Library"
 set "TBB_ROOT_HINT=%PREFIX%/Library"
 set "DPL_ROOT_HINT=%PREFIX%/Library"
 
-set "SKBUILD_ARGS=-G Ninja -- -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
-set "SKBUILD_ARGS=%SKBUILD_ARGS% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
-
 REM Overriding IPO is useful for building in resources constrained VMs (public CI)
 if DEFINED OVERRIDE_INTEL_IPO (
-   set "SKBUILD_ARGS=%SKBUILD_ARGS% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE"
+  set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE"
 )
 
-FOR %%V IN (17.0.0 17 18.0.0 18 19.0.0 19) DO @(
+FOR %%V IN (17.0.0 17 18.0.0 18 19.0.0 19 20.0.0 20 21.0.0 21) DO @(
   REM set DIR_HINT if directory exists
   IF EXIST "%BUILD_PREFIX%\Library\lib\clang\%%V\" (
-    SET "SYCL_INCLUDE_DIR_HINT=%BUILD_PREFIX%\Library\lib\clang\%%V"
+    set "SYCL_INCLUDE_DIR_HINT=%BUILD_PREFIX%\Library\lib\clang\%%V"
   )
 )
 
@@ -37,21 +34,37 @@ if EXIST "%PLATFORM_DIR%" (
   if errorlevel 1 exit 1
 )
 
-if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
-  rem Install and assemble wheel package from the build bits
-  "%PYTHON%" setup.py install bdist_wheel %SKBUILD_ARGS%
-  if errorlevel 1 exit 1
-  copy dist\dpnp*.whl %WHEELS_OUTPUT_FOLDER%
-  if errorlevel 1 exit 1
-) ELSE (
-  rem Only install
-  "%PYTHON%" setup.py install %SKBUILD_ARGS%
-  if errorlevel 1 exit 1
+set "CC=icx"
+set "CXX=icx"
+
+set "CMAKE_GENERATOR=Ninja"
+:: Make CMake verbose
+set "VERBOSE=1"
+
+%PYTHON% -m build -w -n -x
+if %ERRORLEVEL% neq 0 exit 1
+
+:: `pip install dist\numpy*.whl` does not work on windows,
+:: so use a loop; there's only one wheel in dist/ anyway
+for /f %%f in ('dir /b /S .\dist') do (
+  %PYTHON% -m wheel tags --remove --build %GIT_DESCRIBE_NUMBER% %%f
+  if %ERRORLEVEL% neq 0 exit 1
 )
 
-rem copy back
-if EXIST "%PLATFORM_DIR%" (
-  rem copy back
-  copy /Y "%FN%" "%PLATFORM_DIR%\%FN%"
-  if errorlevel 1 exit 1
+:: wheel file was renamed
+for /f %%f in ('dir /b /S .\dist') do (
+  %PYTHON% -m pip install %%f ^
+    --no-build-isolation ^
+    --no-deps ^
+    --only-binary :all: ^
+    --no-index ^
+    --prefix %PREFIX% ^
+    -vv
+  if %ERRORLEVEL% neq 0 exit 1
+)
+
+:: Copy wheel package
+if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
+  copy dist\dpnp*.whl %WHEELS_OUTPUT_FOLDER%
+  if %ERRORLEVEL% neq 0 exit 1
 )
