@@ -330,12 +330,6 @@ class TestCond:
         a = numpy.zeros((2, 2))
         ia = dpnp.array(a)
 
-        # NumPy returns `inf` for most norms on singular matrices,
-        # and zero for norm -2.
-        # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
-        # due to use of gesv in 2D case.
-        # DPNP matches NumPy behavior for [None, 2, -2].
-
         # NumPy does not raise LinAlgError on singular matrices.
         # It returns `inf`, `0`, or large/small finite values
         # depending on the norm and the matrix content.
