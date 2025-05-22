@@ -326,29 +326,22 @@ class TestCond:
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
-    def test_nan(self, p):
-        # dpnp.linalg.cond uses dpnp.linalg.inv()
-        # for the case when p is not None or p != -2 or p != 2
-        # For singular matrices cuSolver raises an error
-        # while OneMKL returns nans
-        if is_cuda_device() and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]:
-            pytest.skip("Different behavior on CUDA")
-        elif requires_intel_mkl_version("2025.2") and p in [
-            -dpnp.inf,
-            -1,
-            1,
-            dpnp.inf,
-            "fro",
-        ]:
-            pytest.skip("SAT-7966")
-        a = generate_random_numpy_array((2, 2, 2, 2))
-        a[0, 0] = 0
-        a[1, 1] = 0
+    def test_nan_to_inf(self, p):
+        a = numpy.zeros((2, 2))
         ia = dpnp.array(a)
 
-        result = dpnp.linalg.cond(ia, p=p)
-        expected = numpy.linalg.cond(a, p=p)
-        assert_dtype_allclose(result, expected)
+        # NumPy does not raise LinAlgError on singular matrices.
+        # It returns `inf`, `0`, or large/small finite values
+        # depending on the norm and the matrix content.
+        # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
+        # due to use of gesv in the 2D case.
+        # For [None, 2, -2], DPNP does not raise.
+        if p in [None, 2, -2]:
+            result = dpnp.linalg.cond(ia, p=p)
+            expected = numpy.linalg.cond(a, p=p)
+            assert_dtype_allclose(result, expected)
+        else:
+            assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p)
 
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]

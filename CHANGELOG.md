@@ -41,6 +41,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Updated FFT module to ensure an input array is Hermitian before calling complex-to-real FFT [#2444](https://github.com/IntelPython/dpnp/pull/2444)
 * Aligned `black` configuration with the list of supported python versions [#2457](https://github.com/IntelPython/dpnp/pull/2457)
 * Use `pyproject.toml` instead of `setup.py` aligning with current packaging best practices [#2462](https://github.com/IntelPython/dpnp/pull/2462)
+* Added a clarification to `dpnp.linalg.cond` docstring about its behavior with singular matrices [#2500] (https://github.com/IntelPython/dpnp/pull/2500)
 
 ### Fixed
 
