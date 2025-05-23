@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.18.0] - MM/DD/2025
+## [0.18.0] - 05/DD/2025
 
 This release achieves 100% compliance with Python Array API specification (revision [2024.12](https://data-apis.org/array-api/2024.12/)).
+The release provides enhanced compatibility with NumPy 2.2.5. Windows and mathematical routines are complemented by a set of new functions.
+Moreover, it adds support to build `dpnp` from the source for AMD GPUs.
 
 ### Added
 
