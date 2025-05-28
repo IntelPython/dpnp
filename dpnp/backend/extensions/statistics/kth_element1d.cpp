@@ -84,8 +84,88 @@ template <typename T>
 struct pick_pivot_kernel;
 
 template <typename T>
+struct kth_sorter_kernel;
+
+template <typename T>
 struct KthElementF
 {
+    static std::tuple<bool, sycl::event>
+        run_kth_sort(sycl::queue &exec_q,
+                     const T *in,
+                     const size_t k,
+                     State<T> &state,
+                     const std::vector<sycl::event> &depends)
+    {
+        auto device = exec_q.get_device();
+        size_t local_mem_size = get_local_mem_size_in_bytes(device);
+        size_t temp_memory_size =
+            sycl_exp::default_sorters::joint_sorter<>::memory_required<T>(
+                sycl::memory_scope::work_group, state.n);
+        size_t loc_items_mem = sizeof(T) * state.n;
+
+        if ((temp_memory_size + loc_items_mem) > local_mem_size)
+            return {false, sycl::event{}};
+
+        auto e = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            const uint32_t local_size = get_max_local_size(exec_q);
+            const uint32_t WorkPI = CeilDiv(state.n, local_size);
+            auto work_sz = make_ndrange(state.n, local_size, WorkPI);
+            auto loc_items =
+                sycl::local_accessor<T, 1>(sycl::range<1>(state.n), cgh);
+            auto scratch = sycl::local_accessor<std::byte, 1>(
+                sycl::range<1>(temp_memory_size), cgh);
+
+            cgh.parallel_for<kth_sorter_kernel<T>>(
+                work_sz, [=](sycl::nd_item<1> item) {
+                    auto group = item.get_group();
+                    auto sbg = item.get_sub_group();
+
+                    if (state.stop[0])
+                        return;
+
+                    auto llid = item.get_local_linear_id();
+                    uint32_t sbg_size = sbg.get_max_local_range()[0];
+                    uint32_t sbg_llid = sbg.get_local_linear_id();
+                    auto local_size = item.get_group_range(0);
+                    uint32_t nan_count = 0;
+
+                    uint32_t i_base =
+                        sbg.get_group_id() * WorkPI * sbg_size + sbg_llid;
+                    for (uint32_t i = 0; i < WorkPI; i++) {
+                        uint32_t idx = i_base + i * sbg_size;
+                        if (idx < state.n) {
+                            loc_items[idx] = in[idx];
+                            if (IsNan<T>::isnan(in[idx])) {
+                                nan_count++;
+                            }
+                        }
+                    }
+
+                    nan_count = sycl::reduce_over_group(group, nan_count,
+                                                        sycl::plus<>());
+                    sycl::group_barrier(group);
+
+                    auto gh = sycl_exp::group_with_scratchpad(
+                        group, sycl::span{&scratch[0], temp_memory_size});
+                    sycl_exp::joint_sort(gh, &loc_items[0],
+                                         &loc_items[0] + state.n, Less<T>{});
+
+                    sycl::group_barrier(group);
+
+                    if (group.leader()) {
+                        state.values[0] = loc_items[k];
+                        state.values[1] = loc_items[k + 1];
+                        state.target_found[0] = true;
+                        state.counters.nan_count[0] = nan_count;
+                    }
+                });
+        });
+
+        return {true, e};
+    }
+
     static sycl::event run_pick_pivot(sycl::queue &queue,
                                       T *in,
                                       T *out,
@@ -276,14 +356,20 @@ struct KthElementF
                                        PartitionState<T> &pstate,
                                        const std::vector<sycl::event> &depends)
     {
+        auto [success, evt] = run_kth_sort(exec_q, in, k, state, depends);
+        if (success) {
+            return evt;
+        }
+
         uint32_t items_to_sort = 127;
         uint32_t limit = 4 * (items_to_sort + 1);
 
         uint32_t iterations = 1;
 
         if (state.n > limit) {
-            iterations = std::ceil(
-                -std::log(double(state.n) / limit) / std::log(0.536)) + 1;
+            iterations = std::ceil(-std::log(double(state.n) / limit) /
+                                   std::log(0.536)) +
+                         1;
 
             // Ensure iterations are odd so the final result is always stored in
             // 'partitioned'
