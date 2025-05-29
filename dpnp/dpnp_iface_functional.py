@@ -44,7 +44,7 @@ from dpctl.tensor._numpy_helper import (
 
 import dpnp
 
-__all__ = ["apply_along_axis", "apply_over_axes"]
+__all__ = ["apply_along_axis", "apply_over_axes", "piecewise"]
 
 
 def apply_along_axis(func1d, axis, arr, *args, **kwargs):
@@ -266,3 +266,110 @@ def apply_over_axes(func, a, axes):
                 )
         a = res
     return res
+
+
+def piecewise(x, condlist, funclist):
+    """
+    Evaluate a piecewise-defined function.
+
+    Given a set of conditions and corresponding functions, evaluate each
+    function on the input data wherever its condition is true.
+
+    For full documentation refer to :obj:`numpy.piecewise`.
+
+    Parameters
+    ----------
+    x : ndarray or scalar
+        The input domain.
+    condlist : list of bool arrays or bool scalars
+        Each boolean array corresponds to a function in `funclist`.  Wherever
+        `condlist[i]` is True, `funclist[i](x)` is used as the output value.
+
+        Each boolean array in `condlist` selects a piece of `x`,
+        and should therefore be of the same shape as `x`.
+
+        The length of `condlist` must correspond to that of `funclist`.
+        If one extra function is given, i.e. if
+        ``len(funclist) == len(condlist) + 1``, then that extra function
+        is the default value, used wherever all conditions are false.
+    funclist : list of callables, f(x,*args,**kw), or scalars
+        Each function is evaluated over `x` wherever its corresponding
+        condition is True.  It should take a 1d array as input and give an 1d
+        array or a scalar value as output.  If, instead of a callable,
+        a scalar is provided then a constant function (``lambda x: scalar``) is
+        assumed.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The output is the same shape and type as x and is found by
+        calling the functions in `funclist` on the appropriate portions of `x`,
+        as defined by the boolean arrays in `condlist`.  Portions not covered
+        by any condition have a default value of 0.
+
+    Limitations
+    -----------
+    Parameters `args` and `kw` are not supported and this function does not
+    support callable functions.
+
+    See Also
+    --------
+    :obj:`dpnp.choose` :
+    :obj:`dpnp.select` :
+    :obj:`dpnp.where` :
+
+    Examples
+    --------
+    >>> import dpnp as np
+
+    Define the signum function, which is -1 for ``x < 0`` and +1 for ``x >= 0``.
+
+    >>> x = np.linspace(-2.5, 2.5, 6)
+    >>> np.piecewise(x, [x < 0, x >= 0], [-1, 1])
+    array([-1., -1., -1.,  1.,  1.,  1.])
+
+    Define the absolute value, which is ``-x`` for ``x <0`` and ``x`` for
+    ``x >= 0``.
+
+    >>> np.piecewise(x, [x < 0, x >= 0], [lambda x: -x, lambda x: x])
+    array([2.5,  1.5,  0.5,  0.5,  1.5,  2.5])
+
+    Apply the same function to a scalar value.
+
+    >>> y = -2
+    >>> np.piecewise(y, [y < 0, y >= 0], [lambda x: -x, lambda x: x])
+    array(2)
+
+    """
+
+    dpnp.check_supported_arrays_type(x)
+    if dpnp.isscalar(condlist):
+        condlist = [condlist]
+
+    condlen = len(condlist)
+    funclen = len(funclist)
+    if condlen == funclen:
+        out = dpnp.zeros_like(x)
+    elif condlen + 1 == funclen:
+        func = funclist[-1]
+        funclist = funclist[:-1]
+        if callable(func):
+            raise NotImplementedError(
+                "Callable functions are not supported currently"
+            )
+        out = dpnp.full(x.shape, func, dtype=x.dtype)
+    else:
+        raise ValueError(
+            f"with {condlen} condition(s), either {condlen} or {condlen + 1} "
+            "functions are expected"
+        )
+
+    for condition, func in zip(condlist, funclist):
+        if callable(func):
+            raise NotImplementedError(
+                "Callable functions are not supported currently"
+            )
+        if isinstance(func, dpnp.ndarray):
+            func = func.astype(x.dtype)
+        _piecewise_krnl(condition, func, out)
+    return out
