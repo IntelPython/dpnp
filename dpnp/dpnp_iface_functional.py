@@ -36,15 +36,21 @@ it contains:
 
 """
 
+# pylint: disable=protected-access
 
+import dpctl.utils as dpu
 from dpctl.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
 )
 
 import dpnp
+import dpnp.backend.extensions.functional._functional_impl as fi
 
-__all__ = ["apply_along_axis", "apply_over_axes"]
+# pylint: disable=no-name-in-module
+from dpnp.dpnp_utils import get_usm_allocations
+
+__all__ = ["apply_along_axis", "apply_over_axes", "piecewise"]
 
 
 def apply_along_axis(func1d, axis, arr, *args, **kwargs):
@@ -266,3 +272,147 @@ def apply_over_axes(func, a, axes):
                 )
         a = res
     return res
+
+
+def piecewise(x, condlist, funclist):
+    """
+    Evaluate a piecewise-defined function.
+
+    Given a set of conditions and corresponding functions, evaluate each
+    function on the input data wherever its condition is true.
+
+    For full documentation refer to :obj:`numpy.piecewise`.
+
+    Parameters
+    ----------
+    x : : {dpnp.ndarray, usm_ndarray}
+        The input domain.
+    condlist : {list of array-like boolean, bool scalars}
+        Each boolean array/scalar corresponds to a function in `funclist`.
+        Wherever `condlist[i]` is ``True``, `funclist[i](x)` is used as the
+        output value.
+
+        Each boolean array in `condlist` selects a piece of `x`, and should
+        therefore be of the same shape as `x`.
+
+        The length of `condlist` must correspond to that of `funclist`.
+        If one extra function is given, i.e. if
+        ``len(funclist) == len(condlist) + 1``, then that extra function
+        is the default value, used wherever all conditions are ``False``.
+    funclist : {array-like of scalars}
+        A constant value is returned wherever corresponding condition of `x`
+        is ``True``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The output is the same shape and type as `x` and is found by
+        calling the functions in `funclist` on the appropriate portions of `x`,
+        as defined by the boolean arrays in `condlist`. Portions not covered
+        by any condition have a default value of ``0``.
+
+    Limitations
+    -----------
+    Parameters `args` and `kw` are not supported and `funclist` cannot include a
+    callable functions.
+
+    See Also
+    --------
+    :obj:`dpnp.choose` : Construct an array from an index array and a set of
+                         arrays to choose from.
+    :obj:`dpnp.select` : Return an array drawn from elements in `choicelist`,
+                         depending on conditions.
+    :obj:`dpnp.where` : Return elements from one of two arrays depending
+                        on condition.
+
+    Examples
+    --------
+    >>> import dpnp as np
+
+    Define the signum function, which is -1 for ``x < 0`` and +1 for ``x >= 0``.
+
+    >>> x = np.linspace(-2.5, 2.5, 6)
+    >>> np.piecewise(x, [x < 0, x >= 0], [-1, 1])
+    array([-1., -1., -1.,  1.,  1.,  1.])
+
+    """
+    dpnp.check_supported_arrays_type(x)
+    if isinstance(condlist, tuple):
+        condlist = list(condlist)
+    if isinstance(condlist, dpnp.ndarray) and condlist.ndim in [0, 1]:
+        condlist = [condlist]
+    if dpnp.isscalar(condlist) or (dpnp.isscalar(condlist[0]) and x.ndim != 0):
+        # convert scalar to a list of one array
+        # convert list of scalars to a list of one array
+        condlist = [
+            dpnp.full(
+                x.shape, condlist, usm_type=x.usm_type, sycl_queue=x.sycl_queue
+            )
+        ]
+    if not isinstance(condlist[0], (dpnp.ndarray)):
+        # convert list of lists to list of arrays
+        # convert list of scalars to a list of 0d arrays (for 0d input)
+        tmp = []
+        for _, cond in enumerate(condlist):
+            tmp.append(
+                dpnp.array(cond, usm_type=x.usm_type, sycl_queue=x.sycl_queue)
+            )
+        condlist = tmp
+
+    dpnp.check_supported_arrays_type(*condlist)
+    if dpnp.is_supported_array_type(funclist):
+        usm_type, exec_q = get_usm_allocations([x, *condlist, funclist])
+    else:
+        usm_type, exec_q = get_usm_allocations([x, *condlist])
+
+    condlen = len(condlist)
+    try:
+        funclen = len(funclist)
+    except TypeError as e:
+        raise TypeError("funclist must be a sequence of scalars") from e
+    if condlen == funclen:
+        # default value is zero
+        result = dpnp.zeros_like(x, usm_type=usm_type, sycl_queue=exec_q)
+    elif condlen + 1 == funclen:
+        # default value is the last element of funclist
+        func = funclist[-1]
+        funclist = funclist[:-1]
+        if callable(func):
+            raise NotImplementedError(
+                "Callable functions are not supported currently"
+            )
+        result = dpnp.full(
+            x.shape, func, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
+        )
+    else:
+        raise ValueError(
+            f"with {condlen} condition(s), either {condlen} or {condlen + 1} "
+            "functions are expected"
+        )
+
+    for condition, func in zip(condlist, funclist):
+        if callable(func):
+            raise NotImplementedError(
+                "Callable functions are not supported currently"
+            )
+        if isinstance(func, dpnp.ndarray):
+            func = func.astype(x.dtype)
+        else:
+            func = x.dtype.type(func)
+
+        # TODO: possibly can use func.item() to make sure that func is always
+        # a scalar and simplify the backend but current implementation of
+        # ndarray.item() copies to host memory and it is not efficient for
+        # large arrays
+        _manager = dpu.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+        ht_ev, fun_ev = fi._piecewise(
+            exec_q,
+            func,  # it is a scalar or 0d array
+            dpnp.get_usm_ndarray(condition),
+            dpnp.get_usm_ndarray(result),
+            depends=dep_evs,
+        )
+        _manager.add_event_pair(ht_ev, fun_ev)
+
+    return result
