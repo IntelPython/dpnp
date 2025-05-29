@@ -65,3 +65,17 @@ class TestApplyOverAxes:
 
         ia = dpnp.arange(24).reshape(2, 3, 4)
         assert_raises(ValueError, dpnp.apply_over_axes, custom_func, ia, 1)
+
+
+class TestPiecewise:
+    def test_piecewise(self):
+        def sample_1d(x):
+            return x[1], x[0]
+
+        a = numpy.array([[1, 2], [3, 4]])
+        ia = dpnp.array(a)
+
+        # 2d insertion along first axis
+        expected = numpy.apply_along_axis(sample_1d, 1, a)
+        result = dpnp.apply_along_axis(sample_1d, 1, ia)
+        assert_array_equal(result, expected)
