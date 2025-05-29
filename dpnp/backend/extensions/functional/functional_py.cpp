@@ -22,46 +22,27 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
+//
+// This file defines functions of dpnp.backend._functional_impl extensions
+//
+//*****************************************************************************
 
-#pragma once
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
-#include "common.hpp"
-#include <sycl/sycl.hpp>
+#include "piecewise.hpp"
 
-namespace dpnp::extensions::window::kernels
+namespace functional_ns = dpnp::extensions::functional;
+namespace py = pybind11;
+
+PYBIND11_MODULE(_functional_impl, m)
 {
-
-template <typename T>
-class BartlettFunctor
-{
-private:
-    T *res = nullptr;
-    const std::size_t N;
-
-public:
-    BartlettFunctor(T *res, const std::size_t N) : res(res), N(N) {}
-
-    void operator()(sycl::id<1> id) const
     {
-        const auto i = id.get(0);
+        functional_ns::init_piecewise_dispatch_vectors();
 
-        const T alpha = (N - 1) / T(2);
-        res[i] = T(1) - sycl::fabs(i - alpha) / alpha;
+        m.def("_piecewise", functional_ns::py_piecewise,
+              "Call piecewise kernel", py::arg("sycl_queue"), py::arg("value"),
+              py::arg("condition"), py::arg("result"),
+              py::arg("depends") = py::list());
     }
-};
-
-template <typename fnT, typename T>
-struct BartlettFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_floating_point_v<T>) {
-            return window_impl<T, BartlettFunctor>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-} // namespace dpnp::extensions::window::kernels
+}
