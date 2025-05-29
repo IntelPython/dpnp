@@ -755,6 +755,18 @@ def test_apply_over_axes(usm_type):
     assert x.usm_type == y.usm_type
 
 
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_piecewise(usm_type):
+    x = dpnp.arange(18, usm_type=usm_type).reshape(2, 3, 3)
+    y = dpnp.array([1, 4], usm_type=usm_type)
+    z = dpnp.array([-1, -3], usm_type=usm_type)
+    result = dpnp.piecewise(x, y, z)
+
+    assert x.usm_type == result.usm_type
+    assert y.usm_type == result.usm_type
+    assert z.usm_type == result.usm_type
+
+
 @pytest.mark.parametrize(
     "func,data1,data2",
     [

@@ -1179,6 +1179,18 @@ def test_apply_over_axes(device):
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_piecewise(device):
+    x = dpnp.arange(9, device=device).reshape(3, 3)
+    y = dpnp.array([1, 4], device=device)
+    z = dpnp.array([-1, -3], device=device)
+    result = dpnp.piecewise(x, y, z)
+
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, z.sycl_queue)
+
+
 @pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
 def test_asarray(device_x, device_y):
