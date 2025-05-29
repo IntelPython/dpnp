@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.19.0] - MM/DD/2025
 
 ### Added
+* Added implementation of `dpnp.piecewise` [#????](https://github.com/IntelPython/dpnp/pull/????)
 
 ### Changed
 

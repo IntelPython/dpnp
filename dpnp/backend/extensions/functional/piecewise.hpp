@@ -25,43 +25,18 @@
 
 #pragma once
 
-#include "common.hpp"
+#include <dpctl4pybind11.hpp>
 #include <sycl/sycl.hpp>
 
-namespace dpnp::extensions::window::kernels
+namespace dpnp::extensions::functional
 {
+extern std::pair<sycl::event, sycl::event>
+    py_piecewise(sycl::queue &exec_q,
+                 const py::object &value,
+                 const dpctl::tensor::usm_ndarray &condition,
+                 const dpctl::tensor::usm_ndarray &result,
+                 const std::vector<sycl::event> &depends);
 
-template <typename T>
-class BartlettFunctor
-{
-private:
-    T *res = nullptr;
-    const std::size_t N;
+extern void init_piecewise_dispatch_vectors(void);
 
-public:
-    BartlettFunctor(T *res, const std::size_t N) : res(res), N(N) {}
-
-    void operator()(sycl::id<1> id) const
-    {
-        const auto i = id.get(0);
-
-        const T alpha = (N - 1) / T(2);
-        res[i] = T(1) - sycl::fabs(i - alpha) / alpha;
-    }
-};
-
-template <typename fnT, typename T>
-struct BartlettFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_floating_point_v<T>) {
-            return window_impl<T, BartlettFunctor>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-} // namespace dpnp::extensions::window::kernels
+} // namespace dpnp::extensions::functional
