@@ -30,9 +30,9 @@
 #include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
 
-#include "sliding_window1d.hpp"
 #include "ext/common.hpp"
 #include "ext/validation_utils.hpp"
+#include "sliding_window1d.hpp"
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using namespace ext::common;
@@ -48,10 +48,7 @@ void validate(const usm_ndarray &a,
               const usm_ndarray &partitioned,
               const size_t k)
 {
-    array_names names = {
-        {&a, "a"},
-        {&partitioned, "partitioned"}
-    };
+    array_names names = {{&a, "a"}, {&partitioned, "partitioned"}};
 
     common_checks({&a}, {&partitioned}, names);
     check_same_size(&a, &partitioned, names);
@@ -61,8 +58,9 @@ void validate(const usm_ndarray &a,
 
     if (k > a.get_size() - 2) {
         throw py::value_error("'k' must be from 0 to a.size() - 2, "
-                              "but got k = " + std::to_string(k) +
-                              " and a.size() = " + std::to_string(a.get_size()));
+                              "but got k = " +
+                              std::to_string(k) + " and a.size() = " +
+                              std::to_string(a.get_size()));
     }
 }
 
