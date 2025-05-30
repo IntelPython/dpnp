@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.18.0] - MM/DD/2025
+## [0.18.0] - 05/DD/2025
 
 This release achieves 100% compliance with Python Array API specification (revision [2024.12](https://data-apis.org/array-api/2024.12/)).
+The release provides enhanced compatibility with NumPy 2.2.5. Window and mathematical routines are complemented by a set of new functions.
+Moreover, it adds support to build `dpnp` from the source for AMD GPUs.
 
 ### Added
 
@@ -39,6 +41,9 @@ This release achieves 100% compliance with Python Array API specification (revis
 * The parameter `axis` in `dpnp.take_along_axis` function has now a default value of `-1` [#2442](https://github.com/IntelPython/dpnp/pull/2442)
 * Updates the list of required python versions documented in `Quick Start Guide` [#2449](https://github.com/IntelPython/dpnp/pull/2449)
 * Updated FFT module to ensure an input array is Hermitian before calling complex-to-real FFT [#2444](https://github.com/IntelPython/dpnp/pull/2444)
+* Aligned `black` configuration with the list of supported python versions [#2457](https://github.com/IntelPython/dpnp/pull/2457)
+* Use `pyproject.toml` instead of `setup.py` aligning with current packaging best practices [#2462](https://github.com/IntelPython/dpnp/pull/2462)
+* Added a clarification to `dpnp.linalg.cond` docstring about its behavior with singular matrices [#2500] (https://github.com/IntelPython/dpnp/pull/2500)
 
 ### Fixed
 
@@ -46,6 +51,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Updated `conda create` commands build and install instructions of `Quick start guide` to avoid a compilation error [#2395](https://github.com/IntelPython/dpnp/pull/2395)
 * Added handling of empty string passed to a test env variable defining data type scope as a `False` value [#2415](https://github.com/IntelPython/dpnp/pull/2415)
 * Resolved build issues on non-Intel targets in `dpnp.i0` and `dpnp.kaiser` [#2439](https://github.com/IntelPython/dpnp/pull/2439)
+* Ensure consistency in the `dpnp.linalg.LinAlgError` exception raised on singular input matrices for both non-batched and batched cases in `dpnp.linalg.inv` [#2458] (https://github.com/IntelPython/dpnp/pull/2458)
 
 
 ## [0.17.0] - 02/26/2025

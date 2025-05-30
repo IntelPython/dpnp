@@ -54,11 +54,11 @@ exclude =
     .git,
     benchmarks/*.py,
     build,
+    dpnp/_version.py,
     dpnp/to_numba/*.py,
     conda.recipe,
     dpnp/tests/*.py,
     tests_external/*.py,
-    versioneer.py,
 
 # Print detailed statistic if any issue detected
 count = True

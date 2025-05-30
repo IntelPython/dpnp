@@ -291,7 +291,7 @@ class TestFloorDivideRemainder:
     @pytest.mark.parametrize("dtype", ALL_DTYPES)
     def test_basic(self, func, dtype):
         a = generate_random_numpy_array(10, dtype)
-        b = generate_random_numpy_array(10, dtype)
+        b = generate_random_numpy_array(10, dtype, low=-5, high=5, seed_value=8)
         expected = getattr(numpy, func)(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)

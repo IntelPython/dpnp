@@ -2,6 +2,9 @@
 {% set required_compiler_and_mkl_version = "2025.0" %}
 {% set required_dpctl_version = "0.20.0*" %}
 
+{% set pyproject = load_file_data('pyproject.toml') %}
+{% set py_build_deps = pyproject.get('build-system', {}).get('requires', []) %}
+
 package:
     name: dpnp
     version: {{ GIT_DESCRIBE_TAG }}
@@ -11,18 +14,27 @@ source:
 requirements:
     host:
       - python
-      - setuptools
-      - numpy >=1.23
-      - cython
-      - cmake >=3.21
-      - ninja
-      - git
+      - pip >=25.0
+      - pybind11 >=2.13.6
+      {% for dep in py_build_deps %}
+      {% if dep.startswith('dpctl') %}
       - dpctl >={{ required_dpctl_version }}
+      {% elif dep.startswith('ninja') %}
+      - {{ dep.split(';')[0] }} # [not win]
+      {% elif dep.startswith('cmake') %}
+      - {{ dep }}
+      {% elif dep.startswith('build>=') %}
+      - {{ 'python-' ~ dep }}
+      {% else %}
+      - {{ dep|replace('_','-') }}
+      {% endif %}
+      {% endfor %}
+      # versioneer dependency
+      - tomli # [py<311]
+      # Do not use pyproject.toml for setting dependencies on OneAPI packages
       - mkl-devel-dpcpp >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
       - onedpl-devel
       - tbb-devel
-      - wheel
-      - scikit-build
     build:
       - {{ compiler('cxx') }}
       - {{ compiler('dpcpp') }} >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}

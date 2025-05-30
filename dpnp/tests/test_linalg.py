@@ -24,9 +24,8 @@ from .helper import (
     has_support_aspect64,
     is_cpu_device,
     is_cuda_device,
-    is_gpu_device,
-    is_win_platform,
     numpy_version,
+    requires_intel_mkl_version,
 )
 from .third_party.cupy import testing
 
@@ -327,27 +326,22 @@ class TestCond:
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
-    def test_nan(self, p):
-        # dpnp.linalg.cond uses dpnp.linalg.inv()
-        # for the case when p is not None or p != -2 or p != 2
-        # For singular matrices cuSolver raises an error
-        # while OneMKL returns nans
-        if is_cuda_device() and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]:
-            pytest.skip("Different behavior on CUDA")
-        elif (
-            is_gpu_device()
-            and is_win_platform()
-            and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]
-        ):
-            pytest.skip("SAT-7966")
-        a = generate_random_numpy_array((2, 2, 2, 2))
-        a[0, 0] = 0
-        a[1, 1] = 0
+    def test_nan_to_inf(self, p):
+        a = numpy.zeros((2, 2))
         ia = dpnp.array(a)
 
-        result = dpnp.linalg.cond(ia, p=p)
-        expected = numpy.linalg.cond(a, p=p)
-        assert_dtype_allclose(result, expected)
+        # NumPy does not raise LinAlgError on singular matrices.
+        # It returns `inf`, `0`, or large/small finite values
+        # depending on the norm and the matrix content.
+        # DPNP raises LinAlgError for 1, -1, inf, -inf, and 'fro'
+        # due to use of gesv in the 2D case.
+        # For [None, 2, -2], DPNP does not raise.
+        if p in [None, 2, -2]:
+            result = dpnp.linalg.cond(ia, p=p)
+            expected = numpy.linalg.cond(a, p=p)
+            assert_dtype_allclose(result, expected)
+        else:
+            assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p)
 
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
@@ -460,10 +454,6 @@ class TestDet:
 
         assert_allclose(result, expected)
 
-    # TODO: remove skipif when MKLD-13852 is resolved
-    # _getrf_batch does not raise an error with singular matrices.
-    # Skip running on cpu because dpnp uses _getrf_batch only on cpu.
-    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-13852")
     def test_det_singular_matrix_3D(self):
         a_np = numpy.array(
             [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
@@ -1761,9 +1751,10 @@ class TestInv:
         assert_raises(numpy.linalg.LinAlgError, numpy.linalg.inv, a_np)
         assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.inv, a_dp)
 
-    # TODO: remove skip when MKLD-13852 is resolved
-    # _getrf_batch does not raise an error with singular matrices.
-    @pytest.mark.skip("MKLD-13852")
+    # TODO: remove skipif when Intel MKL 2025.2 is released
+    @pytest.mark.skipif(
+        not requires_intel_mkl_version("2025.2"), reason="mkl<2025.2"
+    )
     def test_inv_singular_matrix_3D(self):
         a_np = numpy.array(
             [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
@@ -2785,6 +2776,13 @@ class TestSlogdet:
         assert_allclose(sign_result, sign_expected)
         assert_allclose(logdet_result, logdet_expected)
 
+    # TODO: remove skipif when Intel MKL 2025.2 is released
+    # Skip running on CPU because dpnp uses _getrf_batch only on CPU
+    # for dpnp.linalg.det/slogdet.
+    @pytest.mark.skipif(
+        is_cpu_device() and not requires_intel_mkl_version("2025.2"),
+        reason="mkl<2025.2",
+    )
     @pytest.mark.parametrize(
         "matrix",
         [
@@ -2815,10 +2813,13 @@ class TestSlogdet:
         assert_allclose(sign_result, sign_expected)
         assert_allclose(logdet_result, logdet_expected)
 
-    # TODO: remove skipif when MKLD-13852 is resolved
-    # _getrf_batch does not raise an error with singular matrices.
-    # Skip running on cpu because dpnp uses _getrf_batch only on cpu.
-    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-13852")
+    # TODO: remove skipif when Intel MKL 2025.2 is released
+    # Skip running on CPU because dpnp uses _getrf_batch only on CPU
+    # for dpnp.linalg.det/slogdet.
+    @pytest.mark.skipif(
+        is_cpu_device() and not requires_intel_mkl_version("2025.2"),
+        reason="mkl<2025.2",
+    )
     def test_slogdet_singular_matrix_3D(self):
         a_np = numpy.array(
             [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
