@@ -224,4 +224,8 @@ sycl::event run_partition_one_pivot(sycl::queue &exec_q,
                                                       deps, group_size);
     }
 }
+
+void validate(const usm_ndarray &a,
+              const usm_ndarray &partitioned,
+              const size_t k);
 } // namespace statistics::partitioning

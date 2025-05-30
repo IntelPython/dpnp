@@ -477,7 +477,7 @@ KthElement1d::RetT KthElement1d::call(const dpctl::tensor::usm_ndarray &a,
                                       const size_t k,
                                       const std::vector<sycl::event> &depends)
 {
-    // validate(a, partitioned, k);
+    validate(a, partitioned, k);
 
     const int a_typenum = a.get_typenum();
     auto kth_elem_func = dispatch_table.get(a_typenum);
