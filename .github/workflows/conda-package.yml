@@ -191,10 +191,6 @@ jobs:
           echo PACKAGE_VERSION=${PACKAGE_VERSION}
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
-      # conda-index does not support python 3.13, but we need to test DPNP package with python 3.13
-      - name: Remove conda-index
-        run: mamba remove conda-index
-
       - name: Install dpnp
         id: install_dpnp
         continue-on-error: true
@@ -324,10 +320,6 @@ jobs:
           (echo CONDA_LIB_PATH=%CONDA_PREFIX%\Library\lib\) >> %GITHUB_ENV%
           (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
 
-      - name: Install conda-index
-        run: |
-          mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
-
       - name: Create conda channel
         run: |
           @echo on
@@ -350,10 +342,6 @@ jobs:
           )
           echo PACKAGE_VERSION: %PACKAGE_VERSION%
           (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
-
-      # conda-index does not support python 3.13, but we need to test DPNP package with python 3.13
-      - name: Remove conda-index
-        run: mamba remove conda-index
 
       - name: Install dpnp
         run: |
