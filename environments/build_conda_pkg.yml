@@ -3,4 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12 # conda-build does not support python 3.13
-  - conda-build=25.4.2
+  - conda-build=25.5.0
