@@ -76,9 +76,9 @@ cdef ERROR_PREFIX = "DPNP error:"
 
 
 def convert_item(item):
-    if getattr(item, "__sycl_usm_array_interface__", False):
+    if hasattr(item, "__sycl_usm_array_interface__"):
         item_converted = dpnp.asnumpy(item)
-    elif getattr(item, "__array_interface__", False):  # detect if it is a container (TODO any better way?)
+    elif hasattr(item, "__array_interface__"):  # detect if it is a container (TODO any better way?)
         mod_name = getattr(item, "__module__", 'none')
         if (mod_name != 'numpy'):
             item_converted = dpnp.asnumpy(item)
