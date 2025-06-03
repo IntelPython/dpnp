@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.18.0] - 05/23/2025
+## [0.18.0] - 06/23/2025
 
 This release achieves 100% compliance with Python Array API specification (revision [2024.12](https://data-apis.org/array-api/2024.12/)).
 The release provides enhanced compatibility with NumPy 2.2.5. Window and mathematical routines are complemented by a set of new functions.
@@ -52,6 +52,7 @@ Moreover, it adds support to build `dpnp` from the source for AMD GPUs.
 * Added handling of empty string passed to a test env variable defining data type scope as a `False` value [#2415](https://github.com/IntelPython/dpnp/pull/2415)
 * Resolved build issues on non-Intel targets in `dpnp.i0` and `dpnp.kaiser` [#2439](https://github.com/IntelPython/dpnp/pull/2439)
 * Ensure consistency in the `dpnp.linalg.LinAlgError` exception raised on singular input matrices for both non-batched and batched cases in `dpnp.linalg.inv` [#2458] (https://github.com/IntelPython/dpnp/pull/2458)
+* Updated test f/w to correct a check of array interface while converting to `numpy.ndarray` for comparison [#2467] (https://github.com/IntelPython/dpnp/pull/2467)
 
 
 ## [0.17.0] - 02/26/2025
