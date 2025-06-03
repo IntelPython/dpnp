@@ -29,7 +29,7 @@ jobs:
 
     defaults:
       run:
-        shell: ${{ matrix.runner == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
+        shell: ${{ matrix.runner == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -41,7 +41,7 @@ jobs:
         # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
         # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
         python: ['3.9', '3.10', '3.11', '3.12']
-        runner: [ubuntu-22.04, ubuntu-24.04, windows-2019]
+        runner: [ubuntu-22.04, ubuntu-24.04, windows-2022]
 
     steps:
       - name: Cancel Previous Runs
@@ -98,7 +98,7 @@ jobs:
         run: mamba list
 
       - name: Activate OCL CPU RT
-        if: matrix.runner == 'windows-2019'
+        if: matrix.runner == 'windows-2022'
         shell: pwsh
         run: |
           $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
@@ -125,7 +125,7 @@ jobs:
           SYCL_CACHE_PERSISTENT: 1
 
       - name: ReRun tests on Linux
-        if: steps.run_tests.outcome == 'failure' && matrix.runner != 'windows-2019'
+        if: steps.run_tests.outcome == 'failure' && matrix.runner != 'windows-2022'
         id: run_tests_linux
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
@@ -142,7 +142,7 @@ jobs:
           SYCL_CACHE_PERSISTENT: 1
 
       - name: ReRun tests on Windows
-        if: steps.run_tests.outcome == 'failure' && matrix.runner == 'windows-2019'
+        if: steps.run_tests.outcome == 'failure' && matrix.runner == 'windows-2022'
         id: run_tests_win
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:

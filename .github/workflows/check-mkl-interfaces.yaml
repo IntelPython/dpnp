@@ -68,13 +68,13 @@ jobs:
         # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
         # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
         python: ['3.12']
-        os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
+        os: [ubuntu-22.04] # windows-2022 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
 
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
+        shell: ${{ matrix.os == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
     steps:
       - name: Checkout DPNP repo
@@ -158,13 +158,13 @@ jobs:
         # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
         # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
         python: ['3.12']
-        os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
+        os: [ubuntu-22.04] # windows-2022 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
 
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
+        shell: ${{ matrix.os == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
     env:
       onemkl-source-dir: '${{ github.workspace }}/onemkl/'
