@@ -2659,6 +2659,14 @@ def test_elemenwise_outer(x_shape, y_shape):
     assert_dtype_allclose(result, expected)
 
     result_outer = dpnp.outer(x, y)
+    if x_shape == y_shape == ():
+        print(
+            "test_elemenwise_outer:\n",
+            result,
+            result.flatten(),
+            result_outer,
+            result_outer.flatten(),
+        )
     assert dpnp.allclose(result.flatten(), result_outer.flatten())
 
 
