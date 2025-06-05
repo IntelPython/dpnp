@@ -34,13 +34,13 @@
 // include a local copy of elementwise common header from dpctl tensor:
 // dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
 // TODO: replace by including dpctl header once available
-#include "../../elementwise_functions/elementwise_functions.hpp"
+#include "../elementwise_functions.hpp"
 
 // dpctl tensor headers
 #include "kernels/elementwise_functions/common.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace dpnp::extensions::ufunc
+namespace dpnp::extensions::elementwise::mathematical
 {
 namespace py = pybind11;
 namespace py_int = dpnp::extensions::py_internal;
@@ -122,4 +122,4 @@ void init_fabs(py::module_ m)
         m.def("_fabs_result_type", fabs_result_type_pyapi);
     }
 }
-} // namespace dpnp::extensions::ufunc
+} // namespace dpnp::extensions::elementwise::mathematical

@@ -259,7 +259,8 @@ std::pair<sycl::event, sycl::event>
         src_offset, dst_offset);
 
     if (nd == 1 && simplified_src_strides[0] == 1 &&
-        simplified_dst_strides[0] == 1) {
+        simplified_dst_strides[0] == 1)
+    {
         // Special case of contiguous data
         auto contig_fn = nan_to_num_contig_dispatch_vector[src_typeid];
 
@@ -345,7 +346,8 @@ struct NanToNumFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename NanToNumOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             return nullptr;
         }
         else {
@@ -360,7 +362,8 @@ struct NanToNumContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename NanToNumOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             return nullptr;
         }
         else {

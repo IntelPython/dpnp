@@ -25,11 +25,14 @@
 
 #include <pybind11/pybind11.h>
 
-#include "elementwise_functions/common.hpp"
+#include "functional/common.hpp"
+#include "mathematical/common.hpp"
 
-namespace ufunc_ns = dpnp::extensions::ufunc;
+namespace mathematical_ns = dpnp::extensions::elementwise::mathematical;
+namespace functional_ns = dpnp::extensions::elementwise::functional;
 
-PYBIND11_MODULE(_ufunc_impl, m)
+PYBIND11_MODULE(_elementwise_impl, m)
 {
-    ufunc_ns::init_elementwise_functions(m);
+    mathematical_ns::init_mathematical(m);
+    functional_ns::init_functional(m);
 }

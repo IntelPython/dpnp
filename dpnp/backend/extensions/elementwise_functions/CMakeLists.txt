@@ -24,35 +24,35 @@
 # *****************************************************************************
 
 set(_elementwise_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/bitwise_count.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/common.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/degrees.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fabs.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fix.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/float_power.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmax.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmin.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmod.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/gcd.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/heaviside.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/i0.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/interpolate.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/lcm.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/ldexp.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/logaddexp2.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/nan_to_num.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/radians.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/sinc.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/spacing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/bitwise_count.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/degrees.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/fabs.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/fix.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/float_power.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/fmax.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/fmin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/fmod.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/gcd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/heaviside.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/i0.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/interpolate.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/lcm.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/ldexp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/logaddexp2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/nan_to_num.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/radians.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/sinc.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mathematical/spacing.cpp
 )
 
-set(python_module_name _ufunc_impl)
+set(python_module_name _elementwise_impl)
 
 set(_module_src
     # TODO: remove sources from `elementwise_functions` folder
-    ${CMAKE_CURRENT_SOURCE_DIR}/../elementwise_functions/elementwise_functions_type_utils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../elementwise_functions/simplify_iteration_space.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ufunc_py.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions_type_utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/simplify_iteration_space.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_py.cpp
     ${_elementwise_sources}
 )
 
@@ -112,5 +112,5 @@ if (DPNP_WITH_REDIST)
 endif()
 
 install(TARGETS ${python_module_name}
-  DESTINATION "dpnp/backend/extensions/ufunc"
+  DESTINATION "dpnp/backend/extensions/elementwise_functions"
 )
