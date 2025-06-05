@@ -27,6 +27,8 @@ Moreover, it adds support to build `dpnp` from the source for AMD GPUs.
 * Added implementation of `dpnp.bartlett` [#2366](https://github.com/IntelPython/dpnp/pull/2366)
 * Added implementation of `dpnp.convolve` [#2205](https://github.com/IntelPython/dpnp/pull/2205)
 * Added implementation of `dpnp.kaiser` [#2387](https://github.com/IntelPython/dpnp/pull/2387)
+* Added implementation of `dpnp.bitwise_count` [#2308](https://github.com/IntelPython/dpnp/pull/2308)
+* Added implementation of `dpnp.common_type` [#2391](https://github.com/IntelPython/dpnp/pull/2391)
 * Added implementation of `dpnp.interp` [#2417](https://github.com/IntelPython/dpnp/pull/2417)
 * Added support to build `dpnp` for specified AMD GPU architecture using [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/amd/home/) [#2302](https://github.com/IntelPython/dpnp/pull/2302)
 
@@ -52,7 +54,7 @@ Moreover, it adds support to build `dpnp` from the source for AMD GPUs.
 * Updated FFT module to ensure an input array is Hermitian before calling complex-to-real FFT [#2444](https://github.com/IntelPython/dpnp/pull/2444)
 * Aligned `black` configuration with the list of supported python versions [#2457](https://github.com/IntelPython/dpnp/pull/2457)
 * Use `pyproject.toml` instead of `setup.py` aligning with current packaging best practices [#2462](https://github.com/IntelPython/dpnp/pull/2462)
-* Added a clarification to `dpnp.linalg.cond` docstring about its behavior with singular matrices [#2500] (https://github.com/IntelPython/dpnp/pull/2500)
+* Added a clarification to `dpnp.linalg.cond` docstring about its behavior with singular matrices [#2460](https://github.com/IntelPython/dpnp/pull/2460)
 
 ### Fixed
 
