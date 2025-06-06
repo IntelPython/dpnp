@@ -47,16 +47,16 @@ typedef sycl::event (*window_fn_ptr_t)(sycl::queue &,
                                        const std::vector<sycl::event> &);
 
 template <typename T, template <typename> class Functor>
-sycl::event window_impl(sycl::queue &q,
+sycl::event window_impl(sycl::queue &exec_q,
                         char *result,
                         const std::size_t nelems,
                         const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+    dpctl::tensor::type_utils::validate_type_for_device<T>(exec_q);
 
     T *res = reinterpret_cast<T *>(result);
 
-    sycl::event window_ev = q.submit([&](sycl::handler &cgh) {
+    sycl::event window_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         using WindowKernel = Functor<T>;
@@ -75,7 +75,7 @@ std::tuple<size_t, char *, funcPtrT>
 {
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
 
-    int nd = result.get_ndim();
+    const int nd = result.get_ndim();
     if (nd != 1) {
         throw py::value_error("Array should be 1d");
     }
@@ -87,17 +87,17 @@ std::tuple<size_t, char *, funcPtrT>
 
     const bool is_result_c_contig = result.is_c_contiguous();
     if (!is_result_c_contig) {
-        throw py::value_error("The result input array is not c-contiguous.");
+        throw py::value_error("The result array is not c-contiguous.");
     }
 
-    size_t nelems = result.get_size();
+    const std::size_t nelems = result.get_size();
     if (nelems == 0) {
         return std::make_tuple(nelems, nullptr, nullptr);
     }
 
-    int result_typenum = result.get_typenum();
+    const int result_typenum = result.get_typenum();
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
+    const int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
     funcPtrT fn = window_dispatch_vector[result_type_id];
 
     if (fn == nullptr) {

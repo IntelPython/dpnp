@@ -176,7 +176,7 @@ std::pair<sycl::event, sycl::event>
 
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
-    int src_nd = src.get_ndim();
+    const int src_nd = src.get_ndim();
     if (src_nd != dst.get_ndim()) {
         throw py::value_error("Array dimensions are not the same.");
     }
@@ -184,8 +184,9 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
 
-    std::size_t nelems = src.get_size();
-    bool shapes_equal = std::equal(src_shape, src_shape + src_nd, dst_shape);
+    const std::size_t nelems = src.get_size();
+    const bool shapes_equal =
+        std::equal(src_shape, src_shape + src_nd, dst_shape);
     if (!shapes_equal) {
         throw py::value_error("Array shapes are not the same.");
     }
@@ -209,14 +210,14 @@ std::pair<sycl::event, sycl::event>
     char *dst_data = dst.get_data();
 
     // handle contiguous inputs
-    bool is_src_c_contig = src.is_c_contiguous();
-    bool is_src_f_contig = src.is_f_contiguous();
+    const bool is_src_c_contig = src.is_c_contiguous();
+    const bool is_src_f_contig = src.is_f_contiguous();
 
-    bool is_dst_c_contig = dst.is_c_contiguous();
-    bool is_dst_f_contig = dst.is_f_contiguous();
+    const bool is_dst_c_contig = dst.is_c_contiguous();
+    const bool is_dst_f_contig = dst.is_f_contiguous();
 
-    bool both_c_contig = (is_src_c_contig && is_dst_c_contig);
-    bool both_f_contig = (is_src_f_contig && is_dst_f_contig);
+    const bool both_c_contig = (is_src_c_contig && is_dst_c_contig);
+    const bool both_f_contig = (is_src_f_contig && is_dst_f_contig);
 
     if (both_c_contig || both_f_contig) {
         auto contig_fn = nan_to_num_contig_dispatch_vector[src_typeid];
