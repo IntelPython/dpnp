@@ -72,7 +72,7 @@ public:
     }
 };
 
-template <typename T, template <typename> class Functor>
+template <typename T>
 sycl::event kaiser_impl(sycl::queue &q,
                         char *result,
                         const std::size_t nelems,
@@ -87,7 +87,7 @@ sycl::event kaiser_impl(sycl::queue &q,
     sycl::event kaiser_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using KaiserKernel = Functor<T>;
+        using KaiserKernel = KaiserFunctor<T>;
         cgh.parallel_for<KaiserKernel>(sycl::range<1>(nelems),
                                        KaiserKernel(res, nelems, beta));
     });
@@ -101,7 +101,7 @@ struct KaiserFactory
     fnT get()
     {
         if constexpr (std::is_floating_point_v<T>) {
-            return kaiser_impl<T, KaiserFunctor>;
+            return kaiser_impl<T>;
         }
         else {
             return nullptr;
