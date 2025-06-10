@@ -144,13 +144,33 @@ installation layout of compatible version. The following plugins from CodePlay a
 Building ``dpnp`` also requires `building Data Parallel Control Library for custom SYCL targets.
 <https://intelpython.github.io/dpctl/latest/beginners_guides/installation.html#building-for-custom-sycl-targets>`_
 
-``dpnp`` can be built for CUDA devices as follows:
+``dpnp`` can be built for CUDA devices using the ``--target-cuda`` argument.
+
+To target a specific architecture (e.g., ``sm_80``):
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --target=cuda
+    python scripts/build_locally.py --target-cuda=sm_80
 
-And for AMD devices:
+To use the default architecture (``sm_50``), run:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --target-cuda
+
+Note that kernels are built for ``sm_50`` by default, allowing them to work on a wider
+range of architectures, but limiting the usage of more recent CUDA features.
+
+For reference, compute architecture strings like ``sm_80`` correspond to specific
+CUDA Compute Capabilities (e.g., Compute Capability 8.0 corresponds to ``sm_80``).
+A complete mapping between NVIDIA GPU models and their respective
+Compute Capabilities can be found in the official
+`CUDA GPU Compute Capability <https://developer.nvidia.com/cuda-gpus>`_ documentation.
+
+A full list of available SYCL alias targets is available in the
+`DPC++ Compiler User Manual <https://intel.github.io/llvm/UsersManual.html>`_.
+
+To build for AMD devices, use:
 
 .. code-block:: bash
 
@@ -179,7 +199,7 @@ architecture all at once:
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --target=cuda --target-hip=gfx90a
+    python scripts/build_locally.py --target-cuda --target-hip=gfx90a
 
 
 Testing
