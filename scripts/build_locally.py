@@ -192,7 +192,7 @@ if __name__ == "__main__":
         nargs="?",
         const="ON",
         help="Enable CUDA target for build; "
-        "optionally specify architecture (e.g., sm_80)",
+        "optionally specify architecture (e.g., --target-cuda=sm_80)",
         default=None,
         type=str,
     )
