@@ -110,10 +110,10 @@ template <typename Tab, typename Tc>
 struct GemmTypePairSupportFactory
 {
     static constexpr bool is_defined = std::disjunction<
-#if !defined(USE_ONEMKL_INTERFACES)
+#if !defined(USE_ONEMATH)
         dpctl_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, std::int32_t>,
         dpctl_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, float>,
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
         dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, float>,
         dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, sycl::half>,
         dpctl_td_ns::TypePairDefinedEntry<Tab, float, Tc, float>,
@@ -142,10 +142,10 @@ template <typename Tab, typename Tc>
 struct GemmBatchTypePairSupportFactory
 {
     static constexpr bool is_defined = std::disjunction<
-#if !defined(USE_ONEMKL_INTERFACES)
+#if !defined(USE_ONEMATH)
         dpctl_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, std::int32_t>,
         dpctl_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, float>,
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
         dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, float>,
         dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, sycl::half>,
         dpctl_td_ns::TypePairDefinedEntry<Tab, float, Tc, float>,

@@ -143,14 +143,14 @@ PYBIND11_MODULE(_blas_impl, m)
 
     {
         m.def(
-            "_using_onemkl_interfaces",
+            "_using_onemath",
             []() {
-#ifdef USE_ONEMKL_INTERFACES
+#ifdef USE_ONEMATH
                 return true;
 #else
                 return false;
 #endif
             },
-            "Check if the OneMKL interfaces are being used.");
+            "Check if OneMath is being used.");
     }
 }
