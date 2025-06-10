@@ -49,7 +49,10 @@ def _assert(assert_func, result, expected, *args, **kwargs):
     ]
     # For numpy < 2.0, some tests will fail for dtype mismatch
     dev = dpctl.select_default_device()
-    if numpy.__version__ >= "2.0.0" and dev.has_aspect_fp64:
+    if (
+        numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0"
+        and dev.has_aspect_fp64
+    ):
         strict = kwargs.setdefault("strict", True)
         if flag:
             if strict:

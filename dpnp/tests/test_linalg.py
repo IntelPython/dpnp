@@ -23,7 +23,6 @@ from .helper import (
     get_integer_float_dtypes,
     has_support_aspect64,
     is_cpu_device,
-    is_cuda_device,
     numpy_version,
     requires_intel_mkl_version,
 )
@@ -2104,11 +2103,14 @@ class TestNorm:
                 assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
                 assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
             else:
-                # TODO: when similar changes in numpy are available, instead
-                # of assert_equal with zero, we should compare with numpy
-                # ord in [None, 1, 2]
-                assert_equal(dpnp.linalg.norm(ia, **kwarg), 0.0)
-                assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
+                if numpy_version() >= "2.3.0":
+                    result = dpnp.linalg.norm(ia, **kwarg)
+                    expected = numpy.linalg.norm(a, **kwarg)
+                    assert_dtype_allclose(result, expected)
+                else:
+                    assert_equal(
+                        dpnp.linalg.norm(ia, **kwarg), 0.0, strict=False
+                    )
         else:
             result = dpnp.linalg.norm(ia, **kwarg)
             expected = numpy.linalg.norm(a, **kwarg)

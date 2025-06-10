@@ -340,7 +340,8 @@ class TestUnique:
         a = testing.shaped_random((100, 100), xp, dtype)
         return getattr(xp.unique_inverse(a), attr)
 
-    @testing.with_requires("numpy>=2.0")
+    # TODO: include numpy-2.3 when dpnp-issue-2476 is addressed
+    @testing.with_requires("numpy>=2.0", "numpy<2.3")
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_unique_values(self, xp, dtype):
