@@ -131,7 +131,7 @@ def run(
                 f"-DDPNP_ONEMKL_INTERFACES_DIR={onemkl_interfaces_dir}",
             ]
     elif onemkl_interfaces_dir:
-        RuntimeError("--onemkl-interfaces-dir option is not supported")
+        raise RuntimeError("--onemkl-interfaces-dir option is not supported")
 
     subprocess.check_call(
         cmake_args, shell=False, cwd=setup_dir, env=os.environ
