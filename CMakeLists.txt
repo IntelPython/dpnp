@@ -68,17 +68,21 @@ find_package(Dpctl REQUIRED)
 message(STATUS "Dpctl_INCLUDE_DIR=" ${Dpctl_INCLUDE_DIR})
 message(STATUS "Dpctl_TENSOR_INCLUDE_DIR=" ${Dpctl_TENSOR_INCLUDE_DIR})
 
-option(DPNP_TARGET_CUDA
-    "Build DPNP to target CUDA devices"
-    OFF
-)
 option(DPNP_USE_ONEMKL_INTERFACES
     "Build DPNP with oneMKL Interfaces"
     OFF
 )
+set(DPNP_TARGET_CUDA
+    ""
+    CACHE STRING
+    "Build DPNP to target CUDA device. \
+Set to a truthy value (e.g., ON, TRUE) to use default architecture (sm_50), \
+or to a specific architecture like sm_80."
+)
 set(HIP_TARGETS "" CACHE STRING "HIP architecture for target")
 
 set(_dpnp_sycl_targets)
+set(_dpnp_cuda_arch)
 set(_use_onemkl_interfaces OFF)
 set(_use_onemkl_interfaces_cuda OFF)
 set(_use_onemkl_interfaces_hip OFF)
@@ -87,8 +91,18 @@ set(_dpnp_sycl_target_compile_options)
 set(_dpnp_sycl_target_link_options)
 
 if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
-    if(DPNP_TARGET_CUDA)
-        set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
+    if (DPNP_TARGET_CUDA)
+        if(DPNP_TARGET_CUDA MATCHES "^sm_")
+            set(_dpnp_cuda_arch ${DPNP_TARGET_CUDA})
+        elseif(DPNP_TARGET_CUDA MATCHES "^(ON|TRUE|YES|Y|1)$")
+            set(_dpnp_cuda_arch "sm_50")
+        else()
+            message(FATAL_ERROR
+                "Invalid value for DPNP_TARGET_CUDA: \"${DPNP_TARGET_CUDA}\". "
+                "Expected 'ON', 'TRUE', 'YES', 'Y', '1', or a CUDA architecture like 'sm_80'."
+            )
+        endif()
+        set(_dpnp_sycl_targets "nvidia_gpu_${_dpnp_cuda_arch},spir64-unknown-unknown")
         set(_use_onemkl_interfaces_cuda ON)
     endif()
 
@@ -104,7 +118,7 @@ if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
 else()
     set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
 
-    if ("${DPNP_SYCL_TARGETS}" MATCHES "nvptx64-nvidia-cuda")
+    if("${DPNP_SYCL_TARGETS}" MATCHES "(nvidia_gpu_sm_|nvptx64-nvidia-cuda)")
         set(_use_onemkl_interfaces_cuda ON)
     endif()
 
