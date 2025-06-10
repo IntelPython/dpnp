@@ -38,7 +38,7 @@ def run(
     cmake_executable=None,
     verbose=False,
     cmake_opts="",
-    target="intel",
+    target_cuda=None,
     target_hip=None,
     onemkl_interfaces=False,
     onemkl_interfaces_dir=None,
@@ -98,12 +98,14 @@ def run(
         if "DPL_ROOT" in os.environ:
             os.environ["DPL_ROOT_HINT"] = os.environ["DPL_ROOT"]
 
-    if not target.strip():
-        target = "intel"
-
-    if target == "cuda":
+    if target_cuda is not None:
+        if not target_cuda.strip():
+            raise ValueError(
+                "--target-cuda can not be an empty string. "
+                "Use --target-cuda=<arch> or --target-cuda"
+            )
         cmake_args += [
-            "-DDPNP_TARGET_CUDA=ON",
+            f"-DDPNP_TARGET_CUDA={target_cuda}",
         ]
         # Always builds using oneMKL interfaces for the cuda target
         onemkl_interfaces = True
@@ -186,10 +188,12 @@ if __name__ == "__main__":
         type=str,
     )
     driver.add_argument(
-        "--target",
-        help="Target backend for build",
-        dest="target",
-        default="intel",
+        "--target-cuda",
+        nargs="?",
+        const="ON",
+        help="Enable CUDA target for build; "
+        "optionally specify architecture (e.g., sm_80)",
+        default=None,
         type=str,
     )
     driver.add_argument(
@@ -265,7 +269,7 @@ if __name__ == "__main__":
         cmake_executable=args.cmake_executable,
         verbose=args.verbose,
         cmake_opts=args.cmake_opts,
-        target=args.target,
+        target_cuda=args.target_cuda,
         target_hip=args.target_hip,
         onemkl_interfaces=args.onemkl_interfaces,
         onemkl_interfaces_dir=args.onemkl_interfaces_dir,
