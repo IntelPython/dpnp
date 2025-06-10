@@ -342,10 +342,10 @@ def _gemm_special_case(x1, x2, res_dtype, call_flag):
     is_int32_or_f32 = res_dtype in [dpnp.int32, dpnp.float32]
     flag = is_int8 and is_int32_or_f32 and call_flag in ["gemm", "gemm_batch"]
 
-    # onemkl_interfaces does not support these data types
-    onemkl_interfaces = bi._using_onemkl_interfaces()
+    # onemath does not support these data types
+    onemath = bi._using_onemath()
 
-    return flag and not onemkl_interfaces
+    return flag and not onemath
 
 
 def _get_result_shape(x1, x2, out, func, _get_result_shape_fn, np_flag):

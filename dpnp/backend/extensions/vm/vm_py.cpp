@@ -27,7 +27,7 @@
 //
 //*****************************************************************************
 
-#if not defined(USE_ONEMKL_INTERFACES)
+#if not defined(USE_ONEMATH)
 #include "abs.hpp"
 #include "acos.hpp"
 #include "acosh.hpp"
@@ -73,13 +73,13 @@
 #include "trunc.hpp"
 
 namespace vm_ns = dpnp::extensions::vm;
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
 
 #include <pybind11/pybind11.h>
 
 PYBIND11_MODULE(_vm_impl, m)
 {
-#if not defined(USE_ONEMKL_INTERFACES)
+#if not defined(USE_ONEMATH)
     vm_ns::init_abs(m);
     vm_ns::init_acos(m);
     vm_ns::init_acosh(m);
@@ -123,15 +123,15 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_tan(m);
     vm_ns::init_tanh(m);
     vm_ns::init_trunc(m);
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
     m.def(
         "_is_available",
         [](void) {
-#if defined(USE_ONEMKL_INTERFACES)
+#if defined(USE_ONEMATH)
             return false;
 #else
             return true;
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
         },
         "Check if the OneMKL VM library can be used.");
 }

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-
+* Renamed `--onemkl-interfaces` and `--onemkl-interfaces-dir` options for building script to `--onemath` and `--onemath-dir` to align with [oneMath specification](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/latest/elements/onemath/source/) [#????](https://github.com/IntelPython/dpnp/pull/????)
 ### Fixed
 
 

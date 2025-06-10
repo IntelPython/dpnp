@@ -72,16 +72,16 @@ option(DPNP_TARGET_CUDA
     "Build DPNP to target CUDA devices"
     OFF
 )
-option(DPNP_USE_ONEMKL_INTERFACES
-    "Build DPNP with oneMKL Interfaces"
+option(DPNP_USE_ONEMATH
+    "Build DPNP with oneMath"
     OFF
 )
 set(HIP_TARGETS "" CACHE STRING "HIP architecture for target")
 
 set(_dpnp_sycl_targets)
-set(_use_onemkl_interfaces OFF)
-set(_use_onemkl_interfaces_cuda OFF)
-set(_use_onemkl_interfaces_hip OFF)
+set(_use_onemath OFF)
+set(_use_onemath_cuda OFF)
+set(_use_onemath_hip OFF)
 
 set(_dpnp_sycl_target_compile_options)
 set(_dpnp_sycl_target_link_options)
@@ -89,11 +89,11 @@ set(_dpnp_sycl_target_link_options)
 if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
     if(DPNP_TARGET_CUDA)
         set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
-        set(_use_onemkl_interfaces_cuda ON)
+        set(_use_onemath_cuda ON)
     endif()
 
     if (NOT "x${HIP_TARGETS}" STREQUAL "x")
-        set(_use_onemkl_interfaces_hip ON)
+        set(_use_onemath_hip ON)
 
         if ("x${_dpnp_sycl_targets}" STREQUAL "x")
             set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},spir64-unknown-unknown")
@@ -105,11 +105,11 @@ else()
     set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
 
     if ("${DPNP_SYCL_TARGETS}" MATCHES "nvptx64-nvidia-cuda")
-        set(_use_onemkl_interfaces_cuda ON)
+        set(_use_onemath_cuda ON)
     endif()
 
     if ("${DPNP_SYCL_TARGETS}" MATCHES "amd_gpu_")
-        set(_use_onemkl_interfaces_hip ON)
+        set(_use_onemath_hip ON)
 
         if ("x${HIP_TARGETS}" STREQUAL "x")
             message(FATAL_ERROR "HIP_TARGETS must be specified when using HIP backend")
@@ -130,35 +130,35 @@ if (_dpnp_sycl_targets)
    list(APPEND _dpnp_sycl_target_link_options -fsycl-targets=${_dpnp_sycl_targets})
 endif()
 
-if(DPNP_USE_ONEMKL_INTERFACES)
-    set(_use_onemkl_interfaces ON)
+if(DPNP_USE_ONEMATH)
+    set(_use_onemath ON)
 else()
-    if(DEFINED ENV{DPNP_USE_ONEMKL_INTERFACES})
-        set(_use_onemkl_interfaces ON)
+    if(DEFINED ENV{DPNP_USE_ONEMATH})
+        set(_use_onemath ON)
     endif()
 endif()
 
-if(_use_onemkl_interfaces)
+if(_use_onemath)
     set(BUILD_FUNCTIONAL_TESTS False)
     set(BUILD_EXAMPLES False)
     set(ENABLE_MKLGPU_BACKEND True)
     set(ENABLE_MKLCPU_BACKEND True)
 
-    if(_use_onemkl_interfaces_cuda)
+    if(_use_onemath_cuda)
         set(ENABLE_CUBLAS_BACKEND True)
         set(ENABLE_CUSOLVER_BACKEND True)
         set(ENABLE_CUFFT_BACKEND True)
         # set(ENABLE_CURAND_BACKEND True)
     endif()
-    if(_use_onemkl_interfaces_hip)
+    if(_use_onemath_hip)
         set(ENABLE_ROCBLAS_BACKEND True)
         set(ENABLE_ROCSOLVER_BACKEND True)
         set(ENABLE_ROCFFT_BACKEND True)
         # set(ENABLE_ROCRAND_BACKEND True)
     endif()
 
-    if(DPNP_ONEMKL_INTERFACES_DIR)
-        FetchContent_Declare(onemath_library SOURCE_DIR "${DPNP_ONEMKL_INTERFACES_DIR}")
+    if(DPNP_ONEMATH_DIR)
+        FetchContent_Declare(onemath_library SOURCE_DIR "${DPNP_ONEMATH_DIR}")
     else()
         FetchContent_Declare(
             onemath_library
@@ -169,19 +169,19 @@ if(_use_onemkl_interfaces)
 
     FetchContent_MakeAvailable(onemath_library)
     if(TARGET onemath)
-        set(MKL_INTERFACES_LIB "onemath" CACHE INTERNAL "OneMath lib target")
+        set(ONEMATH_LIB "onemath" CACHE INTERNAL "OneMath lib target")
     elseif(TARGET onemkl)
-        set(MKL_INTERFACES_LIB "onemkl" CACHE INTERNAL "OneMKL lib target")
+        set(ONEMATH_LIB "onemkl" CACHE INTERNAL "OneMKL lib target")
     else()
         message(FATAL_ERROR "Neither 'oneMath' nor 'oneMKL' found!")
     endif()
-    message(STATUS "MKL interfaces lib target used: ${MKL_INTERFACES_LIB}")
+    message(STATUS "OneMath lib target used: ${ONEMATH_LIB}")
     set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
 else()
-    if(_use_onemkl_interfaces_cuda OR _use_onemkl_interfaces_hip)
+    if(_use_onemath_cuda OR _use_onemath_hip)
         message(FATAL_ERROR
-            "CUDA or HIP targets are enabled, but oneMKL Interfaces are not. "
-            "Please set DPNP_USE_ONEMKL_INTERFACES=ON to enable them."
+            "CUDA or HIP targets are enabled, but oneMath is not. "
+            "Please set DPNP_USE_ONEMATH=ON to enable them."
         )
     endif()
 endif()
