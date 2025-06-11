@@ -144,6 +144,10 @@ installation layout of compatible version. The following plugins from CodePlay a
 Building ``dpnp`` also requires `building Data Parallel Control Library for custom SYCL targets.
 <https://intelpython.github.io/dpctl/latest/beginners_guides/installation.html#building-for-custom-sycl-targets>`_
 
+Builds for CUDA and AMD devices internally use SYCL alias targets that are passed to the compiler.
+A full list of available SYCL alias targets is available in the
+`DPC++ Compiler User Manual <https://intel.github.io/llvm/UsersManual.html>`_.
+
 CUDA build
 ~~~~~~~~~~
 
@@ -169,9 +173,6 @@ CUDA Compute Capabilities (e.g., Compute Capability 8.0 corresponds to ``sm_80``
 A complete mapping between NVIDIA GPU models and their respective
 Compute Capabilities can be found in the official
 `CUDA GPU Compute Capability <https://developer.nvidia.com/cuda-gpus>`_ documentation.
-
-A full list of available SYCL alias targets is available in the
-`DPC++ Compiler User Manual <https://intel.github.io/llvm/UsersManual.html>`_.
 
 AMD build
 ~~~~~~~~~
