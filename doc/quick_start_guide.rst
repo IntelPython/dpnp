@@ -144,7 +144,10 @@ installation layout of compatible version. The following plugins from CodePlay a
 Building ``dpnp`` also requires `building Data Parallel Control Library for custom SYCL targets.
 <https://intelpython.github.io/dpctl/latest/beginners_guides/installation.html#building-for-custom-sycl-targets>`_
 
-``dpnp`` can be built for CUDA devices using the ``--target-cuda`` argument.
+CUDA build
+~~~~~~~~~~
+
+To build for CUDA devices, use the ``--target-cuda`` argument.
 
 To target a specific architecture (e.g., ``sm_80``):
 
@@ -170,7 +173,10 @@ Compute Capabilities can be found in the official
 A full list of available SYCL alias targets is available in the
 `DPC++ Compiler User Manual <https://intel.github.io/llvm/UsersManual.html>`_.
 
-To build for AMD devices, use:
+AMD build
+~~~~~~~~~
+
+To build for AMD devices, use the ``--target-hip=<arch>`` argument:
 
 .. code-block:: bash
 
@@ -193,6 +199,8 @@ For example:
 .. code-block:: bash
     python scripts/build_locally.py --target-hip=gfx90a
 
+Multi-target build
+~~~~~~~~~~~~~~~~~~
 
 It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
 architecture all at once:
