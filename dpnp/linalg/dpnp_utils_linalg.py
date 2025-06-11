@@ -1188,10 +1188,9 @@ def _norm_int_axis(x, ord, axis, keepdims):
         if x.shape[axis] == 0:
             x = dpnp.moveaxis(x, axis, -1)
             res_shape = x.shape[:-1]
-            result = dpnp.zeros_like(x, shape=res_shape)
             if keepdims:
-                result = result.reshape(res_shape + (1,))
-            return result
+                res_shape += (1,)
+            return dpnp.zeros_like(x, shape=res_shape)
         return dpnp.abs(x).max(axis=axis, keepdims=keepdims)
     if ord == -dpnp.inf:
         return dpnp.abs(x).min(axis=axis, keepdims=keepdims)
@@ -1226,16 +1225,14 @@ def _norm_tuple_axis(x, ord, row_axis, col_axis, keepdims):
 
     """
 
-    # pylint: disable=too-many-branches
     axis = (row_axis, col_axis)
     flag = x.shape[row_axis] == 0 or x.shape[col_axis] == 0
     if flag and ord in [1, 2, dpnp.inf]:
         x = dpnp.moveaxis(x, axis, (-2, -1))
         res_shape = x.shape[:-2]
-        result = dpnp.zeros_like(x, shape=res_shape)
         if keepdims:
-            result = result.reshape(res_shape + (1, 1))
-        return result
+            res_shape += (1, 1)
+        return dpnp.zeros_like(x, shape=res_shape)
     if row_axis == col_axis:
         raise ValueError("Duplicate axes given.")
     if ord == 2:
