@@ -82,7 +82,6 @@ or to a specific architecture like sm_80."
 set(HIP_TARGETS "" CACHE STRING "HIP architecture for target")
 
 set(_dpnp_sycl_targets)
-set(_dpnp_cuda_arch)
 set(_use_onemkl_interfaces OFF)
 set(_use_onemkl_interfaces_cuda OFF)
 set(_use_onemkl_interfaces_hip OFF)
@@ -92,6 +91,7 @@ set(_dpnp_sycl_target_link_options)
 
 if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
     if (DPNP_TARGET_CUDA)
+        set(_dpnp_cuda_arch)
         if(DPNP_TARGET_CUDA MATCHES "^sm_")
             set(_dpnp_cuda_arch ${DPNP_TARGET_CUDA})
         elseif(DPNP_TARGET_CUDA MATCHES "^(ON|TRUE|YES|Y|1)$")
