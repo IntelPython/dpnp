@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.19.0dev0+13.g1fca203f7f5 documentation</title>
+  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.19.0dev0+17.gf32304f26d2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=5ed4f29f"></script>
+      <script src="_static/documentation_options.js?v=21bb96c3"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -60,7 +60,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#install-package-from-intel-r-channel">Install Package from Intel(R) channel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#build-and-install-conda-package">Build and Install Conda Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#build-and-install-with-scikit-build">Build and Install with scikit-build</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#building-for-custom-sycl-targets">Building for custom SYCL targets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-for-custom-sycl-targets">Building for custom SYCL targets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cuda-build">CUDA build</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#amd-build">AMD build</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#multi-target-build">Multi-target build</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
@@ -207,7 +212,12 @@ installation layout of compatible version. The following plugins from CodePlay a
 </ul>
 </div></blockquote>
 <p>Building <code class="docutils literal notranslate"><span class="pre">dpnp</span></code> also requires <a class="reference external" href="https://intelpython.github.io/dpctl/latest/beginners_guides/installation.html#building-for-custom-sycl-targets">building Data Parallel Control Library for custom SYCL targets.</a></p>
-<p><code class="docutils literal notranslate"><span class="pre">dpnp</span></code> can be built for CUDA devices using the <code class="docutils literal notranslate"><span class="pre">--target-cuda</span></code> argument.</p>
+<p>Builds for CUDA and AMD devices internally use SYCL alias targets that are passed to the compiler.
+A full list of available SYCL alias targets is available in the
+<a class="reference external" href="https://intel.github.io/llvm/UsersManual.html">DPC++ Compiler User Manual</a>.</p>
+<section id="cuda-build">
+<h4>CUDA build<a class="headerlink" href="#cuda-build" title="Link to this heading"></a></h4>
+<p>To build for CUDA devices, use the <code class="docutils literal notranslate"><span class="pre">--target-cuda</span></code> argument.</p>
 <p>To target a specific architecture (e.g., <code class="docutils literal notranslate"><span class="pre">sm_80</span></code>):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--target-cuda<span class="o">=</span>sm_80
 </pre></div>
@@ -223,9 +233,10 @@ CUDA Compute Capabilities (e.g., Compute Capability 8.0 corresponds to <code cla
 A complete mapping between NVIDIA GPU models and their respective
 Compute Capabilities can be found in the official
 <a class="reference external" href="https://developer.nvidia.com/cuda-gpus">CUDA GPU Compute Capability</a> documentation.</p>
-<p>A full list of available SYCL alias targets is available in the
-<a class="reference external" href="https://intel.github.io/llvm/UsersManual.html">DPC++ Compiler User Manual</a>.</p>
-<p>To build for AMD devices, use:</p>
+</section>
+<section id="amd-build">
+<h4>AMD build<a class="headerlink" href="#amd-build" title="Link to this heading"></a></h4>
+<p>To build for AMD devices, use the <code class="docutils literal notranslate"><span class="pre">--target-hip=&lt;arch&gt;</span></code> argument:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--target-hip<span class="o">=</span>&lt;arch&gt;
 </pre></div>
 </div>
@@ -238,11 +249,15 @@ one architecture can be specified at a time.</p>
 <p>This will print names like <code class="docutils literal notranslate"><span class="pre">gfx90a</span></code>, <code class="docutils literal notranslate"><span class="pre">gfx1030</span></code>, etc.
 You can then use one of them as the argument to <code class="docutils literal notranslate"><span class="pre">--target-hip</span></code>.</p>
 <p>For example:</p>
+</section>
+<section id="multi-target-build">
+<h4>Multi-target build<a class="headerlink" href="#multi-target-build" title="Link to this heading"></a></h4>
 <p>It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
 architecture all at once:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--target-cuda<span class="w"> </span>--target-hip<span class="o">=</span>gfx90a
 </pre></div>
 </div>
+</section>
 </section>
 </section>
 <section id="testing">
