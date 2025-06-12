@@ -165,8 +165,8 @@ To use the default architecture (``sm_50``), run:
 
     python scripts/build_locally.py --target-cuda
 
-Note that kernels are built for ``sm_50`` by default, allowing them to work on a wider
-range of architectures, but limiting the usage of more recent CUDA features.
+Note that kernels are built for the default architecture (``sm_50``), allowing them to work on a
+wider range of architectures, but limiting the usage of more recent CUDA features.
 
 For reference, compute architecture strings like ``sm_80`` correspond to specific
 CUDA Compute Capabilities (e.g., Compute Capability 8.0 corresponds to ``sm_80``).
@@ -203,8 +203,8 @@ For example:
 Multi-target build
 ~~~~~~~~~~~~~~~~~~
 
-It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
-architecture all at once:
+By default, building from source enables support for Intel devices.
+However, the build can be extended to support both CUDA and AMD devices simultaneously:
 
 .. code-block:: bash
 
