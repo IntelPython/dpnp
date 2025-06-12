@@ -340,13 +340,13 @@ class TestUnique:
         a = testing.shaped_random((100, 100), xp, dtype)
         return getattr(xp.unique_inverse(a), attr)
 
-    # TODO: include numpy-2.3 when dpnp-issue-2476 is addressed
-    @testing.with_requires("numpy>=2.0", "numpy<2.3")
+    @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_unique_values(self, xp, dtype):
         a = testing.shaped_random((100, 100), xp, dtype)
-        return xp.unique_values(a)
+        out = xp.unique_values(a)  # may not be sorted from NumPy 2.3.
+        return xp.sort(out)
 
 
 @testing.parameterize(*testing.product({"trim": ["fb", "f", "b"]}))
