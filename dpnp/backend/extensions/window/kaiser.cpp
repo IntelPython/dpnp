@@ -50,13 +50,13 @@ template <typename T>
 class KaiserFunctor
 {
 private:
-    T *data = nullptr;
+    T *res = nullptr;
     const std::size_t N;
     const T beta;
 
 public:
-    KaiserFunctor(T *data, const std::size_t N, const T beta)
-        : data(data), N(N), beta(beta)
+    KaiserFunctor(T *res, const std::size_t N, const T beta)
+        : res(res), N(N), beta(beta)
     {
     }
 
@@ -67,27 +67,27 @@ public:
         const auto i = id.get(0);
         const T alpha = (N - 1) / T(2);
         const T tmp = (i - alpha) / alpha;
-        data[i] = cyl_bessel_i0(beta * sycl::sqrt(1 - tmp * tmp)) /
-                  cyl_bessel_i0(beta);
+        res[i] = cyl_bessel_i0(beta * sycl::sqrt(1 - tmp * tmp)) /
+                 cyl_bessel_i0(beta);
     }
 };
 
-template <typename T, template <typename> class Functor>
-sycl::event kaiser_impl(sycl::queue &q,
+template <typename T>
+sycl::event kaiser_impl(sycl::queue &exec_q,
                         char *result,
                         const std::size_t nelems,
                         const py::object &py_beta,
                         const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+    dpctl::tensor::type_utils::validate_type_for_device<T>(exec_q);
 
     T *res = reinterpret_cast<T *>(result);
     const T beta = py::cast<const T>(py_beta);
 
-    sycl::event kaiser_ev = q.submit([&](sycl::handler &cgh) {
+    sycl::event kaiser_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using KaiserKernel = Functor<T>;
+        using KaiserKernel = KaiserFunctor<T>;
         cgh.parallel_for<KaiserKernel>(sycl::range<1>(nelems),
                                        KaiserKernel(res, nelems, beta));
     });
@@ -101,7 +101,7 @@ struct KaiserFactory
     fnT get()
     {
         if constexpr (std::is_floating_point_v<T>) {
-            return kaiser_impl<T, KaiserFunctor>;
+            return kaiser_impl<T>;
         }
         else {
             return nullptr;
@@ -115,7 +115,7 @@ std::pair<sycl::event, sycl::event>
               const dpctl::tensor::usm_ndarray &result,
               const std::vector<sycl::event> &depends)
 {
-    auto [nelems, result_typeless_ptr, fn] =
+    auto [nelems, result_typeless_ptr, kaiser_fn] =
         window_fn<kaiser_fn_ptr_t>(exec_q, result, kaiser_dispatch_vector);
 
     if (nelems == 0) {
@@ -123,7 +123,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     sycl::event kaiser_ev =
-        fn(exec_q, result_typeless_ptr, nelems, py_beta, depends);
+        kaiser_fn(exec_q, result_typeless_ptr, nelems, py_beta, depends);
     sycl::event args_ev =
         dpctl::utils::keep_args_alive(exec_q, {result}, {kaiser_ev});
 

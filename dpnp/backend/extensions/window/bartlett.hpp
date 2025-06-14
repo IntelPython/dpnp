@@ -16,7 +16,7 @@
 // ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
 // LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
 // CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, RES, OR PROFITS; OR BUSINESS
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
@@ -35,18 +35,18 @@ template <typename T>
 class BartlettFunctor
 {
 private:
-    T *data = nullptr;
+    T *res = nullptr;
     const std::size_t N;
 
 public:
-    BartlettFunctor(T *data, const std::size_t N) : data(data), N(N) {}
+    BartlettFunctor(T *res, const std::size_t N) : res(res), N(N) {}
 
     void operator()(sycl::id<1> id) const
     {
         const auto i = id.get(0);
 
         const T alpha = (N - 1) / T(2);
-        data[i] = T(1) - sycl::fabs(i - alpha) / alpha;
+        res[i] = T(1) - sycl::fabs(i - alpha) / alpha;
     }
 };
 
