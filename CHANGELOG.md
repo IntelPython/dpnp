@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Fixed a bug for calculating the norm (`dpnp.linalg.norm`) of empty arrays when `keepdims=True` is passed  [#2477](https://github.com/IntelPython/dpnp/pull/2477)
 
 ## [0.18.0] - 06/04/2025
 
