@@ -144,13 +144,40 @@ installation layout of compatible version. The following plugins from CodePlay a
 Building ``dpnp`` also requires `building Data Parallel Control Library for custom SYCL targets.
 <https://intelpython.github.io/dpctl/latest/beginners_guides/installation.html#building-for-custom-sycl-targets>`_
 
-``dpnp`` can be built for CUDA devices as follows:
+Builds for CUDA and AMD devices internally use SYCL alias targets that are passed to the compiler.
+A full list of available SYCL alias targets is available in the
+`DPC++ Compiler User Manual <https://intel.github.io/llvm/UsersManual.html>`_.
+
+CUDA build
+~~~~~~~~~~
+
+To build for CUDA devices, use the ``--target-cuda`` argument.
+
+To target a specific architecture (e.g., ``sm_80``):
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --target=cuda
+    python scripts/build_locally.py --target-cuda=sm_80
 
-And for AMD devices:
+To use the default architecture (``sm_50``), run:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --target-cuda
+
+Note that kernels are built for the default architecture (``sm_50``), allowing them to work on a
+wider range of architectures, but limiting the usage of more recent CUDA features.
+
+For reference, compute architecture strings like ``sm_80`` correspond to specific
+CUDA Compute Capabilities (e.g., Compute Capability 8.0 corresponds to ``sm_80``).
+A complete mapping between NVIDIA GPU models and their respective
+Compute Capabilities can be found in the official
+`CUDA GPU Compute Capability <https://developer.nvidia.com/cuda-gpus>`_ documentation.
+
+AMD build
+~~~~~~~~~
+
+To build for AMD devices, use the ``--target-hip=<arch>`` argument:
 
 .. code-block:: bash
 
@@ -173,13 +200,17 @@ For example:
 .. code-block:: bash
     python scripts/build_locally.py --target-hip=gfx90a
 
+Multi-target build
+~~~~~~~~~~~~~~~~~~
 
-It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
-architecture all at once:
+The default ``dpnp`` build from the source enables support of Intel devices only.
+Extending the build with a custom SYCL target additionally enables support of CUDA or AMD
+device in ``dpnp``. Besides, the support can be also extended to enable both CUDA and AMD
+devices at the same time:
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --target=cuda --target-hip=gfx90a
+    python scripts/build_locally.py --target-cuda --target-hip=gfx90a
 
 
 Testing
