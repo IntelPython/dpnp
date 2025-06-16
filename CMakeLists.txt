@@ -117,7 +117,7 @@ if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
         else()
             message(FATAL_ERROR
                 "Invalid value for HIP_TARGETS: \"${HIP_TARGETS}\". "
-                "Expected an architecture name starting with 'gfx', such as 'gfx90a' or 'gfx1030'."
+                "Expected an architecture name starting with 'gfx', e.g. 'gfx1030'."
             )
         endif()
     endif()
