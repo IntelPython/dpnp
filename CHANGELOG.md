@@ -12,8 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Adjusted the `pre-commit` configuration to run autoupdate weekly [#2479](https://github.com/IntelPython/dpnp/pull/2479)
+
 ### Fixed
 
+* Fixed a bug for calculating the norm (`dpnp.linalg.norm`) of empty arrays when `keepdims=True` is passed  [#2477](https://github.com/IntelPython/dpnp/pull/2477)
 
 ## [0.18.0] - 06/04/2025
 
