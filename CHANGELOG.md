@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Adjusted the `pre-commit` configuration to run autoupdate weekly [#2479](https://github.com/IntelPython/dpnp/pull/2479)
+* Improved `--target-hip` handling to accept only gfx-prefixed values and allow disabling HIP build [#2479](https://github.com/IntelPython/dpnp/pull/2479)
 
 ### Fixed
 
