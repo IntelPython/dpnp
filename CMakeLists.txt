@@ -106,13 +106,19 @@ if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
         set(_use_onemkl_interfaces_cuda ON)
     endif()
 
-    if (NOT "x${HIP_TARGETS}" STREQUAL "x")
-        set(_use_onemkl_interfaces_hip ON)
-
-        if ("x${_dpnp_sycl_targets}" STREQUAL "x")
-            set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},spir64-unknown-unknown")
+    if (HIP_TARGETS)
+        if (HIP_TARGETS MATCHES "^gfx")
+            if ("x${_dpnp_sycl_targets}" STREQUAL "x")
+                set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},spir64-unknown-unknown")
+            else()
+                set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},${_dpnp_sycl_targets}")
+            endif()
+            set(_use_onemkl_interfaces_hip ON)
         else()
-            set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},${_dpnp_sycl_targets}")
+            message(FATAL_ERROR
+                "Invalid value for HIP_TARGETS: \"${HIP_TARGETS}\". "
+                "Expected an architecture name starting with 'gfx', such as 'gfx90a' or 'gfx1030'."
+            )
         endif()
     endif()
 else()
