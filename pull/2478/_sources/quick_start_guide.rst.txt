@@ -203,8 +203,10 @@ For example:
 Multi-target build
 ~~~~~~~~~~~~~~~~~~
 
-By default, building from source enables support for Intel devices.
-However, the build can be extended to support both CUDA and AMD devices simultaneously:
+The default ``dpnp`` build from the source enables support of Intel devices only.
+Extending the build with a custom SYCL target additionally enables support of CUDA or AMD
+device in ``dpnp``. Besides, the support can be also extended to enable both CUDA and AMD
+devices at the same time:
 
 .. code-block:: bash
 
