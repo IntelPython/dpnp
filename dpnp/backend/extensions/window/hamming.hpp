@@ -35,17 +35,17 @@ template <typename T>
 class HammingFunctor
 {
 private:
-    T *data = nullptr;
+    T *res = nullptr;
     const std::size_t N;
 
 public:
-    HammingFunctor(T *data, const std::size_t N) : data(data), N(N) {}
+    HammingFunctor(T *res, const std::size_t N) : res(res), N(N) {}
 
     void operator()(sycl::id<1> id) const
     {
         const auto i = id.get(0);
 
-        data[i] = T(0.54) - T(0.46) * sycl::cospi(T(2) * i / (N - 1));
+        res[i] = T(0.54) - T(0.46) * sycl::cospi(T(2) * i / (N - 1));
     }
 };
 
