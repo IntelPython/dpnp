@@ -146,13 +146,11 @@ var searchData=
   ['dpnp_5frng_5fwald_5fc_143',['dpnp_rng_wald_c',['../group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gacbdc26ae5f2e1a404d9ce2011613bd16',1,'dpnp_iface_random.hpp']]],
   ['dpnp_5frng_5fweibull_5fc_144',['dpnp_rng_weibull_c',['../group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga8d3046514e4bccb6d869f1052c4f4406',1,'dpnp_iface_random.hpp']]],
   ['dpnp_5frng_5fzipf_5fc_145',['dpnp_rng_zipf_c',['../group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gaa681bf7b3ffc6fdd431f1ec2f4dd6d64',1,'dpnp_iface_random.hpp']]],
-  ['dpnp_5fusm_5fiterator_146',['DPNP_USM_iterator',['../class_d_p_n_p___u_s_m__iterator.html',1,'']]],
-  ['dpnp_5fzeros_5fc_147',['dpnp_zeros_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gacd17ba5828ba92fae45ab9c3b82419ae',1,'dpnp_iface.hpp']]],
-  ['dpnp_5fzeros_5flike_5fc_148',['dpnp_zeros_like_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga701ba350a76dc444f53a7e7d59c7a143',1,'dpnp_iface.hpp']]],
-  ['dpnpc_5fid_149',['DPNPC_id',['../class_d_p_n_p_c__id.html',1,'DPNPC_id&lt; _Tp &gt;'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga1e1d9e72e8f1a92a6e25d7f563562b11',1,'DPNPC_id::DPNPC_id(DPCTLSyclQueueRef q_ref, pointer __ptr, const std::vector&lt; size_type &gt; &amp;__shape)'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae67edf544bf0edce8e1cd74d68d8dc76',1,'DPNPC_id::DPNPC_id(pointer __ptr, const std::vector&lt; size_type &gt; &amp;__shape, const std::vector&lt; size_type &gt; &amp;__strides)']]],
-  ['dpnpc_5fptr_5fadapter_150',['DPNPC_ptr_adapter',['../class_d_p_n_p_c__ptr__adapter.html',1,'']]],
-  ['dpnpfuncdata_151',['DPNPFuncData',['../struct_d_p_n_p_func_data.html',1,'']]],
-  ['dpnpfuncdata_5ft_152',['DPNPFuncData_t',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga52f631e01afd73cc5573f9e8f61bd78f',1,'dpnp_iface_fptr.hpp']]],
-  ['dpnpfuncname_153',['DPNPFuncName',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga8b20590525bff7c7ce4f728d2021b558',1,'dpnp_iface_fptr.hpp']]],
-  ['dpnpfunctype_154',['DPNPFuncType',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15',1,'dpnp_iface_fptr.hpp']]]
+  ['dpnp_5fzeros_5fc_146',['dpnp_zeros_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gacd17ba5828ba92fae45ab9c3b82419ae',1,'dpnp_iface.hpp']]],
+  ['dpnp_5fzeros_5flike_5fc_147',['dpnp_zeros_like_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga701ba350a76dc444f53a7e7d59c7a143',1,'dpnp_iface.hpp']]],
+  ['dpnpc_5fptr_5fadapter_148',['DPNPC_ptr_adapter',['../class_d_p_n_p_c__ptr__adapter.html',1,'']]],
+  ['dpnpfuncdata_149',['DPNPFuncData',['../struct_d_p_n_p_func_data.html',1,'']]],
+  ['dpnpfuncdata_5ft_150',['DPNPFuncData_t',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga52f631e01afd73cc5573f9e8f61bd78f',1,'dpnp_iface_fptr.hpp']]],
+  ['dpnpfuncname_151',['DPNPFuncName',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga8b20590525bff7c7ce4f728d2021b558',1,'dpnp_iface_fptr.hpp']]],
+  ['dpnpfunctype_152',['DPNPFuncType',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15',1,'dpnp_iface_fptr.hpp']]]
 ];
