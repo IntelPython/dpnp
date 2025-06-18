@@ -35,8 +35,6 @@ var hierarchy =
     [ "dpnp::extensions::blas::DotuContigFactory< fnT, varT >", "structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html", null ],
     [ "dpnp::extensions::blas::types::DotuTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
     [ "dpnp_less_comp", "classdpnp__less__comp.html", null ],
-    [ "DPNP_USM_iterator< _Tp >", "class_d_p_n_p___u_s_m__iterator.html", null ],
-    [ "DPNPC_id< _Tp >", "class_d_p_n_p_c__id.html", null ],
     [ "DPNPC_ptr_adapter< _DataType >", "class_d_p_n_p_c__ptr__adapter.html", null ],
     [ "DPNPFuncData", "struct_d_p_n_p_func_data.html", null ],
     [ "engine_struct", "structengine__struct.html", [
