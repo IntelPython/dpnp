@@ -1,0 +1,405 @@
+//*****************************************************************************
+// Copyright (c) 2024-2025, Intel Corporation
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+// THE POSSIBILITY OF SUCH DAMAGE.
+//*****************************************************************************
+
+
+// #pragma once
+
+// #include <sycl/sycl.hpp>
+// #include <complex>
+// #include <cstddef>
+// #include <cstdint>
+// #include <type_traits>
+// #include <vector>
+
+// // dpctl tensor headers
+// #include "kernels/alignment.hpp"
+// #include "utils/sycl_utils.hpp"
+// #include "utils/type_utils.hpp"
+
+// namespace dpnp::kernels::isclose
+// {
+
+// template <typename T, typename scT>
+// inline bool isclose_scalar(T a, T b, scT rtol, scT atol, bool equal_nan)
+// {
+//     if constexpr (dpctl::tensor::type_utils::is_complex_v<T>) {
+//         return isclose_scalar(a.real(), b.real(), rtol, atol, equal_nan) &&
+//                isclose_scalar(a.imag(), b.imag(), rtol, atol, equal_nan);
+//     }
+//     else {
+//         if (sycl::isnan(a) || sycl::isnan(b)) {
+//             return equal_nan && sycl::isnan(a) && sycl::isnan(b);
+//         }
+//         return sycl::fabs(a - b) <= atol + rtol * sycl::fabs(b);
+//     }
+// }
+
+// template <typename T, typename scT, std::uint8_t vec_sz = 4, std::uint8_t n_vecs = 2, bool enable_sg = true>
+// struct IsCloseContigFunctor
+// {
+//     const T *in1_;
+//     const T *in2_;
+//     bool *out_;
+//     std::size_t n_;
+//     scT rtol_;
+//     scT atol_;
+//     bool equal_nan_;
+
+//     IsCloseContigFunctor(const T *in1, const T *in2, bool *out,
+//                          std::size_t n, scT rtol, scT atol, bool equal_nan)
+//         : in1_(in1), in2_(in2), out_(out),
+//           n_(n), rtol_(rtol), atol_(atol), equal_nan_(equal_nan)
+//     {
+//     }
+
+//     void operator()(sycl::nd_item<1> item) const
+//     {
+//         const std::size_t gid = item.get_global_linear_id();
+//         if (gid < n_) {
+//             out_[gid] = isclose_scalar<T, scT>(in1_[gid], in2_[gid], rtol_, atol_, equal_nan_);
+//         }
+//     }
+// };
+
+// template <typename T, typename scT>
+// sycl::event isclose_contig_impl(sycl::queue &q,
+//                                 std::size_t n,
+//                                 scT rtol,
+//                                 scT atol,
+//                                 bool equal_nan,
+//                                 const char *in1_p,
+//                                 const char *in2_p,
+//                                 char *out_p,
+//                                 const std::vector<sycl::event> &depends)
+// {
+//     dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+
+//     const T *in1 = reinterpret_cast<const T *>(in1_p);
+//     const T *in2 = reinterpret_cast<const T *>(in2_p);
+//     bool *out = reinterpret_cast<bool *>(out_p);
+
+//     constexpr std::size_t wg_size = 128;
+//     const std::size_t n_wgs = (n + wg_size - 1) / wg_size;
+//     const sycl::range<1> gws{n_wgs * wg_size};
+//     const sycl::range<1> lws{wg_size};
+
+//     using Kernel = IsCloseContigFunctor<T, scT>;
+
+//     return q.submit([&](sycl::handler &cgh) {
+//         cgh.depends_on(depends);
+//         cgh.parallel_for<Kernel>(
+//             sycl::nd_range<1>(gws, lws),
+//             Kernel(in1, in2, out, n, rtol, atol, equal_nan));
+//     });
+// }
+
+// } // namespace dpnp::kernels::isclose
+
+
+#pragma once
+
+#include <complex>
+#include <cstddef>
+#include <vector>
+
+#include <sycl/sycl.hpp>
+// dpctl tensor headers
+#include "kernels/alignment.hpp"
+#include "kernels/dpctl_tensor_types.hpp"
+#include "utils/offset_utils.hpp"
+#include "utils/sycl_utils.hpp"
+#include "utils/type_utils.hpp"
+
+namespace dpnp::kernels::isclose
+{
+
+template <typename T>
+inline T isclose(const T a, const T b, const T rtol, const T atol, const bool equal_nan)
+{
+    if (sycl::isnan(a) || sycl::isnan(b)) {
+        //static cast<T>?
+        return equal_nan && sycl::isnan(a) && sycl::isnan(b);
+    }
+    if (sycl::isinf(a) || sycl::isinf(b)) {
+        return a == b;
+    }
+    return sycl::fabs(a - b) <= atol + rtol * sycl::fabs(b);
+}
+
+template <typename T, typename scT, typename InOutIndexerT>
+struct IsCloseFunctor
+{
+private:
+    const T *a_ = nullptr;
+    const T *b_ = nullptr;
+    T *out_ = nullptr;
+    const InOutIndexerT inp_out_indexer_;
+    const scT rtol_;
+    const scT atol_;
+    const bool equal_nan_;
+
+public:
+    IsCloseFunctor(const T *a,
+                   const T *b,
+                   T *out,
+                   const InOutIndexerT &inp_out_indexer,
+                   const scT rtol,
+                   const scT atol,
+                   const bool equal_nan)
+        : a_(a), b_(b),out_(out), inp_out_indexer_(inp_out_indexer), rtol_(rtol),
+          atol_(atol), equal_nan_(equal_nan)
+    {
+    }
+
+    void operator()(sycl::id<1> wid) const
+    {
+        const auto &offsets_ = inp_out_indexer_(wid.get(0));
+        const dpctl::tensor::ssize_t &inp_offset = offsets_.get_first_offset();
+        const dpctl::tensor::ssize_t &out_offset = offsets_.get_second_offset();
+
+        using dpctl::tensor::type_utils::is_complex_v;
+        if constexpr (is_complex_v<T>) {
+            using realT = typename T::value_type;
+            static_assert(std::is_same_v<realT, scT>);
+            T z_a = a_[inp_offset];
+            T z_b = b_[inp_offset];
+            realT x = isclose(z_a.real(), z_b.real(), rtol_, atol_, equal_nan_);
+            realT y = isclose(z_a.imag(), z_b.imag(), rtol_, atol_, equal_nan_);
+            out_[out_offset] = T{x, y};
+        }
+        else {
+            out_[out_offset] = isclose(a_[inp_offset], b_[inp_offset], rtol_, atol_, equal_nan_);
+        }
+    }
+};
+
+template <typename T,
+          typename scT,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
+          bool enable_sg_loadstore = true>
+struct IsCloseContigFunctor
+{
+private:
+    const T *a_ = nullptr;
+    const T *b_ = nullptr;
+    T *out_ = nullptr;
+    std::size_t nelems_;
+    const scT rtol_;
+    const scT atol_;
+    const bool equal_nan_;
+
+public:
+    IsCloseContigFunctor(const T *a,
+                         const T *b,
+                          T *out,
+                          const std::size_t n_elems,
+                          const scT rtol,
+                          const scT atol,
+                          const bool equal_nan)
+        : a_(a), b_(b), out_(out), nelems_(n_elems), rtol_(rtol), atol_(atol),
+          equal_nan_(equal_nan)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> ndit) const
+    {
+        constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
+        /* Each work-item processes vec_sz elements, contiguous in memory */
+        /* NOTE: work-group size must be divisible by sub-group size */
+
+        using dpctl::tensor::type_utils::is_complex_v;
+        if constexpr (enable_sg_loadstore && !is_complex_v<T>) {
+            auto sg = ndit.get_sub_group();
+            const std::uint16_t sgSize = sg.get_max_local_range()[0];
+            const std::size_t base =
+                elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
+                                sg.get_group_id()[0] * sgSize);
+
+            if (base + elems_per_wi * sgSize < nelems_) {
+                using dpctl::tensor::sycl_utils::sub_group_load;
+                using dpctl::tensor::sycl_utils::sub_group_store;
+                // sycl::vec<T, vec_sz> res_vec;
+#pragma unroll
+                for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
+                    const std::size_t offset = base + it * sgSize;
+                    auto a_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&a_[offset]);
+                    auto b_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&b_[offset]);
+                    auto out_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&out_[offset]);
+
+                    const sycl::vec<T, vec_sz> a_vec =
+                        sub_group_load<vec_sz>(sg, a_multi_ptr);
+                    const sycl::vec<T, vec_sz> b_vec =
+                        sub_group_load<vec_sz>(sg, b_multi_ptr);
+
+                    sycl::vec<T, vec_sz> res_vec;
+#pragma unroll
+                    for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
+                        res_vec[vec_id] =
+                            isclose(a_vec[vec_id], b_vec[vec_id], rtol_, atol_, equal_nan_);
+                    }
+                    sub_group_store<vec_sz>(sg, res_vec, out_multi_ptr);
+                }
+            }
+            else {
+                const std::size_t lane_id = sg.get_local_id()[0];
+                for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
+                    out_[k] = isclose(a_[k], b_[k], rtol_, atol_, equal_nan_);
+                }
+            }
+        }
+        else {
+            const std::uint16_t sgSize =
+                ndit.get_sub_group().get_local_range()[0];
+            const std::size_t gid = ndit.get_global_linear_id();
+            const std::uint16_t elems_per_sg = sgSize * elems_per_wi;
+
+            const std::size_t start =
+                (gid / sgSize) * (elems_per_sg - sgSize) + gid;
+            const std::size_t end = std::min(nelems_, start + elems_per_sg);
+            for (std::size_t offset = start; offset < end; offset += sgSize) {
+                if constexpr (is_complex_v<T>) {
+                    using realT = typename T::value_type;
+                    static_assert(std::is_same_v<realT, scT>);
+
+                    T z_a = a_[offset];
+                    T z_b = b_[offset];
+                    realT x = isclose(z_a.real(), z_b.real(), rtol_, atol_, equal_nan_);
+                    realT y = isclose(z_a.imag(), z_b.imag(), rtol_, atol_, equal_nan_);
+                    out_[offset] = T{x, y};
+                }
+                else {
+                    out_[offset] = isclose(a_[offset], b_[offset], rtol_, atol_, equal_nan_);
+                }
+            }
+        }
+    }
+};
+
+// template <typename T, typename scT>
+// sycl::event nan_to_num_strided_impl(sycl::queue &q,
+//                                     const size_t nelems,
+//                                     const int nd,
+//                                     const dpctl::tensor::ssize_t *shape_strides,
+//                                     const scT nan,
+//                                     const scT posinf,
+//                                     const scT neginf,
+//                                     const char *in_cp,
+//                                     const dpctl::tensor::ssize_t in_offset,
+//                                     char *out_cp,
+//                                     const dpctl::tensor::ssize_t out_offset,
+//                                     const std::vector<sycl::event> &depends)
+// {
+//     dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+
+//     const T *in_tp = reinterpret_cast<const T *>(in_cp);
+//     T *out_tp = reinterpret_cast<T *>(out_cp);
+
+//     using InOutIndexerT =
+//         typename dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+//     const InOutIndexerT indexer{nd, in_offset, out_offset, shape_strides};
+
+//     sycl::event comp_ev = q.submit([&](sycl::handler &cgh) {
+//         cgh.depends_on(depends);
+
+//         using NanToNumFunc = NanToNumFunctor<T, scT, InOutIndexerT>;
+//         cgh.parallel_for<NanToNumFunc>(
+//             {nelems},
+//             NanToNumFunc(in_tp, out_tp, indexer, nan, posinf, neginf));
+//     });
+//     return comp_ev;
+// }
+
+template <typename T,
+          typename scT,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u>
+sycl::event isclose_contig_impl(sycl::queue &exec_q,
+                                std::size_t nelems,
+                                const scT rtol,
+                                const scT atol,
+                                const bool equal_nan,
+                                const char *a_cp,
+                                ssize_t a_offset,
+                                const char *b_cp,
+                                ssize_t b_offset,
+                                char *out_cp,
+                                ssize_t out_offset,
+                                const std::vector<sycl::event> &depends = {})
+{
+    constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
+    const std::size_t n_work_items_needed = nelems / elems_per_wi;
+    const std::size_t empirical_threshold = std::size_t(1) << 21;
+    const std::size_t lws = (n_work_items_needed <= empirical_threshold)
+                                ? std::size_t(128)
+                                : std::size_t(256);
+
+    const std::size_t n_groups =
+        ((nelems + lws * elems_per_wi - 1) / (lws * elems_per_wi));
+    const auto gws_range = sycl::range<1>(n_groups * lws);
+    const auto lws_range = sycl::range<1>(lws);
+
+    const T *a_tp = reinterpret_cast<const T *>(a_cp) + a_offset;
+    const T *b_tp = reinterpret_cast<const T *>(b_cp) + b_offset;
+    T *out_tp = reinterpret_cast<T *>(out_cp) + out_offset;
+
+    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using dpctl::tensor::kernels::alignment_utils::is_aligned;
+        using dpctl::tensor::kernels::alignment_utils::required_alignment;
+        if (is_aligned<required_alignment>(a_tp) &&
+            is_aligned<required_alignment>(b_tp) &&
+            is_aligned<required_alignment>(out_tp))
+        {
+            constexpr bool enable_sg_loadstore = true;
+            using IsCloseFunc = IsCloseContigFunctor<T, scT, vec_sz, n_vecs,
+                                                       enable_sg_loadstore>;
+
+            cgh.parallel_for<IsCloseFunc>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                IsCloseFunc(a_tp, b_tp, out_tp, nelems, rtol, atol, equal_nan));
+        }
+        else {
+            constexpr bool disable_sg_loadstore = false;
+            using IsCloseFunc = IsCloseContigFunctor<T, scT, vec_sz, n_vecs,
+                                                       disable_sg_loadstore>;
+
+            cgh.parallel_for<IsCloseFunc>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                IsCloseFunc(a_tp, b_tp, out_tp, nelems, rtol, atol, equal_nan));
+        }
+    });
+
+    return comp_ev;
+}
+
+} // namespace dpnp::kernels::isclose

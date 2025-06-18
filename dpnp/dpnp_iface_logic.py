@@ -44,10 +44,13 @@ it contains:
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
+import dpctl.utils as dpu
+
 import numpy
 
 import dpnp
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
+import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 
 from .dpnp_utils import get_usm_allocations
 
@@ -771,7 +774,7 @@ greater_equal = DPNPBinaryFunc(
 )
 
 
-def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
+def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False, new=False):
     """
     Returns a boolean array where two arrays are element-wise equal within
     a tolerance.
@@ -880,22 +883,52 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
         dt = dpnp.result_type(b, 1.0, rtol, atol)
         b = dpnp.astype(b, dt)
 
-    # Firstly handle finite values:
-    # result = absolute(a - b) <= atol + rtol * absolute(b)
-    dt = dpnp.result_type(b, rtol, atol)
-    _b = dpnp.abs(b, dtype=dt)
-    _b *= rtol
-    _b += atol
-    result = less_equal(dpnp.abs(a - b), _b)
+    if not new:
 
-    # Handle "inf" values: they are treated as equal if they are in the same
-    # place and of the same sign in both arrays
-    result &= isfinite(b)
-    result |= a == b
+        print("OLD")
 
-    if equal_nan:
-        result |= isnan(a) & isnan(b)
-    return result
+        # Firstly handle finite values:
+        # result = absolute(a - b) <= atol + rtol * absolute(b)
+        dt = dpnp.result_type(b, rtol, atol)
+        _b = dpnp.abs(b, dtype=dt)
+        _b *= rtol
+        _b += atol
+        result = less_equal(dpnp.abs(a - b), _b)
+
+        # Handle "inf" values: they are treated as equal if they are in the same
+        # place and of the same sign in both arrays
+        result &= isfinite(b)
+        result |= a == b
+
+        if equal_nan:
+            result |= isnan(a) & isnan(b)
+        return result
+
+    else:
+
+        print("NEW")
+
+        usm_type, exec_q = get_usm_allocations([a, b])
+        out_dtype = dpnp.bool
+        output = dpnp.empty(
+            a.shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
+        )
+
+        _manager = dpu.SequentialOrderManager[exec_q]
+        mem_ev, ht_ev = ufi._isclose(
+            a.get_array(),
+            b.get_array(),
+            rtol,
+            atol,
+            equal_nan,
+            output.get_array(),
+            exec_q,
+            depends=_manager.submitted_events,
+        )
+        _manager.add_event_pair(mem_ev, ht_ev)
+
+        return output
+
 
 
 def iscomplex(x):
