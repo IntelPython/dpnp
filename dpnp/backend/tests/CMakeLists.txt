@@ -46,11 +46,8 @@ link_directories(${GTEST_LIB_DIR})
 
 # TODO split
 add_executable(dpnpc_tests
-               test_broadcast_iterator.cpp
                test_main.cpp
-               test_random.cpp
-               test_utils.cpp
-               test_utils_iterator.cpp)
+               test_random.cpp)
 target_link_libraries(dpnpc_tests GTest::GTest GTest::Main pthread dpnp_backend_library)
 
 # TODO split
