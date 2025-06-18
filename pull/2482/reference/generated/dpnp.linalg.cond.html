@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.cond &mdash; Data Parallel Extension for NumPy 0.19.0dev0+18.g7b1a94899ef documentation</title>
+  <title>dpnp.linalg.cond &mdash; Data Parallel Extension for NumPy 0.19.0dev0+19.gccdc3593393 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c3947c6e"></script>
+      <script src="../../_static/documentation_options.js?v=b25ff202"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -136,18 +136,39 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- The matrix whose condition number is sought.</p></li>
 <li><p><strong>p</strong> (<em>{None</em><em>, </em><em>1</em><em>, </em><em>-1</em><em>, </em><em>2</em><em>, </em><em>-2</em><em>, </em><em>inf</em><em>, </em><em>-inf</em><em>, </em><em>&quot;fro&quot;}</em><em>, </em><em>optional</em>) -- <p>Order of the norm used in the condition number computation:</p>
-<blockquote>
-<div><ul>
-<li><p>None: 2-norm.</p></li>
-<li><p>&quot;fro&quot;: Frobenius norm.</p></li>
-<li><p>inf: max(sum(abs(x), axis=1)).</p></li>
-<li><p>-inf: min(sum(abs(x), axis=1)).</p></li>
-<li><p>1: max(sum(abs(x), axis=0)).</p></li>
-<li><p>-1: min(sum(abs(x), axis=0)).</p></li>
-<li><p>2: 2-norm (largest singular value).</p></li>
-<li><p>-2: smallest singular value.</p></li>
-</ul>
-</div></blockquote>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>p</p></th>
+<th class="head"><p>norm for matrices</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>None</p></td>
+<td><p>2-norm</p></td>
+</tr>
+<tr class="row-odd"><td><p>'fro'</p></td>
+<td><p>Frobenius norm</p></td>
+</tr>
+<tr class="row-even"><td><p>inf</p></td>
+<td><p>max(sum(abs(x), axis=1))</p></td>
+</tr>
+<tr class="row-odd"><td><p>-inf</p></td>
+<td><p>min(sum(abs(x), axis=1))</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>max(sum(abs(x), axis=0))</p></td>
+</tr>
+<tr class="row-odd"><td><p>-1</p></td>
+<td><p>min(sum(abs(x), axis=0))</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>2-norm (largest singular value)</p></td>
+</tr>
+<tr class="row-odd"><td><p>-2</p></td>
+<td><p>smallest singular value</p></td>
+</tr>
+</tbody>
+</table>
 <p><code class="docutils literal notranslate"><span class="pre">inf</span></code> means the <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.inf</span></code> object, and the Frobenius norm is
 the root-of-sum-of-squares norm.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
