@@ -138,47 +138,6 @@ _DataType get_xyz_id_by_id_inkernel(size_t global_id,
 
 /**
  * @ingroup BACKEND_UTILS
- * @brief Check input shape is broadcastable to output one.
- *
- * @param [in] input_shape        Input shape.
- * @param [in] output_shape       Output shape.
- *
- * @return                        Input shape is broadcastable to output one or
- * not.
- */
-static inline bool
-    broadcastable(const std::vector<shape_elem_type> &input_shape,
-                  const std::vector<shape_elem_type> &output_shape)
-{
-    if (input_shape.size() > output_shape.size()) {
-        return false;
-    }
-
-    std::vector<shape_elem_type>::const_reverse_iterator irit =
-        input_shape.rbegin();
-    std::vector<shape_elem_type>::const_reverse_iterator orit =
-        output_shape.rbegin();
-    for (; irit != input_shape.rend(); ++irit, ++orit) {
-        if (*irit != 1 && *irit != *orit) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-static inline bool
-    broadcastable(const shape_elem_type *input_shape,
-                  const size_t input_shape_size,
-                  const std::vector<shape_elem_type> &output_shape)
-{
-    const std::vector<shape_elem_type> input_shape_vec(
-        input_shape, input_shape + input_shape_size);
-    return broadcastable(input_shape_vec, output_shape);
-}
-
-/**
- * @ingroup BACKEND_UTILS
  * @brief Check arrays are equal.
  *
  * @param [in] input1        Input1.
