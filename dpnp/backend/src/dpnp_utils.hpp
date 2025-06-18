@@ -38,14 +38,6 @@
 
 #include <dpnp_iface_fptr.hpp>
 
-#define LIBSYCL_VERSION_GREATER(major, minor, patch)                           \
-    (__LIBSYCL_MAJOR_VERSION > major) ||                                       \
-        (__LIBSYCL_MAJOR_VERSION == major and                                  \
-         __LIBSYCL_MINOR_VERSION > minor) ||                                   \
-        (__LIBSYCL_MAJOR_VERSION == major and                                  \
-         __LIBSYCL_MINOR_VERSION == minor and                                  \
-         __LIBSYCL_PATCH_VERSION >= patch)
-
 /**
  * Version of SYCL DPC++ 2023 compiler where a return type of sycl::abs() is
  * changed from unsigned integer to signed one of input vector.
