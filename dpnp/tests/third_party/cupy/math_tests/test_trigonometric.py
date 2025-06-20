@@ -1,5 +1,6 @@
 import unittest
 
+import numpy
 import pytest
 
 from dpnp.tests.helper import has_support_aspect64
@@ -24,7 +25,7 @@ class TestTrigonometric(unittest.TestCase):
         return getattr(xp, name)(a, b)
 
     @testing.for_dtypes(["e", "f", "d"])
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol={numpy.float16: 1e-3, "default": 1e-5})
     def check_unary_unit(self, name, xp, dtype):
         a = xp.array([0.2, 0.4, 0.6, 0.8], dtype=dtype)
         return getattr(xp, name)(a)
