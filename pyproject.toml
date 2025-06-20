@@ -31,6 +31,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: Implementation :: CPython",
   "Topic :: Software Development",
@@ -69,7 +70,7 @@ license = {text = "Apache 2.0"}
 maintainers = [{name = "Intel Corporation"}]
 name = "dpnp"
 readme = {file = "README.md", content-type = "text/markdown"}
-requires-python = ">=3.9,<3.13"
+requires-python = ">=3.9,<3.14"
 
 [project.optional-dependencies]
 coverage = ["Cython", "pytest", "pytest-cov", "coverage", "tomli", "llvm"]
@@ -92,7 +93,7 @@ Repository = "https://github.com/IntelPython/dpnp.git"
 
 [tool.black]
 line-length = 80
-target-version = ['py39', 'py310', 'py311', 'py312']
+target-version = ['py39', 'py310', 'py311', 'py312', 'py313']
 
 [tool.codespell]
 builtin = "clear,rare,informal,names"
