@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Enabled support of Python 3.13 [#2490](https://github.com/IntelPython/dpnp/pull/2490)
+
 ### Changed
 
 ### Fixed
