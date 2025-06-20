@@ -69,7 +69,7 @@ license = {text = "Apache 2.0"}
 maintainers = [{name = "Intel Corporation"}]
 name = "dpnp"
 readme = {file = "README.md", content-type = "text/markdown"}
-requires-python = ">=3.9,<3.13"
+requires-python = ">=3.9,<3.14"
 
 [project.optional-dependencies]
 coverage = ["Cython", "pytest", "pytest-cov", "coverage", "tomli", "llvm"]
