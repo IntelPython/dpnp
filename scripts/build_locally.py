@@ -27,6 +27,9 @@
 import os
 import subprocess
 import sys
+import warnings
+
+warnings.simplefilter("default", DeprecationWarning)
 
 
 def run(
@@ -40,6 +43,8 @@ def run(
     cmake_opts="",
     target_cuda=None,
     target_hip=None,
+    onemkl_interfaces=False,
+    onemkl_interfaces_dir=None,
     onemath=False,
     onemath_dir=None,
 ):
@@ -97,6 +102,23 @@ def run(
     if use_oneapi:
         if "DPL_ROOT" in os.environ:
             os.environ["DPL_ROOT_HINT"] = os.environ["DPL_ROOT"]
+
+    # TODO: onemkl_interfaces and onemkl_interfaces_dir are deprecated in
+    # dpnp-0.19.0 and should be removed in dpnp-0.20.0.
+    if onemkl_interfaces:
+        warnings.warn(
+            "Using 'onemkl_interfaces' is deprecated. Please use 'onemath' instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        onemath = True
+    if onemkl_interfaces_dir is not None:
+        warnings.warn(
+            "Using 'onemkl_interfaces_dir' is deprecated. Please use 'onemath_dir' instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        onemath_dir = onemkl_interfaces_dir
 
     if target_cuda is not None:
         if not target_cuda.strip():
@@ -204,6 +226,19 @@ if __name__ == "__main__":
         type=str,
     )
     driver.add_argument(
+        "--onemkl_interfaces",
+        help="(DEPRECATED) Build using oneMath",
+        dest="onemkl_interfaces",
+        action="store_true",
+    )
+    driver.add_argument(
+        "--onemkl_interfaces_dir",
+        help="(DEPRECATED) Local directory with source of oneMath",
+        dest="onemkl_interfaces_dir",
+        default=None,
+        type=str,
+    )
+    driver.add_argument(
         "--onemath",
         help="Build using oneMath",
         dest="onemath",
@@ -271,6 +306,8 @@ if __name__ == "__main__":
         cmake_opts=args.cmake_opts,
         target_cuda=args.target_cuda,
         target_hip=args.target_hip,
+        onemkl_interfaces=args.onemkl_interfaces,
+        onemkl_interfaces_dir=args.onemkl_interfaces_dir,
         onemath=args.onemath,
         onemath_dir=args.onemath_dir,
     )

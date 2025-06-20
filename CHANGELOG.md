@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Adjusted the `pre-commit` configuration to run autoupdate weekly [#2479](https://github.com/IntelPython/dpnp/pull/2479)
 * Improved validation of `--target-hip` build option to only accept a gfx-prefixed value [#2481](https://github.com/IntelPython/dpnp/pull/2481)
 * Cleaned up backend code to remove obsolete and unused parts of functionality [#2485](https://github.com/IntelPython/dpnp/pull/2485)
-* Renamed `--onemkl-interfaces` and `--onemkl-interfaces-dir` options for building script to `--onemath` and `--onemath-dir` to align with [oneMath specification](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/latest/elements/onemath/source/) [#2487](https://github.com/IntelPython/dpnp/pull/2487)
+* `--onemkl-interfaces` and `--onemkl-interfaces-dir` options for building script are deprecated, instead `--onemath` and `--onemath-dir` are introduced to be aligned with [oneMath specification](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/latest/elements/onemath/source/) [#2487](https://github.com/IntelPython/dpnp/pull/2487)
 
 ### Fixed
 
