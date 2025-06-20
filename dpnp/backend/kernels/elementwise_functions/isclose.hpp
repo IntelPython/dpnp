@@ -23,7 +23,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-
 // #pragma once
 
 // #include <sycl/sycl.hpp>
@@ -56,8 +55,8 @@
 //     }
 // }
 
-// template <typename T, typename scT, std::uint8_t vec_sz = 4, std::uint8_t n_vecs = 2, bool enable_sg = true>
-// struct IsCloseContigFunctor
+// template <typename T, typename scT, std::uint8_t vec_sz = 4, std::uint8_t
+// n_vecs = 2, bool enable_sg = true> struct IsCloseContigFunctor
 // {
 //     const T *in1_;
 //     const T *in2_;
@@ -78,7 +77,8 @@
 //     {
 //         const std::size_t gid = item.get_global_linear_id();
 //         if (gid < n_) {
-//             out_[gid] = isclose_scalar<T, scT>(in1_[gid], in2_[gid], rtol_, atol_, equal_nan_);
+//             out_[gid] = isclose_scalar<T, scT>(in1_[gid], in2_[gid], rtol_,
+//             atol_, equal_nan_);
 //         }
 //     }
 // };
@@ -117,7 +117,6 @@
 
 // } // namespace dpnp::kernels::isclose
 
-
 #pragma once
 
 #include <complex>
@@ -136,10 +135,14 @@ namespace dpnp::kernels::isclose
 {
 
 template <typename T>
-inline T isclose(const T a, const T b, const T rtol, const T atol, const bool equal_nan)
+inline bool isclose(const T a,
+                    const T b,
+                    const T rtol,
+                    const T atol,
+                    const bool equal_nan)
 {
     if (sycl::isnan(a) || sycl::isnan(b)) {
-        //static cast<T>?
+        // static cast<T>?
         return equal_nan && sycl::isnan(a) && sycl::isnan(b);
     }
     if (sycl::isinf(a) || sycl::isinf(b)) {
@@ -148,28 +151,32 @@ inline T isclose(const T a, const T b, const T rtol, const T atol, const bool eq
     return sycl::fabs(a - b) <= atol + rtol * sycl::fabs(b);
 }
 
-template <typename T, typename scT, typename InOutIndexerT>
+template <typename T1,
+          typename T2,
+          typename scT,
+          typename resTy,
+          typename InOutIndexerT>
 struct IsCloseFunctor
 {
 private:
-    const T *a_ = nullptr;
-    const T *b_ = nullptr;
-    T *out_ = nullptr;
+    const T1 *a_ = nullptr;
+    const T2 *b_ = nullptr;
+    resTy *out_ = nullptr;
     const InOutIndexerT inp_out_indexer_;
     const scT rtol_;
     const scT atol_;
     const bool equal_nan_;
 
 public:
-    IsCloseFunctor(const T *a,
-                   const T *b,
-                   T *out,
+    IsCloseFunctor(const T1 *a,
+                   const T2 *b,
+                   resTy *out,
                    const InOutIndexerT &inp_out_indexer,
                    const scT rtol,
                    const scT atol,
                    const bool equal_nan)
-        : a_(a), b_(b),out_(out), inp_out_indexer_(inp_out_indexer), rtol_(rtol),
-          atol_(atol), equal_nan_(equal_nan)
+        : a_(a), b_(b), out_(out), inp_out_indexer_(inp_out_indexer),
+          rtol_(rtol), atol_(atol), equal_nan_(equal_nan)
     {
     }
 
@@ -180,45 +187,46 @@ public:
         const dpctl::tensor::ssize_t &out_offset = offsets_.get_second_offset();
 
         using dpctl::tensor::type_utils::is_complex_v;
-        if constexpr (is_complex_v<T>) {
-            using realT = typename T::value_type;
-            static_assert(std::is_same_v<realT, scT>);
-            T z_a = a_[inp_offset];
-            T z_b = b_[inp_offset];
-            realT x = isclose(z_a.real(), z_b.real(), rtol_, atol_, equal_nan_);
-            realT y = isclose(z_a.imag(), z_b.imag(), rtol_, atol_, equal_nan_);
-            out_[out_offset] = T{x, y};
+        if constexpr (is_complex_v<T1>) {
+            T1 z_a = a_[inp_offset];
+            T2 z_b = b_[inp_offset];
+            bool x = isclose(z_a.real(), z_b.real(), rtol_, atol_, equal_nan_);
+            bool y = isclose(z_a.imag(), z_b.imag(), rtol_, atol_, equal_nan_);
+            out_[out_offset] = x && y;
         }
         else {
-            out_[out_offset] = isclose(a_[inp_offset], b_[inp_offset], rtol_, atol_, equal_nan_);
+            out_[out_offset] = isclose(a_[inp_offset], b_[inp_offset], rtol_,
+                                       atol_, equal_nan_);
         }
     }
 };
 
-template <typename T,
+template <typename T1,
+          typename T2,
           typename scT,
+          typename resTy,
           std::uint8_t vec_sz = 4u,
           std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 struct IsCloseContigFunctor
 {
 private:
-    const T *a_ = nullptr;
-    const T *b_ = nullptr;
-    T *out_ = nullptr;
+    const T1 *a_ = nullptr;
+    const T2 *b_ = nullptr;
+    resTy *out_ = nullptr;
     std::size_t nelems_;
     const scT rtol_;
     const scT atol_;
     const bool equal_nan_;
 
 public:
-    IsCloseContigFunctor(const T *a,
-                         const T *b,
-                          T *out,
-                          const std::size_t n_elems,
-                          const scT rtol,
-                          const scT atol,
-                          const bool equal_nan)
+    IsCloseContigFunctor(const T1 *a,
+                         const T2 *b,
+                         resTy *out,
+                         const std::size_t n_elems,
+                         const scT rtol,
+                         const scT atol,
+                         const bool equal_nan)
         : a_(a), b_(b), out_(out), nelems_(n_elems), rtol_(rtol), atol_(atol),
           equal_nan_(equal_nan)
     {
@@ -231,7 +239,7 @@ public:
         /* NOTE: work-group size must be divisible by sub-group size */
 
         using dpctl::tensor::type_utils::is_complex_v;
-        if constexpr (enable_sg_loadstore && !is_complex_v<T>) {
+        if constexpr (enable_sg_loadstore && !is_complex_v<T1>) {
             auto sg = ndit.get_sub_group();
             const std::uint16_t sgSize = sg.get_max_local_range()[0];
             const std::size_t base =
@@ -241,7 +249,6 @@ public:
             if (base + elems_per_wi * sgSize < nelems_) {
                 using dpctl::tensor::sycl_utils::sub_group_load;
                 using dpctl::tensor::sycl_utils::sub_group_store;
-                // sycl::vec<T, vec_sz> res_vec;
 #pragma unroll
                 for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
                     const std::size_t offset = base + it * sgSize;
@@ -255,16 +262,16 @@ public:
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&out_[offset]);
 
-                    const sycl::vec<T, vec_sz> a_vec =
+                    const sycl::vec<T1, vec_sz> a_vec =
                         sub_group_load<vec_sz>(sg, a_multi_ptr);
-                    const sycl::vec<T, vec_sz> b_vec =
+                    const sycl::vec<T2, vec_sz> b_vec =
                         sub_group_load<vec_sz>(sg, b_multi_ptr);
 
-                    sycl::vec<T, vec_sz> res_vec;
+                    sycl::vec<resTy, vec_sz> res_vec;
 #pragma unroll
                     for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
-                        res_vec[vec_id] =
-                            isclose(a_vec[vec_id], b_vec[vec_id], rtol_, atol_, equal_nan_);
+                        res_vec[vec_id] = isclose(a_vec[vec_id], b_vec[vec_id],
+                                                  rtol_, atol_, equal_nan_);
                     }
                     sub_group_store<vec_sz>(sg, res_vec, out_multi_ptr);
                 }
@@ -286,18 +293,18 @@ public:
                 (gid / sgSize) * (elems_per_sg - sgSize) + gid;
             const std::size_t end = std::min(nelems_, start + elems_per_sg);
             for (std::size_t offset = start; offset < end; offset += sgSize) {
-                if constexpr (is_complex_v<T>) {
-                    using realT = typename T::value_type;
-                    static_assert(std::is_same_v<realT, scT>);
-
-                    T z_a = a_[offset];
-                    T z_b = b_[offset];
-                    realT x = isclose(z_a.real(), z_b.real(), rtol_, atol_, equal_nan_);
-                    realT y = isclose(z_a.imag(), z_b.imag(), rtol_, atol_, equal_nan_);
-                    out_[offset] = T{x, y};
+                if constexpr (is_complex_v<T1>) {
+                    T1 z_a = a_[offset];
+                    T2 z_b = b_[offset];
+                    bool x = isclose(z_a.real(), z_b.real(), rtol_, atol_,
+                                     equal_nan_);
+                    bool y = isclose(z_a.imag(), z_b.imag(), rtol_, atol_,
+                                     equal_nan_);
+                    out_[offset] = x && y;
                 }
                 else {
-                    out_[offset] = isclose(a_[offset], b_[offset], rtol_, atol_, equal_nan_);
+                    out_[offset] = isclose(a_[offset], b_[offset], rtol_, atol_,
+                                           equal_nan_);
                 }
             }
         }
@@ -308,15 +315,13 @@ public:
 // sycl::event nan_to_num_strided_impl(sycl::queue &q,
 //                                     const size_t nelems,
 //                                     const int nd,
-//                                     const dpctl::tensor::ssize_t *shape_strides,
-//                                     const scT nan,
-//                                     const scT posinf,
-//                                     const scT neginf,
-//                                     const char *in_cp,
-//                                     const dpctl::tensor::ssize_t in_offset,
-//                                     char *out_cp,
-//                                     const dpctl::tensor::ssize_t out_offset,
-//                                     const std::vector<sycl::event> &depends)
+//                                     const dpctl::tensor::ssize_t
+//                                     *shape_strides, const scT nan, const scT
+//                                     posinf, const scT neginf, const char
+//                                     *in_cp, const dpctl::tensor::ssize_t
+//                                     in_offset, char *out_cp, const
+//                                     dpctl::tensor::ssize_t out_offset, const
+//                                     std::vector<sycl::event> &depends)
 // {
 //     dpctl::tensor::type_utils::validate_type_for_device<T>(q);
 
@@ -338,7 +343,8 @@ public:
 //     return comp_ev;
 // }
 
-template <typename T,
+template <typename T1,
+          typename T2,
           typename scT,
           std::uint8_t vec_sz = 4u,
           std::uint8_t n_vecs = 2u>
@@ -367,9 +373,11 @@ sycl::event isclose_contig_impl(sycl::queue &exec_q,
     const auto gws_range = sycl::range<1>(n_groups * lws);
     const auto lws_range = sycl::range<1>(lws);
 
-    const T *a_tp = reinterpret_cast<const T *>(a_cp) + a_offset;
-    const T *b_tp = reinterpret_cast<const T *>(b_cp) + b_offset;
-    T *out_tp = reinterpret_cast<T *>(out_cp) + out_offset;
+    const T1 *a_tp = reinterpret_cast<const T1 *>(a_cp) + a_offset;
+    const T2 *b_tp = reinterpret_cast<const T2 *>(b_cp) + b_offset;
+
+    using resTy = bool;
+    resTy *out_tp = reinterpret_cast<resTy *>(out_cp) + out_offset;
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -381,8 +389,9 @@ sycl::event isclose_contig_impl(sycl::queue &exec_q,
             is_aligned<required_alignment>(out_tp))
         {
             constexpr bool enable_sg_loadstore = true;
-            using IsCloseFunc = IsCloseContigFunctor<T, scT, vec_sz, n_vecs,
-                                                       enable_sg_loadstore>;
+            using IsCloseFunc =
+                IsCloseContigFunctor<T1, T2, scT, resTy, vec_sz, n_vecs,
+                                     enable_sg_loadstore>;
 
             cgh.parallel_for<IsCloseFunc>(
                 sycl::nd_range<1>(gws_range, lws_range),
@@ -390,8 +399,9 @@ sycl::event isclose_contig_impl(sycl::queue &exec_q,
         }
         else {
             constexpr bool disable_sg_loadstore = false;
-            using IsCloseFunc = IsCloseContigFunctor<T, scT, vec_sz, n_vecs,
-                                                       disable_sg_loadstore>;
+            using IsCloseFunc =
+                IsCloseContigFunctor<T1, T2, scT, resTy, vec_sz, n_vecs,
+                                     disable_sg_loadstore>;
 
             cgh.parallel_for<IsCloseFunc>(
                 sycl::nd_range<1>(gws_range, lws_range),
