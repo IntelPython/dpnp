@@ -25,11 +25,10 @@ def wrap_take(array, *args, **kwargs):
 
 
 class TestNdarrayInit(unittest.TestCase):
-    @pytest.mark.skip("passing 'None' into shape arguments is not supported")
+
     def test_shape_none(self):
-        with testing.assert_warns(DeprecationWarning):
-            a = cupy.ndarray(None)
-        assert a.shape == ()
+        with pytest.raises(TypeError):
+            cupy.ndarray(None)
 
     def test_shape_int(self):
         a = cupy.ndarray(3)

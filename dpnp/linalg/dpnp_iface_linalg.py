@@ -180,8 +180,22 @@ def cond(x, p=None):
     x : {dpnp.ndarray, usm_ndarray}
         The matrix whose condition number is sought.
     p : {None, 1, -1, 2, -2, inf, -inf, "fro"}, optional
-        Order of the norm used in the condition number computation.
-        ``inf`` means the `dpnp.inf` object, and the Frobenius norm is
+        Order of the norm used in the condition number computation:
+
+        =====  ============================
+        p      norm for matrices
+        =====  ============================
+        None   2-norm
+        'fro'  Frobenius norm
+        inf    max(sum(abs(x), axis=1))
+        -inf   min(sum(abs(x), axis=1))
+        1      max(sum(abs(x), axis=0))
+        -1     min(sum(abs(x), axis=0))
+        2      2-norm (largest singular value)
+        -2     smallest singular value
+        =====  ============================
+
+        ``inf`` means the :obj:`dpnp.inf` object, and the Frobenius norm is
         the root-of-sum-of-squares norm.
 
         Default: ``None``.
