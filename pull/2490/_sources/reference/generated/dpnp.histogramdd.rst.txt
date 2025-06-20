@@ -1,0 +1,10 @@
+﻿
+
+dpnp.histogramdd
+================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: histogramdd
