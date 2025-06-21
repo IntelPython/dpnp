@@ -27,6 +27,9 @@
 import os
 import subprocess
 import sys
+import warnings
+
+warnings.simplefilter("default", DeprecationWarning)
 
 
 def run(
@@ -42,6 +45,8 @@ def run(
     target_hip=None,
     onemkl_interfaces=False,
     onemkl_interfaces_dir=None,
+    onemath=False,
+    onemath_dir=None,
 ):
     build_system = None
 
@@ -98,6 +103,23 @@ def run(
         if "DPL_ROOT" in os.environ:
             os.environ["DPL_ROOT_HINT"] = os.environ["DPL_ROOT"]
 
+    # TODO: onemkl_interfaces and onemkl_interfaces_dir are deprecated in
+    # dpnp-0.19.0 and should be removed in dpnp-0.20.0.
+    if onemkl_interfaces:
+        warnings.warn(
+            "Using 'onemkl_interfaces' is deprecated. Please use 'onemath' instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        onemath = True
+    if onemkl_interfaces_dir is not None:
+        warnings.warn(
+            "Using 'onemkl_interfaces_dir' is deprecated. Please use 'onemath_dir' instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        onemath_dir = onemkl_interfaces_dir
+
     if target_cuda is not None:
         if not target_cuda.strip():
             raise ValueError(
@@ -107,8 +129,8 @@ def run(
         cmake_args += [
             f"-DDPNP_TARGET_CUDA={target_cuda}",
         ]
-        # Always builds using oneMKL interfaces for the cuda target
-        onemkl_interfaces = True
+        # Always builds using oneMath for the cuda target
+        onemath = True
 
     if target_hip is not None:
         if not target_hip.strip():
@@ -118,20 +140,20 @@ def run(
         cmake_args += [
             f"-DHIP_TARGETS={target_hip}",
         ]
-        # Always builds using oneMKL interfaces for the hip target
-        onemkl_interfaces = True
+        # Always builds using oneMath for the hip target
+        onemath = True
 
-    if onemkl_interfaces:
+    if onemath:
         cmake_args += [
-            "-DDPNP_USE_ONEMKL_INTERFACES=ON",
+            "-DDPNP_USE_ONEMATH=ON",
         ]
 
-        if onemkl_interfaces_dir:
+        if onemath_dir:
             cmake_args += [
-                f"-DDPNP_ONEMKL_INTERFACES_DIR={onemkl_interfaces_dir}",
+                f"-DDPNP_ONEMATH_DIR={onemath_dir}",
             ]
-    elif onemkl_interfaces_dir:
-        raise RuntimeError("--onemkl-interfaces-dir option is not supported")
+    elif onemath_dir:
+        raise RuntimeError("--onemath-dir option is not supported")
 
     subprocess.check_call(
         cmake_args, shell=False, cwd=setup_dir, env=os.environ
@@ -204,15 +226,28 @@ if __name__ == "__main__":
         type=str,
     )
     driver.add_argument(
-        "--onemkl-interfaces",
-        help="Build using oneMKL Interfaces",
+        "--onemkl_interfaces",
+        help="(DEPRECATED) Build using oneMath",
         dest="onemkl_interfaces",
         action="store_true",
     )
     driver.add_argument(
-        "--onemkl-interfaces-dir",
-        help="Local directory with source of oneMKL Interfaces",
+        "--onemkl_interfaces_dir",
+        help="(DEPRECATED) Local directory with source of oneMath",
         dest="onemkl_interfaces_dir",
+        default=None,
+        type=str,
+    )
+    driver.add_argument(
+        "--onemath",
+        help="Build using oneMath",
+        dest="onemath",
+        action="store_true",
+    )
+    driver.add_argument(
+        "--onemath-dir",
+        help="Local directory with source of oneMath",
+        dest="onemath_dir",
         default=None,
         type=str,
     )
@@ -273,4 +308,6 @@ if __name__ == "__main__":
         target_hip=args.target_hip,
         onemkl_interfaces=args.onemkl_interfaces,
         onemkl_interfaces_dir=args.onemkl_interfaces_dir,
+        onemath=args.onemath,
+        onemath_dir=args.onemath_dir,
     )
