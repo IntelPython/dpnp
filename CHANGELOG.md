@@ -6,15 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.18.1] - 06/DD/2025
 
+This release enables support of Python 3.13 to distribute `dpnp` packages with the latest python version.
+The release provides compatibility with NumPy 2.3.0 and includes several bug fixes.
+
 ### Added
 
 * Enabled support of Python 3.13 [#2490](https://github.com/IntelPython/dpnp/pull/2490)
 
 ### Changed
 
+* Updated the tests scope to exclude several `matmul` tests in case of numpy 2.3.0 due to known NumPy issue [#2495](https://github.com/IntelPython/dpnp/pull/2495)
+
 ### Fixed
 
-* Fixed a bug for calculating the norm (`dpnp.linalg.norm`) of empty arrays when `keepdims=True` is passed  [#2477](https://github.com/IntelPython/dpnp/pull/2477)
+* Fixed a bug for calculating the norm (`dpnp.linalg.norm`) of empty arrays when `keepdims=True` is passed [#2477](https://github.com/IntelPython/dpnp/pull/2477)
+* Updated the tests for hyperbolic and trigonometric elementwise functions to set correct tolerance for `float16` dtype [#2483](https://github.com/IntelPython/dpnp/pull/2483)
 
 
 ## [0.18.0] - 06/04/2025
@@ -50,7 +56,7 @@ Moreover, it adds support to build `dpnp` from the source for AMD GPUs.
 * Updated `dpnp.outer` to return the same dtype as NumPy when multiplying an array with a scalar [#2295](https://github.com/IntelPython/dpnp/pull/2295)
 * Changed `"max dimensions"` to `None` in array API capabilities [#2432](https://github.com/IntelPython/dpnp/pull/2432)
 * Updated kernel header `i0.hpp` to expose `cyl_bessel_i0` function depending on build target [#2440](https://github.com/IntelPython/dpnp/pull/2440)
-* Added MKL functions `arg`, `copysign`, `i0`, and `inv` from VM namespace to be used by implementation of the appropriate element-wise functions [#2445](https://github.com/IntelPython/dpnp/pull/2445)
+* Added MKL functions `arg`, `copysign`, `i0`, and `inv` from VM namespace to be used by implementation of the appropriate elementwise functions [#2445](https://github.com/IntelPython/dpnp/pull/2445)
 * Clarified details about conda install instructions in `Quick start quide` and `README` [#2446](https://github.com/IntelPython/dpnp/pull/2446)
 * Bumped oneMKL version up to `0.7` [#2448](https://github.com/IntelPython/dpnp/pull/2448)
 * The parameter `axis` in `dpnp.take_along_axis` function has now a default value of `-1` [#2442](https://github.com/IntelPython/dpnp/pull/2442)
