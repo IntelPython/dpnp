@@ -99,8 +99,7 @@ class TestMatmul(unittest.TestCase):
 )
 class TestMatmulOut(unittest.TestCase):
 
-    # TODO: include numpy-2.3 when numpy-issue-29164 is resolved
-    @testing.with_requires("numpy<2.3")
+    @testing.with_requires("numpy!=2.3.0")
     # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(name="dtype1", no_int8=True)
     @testing.for_all_dtypes(name="dtype2", no_int8=True)
