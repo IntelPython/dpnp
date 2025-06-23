@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.18.1] - 06/DD/2025
 
-This release enables support of Python 3.13 to distribute `dpnp` packages with the latest python version.
-The release provides compatibility with NumPy 2.3.0 and includes several bug fixes.
+This release achieves `dpnp` compatibility with Python 3.13 and enables distributing `dpnp` packages with the latest Python version.
+Moreover, the release provides compatibility with NumPy 2.3.0 and includes several bug fixes.
 
 ### Added
 
