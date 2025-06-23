@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.18.1] - 06/DD/2025
+## [0.18.1] - 06/24/2025
 
 This release achieves `dpnp` compatibility with Python 3.13 and enables distributing `dpnp` packages with the latest Python version.
 Moreover, the release provides compatibility with NumPy 2.3.0 and includes several bug fixes.
