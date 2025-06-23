@@ -843,8 +843,7 @@ class TestMatmul:
             assert_raises(TypeError, dpnp.matmul, ia, ib, out=iout)
             assert_raises(TypeError, numpy.matmul, a, b, out=out)
 
-    # TODO: include numpy-2.3 when numpy-issue-29164 is resolved
-    @testing.with_requires("numpy<2.3")
+    @testing.with_requires("numpy!=2.3.0")
     @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize("order1", ["C", "F", "A"])
     @pytest.mark.parametrize("order2", ["C", "F", "A"])
@@ -882,8 +881,7 @@ class TestMatmul:
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
-    # TODO: include numpy-2.3 when numpy-issue-29164 is resolved
-    @testing.with_requires("numpy<2.3")
+    @testing.with_requires("numpy!=2.3.0")
     @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize(
         "stride",
