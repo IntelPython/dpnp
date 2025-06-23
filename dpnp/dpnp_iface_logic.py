@@ -45,12 +45,11 @@ it contains:
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as dpu
-
 import numpy
 
 import dpnp
-from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
+from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
 from .dpnp_utils import get_usm_allocations
 
@@ -885,8 +884,6 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False, new=False):
 
     if not new:
 
-        print("OLD")
-
         # Firstly handle finite values:
         # result = absolute(a - b) <= atol + rtol * absolute(b)
         dt = dpnp.result_type(b, rtol, atol)
@@ -906,12 +903,49 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False, new=False):
 
     else:
 
-        print("NEW")
+        dt = dpnp.result_type(a, b, 1.0)
 
-        usm_type, exec_q = get_usm_allocations([a, b])
+        if dpnp.isscalar(a):
+            usm_type = b.usm_type
+            exec_q = b.sycl_queue
+            a = dpnp.array(
+                a,
+                dt,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
+            )
+        elif dpnp.isscalar(b):
+            usm_type = a.usm_type
+            exec_q = a.sycl_queue
+            b = dpnp.array(
+                b,
+                dt,
+                usm_type=usm_type,
+                sycl_queue=exec_q,
+            )
+        else:
+            usm_type, exec_q = get_usm_allocations([a, b])
+
+        # remove order="C"
+        a = dpnp.astype(a, dt, order="C", casting="same_kind", copy=False)
+        b = dpnp.astype(b, dt, order="C", casting="same_kind", copy=False)
+
+        try:
+            res_shape = dpnp.broadcast_shapes(a.shape, b.shape)
+        except ValueError:
+            raise ValueError(
+                "operands could not be broadcast together with shapes "
+                f"{a.shape} and {b.shape}"
+            )
+
+        if a.shape != res_shape:
+            a = dpnp.broadcast_to(a, res_shape)
+        if b.shape != res_shape:
+            b = dpnp.broadcast_to(b, res_shape)
+
         out_dtype = dpnp.bool
         output = dpnp.empty(
-            a.shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
+            res_shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
         )
 
         _manager = dpu.SequentialOrderManager[exec_q]
@@ -928,7 +962,6 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False, new=False):
         _manager.add_event_pair(mem_ev, ht_ev)
 
         return output
-
 
 
 def iscomplex(x):
