@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.19.0] - MM/DD/2025
@@ -16,7 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Improved validation of `--target-hip` build option to only accept a gfx-prefixed value [#2481](https://github.com/IntelPython/dpnp/pull/2481)
 * Cleaned up backend code to remove obsolete and unused parts of functionality [#2485](https://github.com/IntelPython/dpnp/pull/2485)
 
+### Deprecated
+
+### Removed
+
 ### Fixed
+
+### Security
 
 
 ## [0.18.1] - 06/24/2025
