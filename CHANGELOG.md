@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Fixed a bug for calculating the norm (`dpnp.linalg.norm`) of empty arrays when `keepdims=True` is passed  [#2477](https://github.com/IntelPython/dpnp/pull/2477)
 
+### Deprecated
+
+* `--onemkl-interfaces` and `--onemkl-interfaces-dir` options for building script are deprecated, instead `--onemath` and `--onemath-dir` are introduced to be aligned with [oneMath specification](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/latest/elements/onemath/source/) [#2487](https://github.com/IntelPython/dpnp/pull/2487)
+
 ## [0.18.0] - 06/04/2025
 
 This release achieves 100% compliance with Python Array API specification (revision [2024.12](https://data-apis.org/array-api/2024.12/)).
