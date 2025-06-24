@@ -122,7 +122,7 @@ static sycl::event getrf_impl(sycl::queue &exec_q,
         }
     } catch (oneapi::mkl::computation_error const &e) {
         // TODO: remove this catch when gh-642(oneMath) is fixed
-        // Workaround for oneMath interfaces
+        // Workaround for oneMath
         // oneapi::mkl::computation_error is thrown instead of
         // oneapi::mkl::lapack::computation_error.
         is_exception_caught = false;

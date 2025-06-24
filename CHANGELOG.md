@@ -15,8 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Adjusted the `pre-commit` configuration to run autoupdate weekly [#2479](https://github.com/IntelPython/dpnp/pull/2479)
 * Improved validation of `--target-hip` build option to only accept a gfx-prefixed value [#2481](https://github.com/IntelPython/dpnp/pull/2481)
 * Simplifies backend implementation of `dpnp.kaiser` by getting rid of unnecessary template [#2472](https://github.com/IntelPython/dpnp/pull/2472)
+* `--onemkl-interfaces` and `--onemkl-interfaces-dir` options for building script are deprecated, instead `--onemath` and `--onemath-dir` are introduced to be aligned with [oneMath specification](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/latest/elements/onemath/source/) [#2487](https://github.com/IntelPython/dpnp/pull/2487)
 
 ### Deprecated
+
+* `--onemkl-interfaces` and `--onemkl-interfaces-dir` options for building script are deprecated, instead `--onemath` and `--onemath-dir` are introduced to be aligned with [oneMath specification](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/latest/elements/onemath/source/) [#2487](https://github.com/IntelPython/dpnp/pull/2487)
 
 ### Removed
 
@@ -25,7 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
-
 
 ## [0.18.1] - 2025-06-24
 

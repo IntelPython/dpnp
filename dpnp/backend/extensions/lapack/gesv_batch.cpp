@@ -49,10 +49,10 @@ typedef sycl::event (*gesv_batch_impl_fn_ptr_t)(
     const std::int64_t,
     const std::int64_t,
     const std::int64_t,
-#if defined(USE_ONEMKL_INTERFACES)
+#if defined(USE_ONEMATH)
     const std::int64_t,
     const std::int64_t,
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
     char *,
     char *,
     const std::vector<sycl::event> &);
@@ -65,10 +65,10 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
                                    const std::int64_t n,
                                    const std::int64_t nrhs,
                                    const std::int64_t batch_size,
-#if defined(USE_ONEMKL_INTERFACES)
+#if defined(USE_ONEMATH)
                                    const std::int64_t stride_a,
                                    const std::int64_t stride_b,
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
                                    char *in_a,
                                    char *in_b,
                                    const std::vector<sycl::event> &depends)
@@ -89,7 +89,7 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
     std::stringstream error_msg;
     bool is_exception_caught = false;
 
-#if defined(USE_ONEMKL_INTERFACES)
+#if defined(USE_ONEMATH)
     // Use transpose::T if the LU-factorized array is passed as C-contiguous.
     // For F-contiguous we use transpose::N.
     // Since gesv_batch takes F-contiguous as input, we use transpose::N.
@@ -281,7 +281,7 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
         // Update the event dependencies for the current stream
         comp_evs[stream_id] = {gesv_event};
     }
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
 
     if (is_exception_caught) // an unexpected error occurs
     {
@@ -293,13 +293,13 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
     }
 
     sycl::event ht_ev = exec_q.submit([&](sycl::handler &cgh) {
-#if defined(USE_ONEMKL_INTERFACES)
+#if defined(USE_ONEMATH)
         cgh.depends_on(comp_event);
 #else
         for (const auto &ev : comp_evs) {
             cgh.depends_on(ev);
         }
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad, ipiv]() {
             sycl_free_noexcept(scratchpad, ctx);
@@ -383,7 +383,7 @@ std::pair<sycl::event, sycl::event>
 
     sycl::event gesv_ev;
 
-#if defined(USE_ONEMKL_INTERFACES)
+#if defined(USE_ONEMATH)
     auto const &coeff_matrix_strides = coeff_matrix.get_strides_vector();
     auto const &dependent_vals_strides = dependent_vals.get_strides_vector();
 
@@ -401,7 +401,7 @@ std::pair<sycl::event, sycl::event>
 #else
     gesv_ev = gesv_batch_fn(exec_q, n, nrhs, batch_size, coeff_matrix_data,
                             dependent_vals_data, depends);
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
 
     sycl::event ht_ev = dpctl::utils::keep_args_alive(
         exec_q, {coeff_matrix, dependent_vals}, {gesv_ev});

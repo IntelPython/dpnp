@@ -76,7 +76,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     std::stringstream error_msg;
     bool is_exception_caught = false;
 
-#if defined(USE_ONEMKL_INTERFACES)
+#if defined(USE_ONEMATH)
     // Use transpose::T if the LU-factorized array is passed as C-contiguous.
     // For F-contiguous we use transpose::N.
     // Since gesv takes F-contiguous as input, we use transpose::N.
@@ -90,7 +90,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     scratchpad_size =
         mkl_lapack::gesv_scratchpad_size<T>(exec_q, n, nrhs, lda, ldb);
 
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
 
     T *scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
 
@@ -102,7 +102,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         throw;
     }
 
-#if defined(USE_ONEMKL_INTERFACES)
+#if defined(USE_ONEMATH)
     sycl::event getrf_event;
     try {
         getrf_event = mkl_lapack::getrf(
@@ -146,7 +146,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
                                       scratchpad, ipiv, e, error_msg);
     } catch (oneapi::mkl::computation_error const &e) {
         // TODO: remove this catch when gh-642(oneMath) is fixed
-        // Workaround for oneMath interfaces
+        // Workaround for oneMath
         // oneapi::mkl::computation_error is thrown instead of
         // oneapi::mkl::lapack::computation_error.
         if (scratchpad != nullptr)
@@ -188,7 +188,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         error_msg << "Unexpected SYCL exception caught during gesv() call:\n"
                   << e.what();
     }
-#endif // USE_ONEMKL_INTERFACES
+#endif // USE_ONEMATH
 
     if (is_exception_caught) // an unexpected error occurs
     {
