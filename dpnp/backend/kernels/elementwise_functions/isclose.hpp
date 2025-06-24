@@ -155,14 +155,14 @@ template <typename T1,
           typename T2,
           typename scT,
           typename resTy,
-          typename InOutIndexerT>
+          typename ThreeOffsets_IndexerT>
 struct IsCloseFunctor
 {
 private:
     const T1 *a_ = nullptr;
     const T2 *b_ = nullptr;
     resTy *out_ = nullptr;
-    const InOutIndexerT inp_out_indexer_;
+    const ThreeOffsets_IndexerT three_offsets_indexer_;
     const scT rtol_;
     const scT atol_;
     const bool equal_nan_;
@@ -171,31 +171,35 @@ public:
     IsCloseFunctor(const T1 *a,
                    const T2 *b,
                    resTy *out,
-                   const InOutIndexerT &inp_out_indexer,
+                   const ThreeOffsets_IndexerT &inps_res_indexer,
                    const scT rtol,
                    const scT atol,
                    const bool equal_nan)
-        : a_(a), b_(b), out_(out), inp_out_indexer_(inp_out_indexer),
+        : a_(a), b_(b), out_(out), three_offsets_indexer_(inps_res_indexer),
           rtol_(rtol), atol_(atol), equal_nan_(equal_nan)
     {
     }
 
     void operator()(sycl::id<1> wid) const
     {
-        const auto &offsets_ = inp_out_indexer_(wid.get(0));
-        const dpctl::tensor::ssize_t &inp_offset = offsets_.get_first_offset();
-        const dpctl::tensor::ssize_t &out_offset = offsets_.get_second_offset();
+        const auto &three_offsets_ = three_offsets_indexer_(wid.get(0));
+        const dpctl::tensor::ssize_t &inp1_offset =
+            three_offsets_.get_first_offset();
+        const dpctl::tensor::ssize_t &inp2_offset =
+            three_offsets_.get_second_offset();
+        const dpctl::tensor::ssize_t &out_offset =
+            three_offsets_.get_third_offset();
 
         using dpctl::tensor::type_utils::is_complex_v;
         if constexpr (is_complex_v<T1>) {
-            T1 z_a = a_[inp_offset];
-            T2 z_b = b_[inp_offset];
+            T1 z_a = a_[inp1_offset];
+            T2 z_b = b_[inp2_offset];
             bool x = isclose(z_a.real(), z_b.real(), rtol_, atol_, equal_nan_);
             bool y = isclose(z_a.imag(), z_b.imag(), rtol_, atol_, equal_nan_);
             out_[out_offset] = x && y;
         }
         else {
-            out_[out_offset] = isclose(a_[inp_offset], b_[inp_offset], rtol_,
+            out_[out_offset] = isclose(a_[inp1_offset], b_[inp2_offset], rtol_,
                                        atol_, equal_nan_);
         }
     }
