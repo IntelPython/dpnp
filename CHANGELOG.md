@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.19.0] - MM/DD/2025
+## [0.19.0] - 2025-MM-DD
 
 ### Added
 
@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 
-## [0.18.1] - 06/24/2025
+## [0.18.1] - 2025-06-24
 
 This release achieves `dpnp` compatibility with Python 3.13 and enables distributing `dpnp` packages with the latest Python version.
 Moreover, the release provides compatibility with NumPy 2.3.0 and includes several bug fixes.
@@ -44,7 +44,7 @@ Moreover, the release provides compatibility with NumPy 2.3.0 and includes sever
 * Updated the tests for hyperbolic and trigonometric elementwise functions to set correct tolerance for `float16` dtype [#2483](https://github.com/IntelPython/dpnp/pull/2483)
 
 
-## [0.18.0] - 06/04/2025
+## [0.18.0] - 2025-06-04
 
 This release achieves 100% compliance with Python Array API specification (revision [2024.12](https://data-apis.org/array-api/2024.12/)).
 The release provides enhanced compatibility with NumPy 2.2.5. Window and mathematical routines are complemented by a set of new functions.
@@ -97,7 +97,7 @@ Moreover, it adds support to build `dpnp` from the source for AMD GPUs.
 * Updated test f/w to correct a check of array interface while converting to `numpy.ndarray` for comparison [#2467] (https://github.com/IntelPython/dpnp/pull/2467)
 
 
-## [0.17.0] - 02/26/2025
+## [0.17.0] - 2025-02-26
 
 This release achieves 100% compliance with Python Array API specification (revision [2023.12](https://data-apis.org/array-api/2023.12/)).
 The release provides enhanced compatibility with NumPy 2.2.3. Array manipulation, mathematical, logic, and statistics routines are complemented by a set of new functions.
@@ -198,21 +198,21 @@ Furthermore, a number of issues relating to running on NVIDIA GPUs have been res
 * Added a workaround to prevent a memory corruption in `dpnp.correlate` [#2333](https://github.com/IntelPython/dpnp/pull/2333)
 
 
-## [0.16.3] - 12/20/2024
+## [0.16.3] - 2024-12-20
 
 ### Fixed
 
 * Bumped min version of DPC++ compiler required to support experimental SYCL properties [#2231](https://github.com/IntelPython/dpnp/pull/2231)
 
 
-## [0.16.2] - 12/20/2024
+## [0.16.2] - 2024-12-20
 
 ### Fixed
 
 * Enabled `dpnp` in virtual environment on Windows platform [#2242](https://github.com/IntelPython/dpnp/pull/2242)
 
 
-## [0.16.1] - 12/06/2024
+## [0.16.1] - 2024-12-06
 
 This is a bug-fix release.
 
@@ -232,7 +232,7 @@ This is a bug-fix release.
 * Resolved a compilation error when building with DPC++ 2025.1 compiler [#2211](https://github.com/IntelPython/dpnp/pull/2211)
 
 
-## [0.16.0] - 10/14/2024
+## [0.16.0] - 2024-10-14
 
 This release reaches an important milestone by making offloading fully asynchronous. Calls to `dpnp` submit tasks for execution to DPC++ runtime and return without waiting for execution of these tasks to finish. The sequential semantics a user comes to expect from execution of Python script is preserved though.
 In addition, this release completes implementation of `dpnp.fft` module and adds several new array manipulation, indexing and elementwise routines. Moreover, it adds support to build `dpnp` for Nvidia GPUs.
@@ -349,7 +349,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Resolved compilation warning and error while building in debug mode [#2066](https://github.com/IntelPython/dpnp/pull/2066)
 * Fixed an issue with asynchronous execution in `dpnp.fft` module [#2067](https://github.com/IntelPython/dpnp/pull/2067)
 
-## [0.15.0] - 05/25/2024
+## [0.15.0] - 2024-05-25
 
 This release completes implementation of `dpnp.linalg` module and array creation routine, adds cumulative reductions and histogram functions.
 
@@ -418,7 +418,7 @@ and added implementation of `dpnp.mask_indices` function [#1814](https://github.
 * Resolved an unexpected `ValueError` exception raised from `dpnp.linalg.pinv` due to a shape issue in `dpnp.matmul` [#1843](https://github.com/IntelPython/dpnp/pull/1843)
 
 
-## [0.14.0] - 02/16/2024
+## [0.14.0] - 2024-02-16
 
 This release will require DPC++ `2024.1.0`, which no longer supports Intel Gen9 integrated GPUs found in Intel CPUs of 10th generation and older.
 
@@ -496,7 +496,7 @@ This release will require DPC++ `2024.1.0`, which no longer supports Intel Gen9 
 * Improved performance of `dpnp.atleast_2d` and `dpnp.atleast_3d` functions and fixed to return a correct shape of resulting array [#1560](https://github.com/IntelPython/dpnp/pull/1560)
 
 
-## [0.13.0] - 09/29/2023
+## [0.13.0] - 2023-09-29
 
 ### Added
 
@@ -558,7 +558,7 @@ This release will require DPC++ `2024.1.0`, which no longer supports Intel Gen9 
 * Resolved issues with running statistics functions on a device without fp64 support [#1494](https://github.com/IntelPython/dpnp/pull/1494)
 
 
-## [0.12.1] - 07/18/2023
+## [0.12.1] - 2023-07-18
 
 ### Added
 
@@ -591,7 +591,7 @@ This release will require DPC++ `2024.1.0`, which no longer supports Intel Gen9 
 * Resolved a compilation warning with `std::getenv()` call on Windows [#1452](https://github.com/IntelPython/dpnp/pull/1452)
 * Corrected a link to OneAPI Toolkit in Installation Guide [#1445](https://github.com/IntelPython/dpnp/pull/1445)
 
-## [0.12.0] - 06/15/2023
+## [0.12.0] - 2023-06-15
 
 ### Added
 
