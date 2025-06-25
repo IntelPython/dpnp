@@ -956,7 +956,7 @@ def matvec(
     matrix-vector product is defined as:
 
     .. math::
-       \mathbf{A} \cdot \mathbf{b} = \sum_{i=0}^{n-1} A_{ij}v_j
+       \mathbf{A} \cdot \mathbf{v} = \sum_{j=0}^{n-1} A_{ij} v_j
 
     where the sum is over the last dimensions in `x1` and `x2` (unless `axes`
     is specified). (For a matrix-vector product with the vector conjugated,
@@ -1457,7 +1457,7 @@ def vecmat(
     is defined as:
 
     .. math::
-       \mathbf{b} \cdot \mathbf{A} = \sum_{i=0}^{n-1} \overline{v_i}A_{ij}
+       \mathbf{v} \cdot \mathbf{A} = \sum_{i=0}^{n-1} \overline{v_i}A_{ij}
 
     where the sum is over the last dimension of `x1` and the one-but-last
     dimensions in `x2` (unless `axes` is specified) and where
