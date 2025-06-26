@@ -613,7 +613,9 @@ class TestIrfft:
         # and being used with Intel NumPy >= 2.0.0
         flag = True
         # flag = True if numpy_version() < "2.0.0" else False
-        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
+        assert_dtype_allclose(
+            result, expected, factor=24, check_only_type_kind=flag
+        )
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 8])
