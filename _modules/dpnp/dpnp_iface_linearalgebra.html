@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.19.0dev0+24.gbad94747f02 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.19.0dev0+25.g78597f92423 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2d6e6a9e"></script>
+      <script src="../../_static/documentation_options.js?v=d0e65969"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -1061,7 +1061,7 @@
 <span class="sd">    matrix-vector product is defined as:</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">       \mathbf{A} \cdot \mathbf{b} = \sum_{i=0}^{n-1} A_{ij}v_j</span>
+<span class="sd">       \mathbf{A} \cdot \mathbf{v} = \sum_{j=0}^{n-1} A_{ij} v_j</span>
 
 <span class="sd">    where the sum is over the last dimensions in `x1` and `x2` (unless `axes`</span>
 <span class="sd">    is specified). (For a matrix-vector product with the vector conjugated,</span>
@@ -1577,7 +1577,7 @@
 <span class="sd">    is defined as:</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">       \mathbf{b} \cdot \mathbf{A} = \sum_{i=0}^{n-1} \overline{v_i}A_{ij}</span>
+<span class="sd">       \mathbf{v} \cdot \mathbf{A} = \sum_{i=0}^{n-1} \overline{v_i}A_{ij}</span>
 
 <span class="sd">    where the sum is over the last dimension of `x1` and the one-but-last</span>
 <span class="sd">    dimensions in `x2` (unless `axes` is specified) and where</span>
