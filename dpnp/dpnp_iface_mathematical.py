@@ -2784,7 +2784,7 @@ imag = DPNPImag(
 
 
 def interp(x, xp, fp, left=None, right=None, period=None):
-    """
+    r"""
     One-dimensional linear interpolation.
 
     Returns the one-dimensional piecewise linear interpolant to a function
@@ -2804,7 +2804,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         type. The x-coordinates of the data points, must be strictly increasing
         if argument `period` is not specified. Otherwise, `xp` is internally
         sorted after normalizing the periodic boundaries with
-        :math:`xp = xp % period`.
+        :math:`xp = xp \% period`.
 
     fp : {dpnp.ndarray, usm_ndarray}
         Input 1-D array. The y-coordinates of the data points,
