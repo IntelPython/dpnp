@@ -563,9 +563,13 @@ class TestHfft:
 
         result = dpnp.fft.hfft(ia, n=n, norm=norm)
         expected = numpy.fft.hfft(a, n=n, norm=norm)
-        # check_only_type_kind=True since NumPy always returns float64
-        # but dpnp return float32 if input is float32
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        # TODO: change to the commented line when mkl_fft-2.0.0 is released
+        # and being used with Intel NumPy >= 2.0.0
+        flag = True
+        # flag = True if numpy_version() < "2.0.0" else False
+        assert_dtype_allclose(
+            result, expected, factor=24, check_only_type_kind=flag
+        )
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
@@ -579,7 +583,7 @@ class TestHfft:
         result = dpnp.fft.ihfft(ia, n=n, norm=norm)
         expected = numpy.fft.ihfft(a, n=n, norm=norm)
         flag = True if numpy_version() < "2.0.0" else False
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
     def test_error(self):
         a = dpnp.ones(11)
@@ -600,14 +604,18 @@ class TestIrfft:
     @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_basic(self, dtype, n, norm):
-        a = generate_random_numpy_array(11)
+        a = generate_random_numpy_array(11, dtype=dtype)
         ia = dpnp.array(a)
 
         result = dpnp.fft.irfft(ia, n=n, norm=norm)
         expected = numpy.fft.irfft(a, n=n, norm=norm)
-        # check_only_type_kind=True since NumPy always returns float64
-        # but dpnp return float32 if input is float32
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        # TODO: change to the commented line when mkl_fft-2.0.0 is released
+        # and being used with Intel NumPy >= 2.0.0
+        flag = True
+        # flag = True if numpy_version() < "2.0.0" else False
+        assert_dtype_allclose(
+            result, expected, factor=24, check_only_type_kind=flag
+        )
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 8])
@@ -771,8 +779,11 @@ class TestRfft:
 
         expected = numpy.fft.rfft(a)
         result = dpnp.fft.rfft(ia)
-        # check_only_type_kind=True since Intel NumPy returns complex128
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        # TODO: change to the commented line when mkl_fft-2.0.0 is released
+        # and being used with Intel NumPy >= 2.0.0
+        flag = True
+        # flag = True if numpy_version() < "2.0.0" else False
+        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
     @testing.with_requires("numpy>=2.0.0")
     @pytest.mark.parametrize("xp", [numpy, dpnp])
@@ -954,7 +965,8 @@ class TestRfftn:
 
         result = dpnp.fft.irfftn(ia)
         expected = numpy.fft.irfftn(a)
-        # TODO: change to the commented line when mkl_fft-gh-180 is merged
+        # TODO: change to the commented line when mkl_fft-2.0.0 is released
+        # and being used with Intel NumPy >= 2.0.0
         flag = True
         # flag = True if numpy_version() < "2.0.0" else False
         assert_dtype_allclose(result, expected, check_only_type_kind=flag)
