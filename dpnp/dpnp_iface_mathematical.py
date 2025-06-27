@@ -2800,11 +2800,11 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         to evaluate the interpolated values.
 
     xp : {dpnp.ndarray, usm_ndarray}
-        Input 1-D array, expected to have a real-valued
-        floating-point data type. The x-coordinates of the data points,
-        must be increasing if argument `period` is not specified.
-        Otherwise, `xp` is internally sorted after normalizing
-        the periodic boundaries with ``xp = xp % period``.
+        Input 1-D array, expected to have a real-valued floating-point data
+        type. The x-coordinates of the data points, must be strictly increasing
+        if argument `period` is not specified. Otherwise, `xp` is internally
+        sorted after normalizing the periodic boundaries with
+        :math:`xp = xp % period`.
 
     fp : {dpnp.ndarray, usm_ndarray}
         Input 1-D array. The y-coordinates of the data points,
