@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Updated `pre-commit` GitHub workflow to pass `no-commit-to-branch` check [#2501](https://github.com/IntelPython/dpnp/pull/2501)
 * Updated the math formulas in summary of `dpnp.matvec` and `dpnp.vecmat` to correct a typo [#2503](https://github.com/IntelPython/dpnp/pull/2503)
+* Avoided negating unsigned integers in ceil division used in `dpnp.resize` implementation [#2508](https://github.com/IntelPython/dpnp/pull/2503)
 
 ### Security
 
