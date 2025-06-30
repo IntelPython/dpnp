@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.resize &mdash; Data Parallel Extension for NumPy 0.19.0dev0+28.g7d2380d42d5 documentation</title>
+  <title>dpnp.resize &mdash; Data Parallel Extension for NumPy 0.19.0dev0+29.ge3a9b5e082f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b5f06084"></script>
+      <script src="../../_static/documentation_options.js?v=a0865d7c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -146,9 +146,9 @@ copies of <cite>a</cite>.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- The new array is formed from the data in the old array, repeated
-if necessary to fill out the required number of elements. The
-data are repeated iterating over the array in C-order.</p>
+<dd class="field-even"><p><strong>out</strong> -- The new array is formed from the data in the old array, repeated if
+necessary to fill out the required number of elements. The data are
+repeated iterating over the array in C-order.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
@@ -171,13 +171,16 @@ data are repeated iterating over the array in C-order.</p>
 <p>When the total size of the array does not change <a class="reference internal" href="dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a> should
 be used. In most other cases either indexing (to reduce the size) or
 padding (to increase the size) may be a more appropriate solution.</p>
-<p>Warning: This functionality does <strong>not</strong> consider axes separately,
-i.e. it does not apply interpolation/extrapolation.
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This functionality does <strong>not</strong> consider axes separately, i.e. it does not
+apply interpolation/extrapolation.
 It fills the return array with the required number of elements, iterating
 over <cite>a</cite> in C-order, disregarding axes (and cycling back from the start if
 the new shape is larger). This functionality is therefore not suitable to
 resize images, or data where each axis represents a separate and distinct
 entity.</p>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
