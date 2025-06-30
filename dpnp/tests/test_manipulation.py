@@ -1238,6 +1238,16 @@ class TestResize:
         with pytest.raises(ValueError, match=r"negative"):
             xp.resize(a, new_shape=new_shape)
 
+    @testing.with_requires("numpy>=2.3.1")
+    @pytest.mark.parametrize("dt", [dpnp.uint32, dpnp.uint64])
+    def test_unsigned_resize(self, dt):
+        a = numpy.array([[23, 95], [66, 37]])
+        ia = dpnp.array(a)
+
+        result = dpnp.resize(ia, dt(1))
+        expected = numpy.resize(a, dt(1))
+        assert_array_equal(result, expected)
+
 
 class TestRot90:
     @pytest.mark.parametrize("xp", [numpy, dpnp])
