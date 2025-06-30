@@ -3129,9 +3129,9 @@ def resize(a, new_shape):
     Returns
     -------
     out : dpnp.ndarray
-        The new array is formed from the data in the old array, repeated
-        if necessary to fill out the required number of elements. The
-        data are repeated iterating over the array in C-order.
+        The new array is formed from the data in the old array, repeated if
+        necessary to fill out the required number of elements. The data are
+        repeated iterating over the array in C-order.
 
     See Also
     --------
@@ -3146,8 +3146,10 @@ def resize(a, new_shape):
     be used. In most other cases either indexing (to reduce the size) or
     padding (to increase the size) may be a more appropriate solution.
 
-    Warning: This functionality does **not** consider axes separately,
-    i.e. it does not apply interpolation/extrapolation.
+    Warning
+    -------
+    This functionality does **not** consider axes separately, i.e. it does not
+    apply interpolation/extrapolation.
     It fills the return array with the required number of elements, iterating
     over `a` in C-order, disregarding axes (and cycling back from the start if
     the new shape is larger). This functionality is therefore not suitable to
@@ -3187,7 +3189,8 @@ def resize(a, new_shape):
         # First case must zero fill. The second would have repeats == 0.
         return dpnp.zeros_like(a, shape=new_shape)
 
-    repeats = -(-new_size // a_size)  # ceil division
+    # ceiling division without negating new_size
+    repeats = (new_size + a_size - 1) // a_size
     a = dpnp.concatenate((dpnp.ravel(a),) * repeats)[:new_size]
 
     return a.reshape(new_shape)
