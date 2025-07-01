@@ -1198,12 +1198,15 @@ class TestMatmul:
         assert result is iout
         assert_dtype_allclose(result, expected)
 
+        result = ia.mT @ ia
+        expected = a.T @ a
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize(
         "order, out_order",
         [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")],
     )
     def test_syrk_out_order(self, order, out_order):
-        # test syrk with out keyword
         a = generate_random_numpy_array((5, 4), order=order, low=-5, high=5)
         out = numpy.empty((5, 5), dtype=a.dtype, order=out_order)
         ia, iout = dpnp.array(a), dpnp.array(out)
@@ -1213,6 +1216,14 @@ class TestMatmul:
         assert result is iout
         assert result.flags.c_contiguous == expected.flags.c_contiguous
         assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("order", ["F", "C"])
+    def test_syrk_order(self, order):
+        a = generate_random_numpy_array((4, 6), order=order, low=-5, high=5)
+        ia = dpnp.array(a)
+        expected = numpy.matmul(a, a.T)
+        result = dpnp.matmul(ia, ia.mT)
         assert_dtype_allclose(result, expected)
 
     def test_bool(self):

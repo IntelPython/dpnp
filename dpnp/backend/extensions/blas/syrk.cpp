@@ -152,11 +152,20 @@ static sycl::event syrk_impl(sycl::queue &exec_q,
                 std::int64_t i = idx[0];
                 std::int64_t j = idx[1];
                 if (j > i) {
-                    res[j * ldc + i] = res[i * ldc + j];
+                    // result form row_major::syrk is row major and result form
+                    // column_major::syrk is column major, so copying upper
+                    // triangle to lower triangle is different for each case
+                    if (is_row_major) {
+                        // row-major: res[i][j] = res[i * ldc + j]
+                        res[j * ldc + i] = res[i * ldc + j];
+                    }
+                    else {
+                        // column-major: res[i][j] = res[i + j * ldc]
+                        res[i * ldc + j] = res[j * ldc + i];
+                    }
                 }
             });
     });
-
     return copy_event;
 }
 
