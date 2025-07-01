@@ -44,7 +44,7 @@ namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*syrk_impl_fn_ptr_t)(sycl::queue &,
-                                          oneapi::mkl::transpose,
+                                          const oneapi::mkl::transpose,
                                           const std::int64_t,
                                           const std::int64_t,
                                           const char *,
@@ -60,7 +60,7 @@ static syrk_impl_fn_ptr_t syrk_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
 static sycl::event syrk_impl(sycl::queue &exec_q,
-                             oneapi::mkl::transpose transA,
+                             const oneapi::mkl::transpose transA,
                              const std::int64_t n,
                              const std::int64_t k,
                              const char *matrixA,
@@ -107,7 +107,7 @@ static sycl::event syrk_impl(sycl::queue &exec_q,
         };
 
         // we pass beta = 0, so passing upper or lower does not matter
-        oneapi::mkl::uplo uplo = oneapi::mkl::uplo::upper;
+        static constexpr auto uplo = oneapi::mkl::uplo::upper;
         syrk_event = syrk_func(
             exec_q,
             uplo,   // Specifies whether C’s data is stored in its upper
@@ -198,7 +198,7 @@ std::pair<sycl::event, sycl::event>
 
     const bool is_matrixA_f_contig = matrixA.is_f_contiguous();
     const bool is_matrixA_c_contig = matrixA.is_c_contiguous();
-    if (!is_matrixA_f_contig and !is_matrixA_c_contig) {
+    if (!is_matrixA_f_contig && !is_matrixA_c_contig) {
         throw py::value_error(
             "Input matrix is not c-contiguous nor f-contiguous.");
     }

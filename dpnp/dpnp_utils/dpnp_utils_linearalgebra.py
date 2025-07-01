@@ -947,8 +947,6 @@ def dpnp_multiplication(
     x1_is_2D, x1_is_1D, x1_base_is_1D = _define_dim_flags(x1, axis=-1)
     x2_is_2D, x2_is_1D, x2_base_is_1D = _define_dim_flags(x2, axis=-2)
 
-    # TODO: investigate usage of syrk function from BLAS in
-    # case of a.T @ a and a @ a.T to gain performance.
     if numpy.prod(result_shape) == 0:
         res_shape = result_shape
     elif x1_shape[-1] == 1:

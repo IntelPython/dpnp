@@ -1195,6 +1195,7 @@ class TestMatmul:
 
         iout = dpnp.empty(result.shape, dtype=dt)
         result = dpnp.matmul(ia, ia.mT, out=iout)
+        assert result is iout
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(

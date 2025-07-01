@@ -403,52 +403,52 @@ def test_bitwise_op_2in(op, usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
-@pytest.mark.parametrize("usm_type_x", list_of_usm_types)
-@pytest.mark.parametrize("usm_type_y", list_of_usm_types)
-@pytest.mark.parametrize("dtype", [dpnp.int32, dpnp.float32])
-@pytest.mark.parametrize(
-    "shape1, shape2",
-    [
-        ((2, 4), (4,)),
-        ((4,), (4, 3)),
-        ((2, 4), (4, 3)),
-        ((2, 0), (0, 3)),
-        ((2, 4), (4, 0)),
-        ((4, 2, 3), (4, 3, 5)),
-        ((4, 2, 3), (4, 3, 1)),
-        ((4, 1, 3), (4, 3, 5)),
-        ((6, 7, 4, 3), (6, 7, 3, 5)),
-    ],
-    ids=[
-        "((2, 4), (4,))",
-        "((4,), (4, 3))",
-        "((2, 4), (4, 3))",
-        "((2, 0), (0, 3))",
-        "((2, 4), (4, 0))",
-        "((4, 2, 3), (4, 3, 5))",
-        "((4, 2, 3), (4, 3, 1))",
-        "((4, 1, 3), (4, 3, 5))",
-        "((6, 7, 4, 3), (6, 7, 3, 5))",
-    ],
-)
-def test_matmul(usm_type_x, usm_type_y, dtype, shape1, shape2):
-    # int32 checks dpctl implementation and float32 checks oneMKL
-    x = dpnp.arange(numpy.prod(shape1), dtype=dtype, usm_type=usm_type_x)
-    y = dpnp.arange(numpy.prod(shape2), dtype=dtype, usm_type=usm_type_y)
-    x, y = x.reshape(shape1), y.reshape(shape2)
-    z = dpnp.matmul(x, y)
+class TestMatmul:
+    @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
+    @pytest.mark.parametrize("usm_type_y", list_of_usm_types)
+    @pytest.mark.parametrize("dtype", [dpnp.int32, dpnp.float32])
+    @pytest.mark.parametrize(
+        "shape1, shape2",
+        [
+            ((2, 4), (4,)),
+            ((4,), (4, 3)),
+            ((2, 4), (4, 3)),
+            ((2, 0), (0, 3)),
+            ((2, 4), (4, 0)),
+            ((4, 2, 3), (4, 3, 5)),
+            ((4, 2, 3), (4, 3, 1)),
+            ((4, 1, 3), (4, 3, 5)),
+            ((6, 7, 4, 3), (6, 7, 3, 5)),
+        ],
+        ids=[
+            "((2, 4), (4,))",
+            "((4,), (4, 3))",
+            "((2, 4), (4, 3))",
+            "((2, 0), (0, 3))",
+            "((2, 4), (4, 0))",
+            "((4, 2, 3), (4, 3, 5))",
+            "((4, 2, 3), (4, 3, 1))",
+            "((4, 1, 3), (4, 3, 5))",
+            "((6, 7, 4, 3), (6, 7, 3, 5))",
+        ],
+    )
+    def test_basic(self, usm_type_x, usm_type_y, dtype, shape1, shape2):
+        # int32 checks dpctl implementation and float32 checks oneMKL
+        x = dpnp.arange(numpy.prod(shape1), dtype=dtype, usm_type=usm_type_x)
+        y = dpnp.arange(numpy.prod(shape2), dtype=dtype, usm_type=usm_type_y)
+        x, y = x.reshape(shape1), y.reshape(shape2)
+        z = dpnp.matmul(x, y)
 
-    assert x.usm_type == usm_type_x
-    assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+        assert x.usm_type == usm_type_x
+        assert y.usm_type == usm_type_y
+        assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
+    @pytest.mark.parametrize("usm_type", list_of_usm_types)
+    def test_syrk(self, usm_type):
+        x = dpnp.arange(20, dtype=dpnp.float32, usm_type=usm_type).reshape(4, 5)
+        y = dpnp.matmul(x, x.mT)
 
-@pytest.mark.parametrize("usm_type", list_of_usm_types)
-def test_matmul_syrk(usm_type):
-    x = dpnp.arange(20, dtype=dpnp.float32, usm_type=usm_type).reshape(4, 5)
-    y = dpnp.matmul(x, x.mT)
-
-    assert y.usm_type == usm_type
+        assert y.usm_type == usm_type
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
