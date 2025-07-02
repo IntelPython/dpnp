@@ -12,7 +12,6 @@ from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
-    get_float_complex_dtypes,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -1184,7 +1183,7 @@ class TestMatmul:
         result = dpnp.matmul(ia, ib, out=iout)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dt", get_float_complex_dtypes())
+    @pytest.mark.parametrize("dt", get_all_dtypes())
     def test_syrk(self, dt):
         a = generate_random_numpy_array((6, 9), dtype=dt)
         ia = dpnp.array(a)
@@ -1196,6 +1195,21 @@ class TestMatmul:
         iout = dpnp.empty(result.shape, dtype=dt)
         result = dpnp.matmul(ia, ia.mT, out=iout)
         assert result is iout
+        assert_dtype_allclose(result, expected)
+
+        result = ia.mT @ ia
+        expected = a.T @ a
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dt", [dpnp.int32, dpnp.float32])
+    def test_syrk_strided(self, dt):
+        a = generate_random_numpy_array((20, 30), dtype=dt)
+        ia = dpnp.array(a)
+        a = a[::2, ::2]
+        ia = ia[::2, ::2]
+
+        result = dpnp.matmul(ia, ia.mT)
+        expected = numpy.matmul(a, a.T)
         assert_dtype_allclose(result, expected)
 
         result = ia.mT @ ia
