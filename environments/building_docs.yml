@@ -2,7 +2,7 @@ name: Building docs specific packages
 channels:
   - conda-forge
 dependencies:
-  - python=3.12
+  - python=3.13
   - cupy
   - sphinx
   - sphinx_rtd_theme
