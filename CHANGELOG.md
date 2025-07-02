@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Simplifies backend implementation of `dpnp.kaiser` by getting rid of unnecessary template [#2472](https://github.com/IntelPython/dpnp/pull/2472)
 * `--onemkl-interfaces` and `--onemkl-interfaces-dir` options for building script are deprecated, instead `--onemath` and `--onemath-dir` are introduced to be aligned with [oneMath specification](https://oneapi-spec.uxlfoundation.org/specifications/oneapi/latest/elements/onemath/source/) [#2487](https://github.com/IntelPython/dpnp/pull/2487)
 * Clarified description of `xp` keyword in docstring of `dpnp.interp` [#2506](https://github.com/IntelPython/dpnp/pull/2506)
+* Updated existing GitHub workflows to add testing with Python 3.13 [#2510](https://github.com/IntelPython/dpnp/pull/2510)
 
 ### Deprecated
 
