@@ -16,9 +16,7 @@ env:
   ver-script-part1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   ver-script-part2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
   fetch-depth: 1
-  # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
-  # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
-  python-ver-test-all-dtypes: '3.12'
+  python-ver-test-all-dtypes: '3.13'
   test-env-name: 'test'
   rerun-tests-on-failure: 'true'
   rerun-tests-max-attempts: 2
