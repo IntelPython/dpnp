@@ -50,29 +50,6 @@ __all__ = [
 ]
 
 
-def _call_syrk(x1, x2):
-    """
-    Check to see if `syrk` can be called instead of `gemm`.
-
-    It is assumed that x1 and x2 are usm_ndarray objects. These arrays have
-    already been validated to be 2-dimensional and contiguous. Therefore, this
-    function only verifies the following: Both arrays reference the same
-    memory. The number of rows in x1 equals the number of columns in x2. If one
-    array is C-contiguous, the other must be F-contiguous.
-
-    """
-    call_syrk = False
-    if (
-        x1._pointer == x2._pointer
-        and x1.shape[0] == x2.shape[1]
-        and x1.flags.c_contiguous != x2.flags.c_contiguous
-        and x1.flags.f_contiguous != x2.flags.f_contiguous
-    ):
-        call_syrk = True
-
-    return call_syrk
-
-
 def _compute_res_dtype(*arrays, dtype=None, out=None, casting="no"):
     """
     Determines the output array data type.
@@ -541,6 +518,29 @@ def _get_signature(func):
     return signature, distinct_core
 
 
+def _is_syrk_compatible(x1, x2):
+    """
+    Check to see if `syrk` can be called instead of `gemm`.
+    Input arrays have already been validated to be 2-dimensional.
+
+    """
+    # Must share data (same base buffer)
+    if dpnp.get_usm_ndarray(x1)._pointer != dpnp.get_usm_ndarray(x2)._pointer:
+        return False
+
+    # Result must be square
+    if x1.shape[0] != x2.shape[1]:
+        return False
+
+    # Strides must match transpose pattern
+    x1_strides = x1.strides
+    x2_strides = x2.strides
+    if x1_strides[0] != x2_strides[1] or x1_strides[1] != x2_strides[0]:
+        return False
+
+    return True
+
+
 def _shape_error(shape1, shape2, func, err_msg):
     """Validate the shapes of input and output arrays."""
 
@@ -983,6 +983,11 @@ def dpnp_multiplication(
         x1 = dpnp.reshape(x1, x1_shape[-2:])
         x2 = dpnp.reshape(x2, x2_shape[-2:])
         res_shape = (x1_shape[-2], x2_shape[-1])
+        if _is_syrk_compatible(x1, x2):
+            call_flag = "syrk"
+            res_dtype_orig = res_dtype
+            if dpnp.issubdtype(res_dtype, dpnp.integer):
+                res_dtype = dpnp.default_float_type(x1.device)
     elif x1_base_is_1D:
         # TODO: implement gemv_batch to use it here with transpose
         call_flag = "gemm_batch"
@@ -1088,21 +1093,17 @@ def dpnp_multiplication(
                         depends=_manager.submitted_events,
                     )
                     _manager.add_event_pair(ht_ev, gemv_ev)
+                elif call_flag == "syrk":
+                    _manager = dpu.SequentialOrderManager[exec_q]
+                    ht_ev, gemv_ev = bi._syrk(
+                        exec_q,
+                        dpnp.get_usm_ndarray(x1),
+                        dpnp.get_usm_ndarray(result),
+                        depends=_manager.submitted_events,
+                    )
+                    _manager.add_event_pair(ht_ev, gemv_ev)
                 elif call_flag == "gemm":
-                    x1_usm = dpnp.get_usm_ndarray(x1)
-                    x2_usm = dpnp.get_usm_ndarray(x2)
-                    call_syrk = _call_syrk(x1_usm, x2_usm)
-                    if call_syrk:
-                        _manager = dpu.SequentialOrderManager[exec_q]
-                        ht_ev, gemv_ev = bi._syrk(
-                            exec_q,
-                            x1_usm,
-                            dpnp.get_usm_ndarray(result),
-                            depends=_manager.submitted_events,
-                        )
-                        _manager.add_event_pair(ht_ev, gemv_ev)
-                    else:
-                        result = _gemm_matmul(exec_q, x1_usm, x2_usm, result)
+                    result = _gemm_matmul(exec_q, x1, x2, result)
                 else:
                     assert call_flag == "gemm_batch"
                     result = _gemm_batch_matmul(exec_q, x1, x2, result)
@@ -1129,6 +1130,9 @@ def dpnp_multiplication(
         result = dpnp.tile(result, out.shape)
     elif res_shape != result_shape:
         result = dpnp.reshape(result, result_shape)
+
+    if call_flag == "syrk" and res_dtype_orig != res_dtype:
+        result = result.astype(res_dtype_orig)
 
     if out is None:
         if axes is not None:
