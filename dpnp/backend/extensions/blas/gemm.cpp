@@ -315,7 +315,8 @@ std::tuple<sycl::event, sycl::event, bool>
         gemm_dispatch_table[matrixAB_type_id][resultC_type_id];
     if (gemm_fn == nullptr) {
         throw py::value_error(
-            "Types of input matrices and result matrix are mismatched.");
+            "No gemm implementation is available for the specified data type "
+            "of the input and output arrays.");
     }
 
     const char *a_typeless_ptr = matrixA.get_data();

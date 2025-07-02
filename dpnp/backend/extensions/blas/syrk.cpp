@@ -262,7 +262,8 @@ std::pair<sycl::event, sycl::event>
     syrk_impl_fn_ptr_t syrk_fn = syrk_dispatch_vector[type_id];
     if (syrk_fn == nullptr) {
         throw py::value_error(
-            "Types of input arrays and result array are mismatched.");
+            "No syrk implementation is available for the specified data type "
+            "of the input and output arrays.");
     }
 
     const char *a_typeless_ptr = matrixA.get_data();
