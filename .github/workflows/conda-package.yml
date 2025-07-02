@@ -500,7 +500,7 @@ jobs:
       dpnp-repo-path: '${{ github.workspace }}/source/'
       array-api-skips-file: '${{ github.workspace }}/source/.github/workflows/array-api-skips.txt'
       create-conda-channel-env: 'source/environments/create_conda_channel.yml'
-      python-ver: '3.12' # it has to be aligned with python in create_conda_channel.yml
+      python-ver: '3.13' # it has to be aligned with python in create_conda_channel.yml
       conda-env-name: 'array-api-conformity'
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
