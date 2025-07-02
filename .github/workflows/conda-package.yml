@@ -31,9 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
-        # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-22.04, windows-2022]
 
     permissions:
@@ -130,8 +128,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # python 3.13 is blocked due to MKL issue
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-latest]
 
     env:
@@ -258,8 +255,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # python 3.13 is blocked due to MKL issue
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [windows-2022]
 
     env:
@@ -408,8 +404,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # python 3.13 is blocked due to MKL issue
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-22.04, windows-2022]
 
     runs-on: ${{ matrix.os }}
