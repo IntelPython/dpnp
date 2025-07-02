@@ -282,7 +282,8 @@ std::pair<sycl::event, sycl::event>
     gemv_impl_fn_ptr_t gemv_fn = gemv_dispatch_vector[type_id];
     if (gemv_fn == nullptr) {
         throw py::value_error(
-            "Types of input arrays and result array are mismatched.");
+            "No gemv implementation is available for the specified data type "
+            "of the input and output arrays.");
     }
 
     const char *a_typeless_ptr = matrixA.get_data();

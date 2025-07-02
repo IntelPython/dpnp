@@ -128,7 +128,8 @@ std::pair<sycl::event, sycl::event>
     dot_impl_fn_ptr_t dot_fn = dot_dispatch_vector[type_id];
     if (dot_fn == nullptr) {
         throw py::value_error(
-            "Types of input vectors and result array are mismatched.");
+            "No dot implementation is available for the specified data type "
+            "of the input and output arrays.");
     }
 
     char *x_typeless_ptr = vectorX.get_data();
