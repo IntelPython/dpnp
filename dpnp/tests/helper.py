@@ -26,6 +26,12 @@ def _assert_shape(a, b):
         assert a.shape == (), f"{a.shape} != ()"
 
 
+def _get_dev_mask(device=None):
+    dev = dpctl.select_default_device() if device is None else device
+    dev_info = dpctl.utils.intel_device_info(dev)
+    return dev_info.get("device_id", 0) & 0xFF00
+
+
 def assert_dtype_allclose(
     dpnp_arr,
     numpy_arr,
@@ -432,6 +438,22 @@ def is_intel_numpy():
         # numpy 1.26.4 has LAPACK name equals to 'dep140030038112336'
         return blas["name"].startswith("mkl")
     return all(dep["name"].startswith("mkl") for dep in [blas, lapack])
+
+
+def is_iris_xe(device=None):
+    """
+    Return True if a test is running on Iris Xe GPU device, False otherwise.
+    """
+    return _get_dev_mask(device) == 0x9A00
+
+
+def is_lts_driver(device=None):
+    """
+    Return True if a test is running on a GPU device with LTS driver version,
+    False otherwise.
+    """
+    dev = dpctl.select_default_device() if device is None else device
+    return dev.has_aspect_gpu and "1.3" in dev.driver_version
 
 
 def is_win_platform():
