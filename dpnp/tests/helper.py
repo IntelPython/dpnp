@@ -25,7 +25,8 @@ def _assert_shape(a, b):
         # numpy output is scalar, then dpnp is 0-D array
         assert a.shape == (), f"{a.shape} != ()"
 
-def _get_dev_mask(device = None):
+
+def _get_dev_mask(device=None):
     dev = dpctl.select_default_device() if device is None else device
     dev_info = dpctl.utils.intel_device_info(dev)
     return dev_info.get("device_id", 0) & 0xFF00

@@ -917,7 +917,11 @@ def test_geomspace_num0():
 @pytest.mark.parametrize("endpoint", [True, False])
 def test_logspace(dtype, num, endpoint):
     if not is_win_platform() and is_iris_xe() and is_lts_driver():
-        if dpnp.issubdtype(dtype, dpnp.integer) and num in [8, 27] and endpoint is True:
+        if (
+            dpnp.issubdtype(dtype, dpnp.integer)
+            and num in [8, 27]
+            and endpoint is True
+        ):
             pytest.skip("SAT-7978")
 
     start = 2
