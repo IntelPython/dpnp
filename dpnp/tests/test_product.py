@@ -1246,7 +1246,7 @@ class TestMatmul:
         ia = dpnp.array(a)
 
         # Result must be square
-        b = a.mT[:, ::2]
+        b = a.T[:, ::2]
         ib = ia.mT[:, ::2]
         expected = numpy.matmul(a, b)
         result = dpnp.matmul(ia, ib)
