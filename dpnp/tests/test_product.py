@@ -1171,7 +1171,7 @@ class TestMatmul:
         result = dpnp.matmul(ia, ib, out=iout)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dt", get_all_dtypes())
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
     def test_syrk(self, dt):
         a = generate_random_numpy_array((6, 9), dtype=dt, low=-5, high=5)
         ia = dpnp.array(a)

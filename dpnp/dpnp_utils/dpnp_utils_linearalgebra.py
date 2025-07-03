@@ -986,7 +986,10 @@ def dpnp_multiplication(
         if _is_syrk_compatible(x1, x2):
             call_flag = "syrk"
             res_dtype_orig = res_dtype
-            if dpnp.issubdtype(res_dtype, dpnp.integer):
+            # for exact dtypes, use syrk implementation unlike general approach
+            # where dpctl implementation is used for exact dtypes for better
+            # performance
+            if not dpnp.issubdtype(res_dtype, dpnp.inexact):
                 res_dtype = dpnp.default_float_type(x1.device)
     elif x1_base_is_1D:
         # TODO: implement gemv_batch to use it here with transpose
