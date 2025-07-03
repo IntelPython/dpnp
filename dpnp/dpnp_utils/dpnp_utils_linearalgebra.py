@@ -1068,12 +1068,13 @@ def dpnp_multiplication(
                     dtype=res_dtype,
                     order=res_order,
                 )
-                x2 = _copy_array(
-                    x2,
-                    copy_flag=not x2_contig_flag,
-                    dtype=res_dtype,
-                    order=res_order,
-                )
+                if call_flag != "syrk":
+                    x2 = _copy_array(
+                        x2,
+                        copy_flag=not x2_contig_flag,
+                        dtype=res_dtype,
+                        order=res_order,
+                    )
 
                 if call_flag == "gemv":
                     if transpose:
