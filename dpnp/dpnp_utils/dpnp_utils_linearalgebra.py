@@ -50,7 +50,7 @@ __all__ = [
 ]
 
 
-def _compute_res_dtype(*arrays, sycl_queue, dtype=None, out=None, casting="no"):
+def _compute_res_dtype(*arrays, dtype=None, out=None, casting="no"):
     """
     Determines the output array data type.
     If `dtype` and `out` are ``None``, the output array data type of the
@@ -70,8 +70,6 @@ def _compute_res_dtype(*arrays, sycl_queue, dtype=None, out=None, casting="no"):
         If not ``None``, data type of the output array.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur.
-    sycl_queue : {SyclQueue}
-        A SYCL queue to use for determining default floating point datat type.
 
     Returns
     -------
@@ -334,7 +332,7 @@ def _gemm_matmul(exec_q, x1, x2, res):
 def _gemm_special_case(x1, x2, res_dtype, call_flag):
     """
     `gemm` and `gemm_batch` support these special cases of data types
-    while `gemv` does not.
+    while `gemv` or `syrk` do not.
 
     """
 
@@ -518,6 +516,29 @@ def _get_signature(func):
         distinct_core = 2
 
     return signature, distinct_core
+
+
+def _is_syrk_compatible(x1, x2):
+    """
+    Check to see if `syrk` can be called instead of `gemm`.
+    Input arrays have already been validated to be 2-dimensional.
+
+    """
+    # Must share data (same base buffer)
+    if dpnp.get_usm_ndarray(x1)._pointer != dpnp.get_usm_ndarray(x2)._pointer:
+        return False
+
+    # Result must be square
+    if x1.shape[0] != x2.shape[1]:
+        return False
+
+    # Strides must match transpose pattern
+    x1_strides = x1.strides
+    x2_strides = x2.strides
+    if x1_strides[0] != x2_strides[1] or x1_strides[1] != x2_strides[0]:
+        return False
+
+    return True
 
 
 def _shape_error(shape1, shape2, func, err_msg):
@@ -765,9 +786,7 @@ def dpnp_dot(a, b, /, out=None, *, casting="same_kind", conjugate=False):
     _validate_out_array(out, exec_q)
 
     # Determine the appropriate data types
-    res_dtype = _compute_res_dtype(
-        a, b, out=out, casting=casting, sycl_queue=exec_q
-    )
+    res_dtype = _compute_res_dtype(a, b, out=out, casting=casting)
 
     result = _create_result_array(
         a, b, out, (), res_dtype, res_usm_type, exec_q
@@ -918,7 +937,7 @@ def dpnp_multiplication(
 
     # Determine the appropriate data types
     res_dtype = _compute_res_dtype(
-        x1, x2, dtype=dtype, out=out, casting=casting, sycl_queue=exec_q
+        x1, x2, dtype=dtype, out=out, casting=casting
     )
 
     call_flag = None
@@ -928,8 +947,6 @@ def dpnp_multiplication(
     x1_is_2D, x1_is_1D, x1_base_is_1D = _define_dim_flags(x1, axis=-1)
     x2_is_2D, x2_is_1D, x2_base_is_1D = _define_dim_flags(x2, axis=-2)
 
-    # TODO: investigate usage of syrk function from BLAS in
-    # case of a.T @ a and a @ a.T to gain performance.
     if numpy.prod(result_shape) == 0:
         res_shape = result_shape
     elif x1_shape[-1] == 1:
@@ -966,6 +983,14 @@ def dpnp_multiplication(
         x1 = dpnp.reshape(x1, x1_shape[-2:])
         x2 = dpnp.reshape(x2, x2_shape[-2:])
         res_shape = (x1_shape[-2], x2_shape[-1])
+        if _is_syrk_compatible(x1, x2):
+            call_flag = "syrk"
+            res_dtype_orig = res_dtype
+            # for exact dtypes, use syrk implementation unlike general approach
+            # where dpctl implementation is used for exact dtypes for better
+            # performance
+            if not dpnp.issubdtype(res_dtype, dpnp.inexact):
+                res_dtype = dpnp.default_float_type(x1.device)
     elif x1_base_is_1D:
         # TODO: implement gemv_batch to use it here with transpose
         call_flag = "gemm_batch"
@@ -1046,12 +1071,13 @@ def dpnp_multiplication(
                     dtype=res_dtype,
                     order=res_order,
                 )
-                x2 = _copy_array(
-                    x2,
-                    copy_flag=not x2_contig_flag,
-                    dtype=res_dtype,
-                    order=res_order,
-                )
+                if call_flag != "syrk":
+                    x2 = _copy_array(
+                        x2,
+                        copy_flag=not x2_contig_flag,
+                        dtype=res_dtype,
+                        order=res_order,
+                    )
 
                 if call_flag == "gemv":
                     if transpose:
@@ -1062,13 +1088,21 @@ def dpnp_multiplication(
                         x_usm = dpnp.get_usm_ndarray(x2)
 
                     _manager = dpu.SequentialOrderManager[exec_q]
-
                     ht_ev, gemv_ev = bi._gemv(
                         exec_q,
                         a_usm,
                         x_usm,
                         dpnp.get_usm_ndarray(result),
                         transpose,
+                        depends=_manager.submitted_events,
+                    )
+                    _manager.add_event_pair(ht_ev, gemv_ev)
+                elif call_flag == "syrk":
+                    _manager = dpu.SequentialOrderManager[exec_q]
+                    ht_ev, gemv_ev = bi._syrk(
+                        exec_q,
+                        dpnp.get_usm_ndarray(x1),
+                        dpnp.get_usm_ndarray(result),
                         depends=_manager.submitted_events,
                     )
                     _manager.add_event_pair(ht_ev, gemv_ev)
@@ -1100,6 +1134,9 @@ def dpnp_multiplication(
         result = dpnp.tile(result, out.shape)
     elif res_shape != result_shape:
         result = dpnp.reshape(result, result_shape)
+
+    if call_flag == "syrk" and res_dtype_orig != res_dtype:
+        result = result.astype(res_dtype_orig)
 
     if out is None:
         if axes is not None:
@@ -1217,7 +1254,7 @@ def dpnp_vecdot(
         if axis is not None:
             raise TypeError("cannot specify both `axis` and `axes`.")
 
-        axes_x1, axes_x2, axes_res = _validate_axes(x1, x2, axes, "vecdot")
+        axes_x1, axes_x2, _ = _validate_axes(x1, x2, axes, "vecdot")
 
         # Move the axes that are going to be used in dot product,
         # to the end of "x1" and "x2"
@@ -1241,7 +1278,7 @@ def dpnp_vecdot(
 
     # Determine the appropriate data types
     res_dtype = _compute_res_dtype(
-        x1, x2, dtype=dtype, out=out, casting=casting, sycl_queue=exec_q
+        x1, x2, dtype=dtype, out=out, casting=casting
     )
 
     _, x1_is_1D, _ = _define_dim_flags(x1, axis=-1)
