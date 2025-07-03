@@ -434,6 +434,15 @@ def is_intel_numpy():
     return all(dep["name"].startswith("mkl") for dep in [blas, lapack])
 
 
+def is_lts_driver(device=None):
+    """
+    Return True if a test is running on a GPU device with LTS driver version,
+    False otherwise.
+    """
+    dev = dpctl.select_default_device() if device is None else device
+    return dev.has_aspect_gpu and "1.3" in dev.driver_version
+
+
 def is_win_platform():
     """
     Return True if a test is running on Windows OS, False otherwise.
