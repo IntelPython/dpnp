@@ -22,9 +22,6 @@ _selected_dtypes = [numpy.int64, numpy.float32]
 
 
 class TestCross:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("axis", [None, 0])
     @pytest.mark.parametrize("axisc", [-1, 0])
     @pytest.mark.parametrize("axisb", [-1, 0])
@@ -179,9 +176,6 @@ class TestCross:
 
 
 class TestDot:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_ones(self, dtype):
         n = 10**5
@@ -430,9 +424,6 @@ class TestDot:
 
 
 class TestInner:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_scalar(self, dtype):
         a = 2
@@ -596,9 +587,6 @@ class TestKron:
 
 
 class TestMatmul:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize(
         "order1, order2", [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")]
@@ -1185,7 +1173,7 @@ class TestMatmul:
 
     @pytest.mark.parametrize("dt", get_all_dtypes())
     def test_syrk(self, dt):
-        a = generate_random_numpy_array((6, 9), dtype=dt)
+        a = generate_random_numpy_array((6, 9), dtype=dt, low=-5, high=5)
         ia = dpnp.array(a)
 
         result = dpnp.matmul(ia, ia.mT)
@@ -1507,9 +1495,6 @@ class TestMatmulInvalidCases:
 
 @testing.with_requires("numpy>=2.2")
 class TestMatvec:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shape1, shape2",
@@ -1569,9 +1554,6 @@ class TestMatvec:
 
 
 class TestMultiDot:
-    def setup_method(self):
-        numpy.random.seed(70)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shapes",
@@ -1726,9 +1708,6 @@ class TestMultiDot:
 
 
 class TestTensordot:
-    def setup_method(self):
-        numpy.random.seed(87)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_scalar(self, dtype):
         a = 2
@@ -1860,9 +1839,6 @@ class TestTensordot:
 
 
 class TestVdot:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_scalar(self, dtype):
         a = numpy.array([3.5], dtype=dtype)
@@ -1953,9 +1929,6 @@ class TestVdot:
 
 @testing.with_requires("numpy>=2.0")
 class TestVecdot:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shape1, shape2",
@@ -2233,9 +2206,6 @@ class TestVecdot:
 
 @testing.with_requires("numpy>=2.2")
 class TestVecmat:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shape1, shape2",
