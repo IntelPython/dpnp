@@ -456,6 +456,14 @@ def is_lts_driver(device=None):
     return dev.has_aspect_gpu and "1.3" in dev.driver_version
 
 
+def is_ptl(device=None):
+    """
+    Return True if a test is running on Panther Lake with Iris Xe3 GPU device,
+    False otherwise.
+    """
+    return _get_dev_mask(device) == 0xB000
+
+
 def is_win_platform():
     """
     Return True if a test is running on Windows OS, False otherwise.

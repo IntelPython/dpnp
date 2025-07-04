@@ -12,6 +12,7 @@ from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
+    is_ptl,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -1161,6 +1162,7 @@ class TestMatmul:
         expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.skipif(is_ptl(), reason="MKLD-18712")
     @pytest.mark.parametrize("dt_out", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize(
         "shape1, shape2",
