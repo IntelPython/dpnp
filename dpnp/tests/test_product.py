@@ -1443,6 +1443,9 @@ class TestMatvec:
     def setup_method(self):
         numpy.random.seed(42)
 
+    @pytest.mark.skipif(
+        is_win_platform() and not is_gpu_device(), reason="SAT-8073"
+    )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shape1, shape2",
