@@ -23,6 +23,7 @@ from .helper import (
     has_support_aspect64,
     is_cuda_device,
     is_gpu_device,
+    is_win_platform,
 )
 
 # full list of umaths
@@ -121,6 +122,9 @@ def test_umaths(test_cases):
             pytest.skip("dpnp.modf is not supported with dpnp.float16")
         elif is_cuda_device():
             pytest.skip("dpnp.modf is not supported on CUDA device")
+    elif umath == "vecmat":
+        if is_win_platform() and not is_gpu_device():
+            pytest.skip("SAT-8073")
 
     expected = getattr(numpy, umath)(*args)
     result = getattr(dpnp, umath)(*iargs)
