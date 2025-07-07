@@ -455,6 +455,13 @@ def is_iris_xe(device=None):
     return _get_dev_mask(device) == 0x9A00
 
 
+def is_lnl(device=None):
+    """
+    Return True if a test is running on Lunar Lake GPU device, False otherwise.
+    """
+    return _get_dev_mask(device) == 0x6400
+
+
 def is_lts_driver(device=None):
     """
     Return True if a test is running on a GPU device with LTS driver version,
