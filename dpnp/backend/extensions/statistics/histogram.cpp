@@ -139,12 +139,12 @@ struct HistogramF
             auto dispatch_edges = [&](uint32_t local_mem, const auto &weights,
                                       auto &hist) {
                 if (device.is_gpu() && (local_mem >= bins_count + 1)) {
-                    auto edges = CachedEdges(bins_edges, bins_count + 1, cgh);
+                    auto edges = CachedEdges<BinsT>(bins_edges, bins_count + 1, cgh);
                     submit_histogram(in, size, dims, WorkPI, hist, edges,
                                      weights, nd_range, cgh);
                 }
                 else {
-                    auto edges = UncachedEdges(bins_edges, bins_count + 1, cgh);
+                    auto edges = UncachedEdges<BinsT>(bins_edges, bins_count + 1, cgh);
                     submit_histogram(in, size, dims, WorkPI, hist, edges,
                                      weights, nd_range, cgh);
                 }
@@ -165,7 +165,7 @@ struct HistogramF
                 }
                 else {
                     auto hist = HistGlobalMemory<HistType>(out);
-                    auto edges = UncachedEdges(bins_edges, bins_count + 1, cgh);
+                    auto edges = UncachedEdges<BinsT>(bins_edges, bins_count + 1, cgh);
                     submit_histogram(in, size, dims, WorkPI, hist, edges,
                                      weights, nd_range, cgh);
                 }
