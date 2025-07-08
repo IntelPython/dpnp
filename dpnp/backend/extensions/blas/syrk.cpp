@@ -27,6 +27,8 @@
 
 #include <pybind11/pybind11.h>
 
+#include "ext/common.hpp"
+
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
@@ -36,6 +38,8 @@
 #include "types_matrix.hpp"
 
 #include "dpnp_utils.hpp"
+
+using ext::common::Align;
 
 namespace dpnp::extensions::blas
 {
@@ -142,6 +146,33 @@ static sycl::event syrk_impl(sycl::queue &exec_q,
         throw std::runtime_error(error_msg.str());
     }
 
+    static constexpr std::size_t tile_sz = 8; // Tile size
+    sycl::range<2> global_range(Align(n, tile_sz), Align(n, tile_sz));
+    sycl::range<2> local_range(tile_sz, tile_sz);
+
+    // kernel to copy upper triangle to lower triangle
+    sycl::event copy_event = exec_q.submit([&](sycl::handler &h) {
+        h.depends_on(syrk_event);
+
+        h.parallel_for(sycl::nd_range<2>(global_range, local_range),
+                       [=](sycl::nd_item<2> item) {
+                           int i = item.get_global_id(0);
+                           int j = item.get_global_id(1);
+
+                           if (i < n && j < n && i > j) {
+#if defined(USE_ONEMATH_CUBLAS)
+                               res[i * ldc + j] = res[j * ldc + i];
+#else
+                if (is_row_major) {
+                    res[i * ldc + j] = res[j * ldc + i];
+                } else {
+                    res[j * ldc + i] = res[i * ldc + j];
+                }
+#endif // USE_ONEMATH_CUBLAS
+                           }
+                       });
+    });
+    /*
     // kernel to copy upper triangle to lower triangle
     sycl::event copy_event = exec_q.submit([&](sycl::handler &h) {
         h.depends_on(syrk_event);
@@ -165,7 +196,7 @@ static sycl::event syrk_impl(sycl::queue &exec_q,
                     }
                 }
             });
-    });
+    }); */
     return copy_event;
 }
 
