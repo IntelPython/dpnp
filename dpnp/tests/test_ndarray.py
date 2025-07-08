@@ -92,8 +92,10 @@ class TestView:
         a = numpy.ones((8, 4), dtype=numpy.complex64)
         ia = dpnp.array(a)
 
-        expected = a.view(dt)
         result = ia.view(dt)
+        if not has_support_aspect64() and dt in [float, complex]:
+            dt = result.dtype
+        expected = a.view(dt)
         assert_allclose(result, expected)
 
     def test_type_error(self):
