@@ -1990,14 +1990,15 @@ class dpnp_array:
         ----------
         dtype : {None, str, dtype object}, optional
             The desired data type of the returned view, e.g. :obj:`dpnp.float32`
-            or :obj:`dpnp.int16`. Omitting it results in the view having the
+            or :obj:`dpnp.int16`. By default, it results in the view having the
             same data type.
+
+            Default: ``None``.
 
         Notes
         -----
-        Passing ``None`` for `dtype` is different from omitting the parameter,
-        since the former invokes ``dtype(None)`` which is an alias for the
-        default floating point data type.
+        Passing ``None`` for `dtype` is the same as omitting the parameter,
+        opposite to NumPy where they have different meaning.
 
         ``view(some_dtype)`` or ``view(dtype=some_dtype)`` constructs a view of
         the array's memory with a different data type. This can cause a

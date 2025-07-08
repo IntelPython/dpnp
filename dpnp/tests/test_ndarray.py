@@ -74,6 +74,34 @@ class TestAttributes:
         assert_equal(self.two.itemsize, self.two.dtype.itemsize)
 
 
+class TestView:
+    def test_none_dtype(self):
+        a = numpy.ones((1, 2, 4), dtype=numpy.int32)
+        ia = dpnp.array(a)
+
+        expected = a.view()
+        result = ia.view()
+        assert_allclose(result, expected)
+
+        expected = a.view()  # numpy returns dtype(None) otherwise
+        result = ia.view(None)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("dt", [bool, int, float, complex])
+    def test_python_types(self, dt):
+        a = numpy.ones((8, 4), dtype=numpy.complex64)
+        ia = dpnp.array(a)
+
+        expected = a.view(dt)
+        result = ia.view(dt)
+        assert_allclose(result, expected)
+
+    def test_type_error(self):
+        x = dpnp.ones(4, dtype="i4")
+        with pytest.raises(NotImplementedError):
+            x.view("i2", type=dpnp.ndarray)
+
+
 @pytest.mark.parametrize(
     "arr",
     [
