@@ -1980,8 +1980,66 @@ class dpnp_array:
             correction=correction,
         )
 
-    def view(self, dtype=None):
-        """TBD"""
+    def view(self, dtype=None, *, type=None):
+        """
+        New view of array with the same data.
+
+        For full documentation refer to :obj:`numpy.ndarray.view`.
+
+        Parameters
+        ----------
+        dtype : {None, str, dtype object}, optional
+            The desired data type of the returned view, e.g. :obj:`dpnp.float32`
+            or :obj:`dpnp.int16`. Omitting it results in the view having the
+            same data type.
+
+        Notes
+        -----
+        Passing ``None`` for `dtype` is different from omitting the parameter,
+        since the former invokes ``dtype(None)`` which is an alias for the
+        default floating point data type.
+
+        ``view(some_dtype)`` or ``view(dtype=some_dtype)`` constructs a view of
+        the array's memory with a different data type. This can cause a
+        reinterpretation of the bytes of memory.
+
+        Only the last axis has to be contiguous.
+
+        Limitations
+        -----------
+        Parameter `type` is supported only with default value ``None``.
+        Otherwise, the function raises ``NotImplementedError`` exception.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.ones((4,), dtype=np.float32)
+        >>> xv = x.view(dtype=np.int32)
+        >>> xv[:] = 0
+        >>> xv
+        array([0, 0, 0, 0], dtype=int32)
+
+        However, views that change dtype are totally fine for arrays with a
+        contiguous last axis, even if the rest of the axes are not C-contiguous:
+
+        >>> x = np.arange(2 * 3 * 4, dtype=np.int8).reshape(2, 3, 4)
+        >>> x.transpose(1, 0, 2).view(np.int16)
+        array([[[ 256,  770],
+                [3340, 3854]],
+        <BLANKLINE>
+            [[1284, 1798],
+                [4368, 4882]],
+        <BLANKLINE>
+            [[2312, 2826],
+                [5396, 5910]]], dtype=int16)
+
+        """
+
+        if type is not None:
+            raise NotImplementedError(
+                "Keyword argument `type` is supported only with "
+                f"default value ``None``, but got {type}."
+            )
 
         old_sh = self.shape
         old_strides = self.strides
