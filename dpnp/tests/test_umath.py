@@ -23,7 +23,6 @@ from .helper import (
     has_support_aspect64,
     is_cuda_device,
     is_gpu_device,
-    is_win_platform,
 )
 
 # full list of umaths
@@ -115,9 +114,6 @@ def test_umaths(test_cases):
         and not (vmi._is_available() and has_support_aspect64())
     ):
         pytest.skip("dpctl-2031")
-    elif umath in ["vecmat", "matvec"]:
-        if is_win_platform() and not is_gpu_device():
-            pytest.skip("SAT-8073")
 
     expected = getattr(numpy, umath)(*args)
     result = getattr(dpnp, umath)(*iargs)
