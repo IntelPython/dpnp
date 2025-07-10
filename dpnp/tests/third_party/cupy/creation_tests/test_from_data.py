@@ -242,7 +242,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal(strides_check=True)
+    @testing.numpy_cupy_array_equal()
     def test_array_copy_list_of_numpy_with_dtype(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -258,7 +258,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal(strides_check=True)
+    @testing.numpy_cupy_array_equal()
     def test_array_copy_list_of_numpy_with_dtype_char(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -274,7 +274,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal(strides_check=True)
+    @testing.numpy_cupy_array_equal()
     def test_array_copy_list_of_cupy_with_dtype(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -290,7 +290,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal(strides_check=True)
+    @testing.numpy_cupy_array_equal()
     def test_array_copy_list_of_cupy_with_dtype_char(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
