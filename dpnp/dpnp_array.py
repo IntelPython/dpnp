@@ -25,6 +25,7 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
+import dpctl.tensor._type_utils as dtu
 from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp
@@ -1979,5 +1980,126 @@ class dpnp_array:
             correction=correction,
         )
 
+    def view(self, dtype=None, *, type=None):
+        """
+        New view of array with the same data.
 
-# 'view'
+        For full documentation refer to :obj:`numpy.ndarray.view`.
+
+        Parameters
+        ----------
+        dtype : {None, str, dtype object}, optional
+            The desired data type of the returned view, e.g. :obj:`dpnp.float32`
+            or :obj:`dpnp.int16`. By default, it results in the view having the
+            same data type.
+
+            Default: ``None``.
+
+        Notes
+        -----
+        Passing ``None`` for `dtype` is the same as omitting the parameter,
+        opposite to NumPy where they have different meaning.
+
+        ``view(some_dtype)`` or ``view(dtype=some_dtype)`` constructs a view of
+        the array's memory with a different data type. This can cause a
+        reinterpretation of the bytes of memory.
+
+        Only the last axis has to be contiguous.
+
+        Limitations
+        -----------
+        Parameter `type` is supported only with default value ``None``.
+        Otherwise, the function raises ``NotImplementedError`` exception.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.ones((4,), dtype=np.float32)
+        >>> xv = x.view(dtype=np.int32)
+        >>> xv[:] = 0
+        >>> xv
+        array([0, 0, 0, 0], dtype=int32)
+
+        However, views that change dtype are totally fine for arrays with a
+        contiguous last axis, even if the rest of the axes are not C-contiguous:
+
+        >>> x = np.arange(2 * 3 * 4, dtype=np.int8).reshape(2, 3, 4)
+        >>> x.transpose(1, 0, 2).view(np.int16)
+        array([[[ 256,  770],
+                [3340, 3854]],
+        <BLANKLINE>
+            [[1284, 1798],
+                [4368, 4882]],
+        <BLANKLINE>
+            [[2312, 2826],
+                [5396, 5910]]], dtype=int16)
+
+        """
+
+        if type is not None:
+            raise NotImplementedError(
+                "Keyword argument `type` is supported only with "
+                f"default value ``None``, but got {type}."
+            )
+
+        old_sh = self.shape
+        old_strides = self.strides
+
+        if dtype is None:
+            return dpnp_array(old_sh, buffer=self, strides=old_strides)
+
+        new_dt = dpnp.dtype(dtype)
+        new_dt = dtu._to_device_supported_dtype(new_dt, self.sycl_device)
+
+        new_itemsz = new_dt.itemsize
+        old_itemsz = self.dtype.itemsize
+        if new_itemsz == old_itemsz:
+            return dpnp_array(
+                old_sh, dtype=new_dt, buffer=self, strides=old_strides
+            )
+
+        ndim = self.ndim
+        if ndim == 0:
+            raise ValueError(
+                "Changing the dtype of a 0d array is only supported "
+                "if the itemsize is unchanged"
+            )
+
+        # resize on last axis only
+        axis = ndim - 1
+        if old_sh[axis] != 1 and self.size != 0 and old_strides[axis] != 1:
+            raise ValueError(
+                "To change to a dtype of a different size, "
+                "the last axis must be contiguous"
+            )
+
+        # normalize strides whenever itemsize changes
+        if old_itemsz > new_itemsz:
+            new_strides = list(
+                el * (old_itemsz // new_itemsz) for el in old_strides
+            )
+        else:
+            new_strides = list(
+                el // (new_itemsz // old_itemsz) for el in old_strides
+            )
+        new_strides[axis] = 1
+        new_strides = tuple(new_strides)
+
+        new_dim = old_sh[axis] * old_itemsz
+        if new_dim % new_itemsz != 0:
+            raise ValueError(
+                "When changing to a larger dtype, its size must be a divisor "
+                "of the total size in bytes of the last axis of the array"
+            )
+
+        # normalize shape whenever itemsize changes
+        new_sh = list(old_sh)
+        new_sh[axis] = new_dim // new_itemsz
+        new_sh = tuple(new_sh)
+
+        return dpnp_array(
+            new_sh,
+            dtype=new_dt,
+            buffer=self,
+            strides=new_strides,
+        )

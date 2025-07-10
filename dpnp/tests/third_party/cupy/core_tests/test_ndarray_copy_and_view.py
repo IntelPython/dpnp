@@ -25,7 +25,6 @@ def get_strides(xp, a):
     return a.strides
 
 
-@pytest.mark.skip("'dpnp_array' object has no attribute 'view' yet")
 class TestView:
 
     @testing.numpy_cupy_array_equal()
@@ -98,9 +97,9 @@ class TestView:
     )
     @testing.numpy_cupy_equal()
     def test_view_flags_smaller(self, xp, order, shape):
-        a = xp.zeros(shape, numpy.int32, order)
+        a = xp.zeros(shape, dtype=numpy.int32, order=order)
         b = a.view(numpy.int16)
-        return b.flags.c_contiguous, b.flags.f_contiguous, b.flags.owndata
+        return b.flags.c_contiguous, b.flags.f_contiguous  # , b.flags.owndata
 
     @pytest.mark.parametrize(
         ("order", "shape"),
@@ -112,7 +111,7 @@ class TestView:
     @testing.with_requires("numpy>=1.23")
     def test_view_flags_smaller_invalid(self, order, shape):
         for xp in (numpy, cupy):
-            a = xp.zeros(shape, numpy.int32, order)
+            a = xp.zeros(shape, dtype=numpy.int32, order=order)
             with pytest.raises(ValueError):
                 a.view(numpy.int16)
 
@@ -121,7 +120,7 @@ class TestView:
         [
             ("C", (6,)),
             ("C", (3, 10)),
-            ("C", (0,)),
+            # ("C", (0,)), # dpctl-2119
             ("C", (1, 6)),
             ("C", (3, 2)),
         ],
@@ -129,9 +128,9 @@ class TestView:
     )
     @testing.numpy_cupy_equal()
     def test_view_flags_larger(self, xp, order, shape):
-        a = xp.zeros(shape, numpy.int16, order)
+        a = xp.zeros(shape, dtype=numpy.int16, order=order)
         b = a.view(numpy.int32)
-        return b.flags.c_contiguous, b.flags.f_contiguous, b.flags.owndata
+        return b.flags.c_contiguous, b.flags.f_contiguous  # , b.flags.owndata
 
     @pytest.mark.parametrize(
         ("order", "shape"),
@@ -144,7 +143,7 @@ class TestView:
     @testing.with_requires("numpy>=1.23")
     def test_view_flags_larger_invalid(self, order, shape):
         for xp in (numpy, cupy):
-            a = xp.zeros(shape, numpy.int16, order)
+            a = xp.zeros(shape, dtype=numpy.int16, order=order)
             with pytest.raises(ValueError):
                 a.view(numpy.int32)
 
@@ -161,7 +160,7 @@ class TestView:
     @testing.numpy_cupy_array_equal()
     def test_view_smaller_dtype_multiple2(self, xp):
         # x is non-contiguous, and stride[-1] != 0
-        x = xp.ones((3, 4), xp.int32)[:, :1:2]
+        x = xp.ones((3, 4), dtype=xp.int32)[:, :1:2]
         return x.view(xp.int16)
 
     @testing.with_requires("numpy>=1.23")
@@ -184,7 +183,7 @@ class TestView:
 
     @testing.numpy_cupy_array_equal()
     def test_view_larger_dtype_zero_sized(self, xp):
-        x = xp.ones((3, 20), xp.int16)[:0, ::2]
+        x = xp.ones((3, 20), dtype=xp.int16)[:0, ::2]
         return x.view(xp.int32)
 
 
@@ -387,7 +386,7 @@ class TestArrayAsType:
         dst = astype_without_warning(src, dst_dtype, order="K")
         return get_strides(xp, dst)
 
-    @pytest.mark.skip("'dpnp_array' object has no attribute 'view' yet")
+    @pytest.mark.skip("dpctl-2121")
     @testing.numpy_cupy_array_equal()
     def test_astype_boolean_view(self, xp):
         # See #4354
@@ -454,7 +453,7 @@ class C_np(numpy.ndarray):
         self.info = getattr(obj, "info", None)
 
 
-@pytest.mark.skip("'dpnp_array' object has no attribute 'view' yet")
+@pytest.mark.skip("subclass array is not supported")
 class TestSubclassArrayView:
 
     def test_view_casting(self):

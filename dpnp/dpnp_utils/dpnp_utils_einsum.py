@@ -945,7 +945,6 @@ def _transpose_ex(a, axeses):
         stride = sum(a.strides[axis] for axis in axes)
         strides.append(stride)
 
-    # TODO: replace with a.view() when it is implemented in dpnp
     return dpnp_array(
         shape,
         dtype=a.dtype,
@@ -1151,8 +1150,7 @@ def dpnp_einsum(
             operands[idx] = operands[idx].sum(axis=sum_axes, dtype=result_dtype)
 
     if returns_view:
-        # TODO: replace with a.view() when it is implemented in dpnp
-        operands = [a for a in operands]
+        operands = [a.view() for a in operands]
     else:
         operands = [
             dpnp.astype(a, result_dtype, copy=False, casting=casting)

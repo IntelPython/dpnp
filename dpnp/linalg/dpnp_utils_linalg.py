@@ -1290,15 +1290,8 @@ def _nrm2_last_axis(x):
     """
 
     real_dtype = _real_type(x.dtype)
-    # TODO: use dpnp.sum(dpnp.square(dpnp.view(x)), axis=-1, dtype=real_dtype)
-    # w/a since dpnp.view() in not implemented yet
-    # Сalculate and sum the squares of both real and imaginary parts for
-    # compelex array.
-    if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
-        y = dpnp.abs(x) ** 2
-    else:
-        y = dpnp.square(x)
-    return dpnp.sum(y, axis=-1, dtype=real_dtype)
+    x = dpnp.ascontiguousarray(x)
+    return dpnp.sum(dpnp.square(x.view(real_dtype)), axis=-1)
 
 
 def _real_type(dtype, device=None):
