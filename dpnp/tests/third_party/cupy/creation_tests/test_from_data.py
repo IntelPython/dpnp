@@ -62,7 +62,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="src_order")
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_from_list_of_numpy(self, xp, dtype, src_order, dst_order):
         # compares numpy.array(<list of numpy.ndarray>) with
         # cupy.array(<list of numpy.ndarray>)
@@ -75,7 +75,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="src_order")
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_from_list_of_numpy_view(
         self, xp, dtype, src_order, dst_order
     ):
@@ -93,7 +93,7 @@ class TestFromData(unittest.TestCase):
 
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_from_list_of_numpy_scalar(self, xp, dtype, order):
         # compares numpy.array(<list of numpy.ndarray>) with
         # cupy.array(<list of numpy.ndarray>)
@@ -103,7 +103,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="src_order")
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_from_nested_list_of_numpy(
         self, xp, dtype, src_order, dst_order
     ):
@@ -118,7 +118,9 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="src_order")
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes_combination(names=("dtype1", "dtype2"))
-    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
+    @testing.numpy_cupy_array_equal(
+        type_check=has_support_aspect64(), strides_check=True
+    )
     def test_array_from_list_of_cupy(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -133,7 +135,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="src_order")
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_from_list_of_cupy_view(
         self, xp, dtype, src_order, dst_order
     ):
@@ -152,7 +154,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="src_order")
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_from_nested_list_of_cupy(
         self, xp, dtype, src_order, dst_order
     ):
@@ -166,7 +168,7 @@ class TestFromData(unittest.TestCase):
 
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_from_list_of_cupy_scalar(self, xp, dtype, order):
         # compares numpy.array(<list of numpy.ndarray>) with
         # cupy.array(<list of cupy.ndarray>)
@@ -240,7 +242,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_copy_list_of_numpy_with_dtype(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -256,7 +258,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_copy_list_of_numpy_with_dtype_char(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -272,7 +274,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_copy_list_of_cupy_with_dtype(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -288,7 +290,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_copy_list_of_cupy_with_dtype_char(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -656,7 +658,7 @@ class TestCudaArrayInterface(unittest.TestCase):
             DummyObjectWithCudaArrayInterface(a, self.ver, self.strides)
         )
         assert a.strides == b.strides
-        assert a.nbytes == b.nbytes
+        assert a.nbytes == b.data.mem.size
 
     @testing.for_all_dtypes()
     def test_with_zero_size_array(self, dtype):
@@ -665,7 +667,8 @@ class TestCudaArrayInterface(unittest.TestCase):
             DummyObjectWithCudaArrayInterface(a, self.ver, self.strides)
         )
         assert a.strides == b.strides
-        assert a.nbytes == b.nbytes
+        assert a.nbytes == b.data.mem.size
+        assert a.data.ptr == 0
         assert a.size == 0
 
     @testing.for_all_dtypes()
@@ -724,7 +727,7 @@ class TestCudaArrayInterfaceBigArray(unittest.TestCase):
         testing.assert_array_equal(a, b)
 
 
-class DummyObjectWithCudaArrayInterface(object):
+class DummyObjectWithCudaArrayInterface:
     def __init__(self, a, ver, include_strides=False, mask=None, stream=None):
         assert ver in tuple(range(max_cuda_array_interface_version + 1))
         self.a = None
@@ -834,7 +837,7 @@ class TestArrayCopy(unittest.TestCase):
         is_copied = not (
             (actual is a)
             or (self.xp is cupy)
-            and (a.get_array()._pointer == actual.get_array()._pointer)
+            and (a.data.ptr == actual.data.ptr)
         )
         assert should_copy == is_copied
 
