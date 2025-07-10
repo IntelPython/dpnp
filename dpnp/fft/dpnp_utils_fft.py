@@ -110,14 +110,28 @@ def _commit_descriptor(a, forward, in_place, c2c, a_strides, index, batch_fft):
     return dsc, out_strides
 
 
-def _complex_nd_fft(a, s, norm, out, forward, in_place, c2c, axes, batch_fft):
+def _complex_nd_fft(
+    a,
+    s,
+    norm,
+    out,
+    forward,
+    in_place,
+    c2c,
+    axes,
+    batch_fft,
+    *,
+    reversed_axes=True,
+):
     """Computes complex-to-complex FFT of the input N-D array."""
 
     len_axes = len(axes)
     # OneMKL supports up to 3-dimensional FFT on GPU
     # repeated axis in OneMKL FFT is not allowed
     if len_axes > 3 or len(set(axes)) < len_axes:
-        axes_chunk, shape_chunk = _extract_axes_chunk(axes, s, chunk_size=3)
+        axes_chunk, shape_chunk = _extract_axes_chunk(
+            axes, s, chunk_size=3, reversed_axes=reversed_axes
+        )
         for i, (s_chunk, a_chunk) in enumerate(zip(shape_chunk, axes_chunk)):
             a = _truncate_or_pad(a, shape=s_chunk, axes=a_chunk)
             # if out is used in an intermediate step, it will have memory
@@ -291,7 +305,7 @@ def _copy_array(x, complex_input):
     return x, copy_flag
 
 
-def _extract_axes_chunk(a, s, chunk_size=3):
+def _extract_axes_chunk(a, s, chunk_size=3, reversed_axes=True):
     """
     Classify the first input into a list of lists with each list containing
     only unique values in reverse order and its length is at most `chunk_size`.
@@ -362,7 +376,10 @@ def _extract_axes_chunk(a, s, chunk_size=3):
         a_chunks.append(a_current_chunk[::-1])
         s_chunks.append(s_current_chunk[::-1])
 
-    return a_chunks[::-1], s_chunks[::-1]
+    if reversed_axes:
+        return a_chunks[::-1], s_chunks[::-1]
+
+    return a_chunks, s_chunks
 
 
 def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
@@ -531,9 +548,12 @@ def _validate_out_keyword(a, out, s, axes, c2c, c2r, r2c):
             expected_shape[axes[-1]] = s[-1] // 2 + 1
         elif c2c:
             expected_shape[axes[-1]] = s[-1]
-        for s_i, axis in zip(s[-2::-1], axes[-2::-1]):
-            expected_shape[axis] = s_i
+        if r2c or c2c:
+            for s_i, axis in zip(s[-2::-1], axes[-2::-1]):
+                expected_shape[axis] = s_i
         if c2r:
+            for s_i, axis in zip(s[:-1], axes[:-1]):
+                expected_shape[axis] = s_i
             expected_shape[axes[-1]] = s[-1]
 
         if out.shape != tuple(expected_shape):
@@ -717,6 +737,7 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
             c2c=True,
             axes=axes[:-1],
             batch_fft=a.ndim != len_axes - 1,
+            reversed_axes=False,
         )
         a = _truncate_or_pad(a, (s[-1],), (axes[-1],))
         if c2r:
