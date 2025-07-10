@@ -29,6 +29,7 @@ import dpctl.tensor._type_utils as dtu
 from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp
+import dpnp.memory as dpm
 
 
 def _get_unwrapped_index_key(key):
@@ -76,9 +77,12 @@ class dpnp_array:
             order = "C"
 
         if buffer is not None:
-            buffer = dpnp.get_usm_ndarray(buffer)
+            # expecting to have buffer as dpnp.ndarray and usm_ndarray,
+            # or as USM memory allocation
+            if isinstance(buffer, dpnp_array):
+                buffer = buffer.get_array()
 
-            if dtype is None:
+            if dtype is None and hasattr(buffer, "dtype"):
                 dtype = buffer.dtype
         else:
             buffer = usm_type
@@ -1015,7 +1019,15 @@ class dpnp_array:
 
         return dpnp.cumsum(self, axis=axis, dtype=dtype, out=out)
 
-    # 'data',
+    @property
+    def data(self):
+        """
+        Python object pointing to the start of USM memory allocation with the
+        array's data.
+
+        """
+
+        return dpm.create_data(self._array_obj)
 
     def diagonal(self, offset=0, axis1=0, axis2=1):
         """
