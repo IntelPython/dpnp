@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.19.0dev1+2.gd15d395fe58 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.19.0dev1+3.g9b73305babb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=516e0b3f"></script>
+      <script src="../../_static/documentation_options.js?v=2d9cbcf6"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -110,6 +110,7 @@
 <span class="c1"># *****************************************************************************</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._type_utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dtu</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisError</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
@@ -2193,11 +2194,135 @@
             <span class="n">mean</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span>
             <span class="n">correction</span><span class="o">=</span><span class="n">correction</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dpnp_array.view">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.view.html#dpnp.dpnp_array.dpnp_array.view">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        New view of array with the same data.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.view`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dtype : {None, str, dtype object}, optional</span>
+<span class="sd">            The desired data type of the returned view, e.g. :obj:`dpnp.float32`</span>
+<span class="sd">            or :obj:`dpnp.int16`. By default, it results in the view having the</span>
+<span class="sd">            same data type.</span>
+
+<span class="sd">            Default: ``None``.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Passing ``None`` for `dtype` is the same as omitting the parameter,</span>
+<span class="sd">        opposite to NumPy where they have different meaning.</span>
+
+<span class="sd">        ``view(some_dtype)`` or ``view(dtype=some_dtype)`` constructs a view of</span>
+<span class="sd">        the array&#39;s memory with a different data type. This can cause a</span>
+<span class="sd">        reinterpretation of the bytes of memory.</span>
+
+<span class="sd">        Only the last axis has to be contiguous.</span>
+
+<span class="sd">        Limitations</span>
+<span class="sd">        -----------</span>
+<span class="sd">        Parameter `type` is supported only with default value ``None``.</span>
+<span class="sd">        Otherwise, the function raises ``NotImplementedError`` exception.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; x = np.ones((4,), dtype=np.float32)</span>
+<span class="sd">        &gt;&gt;&gt; xv = x.view(dtype=np.int32)</span>
+<span class="sd">        &gt;&gt;&gt; xv[:] = 0</span>
+<span class="sd">        &gt;&gt;&gt; xv</span>
+<span class="sd">        array([0, 0, 0, 0], dtype=int32)</span>
+
+<span class="sd">        However, views that change dtype are totally fine for arrays with a</span>
+<span class="sd">        contiguous last axis, even if the rest of the axes are not C-contiguous:</span>
+
+<span class="sd">        &gt;&gt;&gt; x = np.arange(2 * 3 * 4, dtype=np.int8).reshape(2, 3, 4)</span>
+<span class="sd">        &gt;&gt;&gt; x.transpose(1, 0, 2).view(np.int16)</span>
+<span class="sd">        array([[[ 256,  770],</span>
+<span class="sd">                [3340, 3854]],</span>
+<span class="sd">        &lt;BLANKLINE&gt;</span>
+<span class="sd">            [[1284, 1798],</span>
+<span class="sd">                [4368, 4882]],</span>
+<span class="sd">        &lt;BLANKLINE&gt;</span>
+<span class="sd">            [[2312, 2826],</span>
+<span class="sd">                [5396, 5910]]], dtype=int16)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;Keyword argument `type` is supported only with &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">old_sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">old_strides</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span><span class="n">old_sh</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">old_strides</span><span class="p">)</span>
+
+        <span class="n">new_dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">new_dt</span> <span class="o">=</span> <span class="n">dtu</span><span class="o">.</span><span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">new_dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+
+        <span class="n">new_itemsz</span> <span class="o">=</span> <span class="n">new_dt</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="n">old_itemsz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="k">if</span> <span class="n">new_itemsz</span> <span class="o">==</span> <span class="n">old_itemsz</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span>
+                <span class="n">old_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">new_dt</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">old_strides</span>
+            <span class="p">)</span>
+
+        <span class="n">ndim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span>
+        <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Changing the dtype of a 0d array is only supported &quot;</span>
+                <span class="s2">&quot;if the itemsize is unchanged&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># resize on last axis only</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">old_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">old_strides</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;To change to a dtype of a different size, &quot;</span>
+                <span class="s2">&quot;the last axis must be contiguous&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># normalize strides whenever itemsize changes</span>
+        <span class="k">if</span> <span class="n">old_itemsz</span> <span class="o">&gt;</span> <span class="n">new_itemsz</span><span class="p">:</span>
+            <span class="n">new_strides</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="n">el</span> <span class="o">*</span> <span class="p">(</span><span class="n">old_itemsz</span> <span class="o">//</span> <span class="n">new_itemsz</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">old_strides</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_strides</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="n">el</span> <span class="o">//</span> <span class="p">(</span><span class="n">new_itemsz</span> <span class="o">//</span> <span class="n">old_itemsz</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">old_strides</span>
+            <span class="p">)</span>
+        <span class="n">new_strides</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">new_strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">new_strides</span><span class="p">)</span>
+
+        <span class="n">new_dim</span> <span class="o">=</span> <span class="n">old_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">*</span> <span class="n">old_itemsz</span>
+        <span class="k">if</span> <span class="n">new_dim</span> <span class="o">%</span> <span class="n">new_itemsz</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;When changing to a larger dtype, its size must be a divisor &quot;</span>
+                <span class="s2">&quot;of the total size in bytes of the last axis of the array&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># normalize shape whenever itemsize changes</span>
+        <span class="n">new_sh</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">old_sh</span><span class="p">)</span>
+        <span class="n">new_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_dim</span> <span class="o">//</span> <span class="n">new_itemsz</span>
+        <span class="n">new_sh</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">new_sh</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span>
+            <span class="n">new_sh</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">new_dt</span><span class="p">,</span>
+            <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">strides</span><span class="o">=</span><span class="n">new_strides</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </div>
 
-
-
-<span class="c1"># &#39;view&#39;</span>
 </pre></div>
 
            </div>
