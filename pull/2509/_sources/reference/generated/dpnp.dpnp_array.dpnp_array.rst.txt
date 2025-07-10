@@ -54,6 +54,7 @@
          dpnp_array.trace
          dpnp_array.transpose
          dpnp_array.var
+         dpnp_array.view
 
 
 
