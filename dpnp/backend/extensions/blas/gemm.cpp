@@ -232,7 +232,7 @@ std::tuple<sycl::event, sycl::event, bool>
 
 // cuBLAS supports only column-major storage
 #if defined(USE_ONEMATH_CUBLAS)
-    const bool is_row_major = false;
+    constexpr bool is_row_major = false;
 
     transA = is_matrixA_c_contig ? oneapi::mkl::transpose::T
                                  : oneapi::mkl::transpose::N;
