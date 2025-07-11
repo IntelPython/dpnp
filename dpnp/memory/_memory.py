@@ -35,6 +35,12 @@ def _add_ptr_property(cls):
 
     @property
     def ptr(self):
+        """
+        Returns USM pointer to the start of array (element with zero
+        multi-index) encoded as integer.
+
+        """
+
         return getattr(self, _storage_attr, None)
 
     @ptr.setter
