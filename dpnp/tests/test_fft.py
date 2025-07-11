@@ -551,10 +551,7 @@ class TestFftshift:
 
 
 class TestHfft:
-    # TODO: include boolean dtype when mkl_fft-gh-180 is merged
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_none=True, no_bool=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_basic(self, dtype, n, norm):
@@ -563,10 +560,7 @@ class TestHfft:
 
         result = dpnp.fft.hfft(ia, n=n, norm=norm)
         expected = numpy.fft.hfft(a, n=n, norm=norm)
-        # TODO: change to the commented line when mkl_fft-2.0.0 is released
-        # and being used with Intel NumPy >= 2.0.0
-        flag = True
-        # flag = True if numpy_version() < "2.0.0" else False
+        flag = True if numpy_version() < "2.0.0" else False
         assert_dtype_allclose(
             result, expected, factor=24, check_only_type_kind=flag
         )
@@ -609,10 +603,7 @@ class TestIrfft:
 
         result = dpnp.fft.irfft(ia, n=n, norm=norm)
         expected = numpy.fft.irfft(a, n=n, norm=norm)
-        # TODO: change to the commented line when mkl_fft-2.0.0 is released
-        # and being used with Intel NumPy >= 2.0.0
-        flag = True
-        # flag = True if numpy_version() < "2.0.0" else False
+        flag = True if numpy_version() < "2.0.0" else False
         assert_dtype_allclose(
             result, expected, factor=24, check_only_type_kind=flag
         )
@@ -779,8 +770,7 @@ class TestRfft:
 
         expected = numpy.fft.rfft(a)
         result = dpnp.fft.rfft(ia)
-        # TODO: change to the commented line when mkl_fft-2.0.0 is released
-        # and being used with Intel NumPy >= 2.0.0
+        # TODO: change to the commented line when mkl_fft-gh-204 is resolved
         flag = True
         # flag = True if numpy_version() < "2.0.0" else False
         assert_dtype_allclose(result, expected, check_only_type_kind=flag)
@@ -800,11 +790,10 @@ class TestRfft:
 
 
 class TestRfft2:
-    # TODO: add other axes when mkl_fft gh-119 is addressed
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
-    @pytest.mark.parametrize("axes", [(0, 1)])  # (1, 2),(0, 2),(2, 1),(2, 0)
+    @pytest.mark.parametrize("axes", [(0, 1), (1, 2), (0, 2), (2, 1), (2, 0)])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_basic(self, dtype, axes, norm, order):
@@ -859,12 +848,11 @@ class TestRfft2:
 
 
 class TestRfftn:
-    # TODO: add additional axes when mkl_fft gh-119 is addressed
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
     @pytest.mark.parametrize(
-        "axes", [(0, 1, 2), (-2, -4, -1, -3)]  # (-1, -4, -2)
+        "axes", [(0, 1, 2), (-2, -4, -1, -3), (-1, -4, -2)]
     )
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
@@ -965,8 +953,5 @@ class TestRfftn:
 
         result = dpnp.fft.irfftn(ia)
         expected = numpy.fft.irfftn(a)
-        # TODO: change to the commented line when mkl_fft-2.0.0 is released
-        # and being used with Intel NumPy >= 2.0.0
-        flag = True
-        # flag = True if numpy_version() < "2.0.0" else False
+        flag = True if numpy_version() < "2.0.0" else False
         assert_dtype_allclose(result, expected, check_only_type_kind=flag)
