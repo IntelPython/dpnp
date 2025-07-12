@@ -14,7 +14,7 @@ var NAVTREEINDEX0 =
 "bartlett_8hpp_source.html":[3,0,0,9,0],
 "bincount_8hpp_source.html":[3,0,0,6,0],
 "blackman_8hpp_source.html":[3,0,0,9,1],
-"blas_2types__matrix_8hpp_source.html":[3,0,0,0,6],
+"blas_2types__matrix_8hpp_source.html":[3,0,0,0,7],
 "cbrt_8hpp_source.html":[3,0,0,8,10],
 "ceil_8hpp_source.html":[3,0,0,8,11],
 "choose_8hpp_source.html":[3,0,0,4,0],

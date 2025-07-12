@@ -113,6 +113,7 @@ var hierarchy =
       [ "statistics::sliding_window1d::PaddedSpan< T, SizeT >", "classstatistics_1_1sliding__window1d_1_1_padded_span.html", null ]
     ] ],
     [ "dpnp::extensions::lapack::types::SyevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
+    [ "dpnp::extensions::blas::types::SyrkTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_syrk_type_pair_support_factory.html", null ],
     [ "ext::common::TableBuilder< FnT, SupportedTypes, Func >", "structext_1_1common_1_1_table_builder.html", null ],
     [ "ext::common::TableBuilder2< FnT, SupportedTypes, Func >", "structext_1_1common_1_1_table_builder2.html", null ],
     [ "statistics::histogram::UncachedData< T, Dims >", "structstatistics_1_1histogram_1_1_uncached_data.html", null ],
