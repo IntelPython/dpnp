@@ -272,7 +272,7 @@ std::pair<sycl::event, sycl::event>
 
 // cuBLAS supports only column-major storage
 #if defined(USE_ONEMATH_CUBLAS)
-    const bool is_row_major = false;
+    constexpr bool is_row_major = false;
     std::int64_t n;
     std::int64_t k;
 
