@@ -199,29 +199,30 @@ $(function(){initNavTree('evd__batch__common_8hpp_source.html',''); initResizabl
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        evd_batch_dispatch_table[eig_vecs_type_id][eig_vals_type_id];</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">if</span> (evd_batch_fn == <span class="keyword">nullptr</span>) {</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">throw</span> py::value_error(</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="stringliteral">&quot;Types of input vectors and result array are mismatched.&quot;</span>);</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    }</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordtype">char</span> *eig_vecs_data = eig_vecs.get_data();</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">char</span> *eig_vals_data = eig_vals.get_data();</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> std::int64_t batch_size = eig_vecs_shape[2];</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">const</span> std::int64_t n = eig_vecs_shape[1];</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keyword">const</span> oneapi::mkl::job jobz_val = <span class="keyword">static_cast&lt;</span>oneapi::mkl::job<span class="keyword">&gt;</span>(jobz);</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keyword">const</span> oneapi::mkl::uplo uplo_val =</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">static_cast&lt;</span>oneapi::mkl::uplo<span class="keyword">&gt;</span>(upper_lower);</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    sycl::event evd_batch_ev =</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        evd_batch_fn(exec_q, jobz_val, uplo_val, batch_size, n, eig_vecs_data,</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                     eig_vals_data, depends);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    sycl::event ht_ev = dpctl::utils::keep_args_alive(</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        exec_q, {eig_vecs, eig_vals}, {evd_batch_ev});</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">return</span> std::make_pair(ht_ev, evd_batch_ev);</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>} <span class="comment">// namespace dpnp::extensions::lapack::evd</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="stringliteral">&quot;No evd_batch implementation is available for the specified data &quot;</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="stringliteral">&quot;type of the input and output arrays.&quot;</span>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">char</span> *eig_vecs_data = eig_vecs.get_data();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordtype">char</span> *eig_vals_data = eig_vals.get_data();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">const</span> std::int64_t batch_size = eig_vecs_shape[2];</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">const</span> std::int64_t n = eig_vecs_shape[1];</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keyword">const</span> oneapi::mkl::job jobz_val = <span class="keyword">static_cast&lt;</span>oneapi::mkl::job<span class="keyword">&gt;</span>(jobz);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">const</span> oneapi::mkl::uplo uplo_val =</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">static_cast&lt;</span>oneapi::mkl::uplo<span class="keyword">&gt;</span>(upper_lower);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    sycl::event evd_batch_ev =</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        evd_batch_fn(exec_q, jobz_val, uplo_val, batch_size, n, eig_vecs_data,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                     eig_vals_data, depends);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    sycl::event ht_ev = dpctl::utils::keep_args_alive(</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        exec_q, {eig_vecs, eig_vals}, {evd_batch_ev});</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">return</span> std::make_pair(ht_ev, evd_batch_ev);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>}</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>} <span class="comment">// namespace dpnp::extensions::lapack::evd</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
