@@ -291,9 +291,6 @@ dpnp.str_ = DummyClass
 dpnp.unicode = str
 dpnp.unicode_ = dpnp.str_
 
-dpnp.compat = dummymodule
-dpnp.compat.unicode = dpnp.unicode
-
 dpnp.core = dpnp.core.umath = dpnp
 
 dpnp.core._exceptions = dummymodule

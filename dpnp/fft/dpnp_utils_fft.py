@@ -308,7 +308,7 @@ def _copy_array(x, complex_input):
 def _extract_axes_chunk(a, s, chunk_size=3, reversed_axes=True):
     """
     Classify the first input into a list of lists with each list containing
-    only unique values in reverse order and its length is at most `chunk_size`.
+    only unique values and its length is at most `chunk_size`.
     The second input is also classified into a list of lists with each list
     containing the corresponding values of the first input.
 
@@ -320,13 +320,14 @@ def _extract_axes_chunk(a, s, chunk_size=3, reversed_axes=True):
         The second input.
     chunk_size : int
         Maximum number of elements in each chunk.
+    reversed_axes : bool
+        If True, the output chunks will be in reverse order.
 
     Return
     ------
     out : a tuple of two lists
         The first element of output is a list of lists with each list
-        containing only unique values in revere order and its length is
-        at most `chunk_size`.
+        containing only unique values and its length is at most `chunk_size`.
         The second element of output is a list of lists with each list
         containing the corresponding values of the first input.
 

@@ -55,9 +55,7 @@ typedef sycl::event (*gemm_impl_fn_ptr_t)(sycl::queue &,
                                           const std::int64_t,
                                           char *,
                                           const std::int64_t,
-#if !defined(USE_ONEMATH_CUBLAS)
                                           const bool,
-#endif // !USE_ONEMATH_CUBLAS
                                           const std::vector<sycl::event> &);
 
 static gemm_impl_fn_ptr_t gemm_dispatch_table[dpctl_td_ns::num_types]
@@ -76,9 +74,7 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
                              const std::int64_t ldb,
                              char *resultC,
                              const std::int64_t ldc,
-#if !defined(USE_ONEMATH_CUBLAS)
                              const bool is_row_major,
-#endif // !USE_ONEMATH_CUBLAS
                              const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<Tab>(exec_q);
@@ -100,11 +96,6 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
                 const Tab *a, const std::int64_t lda, const Tab *b,
                 const std::int64_t ldb, Tab beta, Tc *c, const std::int64_t ldc,
                 const std::vector<sycl::event> &deps) -> sycl::event {
-#if defined(USE_ONEMATH_CUBLAS)
-            return mkl_blas::column_major::gemm(q, transA, transB, m, n, k,
-                                                alpha, a, lda, b, ldb, beta, c,
-                                                ldc, deps);
-#else
             if (is_row_major) {
                 return mkl_blas::row_major::gemm(q, transA, transB, m, n, k,
                                                  alpha, a, lda, b, ldb, beta, c,
@@ -115,7 +106,6 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
                                                     alpha, a, lda, b, ldb, beta,
                                                     c, ldc, deps);
             }
-#endif // USE_ONEMATH_CUBLAS
         };
         gemm_event = gemm_func(
             exec_q,
@@ -129,8 +119,7 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
             Tab(1), // Scaling factor for the product of matrices A and B.
             a,      // Pointer to matrix A.
             lda,    // Leading dimension of matrix A, which is the
-                    // stride between successive rows (for row major
-                    // layout).
+                    // stride between successive rows (for row major layout).
             b,      // Pointer to matrix B.
             ldb,    // Leading dimension of matrix B, similar to lda.
             Tab(0), // Scaling factor for matrix C.
@@ -168,7 +157,8 @@ std::tuple<sycl::event, sycl::event, bool>
     const int resultC_nd = resultC.get_ndim();
 
     if ((matrixA_nd != 2) || (matrixB_nd != 2) || (resultC_nd != 2)) {
-        throw py::value_error("Input matrices must be two-dimensional.");
+        throw py::value_error(
+            "Input and output matrices must be two-dimensional.");
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
@@ -242,7 +232,7 @@ std::tuple<sycl::event, sycl::event, bool>
 
 // cuBLAS supports only column-major storage
 #if defined(USE_ONEMATH_CUBLAS)
-    const bool is_row_major = false;
+    constexpr bool is_row_major = false;
 
     transA = is_matrixA_c_contig ? oneapi::mkl::transpose::T
                                  : oneapi::mkl::transpose::N;
@@ -286,6 +276,8 @@ std::tuple<sycl::event, sycl::event, bool>
         }
     }
     else {
+        // both A and B are f_contig so using column-major gemm and
+        // no transpose is needed
         transA = oneapi::mkl::transpose::N;
         transB = oneapi::mkl::transpose::N;
         lda = m;
@@ -313,22 +305,17 @@ std::tuple<sycl::event, sycl::event, bool>
         gemm_dispatch_table[matrixAB_type_id][resultC_type_id];
     if (gemm_fn == nullptr) {
         throw py::value_error(
-            "Types of input matrices and result matrix are mismatched.");
+            "No gemm implementation is available for the specified data type "
+            "of the input and output arrays.");
     }
 
     const char *a_typeless_ptr = matrixA.get_data();
     const char *b_typeless_ptr = matrixB.get_data();
     char *r_typeless_ptr = resultC.get_data();
 
-#if defined(USE_ONEMATH_CUBLAS)
-    sycl::event gemm_ev =
-        gemm_fn(exec_q, transA, transB, m, n, k, a_typeless_ptr, lda,
-                b_typeless_ptr, ldb, r_typeless_ptr, ldc, depends);
-#else
     sycl::event gemm_ev = gemm_fn(exec_q, transA, transB, m, n, k,
                                   a_typeless_ptr, lda, b_typeless_ptr, ldb,
                                   r_typeless_ptr, ldc, is_row_major, depends);
-#endif // USE_ONEMATH_CUBLAS
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, {gemm_ev});
