@@ -37,6 +37,7 @@ jobs:
       actions: write
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
 
     defaults:
       run:
@@ -118,6 +119,7 @@ jobs:
     needs: build
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
 
     defaults:
       run:
@@ -245,6 +247,7 @@ jobs:
     needs: build
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
 
     defaults:
       run:
@@ -406,6 +409,7 @@ jobs:
         os: [ubuntu-22.04, windows-2022]
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
 
     defaults:
       run:
@@ -487,6 +491,7 @@ jobs:
         os: [ubuntu-22.04]
 
     runs-on:  ${{ matrix.os }}
+    timeout-minutes: 15
 
     defaults:
       run:
@@ -649,6 +654,7 @@ jobs:
     needs: [upload]
 
     runs-on: 'ubuntu-latest'
+    timeout-minutes: 10
 
     defaults:
       run:
