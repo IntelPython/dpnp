@@ -119,7 +119,7 @@ jobs:
     needs: build
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    timeout-minutes: 100
 
     defaults:
       run:
