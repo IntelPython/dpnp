@@ -401,13 +401,13 @@ class TestFftn:
         result = dpnp.fft.fftn(ia, axes=axes)
         # Intel NumPy ignores repeated axes (mkl_fft-gh-104), handle it one by one
         expected = a
-        for ii in axes:
+        for ii in axes[::-1]:
             expected = numpy.fft.fft(expected, axis=ii)
         assert_dtype_allclose(result, expected)
 
         # inverse FFT
         result = dpnp.fft.ifftn(result, axes=axes)
-        for ii in axes:
+        for ii in axes[::-1]:
             expected = numpy.fft.ifft(expected, axis=ii)
         assert_dtype_allclose(result, expected)
 
@@ -893,7 +893,7 @@ class TestRfftn:
 
         # inverse FFT
         result = dpnp.fft.irfftn(result, axes=axes)
-        for ii in axes[-2::-1]:
+        for ii in axes[:-1]:
             expected = numpy.fft.ifft(expected, axis=ii)
         expected = numpy.fft.irfft(expected, axis=axes[-1])
         assert_dtype_allclose(result, expected)
@@ -912,7 +912,7 @@ class TestRfftn:
         assert_dtype_allclose(result, expected)
 
         result = dpnp.fft.irfftn(result, s=s, axes=axes)
-        for jj, ii in zip(s[-2::-1], axes[-2::-1]):
+        for jj, ii in zip(s[:-1], axes[:-1]):
             expected = numpy.fft.ifft(expected, n=jj, axis=ii)
         expected = numpy.fft.irfft(expected, n=s[-1], axis=axes[-1])
         assert_dtype_allclose(result, expected)
@@ -934,7 +934,7 @@ class TestRfftn:
         assert_dtype_allclose(result, expected)
 
         # inverse FFT
-        for jj, ii in zip(s[-2::-1], axes[-2::-1]):
+        for jj, ii in zip(s[:-1], axes[:-1]):
             expected = numpy.fft.ifft(expected, n=jj, axis=ii)
         expected = numpy.fft.irfft(expected, n=s[-1], axis=axes[-1])
         out = dpnp.empty(expected.shape, dtype=numpy.float32)

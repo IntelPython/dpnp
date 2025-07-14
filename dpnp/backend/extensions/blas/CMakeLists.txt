@@ -30,6 +30,7 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemm_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gemv.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/syrk.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
@@ -61,6 +62,7 @@ set_target_properties(${python_module_name} PROPERTIES CMAKE_POSITION_INDEPENDEN
 
 target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
+target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../common)
 
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
