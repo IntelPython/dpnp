@@ -1,4 +1,4 @@
-name: pre-commit
+name: Run pre-commit
 
 on:
   pull_request:
@@ -9,7 +9,11 @@ permissions: read-all
 
 jobs:
   pre-commit:
+    name: Check
+
     runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
     steps:
       - name: Set up clang-format
         run: |
