@@ -98,7 +98,7 @@ def create_data(x):
     cls = dispatch.get(type(usm_data), None)
     if cls:
         data = cls(usm_data)
-        # `ptr`` is expecting to point at the start of the array's data,
+        # `ptr` is expecting to point at the start of the array's data,
         # while `usm_data._pointer` is a pointer at the start of memory buffer
         data.ptr = x._pointer
         return data
