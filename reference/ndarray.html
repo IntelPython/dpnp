@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.19.0dev1+9.g463af2275b8 documentation</title>
+  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.19.0dev1+10.ge2c04695cd4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=378a2deb"></script>
+      <script src="../_static/documentation_options.js?v=c2e0af1a"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -69,6 +69,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.shape.html">dpnp.ndarray.shape</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.strides.html">dpnp.ndarray.strides</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.ndim.html">dpnp.ndarray.ndim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.data.html">dpnp.ndarray.data</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.size.html">dpnp.ndarray.size</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.itemsize.html">dpnp.ndarray.itemsize</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.nbytes.html">dpnp.ndarray.nbytes</a></li>
@@ -310,13 +311,16 @@ of the array:</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.ndim.html#dpnp.ndarray.ndim" title="dpnp.ndarray.ndim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.ndim</span></code></a></p></td>
 <td><p>Return the number of dimensions of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.size.html#dpnp.ndarray.size" title="dpnp.ndarray.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.size</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.data.html#dpnp.ndarray.data" title="dpnp.ndarray.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.data</span></code></a></p></td>
+<td><p>Python object pointing to the start of USM memory allocation with the array's data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.size.html#dpnp.ndarray.size" title="dpnp.ndarray.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.size</span></code></a></p></td>
 <td><p>Number of elements in the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.itemsize.html#dpnp.ndarray.itemsize" title="dpnp.ndarray.itemsize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.itemsize</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.itemsize.html#dpnp.ndarray.itemsize" title="dpnp.ndarray.itemsize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.itemsize</span></code></a></p></td>
 <td><p>Size of one array element in bytes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.nbytes.html#dpnp.ndarray.nbytes" title="dpnp.ndarray.nbytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.nbytes</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.nbytes.html#dpnp.ndarray.nbytes" title="dpnp.ndarray.nbytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.nbytes</span></code></a></p></td>
 <td><p>Total bytes consumed by the elements of the array.</p></td>
 </tr>
 </tbody>
