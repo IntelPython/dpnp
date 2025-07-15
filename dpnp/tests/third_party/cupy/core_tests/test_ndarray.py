@@ -43,13 +43,13 @@ class TestNdarrayInit(unittest.TestCase):
 
     def test_shape_int_with_strides(self):
         dummy = cupy.ndarray(3)
-        a = cupy.ndarray(3, strides=(0,), buffer=dummy)
+        a = cupy.ndarray(3, strides=(0,), buffer=dummy.data)
         assert a.shape == (3,)
         assert a.strides == (0,)
 
     def test_memptr(self):
         a = cupy.arange(6).astype(numpy.float32).reshape((2, 3))
-        memptr = a
+        memptr = a.data
 
         b = cupy.ndarray((2, 3), numpy.float32, memptr)
         testing.assert_array_equal(a, b)
@@ -62,7 +62,7 @@ class TestNdarrayInit(unittest.TestCase):
     )
     def test_memptr_with_strides(self):
         buf = cupy.ndarray(20, numpy.uint8)
-        memptr = buf
+        memptr = buf.data
 
         # self-overlapping strides
         a = cupy.ndarray((2, 3), numpy.float32, memptr, strides=(2, 1))
@@ -82,7 +82,9 @@ class TestNdarrayInit(unittest.TestCase):
 
     def test_strides_is_given_and_order_is_ignored(self):
         buf = cupy.ndarray(20, numpy.uint8)
-        a = cupy.ndarray((2, 3), numpy.float32, buf, strides=(2, 1), order="C")
+        a = cupy.ndarray(
+            (2, 3), numpy.float32, buf.data, strides=(2, 1), order="C"
+        )
         assert a.strides == (2, 1)
 
     @testing.with_requires("numpy>=1.19")

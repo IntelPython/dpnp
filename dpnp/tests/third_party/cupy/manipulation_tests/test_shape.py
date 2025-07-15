@@ -103,7 +103,7 @@ class TestReshape:
         a = xp.zeros((0,))
         b = a.reshape((0,))
         if xp is cupy:
-            assert a.get_array()._pointer == b.get_array()._pointer
+            assert a.data.ptr == b.data.ptr
         else:
             assert b.base is a
         return b
@@ -114,7 +114,7 @@ class TestReshape:
         a = xp.zeros((2, 0, 3))
         b = a.reshape((5, 0, 4), order=order)
         if xp is cupy:
-            assert a.get_array()._pointer == b.get_array()._pointer
+            assert a.data.ptr == b.data.ptr
         else:
             assert b.base is a
         return b

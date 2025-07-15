@@ -41,14 +41,15 @@ class DLDummy:
 @pytest.mark.skip("toDlpack() and fromDlpack() are not supported")
 class TestDLPackConversion:
 
-    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @testing.for_all_dtypes(no_bool=False)
-    def test_conversion(self, dtype):
+    def test_conversion(self, dtype, recwarn):
         orig_array = _gen_array(dtype)
         tensor = orig_array.toDlpack()
         out_array = cupy.fromDlpack(tensor)
         testing.assert_array_equal(orig_array, out_array)
-        assert orig_array.get_array()._pointer == out_array.get_array()._pointer
+        testing.assert_array_equal(orig_array.data.ptr, out_array.data.ptr)
+        for w in recwarn:
+            assert issubclass(w.category, cupy.VisibleDeprecationWarning)
 
 
 class TestNewDLPackConversion:
@@ -82,7 +83,7 @@ class TestNewDLPackConversion:
         orig_array = _gen_array(dtype)
         out_array = cupy.from_dlpack(orig_array)
         testing.assert_array_equal(orig_array, out_array)
-        assert orig_array.get_array()._pointer == out_array.get_array()._pointer
+        testing.assert_array_equal(orig_array.data.ptr, out_array.data.ptr)
 
     @pytest.mark.skip("no limitations in from_dlpack()")
     def test_from_dlpack_and_conv_errors(self):
@@ -121,7 +122,7 @@ class TestNewDLPackConversion:
         )
 
         testing.assert_array_equal(orig_array, out_array)
-        assert orig_array.get_array()._pointer == out_array.get_array()._pointer
+        testing.assert_array_equal(orig_array.data.ptr, out_array.data.ptr)
 
     def test_conversion_device(self):
         orig_array = _gen_array("float32")
@@ -135,7 +136,7 @@ class TestNewDLPackConversion:
         )
 
         testing.assert_array_equal(orig_array, out_array)
-        assert orig_array.get_array()._pointer == out_array.get_array()._pointer
+        testing.assert_array_equal(orig_array.data.ptr, out_array.data.ptr)
 
     def test_conversion_bad_device(self):
         arr = _gen_array("float32")
@@ -212,9 +213,8 @@ class TestNewDLPackConversion:
                 out_array = dlp.from_dlpack_capsule(dltensor)
                 out_array = cupy.from_dlpack(out_array, device=dst_s)
                 testing.assert_array_equal(orig_array, out_array)
-                assert (
-                    orig_array.get_array()._pointer
-                    == out_array.get_array()._pointer
+                testing.assert_array_equal(
+                    orig_array.data.ptr, out_array.data.ptr
                 )
 
 
@@ -267,8 +267,7 @@ class TestDLTensorMemory:
         # assert pool.n_free_blocks() == 1
 
     @pytest.mark.skip("toDlpack() and fromDlpack() are not supported")
-    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-    def test_multiple_consumption_error(self):
+    def test_multiple_consumption_error(self, recwarn):
         # Prevent segfault, see #3611
         array = cupy.empty(10)
         tensor = array.toDlpack()
@@ -276,3 +275,5 @@ class TestDLTensorMemory:
         with pytest.raises(ValueError) as e:
             array3 = cupy.fromDlpack(tensor)
         assert "consumed multiple times" in str(e.value)
+        for w in recwarn:
+            assert issubclass(w.category, cupy.VisibleDeprecationWarning)
