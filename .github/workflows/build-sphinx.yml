@@ -26,6 +26,7 @@ jobs:
     name: Build and Deploy Docs
 
     runs-on: ubuntu-22.04
+    timeout-minutes: 60
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -244,6 +245,7 @@ jobs:
       pull-requests: write
 
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2

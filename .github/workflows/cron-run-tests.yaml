@@ -26,6 +26,7 @@ jobs:
     if: github.event.repository.fork == false
 
     runs-on:  ${{ matrix.runner }}
+    timeout-minutes: 60
 
     defaults:
       run:

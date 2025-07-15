@@ -29,6 +29,7 @@ jobs:
       actions: write
 
     runs-on: 'ubuntu-latest'
+    timeout-minutes: 5
 
     steps:
       - name: Cancel Previous Runs
@@ -69,6 +70,7 @@ jobs:
         os: [ubuntu-22.04] # windows-2022 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
 
     defaults:
       run:
@@ -157,6 +159,7 @@ jobs:
         os: [ubuntu-22.04] # windows-2022 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
 
     defaults:
       run:

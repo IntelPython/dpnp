@@ -9,7 +9,9 @@ permissions: read-all
 jobs:
   generate-coverage:
     name: Generate coverage and push to Coveralls.io
+
     runs-on: ubuntu-latest
+    timeout-minutes: 120
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -154,6 +156,7 @@ jobs:
     needs: generate-coverage
 
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     container: python:3-slim
 
