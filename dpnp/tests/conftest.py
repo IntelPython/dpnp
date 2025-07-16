@@ -183,9 +183,8 @@ def allow_fall_back_on_numpy(monkeypatch):
 
 @pytest.fixture
 def suppress_complex_warning():
-    sup = numpy.testing.suppress_warnings("always")
-    sup.filter(ComplexWarning)
-    with sup:
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", ComplexWarning)
         yield
 
 
