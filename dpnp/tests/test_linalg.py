@@ -1,3 +1,5 @@
+import warnings
+
 import dpctl
 import dpctl.tensor as dpt
 import numpy
@@ -10,7 +12,6 @@ from numpy.testing import (
     assert_equal,
     assert_raises,
     assert_raises_regex,
-    suppress_warnings,
 )
 
 import dpnp
@@ -847,8 +848,8 @@ class TestEinsum:
             )
 
         # Suppress the complex warnings for the 'as f8' tests
-        with suppress_warnings() as sup:
-            sup.filter(numpy.exceptions.ComplexWarning)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", numpy.exceptions.ComplexWarning)
 
             # matvec(a,b) / a.dot(b) where a is matrix, b is vector
             for n in range(1, 17):
