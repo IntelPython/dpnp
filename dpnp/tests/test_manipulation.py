@@ -1838,6 +1838,15 @@ class TestUnique:
         expected = numpy.unique(a, **eq_nan_kwd)
         assert_array_equal(result, expected)
 
+    @testing.with_requires("numpy>=2.3.2")
+    def test_1d_equal_nan_axis0(self):
+        a = numpy.array([numpy.nan, 0, 0, numpy.nan])
+        ia = dpnp.array(a)
+
+        result = dpnp.unique(ia, axis=0, equal_nan=True)
+        expected = numpy.unique(a, axis=0, equal_nan=True)
+        assert_array_equal(result, expected)
+
     @pytest.mark.parametrize("dt", get_float_complex_dtypes())
     @pytest.mark.parametrize(
         "axis_kwd",
