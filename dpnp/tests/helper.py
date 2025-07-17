@@ -343,7 +343,7 @@ def get_integer_dtypes(all_int_types=False, no_unsigned=False):
     if config.all_int_types or all_int_types:
         dtypes += [dpnp.int8, dpnp.int16]
         if not no_unsigned:
-            dtypes += [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
+            dtypes += get_unsigned_dtypes()
 
     return dtypes
 
@@ -376,6 +376,14 @@ def get_integer_float_dtypes(
 
     dtypes = [mark_xfail(dtype) for dtype in dtypes if not_excluded(dtype)]
     return dtypes
+
+
+def get_unsigned_dtypes():
+    """
+    Build a list of unsigned integer types supported by DPNP.
+    """
+
+    return [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
 
 
 def has_support_aspect16(device=None):

@@ -21,6 +21,7 @@ from .helper import (
     get_float_dtypes,
     get_integer_dtypes,
     get_integer_float_dtypes,
+    get_unsigned_dtypes,
     has_support_aspect64,
     numpy_version,
 )
@@ -1799,8 +1800,18 @@ class TestUnique:
         expected = numpy.unique(a, axis=0)
         assert_array_equal(result, expected)
 
+    @pytest.mark.parametrize("axis", [None, 0, 1])
+    @pytest.mark.parametrize("dt", get_unsigned_dtypes())
+    def test_2d_axis_unsigned_inetger(self, axis, dt):
+        a = numpy.array([[7, 1, 2, 1], [5, 7, 5, 7]], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.unique(ia, axis=axis)
+        expected = numpy.unique(a, axis=axis)
+        assert_array_equal(result, expected)
+
     @pytest.mark.parametrize("axis", [None, 0])
-    @pytest.mark.parametrize("dt", "bBhHiIlLqQ")
+    @pytest.mark.parametrize("dt", get_integer_dtypes(all_int_types=True))
     def test_1d_axis_all_inetger(self, axis, dt):
         a = numpy.array([5, 7, 1, 2, 1, 5, 7], dtype=dt)
         ia = dpnp.array(a)
