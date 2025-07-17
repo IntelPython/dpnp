@@ -1833,7 +1833,7 @@ class TestUnique:
 
         result = dpnp.unique(ia, axis=0, equal_nan=True)
         expected = numpy.unique(a, axis=0, equal_nan=True)
-        # TODO: remove
+        # TODO: remove when numpy#29372 is released
         if numpy_version() < "2.3.2":
             expected = numpy.array([0.0, numpy.nan])
         assert_array_equal(result, expected)
