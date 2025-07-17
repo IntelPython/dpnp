@@ -1685,6 +1685,7 @@ class TestUnique:
         expected = numpy.unique(a, axis=axis)
         assert_array_equal(result, expected)
 
+    @testing.with_requires("numpy>=2.0.1")
     @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "axis_kwd",
@@ -1716,17 +1717,6 @@ class TestUnique:
         if len(return_kwds) == 0:
             assert_array_equal(result, expected)
         else:
-            if (
-                len(axis_kwd) == 0
-                and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.1"
-            ):
-                # gh-26961: numpy.unique(..., return_inverse=True, axis=None)
-                # returned flatten unique_inverse till 2.0.1 version
-                expected = (
-                    expected[:2]
-                    + (expected[2].reshape(a.shape),)
-                    + expected[3:]
-                )
             for iv, v in zip(result, expected):
                 assert_array_equal(iv, v)
 
@@ -1756,6 +1746,7 @@ class TestUnique:
         expected = numpy.unique(a, axis=axis)
         assert_array_equal(result, expected)
 
+    @testing.with_requires("numpy>=2.0.1")
     @pytest.mark.parametrize("axis", [None, 0, -1])
     def test_2d_axis_inverse(self, axis):
         a = numpy.array([[4, 4, 3], [2, 2, 1], [2, 2, 1], [4, 4, 3]])
@@ -1763,10 +1754,6 @@ class TestUnique:
 
         result = dpnp.unique(ia, return_inverse=True, axis=axis)
         expected = numpy.unique(a, return_inverse=True, axis=axis)
-        if axis is None and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.1":
-            # gh-26961: numpy.unique(..., return_inverse=True, axis=None)
-            # returned flatten unique_inverse till 2.0.1 version
-            expected = expected[:1] + (expected[1].reshape(a.shape),)
 
         for iv, v in zip(result, expected):
             assert_array_equal(iv, v)
@@ -1847,6 +1834,7 @@ class TestUnique:
         expected = numpy.unique(a, axis=0, equal_nan=True)
         assert_array_equal(result, expected)
 
+    @testing.with_requires("numpy>=2.0.1")
     @pytest.mark.parametrize("dt", get_float_complex_dtypes())
     @pytest.mark.parametrize(
         "axis_kwd",
@@ -1888,14 +1876,6 @@ class TestUnique:
         if len(return_kwds) == 0:
             assert_array_equal(result, expected)
         else:
-            if len(axis_kwd) == 0 and numpy_version() < "2.0.1":
-                # gh-26961: numpy.unique(..., return_inverse=True, axis=None)
-                # returned flatten unique_inverse till 2.0.1 version
-                expected = (
-                    expected[:2]
-                    + (expected[2].reshape(a.shape),)
-                    + expected[3:]
-                )
             for iv, v in zip(result, expected):
                 assert_array_equal(iv, v)
 
