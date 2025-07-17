@@ -4245,7 +4245,7 @@ def unique(
 
     """
 
-    if axis is None:
+    if axis is None or (axis == 0 and ar.ndim == 1):
         return _unique_1d(
             ar, return_index, return_inverse, return_counts, equal_nan
         )
