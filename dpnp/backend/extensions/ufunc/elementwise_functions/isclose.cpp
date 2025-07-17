@@ -67,6 +67,21 @@ namespace impl
 using dpctl::tensor::usm_ndarray;
 using event_vector = std::vector<sycl::event>;
 
+using isclose_fn_ptr_t = sycl::event (*)(sycl::queue &,
+                                         int,
+                                         std::size_t,
+                                         const py::ssize_t *,
+                                         const py::object &,
+                                         const py::object &,
+                                         const py::object &,
+                                         const char *,
+                                         py::ssize_t,
+                                         const char *,
+                                         py::ssize_t,
+                                         char *,
+                                         py::ssize_t,
+                                         const std::vector<sycl::event> &);
+
 using isclose_contig_fn_ptr_t =
     sycl::event (*)(sycl::queue &,
                     std::size_t,
@@ -78,6 +93,8 @@ using isclose_contig_fn_ptr_t =
                     char *,
                     const std::vector<sycl::event> &);
 
+static isclose_fn_ptr_t isclose_dispatch_table[td_ns::num_types]
+                                              [td_ns::num_types];
 static isclose_contig_fn_ptr_t isclose_contig_dispatch_table[td_ns::num_types]
                                                             [td_ns::num_types];
 
@@ -120,6 +137,35 @@ struct IsCloseOutputType
 };
 
 template <typename T1, typename T2>
+sycl::event isclose_strided_call(sycl::queue &exec_q,
+                                 int nd,
+                                 std::size_t nelems,
+                                 const py::ssize_t *shape_strides,
+                                 const py::object &rtol_,
+                                 const py::object &atol_,
+                                 const py::object &equal_nan_,
+                                 const char *in1_p,
+                                 py::ssize_t in1_offset,
+                                 const char *in2_p,
+                                 py::ssize_t in2_offset,
+                                 char *out_p,
+                                 py::ssize_t out_offset,
+                                 const std::vector<sycl::event> &depends)
+{
+    using dpctl::tensor::type_utils::is_complex_v;
+    using scT = std::conditional_t<is_complex_v<T1>,
+                                   typename value_type_of<T1>::type, T1>;
+
+    const scT rtol = py::cast<scT>(rtol_);
+    const scT atol = py::cast<scT>(atol_);
+    const bool equal_nan = py::cast<bool>(equal_nan_);
+
+    return dpnp::kernels::isclose::isclose_strided_impl<T1, T2, scT>(
+        exec_q, nd, nelems, shape_strides, rtol, atol, equal_nan, in1_p,
+        in1_offset, in2_p, in2_offset, out_p, out_offset, depends);
+}
+
+template <typename T1, typename T2>
 sycl::event isclose_contig_call(sycl::queue &q,
                                 std::size_t nelems,
                                 const py::object &rtol_,
@@ -144,6 +190,22 @@ sycl::event isclose_contig_call(sycl::queue &q,
 }
 
 template <typename fnT, typename T1, typename T2>
+struct IsCloseFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<
+                          typename IsCloseOutputType<T1, T2>::value_type, void>)
+        {
+            return nullptr;
+        }
+        else {
+            return isclose_strided_call<T1, T2>;
+        }
+    }
+};
+
+template <typename fnT, typename T1, typename T2>
 struct IsCloseContigFactory
 {
     fnT get()
@@ -159,10 +221,15 @@ struct IsCloseContigFactory
 
 void populate_isclose_dispatch_table()
 {
+    td_ns::DispatchTableBuilder<isclose_fn_ptr_t, IsCloseFactory,
+                                td_ns::num_types>
+        dvb1;
+    dvb1.populate_dispatch_table(isclose_dispatch_table);
+
     td_ns::DispatchTableBuilder<isclose_contig_fn_ptr_t, IsCloseContigFactory,
                                 td_ns::num_types>
-        dvb;
-    dvb.populate_dispatch_table(isclose_contig_dispatch_table);
+        dvb2;
+    dvb2.populate_dispatch_table(isclose_contig_dispatch_table);
 }
 
 std::pair<sycl::event, sycl::event>
@@ -257,9 +324,101 @@ std::pair<sycl::event, sycl::event>
 
         return std::make_pair(ht_ev, comp_ev);
     }
-    else {
-        throw py::value_error("Stride implementation is not implemented");
+
+    // simplify iteration space
+    //     if 1d with strides 1 - input is contig
+    //     dispatch to strided
+
+    std::cout << "Strided impl run" << std::endl;
+
+    auto const &a_strides = a.get_strides_vector();
+    auto const &b_strides = b.get_strides_vector();
+    auto const &res_strides = res.get_strides_vector();
+
+    using shT = std::vector<py::ssize_t>;
+    shT simplified_shape;
+    shT simplified_a_strides;
+    shT simplified_b_strides;
+    shT simplified_res_strides;
+    py::ssize_t a_offset(0);
+    py::ssize_t b_offset(0);
+    py::ssize_t res_offset(0);
+
+    int nd = res_nd;
+    const py::ssize_t *shape = a_shape;
+
+    py_internal::simplify_iteration_space_3(
+        nd, shape, a_strides, b_strides, res_strides,
+        // output
+        simplified_shape, simplified_a_strides, simplified_b_strides,
+        simplified_res_strides, a_offset, b_offset, res_offset);
+
+    if (nd == 1 && simplified_a_strides[0] == 1 &&
+        simplified_b_strides[0] == 1 && simplified_res_strides[0] == 1)
+    {
+        // Special case of contiguous data
+        auto contig_fn = isclose_contig_dispatch_table[a_typeid][b_typeid];
+
+        if (contig_fn == nullptr) {
+            throw std::runtime_error(
+                "Contiguous implementation is missing for a_typeid=" +
+                std::to_string(a_typeid) +
+                " and b_typeid=" + std::to_string(b_typeid));
+        }
+
+        int a_elem_size = a.get_elemsize();
+        int b_elem_size = b.get_elemsize();
+        int res_elem_size = res.get_elemsize();
+        auto comp_ev = contig_fn(
+            exec_q, nelems, rtol, atol, equal_nan,
+            a_data + a_elem_size * a_offset, b_data + b_elem_size * b_offset,
+            res_data + res_elem_size * res_offset, depends);
+
+        sycl::event ht_ev =
+            dpctl::utils::keep_args_alive(exec_q, {a, b, res}, {comp_ev});
+
+        return std::make_pair(ht_ev, comp_ev);
     }
+
+    auto fn = isclose_dispatch_table[a_typeid][b_typeid];
+
+    if (fn == nullptr) {
+        throw std::runtime_error(
+            "isclose implementation is missing for a_typeid=" +
+            std::to_string(a_typeid) +
+            " and b_typeid=" + std::to_string(b_typeid));
+    }
+
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+
+    std::vector<sycl::event> host_tasks{};
+    host_tasks.reserve(2);
+
+    auto ptr_size_event_triple_ = device_allocate_and_pack<py::ssize_t>(
+        exec_q, host_tasks, simplified_shape, simplified_a_strides,
+        simplified_b_strides, simplified_res_strides);
+    auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_triple_));
+    const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_triple_);
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
+
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + 1);
+    all_deps.insert(all_deps.end(), depends.begin(), depends.end());
+    all_deps.push_back(copy_shape_ev);
+
+    sycl::event comp_ev =
+        fn(exec_q, nelems, nd, shape_strides, atol, rtol, equal_nan, a_data,
+           a_offset, b_data, b_offset, res_data, res_offset, all_deps);
+
+    // async free of shape_strides temporary
+    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {comp_ev}, shape_strides_owner);
+
+    host_tasks.push_back(tmp_cleanup_ev);
+
+    return std::make_pair(
+        dpctl::utils::keep_args_alive(exec_q, {a, b, res}, host_tasks),
+        comp_ev);
 }
 
 } // namespace impl
@@ -267,6 +426,7 @@ std::pair<sycl::event, sycl::event>
 void init_isclose(py::module_ m)
 {
     impl::populate_isclose_dispatch_table();
+
     m.def("_isclose", &impl::py_isclose, "", py::arg("a"), py::arg("b"),
           py::arg("rtol"), py::arg("atol"), py::arg("equal_nan"),
           py::arg("res"), py::arg("sycl_queue"),

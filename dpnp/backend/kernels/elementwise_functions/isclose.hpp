@@ -315,37 +315,44 @@ public:
     }
 };
 
-// template <typename T, typename scT>
-// sycl::event nan_to_num_strided_impl(sycl::queue &q,
-//                                     const size_t nelems,
-//                                     const int nd,
-//                                     const dpctl::tensor::ssize_t
-//                                     *shape_strides, const scT nan, const scT
-//                                     posinf, const scT neginf, const char
-//                                     *in_cp, const dpctl::tensor::ssize_t
-//                                     in_offset, char *out_cp, const
-//                                     dpctl::tensor::ssize_t out_offset, const
-//                                     std::vector<sycl::event> &depends)
-// {
-//     dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+template <typename T1, typename T2, typename scT>
+sycl::event isclose_strided_impl(sycl::queue &exec_q,
+                                 std::size_t nelems,
+                                 const int nd,
+                                 const dpctl::tensor::ssize_t *shape_strides,
+                                 const scT rtol,
+                                 const scT atol,
+                                 const bool equal_nan,
+                                 const char *a_cp,
+                                 const dpctl::tensor::ssize_t a_offset,
+                                 const char *b_cp,
+                                 const dpctl::tensor::ssize_t b_offset,
+                                 char *out_cp,
+                                 const dpctl::tensor::ssize_t out_offset,
+                                 const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<T1>(exec_q);
 
-//     const T *in_tp = reinterpret_cast<const T *>(in_cp);
-//     T *out_tp = reinterpret_cast<T *>(out_cp);
+    const T1 *a_tp = reinterpret_cast<const T1 *>(a_cp);
+    const T2 *b_tp = reinterpret_cast<const T2 *>(b_cp);
 
-//     using InOutIndexerT =
-//         typename dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-//     const InOutIndexerT indexer{nd, in_offset, out_offset, shape_strides};
+    using resTy = bool;
+    resTy *out_tp = reinterpret_cast<resTy *>(out_cp);
 
-//     sycl::event comp_ev = q.submit([&](sycl::handler &cgh) {
-//         cgh.depends_on(depends);
+    using IndexerT =
+        typename dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+    const IndexerT indexer{nd, a_offset, b_offset, out_offset, shape_strides};
 
-//         using NanToNumFunc = NanToNumFunctor<T, scT, InOutIndexerT>;
-//         cgh.parallel_for<NanToNumFunc>(
-//             {nelems},
-//             NanToNumFunc(in_tp, out_tp, indexer, nan, posinf, neginf));
-//     });
-//     return comp_ev;
-// }
+    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using IsCloseFunc = IsCloseFunctor<T1, T2, scT, resTy, IndexerT>;
+        cgh.parallel_for<IsCloseFunc>(
+            {nelems},
+            IsCloseFunc(a_tp, b_tp, out_tp, indexer, atol, rtol, equal_nan));
+    });
+    return comp_ev;
+}
 
 template <typename T1,
           typename T2,
