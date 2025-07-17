@@ -1825,13 +1825,17 @@ class TestUnique:
         expected = numpy.unique(a, **eq_nan_kwd)
         assert_array_equal(result, expected)
 
-    @testing.with_requires("numpy>=2.3.2")
+    # TODO: uncomment once numpy 2.3.2 release is published
+    # @testing.with_requires("numpy>=2.3.2")
     def test_1d_equal_nan_axis0(self):
         a = numpy.array([numpy.nan, 0, 0, numpy.nan])
         ia = dpnp.array(a)
 
         result = dpnp.unique(ia, axis=0, equal_nan=True)
         expected = numpy.unique(a, axis=0, equal_nan=True)
+        # TODO: remove
+        if numpy_version() < "2.3.2":
+            expected = numpy.array([0.0, numpy.nan])
         assert_array_equal(result, expected)
 
     @testing.with_requires("numpy>=2.0.1")
