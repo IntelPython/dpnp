@@ -9,7 +9,8 @@ var annotated_dup =
             [ "DotuTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
             [ "GemmBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
             [ "GemmTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
-            [ "GemvTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html", null ]
+            [ "GemvTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html", null ],
+            [ "SyrkTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_syrk_type_pair_support_factory.html", null ]
           ] ],
           [ "DotcContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dotc_contig_factory.html", null ],
           [ "DotContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html", null ],
@@ -174,8 +175,6 @@ var annotated_dup =
     [ "are_same", "structare__same.html", null ],
     [ "backend_sycl", "classbackend__sycl.html", null ],
     [ "dpnp_less_comp", "classdpnp__less__comp.html", null ],
-    [ "DPNP_USM_iterator", "class_d_p_n_p___u_s_m__iterator.html", "class_d_p_n_p___u_s_m__iterator" ],
-    [ "DPNPC_id", "class_d_p_n_p_c__id.html", "class_d_p_n_p_c__id" ],
     [ "DPNPC_ptr_adapter", "class_d_p_n_p_c__ptr__adapter.html", null ],
     [ "DPNPFuncData", "struct_d_p_n_p_func_data.html", "struct_d_p_n_p_func_data" ],
     [ "engine_struct", "structengine__struct.html", null ],

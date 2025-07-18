@@ -54,6 +54,7 @@
          dpnp_array.trace
          dpnp_array.transpose
          dpnp_array.var
+         dpnp_array.view
 
 
 
@@ -64,6 +65,7 @@
          :toctree:
       
          dpnp_array.T
+         dpnp_array.data
          dpnp_array.device
          dpnp_array.dtype
          dpnp_array.flags

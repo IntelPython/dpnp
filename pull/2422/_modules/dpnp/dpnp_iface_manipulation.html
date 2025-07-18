@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.18.0dev4+12.ga9032db81d2 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.19.0dev1+21.ge8d2c61848b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=df2ea898"></script>
+      <script src="../../_static/documentation_options.js?v=bd61be8a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -1466,11 +1466,11 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array((1, 2, 3))</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array((2, 3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array((4, 5, 6))</span>
 <span class="sd">    &gt;&gt;&gt; np.column_stack((a, b))</span>
-<span class="sd">    array([[1, 2],</span>
-<span class="sd">           [2, 3],</span>
-<span class="sd">           [3, 4]])</span>
+<span class="sd">    array([[1, 4],</span>
+<span class="sd">           [2, 5],</span>
+<span class="sd">           [3, 6]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1913,18 +1913,18 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array((1, 2, 3))</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array((2, 3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array((4, 5, 6))</span>
 <span class="sd">    &gt;&gt;&gt; np.dstack((a, b))</span>
-<span class="sd">    array([[[1, 2],</span>
-<span class="sd">            [2, 3],</span>
-<span class="sd">            [3, 4]]])</span>
+<span class="sd">    array([[[1, 4],</span>
+<span class="sd">            [2, 5],</span>
+<span class="sd">            [3, 6]]])</span>
 
 <span class="sd">    &gt;&gt;&gt; a = np.array([[1], [2], [3]])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([[2], [3], [4]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[4], [5], [6]])</span>
 <span class="sd">    &gt;&gt;&gt; np.dstack((a, b))</span>
-<span class="sd">    array([[[1, 2]],</span>
-<span class="sd">           [[2, 3]],</span>
-<span class="sd">           [[3, 4]]])</span>
+<span class="sd">    array([[[1, 4]],</span>
+<span class="sd">           [[2, 5]],</span>
+<span class="sd">           [[3, 6]]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -3312,9 +3312,9 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        The new array is formed from the data in the old array, repeated</span>
-<span class="sd">        if necessary to fill out the required number of elements. The</span>
-<span class="sd">        data are repeated iterating over the array in C-order.</span>
+<span class="sd">        The new array is formed from the data in the old array, repeated if</span>
+<span class="sd">        necessary to fill out the required number of elements. The data are</span>
+<span class="sd">        repeated iterating over the array in C-order.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -3329,8 +3329,10 @@
 <span class="sd">    be used. In most other cases either indexing (to reduce the size) or</span>
 <span class="sd">    padding (to increase the size) may be a more appropriate solution.</span>
 
-<span class="sd">    Warning: This functionality does **not** consider axes separately,</span>
-<span class="sd">    i.e. it does not apply interpolation/extrapolation.</span>
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This functionality does **not** consider axes separately, i.e. it does not</span>
+<span class="sd">    apply interpolation/extrapolation.</span>
 <span class="sd">    It fills the return array with the required number of elements, iterating</span>
 <span class="sd">    over `a` in C-order, disregarding axes (and cycling back from the start if</span>
 <span class="sd">    the new shape is larger). This functionality is therefore not suitable to</span>
@@ -3370,7 +3372,8 @@
         <span class="c1"># First case must zero fill. The second would have repeats == 0.</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">new_shape</span><span class="p">)</span>
 
-    <span class="n">repeats</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="n">new_size</span> <span class="o">//</span> <span class="n">a_size</span><span class="p">)</span>  <span class="c1"># ceil division</span>
+    <span class="c1"># ceiling division without negating new_size</span>
+    <span class="n">repeats</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_size</span> <span class="o">+</span> <span class="n">a_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">a_size</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">),)</span> <span class="o">*</span> <span class="n">repeats</span><span class="p">)[:</span><span class="n">new_size</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span></div>
@@ -4467,7 +4470,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ar</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_unique_1d</span><span class="p">(</span>
             <span class="n">ar</span><span class="p">,</span> <span class="n">return_index</span><span class="p">,</span> <span class="n">return_inverse</span><span class="p">,</span> <span class="n">return_counts</span><span class="p">,</span> <span class="n">equal_nan</span>
         <span class="p">)</span>

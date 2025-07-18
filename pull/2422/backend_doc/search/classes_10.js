@@ -11,5 +11,6 @@ var searchData=
   ['spacingfunctor_8',['SpacingFunctor',['../structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html',1,'dpnp::kernels::spacing']]],
   ['span_9',['Span',['../classstatistics_1_1sliding__window1d_1_1_span.html',1,'statistics::sliding_window1d']]],
   ['span_3c_20t_2c_20size_5ft_20_3e_10',['Span&lt; T, size_t &gt;',['../classstatistics_1_1sliding__window1d_1_1_span.html',1,'statistics::sliding_window1d']]],
-  ['syevdtypepairsupportfactory_11',['SyevdTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]]
+  ['syevdtypepairsupportfactory_11',['SyevdTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['syrktypepairsupportfactory_12',['SyrkTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_syrk_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]]
 ];

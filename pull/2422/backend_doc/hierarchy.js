@@ -35,8 +35,6 @@ var hierarchy =
     [ "dpnp::extensions::blas::DotuContigFactory< fnT, varT >", "structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html", null ],
     [ "dpnp::extensions::blas::types::DotuTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
     [ "dpnp_less_comp", "classdpnp__less__comp.html", null ],
-    [ "DPNP_USM_iterator< _Tp >", "class_d_p_n_p___u_s_m__iterator.html", null ],
-    [ "DPNPC_id< _Tp >", "class_d_p_n_p_c__id.html", null ],
     [ "DPNPC_ptr_adapter< _DataType >", "class_d_p_n_p_c__ptr__adapter.html", null ],
     [ "DPNPFuncData", "struct_d_p_n_p_func_data.html", null ],
     [ "engine_struct", "structengine__struct.html", [
@@ -115,6 +113,7 @@ var hierarchy =
       [ "statistics::sliding_window1d::PaddedSpan< T, SizeT >", "classstatistics_1_1sliding__window1d_1_1_padded_span.html", null ]
     ] ],
     [ "dpnp::extensions::lapack::types::SyevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
+    [ "dpnp::extensions::blas::types::SyrkTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_syrk_type_pair_support_factory.html", null ],
     [ "ext::common::TableBuilder< FnT, SupportedTypes, Func >", "structext_1_1common_1_1_table_builder.html", null ],
     [ "ext::common::TableBuilder2< FnT, SupportedTypes, Func >", "structext_1_1common_1_1_table_builder2.html", null ],
     [ "statistics::histogram::UncachedData< T, Dims >", "structstatistics_1_1histogram_1_1_uncached_data.html", null ],
