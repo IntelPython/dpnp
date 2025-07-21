@@ -151,7 +151,7 @@ class dpnp_array:
 
         Parameters
         ----------
-        api_version : str, optional
+        api_version : {None, str}, optional
             Request namespace compliant with given version of array API. If
             ``None``, namespace for the most recent supported version is
             returned.
@@ -223,14 +223,14 @@ class dpnp_array:
             is not performed.
 
             Default: ``None``.
-        max_version {tuple of ints, None}, optional
+        max_version : {tuple of ints, None}, optional
             The maximum DLPack version the consumer (caller of ``__dlpack__``)
             supports. As ``__dlpack__`` may not always return a DLPack capsule
             with version `max_version`, the consumer must verify the version
             even if this argument is passed.
 
             Default: ``None``.
-        dl_device {tuple, None}, optional:
+        dl_device : {tuple, None}, optional:
             The device the returned DLPack capsule will be placed on. The
             device must be a 2-tuple matching the format of
             ``__dlpack_device__`` method, an integer enumerator representing
@@ -238,7 +238,7 @@ class dpnp_array:
             the device.
 
             Default: ``None``.
-        copy {bool, None}, optional:
+        copy : {bool, None}, optional:
             Boolean indicating whether or not to copy the input.
 
             * If `copy` is ``True``, the input will always be copied.
@@ -251,12 +251,12 @@ class dpnp_array:
 
         Raises
         ------
-        MemoryError:
+        MemoryError
             when host memory can not be allocated.
-        DLPackCreationError:
+        DLPackCreationError
             when array is allocated on a partitioned SYCL device, or with
             a non-default context.
-        BufferError:
+        BufferError
             when a copy is deemed necessary but `copy` is ``False`` or when
             the provided `dl_device` cannot be handled.
 
@@ -325,12 +325,12 @@ class dpnp_array:
     # '__hash__',
 
     def __iadd__(self, other):
-        """Return :math:`self+=value`:math:."""
+        """Return :math:`self+=value`."""
         dpnp.add(self, other, out=self)
         return self
 
     def __iand__(self, other):
-        """Return :math:`self&=value`:math:."""
+        """Return :math:`self&=value`."""
         dpnp.bitwise_and(self, other, out=self)
         return self
 
@@ -446,7 +446,7 @@ class dpnp_array:
         return dpnp.less(self, other)
 
     def __matmul__(self, other):
-        """Return `:math:self@value`."""
+        """Return :math:`self@value`."""
         return dpnp.matmul(self, other)
 
     def __mod__(self, other):
@@ -546,7 +546,7 @@ class dpnp_array:
     # '__setattr__',
 
     def __setitem__(self, key, val):
-        """Set ``self[key]`` to value."""
+        """Set :math:`self[key]` to a value."""
         key = _get_unwrapped_index_key(key)
 
         if isinstance(val, dpnp_array):
@@ -584,7 +584,7 @@ class dpnp_array:
     @property
     def __usm_ndarray__(self):
         """
-        Property to support `__usm_ndarray__` protocol.
+        Property to support ``__usm_ndarray__`` protocol.
 
         It assumes to return :class:`dpctl.tensor.usm_ndarray` instance
         corresponding to the content of the object.
