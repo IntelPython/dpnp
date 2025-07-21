@@ -243,7 +243,7 @@ class dpnp_array:
         return self._array_obj.__complex__()
 
     def __contains__(self, value, /):
-        """Return :math:`value in self`."""
+        r"""Return :math:`\text{value in self}`."""
         return (self == value).any()
 
     def __copy__(self):
