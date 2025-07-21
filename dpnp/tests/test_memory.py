@@ -30,4 +30,4 @@ class TestCreateData:
     def test_ndarray_from_data(self):
         a = dpnp.empty(5)
         b = dpnp.ndarray(a.shape, buffer=a.data)
-        assert b.data is a.data
+        assert b.data.ptr == a.data.ptr
