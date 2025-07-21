@@ -95,6 +95,9 @@ def create_data(x):
         )
     usm_data = x.usm_data
 
+    if isinstance(usm_data, tuple(dispatch.values())):
+        return usm_data
+
     cls = dispatch.get(type(usm_data), None)
     if cls:
         data = cls(usm_data)
