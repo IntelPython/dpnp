@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.19.0dev1+21.ge8d2c61848b documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.19.0dev1+23.g1c54d66b13e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bd61be8a"></script>
+      <script src="../../_static/documentation_options.js?v=97d2c485"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -210,7 +210,7 @@
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__and__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return :math:`self&amp;value`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return :math:`\text{self} \&amp; \text{value}`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__array__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -238,7 +238,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        api_version : str, optional</span>
+<span class="sd">        api_version : {None, str}, optional</span>
 <span class="sd">            Request namespace compliant with given version of array API. If</span>
 <span class="sd">            ``None``, namespace for the most recent supported version is</span>
 <span class="sd">            returned.</span>
@@ -308,14 +308,14 @@
 <span class="sd">            is not performed.</span>
 
 <span class="sd">            Default: ``None``.</span>
-<span class="sd">        max_version {tuple of ints, None}, optional</span>
+<span class="sd">        max_version : {tuple of ints, None}, optional</span>
 <span class="sd">            The maximum DLPack version the consumer (caller of ``__dlpack__``)</span>
 <span class="sd">            supports. As ``__dlpack__`` may not always return a DLPack capsule</span>
 <span class="sd">            with version `max_version`, the consumer must verify the version</span>
 <span class="sd">            even if this argument is passed.</span>
 
 <span class="sd">            Default: ``None``.</span>
-<span class="sd">        dl_device {tuple, None}, optional:</span>
+<span class="sd">        dl_device : {tuple, None}, optional:</span>
 <span class="sd">            The device the returned DLPack capsule will be placed on. The</span>
 <span class="sd">            device must be a 2-tuple matching the format of</span>
 <span class="sd">            ``__dlpack_device__`` method, an integer enumerator representing</span>
@@ -323,7 +323,7 @@
 <span class="sd">            the device.</span>
 
 <span class="sd">            Default: ``None``.</span>
-<span class="sd">        copy {bool, None}, optional:</span>
+<span class="sd">        copy : {bool, None}, optional:</span>
 <span class="sd">            Boolean indicating whether or not to copy the input.</span>
 
 <span class="sd">            * If `copy` is ``True``, the input will always be copied.</span>
@@ -336,12 +336,12 @@
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
-<span class="sd">        MemoryError:</span>
+<span class="sd">        MemoryError</span>
 <span class="sd">            when host memory can not be allocated.</span>
-<span class="sd">        DLPackCreationError:</span>
+<span class="sd">        DLPackCreationError</span>
 <span class="sd">            when array is allocated on a partitioned SYCL device, or with</span>
 <span class="sd">            a non-default context.</span>
-<span class="sd">        BufferError:</span>
+<span class="sd">        BufferError</span>
 <span class="sd">            when a copy is deemed necessary but `copy` is ``False`` or when</span>
 <span class="sd">            the provided `dl_device` cannot be handled.</span>
 
@@ -410,12 +410,12 @@
     <span class="c1"># &#39;__hash__&#39;,</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return :math:`self+=value`:math:.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return :math:`self+=value`.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__iand__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return :math:`self&amp;=value`:math:.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return :math:`self&amp;=value`.&quot;&quot;&quot;</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
@@ -531,7 +531,7 @@
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__matmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return `:math:self@value`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return :math:`self@value`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__mod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
@@ -631,7 +631,7 @@
     <span class="c1"># &#39;__setattr__&#39;,</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set ``self[key]`` to value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set :math:`self[key]` to a value.&quot;&quot;&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">_get_unwrapped_index_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
@@ -669,7 +669,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__usm_ndarray__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Property to support `__usm_ndarray__` protocol.</span>
+<span class="sd">        Property to support ``__usm_ndarray__`` protocol.</span>
 
 <span class="sd">        It assumes to return :class:`dpctl.tensor.usm_ndarray` instance</span>
 <span class="sd">        corresponding to the content of the object.</span>

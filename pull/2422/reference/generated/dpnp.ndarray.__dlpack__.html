@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.__dlpack__ &mdash; Data Parallel Extension for NumPy 0.19.0dev1+21.ge8d2c61848b documentation</title>
+  <title>dpnp.ndarray.__dlpack__ &mdash; Data Parallel Extension for NumPy 0.19.0dev1+23.g1c54d66b13e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bd61be8a"></script>
+      <script src="../../_static/documentation_options.js?v=97d2c485"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -146,66 +146,20 @@
 is not performed.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>ints</strong> (<em>max_version {tuple of</em>) -- <p>The maximum DLPack version the consumer (caller of <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code>)
+<li><p><strong>max_version</strong> (<em>{tuple</em><em> of </em><em>ints</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) -- <p>The maximum DLPack version the consumer (caller of <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code>)
 supports. As <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> may not always return a DLPack capsule
 with version <cite>max_version</cite>, the consumer must verify the version
 even if this argument is passed.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>None}</strong> -- <p>The maximum DLPack version the consumer (caller of <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code>)
-supports. As <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> may not always return a DLPack capsule
-with version <cite>max_version</cite>, the consumer must verify the version
-even if this argument is passed.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>optional</strong> -- <p>The maximum DLPack version the consumer (caller of <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code>)
-supports. As <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> may not always return a DLPack capsule
-with version <cite>max_version</cite>, the consumer must verify the version
-even if this argument is passed.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>{tuple</strong> (<em>dl_device</em>) -- <p>The device the returned DLPack capsule will be placed on. The
+<li><p><strong>dl_device</strong> (<em>{tuple</em><em>, </em><em>None}</em><em>, </em><em>optional:</em>) -- <p>The device the returned DLPack capsule will be placed on. The
 device must be a 2-tuple matching the format of
 <code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code> method, an integer enumerator representing
 the device type followed by an integer representing the index of
 the device.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>None}</strong> -- <p>The device the returned DLPack capsule will be placed on. The
-device must be a 2-tuple matching the format of
-<code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code> method, an integer enumerator representing
-the device type followed by an integer representing the index of
-the device.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>optional</strong> -- <p>The device the returned DLPack capsule will be placed on. The
-device must be a 2-tuple matching the format of
-<code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code> method, an integer enumerator representing
-the device type followed by an integer representing the index of
-the device.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>{bool</strong> (<em>copy</em>) -- <p>Boolean indicating whether or not to copy the input.</p>
-<ul>
-<li><p>If <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the input will always be copied.</p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a <code class="docutils literal notranslate"><span class="pre">BufferError</span></code> will be raised if a copy is
-deemed necessary.</p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a copy will be made only if deemed necessary,
-otherwise, the existing memory buffer will be reused.</p></li>
-</ul>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>None}</strong> -- <p>Boolean indicating whether or not to copy the input.</p>
-<ul>
-<li><p>If <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the input will always be copied.</p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a <code class="docutils literal notranslate"><span class="pre">BufferError</span></code> will be raised if a copy is
-deemed necessary.</p></li>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a copy will be made only if deemed necessary,
-otherwise, the existing memory buffer will be reused.</p></li>
-</ul>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-<li><p><strong>optional</strong> -- <p>Boolean indicating whether or not to copy the input.</p>
+<li><p><strong>copy</strong> (<em>{bool</em><em>, </em><em>None}</em><em>, </em><em>optional:</em>) -- <p>Boolean indicating whether or not to copy the input.</p>
 <ul>
 <li><p>If <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the input will always be copied.</p></li>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a <code class="docutils literal notranslate"><span class="pre">BufferError</span></code> will be raised if a copy is
@@ -219,10 +173,10 @@ otherwise, the existing memory buffer will be reused.</p></li>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>MemoryError:</strong> -- when host memory can not be allocated.</p></li>
-<li><p><strong>DLPackCreationError:</strong> -- when array is allocated on a partitioned SYCL device, or with
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#MemoryError" title="(in Python v3.13)"><strong>MemoryError</strong></a> -- when host memory can not be allocated.</p></li>
+<li><p><strong>DLPackCreationError</strong> -- when array is allocated on a partitioned SYCL device, or with
     a non-default context.</p></li>
-<li><p><strong>BufferError:</strong> -- when a copy is deemed necessary but <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> or when
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#BufferError" title="(in Python v3.13)"><strong>BufferError</strong></a> -- when a copy is deemed necessary but <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> or when
     the provided <cite>dl_device</cite> cannot be handled.</p></li>
 </ul>
 </dd>
