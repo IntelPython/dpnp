@@ -26,3 +26,8 @@ class TestCreateData:
 
         with pytest.raises(TypeError):
             dpm.create_data(d)
+
+    def test_ndarray_from_data(self):
+        a = dpnp.empty(5)
+        b = dpnp.ndarray(a.shape, buffer=a.data)
+        assert b.data is a.data
