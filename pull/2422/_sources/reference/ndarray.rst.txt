@@ -405,7 +405,7 @@ Container customization: (see :ref:`Indexing <routines.indexing>`)
    dpnp.ndarray.__contains__
 
 Conversion; the operations :class:`int() <int>`, :class:`float() <float>`,
-:class:`complex() <complex>` and :func:`operator.index() <index>`.
+:class:`complex() <complex>` and :func:`operator.index() <operator.index>`.
 They work only on arrays that have one element in them
 and return the appropriate scalar.
 
