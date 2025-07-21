@@ -115,15 +115,15 @@ class dpnp_array:
         )
 
     def __abs__(self):
-        """Return :math:`|self|`."""
+        r"""Return :math:`|\text{self}|`."""
         return dpnp.abs(self)
 
     def __add__(self, other):
-        """Return :math:`self+value`."""
+        r"""Return :math:`\text{self + value}`."""
         return dpnp.add(self, other)
 
     def __and__(self, other):
-        """Return :math:`self&value`."""
+        r"""Return :math:`\text{self & value}`."""
         return dpnp.bitwise_and(self, other)
 
     def __array__(self, dtype=None, /, *, copy=None):
@@ -180,7 +180,7 @@ class dpnp_array:
     # '__array_wrap__',
 
     def __bool__(self):
-        """``True`` if self else ``False``."""
+        """``True`` if `self` else ``False``."""
         return self._array_obj.__bool__()
 
     # '__class__',
@@ -290,7 +290,7 @@ class dpnp_array:
     # '__doc__',
 
     def __eq__(self, other):
-        """Return :math:`self==value`."""
+        r"""Return :math:`\text{self == value}`."""
         return dpnp.equal(self, other)
 
     def __float__(self):
@@ -298,19 +298,19 @@ class dpnp_array:
         return self._array_obj.__float__()
 
     def __floordiv__(self, other):
-        """Return :math:`self//value`."""
+        r"""Return :math:`\text{self // value}`."""
         return dpnp.floor_divide(self, other)
 
     # '__format__',
 
     def __ge__(self, other):
-        """Return :math:`self>=value`."""
+        r"""Return :math:`\text{self >= value}`."""
         return dpnp.greater_equal(self, other)
 
     # '__getattribute__',
 
     def __getitem__(self, key):
-        """Return :math:`self[key]`."""
+        r"""Return :math:`\text{self[key]}`."""
         key = _get_unwrapped_index_key(key)
 
         item = self._array_obj.__getitem__(key)
@@ -319,33 +319,33 @@ class dpnp_array:
     # '__getstate__',
 
     def __gt__(self, other):
-        """Return :math:`self>value`."""
+        r"""Return :math:`\text{self > value}`."""
         return dpnp.greater(self, other)
 
     # '__hash__',
 
     def __iadd__(self, other):
-        """Return :math:`self+=value`."""
+        r"""Return :math:`\text{self += value}`."""
         dpnp.add(self, other, out=self)
         return self
 
     def __iand__(self, other):
-        """Return :math:`self&=value`."""
+        r"""Return :math:`\text{self &= value}`."""
         dpnp.bitwise_and(self, other, out=self)
         return self
 
     def __ifloordiv__(self, other):
-        """Return :math:`self//=value`."""
+        r"""Return :math:`\text{self //= value}`."""
         dpnp.floor_divide(self, other, out=self)
         return self
 
     def __ilshift__(self, other):
-        """Return :math:`self<<=value`."""
+        r"""Return :math:`\text{self <<= value}`."""
         dpnp.left_shift(self, other, out=self)
         return self
 
     def __imatmul__(self, other):
-        """Return :math:`self@=value`."""
+        r"""Return :math:`\text{self @= value}`."""
 
         # Unlike `matmul(a, b, out=a)` we ensure that the result isn't broadcast
         # if the result without `out` would have less dimensions than `a`.
@@ -369,12 +369,12 @@ class dpnp_array:
         return self
 
     def __imod__(self, other):
-        """Return :math:`self%=value`."""
+        r"""Return :math:`\text{self %= value}`."""
         dpnp.remainder(self, other, out=self)
         return self
 
     def __imul__(self, other):
-        """Return :math:`self*=value`."""
+        r"""Return :math:`\text{self *= value}`."""
         dpnp.multiply(self, other, out=self)
         return self
 
@@ -390,101 +390,101 @@ class dpnp_array:
         return self._array_obj.__int__()
 
     def __invert__(self):
-        """Return :math:`~self`."""
+        r"""Return :math:`\text{~self}`."""
         return dpnp.invert(self)
 
     def __ior__(self, other):
-        """Return :math:`self|=value`."""
+        r"""Return :math:`\text{self |= value}`."""
         dpnp.bitwise_or(self, other, out=self)
         return self
 
     def __ipow__(self, other):
-        """Return :math:`self**=value`."""
+        r"""Return :math:`\text{self **= value}`."""
         dpnp.power(self, other, out=self)
         return self
 
     def __irshift__(self, other):
-        """Return :math:`self>>=value`."""
+        r"""Return :math:`\text{self >>= value}`."""
         dpnp.right_shift(self, other, out=self)
         return self
 
     def __isub__(self, other):
-        """Return :math:`self-=value`."""
+        r"""Return :math:`\text{self -= value}`."""
         dpnp.subtract(self, other, out=self)
         return self
 
     def __iter__(self):
-        """Return :math:`iter(self)`."""
+        r"""Return :math:`\text{iter(self)}`."""
         if self.ndim == 0:
             raise TypeError("iteration over a 0-d array")
         return (self[i] for i in range(self.shape[0]))
 
     def __itruediv__(self, other):
-        """Return :math:`self/=value`."""
+        r"""Return :math:`\text{self /= value}`."""
         dpnp.true_divide(self, other, out=self)
         return self
 
     def __ixor__(self, other):
-        """Return :math:`self^=value`."""
+        r"""Return :math:`\text{self ^= value}`."""
         dpnp.bitwise_xor(self, other, out=self)
         return self
 
     def __le__(self, other):
-        """Return :math:`self<=value`."""
+        r"""Return :math:`\text{self <= value}`."""
         return dpnp.less_equal(self, other)
 
     def __len__(self):
-        """Return :math:`len(self)`."""
+        r"""Return :math:`\text{len(self)}`."""
         return self._array_obj.__len__()
 
     def __lshift__(self, other):
-        """Return :math:`self<<value`."""
+        r"""Return :math:`\text{self << value}`."""
         return dpnp.left_shift(self, other)
 
     def __lt__(self, other):
-        """Return :math:`self<value`."""
+        r"""Return :math:`\text{self < value}`."""
         return dpnp.less(self, other)
 
     def __matmul__(self, other):
-        """Return :math:`self@value`."""
+        r"""Return :math:`\text{self @ value}`."""
         return dpnp.matmul(self, other)
 
     def __mod__(self, other):
-        """Return :math:`self%value`."""
+        r"""Return :math:`\text{self % value}`."""
         return dpnp.remainder(self, other)
 
     def __mul__(self, other):
-        """Return :math:`self*value`."""
+        r"""Return :math:`\text{self * value}`."""
         return dpnp.multiply(self, other)
 
     def __ne__(self, other):
-        """Return :math:`self!=value`."""
+        r"""Return :math:`\text{self != value}`."""
         return dpnp.not_equal(self, other)
 
     def __neg__(self):
-        """Return :math:`-self`."""
+        r"""Return :math:`\text{-self}`."""
         return dpnp.negative(self)
 
     # '__new__',
 
     def __or__(self, other):
-        """Return :math:`self|value`."""
+        r"""Return :math:`\text{self | value}`."""
         return dpnp.bitwise_or(self, other)
 
     def __pos__(self):
-        """Return :math:`+self`."""
+        r"""Return :math:`\text{+self}`."""
         return dpnp.positive(self)
 
     def __pow__(self, other):
-        """Return :math:`self**value`."""
+        r"""Return :math:`\text{self ** value}`."""
         return dpnp.power(self, other)
 
     def __radd__(self, other):
-        """Return :math:`value+self`."""
+        r"""Return :math:`\text{value + self}`."""
         return dpnp.add(other, self)
 
     def __rand__(self, other):
-        """Return :math:`value&self`."""
+        r"""Return :math:`\text{value & self}`."""
         return dpnp.bitwise_and(other, self)
 
     # '__rdivmod__',
@@ -492,61 +492,61 @@ class dpnp_array:
     # '__reduce_ex__',
 
     def __repr__(self):
-        """Return :math:`repr(self)`."""
+        r"""Return :math:`\text{repr(self)}`."""
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
     def __rfloordiv__(self, other):
-        """Return :math:`value//self`."""
+        r"""Return :math:`\text{value // self}`."""
         return dpnp.floor_divide(self, other)
 
     def __rlshift__(self, other):
-        """Return :math:`value<<self`."""
+        r"""Return :math:`\text{value << self}`."""
         return dpnp.left_shift(other, self)
 
     def __rmatmul__(self, other):
-        """Return :math:`value@self`."""
+        r"""Return :math:`\text{value @ self}`."""
         return dpnp.matmul(other, self)
 
     def __rmod__(self, other):
-        """Return :math:`value%self`."""
+        r"""Return :math:`\text{value % self}`."""
         return dpnp.remainder(other, self)
 
     def __rmul__(self, other):
-        """Return :math:`value*self`."""
+        r"""Return :math:`\text{value * self}`."""
         return dpnp.multiply(other, self)
 
     def __ror__(self, other):
-        """Return :math:`value|self`."""
+        r"""Return :math:`\text{value | self}`."""
         return dpnp.bitwise_or(other, self)
 
     def __rpow__(self, other):
-        """Return :math:`value**self`."""
+        r"""Return :math:`\text{value ** self}`."""
         return dpnp.power(other, self)
 
     def __rrshift__(self, other):
-        """Return :math:`value>>self`."""
+        r"""Return :math:`\text{value >> self}`."""
         return dpnp.right_shift(other, self)
 
     def __rshift__(self, other):
-        """Return :math:`self>>value`."""
+        r"""Return :math:`\text{self >> value}`."""
         return dpnp.right_shift(self, other)
 
     def __rsub__(self, other):
-        """Return :math:`value-self`."""
+        r"""Return :math:`\text{value - self}`."""
         return dpnp.subtract(other, self)
 
     def __rtruediv__(self, other):
-        """Return :math:`value/self`."""
+        r"""Return :math:`\text{value / self}`."""
         return dpnp.true_divide(other, self)
 
     def __rxor__(self, other):
-        """Return :math:`value^self`."""
+        r"""Return :math:`\text{value ^ self}`."""
         return dpnp.bitwise_xor(other, self)
 
     # '__setattr__',
 
     def __setitem__(self, key, val):
-        """Set :math:`self[key]` to a value."""
+        r"""Set :math:`\text{self[key]}` to a value."""
         key = _get_unwrapped_index_key(key)
 
         if isinstance(val, dpnp_array):
@@ -560,11 +560,11 @@ class dpnp_array:
     __slots__ = ("_array_obj",)
 
     def __str__(self):
-        """Return :math:`str(self)`."""
+        r"""Return :math:`\text{str(self)}`."""
         return self._array_obj.__str__()
 
     def __sub__(self, other):
-        """Return :math:`self-value`."""
+        r"""Return :math:`\text{self - value}`."""
         return dpnp.subtract(self, other)
 
     # '__subclasshook__',
@@ -578,7 +578,7 @@ class dpnp_array:
         return self._array_obj.__sycl_usm_array_interface__
 
     def __truediv__(self, other):
-        """Return :math:`self/value`."""
+        r"""Return :math:`\text{self / value}`."""
         return dpnp.true_divide(self, other)
 
     @property
@@ -601,7 +601,7 @@ class dpnp_array:
         return self._array_obj
 
     def __xor__(self, other):
-        """Return :math:`self^value`."""
+        r"""Return :math:`\text{self ^ value}`."""
         return dpnp.bitwise_xor(self, other)
 
     @staticmethod
