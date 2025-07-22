@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.19.0dev1+29.gd57cde7c6d2 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.19.0dev1+31.g01cacbe646e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2303fc86"></script>
+      <script src="../../_static/documentation_options.js?v=368c4701"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -234,7 +234,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__array_namespace__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">api_version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns array namespace, member functions of which implement data API.</span>
+<span class="sd">        Return array namespace, member functions of which implement data API.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -283,7 +283,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Used if :func:`copy.copy` is called on an array. Returns a copy of the</span>
+<span class="sd">        Used if :func:`copy.copy` is called on an array. Return a copy of the</span>
 <span class="sd">        array.</span>
 
 <span class="sd">        Equivalent to ``a.copy(order=&quot;K&quot;)``.</span>
@@ -301,7 +301,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dl_device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Produces DLPack capsule.</span>
+<span class="sd">        Produce DLPack capsule.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -358,7 +358,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__dlpack_device__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Gives a tuple (``device_type``, ``device_id``) corresponding to</span>
+<span class="sd">        Give a tuple (``device_type``, ``device_id``) corresponding to</span>
 <span class="sd">        ``DLDevice`` entry in ``DLTensor`` in DLPack protocol.</span>
 
 <span class="sd">        The tuple describes the non-partitioned device where the array has been</span>
@@ -712,7 +712,7 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.all.html#dpnp.dpnp_array.dpnp_array.all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns ``True`` if all elements evaluate to ``True.``</span>
+<span class="sd">        Return ``True`` if all elements evaluate to ``True.``</span>
 
 <span class="sd">        Refer to :obj:`dpnp.all` for full documentation.</span>
 
@@ -731,7 +731,7 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.any.html#dpnp.dpnp_array.dpnp_array.any">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns ``True`` if any of the elements of `a` evaluate to ``True``.</span>
+<span class="sd">        Return ``True`` if any of the elements of `a` evaluate to ``True``.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.any` for full documentation.</span>
 
@@ -750,7 +750,7 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.argmax.html#dpnp.dpnp_array.dpnp_array.argmax">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns array of indices of the maximum values along the given axis.</span>
+<span class="sd">        Return array of indices of the maximum values along the given axis.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.argmax` for full documentation.</span>
 
@@ -1214,7 +1214,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns NumPy&#39;s dtype corresponding to the type of the array elements.</span>
+<span class="sd">        Return NumPy&#39;s dtype corresponding to the type of the array elements.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa: D200</span>
 
@@ -1464,7 +1464,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the average of the array elements.</span>
+<span class="sd">        Return the average of the array elements.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.mean` for full documentation.</span>
 
@@ -1645,7 +1645,7 @@
         <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the prod along a given axis.</span>
+<span class="sd">        Return the prod along a given axis.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.prod` for full documentation.</span>
 
@@ -1666,7 +1666,7 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.put.html#dpnp.dpnp_array.dpnp_array.put">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Puts values of an array into another array along a given axis.</span>
+<span class="sd">        Put values of an array into another array along a given axis.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.put` for full documentation.</span>
 
@@ -1746,7 +1746,7 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.reshape.html#dpnp.dpnp_array.dpnp_array.reshape">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reshape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns an array containing the same data with a new shape.</span>
+<span class="sd">        Return an array containing the same data with a new shape.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.reshape` for full documentation.</span>
 
@@ -2015,7 +2015,7 @@
         <span class="n">correction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the standard deviation of the array elements, along given axis.</span>
+<span class="sd">        Return the standard deviation of the array elements, along given axis.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.std` for full documentation.</span>
 
@@ -2037,7 +2037,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">strides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns memory displacement in array elements, upon unit</span>
+<span class="sd">        Return memory displacement in array elements, upon unit</span>
 <span class="sd">        change of respective index.</span>
 
 <span class="sd">        For example, for strides ``(s1, s2, s3)`` and multi-index</span>
@@ -2062,7 +2062,7 @@
         <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the sum along a given axis.</span>
+<span class="sd">        Return the sum along a given axis.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.sum` for full documentation.</span>
 
@@ -2166,7 +2166,7 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.to_device.html#dpnp.dpnp_array.dpnp_array.to_device">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Transfers this array to specified target device.</span>
+<span class="sd">        Transfer this array to specified target device.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2232,7 +2232,7 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.transpose.html#dpnp.dpnp_array.dpnp_array.transpose">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">axes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a view of the array with axes transposed.</span>
+<span class="sd">        Return a view of the array with axes transposed.</span>
 
 <span class="sd">        For full documentation refer to :obj:`numpy.ndarray.transpose`.</span>
 
@@ -2317,7 +2317,7 @@
         <span class="n">correction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the variance of the array elements, along given axis.</span>
+<span class="sd">        Return the variance of the array elements, along given axis.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.var` for full documentation.</span>
 
