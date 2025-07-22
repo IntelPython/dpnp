@@ -114,15 +114,15 @@ class dpnp_array:
             array_namespace=dpnp,
         )
 
-    def __abs__(self):
+    def __abs__(self, /):
         r"""Return :math:`|\text{self}|`."""
         return dpnp.abs(self)
 
-    def __add__(self, other):
+    def __add__(self, other, /):
         r"""Return :math:`\text{self + value}`."""
         return dpnp.add(self, other)
 
-    def __and__(self, other):
+    def __and__(self, other, /):
         r"""Return :math:`\text{self & value}`."""
         return dpnp.bitwise_and(self, other)
 
@@ -179,14 +179,14 @@ class dpnp_array:
 
     # '__array_wrap__',
 
-    def __bool__(self):
+    def __bool__(self, /):
         """``True`` if `self` else ``False``."""
         return self._array_obj.__bool__()
 
     # '__class__',
     # `__class_getitem__`,
 
-    def __complex__(self):
+    def __complex__(self, /):
         """Convert a zero-dimensional array to a Python complex object."""
         return self._array_obj.__complex__()
 
@@ -211,7 +211,7 @@ class dpnp_array:
     # '__divmod__',
 
     def __dlpack__(
-        self, *, stream=None, max_version=None, dl_device=None, copy=None
+        self, /, *, stream=None, max_version=None, dl_device=None, copy=None
     ):
         """
         Produces DLPack capsule.
@@ -269,7 +269,7 @@ class dpnp_array:
             copy=copy,
         )
 
-    def __dlpack_device__(self):
+    def __dlpack_device__(self, /):
         """
         Gives a tuple (``device_type``, ``device_id``) corresponding to
         ``DLDevice`` entry in ``DLTensor`` in DLPack protocol.
@@ -289,27 +289,27 @@ class dpnp_array:
 
     # '__doc__',
 
-    def __eq__(self, other):
+    def __eq__(self, other, /):
         r"""Return :math:`\text{self == value}`."""
         return dpnp.equal(self, other)
 
-    def __float__(self):
+    def __float__(self, /):
         """Convert a zero-dimensional array to a Python float object."""
         return self._array_obj.__float__()
 
-    def __floordiv__(self, other):
+    def __floordiv__(self, other, /):
         r"""Return :math:`\text{self // value}`."""
         return dpnp.floor_divide(self, other)
 
     # '__format__',
 
-    def __ge__(self, other):
+    def __ge__(self, other, /):
         r"""Return :math:`\text{self >= value}`."""
         return dpnp.greater_equal(self, other)
 
     # '__getattribute__',
 
-    def __getitem__(self, key):
+    def __getitem__(self, key, /):
         r"""Return :math:`\text{self[key]}`."""
         key = _get_unwrapped_index_key(key)
 
@@ -318,33 +318,33 @@ class dpnp_array:
 
     # '__getstate__',
 
-    def __gt__(self, other):
+    def __gt__(self, other, /):
         r"""Return :math:`\text{self > value}`."""
         return dpnp.greater(self, other)
 
     # '__hash__',
 
-    def __iadd__(self, other):
+    def __iadd__(self, other, /):
         r"""Return :math:`\text{self += value}`."""
         dpnp.add(self, other, out=self)
         return self
 
-    def __iand__(self, other):
+    def __iand__(self, other, /):
         r"""Return :math:`\text{self &= value}`."""
         dpnp.bitwise_and(self, other, out=self)
         return self
 
-    def __ifloordiv__(self, other):
+    def __ifloordiv__(self, other, /):
         r"""Return :math:`\text{self //= value}`."""
         dpnp.floor_divide(self, other, out=self)
         return self
 
-    def __ilshift__(self, other):
+    def __ilshift__(self, other, /):
         r"""Return :math:`\text{self <<= value}`."""
         dpnp.left_shift(self, other, out=self)
         return self
 
-    def __imatmul__(self, other):
+    def __imatmul__(self, other, /):
         r"""Return :math:`\text{self @= value}`."""
 
         # Unlike `matmul(a, b, out=a)` we ensure that the result isn't broadcast
@@ -368,68 +368,68 @@ class dpnp_array:
             ) from e
         return self
 
-    def __imod__(self, other):
+    def __imod__(self, other, /):
         r"""Return :math:`\text{self %= value}`."""
         dpnp.remainder(self, other, out=self)
         return self
 
-    def __imul__(self, other):
+    def __imul__(self, other, /):
         r"""Return :math:`\text{self *= value}`."""
         dpnp.multiply(self, other, out=self)
         return self
 
-    def __index__(self):
+    def __index__(self, /):
         """Convert a zero-dimensional array to a Python int object."""
         return self._array_obj.__index__()
 
     # '__init__',
     # '__init_subclass__',
 
-    def __int__(self):
+    def __int__(self, /):
         """Convert a zero-dimensional array to a Python int object."""
         return self._array_obj.__int__()
 
-    def __invert__(self):
+    def __invert__(self, /):
         r"""Return :math:`\text{~self}`."""
         return dpnp.invert(self)
 
-    def __ior__(self, other):
+    def __ior__(self, other, /):
         r"""Return :math:`\text{self |= value}`."""
         dpnp.bitwise_or(self, other, out=self)
         return self
 
-    def __ipow__(self, other):
+    def __ipow__(self, other, /):
         r"""Return :math:`\text{self **= value}`."""
         dpnp.power(self, other, out=self)
         return self
 
-    def __irshift__(self, other):
+    def __irshift__(self, other, /):
         r"""Return :math:`\text{self >>= value}`."""
         dpnp.right_shift(self, other, out=self)
         return self
 
-    def __isub__(self, other):
+    def __isub__(self, other, /):
         r"""Return :math:`\text{self -= value}`."""
         dpnp.subtract(self, other, out=self)
         return self
 
-    def __iter__(self):
+    def __iter__(self, /):
         r"""Return :math:`\text{iter(self)}`."""
         if self.ndim == 0:
             raise TypeError("iteration over a 0-d array")
         return (self[i] for i in range(self.shape[0]))
 
-    def __itruediv__(self, other):
+    def __itruediv__(self, other, /):
         r"""Return :math:`\text{self /= value}`."""
         dpnp.true_divide(self, other, out=self)
         return self
 
-    def __ixor__(self, other):
+    def __ixor__(self, other, /):
         r"""Return :math:`\text{self ^= value}`."""
         dpnp.bitwise_xor(self, other, out=self)
         return self
 
-    def __le__(self, other):
+    def __le__(self, other, /):
         r"""Return :math:`\text{self <= value}`."""
         return dpnp.less_equal(self, other)
 
@@ -437,53 +437,53 @@ class dpnp_array:
         r"""Return :math:`\text{len(self)}`."""
         return self._array_obj.__len__()
 
-    def __lshift__(self, other):
+    def __lshift__(self, other, /):
         r"""Return :math:`\text{self << value}`."""
         return dpnp.left_shift(self, other)
 
-    def __lt__(self, other):
+    def __lt__(self, other, /):
         r"""Return :math:`\text{self < value}`."""
         return dpnp.less(self, other)
 
-    def __matmul__(self, other):
+    def __matmul__(self, other, /):
         r"""Return :math:`\text{self @ value}`."""
         return dpnp.matmul(self, other)
 
-    def __mod__(self, other):
+    def __mod__(self, other, /):
         r"""Return :math:`\text{self % value}`."""
         return dpnp.remainder(self, other)
 
-    def __mul__(self, other):
+    def __mul__(self, other, /):
         r"""Return :math:`\text{self * value}`."""
         return dpnp.multiply(self, other)
 
-    def __ne__(self, other):
+    def __ne__(self, other, /):
         r"""Return :math:`\text{self != value}`."""
         return dpnp.not_equal(self, other)
 
-    def __neg__(self):
+    def __neg__(self, /):
         r"""Return :math:`\text{-self}`."""
         return dpnp.negative(self)
 
     # '__new__',
 
-    def __or__(self, other):
+    def __or__(self, other, /):
         r"""Return :math:`\text{self | value}`."""
         return dpnp.bitwise_or(self, other)
 
-    def __pos__(self):
+    def __pos__(self, /):
         r"""Return :math:`\text{+self}`."""
         return dpnp.positive(self)
 
-    def __pow__(self, other):
+    def __pow__(self, other, mod=None, /):
         r"""Return :math:`\text{self ** value}`."""
         return dpnp.power(self, other)
 
-    def __radd__(self, other):
+    def __radd__(self, other, /):
         r"""Return :math:`\text{value + self}`."""
         return dpnp.add(other, self)
 
-    def __rand__(self, other):
+    def __rand__(self, other, /):
         r"""Return :math:`\text{value & self}`."""
         return dpnp.bitwise_and(other, self)
 
@@ -495,64 +495,64 @@ class dpnp_array:
         r"""Return :math:`\text{repr(self)}`."""
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
-    def __rfloordiv__(self, other):
+    def __rfloordiv__(self, other, /):
         r"""Return :math:`\text{value // self}`."""
         return dpnp.floor_divide(self, other)
 
-    def __rlshift__(self, other):
+    def __rlshift__(self, other, /):
         r"""Return :math:`\text{value << self}`."""
         return dpnp.left_shift(other, self)
 
-    def __rmatmul__(self, other):
+    def __rmatmul__(self, other, /):
         r"""Return :math:`\text{value @ self}`."""
         return dpnp.matmul(other, self)
 
-    def __rmod__(self, other):
+    def __rmod__(self, other, /):
         r"""Return :math:`\text{value % self}`."""
         return dpnp.remainder(other, self)
 
-    def __rmul__(self, other):
+    def __rmul__(self, other, /):
         r"""Return :math:`\text{value * self}`."""
         return dpnp.multiply(other, self)
 
-    def __ror__(self, other):
+    def __ror__(self, other, /):
         r"""Return :math:`\text{value | self}`."""
         return dpnp.bitwise_or(other, self)
 
-    def __rpow__(self, other):
+    def __rpow__(self, other, mod=None, /):
         r"""Return :math:`\text{value ** self}`."""
         return dpnp.power(other, self)
 
-    def __rrshift__(self, other):
+    def __rrshift__(self, other, /):
         r"""Return :math:`\text{value >> self}`."""
         return dpnp.right_shift(other, self)
 
-    def __rshift__(self, other):
+    def __rshift__(self, other, /):
         r"""Return :math:`\text{self >> value}`."""
         return dpnp.right_shift(self, other)
 
-    def __rsub__(self, other):
+    def __rsub__(self, other, /):
         r"""Return :math:`\text{value - self}`."""
         return dpnp.subtract(other, self)
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(self, other, /):
         r"""Return :math:`\text{value / self}`."""
         return dpnp.true_divide(other, self)
 
-    def __rxor__(self, other):
+    def __rxor__(self, other, /):
         r"""Return :math:`\text{value ^ self}`."""
         return dpnp.bitwise_xor(other, self)
 
     # '__setattr__',
 
-    def __setitem__(self, key, val):
+    def __setitem__(self, key, value, /):
         r"""Set :math:`\text{self[key]}` to a value."""
         key = _get_unwrapped_index_key(key)
 
-        if isinstance(val, dpnp_array):
-            val = val.get_array()
+        if isinstance(value, dpnp_array):
+            value = value.get_array()
 
-        self._array_obj.__setitem__(key, val)
+        self._array_obj.__setitem__(key, value)
 
     # '__setstate__',
     # '__sizeof__',
@@ -563,7 +563,7 @@ class dpnp_array:
         r"""Return :math:`\text{str(self)}`."""
         return self._array_obj.__str__()
 
-    def __sub__(self, other):
+    def __sub__(self, other, /):
         r"""Return :math:`\text{self - value}`."""
         return dpnp.subtract(self, other)
 
@@ -577,7 +577,7 @@ class dpnp_array:
         """  # noqa: D200
         return self._array_obj.__sycl_usm_array_interface__
 
-    def __truediv__(self, other):
+    def __truediv__(self, other, /):
         r"""Return :math:`\text{self / value}`."""
         return dpnp.true_divide(self, other)
 
@@ -600,7 +600,7 @@ class dpnp_array:
 
         return self._array_obj
 
-    def __xor__(self, other):
+    def __xor__(self, other, /):
         r"""Return :math:`\text{self ^ value}`."""
         return dpnp.bitwise_xor(self, other)
 
@@ -621,7 +621,7 @@ class dpnp_array:
         res._array_obj._set_namespace(dpnp)
         return res
 
-    def all(self, axis=None, out=None, keepdims=False, *, where=True):
+    def all(self, axis=None, *, out=None, keepdims=False, where=True):
         """
         Returns ``True`` if all elements evaluate to ``True.``
 
@@ -637,7 +637,7 @@ class dpnp_array:
             self, axis=axis, out=out, keepdims=keepdims, where=where
         )
 
-    def any(self, axis=None, out=None, keepdims=False, *, where=True):
+    def any(self, axis=None, *, out=None, keepdims=False, where=True):
         """
         Returns ``True`` if any of the elements of `a` evaluate to ``True``.
 
@@ -653,7 +653,7 @@ class dpnp_array:
             self, axis=axis, out=out, keepdims=keepdims, where=where
         )
 
-    def argmax(self, axis=None, out=None, *, keepdims=False):
+    def argmax(self, /, axis=None, out=None, *, keepdims=False):
         """
         Returns array of indices of the maximum values along the given axis.
 
@@ -663,7 +663,7 @@ class dpnp_array:
 
         return dpnp.argmax(self, axis=axis, out=out, keepdims=keepdims)
 
-    def argmin(self, axis=None, out=None, *, keepdims=False):
+    def argmin(self, /, axis=None, out=None, *, keepdims=False):
         """
         Return array of indices to the minimum values along the given axis.
 
@@ -854,7 +854,7 @@ class dpnp_array:
 
         return dpnp.choose(self, choices, out, mode)
 
-    def clip(self, min=None, max=None, out=None, **kwargs):
+    def clip(self, /, min=None, max=None, out=None, **kwargs):
         """
         Clip (limit) the values in an array.
 
@@ -864,7 +864,7 @@ class dpnp_array:
 
         return dpnp.clip(self, min, max, out=out, **kwargs)
 
-    def compress(self, condition, axis=None, out=None):
+    def compress(self, /, condition, axis=None, *, out=None):
         """
         Select slices of an array along a given axis.
 
@@ -895,7 +895,9 @@ class dpnp_array:
             return self
         return dpnp.conjugate(self)
 
-    def copy(self, order="C", device=None, usm_type=None, sycl_queue=None):
+    def copy(
+        self, /, order="C", *, device=None, usm_type=None, sycl_queue=None
+    ):
         """
         Return a copy of the array.
 
@@ -974,7 +976,7 @@ class dpnp_array:
 
     # 'ctypes',
 
-    def cumprod(self, axis=None, dtype=None, out=None):
+    def cumprod(self, /, axis=None, dtype=None, *, out=None):
         """
         Return the cumulative product of the elements along the given axis.
 
@@ -984,7 +986,7 @@ class dpnp_array:
 
         return dpnp.cumprod(self, axis=axis, dtype=dtype, out=out)
 
-    def cumsum(self, axis=None, dtype=None, out=None):
+    def cumsum(self, /, axis=None, dtype=None, *, out=None):
         """
         Return the cumulative sum of the elements along the given axis.
 
@@ -1129,7 +1131,7 @@ class dpnp_array:
 
         return dpnp.flatiter(self)
 
-    def flatten(self, order="C"):
+    def flatten(self, /, order="C"):
         """
         Return a copy of the array collapsed into one dimension.
 
@@ -1180,7 +1182,7 @@ class dpnp_array:
     # 'getfield',
 
     @property
-    def imag(self):
+    def imag(self, /):
         """
         The imaginary part of the array.
 
@@ -1199,7 +1201,7 @@ class dpnp_array:
         )
 
     @imag.setter
-    def imag(self, value):
+    def imag(self, value, /):
         """
         Set the imaginary part of the array.
 
@@ -1220,7 +1222,7 @@ class dpnp_array:
         else:
             raise TypeError("array does not have imaginary part to set")
 
-    def item(self, *args):
+    def item(self, /, *args):
         """
         Copy an element of an array to a standard Python scalar and return it.
 
@@ -1279,7 +1281,9 @@ class dpnp_array:
 
     def max(
         self,
+        /,
         axis=None,
+        *,
         out=None,
         keepdims=False,
         initial=None,
@@ -1302,7 +1306,7 @@ class dpnp_array:
         )
 
     def mean(
-        self, axis=None, dtype=None, out=None, keepdims=False, *, where=True
+        self, /, axis=None, dtype=None, *, out=None, keepdims=False, where=True
     ):
         """
         Returns the average of the array elements.
@@ -1315,7 +1319,9 @@ class dpnp_array:
 
     def min(
         self,
+        /,
         axis=None,
+        *,
         out=None,
         keepdims=False,
         initial=None,
@@ -1428,7 +1434,7 @@ class dpnp_array:
 
         return dpnp.nonzero(self)
 
-    def partition(self, kth, axis=-1, kind="introselect", order=None):
+    def partition(self, /, kth, axis=-1, kind="introselect", order=None):
         """
         Return a partitioned copy of an array.
 
@@ -1462,8 +1468,10 @@ class dpnp_array:
 
     def prod(
         self,
+        /,
         axis=None,
         dtype=None,
+        *,
         out=None,
         keepdims=False,
         initial=None,
@@ -1486,7 +1494,7 @@ class dpnp_array:
             where=where,
         )
 
-    def put(self, indices, vals, /, *, axis=None, mode="wrap"):
+    def put(self, /, indices, vals, axis=None, mode="wrap"):
         """
         Puts values of an array into another array along a given axis.
 
@@ -1496,7 +1504,7 @@ class dpnp_array:
 
         return dpnp.put(self, indices, vals, axis=axis, mode=mode)
 
-    def ravel(self, order="C"):
+    def ravel(self, /, order="C"):
         """
         Return a contiguous flattened array.
 
@@ -1507,7 +1515,7 @@ class dpnp_array:
         return dpnp.ravel(self, order=order)
 
     @property
-    def real(self):
+    def real(self, /):
         """
         The real part of the array.
 
@@ -1529,7 +1537,7 @@ class dpnp_array:
         return self
 
     @real.setter
-    def real(self, value):
+    def real(self, value, /):
         """
         Set the real part of the array.
 
@@ -1557,7 +1565,7 @@ class dpnp_array:
 
         return dpnp.repeat(self, repeats, axis=axis)
 
-    def reshape(self, *shape, order="C", copy=None):
+    def reshape(self, /, *shape, order="C", copy=None):
         """
         Returns an array containing the same data with a new shape.
 
@@ -1589,7 +1597,7 @@ class dpnp_array:
 
     # 'resize',
 
-    def round(self, decimals=0, out=None):
+    def round(self, /, decimals=0, *, out=None):
         """
         Return array with each element rounded to the given number of decimals.
 
@@ -1804,10 +1812,10 @@ class dpnp_array:
         self,
         axis=None,
         dtype=None,
+        *,
         out=None,
         ddof=0,
         keepdims=False,
-        *,
         where=True,
         mean=None,
         correction=None,
@@ -1847,8 +1855,10 @@ class dpnp_array:
 
     def sum(
         self,
+        /,
         axis=None,
         dtype=None,
+        *,
         out=None,
         keepdims=False,
         initial=None,
@@ -1938,7 +1948,7 @@ class dpnp_array:
 
         return self.transpose()
 
-    def take(self, indices, axis=None, out=None, mode="wrap"):
+    def take(self, indices, axis=None, *, out=None, mode="wrap"):
         """
         Take elements from an array along an axis.
 
@@ -1996,7 +2006,7 @@ class dpnp_array:
     # 'tofile',
     # 'tolist',
 
-    def trace(self, offset=0, axis1=0, axis2=1, dtype=None, out=None):
+    def trace(self, offset=0, axis1=0, axis2=1, dtype=None, *, out=None):
         """
         Return the sum along diagonals of the array.
 
@@ -2083,10 +2093,10 @@ class dpnp_array:
         self,
         axis=None,
         dtype=None,
+        *,
         out=None,
         ddof=0,
         keepdims=False,
-        *,
         where=True,
         mean=None,
         correction=None,
@@ -2110,7 +2120,7 @@ class dpnp_array:
             correction=correction,
         )
 
-    def view(self, dtype=None, *, type=None):
+    def view(self, /, dtype=None, *, type=None):
         """
         New view of array with the same data.
 
