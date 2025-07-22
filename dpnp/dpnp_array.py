@@ -147,7 +147,7 @@ class dpnp_array:
 
     def __array_namespace__(self, /, *, api_version=None):
         """
-        Returns array namespace, member functions of which implement data API.
+        Return array namespace, member functions of which implement data API.
 
         Parameters
         ----------
@@ -196,7 +196,7 @@ class dpnp_array:
 
     def __copy__(self):
         """
-        Used if :func:`copy.copy` is called on an array. Returns a copy of the
+        Used if :func:`copy.copy` is called on an array. Return a copy of the
         array.
 
         Equivalent to ``a.copy(order="K")``.
@@ -214,7 +214,7 @@ class dpnp_array:
         self, /, *, stream=None, max_version=None, dl_device=None, copy=None
     ):
         """
-        Produces DLPack capsule.
+        Produce DLPack capsule.
 
         Parameters
         ----------
@@ -271,7 +271,7 @@ class dpnp_array:
 
     def __dlpack_device__(self, /):
         """
-        Gives a tuple (``device_type``, ``device_id``) corresponding to
+        Give a tuple (``device_type``, ``device_id``) corresponding to
         ``DLDevice`` entry in ``DLTensor`` in DLPack protocol.
 
         The tuple describes the non-partitioned device where the array has been
@@ -623,7 +623,7 @@ class dpnp_array:
 
     def all(self, axis=None, *, out=None, keepdims=False, where=True):
         """
-        Returns ``True`` if all elements evaluate to ``True.``
+        Return ``True`` if all elements evaluate to ``True.``
 
         Refer to :obj:`dpnp.all` for full documentation.
 
@@ -639,7 +639,7 @@ class dpnp_array:
 
     def any(self, axis=None, *, out=None, keepdims=False, where=True):
         """
-        Returns ``True`` if any of the elements of `a` evaluate to ``True``.
+        Return ``True`` if any of the elements of `a` evaluate to ``True``.
 
         Refer to :obj:`dpnp.any` for full documentation.
 
@@ -655,7 +655,7 @@ class dpnp_array:
 
     def argmax(self, /, axis=None, out=None, *, keepdims=False):
         """
-        Returns array of indices of the maximum values along the given axis.
+        Return array of indices of the maximum values along the given axis.
 
         Refer to :obj:`dpnp.argmax` for full documentation.
 
@@ -1076,7 +1076,7 @@ class dpnp_array:
     @property
     def dtype(self):
         """
-        Returns NumPy's dtype corresponding to the type of the array elements.
+        Return NumPy's dtype corresponding to the type of the array elements.
 
         """  # noqa: D200
 
@@ -1309,7 +1309,7 @@ class dpnp_array:
         self, /, axis=None, dtype=None, *, out=None, keepdims=False, where=True
     ):
         """
-        Returns the average of the array elements.
+        Return the average of the array elements.
 
         Refer to :obj:`dpnp.mean` for full documentation.
 
@@ -1478,7 +1478,7 @@ class dpnp_array:
         where=True,
     ):
         """
-        Returns the prod along a given axis.
+        Return the prod along a given axis.
 
         Refer to :obj:`dpnp.prod` for full documentation.
 
@@ -1496,7 +1496,7 @@ class dpnp_array:
 
     def put(self, /, indices, vals, axis=None, mode="wrap"):
         """
-        Puts values of an array into another array along a given axis.
+        Put values of an array into another array along a given axis.
 
         Refer to :obj:`dpnp.put` for full documentation.
 
@@ -1567,7 +1567,7 @@ class dpnp_array:
 
     def reshape(self, /, *shape, order="C", copy=None):
         """
-        Returns an array containing the same data with a new shape.
+        Return an array containing the same data with a new shape.
 
         Refer to :obj:`dpnp.reshape` for full documentation.
 
@@ -1821,7 +1821,7 @@ class dpnp_array:
         correction=None,
     ):
         """
-        Returns the standard deviation of the array elements, along given axis.
+        Return the standard deviation of the array elements, along given axis.
 
         Refer to :obj:`dpnp.std` for full documentation.
 
@@ -1842,7 +1842,7 @@ class dpnp_array:
     @property
     def strides(self):
         """
-        Returns memory displacement in array elements, upon unit
+        Return memory displacement in array elements, upon unit
         change of respective index.
 
         For example, for strides ``(s1, s2, s3)`` and multi-index
@@ -1865,7 +1865,7 @@ class dpnp_array:
         where=True,
     ):
         """
-        Returns the sum along a given axis.
+        Return the sum along a given axis.
 
         Refer to :obj:`dpnp.sum` for full documentation.
 
@@ -1960,7 +1960,7 @@ class dpnp_array:
 
     def to_device(self, device, /, *, stream=None):
         """
-        Transfers this array to specified target device.
+        Transfer this array to specified target device.
 
         Parameters
         ----------
@@ -2020,7 +2020,7 @@ class dpnp_array:
 
     def transpose(self, *axes):
         """
-        Returns a view of the array with axes transposed.
+        Return a view of the array with axes transposed.
 
         For full documentation refer to :obj:`numpy.ndarray.transpose`.
 
@@ -2102,7 +2102,7 @@ class dpnp_array:
         correction=None,
     ):
         """
-        Returns the variance of the array elements, along given axis.
+        Return the variance of the array elements, along given axis.
 
         Refer to :obj:`dpnp.var` for full documentation.
 
