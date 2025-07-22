@@ -286,6 +286,7 @@ Truth value of an array (:class:`bool() <bool>`):
 
 .. autosummary::
    :toctree: generated/
+   :nosignatures:
 
    dpnp.ndarray.__bool__
 
@@ -377,6 +378,7 @@ Matrix Multiplication:
 
 .. autosummary::
    :toctree: generated/
+   :nosignatures:
 
    dpnp.ndarray.__matmul__
    dpnp.ndarray.__rmatmul__
