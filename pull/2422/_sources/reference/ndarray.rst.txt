@@ -211,6 +211,25 @@ the operation should proceed.
 Calculation
 -----------
 
+Many of these methods take an argument named *axis*. In such cases,
+
+- If *axis* is *None* (the default), the array is treated as a 1-D array and
+  the operation is performed over the entire array. This behavior is also the
+  default if *self* is a 0-dimensional array.
+
+- If *axis* is an integer, then the operation is done over the given axis (for
+  each 1-D subarray that can be created along the given axis).
+
+The parameter *dtype* specifies the data type over which a reduction operation
+(like summing) should take place. The default reduce data type is the same as
+the data type of *self*. To avoid overflow, it can be useful to perform the
+reduction using a larger data type.
+
+For several methods, an optional *out* argument can also be provided and the
+result will be placed into the output array given. The *out* argument must be
+an :class:`dpnp.ndarray` and have the same number of elements. It can have a
+different data type in which case casting will be performed.
+
 .. autosummary::
    :toctree: generated/
    :nosignatures:
@@ -242,12 +261,11 @@ Arithmetic and comparison operations on :class:`dpnp.ndarrays <dpnp.ndarray>`
 are defined as element-wise operations, and generally yield
 :class:`dpnp.ndarray` objects as results.
 
-Each of the arithmetic operations (``+``, ``-``, ``*``, ``/``, ``//``,
-``%``, ``divmod()``, ``**`` or ``pow()``, ``<<``, ``>>``, ``&``,
-``^``, ``|``, ``~``) and the comparisons (``==``, ``<``, ``>``,
-``<=``, ``>=``, ``!=``) is equivalent to the corresponding
-universal function (or :term:`ufunc` for short) in DPNP. For
-more information, see the section on :ref:`Universal Functions
+Each of the arithmetic operations (``+``, ``-``, ``*``, ``/``, ``//``, ``%``,
+``divmod()``, ``**`` or ``pow()``, ``<<``, ``>>``, ``&``, ``^``, ``|``, ``~``)
+and the comparisons (``==``, ``<``, ``>``, ``<=``, ``>=``, ``!=``) is
+equivalent to the corresponding universal function (or :term:`ufunc` for short)
+in DPNP. For more information, see the section on :ref:`Universal Functions
 <ufuncs>`.
 
 
@@ -268,6 +286,7 @@ Truth value of an array (:class:`bool() <bool>`):
 
 .. autosummary::
    :toctree: generated/
+   :nosignatures:
 
    dpnp.ndarray.__bool__
 
@@ -359,6 +378,7 @@ Matrix Multiplication:
 
 .. autosummary::
    :toctree: generated/
+   :nosignatures:
 
    dpnp.ndarray.__matmul__
    dpnp.ndarray.__rmatmul__
