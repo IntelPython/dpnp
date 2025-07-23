@@ -1,5 +1,5 @@
 Constants
-=================================
+=========
 
 DPNP includes several constants:
 
