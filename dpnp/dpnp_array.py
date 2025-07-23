@@ -626,7 +626,7 @@ class dpnp_array:
 
     def all(self, axis=None, *, out=None, keepdims=False, where=True):
         """
-        Return ``True`` if all elements evaluate to ``True.``
+        Return ``True`` if all elements evaluate to ``True``.
 
         Refer to :obj:`dpnp.all` for full documentation.
 
