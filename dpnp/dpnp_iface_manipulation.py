@@ -2504,7 +2504,7 @@ def pad(array, pad_width, mode="constant", **kwargs):
     ----------
     array : {dpnp.ndarray, usm_ndarray}
         The array of rank ``N`` to pad.
-    pad_width : {sequence, array_like, int}
+    pad_width : {sequence, array_like, int, dict}
         Number of values padded to the edges of each axis.
         ``((before_1, after_1), ... (before_N, after_N))`` unique pad widths
         for each axis.
@@ -2512,6 +2512,9 @@ def pad(array, pad_width, mode="constant", **kwargs):
         and after pad for each axis.
         ``(pad,)`` or ``int`` is a shortcut for ``before = after = pad`` width
         for all axes.
+        If a dictionary, each key is an axis and its corresponding value is an
+        integer or a pair of integers describing the padding ``(before, after)``
+        or ``pad`` width for that axis.
     mode : {str, function}, optional
         One of the following string values or a user supplied function.
 
@@ -2693,6 +2696,26 @@ def pad(array, pad_width, mode="constant", **kwargs):
            [100, 100,   3,   4,   5, 100, 100],
            [100, 100, 100, 100, 100, 100, 100],
            [100, 100, 100, 100, 100, 100, 100]])
+
+    >>> a = np.arange(1, 7).reshape(2, 3)
+    >>> np.pad(a, {1: (1, 2)})
+    array([[0, 1, 2, 3, 0, 0],
+           [0, 4, 5, 6, 0, 0]])
+    >>> np.pad(a, {-1: 2})
+    array([[0, 0, 1, 2, 3, 0, 0],
+           [0, 0, 4, 5, 6, 0, 0]])
+    >>> np.pad(a, {0: (3, 0)})
+    array([[0, 0, 0],
+           [0, 0, 0],
+           [0, 0, 0],
+           [1, 2, 3],
+           [4, 5, 6]])
+    >>> np.pad(a, {0: (3, 0), 1: 2})
+    array([[0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 0, 0, 0, 0, 0],
+           [0, 0, 1, 2, 3, 0, 0],
+           [0, 0, 4, 5, 6, 0, 0]])
 
     """
 
