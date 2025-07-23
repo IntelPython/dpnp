@@ -74,6 +74,8 @@ def test_ndim():
     assert dpnp.ndim(ia) == exp
 
 
+# TODO: include commented code in the test when numpy-2.4 is released
+# @testing.with_requires("numpy>=2.4")
 def test_size():
     a = [[1, 2, 3], [4, 5, 6]]
     ia = dpnp.array(a)
@@ -86,6 +88,12 @@ def test_size():
     exp = numpy.size(a, 0)
     assert dpnp.size(a, 0) == exp
     assert dpnp.size(ia, 0) == exp
+
+    assert dpnp.size(ia, 1) == numpy.size(a, 1)
+    assert dpnp.size(ia, ()) == 1  # numpy.size(a, ())
+    assert dpnp.size(ia, (0,)) == 2  # numpy.size(a, (0,))
+    assert dpnp.size(ia, (1,)) == 3  # numpy.size(a, (1,))
+    assert dpnp.size(ia, (0, 1)) == 6  # numpy.size(a, (0, 1))
 
 
 class TestAppend:
