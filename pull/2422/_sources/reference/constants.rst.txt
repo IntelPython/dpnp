@@ -83,7 +83,7 @@ DPNP includes several constants:
 
     .. rubric:: See Also
 
-    :func:`isnan` : Shows which elements are Not a Number.
+    :func:`isnan` : Shows which elements are Not a Number
 
     :func:`isfinite` : Shows which elements are finite (not one of Not a Number,
     positive infinity and negative infinity)
