@@ -1346,11 +1346,11 @@ def column_stack(tup):
     --------
     >>> import dpnp as np
     >>> a = np.array((1, 2, 3))
-    >>> b = np.array((2, 3, 4))
+    >>> b = np.array((4, 5, 6))
     >>> np.column_stack((a, b))
-    array([[1, 2],
-           [2, 3],
-           [3, 4]])
+    array([[1, 4],
+           [2, 5],
+           [3, 6]])
 
     """
 
@@ -1778,18 +1778,18 @@ def dstack(tup):
     --------
     >>> import dpnp as np
     >>> a = np.array((1, 2, 3))
-    >>> b = np.array((2, 3, 4))
+    >>> b = np.array((4, 5, 6))
     >>> np.dstack((a, b))
-    array([[[1, 2],
-            [2, 3],
-            [3, 4]]])
+    array([[[1, 4],
+            [2, 5],
+            [3, 6]]])
 
     >>> a = np.array([[1], [2], [3]])
-    >>> b = np.array([[2], [3], [4]])
+    >>> b = np.array([[4], [5], [6]])
     >>> np.dstack((a, b))
-    array([[[1, 2]],
-           [[2, 3]],
-           [[3, 4]]])
+    array([[[1, 4]],
+           [[2, 5]],
+           [[3, 6]]])
 
     """
 
@@ -4245,7 +4245,7 @@ def unique(
 
     """
 
-    if axis is None:
+    if axis is None or (axis == 0 and ar.ndim == 1):
         return _unique_1d(
             ar, return_index, return_inverse, return_counts, equal_nan
         )
