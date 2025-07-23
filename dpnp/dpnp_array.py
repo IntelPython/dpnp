@@ -233,9 +233,9 @@ class dpnp_array:
         dl_device : {tuple, None}, optional:
             The device the returned DLPack capsule will be placed on. The
             device must be a 2-tuple matching the format of
-            ``__dlpack_device__`` method, an integer enumerator representing
-            the device type followed by an integer representing the index of
-            the device.
+            :meth:`dpnp.ndarray.__dlpack_device__`, an integer enumerator
+            representing the device type followed by an integer representing
+            the index of the device.
 
             Default: ``None``.
         copy : {bool, None}, optional:
@@ -278,9 +278,12 @@ class dpnp_array:
         allocated, or the non-partitioned parent device of the allocation
         device.
 
+        See :class:`dpnp.DLDeviceType` for a list of devices supported by the
+        DLPack protocol.
+
         Raises
         ------
-        DLPackCreationError:
+        DLPackCreationError
             when the ``device_id`` could not be determined.
 
         """
