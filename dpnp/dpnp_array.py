@@ -480,6 +480,8 @@ class dpnp_array:
 
     def __pow__(self, other, mod=None, /):
         r"""Return :math:`\text{self ** value}`."""
+        if mod is not None:
+            return NotImplemented
         return dpnp.power(self, other)
 
     def __radd__(self, other, /):
@@ -524,6 +526,8 @@ class dpnp_array:
 
     def __rpow__(self, other, mod=None, /):
         r"""Return :math:`\text{value ** self}`."""
+        if mod is not None:
+            return NotImplemented
         return dpnp.power(other, self)
 
     def __rrshift__(self, other, /):
