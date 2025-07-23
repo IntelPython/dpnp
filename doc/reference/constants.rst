@@ -122,16 +122,16 @@ DPNP includes several constants:
         array([0, 1, 2])
         >>> x[:, np.newaxis]
         array([[0],
-            [1],
-            [2]])
+               [1],
+               [2]])
         >>> x[:, np.newaxis, np.newaxis]
         array([[[0]],
-            [[1]],
-            [[2]]])
+               [[1]],
+               [[2]]])
         >>> x[:, np.newaxis] * x
         array([[0, 0, 0],
-            [0, 1, 2],
-            [0, 2, 4]])
+               [0, 1, 2],
+               [0, 2, 4]])
 
         Outer product, same as ``outer(x, y)``:
 
