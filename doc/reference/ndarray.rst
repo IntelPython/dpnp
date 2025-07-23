@@ -227,8 +227,9 @@ reduction using a larger data type.
 
 For several methods, an optional *out* argument can also be provided and the
 result will be placed into the output array given. The *out* argument must be
-an :class:`dpnp.ndarray` and have the same number of elements. It can have a
-different data type in which case casting will be performed.
+an :class:`dpnp.ndarray` and have the same number of elements as the result
+array. It can have a different data type in which case casting will be
+performed.
 
 .. autosummary::
    :toctree: generated/
