@@ -61,11 +61,9 @@ using ext::common::value_type_of;
 
 namespace dpnp::extensions::ufunc
 {
+
 namespace impl
 {
-
-using dpctl::tensor::usm_ndarray;
-using event_vector = std::vector<sycl::event>;
 
 using isclose_strided_scalar_fn_ptr_t =
     sycl::event (*)(sycl::queue &,
@@ -95,49 +93,32 @@ using isclose_contig_scalar_fn_ptr_t =
                     const std::vector<sycl::event> &);
 
 static isclose_strided_scalar_fn_ptr_t
-    isclose_strided_scalar_dispatch_table[td_ns::num_types][td_ns::num_types];
+    isclose_strided_scalar_dispatch_vector[td_ns::num_types];
 static isclose_contig_scalar_fn_ptr_t
-    isclose_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+    isclose_contig_dispatch_vector[td_ns::num_types];
 
 template <typename T>
 using value_type_of_t = typename value_type_of<T>::type;
 
-// // Template for checking if T is supported
-// template <typename T>
-// struct IsCloseOutputType
-// {
-//     using value_type = typename std::disjunction<
-//         td_ns::TypeMapResultEntry<T, sycl::half>,
-//         td_ns::TypeMapResultEntry<T, float>,
-//         td_ns::TypeMapResultEntry<T, double>,
-//         td_ns::TypeMapResultEntry<T, std::complex<float>>,
-//         td_ns::TypeMapResultEntry<T, std::complex<double>>,
-//         td_ns::DefaultResultEntry<void>>::result_type;
-// };
-
-// Supports only float and complex types
-template <typename T1, typename T2>
+/**
+ * @brief A factory to define pairs of supported types for which
+ * isclose function is available.
+ *
+ * @tparam T Type of input vector `a` and `b` and of result vector `y`.
+ */
+template <typename T>
 struct IsCloseOutputType
 {
     using value_type = typename std::disjunction<
-        td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, bool>,
-        td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, bool>,
-        td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<float>,
-                                        T2,
-                                        std::complex<float>,
-                                        bool>,
-        td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<double>,
-                                        T2,
-                                        std::complex<double>,
-                                        bool>,
+        td_ns::TypeMapResultEntry<T, sycl::half>,
+        td_ns::TypeMapResultEntry<T, float>,
+        td_ns::TypeMapResultEntry<T, double>,
+        td_ns::TypeMapResultEntry<T, std::complex<float>>,
+        td_ns::TypeMapResultEntry<T, std::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
-
-    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-template <typename T1, typename T2>
+template <typename T>
 sycl::event isclose_strided_scalar_call(sycl::queue &exec_q,
                                         int nd,
                                         std::size_t nelems,
@@ -154,19 +135,18 @@ sycl::event isclose_strided_scalar_call(sycl::queue &exec_q,
                                         const std::vector<sycl::event> &depends)
 {
     using dpctl::tensor::type_utils::is_complex_v;
-    using scT = std::conditional_t<is_complex_v<T1>,
-                                   typename value_type_of<T1>::type, T1>;
+    using scT = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
     const scT rtol = py::cast<scT>(py_rtol);
     const scT atol = py::cast<scT>(py_atol);
     const bool equal_nan = py::cast<bool>(py_equal_nan);
 
-    return dpnp::kernels::isclose::isclose_strided_scalar_impl<T1, T2, scT>(
+    return dpnp::kernels::isclose::isclose_strided_scalar_impl<T, scT>(
         exec_q, nd, nelems, shape_strides, rtol, atol, equal_nan, in1_p,
         in1_offset, in2_p, in2_offset, out_p, out_offset, depends);
 }
 
-template <typename T1, typename T2>
+template <typename T>
 sycl::event isclose_contig_scalar_call(sycl::queue &q,
                                        std::size_t nelems,
                                        const py::object &py_rtol,
@@ -175,77 +155,84 @@ sycl::event isclose_contig_scalar_call(sycl::queue &q,
                                        const char *in1_p,
                                        const char *in2_p,
                                        char *out_p,
-                                       const event_vector &depends)
+                                       const std::vector<sycl::event> &depends)
 {
     using dpctl::tensor::type_utils::is_complex_v;
-    using scT = std::conditional_t<is_complex_v<T1>,
-                                   typename value_type_of<T1>::type, T1>;
+    using scT = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
     const scT rtol = py::cast<scT>(py_rtol);
     const scT atol = py::cast<scT>(py_atol);
     const bool equal_nan = py::cast<bool>(py_equal_nan);
 
-    return dpnp::kernels::isclose::isclose_contig_scalar_impl<T1, T2, scT>(
+    return dpnp::kernels::isclose::isclose_contig_scalar_impl<T, scT>(
         q, nelems, rtol, atol, equal_nan, in1_p, 0, in2_p, 0, out_p, 0,
         depends);
 }
 
-template <typename fnT, typename T1, typename T2>
+template <typename fnT, typename T>
 struct IsCloseStridedScalarFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename IsCloseOutputType<T1, T2>::value_type, void>)
+        if constexpr (std::is_same_v<typename IsCloseOutputType<T>::value_type,
+                                     void>)
         {
             return nullptr;
         }
         else {
-            return isclose_strided_scalar_call<T1, T2>;
+            return isclose_strided_scalar_call<T>;
         }
     }
 };
 
-template <typename fnT, typename T1, typename T2>
+template <typename fnT, typename T>
 struct IsCloseContigScalarFactory
 {
     fnT get()
     {
-        if constexpr (!IsCloseOutputType<T1, T2>::is_defined) {
+        if constexpr (std::is_same_v<typename IsCloseOutputType<T>::value_type,
+                                     void>)
+        {
             return nullptr;
         }
         else {
-            return isclose_contig_scalar_call<T1, T2>;
+            return isclose_contig_scalar_call<T>;
         }
     }
 };
 
-void populate_isclose_dispatch_table()
+void populate_isclose_dispatch_vectors()
 {
-    td_ns::DispatchTableBuilder<isclose_strided_scalar_fn_ptr_t,
-                                IsCloseStridedScalarFactory, td_ns::num_types>
-        dvb1;
-    dvb1.populate_dispatch_table(isclose_strided_scalar_dispatch_table);
+    using namespace td_ns;
 
-    td_ns::DispatchTableBuilder<isclose_contig_scalar_fn_ptr_t,
-                                IsCloseContigScalarFactory, td_ns::num_types>
+    DispatchVectorBuilder<isclose_strided_scalar_fn_ptr_t,
+                          IsCloseStridedScalarFactory, num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(isclose_strided_scalar_dispatch_vector);
+
+    DispatchVectorBuilder<isclose_contig_scalar_fn_ptr_t,
+                          IsCloseContigScalarFactory, num_types>
         dvb2;
-    dvb2.populate_dispatch_table(isclose_contig_dispatch_table);
+    dvb2.populate_dispatch_vector(isclose_contig_dispatch_vector);
 }
 
 std::pair<sycl::event, sycl::event>
-    py_isclose_scalar(const usm_ndarray &a,
-                      const usm_ndarray &b,
+    py_isclose_scalar(const dpctl::tensor::usm_ndarray &a,
+                      const dpctl::tensor::usm_ndarray &b,
                       const py::object &py_rtol,
                       const py::object &py_atol,
                       const py::object &py_equal_nan,
-                      const usm_ndarray &res,
+                      const dpctl::tensor::usm_ndarray &res,
                       sycl::queue &exec_q,
                       const std::vector<sycl::event> &depends)
 {
     auto types = td_ns::usm_ndarray_types();
     int a_typeid = types.typenum_to_lookup_id(a.get_typenum());
     int b_typeid = types.typenum_to_lookup_id(b.get_typenum());
+
+    if (a_typeid != b_typeid) {
+        throw py::type_error("Array data types are not the same.");
+    }
 
     if (!dpctl::utils::queues_are_compatible(exec_q, {a, b, res})) {
         throw py::value_error(
@@ -309,7 +296,8 @@ std::pair<sycl::event, sycl::event>
     bool all_f_contig = (is_a_f_contig && is_b_f_contig && is_res_f_contig);
 
     if (all_c_contig || all_f_contig) {
-        auto contig_fn = isclose_contig_dispatch_table[a_typeid][b_typeid];
+        // a_typeid == b_typeid
+        auto contig_fn = isclose_contig_dispatch_vector[a_typeid];
 
         if (contig_fn == nullptr) {
             throw std::runtime_error(
@@ -358,7 +346,8 @@ std::pair<sycl::event, sycl::event>
         simplified_b_strides[0] == 1 && simplified_res_strides[0] == 1)
     {
         // Special case of contiguous data
-        auto contig_fn = isclose_contig_dispatch_table[a_typeid][b_typeid];
+        // a_typeid == b_typeid
+        auto contig_fn = isclose_contig_dispatch_vector[a_typeid];
 
         if (contig_fn == nullptr) {
             throw std::runtime_error(
@@ -383,7 +372,8 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(ht_ev, comp_ev);
     }
 
-    auto strided_fn = isclose_strided_scalar_dispatch_table[a_typeid][b_typeid];
+    // a_typeid == b_typeid
+    auto strided_fn = isclose_strided_scalar_dispatch_vector[a_typeid];
 
     if (strided_fn == nullptr) {
         throw std::runtime_error(
@@ -430,7 +420,7 @@ std::pair<sycl::event, sycl::event>
 
 void init_isclose(py::module_ m)
 {
-    impl::populate_isclose_dispatch_table();
+    impl::populate_isclose_dispatch_vectors();
 
     m.def("_isclose_scalar", &impl::py_isclose_scalar, "", py::arg("a"),
           py::arg("b"), py::arg("py_rtol"), py::arg("py_atol"),
