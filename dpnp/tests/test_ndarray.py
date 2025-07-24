@@ -550,3 +550,15 @@ def test_rmatmul_numpy_array():
 
     with pytest.raises(TypeError):
         b @ a
+
+
+@pytest.mark.parametrize("xp", [dpnp, numpy])
+def test_pow_modulo(xp):
+    a = xp.array([2, 3, 4])
+    b = xp.array([5, 2, 3])
+
+    assert a.__pow__(b, 10) == NotImplemented
+    assert a.__rpow__(b, 10) == NotImplemented
+
+    assert (a.__pow__(b, None) == a**b).all()
+    assert (a.__rpow__(b, None) == b**a).all()

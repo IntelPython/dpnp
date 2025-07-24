@@ -39,7 +39,7 @@ class TestRound(unittest.TestCase):
             self.shape, xp, scale=100, dtype=cupy.default_float_type()
         )
         out = xp.empty_like(a)
-        a.round(self.decimals, out)
+        a.round(self.decimals, out=out)
         return out
 
 

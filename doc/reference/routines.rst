@@ -11,6 +11,7 @@ These functions cover a subset of
 .. toctree::
    :maxdepth: 2
 
+   constants
    array-creation
    array-manipulation
    bitwise
