@@ -67,22 +67,23 @@ namespace impl
 using dpctl::tensor::usm_ndarray;
 using event_vector = std::vector<sycl::event>;
 
-using isclose_fn_ptr_t = sycl::event (*)(sycl::queue &,
-                                         int,
-                                         std::size_t,
-                                         const py::ssize_t *,
-                                         const py::object &,
-                                         const py::object &,
-                                         const py::object &,
-                                         const char *,
-                                         py::ssize_t,
-                                         const char *,
-                                         py::ssize_t,
-                                         char *,
-                                         py::ssize_t,
-                                         const std::vector<sycl::event> &);
+using isclose_strided_scalar_fn_ptr_t =
+    sycl::event (*)(sycl::queue &,
+                    int,
+                    std::size_t,
+                    const py::ssize_t *,
+                    const py::object &,
+                    const py::object &,
+                    const py::object &,
+                    const char *,
+                    py::ssize_t,
+                    const char *,
+                    py::ssize_t,
+                    char *,
+                    py::ssize_t,
+                    const std::vector<sycl::event> &);
 
-using isclose_contig_fn_ptr_t =
+using isclose_contig_scalar_fn_ptr_t =
     sycl::event (*)(sycl::queue &,
                     std::size_t,
                     const py::object &,
@@ -93,10 +94,10 @@ using isclose_contig_fn_ptr_t =
                     char *,
                     const std::vector<sycl::event> &);
 
-static isclose_fn_ptr_t isclose_dispatch_table[td_ns::num_types]
-                                              [td_ns::num_types];
-static isclose_contig_fn_ptr_t isclose_contig_dispatch_table[td_ns::num_types]
-                                                            [td_ns::num_types];
+static isclose_strided_scalar_fn_ptr_t
+    isclose_strided_scalar_dispatch_table[td_ns::num_types][td_ns::num_types];
+static isclose_contig_scalar_fn_ptr_t
+    isclose_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 template <typename T>
 using value_type_of_t = typename value_type_of<T>::type;
@@ -137,60 +138,60 @@ struct IsCloseOutputType
 };
 
 template <typename T1, typename T2>
-sycl::event isclose_strided_call(sycl::queue &exec_q,
-                                 int nd,
-                                 std::size_t nelems,
-                                 const py::ssize_t *shape_strides,
-                                 const py::object &rtol_,
-                                 const py::object &atol_,
-                                 const py::object &equal_nan_,
-                                 const char *in1_p,
-                                 py::ssize_t in1_offset,
-                                 const char *in2_p,
-                                 py::ssize_t in2_offset,
-                                 char *out_p,
-                                 py::ssize_t out_offset,
-                                 const std::vector<sycl::event> &depends)
+sycl::event isclose_strided_scalar_call(sycl::queue &exec_q,
+                                        int nd,
+                                        std::size_t nelems,
+                                        const py::ssize_t *shape_strides,
+                                        const py::object &py_rtol,
+                                        const py::object &py_atol,
+                                        const py::object &py_equal_nan,
+                                        const char *in1_p,
+                                        py::ssize_t in1_offset,
+                                        const char *in2_p,
+                                        py::ssize_t in2_offset,
+                                        char *out_p,
+                                        py::ssize_t out_offset,
+                                        const std::vector<sycl::event> &depends)
 {
     using dpctl::tensor::type_utils::is_complex_v;
     using scT = std::conditional_t<is_complex_v<T1>,
                                    typename value_type_of<T1>::type, T1>;
 
-    const scT rtol = py::cast<scT>(rtol_);
-    const scT atol = py::cast<scT>(atol_);
-    const bool equal_nan = py::cast<bool>(equal_nan_);
+    const scT rtol = py::cast<scT>(py_rtol);
+    const scT atol = py::cast<scT>(py_atol);
+    const bool equal_nan = py::cast<bool>(py_equal_nan);
 
-    return dpnp::kernels::isclose::isclose_strided_impl<T1, T2, scT>(
+    return dpnp::kernels::isclose::isclose_strided_scalar_impl<T1, T2, scT>(
         exec_q, nd, nelems, shape_strides, rtol, atol, equal_nan, in1_p,
         in1_offset, in2_p, in2_offset, out_p, out_offset, depends);
 }
 
 template <typename T1, typename T2>
-sycl::event isclose_contig_call(sycl::queue &q,
-                                std::size_t nelems,
-                                const py::object &rtol_,
-                                const py::object &atol_,
-                                const py::object &equal_nan_,
-                                const char *in1_p,
-                                const char *in2_p,
-                                char *out_p,
-                                const event_vector &depends)
+sycl::event isclose_contig_scalar_call(sycl::queue &q,
+                                       std::size_t nelems,
+                                       const py::object &py_rtol,
+                                       const py::object &py_atol,
+                                       const py::object &py_equal_nan,
+                                       const char *in1_p,
+                                       const char *in2_p,
+                                       char *out_p,
+                                       const event_vector &depends)
 {
     using dpctl::tensor::type_utils::is_complex_v;
     using scT = std::conditional_t<is_complex_v<T1>,
                                    typename value_type_of<T1>::type, T1>;
 
-    const scT rtol = py::cast<scT>(rtol_);
-    const scT atol = py::cast<scT>(atol_);
-    const bool equal_nan = py::cast<bool>(equal_nan_);
+    const scT rtol = py::cast<scT>(py_rtol);
+    const scT atol = py::cast<scT>(py_atol);
+    const bool equal_nan = py::cast<bool>(py_equal_nan);
 
-    return dpnp::kernels::isclose::isclose_contig_impl<T1, T2, scT>(
+    return dpnp::kernels::isclose::isclose_contig_scalar_impl<T1, T2, scT>(
         q, nelems, rtol, atol, equal_nan, in1_p, 0, in2_p, 0, out_p, 0,
         depends);
 }
 
 template <typename fnT, typename T1, typename T2>
-struct IsCloseFactory
+struct IsCloseStridedScalarFactory
 {
     fnT get()
     {
@@ -200,13 +201,13 @@ struct IsCloseFactory
             return nullptr;
         }
         else {
-            return isclose_strided_call<T1, T2>;
+            return isclose_strided_scalar_call<T1, T2>;
         }
     }
 };
 
 template <typename fnT, typename T1, typename T2>
-struct IsCloseContigFactory
+struct IsCloseContigScalarFactory
 {
     fnT get()
     {
@@ -214,33 +215,33 @@ struct IsCloseContigFactory
             return nullptr;
         }
         else {
-            return isclose_contig_call<T1, T2>;
+            return isclose_contig_scalar_call<T1, T2>;
         }
     }
 };
 
 void populate_isclose_dispatch_table()
 {
-    td_ns::DispatchTableBuilder<isclose_fn_ptr_t, IsCloseFactory,
-                                td_ns::num_types>
+    td_ns::DispatchTableBuilder<isclose_strided_scalar_fn_ptr_t,
+                                IsCloseStridedScalarFactory, td_ns::num_types>
         dvb1;
-    dvb1.populate_dispatch_table(isclose_dispatch_table);
+    dvb1.populate_dispatch_table(isclose_strided_scalar_dispatch_table);
 
-    td_ns::DispatchTableBuilder<isclose_contig_fn_ptr_t, IsCloseContigFactory,
-                                td_ns::num_types>
+    td_ns::DispatchTableBuilder<isclose_contig_scalar_fn_ptr_t,
+                                IsCloseContigScalarFactory, td_ns::num_types>
         dvb2;
     dvb2.populate_dispatch_table(isclose_contig_dispatch_table);
 }
 
 std::pair<sycl::event, sycl::event>
-    py_isclose(const usm_ndarray &a,
-               const usm_ndarray &b,
-               const py::object &rtol,
-               const py::object &atol,
-               const py::object &equal_nan,
-               const usm_ndarray &res,
-               sycl::queue &exec_q,
-               const std::vector<sycl::event> &depends)
+    py_isclose_scalar(const usm_ndarray &a,
+                      const usm_ndarray &b,
+                      const py::object &py_rtol,
+                      const py::object &py_atol,
+                      const py::object &py_equal_nan,
+                      const usm_ndarray &res,
+                      sycl::queue &exec_q,
+                      const std::vector<sycl::event> &depends)
 {
     auto types = td_ns::usm_ndarray_types();
     int a_typeid = types.typenum_to_lookup_id(a.get_typenum());
@@ -317,8 +318,8 @@ std::pair<sycl::event, sycl::event>
                 " and b_typeid=" + std::to_string(b_typeid));
         }
 
-        auto comp_ev = contig_fn(exec_q, nelems, rtol, atol, equal_nan, a_data,
-                                 b_data, res_data, depends);
+        auto comp_ev = contig_fn(exec_q, nelems, py_rtol, py_atol, py_equal_nan,
+                                 a_data, b_data, res_data, depends);
         sycl::event ht_ev =
             dpctl::utils::keep_args_alive(exec_q, {a, b, res}, {comp_ev});
 
@@ -366,11 +367,13 @@ std::pair<sycl::event, sycl::event>
                 " and b_typeid=" + std::to_string(b_typeid));
         }
 
+        std::cout << "Run contig impl in strided" << std::endl;
+
         int a_elem_size = a.get_elemsize();
         int b_elem_size = b.get_elemsize();
         int res_elem_size = res.get_elemsize();
         auto comp_ev = contig_fn(
-            exec_q, nelems, rtol, atol, equal_nan,
+            exec_q, nelems, py_rtol, py_atol, py_equal_nan,
             a_data + a_elem_size * a_offset, b_data + b_elem_size * b_offset,
             res_data + res_elem_size * res_offset, depends);
 
@@ -380,14 +383,16 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(ht_ev, comp_ev);
     }
 
-    auto fn = isclose_dispatch_table[a_typeid][b_typeid];
+    auto strided_fn = isclose_strided_scalar_dispatch_table[a_typeid][b_typeid];
 
-    if (fn == nullptr) {
+    if (strided_fn == nullptr) {
         throw std::runtime_error(
             "isclose implementation is missing for a_typeid=" +
             std::to_string(a_typeid) +
             " and b_typeid=" + std::to_string(b_typeid));
     }
+
+    std::cout << "Run strided impl" << std::endl;
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
 
@@ -406,9 +411,9 @@ std::pair<sycl::event, sycl::event>
     all_deps.insert(all_deps.end(), depends.begin(), depends.end());
     all_deps.push_back(copy_shape_ev);
 
-    sycl::event comp_ev =
-        fn(exec_q, nelems, nd, shape_strides, atol, rtol, equal_nan, a_data,
-           a_offset, b_data, b_offset, res_data, res_offset, all_deps);
+    sycl::event comp_ev = strided_fn(
+        exec_q, nd, nelems, shape_strides, py_rtol, py_atol, py_equal_nan,
+        a_data, a_offset, b_data, b_offset, res_data, res_offset, all_deps);
 
     // async free of shape_strides temporary
     sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
@@ -427,9 +432,9 @@ void init_isclose(py::module_ m)
 {
     impl::populate_isclose_dispatch_table();
 
-    m.def("_isclose", &impl::py_isclose, "", py::arg("a"), py::arg("b"),
-          py::arg("rtol"), py::arg("atol"), py::arg("equal_nan"),
-          py::arg("res"), py::arg("sycl_queue"),
+    m.def("_isclose_scalar", &impl::py_isclose_scalar, "", py::arg("a"),
+          py::arg("b"), py::arg("py_rtol"), py::arg("py_atol"),
+          py::arg("py_equal_nan"), py::arg("res"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 }
 

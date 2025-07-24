@@ -23,100 +23,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-// #pragma once
-
-// #include <sycl/sycl.hpp>
-// #include <complex>
-// #include <cstddef>
-// #include <cstdint>
-// #include <type_traits>
-// #include <vector>
-
-// // dpctl tensor headers
-// #include "kernels/alignment.hpp"
-// #include "utils/sycl_utils.hpp"
-// #include "utils/type_utils.hpp"
-
-// namespace dpnp::kernels::isclose
-// {
-
-// template <typename T, typename scT>
-// inline bool isclose_scalar(T a, T b, scT rtol, scT atol, bool equal_nan)
-// {
-//     if constexpr (dpctl::tensor::type_utils::is_complex_v<T>) {
-//         return isclose_scalar(a.real(), b.real(), rtol, atol, equal_nan) &&
-//                isclose_scalar(a.imag(), b.imag(), rtol, atol, equal_nan);
-//     }
-//     else {
-//         if (sycl::isnan(a) || sycl::isnan(b)) {
-//             return equal_nan && sycl::isnan(a) && sycl::isnan(b);
-//         }
-//         return sycl::fabs(a - b) <= atol + rtol * sycl::fabs(b);
-//     }
-// }
-
-// template <typename T, typename scT, std::uint8_t vec_sz = 4, std::uint8_t
-// n_vecs = 2, bool enable_sg = true> struct IsCloseContigFunctor
-// {
-//     const T *in1_;
-//     const T *in2_;
-//     bool *out_;
-//     std::size_t n_;
-//     scT rtol_;
-//     scT atol_;
-//     bool equal_nan_;
-
-//     IsCloseContigFunctor(const T *in1, const T *in2, bool *out,
-//                          std::size_t n, scT rtol, scT atol, bool equal_nan)
-//         : in1_(in1), in2_(in2), out_(out),
-//           n_(n), rtol_(rtol), atol_(atol), equal_nan_(equal_nan)
-//     {
-//     }
-
-//     void operator()(sycl::nd_item<1> item) const
-//     {
-//         const std::size_t gid = item.get_global_linear_id();
-//         if (gid < n_) {
-//             out_[gid] = isclose_scalar<T, scT>(in1_[gid], in2_[gid], rtol_,
-//             atol_, equal_nan_);
-//         }
-//     }
-// };
-
-// template <typename T, typename scT>
-// sycl::event isclose_contig_impl(sycl::queue &q,
-//                                 std::size_t n,
-//                                 scT rtol,
-//                                 scT atol,
-//                                 bool equal_nan,
-//                                 const char *in1_p,
-//                                 const char *in2_p,
-//                                 char *out_p,
-//                                 const std::vector<sycl::event> &depends)
-// {
-//     dpctl::tensor::type_utils::validate_type_for_device<T>(q);
-
-//     const T *in1 = reinterpret_cast<const T *>(in1_p);
-//     const T *in2 = reinterpret_cast<const T *>(in2_p);
-//     bool *out = reinterpret_cast<bool *>(out_p);
-
-//     constexpr std::size_t wg_size = 128;
-//     const std::size_t n_wgs = (n + wg_size - 1) / wg_size;
-//     const sycl::range<1> gws{n_wgs * wg_size};
-//     const sycl::range<1> lws{wg_size};
-
-//     using Kernel = IsCloseContigFunctor<T, scT>;
-
-//     return q.submit([&](sycl::handler &cgh) {
-//         cgh.depends_on(depends);
-//         cgh.parallel_for<Kernel>(
-//             sycl::nd_range<1>(gws, lws),
-//             Kernel(in1, in2, out, n, rtol, atol, equal_nan));
-//     });
-// }
-
-// } // namespace dpnp::kernels::isclose
-
 #pragma once
 
 #include <complex>
@@ -156,7 +62,7 @@ template <typename T1,
           typename scT,
           typename resTy,
           typename ThreeOffsets_IndexerT>
-struct IsCloseFunctor
+struct IsCloseStridedScalarFunctor
 {
 private:
     const T1 *a_ = nullptr;
@@ -168,13 +74,13 @@ private:
     const bool equal_nan_;
 
 public:
-    IsCloseFunctor(const T1 *a,
-                   const T2 *b,
-                   resTy *out,
-                   const ThreeOffsets_IndexerT &inps_res_indexer,
-                   const scT rtol,
-                   const scT atol,
-                   const bool equal_nan)
+    IsCloseStridedScalarFunctor(const T1 *a,
+                                const T2 *b,
+                                resTy *out,
+                                const ThreeOffsets_IndexerT &inps_res_indexer,
+                                const scT rtol,
+                                const scT atol,
+                                const bool equal_nan)
         : a_(a), b_(b), out_(out), three_offsets_indexer_(inps_res_indexer),
           rtol_(rtol), atol_(atol), equal_nan_(equal_nan)
     {
@@ -212,7 +118,7 @@ template <typename T1,
           std::uint8_t vec_sz = 4u,
           std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
-struct IsCloseContigFunctor
+struct IsCloseContigScalarFunctor
 {
 private:
     const T1 *a_ = nullptr;
@@ -224,13 +130,13 @@ private:
     const bool equal_nan_;
 
 public:
-    IsCloseContigFunctor(const T1 *a,
-                         const T2 *b,
-                         resTy *out,
-                         const std::size_t n_elems,
-                         const scT rtol,
-                         const scT atol,
-                         const bool equal_nan)
+    IsCloseContigScalarFunctor(const T1 *a,
+                               const T2 *b,
+                               resTy *out,
+                               const std::size_t n_elems,
+                               const scT rtol,
+                               const scT atol,
+                               const bool equal_nan)
         : a_(a), b_(b), out_(out), nelems_(n_elems), rtol_(rtol), atol_(atol),
           equal_nan_(equal_nan)
     {
@@ -316,20 +222,21 @@ public:
 };
 
 template <typename T1, typename T2, typename scT>
-sycl::event isclose_strided_impl(sycl::queue &exec_q,
-                                 std::size_t nelems,
-                                 const int nd,
-                                 const dpctl::tensor::ssize_t *shape_strides,
-                                 const scT rtol,
-                                 const scT atol,
-                                 const bool equal_nan,
-                                 const char *a_cp,
-                                 const dpctl::tensor::ssize_t a_offset,
-                                 const char *b_cp,
-                                 const dpctl::tensor::ssize_t b_offset,
-                                 char *out_cp,
-                                 const dpctl::tensor::ssize_t out_offset,
-                                 const std::vector<sycl::event> &depends)
+sycl::event
+    isclose_strided_scalar_impl(sycl::queue &exec_q,
+                                const int nd,
+                                std::size_t nelems,
+                                const dpctl::tensor::ssize_t *shape_strides,
+                                const scT rtol,
+                                const scT atol,
+                                const bool equal_nan,
+                                const char *a_cp,
+                                const dpctl::tensor::ssize_t a_offset,
+                                const char *b_cp,
+                                const dpctl::tensor::ssize_t b_offset,
+                                char *out_cp,
+                                const dpctl::tensor::ssize_t out_offset,
+                                const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<T1>(exec_q);
 
@@ -346,7 +253,8 @@ sycl::event isclose_strided_impl(sycl::queue &exec_q,
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using IsCloseFunc = IsCloseFunctor<T1, T2, scT, resTy, IndexerT>;
+        using IsCloseFunc =
+            IsCloseStridedScalarFunctor<T1, T2, scT, resTy, IndexerT>;
         cgh.parallel_for<IsCloseFunc>(
             {nelems},
             IsCloseFunc(a_tp, b_tp, out_tp, indexer, atol, rtol, equal_nan));
@@ -359,18 +267,19 @@ template <typename T1,
           typename scT,
           std::uint8_t vec_sz = 4u,
           std::uint8_t n_vecs = 2u>
-sycl::event isclose_contig_impl(sycl::queue &exec_q,
-                                std::size_t nelems,
-                                const scT rtol,
-                                const scT atol,
-                                const bool equal_nan,
-                                const char *a_cp,
-                                ssize_t a_offset,
-                                const char *b_cp,
-                                ssize_t b_offset,
-                                char *out_cp,
-                                ssize_t out_offset,
-                                const std::vector<sycl::event> &depends = {})
+sycl::event
+    isclose_contig_scalar_impl(sycl::queue &exec_q,
+                               std::size_t nelems,
+                               const scT rtol,
+                               const scT atol,
+                               const bool equal_nan,
+                               const char *a_cp,
+                               ssize_t a_offset,
+                               const char *b_cp,
+                               ssize_t b_offset,
+                               char *out_cp,
+                               ssize_t out_offset,
+                               const std::vector<sycl::event> &depends = {})
 {
     constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
     const std::size_t n_work_items_needed = nelems / elems_per_wi;
@@ -384,6 +293,7 @@ sycl::event isclose_contig_impl(sycl::queue &exec_q,
     const auto gws_range = sycl::range<1>(n_groups * lws);
     const auto lws_range = sycl::range<1>(lws);
 
+    // ? + offset
     const T1 *a_tp = reinterpret_cast<const T1 *>(a_cp) + a_offset;
     const T2 *b_tp = reinterpret_cast<const T2 *>(b_cp) + b_offset;
 
@@ -401,8 +311,8 @@ sycl::event isclose_contig_impl(sycl::queue &exec_q,
         {
             constexpr bool enable_sg_loadstore = true;
             using IsCloseFunc =
-                IsCloseContigFunctor<T1, T2, scT, resTy, vec_sz, n_vecs,
-                                     enable_sg_loadstore>;
+                IsCloseContigScalarFunctor<T1, T2, scT, resTy, vec_sz, n_vecs,
+                                           enable_sg_loadstore>;
 
             cgh.parallel_for<IsCloseFunc>(
                 sycl::nd_range<1>(gws_range, lws_range),
@@ -411,8 +321,8 @@ sycl::event isclose_contig_impl(sycl::queue &exec_q,
         else {
             constexpr bool disable_sg_loadstore = false;
             using IsCloseFunc =
-                IsCloseContigFunctor<T1, T2, scT, resTy, vec_sz, n_vecs,
-                                     disable_sg_loadstore>;
+                IsCloseContigScalarFunctor<T1, T2, scT, resTy, vec_sz, n_vecs,
+                                           disable_sg_loadstore>;
 
             cgh.parallel_for<IsCloseFunc>(
                 sycl::nd_range<1>(gws_range, lws_range),
