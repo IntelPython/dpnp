@@ -84,39 +84,6 @@ typedef sycl::event (*isclose_strided_scalar_fn_ptr_t)(
     py::ssize_t,         // out_offset
     const std::vector<sycl::event> &);
 
-typedef sycl::event (*isclose_contig_scalar_fn_ptr_t)(
-    sycl::queue &,
-    std::size_t,        // nelems
-    const py::object &, // rtol
-    const py::object &, // atol
-    const py::object &, // equal_nan
-    const char *,       // a
-    const char *,       // b
-    char *,             // out
-    const std::vector<sycl::event> &);
-
-isclose_strided_scalar_fn_ptr_t
-    isclose_strided_scalar_dispatch_vector[td_ns::num_types];
-isclose_contig_scalar_fn_ptr_t isclose_contig_dispatch_vector[td_ns::num_types];
-
-/**
- * @brief A factory to define pairs of supported types for which
- * isclose function is available.
- *
- * @tparam T Type of input vector `a` and `b` and of result vector `y`.
- */
-template <typename T>
-struct IsCloseOutputType
-{
-    using value_type = typename std::disjunction<
-        td_ns::TypeMapResultEntry<T, sycl::half>,
-        td_ns::TypeMapResultEntry<T, float>,
-        td_ns::TypeMapResultEntry<T, double>,
-        td_ns::TypeMapResultEntry<T, std::complex<float>>,
-        td_ns::TypeMapResultEntry<T, std::complex<double>>,
-        td_ns::DefaultResultEntry<void>>::result_type;
-};
-
 template <typename T>
 sycl::event isclose_strided_scalar_call(sycl::queue &exec_q,
                                         int nd,
@@ -145,6 +112,17 @@ sycl::event isclose_strided_scalar_call(sycl::queue &exec_q,
         in1_offset, in2_p, in2_offset, out_p, out_offset, depends);
 }
 
+typedef sycl::event (*isclose_contig_scalar_fn_ptr_t)(
+    sycl::queue &,
+    std::size_t,        // nelems
+    const py::object &, // rtol
+    const py::object &, // atol
+    const py::object &, // equal_nan
+    const char *,       // a
+    const char *,       // b
+    char *,             // out
+    const std::vector<sycl::event> &);
+
 template <typename T>
 sycl::event isclose_contig_scalar_call(sycl::queue &q,
                                        std::size_t nelems,
@@ -168,52 +146,9 @@ sycl::event isclose_contig_scalar_call(sycl::queue &q,
         depends);
 }
 
-template <typename fnT, typename T>
-struct IsCloseStridedScalarFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_same_v<typename IsCloseOutputType<T>::value_type,
-                                     void>)
-        {
-            return nullptr;
-        }
-        else {
-            return isclose_strided_scalar_call<T>;
-        }
-    }
-};
-
-template <typename fnT, typename T>
-struct IsCloseContigScalarFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_same_v<typename IsCloseOutputType<T>::value_type,
-                                     void>)
-        {
-            return nullptr;
-        }
-        else {
-            return isclose_contig_scalar_call<T>;
-        }
-    }
-};
-
-void populate_isclose_dispatch_vectors()
-{
-    using namespace td_ns;
-
-    DispatchVectorBuilder<isclose_strided_scalar_fn_ptr_t,
-                          IsCloseStridedScalarFactory, num_types>
-        dvb1;
-    dvb1.populate_dispatch_vector(isclose_strided_scalar_dispatch_vector);
-
-    DispatchVectorBuilder<isclose_contig_scalar_fn_ptr_t,
-                          IsCloseContigScalarFactory, num_types>
-        dvb2;
-    dvb2.populate_dispatch_vector(isclose_contig_dispatch_vector);
-}
+isclose_strided_scalar_fn_ptr_t
+    isclose_strided_scalar_dispatch_vector[td_ns::num_types];
+isclose_contig_scalar_fn_ptr_t isclose_contig_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
     py_isclose_scalar(const dpctl::tensor::usm_ndarray &a,
@@ -413,6 +348,71 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(
         dpctl::utils::keep_args_alive(exec_q, {a, b, res}, host_tasks),
         comp_ev);
+}
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * isclose function is available.
+ *
+ * @tparam T Type of input vector `a` and `b` and of result vector `y`.
+ */
+template <typename T>
+struct IsCloseOutputType
+{
+    using value_type = typename std::disjunction<
+        td_ns::TypeMapResultEntry<T, sycl::half>,
+        td_ns::TypeMapResultEntry<T, float>,
+        td_ns::TypeMapResultEntry<T, double>,
+        td_ns::TypeMapResultEntry<T, std::complex<float>>,
+        td_ns::TypeMapResultEntry<T, std::complex<double>>,
+        td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+template <typename fnT, typename T>
+struct IsCloseStridedScalarFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename IsCloseOutputType<T>::value_type,
+                                     void>)
+        {
+            return nullptr;
+        }
+        else {
+            return isclose_strided_scalar_call<T>;
+        }
+    }
+};
+
+template <typename fnT, typename T>
+struct IsCloseContigScalarFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename IsCloseOutputType<T>::value_type,
+                                     void>)
+        {
+            return nullptr;
+        }
+        else {
+            return isclose_contig_scalar_call<T>;
+        }
+    }
+};
+
+void populate_isclose_dispatch_vectors()
+{
+    using namespace td_ns;
+
+    DispatchVectorBuilder<isclose_strided_scalar_fn_ptr_t,
+                          IsCloseStridedScalarFactory, num_types>
+        dvb1;
+    dvb1.populate_dispatch_vector(isclose_strided_scalar_dispatch_vector);
+
+    DispatchVectorBuilder<isclose_contig_scalar_fn_ptr_t,
+                          IsCloseContigScalarFactory, num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(isclose_contig_dispatch_vector);
 }
 
 } // namespace impl
