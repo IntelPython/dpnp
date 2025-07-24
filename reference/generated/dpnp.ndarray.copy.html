@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.copy &mdash; Data Parallel Extension for NumPy 0.19.0dev1+15.g876e9403a7e documentation</title>
+  <title>dpnp.ndarray.copy &mdash; Data Parallel Extension for NumPy 0.19.0dev1+17.gf93db815a7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=dafbec2e"></script>
+      <script src="../../_static/documentation_options.js?v=ada94ba0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -64,6 +64,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#memory-layout">Memory layout</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#data-type">Data type</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#other-attributes">Other attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#special-attributes">Special attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-methods">Array methods</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../ndarray.html#array-conversion">Array conversion</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.item.html">dpnp.ndarray.item</a></li>
@@ -71,6 +72,7 @@
 <li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.ndarray.copy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.view.html">dpnp.ndarray.view</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.fill.html">dpnp.ndarray.fill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.get_array.html">dpnp.ndarray.get_array</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#shape-manipulation">Shape manipulation</a></li>
@@ -125,29 +127,32 @@
 <p>method</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.ndarray.copy">
-<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.copy" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.copy" title="Link to this definition"></a></dt>
 <dd><p>Return a copy of the array.</p>
 <p>Refer to <a class="reference internal" href="dpnp.copy.html#dpnp.copy" title="dpnp.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.copy</span></code></a> for full documentation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>order</strong> (<em>{None</em><em>, </em><em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- Memory layout of the newly output array.
-Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p></li>
+<li><p><strong>order</strong> (<em>{None</em><em>, </em><em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- <p>Memory layout of the newly output array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p>
+</p></li>
 <li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue</em><em>, </em><em>Device}</em><em>, </em><em>optional</em>) -- <p>An array API concept of device where the output array is created.
 <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector string,
-an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.21.0dev0+62.g8c94751241)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
+an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.21.0dev0+77.g0dbd495793)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
 a non-partitioned SYCL device, an instance of
-<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.21.0dev0+62.g8c94751241)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.21.0dev0+62.g8c94751241)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.21.0dev0+77.g0dbd495793)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.21.0dev0+77.g0dbd495793)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
 returned by <a class="reference internal" href="dpnp.ndarray.device.html#dpnp.ndarray.device" title="dpnp.ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpnp.ndarray.device</span></code></a>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>usm_type</strong> (<em>{None</em><em>, </em><em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) -- The type of SYCL USM allocation for the output array.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) -- A SYCL queue to use for output array allocation and copying. The
+<li><p><strong>usm_type</strong> (<em>{None</em><em>, </em><em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) -- <p>The type of SYCL USM allocation for the output array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) -- <p>A SYCL queue to use for output array allocation and copying. The
 <cite>sycl_queue</cite> can be passed as <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), which means
 to get the SYCL queue from <cite>device</cite> keyword if present or to use
-a default queue.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+a default queue.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

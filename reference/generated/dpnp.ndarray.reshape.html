@@ -15,21 +15,21 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.reshape &mdash; Data Parallel Extension for NumPy 0.19.0dev1+15.g876e9403a7e documentation</title>
+  <title>dpnp.ndarray.reshape &mdash; Data Parallel Extension for NumPy 0.19.0dev1+17.gf93db815a7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=dafbec2e"></script>
+      <script src="../../_static/documentation_options.js?v=ada94ba0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpnp.ndarray.transpose" href="dpnp.ndarray.transpose.html" />
-    <link rel="prev" title="dpnp.ndarray.fill" href="dpnp.ndarray.fill.html" /> 
+    <link rel="prev" title="dpnp.ndarray.get_array" href="dpnp.ndarray.get_array.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -64,6 +64,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#memory-layout">Memory layout</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#data-type">Data type</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#other-attributes">Other attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#special-attributes">Special attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-methods">Array methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-conversion">Array conversion</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../ndarray.html#shape-manipulation">Shape manipulation</a><ul class="current">
@@ -127,7 +128,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.ndarray.reshape">
 <span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.reshape" title="Link to this definition"></a></dt>
-<dd><p>Returns an array containing the same data with a new shape.</p>
+<dd><p>Return an array containing the same data with a new shape.</p>
 <p>Refer to <a class="reference internal" href="dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a> for full documentation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -147,7 +148,8 @@ otherwise, it will be a copy.</p>
 </div>
 <p class="rubric">Notes</p>
 <p>Unlike the free function <cite>dpnp.reshape</cite>, this method on <cite>ndarray</cite> allows
-the elements of the shape parameter to be passed in as separate arguments.
+the elements of the shape parameter to be passed in as separate
+arguments.
 For example, <code class="docutils literal notranslate"><span class="pre">a.reshape(10,</span> <span class="pre">11)</span></code> is equivalent to
 <code class="docutils literal notranslate"><span class="pre">a.reshape((10,</span> <span class="pre">11))</span></code>.</p>
 </dd></dl>
@@ -158,7 +160,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">a.resh
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.ndarray.fill.html" class="btn btn-neutral float-left" title="dpnp.ndarray.fill" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.ndarray.get_array.html" class="btn btn-neutral float-left" title="dpnp.ndarray.get_array" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="dpnp.ndarray.transpose.html" class="btn btn-neutral float-right" title="dpnp.ndarray.transpose" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

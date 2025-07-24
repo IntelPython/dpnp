@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.strides &mdash; Data Parallel Extension for NumPy 0.19.0dev1+15.g876e9403a7e documentation</title>
+  <title>dpnp.ndarray.strides &mdash; Data Parallel Extension for NumPy 0.19.0dev1+17.gf93db815a7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=dafbec2e"></script>
+      <script src="../../_static/documentation_options.js?v=ada94ba0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -70,10 +70,16 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.size.html">dpnp.ndarray.size</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.itemsize.html">dpnp.ndarray.itemsize</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.nbytes.html">dpnp.ndarray.nbytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.device.html">dpnp.ndarray.device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.sycl_context.html">dpnp.ndarray.sycl_context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.sycl_device.html">dpnp.ndarray.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.sycl_queue.html">dpnp.ndarray.sycl_queue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.usm_type.html">dpnp.ndarray.usm_type</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#data-type">Data type</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#other-attributes">Other attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ndarray.html#special-attributes">Special attributes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-methods">Array methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-conversion">Array conversion</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#shape-manipulation">Shape manipulation</a></li>
@@ -129,7 +135,7 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="dpnp.ndarray.strides">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">strides</span></span><a class="headerlink" href="#dpnp.ndarray.strides" title="Link to this definition"></a></dt>
-<dd><p>Returns memory displacement in array elements, upon unit
+<dd><p>Return memory displacement in array elements, upon unit
 change of respective index.</p>
 <p>For example, for strides <code class="docutils literal notranslate"><span class="pre">(s1,</span> <span class="pre">s2,</span> <span class="pre">s3)</span></code> and multi-index
 <code class="docutils literal notranslate"><span class="pre">(i1,</span> <span class="pre">i2,</span> <span class="pre">i3)</span></code> position of the respective element relative
