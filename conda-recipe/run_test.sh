@@ -37,4 +37,5 @@ set -e
 
 $PYTHON -c "import dpnp; print(dpnp.__version__)"
 $PYTHON -m dpctl -f
-$PYTHON -m pytest -ra -sv --pyargs dpnp
+# $PYTHON -m pytest -ra -sv --pyargs dpnp
+timeout --signal=SIGINT 30m gdb --batch -ex "run" --ex "thread apply all bt" --ex "quit" --args "$PYTHON" -m pytest -ra -sv --pyargs dpnp
