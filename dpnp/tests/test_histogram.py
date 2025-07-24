@@ -24,6 +24,19 @@ from .helper import (
     numpy_version,
 )
 
+# TODO: comments
+_dev = dpctl.select_default_device()
+
+
+@pytest.fixture(autouse=True)
+def setup_each():
+    print("\n[Setup] Run before each test")
+    free_mem = dpctl.utils.intel_device_info(_dev).get("free_memory", None)
+    if free_mem:
+        print(f"Global memory available: {free_mem}")
+    yield
+    print("[Teardown] Run after each test")
+
 
 class TestDigitize:
     @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
