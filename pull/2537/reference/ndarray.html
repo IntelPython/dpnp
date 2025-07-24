@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.19.0dev1+22.gc8cd869ab32 documentation</title>
+  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.19.0dev1+24.g9572a1bc2bf documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=701d8ece"></script>
+      <script src="../_static/documentation_options.js?v=4d62733d"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -74,6 +74,11 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.size.html">dpnp.ndarray.size</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.itemsize.html">dpnp.ndarray.itemsize</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.nbytes.html">dpnp.ndarray.nbytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.device.html">dpnp.ndarray.device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.sycl_context.html">dpnp.ndarray.sycl_context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.sycl_device.html">dpnp.ndarray.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.sycl_queue.html">dpnp.ndarray.sycl_queue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.usm_type.html">dpnp.ndarray.usm_type</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#data-type">Data type</a><ul>
@@ -88,6 +93,11 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.flat.html">dpnp.ndarray.flat</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#special-attributes">Special attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__sycl_usm_array_interface__.html">dpnp.ndarray.__sycl_usm_array_interface__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__usm_ndarray__.html">dpnp.ndarray.__usm_ndarray__</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#array-methods">Array methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#array-conversion">Array conversion</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.item.html">dpnp.ndarray.item</a></li>
@@ -95,6 +105,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.copy.html">dpnp.ndarray.copy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.view.html">dpnp.ndarray.view</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.fill.html">dpnp.ndarray.fill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.get_array.html">dpnp.ndarray.get_array</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#shape-manipulation">Shape manipulation</a><ul>
@@ -198,10 +209,15 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__copy__.html">dpnp.ndarray.__copy__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__new__.html">dpnp.ndarray.__new__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__array__.html">dpnp.ndarray.__array__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__array_namespace__.html">dpnp.ndarray.__array_namespace__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__dlpack__.html">dpnp.ndarray.__dlpack__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__dlpack_device__.html">dpnp.ndarray.__dlpack_device__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__len__.html">dpnp.ndarray.__len__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__iter__.html">dpnp.ndarray.__iter__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__getitem__.html">dpnp.ndarray.__getitem__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__setitem__.html">dpnp.ndarray.__setitem__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__contains__.html">dpnp.ndarray.__contains__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__index__.html">dpnp.ndarray.__index__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__int__.html">dpnp.ndarray.__int__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__float__.html">dpnp.ndarray.__float__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__complex__.html">dpnp.ndarray.__complex__</a></li>
@@ -260,7 +276,7 @@
 <td><p>alias of <a class="reference internal" href="generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array" title="dpnp.dpnp_array.dpnp_array"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp_array</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array" title="dpnp.dpnp_array.dpnp_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dpnp_array.dpnp_array</span></code></a></p></td>
-<td><p>Multi-dimensional array object.</p></td>
+<td><p>An array object represents a multidimensional tensor of numeric elements stored in a USM allocation on a SYCL device.</p></td>
 </tr>
 </tbody>
 </table>
@@ -308,7 +324,7 @@ of the array:</p>
 <td><p>Tuple of array dimensions.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.strides.html#dpnp.ndarray.strides" title="dpnp.ndarray.strides"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.strides</span></code></a></p></td>
-<td><p>Returns memory displacement in array elements, upon unit change of respective index.</p></td>
+<td><p>Return memory displacement in array elements, upon unit change of respective index.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.ndim.html#dpnp.ndarray.ndim" title="dpnp.ndarray.ndim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.ndim</span></code></a></p></td>
 <td><p>Return the number of dimensions of an array.</p></td>
@@ -325,6 +341,21 @@ of the array:</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.nbytes.html#dpnp.ndarray.nbytes" title="dpnp.ndarray.nbytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.nbytes</span></code></a></p></td>
 <td><p>Total bytes consumed by the elements of the array.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.device.html#dpnp.ndarray.device" title="dpnp.ndarray.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.device</span></code></a></p></td>
+<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.21.0dev0+77.g0dbd495793)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object representing residence of the array data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.sycl_context.html#dpnp.ndarray.sycl_context" title="dpnp.ndarray.sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.sycl_context</span></code></a></p></td>
+<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclContext.html#dpctl.SyclContext" title="(in Data Parallel Control (dpctl) v0.21.0dev0+77.g0dbd495793)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object to which USM data is bound.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.sycl_device.html#dpnp.ndarray.sycl_device" title="dpnp.ndarray.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.sycl_device</span></code></a></p></td>
+<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.21.0dev0+77.g0dbd495793)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> object on which USM data was allocated.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.sycl_queue.html#dpnp.ndarray.sycl_queue" title="dpnp.ndarray.sycl_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.sycl_queue</span></code></a></p></td>
+<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.21.0dev0+77.g0dbd495793)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object associated with USM data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.usm_type.html#dpnp.ndarray.usm_type" title="dpnp.ndarray.usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.usm_type</span></code></a></p></td>
+<td><p>USM type of underlying memory.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -339,7 +370,7 @@ of the array:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.dtype.html#dpnp.ndarray.dtype" title="dpnp.ndarray.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.dtype</span></code></a></p></td>
-<td><p>Returns NumPy's dtype corresponding to the type of the array elements.</p></td>
+<td><p>Return NumPy's dtype corresponding to the type of the array elements.</p></td>
 </tr>
 </tbody>
 </table>
@@ -362,6 +393,19 @@ of the array:</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.flat.html#dpnp.ndarray.flat" title="dpnp.ndarray.flat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.flat</span></code></a></p></td>
 <td><p>Return a flat iterator, or set a flattened version of self to value.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="special-attributes">
+<h2>Special attributes<a class="headerlink" href="#special-attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__sycl_usm_array_interface__.html#dpnp.ndarray.__sycl_usm_array_interface__" title="dpnp.ndarray.__sycl_usm_array_interface__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__sycl_usm_array_interface__</span></code></a></p></td>
+<td><p>Give <code class="docutils literal notranslate"><span class="pre">__sycl_usm_array_interface__</span></code> dictionary describing the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__usm_ndarray__.html#dpnp.ndarray.__usm_ndarray__" title="dpnp.ndarray.__usm_ndarray__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__usm_ndarray__</span></code></a></p></td>
+<td><p>Property to support <code class="docutils literal notranslate"><span class="pre">__usm_ndarray__</span></code> protocol.</p></td>
 </tr>
 </tbody>
 </table>
@@ -409,6 +453,9 @@ more complete description.)</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.fill.html#dpnp.ndarray.fill" title="dpnp.ndarray.fill"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.fill</span></code></a></p></td>
 <td><p>Fill the array with a scalar value.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.get_array.html#dpnp.ndarray.get_array" title="dpnp.ndarray.get_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.get_array</span></code></a></p></td>
+<td><p>Get <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="(in Data Parallel Control (dpctl) v0.21.0dev0+77.g0dbd495793)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> object.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -419,10 +466,10 @@ replaced with <code class="docutils literal notranslate"><span class="pre">n</sp
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.reshape.html#dpnp.ndarray.reshape" title="dpnp.ndarray.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.reshape</span></code></a></p></td>
-<td><p>Returns an array containing the same data with a new shape.</p></td>
+<td><p>Return an array containing the same data with a new shape.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.transpose.html#dpnp.ndarray.transpose" title="dpnp.ndarray.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.transpose</span></code></a></p></td>
-<td><p>Returns a view of the array with axes transposed.</p></td>
+<td><p>Return a view of the array with axes transposed.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.swapaxes.html#dpnp.ndarray.swapaxes" title="dpnp.ndarray.swapaxes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.swapaxes</span></code></a></p></td>
 <td><p>Interchange two axes of an array.</p></td>
@@ -451,7 +498,7 @@ the operation should proceed.</p>
 <td><p>Take elements from an array along an axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.put.html#dpnp.ndarray.put" title="dpnp.ndarray.put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.put</span></code></a></p></td>
-<td><p>Puts values of an array into another array along a given axis.</p></td>
+<td><p>Put values of an array into another array along a given axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.repeat.html#dpnp.ndarray.repeat" title="dpnp.ndarray.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.repeat</span></code></a></p></td>
 <td><p>Repeat elements of an array.</p></td>
@@ -485,13 +532,30 @@ the operation should proceed.</p>
 </section>
 <section id="calculation">
 <h2>Calculation<a class="headerlink" href="#calculation" title="Link to this heading"></a></h2>
+<p>Many of these methods take an argument named <em>axis</em>. In such cases,</p>
+<ul class="simple">
+<li><p>If <em>axis</em> is <em>None</em> (the default), the array is treated as a 1-D array and
+the operation is performed over the entire array. This behavior is also the
+default if <em>self</em> is a 0-dimensional array.</p></li>
+<li><p>If <em>axis</em> is an integer, then the operation is done over the given axis (for
+each 1-D subarray that can be created along the given axis).</p></li>
+</ul>
+<p>The parameter <em>dtype</em> specifies the data type over which a reduction operation
+(like summing) should take place. The default reduce data type is the same as
+the data type of <em>self</em>. To avoid overflow, it can be useful to perform the
+reduction using a larger data type.</p>
+<p>For several methods, an optional <em>out</em> argument can also be provided and the
+result will be placed into the output array given. The <em>out</em> argument must be
+an <a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> and have the same number of elements as the result
+array. It can have a different data type in which case casting will be
+performed.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.max.html#dpnp.ndarray.max" title="dpnp.ndarray.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.max</span></code></a></p></td>
 <td><p>Return the maximum along an axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.argmax.html#dpnp.ndarray.argmax" title="dpnp.ndarray.argmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.argmax</span></code></a></p></td>
-<td><p>Returns array of indices of the maximum values along the given axis.</p></td>
+<td><p>Return array of indices of the maximum values along the given axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.min.html#dpnp.ndarray.min" title="dpnp.ndarray.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.min</span></code></a></p></td>
 <td><p>Return the minimum along a given axis.</p></td>
@@ -515,31 +579,31 @@ the operation should proceed.</p>
 <td><p>Return the sum along diagonals of the array.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.sum.html#dpnp.ndarray.sum" title="dpnp.ndarray.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.sum</span></code></a></p></td>
-<td><p>Returns the sum along a given axis.</p></td>
+<td><p>Return the sum along a given axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.cumsum.html#dpnp.ndarray.cumsum" title="dpnp.ndarray.cumsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.cumsum</span></code></a></p></td>
 <td><p>Return the cumulative sum of the elements along the given axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.mean.html#dpnp.ndarray.mean" title="dpnp.ndarray.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.mean</span></code></a></p></td>
-<td><p>Returns the average of the array elements.</p></td>
+<td><p>Return the average of the array elements.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.var.html#dpnp.ndarray.var" title="dpnp.ndarray.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.var</span></code></a></p></td>
-<td><p>Returns the variance of the array elements, along given axis.</p></td>
+<td><p>Return the variance of the array elements, along given axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.std.html#dpnp.ndarray.std" title="dpnp.ndarray.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.std</span></code></a></p></td>
-<td><p>Returns the standard deviation of the array elements, along given axis.</p></td>
+<td><p>Return the standard deviation of the array elements, along given axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.prod.html#dpnp.ndarray.prod" title="dpnp.ndarray.prod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.prod</span></code></a></p></td>
-<td><p>Returns the prod along a given axis.</p></td>
+<td><p>Return the prod along a given axis.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.cumprod.html#dpnp.ndarray.cumprod" title="dpnp.ndarray.cumprod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.cumprod</span></code></a></p></td>
 <td><p>Return the cumulative product of the elements along the given axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.all.html#dpnp.ndarray.all" title="dpnp.ndarray.all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.all</span></code></a></p></td>
-<td><p>Returns True if all elements evaluate to True.</p></td>
+<td><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if all elements evaluate to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.any.html#dpnp.ndarray.any" title="dpnp.ndarray.any"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.any</span></code></a></p></td>
-<td><p>Returns True if any of the elements of <cite>a</cite> evaluate to True.</p></td>
+<td><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if any of the elements of <cite>a</cite> evaluate to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -549,40 +613,39 @@ the operation should proceed.</p>
 <p>Arithmetic and comparison operations on <a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarrays</span></code></a>
 are defined as element-wise operations, and generally yield
 <a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> objects as results.</p>
-<p>Each of the arithmetic operations (<code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">//</span></code>,
-<code class="docutils literal notranslate"><span class="pre">%</span></code>, <code class="docutils literal notranslate"><span class="pre">divmod()</span></code>, <code class="docutils literal notranslate"><span class="pre">**</span></code> or <code class="docutils literal notranslate"><span class="pre">pow()</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>,
-<code class="docutils literal notranslate"><span class="pre">^</span></code>, <code class="docutils literal notranslate"><span class="pre">|</span></code>, <code class="docutils literal notranslate"><span class="pre">~</span></code>) and the comparisons (<code class="docutils literal notranslate"><span class="pre">==</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>,
-<code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">!=</span></code>) is equivalent to the corresponding
-universal function (or <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-ufunc" title="(in NumPy v2.3)"><span class="xref std std-term">ufunc</span></a> for short) in DPNP. For
-more information, see the section on <a class="reference external" href="https://numpy.org/doc/stable/reference/ufuncs.html#ufuncs" title="(in NumPy v2.3)"><span class="xref std std-ref">Universal Functions</span></a>.</p>
+<p>Each of the arithmetic operations (<code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">//</span></code>, <code class="docutils literal notranslate"><span class="pre">%</span></code>,
+<code class="docutils literal notranslate"><span class="pre">divmod()</span></code>, <code class="docutils literal notranslate"><span class="pre">**</span></code> or <code class="docutils literal notranslate"><span class="pre">pow()</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>, <code class="docutils literal notranslate"><span class="pre">^</span></code>, <code class="docutils literal notranslate"><span class="pre">|</span></code>, <code class="docutils literal notranslate"><span class="pre">~</span></code>)
+and the comparisons (<code class="docutils literal notranslate"><span class="pre">==</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">!=</span></code>) is
+equivalent to the corresponding universal function (or <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-ufunc" title="(in NumPy v2.3)"><span class="xref std std-term">ufunc</span></a> for short)
+in DPNP. For more information, see the section on <a class="reference external" href="https://numpy.org/doc/stable/reference/ufuncs.html#ufuncs" title="(in NumPy v2.3)"><span class="xref std std-ref">Universal Functions</span></a>.</p>
 <p>Comparison operators:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__lt__.html#dpnp.ndarray.__lt__" title="dpnp.ndarray.__lt__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__lt__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&lt;value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &lt; value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__le__.html#dpnp.ndarray.__le__" title="dpnp.ndarray.__le__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__le__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&lt;=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &lt;= value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__gt__.html#dpnp.ndarray.__gt__" title="dpnp.ndarray.__gt__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__gt__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&gt;value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &gt; value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__ge__.html#dpnp.ndarray.__ge__" title="dpnp.ndarray.__ge__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__ge__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&gt;=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &gt;= value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__eq__.html#dpnp.ndarray.__eq__" title="dpnp.ndarray.__eq__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__eq__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self==value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self == value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__ne__.html#dpnp.ndarray.__ne__" title="dpnp.ndarray.__ne__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__ne__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self!=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self != value}\)</span>.</p></td>
 </tr>
 </tbody>
 </table>
 <p>Truth value of an array (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool()</span></code></a>):</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__bool__.html#dpnp.ndarray.__bool__" title="dpnp.ndarray.__bool__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__bool__</span></code></a>()</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if self else <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__bool__.html#dpnp.ndarray.__bool__" title="dpnp.ndarray.__bool__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__bool__</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <cite>self</cite> else <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -600,16 +663,16 @@ use for example <code class="docutils literal notranslate"><span class="pre">.si
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__neg__.html#dpnp.ndarray.__neg__" title="dpnp.ndarray.__neg__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__neg__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">-self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{-self}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__pos__.html#dpnp.ndarray.__pos__" title="dpnp.ndarray.__pos__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__pos__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">+self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{+self}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__abs__.html#dpnp.ndarray.__abs__" title="dpnp.ndarray.__abs__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__abs__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">\|self\|</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(|\text{self}|\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__invert__.html#dpnp.ndarray.__invert__" title="dpnp.ndarray.__invert__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__invert__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">~self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{~self}\)</span>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -617,40 +680,40 @@ use for example <code class="docutils literal notranslate"><span class="pre">.si
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__add__.html#dpnp.ndarray.__add__" title="dpnp.ndarray.__add__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__add__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self+value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self + value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__sub__.html#dpnp.ndarray.__sub__" title="dpnp.ndarray.__sub__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__sub__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self-value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self - value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__mul__.html#dpnp.ndarray.__mul__" title="dpnp.ndarray.__mul__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__mul__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self*value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self * value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__truediv__.html#dpnp.ndarray.__truediv__" title="dpnp.ndarray.__truediv__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__truediv__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self/value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self / value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__floordiv__.html#dpnp.ndarray.__floordiv__" title="dpnp.ndarray.__floordiv__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__floordiv__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self//value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self // value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__mod__.html#dpnp.ndarray.__mod__" title="dpnp.ndarray.__mod__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__mod__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self%value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self % value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__pow__.html#dpnp.ndarray.__pow__" title="dpnp.ndarray.__pow__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__pow__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self**value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self ** value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__lshift__.html#dpnp.ndarray.__lshift__" title="dpnp.ndarray.__lshift__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__lshift__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&lt;&lt;value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &lt;&lt; value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rshift__.html#dpnp.ndarray.__rshift__" title="dpnp.ndarray.__rshift__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rshift__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&gt;&gt;value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &gt;&gt; value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__and__.html#dpnp.ndarray.__and__" title="dpnp.ndarray.__and__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__and__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&amp;value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &amp; value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__or__.html#dpnp.ndarray.__or__" title="dpnp.ndarray.__or__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__or__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self|value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self | value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__xor__.html#dpnp.ndarray.__xor__" title="dpnp.ndarray.__xor__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__xor__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self^value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self ^ value}\)</span>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -658,40 +721,40 @@ use for example <code class="docutils literal notranslate"><span class="pre">.si
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__radd__.html#dpnp.ndarray.__radd__" title="dpnp.ndarray.__radd__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__radd__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value+self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value + self}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rsub__.html#dpnp.ndarray.__rsub__" title="dpnp.ndarray.__rsub__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rsub__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value-self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value - self}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rmul__.html#dpnp.ndarray.__rmul__" title="dpnp.ndarray.__rmul__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rmul__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value*self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value * self}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rtruediv__.html#dpnp.ndarray.__rtruediv__" title="dpnp.ndarray.__rtruediv__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rtruediv__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value/self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value / self}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rfloordiv__.html#dpnp.ndarray.__rfloordiv__" title="dpnp.ndarray.__rfloordiv__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rfloordiv__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value//self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value // self}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rmod__.html#dpnp.ndarray.__rmod__" title="dpnp.ndarray.__rmod__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rmod__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value%self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value % self}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rpow__.html#dpnp.ndarray.__rpow__" title="dpnp.ndarray.__rpow__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rpow__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value**self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value ** self}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rlshift__.html#dpnp.ndarray.__rlshift__" title="dpnp.ndarray.__rlshift__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rlshift__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value&lt;&lt;self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value &lt;&lt; self}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rrshift__.html#dpnp.ndarray.__rrshift__" title="dpnp.ndarray.__rrshift__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rrshift__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value&gt;&gt;self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value &gt;&gt; self}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rand__.html#dpnp.ndarray.__rand__" title="dpnp.ndarray.__rand__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rand__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value&amp;self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value &amp; self}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__ror__.html#dpnp.ndarray.__ror__" title="dpnp.ndarray.__ror__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__ror__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value|self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value | self}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rxor__.html#dpnp.ndarray.__rxor__" title="dpnp.ndarray.__rxor__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rxor__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value^self</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value ^ self}\)</span>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -699,54 +762,54 @@ use for example <code class="docutils literal notranslate"><span class="pre">.si
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__iadd__.html#dpnp.ndarray.__iadd__" title="dpnp.ndarray.__iadd__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__iadd__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self+=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self += value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__isub__.html#dpnp.ndarray.__isub__" title="dpnp.ndarray.__isub__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__isub__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self-=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self -= value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__imul__.html#dpnp.ndarray.__imul__" title="dpnp.ndarray.__imul__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__imul__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self*=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self *= value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__itruediv__.html#dpnp.ndarray.__itruediv__" title="dpnp.ndarray.__itruediv__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__itruediv__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self/=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self /= value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__ifloordiv__.html#dpnp.ndarray.__ifloordiv__" title="dpnp.ndarray.__ifloordiv__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__ifloordiv__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self//=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self //= value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__imod__.html#dpnp.ndarray.__imod__" title="dpnp.ndarray.__imod__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__imod__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self%=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self %= value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__ipow__.html#dpnp.ndarray.__ipow__" title="dpnp.ndarray.__ipow__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__ipow__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self**=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self **= value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__ilshift__.html#dpnp.ndarray.__ilshift__" title="dpnp.ndarray.__ilshift__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__ilshift__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&lt;&lt;=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &lt;&lt;= value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__irshift__.html#dpnp.ndarray.__irshift__" title="dpnp.ndarray.__irshift__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__irshift__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&gt;&gt;=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &gt;&gt;= value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__iand__.html#dpnp.ndarray.__iand__" title="dpnp.ndarray.__iand__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__iand__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&amp;=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &amp;= value}\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__ior__.html#dpnp.ndarray.__ior__" title="dpnp.ndarray.__ior__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__ior__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self|=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self |= value}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__ixor__.html#dpnp.ndarray.__ixor__" title="dpnp.ndarray.__ixor__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__ixor__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self^=value</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self ^= value}\)</span>.</p></td>
 </tr>
 </tbody>
 </table>
 <p>Matrix Multiplication:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__matmul__.html#dpnp.ndarray.__matmul__" title="dpnp.ndarray.__matmul__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__matmul__</span></code></a>(other)</p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&#64;value</span></code>.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__matmul__.html#dpnp.ndarray.__matmul__" title="dpnp.ndarray.__matmul__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__matmul__</span></code></a></p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &#64; value}\)</span>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rmatmul__.html#dpnp.ndarray.__rmatmul__" title="dpnp.ndarray.__rmatmul__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rmatmul__</span></code></a>(other)</p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">value&#64;self</span></code>.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__rmatmul__.html#dpnp.ndarray.__rmatmul__" title="dpnp.ndarray.__rmatmul__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__rmatmul__</span></code></a></p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{value &#64; self}\)</span>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__imatmul__.html#dpnp.ndarray.__imatmul__" title="dpnp.ndarray.__imatmul__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__imatmul__</span></code></a>(other)</p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self&#64;=value</span></code>.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__imatmul__.html#dpnp.ndarray.__imatmul__" title="dpnp.ndarray.__imatmul__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__imatmul__</span></code></a></p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self &#64;= value}\)</span>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -768,7 +831,16 @@ use for example <code class="docutils literal notranslate"><span class="pre">.si
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__array__.html#dpnp.ndarray.__array__" title="dpnp.ndarray.__array__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__array__</span></code></a></p></td>
-<td><p></p></td>
+<td><p>NumPy's array protocol method to disallow implicit conversion.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__array_namespace__.html#dpnp.ndarray.__array_namespace__" title="dpnp.ndarray.__array_namespace__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__array_namespace__</span></code></a></p></td>
+<td><p>Return array namespace, member functions of which implement data API.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__dlpack__.html#dpnp.ndarray.__dlpack__" title="dpnp.ndarray.__dlpack__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__dlpack__</span></code></a></p></td>
+<td><p>Produce DLPack capsule.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__dlpack_device__.html#dpnp.ndarray.__dlpack_device__" title="dpnp.ndarray.__dlpack_device__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__dlpack_device__</span></code></a></p></td>
+<td><p>Give a tuple (<code class="docutils literal notranslate"><span class="pre">device_type</span></code>, <code class="docutils literal notranslate"><span class="pre">device_id</span></code>) corresponding to <code class="docutils literal notranslate"><span class="pre">DLDevice</span></code> entry in <code class="docutils literal notranslate"><span class="pre">DLTensor</span></code> in DLPack protocol.</p></td>
 </tr>
 </tbody>
 </table>
@@ -776,33 +848,39 @@ use for example <code class="docutils literal notranslate"><span class="pre">.si
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__len__.html#dpnp.ndarray.__len__" title="dpnp.ndarray.__len__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__len__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">len(self)</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{len(self)}\)</span>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__getitem__.html#dpnp.ndarray.__getitem__" title="dpnp.ndarray.__getitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__getitem__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">self[key]</span></code>.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__iter__.html#dpnp.ndarray.__iter__" title="dpnp.ndarray.__iter__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__iter__</span></code></a></p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{iter(self)}\)</span>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__setitem__.html#dpnp.ndarray.__setitem__" title="dpnp.ndarray.__setitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__setitem__</span></code></a></p></td>
-<td><p>Set <code class="docutils literal notranslate"><span class="pre">self[key]</span></code> to value.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__getitem__.html#dpnp.ndarray.__getitem__" title="dpnp.ndarray.__getitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__getitem__</span></code></a></p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{self[key]}\)</span>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__contains__.html#dpnp.ndarray.__contains__" title="dpnp.ndarray.__contains__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__contains__</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__setitem__.html#dpnp.ndarray.__setitem__" title="dpnp.ndarray.__setitem__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__setitem__</span></code></a></p></td>
+<td><p>Set <span class="math notranslate nohighlight">\(\text{self[key]}\)</span> to a value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__contains__.html#dpnp.ndarray.__contains__" title="dpnp.ndarray.__contains__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__contains__</span></code></a></p></td>
 <td><p>Return <span class="math notranslate nohighlight">\(\text{value in self}\)</span>.</p></td>
 </tr>
 </tbody>
 </table>
-<p>Conversion; the operations <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int()</span></code></a>,
-<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float()</span></code></a> and <a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">complex()</span></code></a>.
+<p>Conversion; the operations <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int()</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float()</span></code></a>,
+<a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">complex()</span></code></a> and <a class="reference external" href="https://docs.python.org/3/library/operator.html#operator.index" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">operator.index()</span></code></a>.
 They work only on arrays that have one element in them
 and return the appropriate scalar.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__int__.html#dpnp.ndarray.__int__" title="dpnp.ndarray.__int__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__int__</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__index__.html#dpnp.ndarray.__index__" title="dpnp.ndarray.__index__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__index__</span></code></a></p></td>
+<td><p>Convert a zero-dimensional array to a Python int object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__float__.html#dpnp.ndarray.__float__" title="dpnp.ndarray.__float__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__float__</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__int__.html#dpnp.ndarray.__int__" title="dpnp.ndarray.__int__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__int__</span></code></a></p></td>
+<td><p>Convert a zero-dimensional array to a Python int object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__complex__.html#dpnp.ndarray.__complex__" title="dpnp.ndarray.__complex__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__complex__</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__float__.html#dpnp.ndarray.__float__" title="dpnp.ndarray.__float__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__float__</span></code></a></p></td>
+<td><p>Convert a zero-dimensional array to a Python float object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__complex__.html#dpnp.ndarray.__complex__" title="dpnp.ndarray.__complex__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__complex__</span></code></a></p></td>
+<td><p>Convert a zero-dimensional array to a Python complex object.</p></td>
 </tr>
 </tbody>
 </table>
@@ -810,10 +888,10 @@ and return the appropriate scalar.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__str__.html#dpnp.ndarray.__str__" title="dpnp.ndarray.__str__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__str__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">str(self)</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{str(self)}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__repr__.html#dpnp.ndarray.__repr__" title="dpnp.ndarray.__repr__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__repr__</span></code></a></p></td>
-<td><p>Return <code class="docutils literal notranslate"><span class="pre">repr(self)</span></code>.</p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{repr(self)}\)</span>.</p></td>
 </tr>
 </tbody>
 </table>
