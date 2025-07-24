@@ -53,11 +53,21 @@
 #include "utils/type_utils.hpp"
 
 #include "ext/common.hpp"
+#include "ext/validation_utils.hpp"
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using ext::common::value_type_of;
+using ext::validation::array_names;
+
+using ext::common::dtype_from_typenum;
+using ext::validation::check_has_dtype;
+using ext::validation::check_no_overlap;
+using ext::validation::check_num_dims;
+using ext::validation::check_queue;
+using ext::validation::check_same_dtype;
+using ext::validation::check_same_size;
 
 namespace dpnp::extensions::ufunc
 {
@@ -160,25 +170,22 @@ std::pair<sycl::event, sycl::event>
                       sycl::queue &exec_q,
                       const std::vector<sycl::event> &depends)
 {
-    auto types = td_ns::usm_ndarray_types();
-    int a_typeid = types.typenum_to_lookup_id(a.get_typenum());
-    int b_typeid = types.typenum_to_lookup_id(b.get_typenum());
+    array_names names = {{&a, "a"}, {&b, "b"}, {&res, "res"}};
 
-    if (a_typeid != b_typeid) {
-        throw py::type_error("Array data types are not the same.");
-    }
+    check_same_dtype(&a, &b, names);
+    check_has_dtype(&res, td_ns::typenum_t::BOOL, names);
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {a, b, res})) {
-        throw py::value_error(
-            "Execution queue is not compatible with allocation queues");
-    }
+    check_same_size({&a, &b, &res}, names);
+    int res_nd = res.get_ndim();
+    check_num_dims({&a, &b}, res_nd, names);
 
+    check_queue({&a, &b, &res}, names, exec_q);
+    check_no_overlap({&a, &b}, {&res}, names);
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(res);
 
-    int res_nd = res.get_ndim();
-    if (res_nd != a.get_ndim() || res_nd != b.get_ndim()) {
-        throw py::value_error("Array dimensions are not the same.");
-    }
+    auto types = td_ns::usm_ndarray_types();
+    // a_typeid == b_typeid (check_same_dtype(&a, &b, names))
+    int a_b_typeid = types.typenum_to_lookup_id(a.get_typenum());
 
     const py::ssize_t *a_shape = a.get_shape_raw();
     const py::ssize_t *b_shape = b.get_shape_raw();
@@ -192,7 +199,7 @@ std::pair<sycl::event, sycl::event>
                                         b_shape[i] == res_shape[i]);
     }
     if (!shapes_equal) {
-        throw py::value_error("Array shapes are not the same.");
+        throw py::value_error("Array shapes are not the same");
     }
 
     // if nelems is zero, return
@@ -201,16 +208,6 @@ std::pair<sycl::event, sycl::event>
     }
 
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(res, nelems);
-
-    // check memory overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    auto const &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
-    if ((overlap(a, res) && !same_logical_tensors(a, res)) ||
-        (overlap(b, res) && !same_logical_tensors(b, res)))
-    {
-        throw py::value_error("Arrays index overlapping segments of memory");
-    }
 
     const char *a_data = a.get_data();
     const char *b_data = b.get_data();
@@ -230,14 +227,13 @@ std::pair<sycl::event, sycl::event>
     bool all_f_contig = (is_a_f_contig && is_b_f_contig && is_res_f_contig);
 
     if (all_c_contig || all_f_contig) {
-        // a_typeid == b_typeid
-        auto contig_fn = isclose_contig_dispatch_vector[a_typeid];
+        auto contig_fn = isclose_contig_dispatch_vector[a_b_typeid];
 
         if (contig_fn == nullptr) {
+            py::dtype a_b_dtype_py = dtype_from_typenum(a_b_typeid);
             throw std::runtime_error(
-                "Contiguous implementation is missing for a_typeid=" +
-                std::to_string(a_typeid) +
-                " and b_typeid=" + std::to_string(b_typeid));
+                "Contiguous implementation is missing for " +
+                std::string(py::str(a_b_dtype_py)) + "data type");
         }
 
         auto comp_ev = contig_fn(exec_q, nelems, py_rtol, py_atol, py_equal_nan,
@@ -280,14 +276,13 @@ std::pair<sycl::event, sycl::event>
         simplified_b_strides[0] == 1 && simplified_res_strides[0] == 1)
     {
         // Special case of contiguous data
-        // a_typeid == b_typeid
-        auto contig_fn = isclose_contig_dispatch_vector[a_typeid];
+        auto contig_fn = isclose_contig_dispatch_vector[a_b_typeid];
 
         if (contig_fn == nullptr) {
+            py::dtype a_b_dtype_py = dtype_from_typenum(a_b_typeid);
             throw std::runtime_error(
-                "Contiguous implementation is missing for a_typeid=" +
-                std::to_string(a_typeid) +
-                " and b_typeid=" + std::to_string(b_typeid));
+                "Contiguous implementation is missing for " +
+                std::string(py::str(a_b_dtype_py)) + "data type");
         }
 
         std::cout << "Run contig impl in strided" << std::endl;
@@ -306,14 +301,13 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(ht_ev, comp_ev);
     }
 
-    // a_typeid == b_typeid
-    auto strided_fn = isclose_strided_scalar_dispatch_vector[a_typeid];
+    auto strided_fn = isclose_strided_scalar_dispatch_vector[a_b_typeid];
 
     if (strided_fn == nullptr) {
-        throw std::runtime_error(
-            "isclose implementation is missing for a_typeid=" +
-            std::to_string(a_typeid) +
-            " and b_typeid=" + std::to_string(b_typeid));
+        py::dtype a_b_dtype_py = dtype_from_typenum(a_b_typeid);
+        throw std::runtime_error("Strided implementation is missing for " +
+                                 std::string(py::str(a_b_dtype_py)) +
+                                 "data type");
     }
 
     std::cout << "Run strided impl" << std::endl;
