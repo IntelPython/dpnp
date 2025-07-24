@@ -65,40 +65,39 @@ namespace dpnp::extensions::ufunc
 namespace impl
 {
 
-using isclose_strided_scalar_fn_ptr_t =
-    sycl::event (*)(sycl::queue &,
-                    int,
-                    std::size_t,
-                    const py::ssize_t *,
-                    const py::object &,
-                    const py::object &,
-                    const py::object &,
-                    const char *,
-                    py::ssize_t,
-                    const char *,
-                    py::ssize_t,
-                    char *,
-                    py::ssize_t,
-                    const std::vector<sycl::event> &);
-
-using isclose_contig_scalar_fn_ptr_t =
-    sycl::event (*)(sycl::queue &,
-                    std::size_t,
-                    const py::object &,
-                    const py::object &,
-                    const py::object &,
-                    const char *,
-                    const char *,
-                    char *,
-                    const std::vector<sycl::event> &);
-
-static isclose_strided_scalar_fn_ptr_t
-    isclose_strided_scalar_dispatch_vector[td_ns::num_types];
-static isclose_contig_scalar_fn_ptr_t
-    isclose_contig_dispatch_vector[td_ns::num_types];
-
 template <typename T>
 using value_type_of_t = typename value_type_of<T>::type;
+
+typedef sycl::event (*isclose_strided_scalar_fn_ptr_t)(
+    sycl::queue &,
+    int,                 // nd
+    std::size_t,         // nelems
+    const py::ssize_t *, // shape_strides
+    const py::object &,  // rtol
+    const py::object &,  // atol
+    const py::object &,  // equal_nan
+    const char *,        // a
+    py::ssize_t,         // a_offset
+    const char *,        // b
+    py::ssize_t,         // b_offset
+    char *,              // out
+    py::ssize_t,         // out_offset
+    const std::vector<sycl::event> &);
+
+typedef sycl::event (*isclose_contig_scalar_fn_ptr_t)(
+    sycl::queue &,
+    std::size_t,        // nelems
+    const py::object &, // rtol
+    const py::object &, // atol
+    const py::object &, // equal_nan
+    const char *,       // a
+    const char *,       // b
+    char *,             // out
+    const std::vector<sycl::event> &);
+
+isclose_strided_scalar_fn_ptr_t
+    isclose_strided_scalar_dispatch_vector[td_ns::num_types];
+isclose_contig_scalar_fn_ptr_t isclose_contig_dispatch_vector[td_ns::num_types];
 
 /**
  * @brief A factory to define pairs of supported types for which
