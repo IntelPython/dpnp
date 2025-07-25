@@ -255,7 +255,7 @@ sycl::event
             IsCloseStridedScalarFunctor<T, scT, resTy, IndexerT>;
         cgh.parallel_for<IsCloseFunc>(
             {nelems},
-            IsCloseFunc(a_tp, b_tp, out_tp, indexer, atol, rtol, equal_nan));
+            IsCloseFunc(a_tp, b_tp, out_tp, indexer, rtol, atol, equal_nan));
     });
     return comp_ev;
 }
