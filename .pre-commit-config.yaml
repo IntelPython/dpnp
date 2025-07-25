@@ -119,7 +119,7 @@ repos:
             "--disable=redefined-builtin",
             "--disable=unused-wildcard-import"
             ]
-        files: '^dpnp/(dpnp_iface.*|fft|linalg)'
+        files: '^dpnp/(dpnp_iface.*|fft|linalg|dpnp_array)'
 -   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
     rev: v2.14.0
     hooks:

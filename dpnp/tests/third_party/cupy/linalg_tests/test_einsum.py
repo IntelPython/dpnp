@@ -359,9 +359,7 @@ class TestEinSumUnaryOperation:
         a = testing.shaped_arange(self.shape_a, xp, dtype)
         b = xp.einsum(self.subscripts, a)
         if xp is cupy:
-            return (
-                b.ndim == 0 or b.get_array()._pointer == a.get_array()._pointer
-            )
+            return b.ndim == 0 or b.data.ptr == a.data.ptr
         return b.ndim == 0 or b.base is a
 
     @testing.for_all_dtypes_combination(

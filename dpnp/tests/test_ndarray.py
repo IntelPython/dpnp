@@ -74,6 +74,39 @@ class TestAttributes:
         assert_equal(self.two.itemsize, self.two.dtype.itemsize)
 
 
+@testing.parameterize(*testing.product({"xp": [dpnp, numpy]}))
+class TestContains:
+    def test_basic(self):
+        a = self.xp.arange(10).reshape((2, 5))
+        assert 4 in a
+        assert 20 not in a
+
+    def test_broadcast(self):
+        xp = self.xp
+        a = xp.arange(6).reshape((2, 3))
+        assert 4 in a
+        assert xp.array([0, 1, 2]) in a
+        assert xp.array([5, 3, 4]) not in a
+
+    def test_broadcast_error(self):
+        a = self.xp.arange(10).reshape((2, 5))
+        with pytest.raises(
+            ValueError,
+            match="operands could not be broadcast together with shapes",
+        ):
+            self.xp.array([1, 2]) in a
+
+    def test_strides(self):
+        xp = self.xp
+        a = xp.arange(10).reshape((2, 5))
+        a = a[:, ::2]
+        assert 4 in a
+        assert 8 not in a
+        assert xp.full(a.shape[-1], fill_value=2) in a
+        assert xp.full_like(a, fill_value=7) in a
+        assert xp.full_like(a, fill_value=6) not in a
+
+
 class TestView:
     def test_none_dtype(self):
         a = numpy.ones((1, 2, 4), dtype=numpy.int32)
@@ -517,3 +550,15 @@ def test_rmatmul_numpy_array():
 
     with pytest.raises(TypeError):
         b @ a
+
+
+@pytest.mark.parametrize("xp", [dpnp, numpy])
+def test_pow_modulo(xp):
+    a = xp.array([2, 3, 4])
+    b = xp.array([5, 2, 3])
+
+    assert a.__pow__(b, 10) == NotImplemented
+    assert a.__rpow__(b, 10) == NotImplemented
+
+    assert (a.__pow__(b, None) == a**b).all()
+    assert (a.__rpow__(b, None) == b**a).all()
