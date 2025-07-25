@@ -65,6 +65,7 @@
          :toctree:
       
          dpnp_array.T
+         dpnp_array.data
          dpnp_array.device
          dpnp_array.dtype
          dpnp_array.flags

@@ -65,6 +65,7 @@
          :toctree:
       
          ndarray.T
+         ndarray.data
          ndarray.device
          ndarray.dtype
          ndarray.flags
