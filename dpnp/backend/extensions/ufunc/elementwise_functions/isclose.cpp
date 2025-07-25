@@ -248,8 +248,6 @@ std::pair<sycl::event, sycl::event>
     //     if 1d with strides 1 - input is contig
     //     dispatch to strided
 
-    std::cout << "Strided impl run" << std::endl;
-
     auto const &a_strides = a.get_strides_vector();
     auto const &b_strides = b.get_strides_vector();
     auto const &res_strides = res.get_strides_vector();
@@ -285,8 +283,6 @@ std::pair<sycl::event, sycl::event>
                 std::string(py::str(a_b_dtype_py)) + "data type");
         }
 
-        std::cout << "Run contig impl in strided" << std::endl;
-
         int a_elem_size = a.get_elemsize();
         int b_elem_size = b.get_elemsize();
         int res_elem_size = res.get_elemsize();
@@ -309,8 +305,6 @@ std::pair<sycl::event, sycl::event>
                                  std::string(py::str(a_b_dtype_py)) +
                                  "data type");
     }
-
-    std::cout << "Run strided impl" << std::endl;
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
 
