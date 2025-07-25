@@ -53,9 +53,7 @@ typedef sycl::event (*gemv_impl_fn_ptr_t)(sycl::queue &,
                                           const std::int64_t,
                                           char *,
                                           const std::int64_t,
-#if !defined(USE_ONEMKL_CUBLAS)
                                           const bool,
-#endif // !USE_ONEMKL_CUBLAS
                                           const std::vector<sycl::event> &);
 
 static gemv_impl_fn_ptr_t gemv_dispatch_vector[dpctl_td_ns::num_types];
@@ -71,9 +69,7 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
                              const std::int64_t incx,
                              char *vectorY,
                              const std::int64_t incy,
-#if !defined(USE_ONEMKL_CUBLAS)
                              const bool is_row_major,
-#endif // !USE_ONEMKL_CUBLAS
                              const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
@@ -93,10 +89,6 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
                 const std::int64_t lda, const T *x, const std::int64_t incx,
                 T beta, T *y, const std::int64_t incy,
                 const std::vector<sycl::event> &deps) -> sycl::event {
-#if defined(USE_ONEMKL_CUBLAS)
-            return mkl_blas::column_major::gemv(q, transA, m, n, alpha, a, lda,
-                                                x, incx, beta, y, incy, deps);
-#else
             if (is_row_major) {
                 return mkl_blas::row_major::gemv(q, transA, m, n, alpha, a, lda,
                                                  x, incx, beta, y, incy, deps);
@@ -106,7 +98,6 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
                                                     lda, x, incx, beta, y, incy,
                                                     deps);
             }
-#endif // USE_ONEMKL_CUBLAS
         };
         gemv_event = gemv_func(
             exec_q,
@@ -118,8 +109,7 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
             T(1),   // Scaling factor for the matrix-vector product.
             a,      // Pointer to the input matrix A.
             lda,    // Leading dimension of matrix A, which is the
-                    // stride between successive rows (for row major
-                    // layout).
+                    // stride between successive rows (for row major layout).
             x,      // Pointer to the input vector x.
             incx,   // The stride of vector x.
             T(0),   // Scaling factor for vector y.
@@ -190,13 +180,33 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *a_shape = matrixA.get_shape_raw();
     const py::ssize_t *x_shape = vectorX.get_shape_raw();
     const py::ssize_t *y_shape = vectorY.get_shape_raw();
+    if (transpose) {
+        if (a_shape[0] != x_shape[0]) {
+            throw py::value_error("The number of rows in A must be equal to "
+                                  "the number of elements in X.");
+        }
+        if (a_shape[1] != y_shape[0]) {
+            throw py::value_error("The number of columns in A must be equal to "
+                                  "the number of elements in Y.");
+        }
+    }
+    else {
+        if (a_shape[1] != x_shape[0]) {
+            throw py::value_error("The number of columns in A must be equal to "
+                                  "the number of elements in X.");
+        }
+        if (a_shape[0] != y_shape[0]) {
+            throw py::value_error("The number of rows in A must be equal to "
+                                  "the number of elements in Y.");
+        }
+    }
 
     oneapi::mkl::transpose transA;
     std::size_t src_nelems;
 
 // cuBLAS supports only column-major storage
-#if defined(USE_ONEMKL_CUBLAS)
-    const bool is_row_major = false;
+#if defined(USE_ONEMATH_CUBLAS)
+    constexpr bool is_row_major = false;
     std::int64_t m;
     std::int64_t n;
 
@@ -241,28 +251,7 @@ std::pair<sycl::event, sycl::event>
         transA = oneapi::mkl::transpose::N;
         src_nelems = m;
     }
-#endif // USE_ONEMKL_CUBLAS
-
-    if (transpose) {
-        if (a_shape[0] != x_shape[0]) {
-            throw py::value_error("The number of rows in A must be equal to "
-                                  "the number of elements in X.");
-        }
-        if (a_shape[1] != y_shape[0]) {
-            throw py::value_error("The number of columns in A must be equal to "
-                                  "the number of elements in Y.");
-        }
-    }
-    else {
-        if (a_shape[1] != x_shape[0]) {
-            throw py::value_error("The number of columns in A must be equal to "
-                                  "the number of elements in X.");
-        }
-        if (a_shape[0] != y_shape[0]) {
-            throw py::value_error("The number of rows in A must be equal to "
-                                  "the number of elements in Y.");
-        }
-    }
+#endif // USE_ONEMATH_CUBLAS
 
     const std::int64_t lda = is_row_major ? n : m;
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(vectorY);
@@ -284,10 +273,11 @@ std::pair<sycl::event, sycl::event>
     gemv_impl_fn_ptr_t gemv_fn = gemv_dispatch_vector[type_id];
     if (gemv_fn == nullptr) {
         throw py::value_error(
-            "Types of input arrays and result array are mismatched.");
+            "No gemv implementation is available for the specified data type "
+            "of the input and output arrays.");
     }
 
-    char *a_typeless_ptr = matrixA.get_data();
+    const char *a_typeless_ptr = matrixA.get_data();
     char *x_typeless_ptr = vectorX.get_data();
     char *y_typeless_ptr = vectorY.get_data();
 
@@ -304,15 +294,9 @@ std::pair<sycl::event, sycl::event>
         y_typeless_ptr -= (y_shape[0] - 1) * std::abs(incy) * y_elemsize;
     }
 
-#if defined(USE_ONEMKL_CUBLAS)
-    sycl::event gemv_ev =
-        gemv_fn(exec_q, transA, m, n, a_typeless_ptr, lda, x_typeless_ptr, incx,
-                y_typeless_ptr, incy, depends);
-#else
     sycl::event gemv_ev =
         gemv_fn(exec_q, transA, m, n, a_typeless_ptr, lda, x_typeless_ptr, incx,
                 y_typeless_ptr, incy, is_row_major, depends);
-#endif // USE_ONEMKL_CUBLAS
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, vectorX, vectorY}, {gemv_ev});

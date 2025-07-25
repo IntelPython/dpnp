@@ -16,13 +16,11 @@ env:
   ver-script-part1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   ver-script-part2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
   fetch-depth: 1
-  # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
-  # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
-  python-ver-test-all-dtypes: '3.12'
+  python-ver-test-all-dtypes: '3.13'
   test-env-name: 'test'
   rerun-tests-on-failure: 'true'
   rerun-tests-max-attempts: 2
-  rerun-tests-timeout: 35
+  rerun-tests-timeout: 40
 
 jobs:
   build:
@@ -31,9 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
-        # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-22.04, windows-2022]
 
     permissions:
@@ -41,6 +37,7 @@ jobs:
       actions: write
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
 
     defaults:
       run:
@@ -96,13 +93,13 @@ jobs:
         continue-on-error: true
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
         env:
-          MAX_BUILD_CMPL_MKL_VERSION: '2025.2a0'
+          MAX_BUILD_CMPL_MKL_VERSION: '2025.3a0'
 
       - name: ReBuild conda package
         if: steps.build_conda_pkg.outcome == 'failure'
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
         env:
-          MAX_BUILD_CMPL_MKL_VERSION: '2025.2a0'
+          MAX_BUILD_CMPL_MKL_VERSION: '2025.3a0'
 
       - name: Upload artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -122,6 +119,7 @@ jobs:
     needs: build
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 100
 
     defaults:
       run:
@@ -130,8 +128,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # python 3.13 is blocked due to MKL issue
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-latest]
 
     env:
@@ -250,6 +247,7 @@ jobs:
     needs: build
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
 
     defaults:
       run:
@@ -258,8 +256,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # python 3.13 is blocked due to MKL issue
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [windows-2022]
 
     env:
@@ -408,11 +405,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # python 3.13 is blocked due to MKL issue
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-22.04, windows-2022]
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
 
     defaults:
       run:
@@ -494,6 +491,7 @@ jobs:
         os: [ubuntu-22.04]
 
     runs-on:  ${{ matrix.os }}
+    timeout-minutes: 15
 
     defaults:
       run:
@@ -507,7 +505,7 @@ jobs:
       dpnp-repo-path: '${{ github.workspace }}/source/'
       array-api-skips-file: '${{ github.workspace }}/source/.github/workflows/array-api-skips.txt'
       create-conda-channel-env: 'source/environments/create_conda_channel.yml'
-      python-ver: '3.12' # it has to be aligned with python in create_conda_channel.yml
+      python-ver: '3.13' # it has to be aligned with python in create_conda_channel.yml
       conda-env-name: 'array-api-conformity'
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
@@ -656,6 +654,7 @@ jobs:
     needs: [upload]
 
     runs-on: 'ubuntu-latest'
+    timeout-minutes: 10
 
     defaults:
       run:

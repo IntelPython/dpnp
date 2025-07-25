@@ -401,13 +401,13 @@ class TestFftn:
         result = dpnp.fft.fftn(ia, axes=axes)
         # Intel NumPy ignores repeated axes (mkl_fft-gh-104), handle it one by one
         expected = a
-        for ii in axes:
+        for ii in axes[::-1]:
             expected = numpy.fft.fft(expected, axis=ii)
         assert_dtype_allclose(result, expected)
 
         # inverse FFT
         result = dpnp.fft.ifftn(result, axes=axes)
-        for ii in axes:
+        for ii in axes[::-1]:
             expected = numpy.fft.ifft(expected, axis=ii)
         assert_dtype_allclose(result, expected)
 
@@ -551,10 +551,7 @@ class TestFftshift:
 
 
 class TestHfft:
-    # TODO: include boolean dtype when mkl_fft-gh-180 is merged
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_none=True, no_bool=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_basic(self, dtype, n, norm):
@@ -563,9 +560,10 @@ class TestHfft:
 
         result = dpnp.fft.hfft(ia, n=n, norm=norm)
         expected = numpy.fft.hfft(a, n=n, norm=norm)
-        # check_only_type_kind=True since NumPy always returns float64
-        # but dpnp return float32 if input is float32
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        flag = True if numpy_version() < "2.0.0" else False
+        assert_dtype_allclose(
+            result, expected, factor=24, check_only_type_kind=flag
+        )
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
@@ -579,7 +577,7 @@ class TestHfft:
         result = dpnp.fft.ihfft(ia, n=n, norm=norm)
         expected = numpy.fft.ihfft(a, n=n, norm=norm)
         flag = True if numpy_version() < "2.0.0" else False
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
     def test_error(self):
         a = dpnp.ones(11)
@@ -600,14 +598,15 @@ class TestIrfft:
     @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_basic(self, dtype, n, norm):
-        a = generate_random_numpy_array(11)
+        a = generate_random_numpy_array(11, dtype=dtype)
         ia = dpnp.array(a)
 
         result = dpnp.fft.irfft(ia, n=n, norm=norm)
         expected = numpy.fft.irfft(a, n=n, norm=norm)
-        # check_only_type_kind=True since NumPy always returns float64
-        # but dpnp return float32 if input is float32
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        flag = True if numpy_version() < "2.0.0" else False
+        assert_dtype_allclose(
+            result, expected, factor=24, check_only_type_kind=flag
+        )
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 8])
@@ -771,8 +770,10 @@ class TestRfft:
 
         expected = numpy.fft.rfft(a)
         result = dpnp.fft.rfft(ia)
-        # check_only_type_kind=True since Intel NumPy returns complex128
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        # TODO: change to the commented line when mkl_fft-gh-204 is resolved
+        flag = True
+        # flag = True if numpy_version() < "2.0.0" else False
+        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
     @testing.with_requires("numpy>=2.0.0")
     @pytest.mark.parametrize("xp", [numpy, dpnp])
@@ -789,11 +790,10 @@ class TestRfft:
 
 
 class TestRfft2:
-    # TODO: add other axes when mkl_fft gh-119 is addressed
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
-    @pytest.mark.parametrize("axes", [(0, 1)])  # (1, 2),(0, 2),(2, 1),(2, 0)
+    @pytest.mark.parametrize("axes", [(0, 1), (1, 2), (0, 2), (2, 1), (2, 0)])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_basic(self, dtype, axes, norm, order):
@@ -848,12 +848,11 @@ class TestRfft2:
 
 
 class TestRfftn:
-    # TODO: add additional axes when mkl_fft gh-119 is addressed
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
     @pytest.mark.parametrize(
-        "axes", [(0, 1, 2), (-2, -4, -1, -3)]  # (-1, -4, -2)
+        "axes", [(0, 1, 2), (-2, -4, -1, -3), (-1, -4, -2)]
     )
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
@@ -894,7 +893,7 @@ class TestRfftn:
 
         # inverse FFT
         result = dpnp.fft.irfftn(result, axes=axes)
-        for ii in axes[-2::-1]:
+        for ii in axes[:-1]:
             expected = numpy.fft.ifft(expected, axis=ii)
         expected = numpy.fft.irfft(expected, axis=axes[-1])
         assert_dtype_allclose(result, expected)
@@ -913,7 +912,7 @@ class TestRfftn:
         assert_dtype_allclose(result, expected)
 
         result = dpnp.fft.irfftn(result, s=s, axes=axes)
-        for jj, ii in zip(s[-2::-1], axes[-2::-1]):
+        for jj, ii in zip(s[:-1], axes[:-1]):
             expected = numpy.fft.ifft(expected, n=jj, axis=ii)
         expected = numpy.fft.irfft(expected, n=s[-1], axis=axes[-1])
         assert_dtype_allclose(result, expected)
@@ -935,7 +934,7 @@ class TestRfftn:
         assert_dtype_allclose(result, expected)
 
         # inverse FFT
-        for jj, ii in zip(s[-2::-1], axes[-2::-1]):
+        for jj, ii in zip(s[:-1], axes[:-1]):
             expected = numpy.fft.ifft(expected, n=jj, axis=ii)
         expected = numpy.fft.irfft(expected, n=s[-1], axis=axes[-1])
         out = dpnp.empty(expected.shape, dtype=numpy.float32)
@@ -954,7 +953,5 @@ class TestRfftn:
 
         result = dpnp.fft.irfftn(ia)
         expected = numpy.fft.irfftn(a)
-        # TODO: change to the commented line when mkl_fft-gh-180 is merged
-        flag = True
-        # flag = True if numpy_version() < "2.0.0" else False
+        flag = True if numpy_version() < "2.0.0" else False
         assert_dtype_allclose(result, expected, check_only_type_kind=flag)

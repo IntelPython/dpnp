@@ -35,17 +35,17 @@ template <typename T>
 class HanningFunctor
 {
 private:
-    T *data = nullptr;
+    T *res = nullptr;
     const std::size_t N;
 
 public:
-    HanningFunctor(T *data, const std::size_t N) : data(data), N(N) {}
+    HanningFunctor(T *res, const std::size_t N) : res(res), N(N) {}
 
     void operator()(sycl::id<1> id) const
     {
         const auto i = id.get(0);
 
-        data[i] = T(0.5) - T(0.5) * sycl::cospi(T(2) * i / (N - 1));
+        res[i] = T(0.5) - T(0.5) * sycl::cospi(T(2) * i / (N - 1));
     }
 };
 

@@ -74,6 +74,69 @@ class TestAttributes:
         assert_equal(self.two.itemsize, self.two.dtype.itemsize)
 
 
+@testing.parameterize(*testing.product({"xp": [dpnp, numpy]}))
+class TestContains:
+    def test_basic(self):
+        a = self.xp.arange(10).reshape((2, 5))
+        assert 4 in a
+        assert 20 not in a
+
+    def test_broadcast(self):
+        xp = self.xp
+        a = xp.arange(6).reshape((2, 3))
+        assert 4 in a
+        assert xp.array([0, 1, 2]) in a
+        assert xp.array([5, 3, 4]) not in a
+
+    def test_broadcast_error(self):
+        a = self.xp.arange(10).reshape((2, 5))
+        with pytest.raises(
+            ValueError,
+            match="operands could not be broadcast together with shapes",
+        ):
+            self.xp.array([1, 2]) in a
+
+    def test_strides(self):
+        xp = self.xp
+        a = xp.arange(10).reshape((2, 5))
+        a = a[:, ::2]
+        assert 4 in a
+        assert 8 not in a
+        assert xp.full(a.shape[-1], fill_value=2) in a
+        assert xp.full_like(a, fill_value=7) in a
+        assert xp.full_like(a, fill_value=6) not in a
+
+
+class TestView:
+    def test_none_dtype(self):
+        a = numpy.ones((1, 2, 4), dtype=numpy.int32)
+        ia = dpnp.array(a)
+
+        expected = a.view()
+        result = ia.view()
+        assert_allclose(result, expected)
+
+        expected = a.view()  # numpy returns dtype(None) otherwise
+        result = ia.view(None)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("dt", [bool, int, float, complex])
+    def test_python_types(self, dt):
+        a = numpy.ones((8, 4), dtype=numpy.complex64)
+        ia = dpnp.array(a)
+
+        result = ia.view(dt)
+        if not has_support_aspect64() and dt in [float, complex]:
+            dt = result.dtype
+        expected = a.view(dt)
+        assert_allclose(result, expected)
+
+    def test_type_error(self):
+        x = dpnp.ones(4, dtype="i4")
+        with pytest.raises(NotImplementedError):
+            x.view("i2", type=dpnp.ndarray)
+
+
 @pytest.mark.parametrize(
     "arr",
     [
@@ -487,3 +550,15 @@ def test_rmatmul_numpy_array():
 
     with pytest.raises(TypeError):
         b @ a
+
+
+@pytest.mark.parametrize("xp", [dpnp, numpy])
+def test_pow_modulo(xp):
+    a = xp.array([2, 3, 4])
+    b = xp.array([5, 2, 3])
+
+    assert a.__pow__(b, 10) == NotImplemented
+    assert a.__rpow__(b, 10) == NotImplemented
+
+    assert (a.__pow__(b, None) == a**b).all()
+    assert (a.__rpow__(b, None) == b**a).all()

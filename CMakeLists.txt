@@ -68,48 +68,68 @@ find_package(Dpctl REQUIRED)
 message(STATUS "Dpctl_INCLUDE_DIR=" ${Dpctl_INCLUDE_DIR})
 message(STATUS "Dpctl_TENSOR_INCLUDE_DIR=" ${Dpctl_TENSOR_INCLUDE_DIR})
 
-option(DPNP_TARGET_CUDA
-    "Build DPNP to target CUDA devices"
+option(DPNP_USE_ONEMATH
+    "Build DPNP with oneMath"
     OFF
 )
-option(DPNP_USE_ONEMKL_INTERFACES
-    "Build DPNP with oneMKL Interfaces"
-    OFF
+set(DPNP_TARGET_CUDA
+    ""
+    CACHE STRING
+    "Build DPNP to target CUDA device. \
+Set to a truthy value (e.g., ON, TRUE) to use default architecture (sm_50), \
+or to a specific architecture like sm_80."
 )
 set(HIP_TARGETS "" CACHE STRING "HIP architecture for target")
 
 set(_dpnp_sycl_targets)
-set(_use_onemkl_interfaces OFF)
-set(_use_onemkl_interfaces_cuda OFF)
-set(_use_onemkl_interfaces_hip OFF)
+set(_use_onemath OFF)
+set(_use_onemath_cuda OFF)
+set(_use_onemath_hip OFF)
 
 set(_dpnp_sycl_target_compile_options)
 set(_dpnp_sycl_target_link_options)
 
 if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
-    if(DPNP_TARGET_CUDA)
-        set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
-        set(_use_onemkl_interfaces_cuda ON)
+    if (DPNP_TARGET_CUDA)
+        set(_dpnp_cuda_arch)
+        if(DPNP_TARGET_CUDA MATCHES "^sm_")
+            set(_dpnp_cuda_arch ${DPNP_TARGET_CUDA})
+        elseif(DPNP_TARGET_CUDA MATCHES "^(ON|TRUE|YES|Y|1)$")
+            set(_dpnp_cuda_arch "sm_50")
+        else()
+            message(FATAL_ERROR
+                "Invalid value for DPNP_TARGET_CUDA: \"${DPNP_TARGET_CUDA}\". "
+                "Expected 'ON', 'TRUE', 'YES', 'Y', '1', or a CUDA architecture like 'sm_80'."
+            )
+        endif()
+        set(_dpnp_sycl_targets "nvidia_gpu_${_dpnp_cuda_arch},spir64-unknown-unknown")
+        set(_use_onemath_cuda ON)
     endif()
 
-    if (NOT "x${HIP_TARGETS}" STREQUAL "x")
-        set(_use_onemkl_interfaces_hip ON)
-
-        if ("x${_dpnp_sycl_targets}" STREQUAL "x")
-            set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},spir64-unknown-unknown")
+    if (HIP_TARGETS)
+        if (HIP_TARGETS MATCHES "^gfx")
+            if ("x${_dpnp_sycl_targets}" STREQUAL "x")
+                set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},spir64-unknown-unknown")
+            else()
+                set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},${_dpnp_sycl_targets}")
+            endif()
+            set(_use_onemath_hip ON)
         else()
-            set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},${_dpnp_sycl_targets}")
+            message(FATAL_ERROR
+                "Invalid value for HIP_TARGETS: \"${HIP_TARGETS}\". "
+                "Expected an architecture name starting with 'gfx', e.g. 'gfx1030'."
+            )
         endif()
     endif()
 else()
     set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
 
-    if ("${DPNP_SYCL_TARGETS}" MATCHES "nvptx64-nvidia-cuda")
-        set(_use_onemkl_interfaces_cuda ON)
+    if("${DPNP_SYCL_TARGETS}" MATCHES "(nvidia_gpu_sm_|nvptx64-nvidia-cuda)")
+        set(_use_onemath_cuda ON)
     endif()
 
     if ("${DPNP_SYCL_TARGETS}" MATCHES "amd_gpu_")
-        set(_use_onemkl_interfaces_hip ON)
+        set(_use_onemath_hip ON)
 
         if ("x${HIP_TARGETS}" STREQUAL "x")
             message(FATAL_ERROR "HIP_TARGETS must be specified when using HIP backend")
@@ -130,58 +150,58 @@ if (_dpnp_sycl_targets)
    list(APPEND _dpnp_sycl_target_link_options -fsycl-targets=${_dpnp_sycl_targets})
 endif()
 
-if(DPNP_USE_ONEMKL_INTERFACES)
-    set(_use_onemkl_interfaces ON)
+if(DPNP_USE_ONEMATH)
+    set(_use_onemath ON)
 else()
-    if(DEFINED ENV{DPNP_USE_ONEMKL_INTERFACES})
-        set(_use_onemkl_interfaces ON)
+    if(DEFINED ENV{DPNP_USE_ONEMATH})
+        set(_use_onemath ON)
     endif()
 endif()
 
-if(_use_onemkl_interfaces)
+if(_use_onemath)
     set(BUILD_FUNCTIONAL_TESTS False)
     set(BUILD_EXAMPLES False)
     set(ENABLE_MKLGPU_BACKEND True)
     set(ENABLE_MKLCPU_BACKEND True)
 
-    if(_use_onemkl_interfaces_cuda)
+    if(_use_onemath_cuda)
         set(ENABLE_CUBLAS_BACKEND True)
         set(ENABLE_CUSOLVER_BACKEND True)
         set(ENABLE_CUFFT_BACKEND True)
         # set(ENABLE_CURAND_BACKEND True)
     endif()
-    if(_use_onemkl_interfaces_hip)
+    if(_use_onemath_hip)
         set(ENABLE_ROCBLAS_BACKEND True)
         set(ENABLE_ROCSOLVER_BACKEND True)
         set(ENABLE_ROCFFT_BACKEND True)
         # set(ENABLE_ROCRAND_BACKEND True)
     endif()
 
-    if(DPNP_ONEMKL_INTERFACES_DIR)
-        FetchContent_Declare(onemath_library SOURCE_DIR "${DPNP_ONEMKL_INTERFACES_DIR}")
+    if(DPNP_ONEMATH_DIR)
+        FetchContent_Declare(onemath_library SOURCE_DIR "${DPNP_ONEMATH_DIR}")
     else()
         FetchContent_Declare(
             onemath_library
                 GIT_REPOSITORY https://github.com/uxlfoundation/oneMath.git
-                GIT_TAG 20ba6fd7ae4af6ed693246cfd22c343e6522edbe  # v0.7
+                GIT_TAG 5c7e1e7a710556e51f70ecc8dd26dfd04e3abf41  # v0.8
         )
     endif()
 
     FetchContent_MakeAvailable(onemath_library)
     if(TARGET onemath)
-        set(MKL_INTERFACES_LIB "onemath" CACHE INTERNAL "OneMath lib target")
+        set(ONEMATH_LIB "onemath" CACHE INTERNAL "OneMath lib target")
     elseif(TARGET onemkl)
-        set(MKL_INTERFACES_LIB "onemkl" CACHE INTERNAL "OneMKL lib target")
+        set(ONEMATH_LIB "onemkl" CACHE INTERNAL "OneMKL lib target")
     else()
         message(FATAL_ERROR "Neither 'oneMath' nor 'oneMKL' found!")
     endif()
-    message(STATUS "MKL interfaces lib target used: ${MKL_INTERFACES_LIB}")
+    message(STATUS "OneMath lib target used: ${ONEMATH_LIB}")
     set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
 else()
-    if(_use_onemkl_interfaces_cuda OR _use_onemkl_interfaces_hip)
+    if(_use_onemath_cuda OR _use_onemath_hip)
         message(FATAL_ERROR
-            "CUDA or HIP targets are enabled, but oneMKL Interfaces are not. "
-            "Please set DPNP_USE_ONEMKL_INTERFACES=ON to enable them."
+            "CUDA or HIP targets are enabled, but oneMath is not. "
+            "Please set DPNP_USE_ONEMATH=ON to enable them."
         )
     endif()
 endif()

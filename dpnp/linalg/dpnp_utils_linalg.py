@@ -1187,7 +1187,10 @@ def _norm_int_axis(x, ord, axis, keepdims):
     if ord == dpnp.inf:
         if x.shape[axis] == 0:
             x = dpnp.moveaxis(x, axis, -1)
-            return dpnp.zeros_like(x, shape=x.shape[:-1])
+            res_shape = x.shape[:-1]
+            if keepdims:
+                res_shape += (1,)
+            return dpnp.zeros_like(x, shape=res_shape)
         return dpnp.abs(x).max(axis=axis, keepdims=keepdims)
     if ord == -dpnp.inf:
         return dpnp.abs(x).min(axis=axis, keepdims=keepdims)
@@ -1226,7 +1229,10 @@ def _norm_tuple_axis(x, ord, row_axis, col_axis, keepdims):
     flag = x.shape[row_axis] == 0 or x.shape[col_axis] == 0
     if flag and ord in [1, 2, dpnp.inf]:
         x = dpnp.moveaxis(x, axis, (-2, -1))
-        return dpnp.zeros_like(x, shape=x.shape[:-2])
+        res_shape = x.shape[:-2]
+        if keepdims:
+            res_shape += (1, 1)
+        return dpnp.zeros_like(x, shape=res_shape)
     if row_axis == col_axis:
         raise ValueError("Duplicate axes given.")
     if ord == 2:
@@ -1284,15 +1290,8 @@ def _nrm2_last_axis(x):
     """
 
     real_dtype = _real_type(x.dtype)
-    # TODO: use dpnp.sum(dpnp.square(dpnp.view(x)), axis=-1, dtype=real_dtype)
-    # w/a since dpnp.view() in not implemented yet
-    # Сalculate and sum the squares of both real and imaginary parts for
-    # compelex array.
-    if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
-        y = dpnp.abs(x) ** 2
-    else:
-        y = dpnp.square(x)
-    return dpnp.sum(y, axis=-1, dtype=real_dtype)
+    x = dpnp.ascontiguousarray(x)
+    return dpnp.sum(dpnp.square(x.view(real_dtype)), axis=-1)
 
 
 def _real_type(dtype, device=None):

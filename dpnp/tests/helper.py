@@ -26,6 +26,12 @@ def _assert_shape(a, b):
         assert a.shape == (), f"{a.shape} != ()"
 
 
+def _get_dev_mask(device=None):
+    dev = dpctl.select_default_device() if device is None else device
+    dev_info = dpctl.utils.intel_device_info(dev)
+    return dev_info.get("device_id", 0) & 0xFF00
+
+
 def assert_dtype_allclose(
     dpnp_arr,
     numpy_arr,
@@ -337,7 +343,7 @@ def get_integer_dtypes(all_int_types=False, no_unsigned=False):
     if config.all_int_types or all_int_types:
         dtypes += [dpnp.int8, dpnp.int16]
         if not no_unsigned:
-            dtypes += [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
+            dtypes += get_unsigned_dtypes()
 
     return dtypes
 
@@ -370,6 +376,14 @@ def get_integer_float_dtypes(
 
     dtypes = [mark_xfail(dtype) for dtype in dtypes if not_excluded(dtype)]
     return dtypes
+
+
+def get_unsigned_dtypes():
+    """
+    Build a list of unsigned integer types supported by DPNP.
+    """
+
+    return [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
 
 
 def has_support_aspect16(device=None):
@@ -432,6 +446,30 @@ def is_intel_numpy():
         # numpy 1.26.4 has LAPACK name equals to 'dep140030038112336'
         return blas["name"].startswith("mkl")
     return all(dep["name"].startswith("mkl") for dep in [blas, lapack])
+
+
+def is_iris_xe(device=None):
+    """
+    Return True if a test is running on Iris Xe GPU device, False otherwise.
+    """
+    return _get_dev_mask(device) == 0x9A00
+
+
+def is_lts_driver(device=None):
+    """
+    Return True if a test is running on a GPU device with LTS driver version,
+    False otherwise.
+    """
+    dev = dpctl.select_default_device() if device is None else device
+    return dev.has_aspect_gpu and "1.3" in dev.driver_version
+
+
+def is_ptl(device=None):
+    """
+    Return True if a test is running on Panther Lake with Iris Xe3 GPU device,
+    False otherwise.
+    """
+    return _get_dev_mask(device) == 0xB000
 
 
 def is_win_platform():

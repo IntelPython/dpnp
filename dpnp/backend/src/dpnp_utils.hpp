@@ -38,14 +38,6 @@
 
 #include <dpnp_iface_fptr.hpp>
 
-#define LIBSYCL_VERSION_GREATER(major, minor, patch)                           \
-    (__LIBSYCL_MAJOR_VERSION > major) ||                                       \
-        (__LIBSYCL_MAJOR_VERSION == major and                                  \
-         __LIBSYCL_MINOR_VERSION > minor) ||                                   \
-        (__LIBSYCL_MAJOR_VERSION == major and                                  \
-         __LIBSYCL_MINOR_VERSION == minor and                                  \
-         __LIBSYCL_PATCH_VERSION >= patch)
-
 /**
  * Version of SYCL DPC++ 2023 compiler where a return type of sycl::abs() is
  * changed from unsigned integer to signed one of input vector.
@@ -146,47 +138,6 @@ _DataType get_xyz_id_by_id_inkernel(size_t global_id,
 
 /**
  * @ingroup BACKEND_UTILS
- * @brief Check input shape is broadcastable to output one.
- *
- * @param [in] input_shape        Input shape.
- * @param [in] output_shape       Output shape.
- *
- * @return                        Input shape is broadcastable to output one or
- * not.
- */
-static inline bool
-    broadcastable(const std::vector<shape_elem_type> &input_shape,
-                  const std::vector<shape_elem_type> &output_shape)
-{
-    if (input_shape.size() > output_shape.size()) {
-        return false;
-    }
-
-    std::vector<shape_elem_type>::const_reverse_iterator irit =
-        input_shape.rbegin();
-    std::vector<shape_elem_type>::const_reverse_iterator orit =
-        output_shape.rbegin();
-    for (; irit != input_shape.rend(); ++irit, ++orit) {
-        if (*irit != 1 && *irit != *orit) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-static inline bool
-    broadcastable(const shape_elem_type *input_shape,
-                  const size_t input_shape_size,
-                  const std::vector<shape_elem_type> &output_shape)
-{
-    const std::vector<shape_elem_type> input_shape_vec(
-        input_shape, input_shape + input_shape_size);
-    return broadcastable(input_shape_vec, output_shape);
-}
-
-/**
- * @ingroup BACKEND_UTILS
  * @brief Check arrays are equal.
  *
  * @param [in] input1        Input1.
@@ -210,78 +161,6 @@ static inline bool array_equal(const _DataType *input1,
 
     return std::equal(std::begin(input1_vec), std::end(input1_vec),
                       std::begin(input2_vec));
-}
-
-/**
- * @ingroup BACKEND_UTILS
- * @brief Normalizes an axes into a non-negative integer axes.
- *
- * Return vector of normalized axes with a non-negative integer axes.
- *
- * By default, this forbids axes from being specified multiple times.
- *
- * @param [in] __axes             Array with positive or negative indexes.
- * @param [in] __shape_size       The number of dimensions of the array that
- * @ref __axes should be normalized against.
- * @param [in] __allow_duplicate  Disallow an axis from being specified twice.
- * Default: false
- *
- * @exception std::range_error    Particular axis is out of range or other
- * error.
- * @return                        The normalized axes indexes, such that `0 <=
- * result < __shape_size`
- */
-static inline std::vector<shape_elem_type>
-    get_validated_axes(const std::vector<shape_elem_type> &__axes,
-                       const size_t __shape_size,
-                       const bool __allow_duplicate = false)
-{
-    std::vector<shape_elem_type> result;
-
-    if (__axes.empty()) {
-        goto out;
-    }
-
-    if (__axes.size() > __shape_size) {
-        goto err;
-    }
-
-    result.reserve(__axes.size());
-    for (std::vector<shape_elem_type>::const_iterator it = __axes.cbegin();
-         it != __axes.cend(); ++it)
-    {
-        const shape_elem_type _axis = *it;
-        const shape_elem_type input_shape_size_signed =
-            static_cast<shape_elem_type>(__shape_size);
-        if (_axis >= input_shape_size_signed) { // positive axis range check
-            goto err;
-        }
-
-        if (_axis < -input_shape_size_signed) { // negative axis range check
-            goto err;
-        }
-
-        const shape_elem_type positive_axis =
-            _axis < 0 ? (_axis + input_shape_size_signed) : _axis;
-
-        if (!__allow_duplicate) {
-            if (std::find(result.begin(), result.end(), positive_axis) !=
-                result.end()) { // find axis duplication
-                goto err;
-            }
-        }
-
-        result.push_back(positive_axis);
-    }
-
-out:
-    return result;
-
-err:
-    // TODO exception if wrong axis? need common function for throwing
-    // exceptions
-    throw std::range_error(
-        "DPNP Error: validate_axes() failed with axis check");
 }
 
 /**

@@ -46,7 +46,11 @@ from typing import NamedTuple
 import dpctl
 import dpctl.tensor as dpt
 import numpy
-from dpctl.tensor._numpy_helper import AxisError, normalize_axis_index
+from dpctl.tensor._numpy_helper import (
+    AxisError,
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 import dpnp
 
@@ -1346,11 +1350,11 @@ def column_stack(tup):
     --------
     >>> import dpnp as np
     >>> a = np.array((1, 2, 3))
-    >>> b = np.array((2, 3, 4))
+    >>> b = np.array((4, 5, 6))
     >>> np.column_stack((a, b))
-    array([[1, 2],
-           [2, 3],
-           [3, 4]])
+    array([[1, 4],
+           [2, 5],
+           [3, 6]])
 
     """
 
@@ -1778,18 +1782,18 @@ def dstack(tup):
     --------
     >>> import dpnp as np
     >>> a = np.array((1, 2, 3))
-    >>> b = np.array((2, 3, 4))
+    >>> b = np.array((4, 5, 6))
     >>> np.dstack((a, b))
-    array([[[1, 2],
-            [2, 3],
-            [3, 4]]])
+    array([[[1, 4],
+            [2, 5],
+            [3, 6]]])
 
     >>> a = np.array([[1], [2], [3]])
-    >>> b = np.array([[2], [3], [4]])
+    >>> b = np.array([[4], [5], [6]])
     >>> np.dstack((a, b))
-    array([[[1, 2]],
-           [[2, 3]],
-           [[3, 4]]])
+    array([[[1, 4]],
+           [[2, 5]],
+           [[3, 6]]])
 
     """
 
@@ -3129,9 +3133,9 @@ def resize(a, new_shape):
     Returns
     -------
     out : dpnp.ndarray
-        The new array is formed from the data in the old array, repeated
-        if necessary to fill out the required number of elements. The
-        data are repeated iterating over the array in C-order.
+        The new array is formed from the data in the old array, repeated if
+        necessary to fill out the required number of elements. The data are
+        repeated iterating over the array in C-order.
 
     See Also
     --------
@@ -3146,8 +3150,10 @@ def resize(a, new_shape):
     be used. In most other cases either indexing (to reduce the size) or
     padding (to increase the size) may be a more appropriate solution.
 
-    Warning: This functionality does **not** consider axes separately,
-    i.e. it does not apply interpolation/extrapolation.
+    Warning
+    -------
+    This functionality does **not** consider axes separately, i.e. it does not
+    apply interpolation/extrapolation.
     It fills the return array with the required number of elements, iterating
     over `a` in C-order, disregarding axes (and cycling back from the start if
     the new shape is larger). This functionality is therefore not suitable to
@@ -3187,7 +3193,8 @@ def resize(a, new_shape):
         # First case must zero fill. The second would have repeats == 0.
         return dpnp.zeros_like(a, shape=new_shape)
 
-    repeats = -(-new_size // a_size)  # ceil division
+    # ceiling division without negating new_size
+    repeats = (new_size + a_size - 1) // a_size
     a = dpnp.concatenate((dpnp.ravel(a),) * repeats)[:new_size]
 
     return a.reshape(new_shape)
@@ -3525,8 +3532,8 @@ def size(a, axis=None):
     ----------
     a : array_like
         Input data.
-    axis : {None, int}, optional
-        Axis along which the elements are counted.
+    axis : {None, int, tuple of ints}, optional
+        Axis or axes along which the elements are counted.
         By default, give the total number of elements.
 
         Default: ``None``.
@@ -3548,23 +3555,21 @@ def size(a, axis=None):
     >>> a = [[1, 2, 3], [4, 5, 6]]
     >>> np.size(a)
     6
-    >>> np.size(a, 1)
+    >>> np.size(a, axis=1)
     3
-    >>> np.size(a, 0)
+    >>> np.size(a, axis=0)
     2
-
-    >>> a = np.asarray(a)
-    >>> np.size(a)
+    >>> np.size(a, axis=(0, 1))
     6
-    >>> np.size(a, 1)
-    3
 
     """
 
     if dpnp.is_supported_array_type(a):
         if axis is None:
             return a.size
-        return a.shape[axis]
+        _shape = a.shape
+        _axis = normalize_axis_tuple(axis, a.ndim)
+        return math.prod(_shape[ax] for ax in _axis)
 
     return numpy.size(a, axis)
 
@@ -4242,7 +4247,7 @@ def unique(
 
     """
 
-    if axis is None:
+    if axis is None or (axis == 0 and ar.ndim == 1):
         return _unique_1d(
             ar, return_index, return_inverse, return_counts, equal_nan
         )

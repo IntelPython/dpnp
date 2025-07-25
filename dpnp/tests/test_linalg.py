@@ -1,3 +1,5 @@
+import warnings
+
 import dpctl
 import dpctl.tensor as dpt
 import numpy
@@ -10,7 +12,6 @@ from numpy.testing import (
     assert_equal,
     assert_raises,
     assert_raises_regex,
-    suppress_warnings,
 )
 
 import dpnp
@@ -23,7 +24,6 @@ from .helper import (
     get_integer_float_dtypes,
     has_support_aspect64,
     is_cpu_device,
-    is_cuda_device,
     numpy_version,
     requires_intel_mkl_version,
 )
@@ -848,8 +848,8 @@ class TestEinsum:
             )
 
         # Suppress the complex warnings for the 'as f8' tests
-        with suppress_warnings() as sup:
-            sup.filter(numpy.exceptions.ComplexWarning)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", numpy.exceptions.ComplexWarning)
 
             # matvec(a,b) / a.dot(b) where a is matrix, b is vector
             for n in range(1, 17):
@@ -2104,11 +2104,14 @@ class TestNorm:
                 assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
                 assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
             else:
-                # TODO: when similar changes in numpy are available, instead
-                # of assert_equal with zero, we should compare with numpy
-                # ord in [None, 1, 2]
-                assert_equal(dpnp.linalg.norm(ia, **kwarg), 0.0)
-                assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
+                if numpy_version() >= "2.3.0":
+                    result = dpnp.linalg.norm(ia, **kwarg)
+                    expected = numpy.linalg.norm(a, **kwarg)
+                    assert_dtype_allclose(result, expected)
+                else:
+                    assert_equal(
+                        dpnp.linalg.norm(ia, **kwarg), 0.0, strict=False
+                    )
         else:
             result = dpnp.linalg.norm(ia, **kwarg)
             expected = numpy.linalg.norm(a, **kwarg)
@@ -2296,49 +2299,40 @@ class TestNorm:
         expected = numpy.linalg.matrix_norm(a, ord=ord, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "xp",
-        [
-            dpnp,
-            pytest.param(
-                numpy,
-                marks=pytest.mark.skipif(
-                    numpy_version() < "2.3.0",
-                    reason="numpy raises an error",
-                ),
-            ),
-        ],
-    )
+    @testing.with_requires("numpy>=2.3")
     @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.int32])
     @pytest.mark.parametrize(
         "shape, axis", [[(2, 0), None], [(2, 0), (0, 1)], [(0, 2), (0, 1)]]
     )
     @pytest.mark.parametrize("ord", [None, "fro", "nuc", 1, 2, dpnp.inf])
-    def test_matrix_norm_empty(self, xp, dtype, shape, axis, ord):
-        x = xp.zeros(shape, dtype=dtype)
-        sc = dtype(0.0) if dtype == dpnp.float32 else 0.0
-        assert_equal(xp.linalg.norm(x, axis=axis, ord=ord), sc)
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_matrix_norm_empty(self, dtype, shape, axis, ord, keepdims):
+        a = numpy.zeros(shape, dtype=dtype)
+        ia = dpnp.array(a)
+        result = dpnp.linalg.norm(ia, axis=axis, ord=ord, keepdims=keepdims)
+        expected = numpy.linalg.norm(a, axis=axis, ord=ord, keepdims=keepdims)
+        assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "xp",
-        [
-            dpnp,
-            pytest.param(
-                numpy,
-                marks=pytest.mark.skipif(
-                    numpy_version() < "2.3.0",
-                    reason="numpy raises an error",
-                ),
-            ),
-        ],
-    )
+    @testing.with_requires("numpy>=2.3")
     @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.int32])
     @pytest.mark.parametrize("axis", [None, 0])
     @pytest.mark.parametrize("ord", [None, 1, 2, dpnp.inf])
-    def test_vector_norm_empty(self, xp, dtype, axis, ord):
-        x = xp.zeros(0, dtype=dtype)
-        sc = dtype(0.0) if dtype == dpnp.float32 else 0.0
-        assert_equal(xp.linalg.vector_norm(x, axis=axis, ord=ord), sc)
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_vector_norm_empty(self, dtype, axis, ord, keepdims):
+        a = numpy.zeros(0, dtype=dtype)
+        ia = dpnp.array(a)
+        result = dpnp.linalg.vector_norm(
+            ia, axis=axis, ord=ord, keepdims=keepdims
+        )
+        expected = numpy.linalg.vector_norm(
+            a, axis=axis, ord=ord, keepdims=keepdims
+        )
+        assert_dtype_allclose(result, expected)
+        if keepdims:
+            # norm and vector_norm have different paths in dpnp when keepdims=True,
+            # to cover both of them test with norm as well
+            result = dpnp.linalg.norm(ia, axis=axis, ord=ord, keepdims=keepdims)
+            assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(

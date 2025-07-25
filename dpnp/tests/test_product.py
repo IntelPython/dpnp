@@ -12,7 +12,8 @@ from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
-    get_complex_dtypes,
+    is_gpu_device,
+    is_ptl,
     is_win_platform,
     numpy_version,
 )
@@ -24,9 +25,6 @@ _selected_dtypes = [numpy.int64, numpy.float32]
 
 
 class TestCross:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("axis", [None, 0])
     @pytest.mark.parametrize("axisc", [-1, 0])
     @pytest.mark.parametrize("axisb", [-1, 0])
@@ -181,9 +179,6 @@ class TestCross:
 
 
 class TestDot:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_ones(self, dtype):
         n = 10**5
@@ -432,9 +427,6 @@ class TestDot:
 
 
 class TestInner:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_scalar(self, dtype):
         a = 2
@@ -598,9 +590,6 @@ class TestKron:
 
 
 class TestMatmul:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize(
         "order1, order2", [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")]
@@ -845,6 +834,7 @@ class TestMatmul:
             assert_raises(TypeError, dpnp.matmul, ia, ib, out=iout)
             assert_raises(TypeError, numpy.matmul, a, b, out=out)
 
+    @testing.with_requires("numpy!=2.3.0")
     @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize("order1", ["C", "F", "A"])
     @pytest.mark.parametrize("order2", ["C", "F", "A"])
@@ -882,6 +872,7 @@ class TestMatmul:
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
+    @testing.with_requires("numpy!=2.3.0")
     @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize(
         "stride",
@@ -1059,17 +1050,19 @@ class TestMatmul:
     @pytest.mark.parametrize("dtype", _selected_dtypes)
     def test_out_order1(self, order1, order2, out_order, dtype):
         # test gemm with out keyword
-        a = generate_random_numpy_array((5, 4), dtype, low=-5, high=5)
-        b = generate_random_numpy_array((4, 7), dtype, low=-5, high=5)
-        a = numpy.array(a, order=order1)
-        b = numpy.array(b, order=order2)
+        a = generate_random_numpy_array(
+            (5, 4), dtype, order=order1, low=-5, high=5
+        )
+        b = generate_random_numpy_array(
+            (4, 7), dtype, order=order2, low=-5, high=5
+        )
         ia, ib = dpnp.array(a), dpnp.array(b)
 
-        iout = dpnp.empty((5, 7), dtype=dtype, order=out_order)
+        out = numpy.empty((5, 7), dtype=dtype, order=out_order)
+        iout = dpnp.array(out)
         result = dpnp.matmul(ia, ib, out=iout)
         assert result is iout
 
-        out = numpy.empty((5, 7), dtype=dtype, order=out_order)
         expected = numpy.matmul(a, b, out=out)
         assert result.flags.c_contiguous == expected.flags.c_contiguous
         assert result.flags.f_contiguous == expected.flags.f_contiguous
@@ -1161,6 +1154,7 @@ class TestMatmul:
         expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.skipif(is_ptl(), reason="MKLD-18712")
     @pytest.mark.parametrize("dt_out", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize(
         "shape1, shape2",
@@ -1179,6 +1173,75 @@ class TestMatmul:
 
         iout = dpnp.empty(result.shape, dtype=dt_out)
         result = dpnp.matmul(ia, ib, out=iout)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_syrk(self, dt):
+        a = generate_random_numpy_array((6, 9), dtype=dt, low=-5, high=5)
+        ia = dpnp.array(a)
+
+        result = dpnp.matmul(ia, ia.mT)
+        expected = numpy.matmul(a, a.T)
+        assert_dtype_allclose(result, expected)
+
+        iout = dpnp.empty(result.shape, dtype=dt)
+        result = dpnp.matmul(ia, ia.mT, out=iout)
+        assert result is iout
+        assert_dtype_allclose(result, expected)
+
+        result = ia.mT @ ia
+        expected = a.T @ a
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dt", [dpnp.int32, dpnp.float32])
+    def test_syrk_strided(self, dt):
+        a = generate_random_numpy_array((20, 30), dtype=dt)
+        ia = dpnp.array(a)
+        a = a[::2, ::2]
+        ia = ia[::2, ::2]
+
+        result = dpnp.matmul(ia, ia.mT)
+        expected = numpy.matmul(a, a.T)
+        assert_dtype_allclose(result, expected)
+
+        result = ia.mT @ ia
+        expected = a.T @ a
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "order, out_order",
+        [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")],
+    )
+    def test_syrk_out_order(self, order, out_order):
+        a = generate_random_numpy_array((5, 4), order=order, low=-5, high=5)
+        out = numpy.empty((5, 5), dtype=a.dtype, order=out_order)
+        ia, iout = dpnp.array(a), dpnp.array(out)
+
+        expected = numpy.matmul(a, a.T, out=out)
+        result = dpnp.matmul(ia, ia.mT, out=iout)
+        assert result is iout
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("order", ["F", "C"])
+    def test_syrk_order(self, order):
+        a = generate_random_numpy_array((4, 6), order=order, low=-5, high=5)
+        ia = dpnp.array(a)
+        expected = numpy.matmul(a, a.T)
+        result = dpnp.matmul(ia, ia.mT)
+        assert_dtype_allclose(result, expected)
+
+    # added for coverage
+    def test_not_syrk(self):
+        a = generate_random_numpy_array((20, 20), low=-5, high=5)
+        ia = dpnp.array(a)
+
+        # Result must be square
+        b = a.T[:, ::2]
+        ib = ia.mT[:, ::2]
+        expected = numpy.matmul(a, b)
+        result = dpnp.matmul(ia, ib)
         assert_dtype_allclose(result, expected)
 
     def test_bool(self):
@@ -1436,9 +1499,9 @@ class TestMatmulInvalidCases:
 
 @testing.with_requires("numpy>=2.2")
 class TestMatvec:
-    def setup_method(self):
-        numpy.random.seed(42)
-
+    @pytest.mark.skipif(
+        is_win_platform() and not is_gpu_device(), reason="SAT-8073"
+    )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shape1, shape2",
@@ -1498,9 +1561,6 @@ class TestMatvec:
 
 
 class TestMultiDot:
-    def setup_method(self):
-        numpy.random.seed(70)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shapes",
@@ -1655,9 +1715,6 @@ class TestMultiDot:
 
 
 class TestTensordot:
-    def setup_method(self):
-        numpy.random.seed(87)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_scalar(self, dtype):
         a = 2
@@ -1789,9 +1846,6 @@ class TestTensordot:
 
 
 class TestVdot:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_scalar(self, dtype):
         a = numpy.array([3.5], dtype=dtype)
@@ -1882,9 +1936,6 @@ class TestVdot:
 
 @testing.with_requires("numpy>=2.0")
 class TestVecdot:
-    def setup_method(self):
-        numpy.random.seed(42)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shape1, shape2",
@@ -2162,9 +2213,9 @@ class TestVecdot:
 
 @testing.with_requires("numpy>=2.2")
 class TestVecmat:
-    def setup_method(self):
-        numpy.random.seed(42)
-
+    @pytest.mark.skipif(
+        is_win_platform() and not is_gpu_device(), reason="SAT-8073"
+    )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shape1, shape2",

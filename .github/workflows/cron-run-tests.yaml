@@ -26,6 +26,7 @@ jobs:
     if: github.event.repository.fork == false
 
     runs-on:  ${{ matrix.runner }}
+    timeout-minutes: 60
 
     defaults:
       run:
@@ -38,9 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
-        # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         runner: [ubuntu-22.04, ubuntu-24.04, windows-2022]
 
     steps:

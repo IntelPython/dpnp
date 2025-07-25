@@ -30,7 +30,6 @@
 #include <dpnp_iface.hpp>
 
 #include "dpnp_fptr.hpp"
-#include "dpnp_iterator.hpp"
 #include "dpnp_utils.hpp"
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"

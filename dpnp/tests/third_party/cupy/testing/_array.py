@@ -171,13 +171,14 @@ def assert_array_equal(
         )
 
     if strides_check:
-        if actual.strides != desired.strides:
+        strides = tuple(el // desired.itemsize for el in desired.strides)
+        if actual.strides != strides:
             msg = ["Strides are not equal:"]
             if err_msg:
                 msg = [msg[0] + " " + err_msg]
             if verbose:
                 msg.append(" x: {}".format(actual.strides))
-                msg.append(" y: {}".format(desired.strides))
+                msg.append(" y: {}".format(strides))
             raise AssertionError("\n".join(msg))
 
 

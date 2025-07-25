@@ -97,7 +97,8 @@ std::pair<sycl::event, sycl::event>
         evd_batch_dispatch_table[eig_vecs_type_id][eig_vals_type_id];
     if (evd_batch_fn == nullptr) {
         throw py::value_error(
-            "Types of input vectors and result array are mismatched.");
+            "No evd_batch implementation is available for the specified data "
+            "type of the input and output arrays.");
     }
 
     char *eig_vecs_data = eig_vecs.get_data();

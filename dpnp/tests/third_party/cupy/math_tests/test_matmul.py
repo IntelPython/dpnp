@@ -99,6 +99,7 @@ class TestMatmul(unittest.TestCase):
 )
 class TestMatmulOut(unittest.TestCase):
 
+    @testing.with_requires("numpy!=2.3.0")
     # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(name="dtype1", no_int8=True)
     @testing.for_all_dtypes(name="dtype2", no_int8=True)

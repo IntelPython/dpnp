@@ -415,9 +415,6 @@ def test_1in_1out(func, data, device):
         pytest.param("ldexp", [5, 5, 5, 5, 5], [0, 1, 2, 3, 4]),
         pytest.param("logaddexp", [-1, 2, 5, 9], [4, -3, 2, -8]),
         pytest.param("logaddexp2", [-1, 2, 5, 9], [4, -3, 2, -8]),
-        pytest.param(
-            "matmul", [[1.0, 0.0], [0.0, 1.0]], [[4.0, 1.0], [1.0, 2.0]]
-        ),
         pytest.param("maximum", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
         pytest.param("minimum", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
         pytest.param(
@@ -632,40 +629,50 @@ def test_bitwise_op_2in(op, device):
     assert_sycl_queue_equal(zy.sycl_queue, y.sycl_queue)
 
 
-@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-@pytest.mark.parametrize(
-    "shape1, shape2",
-    [
-        ((2, 4), (4,)),
-        ((4,), (4, 3)),
-        ((2, 4), (4, 3)),
-        ((2, 0), (0, 3)),
-        ((2, 4), (4, 0)),
-        ((4, 2, 3), (4, 3, 5)),
-        ((4, 2, 3), (4, 3, 1)),
-        ((4, 1, 3), (4, 3, 5)),
-        ((6, 7, 4, 3), (6, 7, 3, 5)),
-    ],
-    ids=[
-        "((2, 4), (4,))",
-        "((4,), (4, 3))",
-        "((2, 4), (4, 3))",
-        "((2, 0), (0, 3))",
-        "((2, 4), (4, 0))",
-        "((4, 2, 3), (4, 3, 5))",
-        "((4, 2, 3), (4, 3, 1))",
-        "((4, 1, 3), (4, 3, 5))",
-        "((6, 7, 4, 3), (6, 7, 3, 5))",
-    ],
-)
-def test_matmul(device, shape1, shape2):
-    a = dpnp.arange(numpy.prod(shape1), device=device).reshape(shape1)
-    b = dpnp.arange(numpy.prod(shape2), device=device).reshape(shape2)
-    result = dpnp.matmul(a, b)
+class TestMatmul:
+    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+    @pytest.mark.parametrize("dtype", [dpnp.int32, dpnp.float32])
+    @pytest.mark.parametrize(
+        "shape1, shape2",
+        [
+            ((2, 4), (4,)),
+            ((4,), (4, 3)),
+            ((2, 4), (4, 3)),
+            ((2, 0), (0, 3)),
+            ((2, 4), (4, 0)),
+            ((4, 2, 3), (4, 3, 5)),
+            ((4, 2, 3), (4, 3, 1)),
+            ((4, 1, 3), (4, 3, 5)),
+            ((6, 7, 4, 3), (6, 7, 3, 5)),
+        ],
+        ids=[
+            "((2, 4), (4,))",
+            "((4,), (4, 3))",
+            "((2, 4), (4, 3))",
+            "((2, 0), (0, 3))",
+            "((2, 4), (4, 0))",
+            "((4, 2, 3), (4, 3, 5))",
+            "((4, 2, 3), (4, 3, 1))",
+            "((4, 1, 3), (4, 3, 5))",
+            "((6, 7, 4, 3), (6, 7, 3, 5))",
+        ],
+    )
+    def test_matmul(self, device, dtype, shape1, shape2):
+        # int32 checks dpctl implementation and float32 checks oneMKL
+        a = dpnp.arange(numpy.prod(shape1), dtype=dtype, device=device)
+        b = dpnp.arange(numpy.prod(shape2), dtype=dtype, device=device)
+        a, b = a.reshape(shape1), b.reshape(shape2)
+        result = dpnp.matmul(a, b)
 
-    result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, a.sycl_queue)
-    assert_sycl_queue_equal(result_queue, b.sycl_queue)
+        result_queue = result.sycl_queue
+        assert_sycl_queue_equal(result_queue, a.sycl_queue)
+        assert_sycl_queue_equal(result_queue, b.sycl_queue)
+
+    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+    def test_matmul_syrk(self, device):
+        a = dpnp.arange(20, dtype=dpnp.float32, device=device).reshape(4, 5)
+        result = dpnp.matmul(a, a.mT)
+        assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
 
 
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
@@ -765,10 +772,7 @@ def test_random(func, args, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    # SAT-7414: w/a to avoid crash on Windows (observing on LNL and ARL)
-    # sycl_queue = dpctl.SyclQueue(device, property="in_order")
-    # TODO: remove the w/a once resolved
-    sycl_queue = dpctl.SyclQueue(device, property="enable_profiling")
+    sycl_queue = dpctl.SyclQueue(device, property="in_order")
     kwargs["device"] = None
     kwargs["sycl_queue"] = sycl_queue
 
@@ -807,10 +811,7 @@ def test_random_state(func, args, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    # SAT-7414: w/a to avoid crash on Windows (observing on LNL and ARL)
-    # sycl_queue = dpctl.SyclQueue(device, property="in_order")
-    # TODO: remove the w/a once resolved
-    sycl_queue = dpctl.SyclQueue(device, property="enable_profiling")
+    sycl_queue = dpctl.SyclQueue(device, property="in_order")
 
     # test with in-order SYCL queue per a device and passed as argument
     seed = (147, 56, 896) if device.is_cpu else 987654
