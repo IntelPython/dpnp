@@ -46,7 +46,11 @@ from typing import NamedTuple
 import dpctl
 import dpctl.tensor as dpt
 import numpy
-from dpctl.tensor._numpy_helper import AxisError, normalize_axis_index
+from dpctl.tensor._numpy_helper import (
+    AxisError,
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 import dpnp
 
@@ -3528,8 +3532,8 @@ def size(a, axis=None):
     ----------
     a : array_like
         Input data.
-    axis : {None, int}, optional
-        Axis along which the elements are counted.
+    axis : {None, int, tuple of ints}, optional
+        Axis or axes along which the elements are counted.
         By default, give the total number of elements.
 
         Default: ``None``.
@@ -3551,23 +3555,21 @@ def size(a, axis=None):
     >>> a = [[1, 2, 3], [4, 5, 6]]
     >>> np.size(a)
     6
-    >>> np.size(a, 1)
+    >>> np.size(a, axis=1)
     3
-    >>> np.size(a, 0)
+    >>> np.size(a, axis=0)
     2
-
-    >>> a = np.asarray(a)
-    >>> np.size(a)
+    >>> np.size(a, axis=(0, 1))
     6
-    >>> np.size(a, 1)
-    3
 
     """
 
     if dpnp.is_supported_array_type(a):
         if axis is None:
             return a.size
-        return a.shape[axis]
+        _shape = a.shape
+        _axis = normalize_axis_tuple(axis, a.ndim)
+        return math.prod(_shape[ax] for ax in _axis)
 
     return numpy.size(a, axis)
 
