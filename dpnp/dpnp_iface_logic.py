@@ -773,7 +773,7 @@ greater_equal = DPNPBinaryFunc(
 )
 
 
-def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False, new=False):
+def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     """
     Returns a boolean array where two arrays are element-wise equal within
     a tolerance.
@@ -872,37 +872,8 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False, new=False):
         rtol, atol, scalar_type=True, all_scalars=True
     )
 
-    # make sure b is an inexact type to avoid bad behavior on abs(MIN_INT)
-    if dpnp.isscalar(b):
-        dt = dpnp.result_type(a, b, 1.0, rtol, atol)
-        b = dpnp.asarray(
-            b, dtype=dt, sycl_queue=a.sycl_queue, usm_type=a.usm_type
-        )
-    elif dpnp.issubdtype(b, dpnp.integer):
-        dt = dpnp.result_type(b, 1.0, rtol, atol)
-        b = dpnp.astype(b, dt)
-
-    if not new:
-
-        # Firstly handle finite values:
-        # result = absolute(a - b) <= atol + rtol * absolute(b)
-        dt = dpnp.result_type(b, rtol, atol)
-        _b = dpnp.abs(b, dtype=dt)
-        _b *= rtol
-        _b += atol
-        result = less_equal(dpnp.abs(a - b), _b)
-
-        # Handle "inf" values: they are treated as equal if they are in the same
-        # place and of the same sign in both arrays
-        result &= isfinite(b)
-        result |= a == b
-
-        if equal_nan:
-            result |= isnan(a) & isnan(b)
-        return result
-
-    else:
-
+    # Use own SYCL kernel for scalar rtol/atol
+    if dpnp.isscalar(rtol) and dpnp.isscalar(atol):
         dt = dpnp.result_type(a, b, 1.0)
 
         if dpnp.isscalar(a):
@@ -926,10 +897,17 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False, new=False):
         else:
             usm_type, exec_q = get_usm_allocations([a, b])
 
-        # remove order="C"
-        a = dpnp.astype(a, dt, order="C", casting="same_kind", copy=False)
-        b = dpnp.astype(b, dt, order="C", casting="same_kind", copy=False)
+        a = dpnp.astype(a, dt, casting="same_kind", copy=False)
+        b = dpnp.astype(b, dt, casting="same_kind", copy=False)
 
+        # Convert complex rtol/atol to real values
+        # to avoid pybind11 cast errors and match NumPy behavior
+        if isinstance(rtol, complex):
+            rtol = abs(rtol)
+        if isinstance(atol, complex):
+            atol = abs(atol)
+
+        # pylint: disable=W0707
         try:
             res_shape = dpnp.broadcast_shapes(a.shape, b.shape)
         except ValueError:
@@ -949,7 +927,7 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False, new=False):
         )
 
         _manager = dpu.SequentialOrderManager[exec_q]
-        mem_ev, ht_ev = ufi._isclose(
+        mem_ev, ht_ev = ufi._isclose_scalar(
             a.get_array(),
             b.get_array(),
             rtol,
@@ -962,6 +940,33 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False, new=False):
         _manager.add_event_pair(mem_ev, ht_ev)
 
         return output
+
+    # make sure b is an inexact type to avoid bad behavior on abs(MIN_INT)
+    if dpnp.isscalar(b):
+        dt = dpnp.result_type(a, b, 1.0, rtol, atol)
+        b = dpnp.asarray(
+            b, dtype=dt, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+        )
+    elif dpnp.issubdtype(b, dpnp.integer):
+        dt = dpnp.result_type(b, 1.0, rtol, atol)
+        b = dpnp.astype(b, dt)
+
+    # Firstly handle finite values:
+    # result = absolute(a - b) <= atol + rtol * absolute(b)
+    dt = dpnp.result_type(b, rtol, atol)
+    _b = dpnp.abs(b, dtype=dt)
+    _b *= rtol
+    _b += atol
+    result = less_equal(dpnp.abs(a - b), _b)
+
+    # Handle "inf" values: they are treated as equal if they are in the same
+    # place and of the same sign in both arrays
+    result &= isfinite(b)
+    result |= a == b
+
+    if equal_nan:
+        result |= isnan(a) & isnan(b)
+    return result
 
 
 def iscomplex(x):
