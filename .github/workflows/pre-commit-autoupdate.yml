@@ -1,4 +1,4 @@
-name: Autoupdate pre-Commit
+name: Autoupdate pre-commit
 
 on:
   # For Branch-Protection check. Only the default branch is supported. See
