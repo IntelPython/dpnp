@@ -110,7 +110,7 @@ def _commit_descriptor(a, forward, in_place, c2c, a_strides, index, batch_fft):
     return dsc, out_strides
 
 
-def _complex_nd_fft(
+def _c2c_nd_fft(
     a,
     s,
     norm,
@@ -714,7 +714,7 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
             axes=axes[-1],
             batch_fft=a.ndim != 1,
         )
-        return _complex_nd_fft(
+        return _c2c_nd_fft(
             a,
             s=s[:-1],
             norm=norm,
@@ -728,7 +728,7 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
     if c2r:
         # an N-D complex-to-complex FFT is performed on all axes except the
         # last one then a 1D complex-to-real FFT is performed on the last axis
-        a = _complex_nd_fft(
+        a = _c2c_nd_fft(
             a,
             s=s[:-1],
             norm=norm,
@@ -744,11 +744,27 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
         a = _make_array_hermitian(
             a, axes[-1], dpnp.are_same_logical_tensors(a, a_orig)
         )
-        return _fft(a, norm, out, forward, False, False, axes[-1], a.ndim != 1)
+        return _fft(
+            a,
+            norm=norm,
+            out=out,
+            forward=forward,
+            in_place=False,
+            c2c=False,
+            axes=axes[-1],
+            batch_fft=a.ndim != 1,
+        )
 
     # c2c
-    return _complex_nd_fft(
-        a, s, norm, out, forward, in_place, axes, a.ndim != len_axes
+    return _c2c_nd_fft(
+        a,
+        s=s,
+        norm=norm,
+        out=out,
+        forward=forward,
+        in_place=in_place,
+        axes=axes,
+        batch_fft=a.ndim != len_axes,
     )
 
 
