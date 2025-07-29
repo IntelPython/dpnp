@@ -386,7 +386,6 @@ class TestArrayAsType:
         dst = astype_without_warning(src, dst_dtype, order="K")
         return get_strides(xp, dst)
 
-    @pytest.mark.skip("dpctl-2121")
     @testing.numpy_cupy_array_equal()
     def test_astype_boolean_view(self, xp):
         # See #4354
