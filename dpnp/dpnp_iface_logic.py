@@ -900,12 +900,12 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
         a = dpnp.astype(a, dt, casting="same_kind", copy=False)
         b = dpnp.astype(b, dt, casting="same_kind", copy=False)
 
-        # Convert complex rtol/atol to real values
+        # Convert complex rtol/atol to to their real parts
         # to avoid pybind11 cast errors and match NumPy behavior
         if isinstance(rtol, complex):
-            rtol = abs(rtol)
+            rtol = rtol.real
         if isinstance(atol, complex):
-            atol = abs(atol)
+            atol = atol.real
 
         # pylint: disable=W0707
         try:
