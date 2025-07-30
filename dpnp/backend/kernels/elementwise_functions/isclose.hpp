@@ -25,6 +25,13 @@
 
 #pragma once
 
+#define SYCL_EXT_ONEAPI_COMPLEX
+#if __has_include(<sycl/ext/oneapi/experimental/sycl_complex.hpp>)
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#else
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
+#endif
+
 #include <complex>
 #include <cstddef>
 #include <vector>
@@ -39,6 +46,7 @@
 
 namespace dpnp::kernels::isclose
 {
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename T>
 inline bool isclose(const T a,
@@ -47,14 +55,39 @@ inline bool isclose(const T a,
                     const T atol,
                     const bool equal_nan)
 {
-    if (sycl::isnan(a) || sycl::isnan(b)) {
-        // static cast<T>?
-        return equal_nan && sycl::isnan(a) && sycl::isnan(b);
+    if (sycl::isfinite(a) && sycl::isfinite(b)) {
+        return sycl::fabs(a - b) <= atol + rtol * sycl::fabs(b);
     }
-    if (sycl::isinf(a) || sycl::isinf(b)) {
-        return a == b;
+
+    if (sycl::isnan(a) && sycl::isnan(b)) {
+        return equal_nan;
     }
-    return sycl::fabs(a - b) <= atol + rtol * sycl::fabs(b);
+
+    return a == b;
+}
+
+template <typename T>
+inline bool isclose(const std::complex<T> a,
+                    const std::complex<T> b,
+                    const T rtol,
+                    const T atol,
+                    const bool equal_nan)
+{
+    const bool a_finite = sycl::isfinite(a.real()) && sycl::isfinite(a.imag());
+    const bool b_finite = sycl::isfinite(b.real()) && sycl::isfinite(b.imag());
+
+    if (a_finite && b_finite) {
+        return exprm_ns::abs(exprm_ns::complex<T>(a - b)) <=
+               atol + rtol * exprm_ns::abs(exprm_ns::complex<T>(b));
+    }
+
+    if (sycl::isnan(a.real()) && sycl::isnan(a.imag()) &&
+        sycl::isnan(b.real()) && sycl::isnan(b.imag()))
+    {
+        return equal_nan;
+    }
+
+    return a == b;
 }
 
 template <typename T,
@@ -95,18 +128,8 @@ public:
         const dpctl::tensor::ssize_t &out_offset =
             three_offsets_.get_third_offset();
 
-        using dpctl::tensor::type_utils::is_complex_v;
-        if constexpr (is_complex_v<T>) {
-            T z_a = a_[inp1_offset];
-            T z_b = b_[inp2_offset];
-            bool x = isclose(z_a.real(), z_b.real(), rtol_, atol_, equal_nan_);
-            bool y = isclose(z_a.imag(), z_b.imag(), rtol_, atol_, equal_nan_);
-            out_[out_offset] = x && y;
-        }
-        else {
-            out_[out_offset] = isclose(a_[inp1_offset], b_[inp2_offset], rtol_,
-                                       atol_, equal_nan_);
-        }
+        out_[out_offset] =
+            isclose(a_[inp1_offset], b_[inp2_offset], rtol_, atol_, equal_nan_);
     }
 };
 
@@ -201,19 +224,8 @@ public:
                 (gid / sgSize) * (elems_per_sg - sgSize) + gid;
             const std::size_t end = std::min(nelems_, start + elems_per_sg);
             for (std::size_t offset = start; offset < end; offset += sgSize) {
-                if constexpr (is_complex_v<T>) {
-                    T z_a = a_[offset];
-                    T z_b = b_[offset];
-                    bool x = isclose(z_a.real(), z_b.real(), rtol_, atol_,
-                                     equal_nan_);
-                    bool y = isclose(z_a.imag(), z_b.imag(), rtol_, atol_,
-                                     equal_nan_);
-                    out_[offset] = x && y;
-                }
-                else {
-                    out_[offset] = isclose(a_[offset], b_[offset], rtol_, atol_,
-                                           equal_nan_);
-                }
+                out_[offset] =
+                    isclose(a_[offset], b_[offset], rtol_, atol_, equal_nan_);
             }
         }
     }
