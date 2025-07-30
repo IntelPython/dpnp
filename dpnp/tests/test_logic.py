@@ -10,7 +10,9 @@ from numpy.testing import (
 import dpnp
 
 from .helper import (
+    generate_random_numpy_array,
     get_all_dtypes,
+    get_complex_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_float_dtypes,
@@ -554,6 +556,21 @@ class TestIsClose:
         dpnp_res = dpnp.isclose(dpnp_a, dpnp_b, rtol=rtol, atol=atol)
         assert_allclose(dpnp_res, np_res)
 
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("shape", [(4, 4), (16, 16), (4, 4, 4)])
+    def test_isclose_complex(self, dtype, shape):
+        a = generate_random_numpy_array(shape, dtype=dtype, seed_value=81)
+        b = a.copy()
+
+        b = b + (1e-6 + 1e-6j)
+
+        dpnp_a = dpnp.array(a, dtype=dtype)
+        dpnp_b = dpnp.array(b, dtype=dtype)
+
+        np_res = numpy.isclose(a, b)
+        dpnp_res = dpnp.isclose(dpnp_a, dpnp_b)
+        assert_allclose(dpnp_res, np_res)
+
     @pytest.mark.parametrize(
         "sh_a, sh_b",
         [
@@ -603,14 +620,14 @@ class TestIsClose:
     @pytest.mark.parametrize(
         "rtol, atol",
         [
-            (1e-05 + 1j, 1e-08),
-            (1e-05, 1e-08 + 1j),
-            (1e-05 + 1j, 1e-08 + 1j),
+            (0 + 1e-5j, 1e-08),
+            (1e-05, 0 + 1e-8j),
+            (0 + 1e-5j, 0 + 1e-8j),
         ],
     )
     def test_rtol_atol_complex(self, rtol, atol):
-        a = dpnp.array([1.0, 2.0])
-        b = dpnp.array([1.0, 2.0 + 1e-7])
+        a = dpnp.array([1.0, 1.0])
+        b = dpnp.array([1.0, 1.0 + 1e-6])
 
         dpnp_res = dpnp.isclose(a, b, rtol=rtol, atol=atol)
         np_res = numpy.isclose(a.asnumpy(), b.asnumpy(), rtol=rtol, atol=atol)
