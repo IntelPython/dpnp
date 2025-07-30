@@ -84,6 +84,79 @@ __all__ = [
 ]
 
 
+def _isclose_scalar_tol(a, b, rtol, atol, equal_nan):
+    """
+    Specialized implementation of dpnp.isclose() for scalar rtol and atol
+    using a dedicated SYCL kernel.
+    """
+    dt = dpnp.result_type(a, b, 1.0)
+
+    if dpnp.isscalar(a):
+        usm_type = b.usm_type
+        exec_q = b.sycl_queue
+        a = dpnp.array(
+            a,
+            dt,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
+        )
+    elif dpnp.isscalar(b):
+        usm_type = a.usm_type
+        exec_q = a.sycl_queue
+        b = dpnp.array(
+            b,
+            dt,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
+        )
+    else:
+        usm_type, exec_q = get_usm_allocations([a, b])
+
+    a = dpnp.astype(a, dt, casting="same_kind", copy=False)
+    b = dpnp.astype(b, dt, casting="same_kind", copy=False)
+
+    # Convert complex rtol/atol to to their real parts
+    # to avoid pybind11 cast errors and match NumPy behavior
+    if isinstance(rtol, complex):
+        rtol = rtol.real
+    if isinstance(atol, complex):
+        atol = atol.real
+
+    # pylint: disable=W0707
+    try:
+        res_shape = dpnp.broadcast_shapes(a.shape, b.shape)
+    except ValueError:
+        raise ValueError(
+            "operands could not be broadcast together with shapes "
+            f"{a.shape} and {b.shape}"
+        )
+
+    if a.shape != res_shape:
+        a = dpnp.broadcast_to(a, res_shape)
+    if b.shape != res_shape:
+        b = dpnp.broadcast_to(b, res_shape)
+
+    out_dtype = dpnp.bool
+    output = dpnp.empty(
+        res_shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
+    )
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+    mem_ev, ht_ev = ufi._isclose_scalar(
+        a.get_array(),
+        b.get_array(),
+        rtol,
+        atol,
+        equal_nan,
+        output.get_array(),
+        exec_q,
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(mem_ev, ht_ev)
+
+    return output
+
+
 def all(a, /, axis=None, out=None, keepdims=False, *, where=True):
     """
     Test whether all array elements along a given axis evaluate to ``True``.
@@ -874,72 +947,7 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
 
     # Use own SYCL kernel for scalar rtol/atol
     if dpnp.isscalar(rtol) and dpnp.isscalar(atol):
-        dt = dpnp.result_type(a, b, 1.0)
-
-        if dpnp.isscalar(a):
-            usm_type = b.usm_type
-            exec_q = b.sycl_queue
-            a = dpnp.array(
-                a,
-                dt,
-                usm_type=usm_type,
-                sycl_queue=exec_q,
-            )
-        elif dpnp.isscalar(b):
-            usm_type = a.usm_type
-            exec_q = a.sycl_queue
-            b = dpnp.array(
-                b,
-                dt,
-                usm_type=usm_type,
-                sycl_queue=exec_q,
-            )
-        else:
-            usm_type, exec_q = get_usm_allocations([a, b])
-
-        a = dpnp.astype(a, dt, casting="same_kind", copy=False)
-        b = dpnp.astype(b, dt, casting="same_kind", copy=False)
-
-        # Convert complex rtol/atol to to their real parts
-        # to avoid pybind11 cast errors and match NumPy behavior
-        if isinstance(rtol, complex):
-            rtol = rtol.real
-        if isinstance(atol, complex):
-            atol = atol.real
-
-        # pylint: disable=W0707
-        try:
-            res_shape = dpnp.broadcast_shapes(a.shape, b.shape)
-        except ValueError:
-            raise ValueError(
-                "operands could not be broadcast together with shapes "
-                f"{a.shape} and {b.shape}"
-            )
-
-        if a.shape != res_shape:
-            a = dpnp.broadcast_to(a, res_shape)
-        if b.shape != res_shape:
-            b = dpnp.broadcast_to(b, res_shape)
-
-        out_dtype = dpnp.bool
-        output = dpnp.empty(
-            res_shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
-        )
-
-        _manager = dpu.SequentialOrderManager[exec_q]
-        mem_ev, ht_ev = ufi._isclose_scalar(
-            a.get_array(),
-            b.get_array(),
-            rtol,
-            atol,
-            equal_nan,
-            output.get_array(),
-            exec_q,
-            depends=_manager.submitted_events,
-        )
-        _manager.add_event_pair(mem_ev, ht_ev)
-
-        return output
+        return _isclose_scalar_tol(a, b, rtol, atol, equal_nan)
 
     # make sure b is an inexact type to avoid bad behavior on abs(MIN_INT)
     if dpnp.isscalar(b):
