@@ -45,7 +45,6 @@
 #include "../../elementwise_functions/simplify_iteration_space.hpp"
 
 // dpctl tensor headers
-#include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
@@ -58,7 +57,7 @@
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-using ext::common::value_type_of;
+using ext::common::value_type_of_t;
 using ext::validation::array_names;
 
 using ext::common::dtype_from_typenum;
@@ -68,15 +67,13 @@ using ext::validation::check_num_dims;
 using ext::validation::check_queue;
 using ext::validation::check_same_dtype;
 using ext::validation::check_same_size;
+using ext::validation::check_writable;
 
 namespace dpnp::extensions::ufunc
 {
 
 namespace impl
 {
-
-template <typename T>
-using value_type_of_t = typename value_type_of<T>::type;
 
 typedef sycl::event (*isclose_strided_scalar_fn_ptr_t)(
     sycl::queue &,
@@ -181,7 +178,7 @@ std::pair<sycl::event, sycl::event>
 
     check_queue({&a, &b, &res}, names, exec_q);
     check_no_overlap({&a, &b}, {&res}, names);
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(res);
+    check_writable({&res}, names);
 
     auto types = td_ns::usm_ndarray_types();
     // a_typeid == b_typeid (check_same_dtype(&a, &b, names))
