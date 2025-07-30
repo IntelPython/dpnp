@@ -80,8 +80,8 @@ using value_type_of_t = typename value_type_of<T>::type;
 
 typedef sycl::event (*isclose_strided_scalar_fn_ptr_t)(
     sycl::queue &,
-    int,                 // nd
-    std::size_t,         // nelems
+    const int,           // nd
+    const std::size_t,   // nelems
     const py::ssize_t *, // shape_strides
     const py::object &,  // rtol
     const py::object &,  // atol
@@ -96,8 +96,8 @@ typedef sycl::event (*isclose_strided_scalar_fn_ptr_t)(
 
 template <typename T>
 sycl::event isclose_strided_scalar_call(sycl::queue &exec_q,
-                                        int nd,
-                                        std::size_t nelems,
+                                        const int nd,
+                                        const std::size_t nelems,
                                         const py::ssize_t *shape_strides,
                                         const py::object &py_rtol,
                                         const py::object &py_atol,
@@ -124,7 +124,7 @@ sycl::event isclose_strided_scalar_call(sycl::queue &exec_q,
 
 typedef sycl::event (*isclose_contig_scalar_fn_ptr_t)(
     sycl::queue &,
-    std::size_t,        // nelems
+    const std::size_t,  // nelems
     const py::object &, // rtol
     const py::object &, // atol
     const py::object &, // equal_nan
@@ -135,7 +135,7 @@ typedef sycl::event (*isclose_contig_scalar_fn_ptr_t)(
 
 template <typename T>
 sycl::event isclose_contig_scalar_call(sycl::queue &q,
-                                       std::size_t nelems,
+                                       const std::size_t nelems,
                                        const py::object &py_rtol,
                                        const py::object &py_atol,
                                        const py::object &py_equal_nan,
@@ -214,17 +214,19 @@ std::pair<sycl::event, sycl::event>
     char *res_data = res.get_data();
 
     // handle contiguous inputs
-    bool is_a_c_contig = a.is_c_contiguous();
-    bool is_a_f_contig = a.is_f_contiguous();
+    const bool is_a_c_contig = a.is_c_contiguous();
+    const bool is_a_f_contig = a.is_f_contiguous();
 
-    bool is_b_c_contig = b.is_c_contiguous();
-    bool is_b_f_contig = b.is_f_contiguous();
+    const bool is_b_c_contig = b.is_c_contiguous();
+    const bool is_b_f_contig = b.is_f_contiguous();
 
-    bool is_res_c_contig = res.is_c_contiguous();
-    bool is_res_f_contig = res.is_f_contiguous();
+    const bool is_res_c_contig = res.is_c_contiguous();
+    const bool is_res_f_contig = res.is_f_contiguous();
 
-    bool all_c_contig = (is_a_c_contig && is_b_c_contig && is_res_c_contig);
-    bool all_f_contig = (is_a_f_contig && is_b_f_contig && is_res_f_contig);
+    const bool all_c_contig =
+        (is_a_c_contig && is_b_c_contig && is_res_c_contig);
+    const bool all_f_contig =
+        (is_a_f_contig && is_b_f_contig && is_res_f_contig);
 
     if (all_c_contig || all_f_contig) {
         auto contig_fn = isclose_contig_dispatch_vector[a_b_typeid];
@@ -362,8 +364,7 @@ struct IsCloseStridedScalarFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename IsCloseOutputType<T>::value_type,
-                                     void>)
-        {
+                                     void>) {
             return nullptr;
         }
         else {
@@ -378,8 +379,7 @@ struct IsCloseContigScalarFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename IsCloseOutputType<T>::value_type,
-                                     void>)
-        {
+                                     void>) {
             return nullptr;
         }
         else {
