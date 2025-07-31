@@ -49,6 +49,8 @@ inline bool isclose(const T a,
                     const T atol,
                     const bool equal_nan)
 {
+    static_assert(std::is_floating_point_v<T> || std::is_same_v<T, sycl::half>);
+
     if (sycl::isfinite(a) && sycl::isfinite(b)) {
         return sycl::fabs(a - b) <= atol + rtol * sycl::fabs(b);
     }
