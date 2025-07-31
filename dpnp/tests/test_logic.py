@@ -519,26 +519,6 @@ def test_infinity_sign_errors(func):
 
 
 class TestIsClose:
-    @pytest.mark.parametrize("val", [1.0, numpy.inf, -numpy.inf, numpy.nan])
-    def test_input_0d(self, val):
-        dp_arr = dpnp.array(val)
-        np_arr = numpy.array(val)
-
-        # array & scalar
-        dp_res = dpnp.isclose(dp_arr, val)
-        np_res = numpy.isclose(np_arr, val)
-        assert_allclose(dp_res, np_res)
-
-        # scalar & array
-        dp_res = dpnp.isclose(val, dp_arr)
-        np_res = numpy.isclose(val, np_arr)
-        assert_allclose(dp_res, np_res)
-
-        # array & array
-        dp_res = dpnp.isclose(dp_arr, dp_arr)
-        np_res = numpy.isclose(np_arr, np_arr)
-        assert_allclose(dp_res, np_res)
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "rtol", [1e-5, dpnp.array(1e-5), dpnp.full((10,), 1e-5)]
@@ -573,6 +553,51 @@ class TestIsClose:
         assert_allclose(dpnp_res, np_res)
 
     @pytest.mark.parametrize(
+        "rtol, atol",
+        [
+            (1e-5, 1e-8),
+            (dpnp.array(1e-5), dpnp.array(1e-8)),
+        ],
+    )
+    def test_empty_input(self, rtol, atol):
+        a = numpy.array([])
+        b = numpy.array([])
+
+        dpnp_a = dpnp.array(a)
+        dpnp_b = dpnp.array(b)
+
+        np_res = numpy.isclose(a, b, rtol=1e-5, atol=1e-8)
+        dpnp_res = dpnp.isclose(dpnp_a, dpnp_b, rtol=rtol, atol=atol)
+        assert_allclose(dpnp_res, np_res)
+
+    @pytest.mark.parametrize(
+        "rtol, atol",
+        [
+            (1e-5, 1e-8),
+            (dpnp.array(1e-5), dpnp.array(1e-8)),
+        ],
+    )
+    @pytest.mark.parametrize("val", [1.0, numpy.inf, -numpy.inf, numpy.nan])
+    def test_input_0d(self, val, rtol, atol):
+        dp_arr = dpnp.array(val)
+        np_arr = numpy.array(val)
+
+        # array & scalar
+        dp_res = dpnp.isclose(dp_arr, val, rtol=rtol, atol=atol)
+        np_res = numpy.isclose(np_arr, val, rtol=1e-5, atol=1e-8)
+        assert_allclose(dp_res, np_res)
+
+        # scalar & array
+        dp_res = dpnp.isclose(val, dp_arr, rtol=rtol, atol=atol)
+        np_res = numpy.isclose(val, np_arr, rtol=1e-5, atol=1e-8)
+        assert_allclose(dp_res, np_res)
+
+        # array & array
+        dp_res = dpnp.isclose(dp_arr, dp_arr, rtol=rtol, atol=atol)
+        np_res = numpy.isclose(np_arr, np_arr, rtol=1e-5, atol=1e-8)
+        assert_allclose(dp_res, np_res)
+
+    @pytest.mark.parametrize(
         "sh_a, sh_b",
         [
             ((10,), (1,)),
@@ -592,15 +617,22 @@ class TestIsClose:
         dp_res = dpnp.isclose(a_dp, b_dp)
         assert_allclose(dp_res, np_res)
 
-    def test_equal_nan(self):
+    @pytest.mark.parametrize(
+        "rtol, atol",
+        [
+            (1e-5, 1e-8),
+            (dpnp.array(1e-5), dpnp.array(1e-8)),
+        ],
+    )
+    def test_equal_nan(self, rtol, atol):
         a = numpy.array([numpy.nan, 1.0])
         b = numpy.array([numpy.nan, 1.0])
 
         dp_a = dpnp.array(a)
         dp_b = dpnp.array(b)
 
-        np_res = numpy.isclose(a, b, equal_nan=True)
-        dp_res = dpnp.isclose(dp_a, dp_b, equal_nan=True)
+        np_res = numpy.isclose(a, b, rtol=1e-5, atol=1e-8, equal_nan=True)
+        dp_res = dpnp.isclose(dp_a, dp_b, rtol=rtol, atol=atol, equal_nan=True)
         assert_allclose(dp_res, np_res)
 
     # array-like rtol/atol support requires NumPy >= 2.0
