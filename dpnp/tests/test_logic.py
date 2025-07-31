@@ -17,6 +17,7 @@ from .helper import (
     get_float_dtypes,
     get_integer_float_dtypes,
 )
+from .third_party.cupy import testing
 
 
 class TestAllAny:
@@ -602,6 +603,8 @@ class TestIsClose:
         dp_res = dpnp.isclose(dp_a, dp_b, equal_nan=True)
         assert_allclose(dp_res, np_res)
 
+    # array-like rtol/atol support requires NumPy >= 2.0
+    @testing.with_requires("numpy>=2.0")
     def test_rtol_atol_arrays(self):
         a = numpy.array([2.1, 2.1, 2.1, 2.1, 5, numpy.nan])
         b = numpy.array([2, 2, 2, 2, numpy.nan, 5])
@@ -633,7 +636,9 @@ class TestIsClose:
         np_res = numpy.isclose(a.asnumpy(), b.asnumpy(), rtol=rtol, atol=atol)
         assert_allclose(dpnp_res, np_res)
 
-    def test_rtol_atol_nep50_broadcasting(self):
+    # NEP 50: float32 vs Python float comparison requires NumPy >= 2.0
+    @testing.with_requires("numpy>=2.0")
+    def test_rtol_atol_nep50(self):
         below_one = float(1.0 - numpy.finfo("f8").eps)
         f32 = numpy.array(below_one, dtype="f4")
         dp_f32 = dpnp.array(f32)
