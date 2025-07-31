@@ -23,22 +23,16 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <algorithm>
 #include <complex>
 #include <cstddef>
 #include <stdexcept>
-#include <string>
-#include <tuple>
 #include <type_traits>
-#include <utility>
 #include <vector>
 
 #include <sycl/sycl.hpp>
 
 #include "dpctl4pybind11.hpp"
-#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "kernels/elementwise_functions/isclose.hpp"
 
@@ -47,7 +41,6 @@
 // dpctl tensor headers
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
-#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
