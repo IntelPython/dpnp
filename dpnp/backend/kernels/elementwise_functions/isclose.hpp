@@ -279,11 +279,8 @@ sycl::event
                                const scT atol,
                                const bool equal_nan,
                                const char *a_cp,
-                               ssize_t a_offset,
                                const char *b_cp,
-                               ssize_t b_offset,
                                char *out_cp,
-                               ssize_t out_offset,
                                const std::vector<sycl::event> &depends = {})
 {
     constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
@@ -298,12 +295,11 @@ sycl::event
     const auto gws_range = sycl::range<1>(n_groups * lws);
     const auto lws_range = sycl::range<1>(lws);
 
-    // ? + offset
-    const T *a_tp = reinterpret_cast<const T *>(a_cp) + a_offset;
-    const T *b_tp = reinterpret_cast<const T *>(b_cp) + b_offset;
+    const T *a_tp = reinterpret_cast<const T *>(a_cp);
+    const T *b_tp = reinterpret_cast<const T *>(b_cp);
 
     using resTy = bool;
-    resTy *out_tp = reinterpret_cast<resTy *>(out_cp) + out_offset;
+    resTy *out_tp = reinterpret_cast<resTy *>(out_cp);
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);

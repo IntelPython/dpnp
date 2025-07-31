@@ -143,8 +143,7 @@ sycl::event isclose_contig_scalar_call(sycl::queue &q,
     const bool equal_nan = py::cast<bool>(py_equal_nan);
 
     return dpnp::kernels::isclose::isclose_contig_scalar_impl<T, scT>(
-        q, nelems, rtol, atol, equal_nan, in1_p, 0, in2_p, 0, out_p, 0,
-        depends);
+        q, nelems, rtol, atol, equal_nan, in1_p, in2_p, out_p, depends);
 }
 
 isclose_strided_scalar_fn_ptr_t
