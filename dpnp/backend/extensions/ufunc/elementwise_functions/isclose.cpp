@@ -33,6 +33,7 @@
 
 #include "dpctl4pybind11.hpp"
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "kernels/elementwise_functions/isclose.hpp"
 
