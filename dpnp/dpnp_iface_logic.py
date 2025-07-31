@@ -124,21 +124,16 @@ def _isclose_scalar_tol(a, b, rtol, atol, equal_nan):
 
     # pylint: disable=W0707
     try:
-        res_shape = dpnp.broadcast_shapes(a.shape, b.shape)
+        a, b = dpnp.broadcast_arrays(a, b)
     except ValueError:
         raise ValueError(
             "operands could not be broadcast together with shapes "
             f"{a.shape} and {b.shape}"
         )
 
-    if a.shape != res_shape:
-        a = dpnp.broadcast_to(a, res_shape)
-    if b.shape != res_shape:
-        b = dpnp.broadcast_to(b, res_shape)
-
     out_dtype = dpnp.bool
     output = dpnp.empty(
-        res_shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
+        a.shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
     )
 
     _manager = dpu.SequentialOrderManager[exec_q]
