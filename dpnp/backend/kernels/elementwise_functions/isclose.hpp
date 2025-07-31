@@ -25,13 +25,7 @@
 
 #pragma once
 
-#define SYCL_EXT_ONEAPI_COMPLEX
-#if __has_include(<sycl/ext/oneapi/experimental/sycl_complex.hpp>)
-#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
-#else
-#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
-#endif
-
+#include <algorithm>
 #include <complex>
 #include <cstddef>
 #include <vector>
@@ -40,13 +34,13 @@
 // dpctl tensor headers
 #include "kernels/alignment.hpp"
 #include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/elementwise_functions/sycl_complex.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpnp::kernels::isclose
 {
-namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename T>
 inline bool isclose(const T a,
