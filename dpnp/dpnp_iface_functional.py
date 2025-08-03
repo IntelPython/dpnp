@@ -36,6 +36,7 @@ it contains:
 
 """
 
+# pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
 import dpctl.utils as dpu
@@ -339,9 +340,11 @@ def piecewise(x, condlist, funclist):
     dpnp.check_supported_arrays_type(x)
     if isinstance(condlist, tuple):
         condlist = list(condlist)
-    if isinstance(condlist, dpnp.ndarray) and condlist.ndim in [0, 1]:
+    elif isinstance(condlist, dpnp.ndarray) and condlist.ndim in [0, 1]:
         condlist = [condlist]
-    if dpnp.isscalar(condlist) or (dpnp.isscalar(condlist[0]) and x.ndim != 0):
+    elif dpnp.isscalar(condlist) or (
+        dpnp.isscalar(condlist[0]) and x.ndim != 0
+    ):
         # convert scalar to a list of one array
         # convert list of scalars to a list of one array
         condlist = [

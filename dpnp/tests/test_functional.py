@@ -94,10 +94,7 @@ class TestPiecewise:
         ia = dpnp.array(a)
         funclist = [-1.5 - 1j * 1.5, 1.5 + 1j * 1.5]
 
-        if (
-            numpy.issubdtype(dtype, numpy.complexfloating)
-            or dtype == numpy.bool
-        ):
+        if numpy.issubdtype(dtype, numpy.complexfloating) or dtype == dpnp.bool:
             expected = numpy.piecewise(a, [a < 0, a >= 0], funclist)
             result = dpnp.piecewise(ia, [ia < 0, ia >= 0], funclist)
             assert a.dtype == result.dtype
