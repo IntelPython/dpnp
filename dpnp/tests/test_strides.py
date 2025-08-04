@@ -2,6 +2,7 @@ import math
 
 import numpy
 import pytest
+import scipy
 from numpy.testing import assert_array_equal
 
 import dpnp
@@ -12,6 +13,7 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
+    get_float_dtypes,
     get_integer_dtypes,
     get_integer_float_dtypes,
     numpy_version,
@@ -164,21 +166,14 @@ def test_reduce_hypot(dtype, stride):
     assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
 
-@pytest.mark.parametrize(
-    "dtype",
-    get_integer_float_dtypes(
-        no_unsigned=True, xfail_dtypes=[dpnp.int8, dpnp.int16]
-    ),
-)
-def test_erf(dtype):
-    a = dpnp.linspace(-1, 1, num=10, dtype=dtype)
-    b = a[::2]
-    result = dpnp.erf(b)
+@pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
+@pytest.mark.parametrize("stride", [2, -1, -3])
+def test_erf(dtype, stride):
+    x = generate_random_numpy_array(10, dtype=dtype)
+    a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    expected = numpy.empty_like(b.asnumpy())
-    for idx, val in enumerate(b):
-        expected[idx] = math.erf(val)
-
+    result = dpnp.special.erf(ia)
+    expected = scipy.special.erf(a)
     assert_dtype_allclose(result, expected)
 
 
