@@ -17,6 +17,7 @@ from .helper import (
     get_integer_dtypes,
     get_integer_float_dtypes,
     numpy_version,
+    scipy_version,
 )
 
 
@@ -174,7 +175,10 @@ def test_erf(dtype, stride):
 
     result = dpnp.special.erf(ia)
     expected = scipy.special.erf(a)
-    assert_dtype_allclose(result, expected)
+
+    # scipy >= 0.16.0 returns float64, but dpnp returns float32
+    only_type_kind = scipy_version() >= "0.16.0" and (dtype == dpnp.float16)
+    assert_dtype_allclose(result, expected, check_only_type_kind=only_type_kind)
 
 
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")

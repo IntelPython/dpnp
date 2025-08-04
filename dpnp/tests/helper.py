@@ -3,6 +3,7 @@ from sys import platform
 import dpctl
 import numpy
 import pytest
+import scipy
 from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
@@ -506,3 +507,7 @@ def requires_intel_mkl_version(version):  # pragma: no cover
 
     build_deps = numpy.show_config(mode="dicts")["Build Dependencies"]
     return build_deps["blas"]["version"] >= version
+
+
+def scipy_version():
+    return scipy.__version__
