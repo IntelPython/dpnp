@@ -63,8 +63,7 @@ template <typename T>
 struct OutputType
 {
     using value_type =
-        typename std::disjunction<td_ns::TypeMapResultEntry<T, sycl::half>,
-                                  td_ns::TypeMapResultEntry<T, float>,
+        typename std::disjunction<td_ns::TypeMapResultEntry<T, float>,
                                   td_ns::TypeMapResultEntry<T, double>,
                                   td_ns::DefaultResultEntry<void>>::result_type;
 };
