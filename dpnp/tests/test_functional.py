@@ -136,7 +136,17 @@ class TestPiecewise:
         result = dpnp.piecewise(ia, [dpnp.array([1, 0])], [1])
         assert_array_equal(result, expected)
 
-    def test_error(self):
+        # List of conditions: single bool tuple
+        expected = numpy.piecewise(a, ([True, False], [False, True]), [1, -4])
+        result = dpnp.piecewise(ia, ([True, False], [False, True]), [1, -4])
+        assert_array_equal(result, expected)
+
+        # Condition is single bool tuple
+        expected = numpy.piecewise(a, (True, False), [1])
+        result = dpnp.piecewise(ia, (True, False), [1])
+        assert_array_equal(result, expected)
+
+    def test_error_dpnp(self):
         ia = dpnp.array([0, 0])
         # values cannot be a callable function
         assert_raises_regex(
@@ -158,13 +168,35 @@ class TestPiecewise:
             [-1, lambda x: 1],
         )
 
+        # funclist is not array-like
+        assert_raises_regex(
+            TypeError,
+            "funclist must be a sequence of scalars",
+            dpnp.piecewise,
+            ia,
+            [dpnp.array([True, False])],
+            1,
+        )
+
+        assert_raises_regex(
+            TypeError,
+            "object of type",
+            numpy.piecewise,
+            ia.asnumpy(),
+            [numpy.array([True, False])],
+            1,
+        )
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_error(self, xp):
+        ia = xp.array([0, 0])
         # not enough functions
         assert_raises_regex(
             ValueError,
             "1 or 2 functions are expected",
-            dpnp.piecewise,
+            xp.piecewise,
             ia,
-            [dpnp.array([True, False])],
+            [xp.array([True, False])],
             [],
         )
 
@@ -172,9 +204,9 @@ class TestPiecewise:
         assert_raises_regex(
             ValueError,
             "1 or 2 functions are expected",
-            dpnp.piecewise,
+            xp.piecewise,
             ia,
-            [dpnp.array([True, False])],
+            [xp.array([True, False])],
             [1, 2, 3],
         )
 
