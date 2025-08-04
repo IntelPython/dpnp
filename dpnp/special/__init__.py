@@ -24,6 +24,21 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+"""
+``dpnp.special``
+================
+
+The submodule provides a large collection of mathematical functions that are
+widely used in science and engineering. It includes special functions of
+mathematical physics (e.g., Bessel, elliptic, gamma,  hypergeometric), as well
+as standard functions like `erf`, `sinc`, and `logit`.
+
+The functions in the submodule invokes VM implementation from pybind11
+extension above OneMKL VM if possible or uses a dedicated SYCL kernel, or,
+alternatively, is implemented through a subset of python calls.
+
+"""
+
 from ._erf import (
     erf,
 )

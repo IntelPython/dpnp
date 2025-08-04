@@ -36,6 +36,8 @@ it contains:
 
 """
 
+# pylint: disable=protected-access
+
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPUnaryFunc
 
@@ -63,7 +65,7 @@ class DPNPErf(DPNPUnaryFunc):
             mkl_impl_fn=mkl_impl_fn,
         )
 
-    def __call__(self, x, out=None):
+    def __call__(self, x, out=None):  # pylint: disable=signature-differs
         return super().__call__(x, out=out)
 
 
