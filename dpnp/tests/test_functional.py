@@ -13,6 +13,7 @@ from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
+    get_unsigned_dtypes,
 )
 
 
@@ -77,10 +78,24 @@ class TestApplyOverAxes:
 
 
 class TestPiecewise:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_unsigned=True)
+    )
     @pytest.mark.parametrize("funclist", [[True, False], [-1, 1], [-1.5, 1.5]])
     def test_basic(self, dtype, funclist):
-        a = generate_random_numpy_array(10, dtype=dtype)
+        low = 0 if dpnp.issubdtype(dtype, dpnp.unsignedinteger) else -10
+        a = generate_random_numpy_array(10, dtype=dtype, low=low)
+        ia = dpnp.array(a)
+
+        expected = numpy.piecewise(a, [a < 0, a >= 0], funclist)
+        result = dpnp.piecewise(ia, [ia < 0, ia >= 0], funclist)
+        assert a.dtype == result.dtype
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_unsigned_dtypes())
+    @pytest.mark.parametrize("funclist", [[True, False], [1, 2], [1.5, 4.5]])
+    def test_unsigned(self, dtype, funclist):
+        a = generate_random_numpy_array(10, dtype=dtype, low=0)
         ia = dpnp.array(a)
 
         expected = numpy.piecewise(a, [a < 0, a >= 0], funclist)
