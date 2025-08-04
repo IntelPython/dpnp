@@ -88,8 +88,6 @@ from dpnp.dpnp_iface_histograms import *
 from dpnp.dpnp_iface_histograms import __all__ as __all__histograms
 from dpnp.dpnp_iface_indexing import *
 from dpnp.dpnp_iface_indexing import __all__ as __all__indexing
-from dpnp.dpnp_iface_libmath import *
-from dpnp.dpnp_iface_libmath import __all__ as __all__libmath
 from dpnp.dpnp_iface_linearalgebra import *
 from dpnp.dpnp_iface_linearalgebra import __all__ as __all__linearalgebra
 from dpnp.dpnp_iface_logic import *
@@ -124,7 +122,6 @@ __all__ += __all__counting
 __all__ += __all__functional
 __all__ += __all__histograms
 __all__ += __all__indexing
-__all__ += __all__libmath
 __all__ += __all__linearalgebra
 __all__ += __all__logic
 __all__ += __all__manipulation
