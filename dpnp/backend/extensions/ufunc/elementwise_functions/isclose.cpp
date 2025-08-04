@@ -262,33 +262,6 @@ std::pair<sycl::event, sycl::event>
         simplified_shape, simplified_a_strides, simplified_b_strides,
         simplified_res_strides, a_offset, b_offset, res_offset);
 
-    if (nd == 1 && simplified_a_strides[0] == 1 &&
-        simplified_b_strides[0] == 1 && simplified_res_strides[0] == 1)
-    {
-        // Special case of contiguous data
-        auto contig_fn = isclose_contig_dispatch_vector[a_b_typeid];
-
-        if (contig_fn == nullptr) {
-            py::dtype a_b_dtype_py = dtype_from_typenum(a_b_typeid);
-            throw std::runtime_error(
-                "Contiguous implementation is missing for " +
-                std::string(py::str(a_b_dtype_py)) + "data type");
-        }
-
-        int a_elem_size = a.get_elemsize();
-        int b_elem_size = b.get_elemsize();
-        int res_elem_size = res.get_elemsize();
-        auto comp_ev = contig_fn(
-            exec_q, nelems, py_rtol, py_atol, py_equal_nan,
-            a_data + a_elem_size * a_offset, b_data + b_elem_size * b_offset,
-            res_data + res_elem_size * res_offset, depends);
-
-        sycl::event ht_ev =
-            dpctl::utils::keep_args_alive(exec_q, {a, b, res}, {comp_ev});
-
-        return std::make_pair(ht_ev, comp_ev);
-    }
-
     auto strided_fn = isclose_strided_scalar_dispatch_vector[a_b_typeid];
 
     if (strided_fn == nullptr) {
