@@ -38,12 +38,14 @@ it contains:
 
 # pylint: disable=protected-access
 
+# pylint: disable=no-name-in-module
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPUnaryFunc
 
 __all__ = ["erf"]
 
 
+# pylint: disable=too-few-public-methods
 class DPNPErf(DPNPUnaryFunc):
     """Class that implements a family of erf functions."""
 
