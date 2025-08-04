@@ -23,6 +23,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <complex>
+#include <type_traits>
+#include <vector>
+
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
