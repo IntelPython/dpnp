@@ -351,7 +351,9 @@ class TestCond:
         ],
     )
     def test_strided(self, p, stride):
-        A = generate_random_numpy_array((6, 8, 10, 10))
+        A = generate_random_numpy_array(
+            (6, 8, 10, 10), seed_value=70, low=0, high=1
+        )
         iA = dpnp.array(A)
         slices = tuple(slice(None, None, stride[i]) for i in range(A.ndim))
         a, ia = A[slices], iA[slices]
