@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.19.0dev2+3.gba8f4905280 documentation</title>
+  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.19.0dev3+4.g784915595cf documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=fa1b0485"></script>
+      <script src="../../_static/documentation_options.js?v=fcfacf3b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -121,6 +121,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="c1"># pylint: disable=protected-access</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
@@ -380,20 +381,21 @@
 <span class="sd">    ----------</span>
 <span class="sd">    x : : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        The input domain.</span>
-<span class="sd">    condlist : {list of array-like boolean, array-like boolean, bool scalars}</span>
-<span class="sd">        Each boolean array corresponds to a function in `funclist`. Wherever</span>
-<span class="sd">        `condlist[i]` is ``True``, `funclist[i](x)` is used as the output value.</span>
+<span class="sd">    condlist : {list of array-like boolean, bool scalars}</span>
+<span class="sd">        Each boolean array/scalar corresponds to a function in `funclist`.</span>
+<span class="sd">        Wherever `condlist[i]` is ``True``, `funclist[i](x)` is used as the</span>
+<span class="sd">        output value.</span>
 
-<span class="sd">        Each boolean array in `condlist` selects a piece of `x`,</span>
-<span class="sd">        and should therefore be of the same shape as `x`.</span>
+<span class="sd">        Each boolean array in `condlist` selects a piece of `x`, and should</span>
+<span class="sd">        therefore be of the same shape as `x`.</span>
 
 <span class="sd">        The length of `condlist` must correspond to that of `funclist`.</span>
 <span class="sd">        If one extra function is given, i.e. if</span>
 <span class="sd">        ``len(funclist) == len(condlist) + 1``, then that extra function</span>
 <span class="sd">        is the default value, used wherever all conditions are ``False``.</span>
 <span class="sd">    funclist : {array-like of scalars}</span>
-<span class="sd">        A constant function (``lambda x: scalar``) is returned wherever</span>
-<span class="sd">        corresponding condition of `x` is ``True``.</span>
+<span class="sd">        A constant value is returned wherever corresponding condition of `x`</span>
+<span class="sd">        is ``True``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -427,16 +429,15 @@
 <span class="sd">    &gt;&gt;&gt; np.piecewise(x, [x &lt; 0, x &gt;= 0], [-1, 1])</span>
 <span class="sd">    array([-1., -1., -1.,  1.,  1.,  1.])</span>
 
-<span class="sd">    Define the absolute value, which is ``-x`` for ``x &lt;0`` and ``x`` for</span>
-<span class="sd">    ``x &gt;= 0``.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="n">condlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">condlist</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">condlist</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
         <span class="n">condlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">condlist</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">condlist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">condlist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span>
+    <span class="p">):</span>
         <span class="c1"># convert scalar to a list of one array</span>
         <span class="c1"># convert list of scalars to a list of one array</span>
         <span class="n">condlist</span> <span class="o">=</span> <span class="p">[</span>

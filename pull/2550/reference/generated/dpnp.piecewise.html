@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.piecewise &mdash; Data Parallel Extension for NumPy 0.19.0dev2+3.gba8f4905280 documentation</title>
+  <title>dpnp.piecewise &mdash; Data Parallel Extension for NumPy 0.19.0dev3+4.g784915595cf documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=fa1b0485"></script>
+      <script src="../../_static/documentation_options.js?v=fcfacf3b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -134,17 +134,18 @@ function on the input data wherever its condition is true.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>: {dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- The input domain.</p></li>
-<li><p><strong>condlist</strong> (<em>{list</em><em> of </em><em>array-like boolean</em><em>, </em><em>array-like boolean</em><em>, </em><em>bool scalars}</em>) -- <p>Each boolean array corresponds to a function in <cite>funclist</cite>. Wherever
-<cite>condlist[i]</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, <cite>funclist[i](x)</cite> is used as the output value.</p>
-<p>Each boolean array in <cite>condlist</cite> selects a piece of <cite>x</cite>,
-and should therefore be of the same shape as <cite>x</cite>.</p>
+<li><p><strong>condlist</strong> (<em>{list</em><em> of </em><em>array-like boolean</em><em>, </em><em>bool scalars}</em>) -- <p>Each boolean array/scalar corresponds to a function in <cite>funclist</cite>.
+Wherever <cite>condlist[i]</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, <cite>funclist[i](x)</cite> is used as the
+output value.</p>
+<p>Each boolean array in <cite>condlist</cite> selects a piece of <cite>x</cite>, and should
+therefore be of the same shape as <cite>x</cite>.</p>
 <p>The length of <cite>condlist</cite> must correspond to that of <cite>funclist</cite>.
 If one extra function is given, i.e. if
 <code class="docutils literal notranslate"><span class="pre">len(funclist)</span> <span class="pre">==</span> <span class="pre">len(condlist)</span> <span class="pre">+</span> <span class="pre">1</span></code>, then that extra function
 is the default value, used wherever all conditions are <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>
-<li><p><strong>funclist</strong> (<em>{array-like</em><em> of </em><em>scalars}</em>) -- A constant function (<code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">x:</span> <span class="pre">scalar</span></code>) is returned wherever
-corresponding condition of <cite>x</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>funclist</strong> (<em>{array-like</em><em> of </em><em>scalars}</em>) -- A constant value is returned wherever corresponding condition of <cite>x</cite>
+is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -181,8 +182,6 @@ callable functions.</p>
 <span class="go">array([-1., -1., -1.,  1.,  1.,  1.])</span>
 </pre></div>
 </div>
-<p>Define the absolute value, which is <code class="docutils literal notranslate"><span class="pre">-x</span></code> for <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&lt;0</span></code> and <code class="docutils literal notranslate"><span class="pre">x</span></code> for
-<code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code>.</p>
 </dd></dl>
 
 </section>
