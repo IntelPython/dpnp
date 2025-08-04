@@ -221,10 +221,12 @@ std::pair<sycl::event, sycl::event>
     }
 
     bool is_a_array_c_contig = a_array.is_c_contiguous();
+    bool is_a_array_f_contig = a_array.is_f_contiguous();
     bool is_ipiv_array_c_contig = ipiv_array.is_c_contiguous();
-    if (!is_a_array_c_contig) {
+    if (!is_a_array_c_contig && !is_a_array_f_contig) {
         throw py::value_error("The input array "
-                              "must be C-contiguous");
+                              "must be must be either C-contiguous "
+                              "or F-contiguous");
     }
     if (!is_ipiv_array_c_contig) {
         throw py::value_error("The array of pivot indices "
