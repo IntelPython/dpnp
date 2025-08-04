@@ -51,12 +51,16 @@ class DPNPErf(DPNPUnaryFunc):
         result_type_resolver_fn,
         unary_dp_impl_fn,
         docs,
+        mkl_fn_to_call=None,
+        mkl_impl_fn=None,
     ):
         super().__init__(
             name,
             result_type_resolver_fn,
             unary_dp_impl_fn,
             docs,
+            mkl_fn_to_call=mkl_fn_to_call,
+            mkl_impl_fn=mkl_impl_fn,
         )
 
     def __call__(self, x, out=None):
@@ -110,6 +114,6 @@ erf = DPNPErf(
     ufi._erf_result_type,
     ufi._erf,
     _ERF_DOCSTRING,
-    # mkl_fn_to_call="_mkl_erf_to_call",
-    # mkl_impl_fn="_erf",
+    mkl_fn_to_call="_mkl_erf_to_call",
+    mkl_impl_fn="_erf",
 )
