@@ -36,8 +36,10 @@ and the rest of the library
 
 import dpnp
 
+cimport dpctl as c_dpctl
 
 cimport dpnp.dpnp_utils as utils
+from dpnp.dpnp_algo cimport shape_elem_type, shape_type_c
 
 __all__ = [
 ]
