@@ -27,6 +27,7 @@
 #ifndef BACKEND_UTILS_H // Cython compatibility
 #define BACKEND_UTILS_H
 
+#include <complex>
 #include <iostream>
 #include <stdexcept>
 #include <string>
