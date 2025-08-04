@@ -280,9 +280,6 @@ class TestCholesky:
 class TestCond:
     _norms = [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
 
-    def setup_method(self):
-        numpy.random.seed(70)
-
     @pytest.mark.parametrize(
         "shape", [(0, 4, 4), (4, 0, 3, 3)], ids=["(0, 4, 4)", "(4, 0, 3, 3)"]
     )
@@ -354,13 +351,12 @@ class TestCond:
         ],
     )
     def test_strided(self, p, stride):
-        A = numpy.random.rand(6, 8, 10, 10)
-        B = dpnp.asarray(A)
+        A = generate_random_numpy_array((6, 8, 10, 10))
+        iA = dpnp.array(A)
         slices = tuple(slice(None, None, stride[i]) for i in range(A.ndim))
-        a = A[slices]
-        b = B[slices]
+        a, ia = A[slices], iA[slices]
 
-        result = dpnp.linalg.cond(b, p=p)
+        result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected, factor=24)
 
