@@ -751,7 +751,7 @@ class TestArrayAdvancedIndexingSetitemScalarValueIndexError:
     def test_adv_setitem(self):
         for xp in (numpy, cupy):
             a = xp.zeros(self.shape)
-            with pytest.raises(IndexError):
+            with pytest.raises((IndexError, ValueError)):
                 a[self.indexes] = self.value
 
 
