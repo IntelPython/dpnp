@@ -1976,13 +1976,15 @@ def dpnp_cond(x, p=None):
         else:
             r = s[..., 0] / s[..., -1]
     else:
-        result_t = _common_type(x)
         # The result array will contain nans in the entries
         # where inversion failed
         invx = dpnp.linalg.inv(x)
         r = dpnp.linalg.norm(x, p, axis=(-2, -1)) * dpnp.linalg.norm(
             invx, p, axis=(-2, -1)
         )
+
+        # condition number is always real
+        result_t = _real_type(_common_type(x), device=x.sycl_queue)
         r = r.astype(result_t, copy=False)
 
     # Convert nans to infs unless the original array had nan entries
