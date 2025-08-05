@@ -59,9 +59,6 @@
 enum class DPNPFuncName : size_t
 {
     DPNP_FN_NONE,    /**< Very first element of the enumeration */
-    DPNP_FN_ERF,     /**< Used in scipy.special.erf impl  */
-    DPNP_FN_ERF_EXT, /**< Used in scipy.special.erf impl, requires extra
-                        parameters */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
                       */
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
