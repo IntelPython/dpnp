@@ -2,7 +2,6 @@ import math
 
 import numpy
 import pytest
-import scipy
 from numpy.testing import assert_array_equal
 
 import dpnp
@@ -17,8 +16,8 @@ from .helper import (
     get_integer_dtypes,
     get_integer_float_dtypes,
     numpy_version,
-    scipy_version,
 )
+from .third_party.cupy.testing import installed, with_requires
 
 
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
@@ -167,9 +166,12 @@ def test_reduce_hypot(dtype, stride):
     assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
 
+@with_requires("scipy")
 @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
 @pytest.mark.parametrize("stride", [2, -1, -3])
 def test_erf(dtype, stride):
+    import scipy.special
+
     x = generate_random_numpy_array(10, dtype=dtype)
     a, ia = x[::stride], dpnp.array(x)[::stride]
 
@@ -177,7 +179,7 @@ def test_erf(dtype, stride):
     expected = scipy.special.erf(a)
 
     # scipy >= 0.16.0 returns float64, but dpnp returns float32
-    only_type_kind = scipy_version() >= "0.16.0" and (dtype == dpnp.float16)
+    only_type_kind = installed("scipy>=0.16.0") and (dtype == dpnp.float16)
     assert_dtype_allclose(result, expected, check_only_type_kind=only_type_kind)
 
 
