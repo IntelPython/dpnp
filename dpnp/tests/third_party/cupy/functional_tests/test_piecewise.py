@@ -31,7 +31,10 @@ class TestPiecewise(unittest.TestCase):
     def test_piecewise_scalar_condition(self, xp, dtype):
         x = testing.shaped_random(shape=(2, 3, 5), xp=xp, dtype=dtype)
         condlist = True
-        funclist = xp.array([-10, 10])
+        if cupy.issubdtype(dtype, cupy.unsignedinteger):
+            funclist = xp.array([5, 10], dtype=dtype)
+        else:
+            funclist = xp.array([-10, 10], dtype=dtype)
         return xp.piecewise(x, condlist, funclist)
 
     @testing.for_signed_dtypes()
