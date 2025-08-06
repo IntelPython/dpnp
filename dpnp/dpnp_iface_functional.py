@@ -286,7 +286,7 @@ def piecewise(x, condlist, funclist):
 
     Parameters
     ----------
-    x : : {dpnp.ndarray, usm_ndarray}
+    x : {dpnp.ndarray, usm_ndarray}
         The input domain.
     condlist : {list of array-like boolean, bool scalars}
         Each boolean array/scalar corresponds to a function in `funclist`.
