@@ -40,17 +40,13 @@ dpctlpath = os.path.dirname(dpctl.__file__)
 # where to search for DLLs towards both DPNP backend and DPCTL Sycl interface,
 # otherwise DPNP import will be failing. This is because the libraries
 # are not installed under any of default paths where Python is searching.
-from platform import system
 
-if system() == "Windows":  # pragma: no cover
-    if hasattr(os, "add_dll_directory"):
-        os.add_dll_directory(mypath)
-        os.add_dll_directory(dpctlpath)
-
+if sys.platform == "win32":  # pragma: no cover
+    os.add_dll_directory(mypath)
+    os.add_dll_directory(dpctlpath)
     os.environ["PATH"] = os.pathsep.join(
         [os.getenv("PATH", ""), mypath, dpctlpath]
     )
-
     # For virtual environments on Windows, add folder with DPC++ libraries
     # to the DLL search path
     if sys.base_exec_prefix != sys.exec_prefix and os.path.isfile(
