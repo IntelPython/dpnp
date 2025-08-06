@@ -36,17 +36,14 @@ it contains:
 
 """
 
-# pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
-import dpctl.utils as dpu
 from dpctl.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
 )
 
 import dpnp
-import dpnp.backend.extensions.functional._functional_impl as fi
 
 # pylint: disable=no-name-in-module
 from dpnp.dpnp_utils import get_usm_allocations
@@ -338,6 +335,7 @@ def piecewise(x, condlist, funclist):
 
     """
     dpnp.check_supported_arrays_type(x)
+    x_dtype = x.dtype
     if isinstance(condlist, dpnp.ndarray) and condlist.ndim in [0, 1]:
         condlist = [condlist]
     elif dpnp.isscalar(condlist) or (
@@ -366,6 +364,8 @@ def piecewise(x, condlist, funclist):
     else:
         usm_type, exec_q = get_usm_allocations([x, *condlist])
 
+    result = dpnp.empty_like(x, usm_type=usm_type, sycl_queue=exec_q)
+
     condlen = len(condlist)
     try:
         if isinstance(funclist, str):
@@ -375,18 +375,20 @@ def piecewise(x, condlist, funclist):
         raise TypeError("funclist must be a sequence of scalars") from e
     if condlen == funclen:
         # default value is zero
-        result = dpnp.zeros_like(x, usm_type=usm_type, sycl_queue=exec_q)
+        default_value = x_dtype.type(0)
     elif condlen + 1 == funclen:
         # default value is the last element of funclist
-        func = funclist[-1]
-        funclist = funclist[:-1]
-        if callable(func):
+        default_value = funclist[-1]
+        if callable(default_value):
             raise NotImplementedError(
                 "Callable functions are not supported currently"
             )
-        result = dpnp.full(
-            x.shape, func, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
-        )
+        if isinstance(default_value, dpnp.ndarray):
+            default_value = default_value.astype(x_dtype)
+        else:
+            default_value = x_dtype.type(default_value)
+        funclist = funclist[:-1]
+
     else:
         raise ValueError(
             f"with {condlen} condition(s), either {condlen} or {condlen + 1} "
@@ -399,23 +401,10 @@ def piecewise(x, condlist, funclist):
                 "Callable functions are not supported currently"
             )
         if isinstance(func, dpnp.ndarray):
-            func = func.astype(x.dtype)
+            func = func.astype(x_dtype)
         else:
-            func = x.dtype.type(func)
-
-        # TODO: possibly can use func.item() to make sure that func is always
-        # a scalar and simplify the backend but current implementation of
-        # ndarray.item() copies to host memory and it is not efficient for
-        # large arrays
-        _manager = dpu.SequentialOrderManager[exec_q]
-        dep_evs = _manager.submitted_events
-        ht_ev, fun_ev = fi._piecewise(
-            exec_q,
-            func,  # it is a scalar or 0d array
-            dpnp.get_usm_ndarray(condition),
-            dpnp.get_usm_ndarray(result),
-            depends=dep_evs,
-        )
-        _manager.add_event_pair(ht_ev, fun_ev)
+            func = x_dtype.type(func)
+        dpnp.where(condition, func, default_value, out=result)
+        default_value = result
 
     return result
