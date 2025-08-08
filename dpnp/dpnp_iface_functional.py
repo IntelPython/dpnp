@@ -368,6 +368,8 @@ def piecewise(x, condlist, funclist):
 
     condlen = len(condlist)
     try:
+        if isinstance(funclist, str):
+            raise TypeError
         funclen = len(funclist)
     except TypeError as e:
         raise TypeError("funclist must be a sequence of scalars") from e
