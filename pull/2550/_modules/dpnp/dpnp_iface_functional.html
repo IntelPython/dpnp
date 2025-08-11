@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.19.0dev3+10.g98940f3a28f documentation</title>
+  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.19.0dev3+13.gd1f6df38493 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bf550ad2"></script>
+      <script src="../../_static/documentation_options.js?v=c7ba9818"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -121,17 +121,14 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="c1"># pylint: disable=protected-access</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">normalize_axis_index</span><span class="p">,</span>
     <span class="n">normalize_axis_tuple</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.functional._functional_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">fi</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
@@ -431,6 +428,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x_dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">condlist</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
         <span class="n">condlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">condlist</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
@@ -459,6 +457,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">condlist</span><span class="p">])</span>
 
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+
     <span class="n">condlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">funclist</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -468,18 +468,20 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;funclist must be a sequence of scalars&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
     <span class="k">if</span> <span class="n">condlen</span> <span class="o">==</span> <span class="n">funclen</span><span class="p">:</span>
         <span class="c1"># default value is zero</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+        <span class="n">default_value</span> <span class="o">=</span> <span class="n">x_dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">condlen</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">funclen</span><span class="p">:</span>
         <span class="c1"># default value is the last element of funclist</span>
-        <span class="n">func</span> <span class="o">=</span> <span class="n">funclist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">funclist</span> <span class="o">=</span> <span class="n">funclist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="n">default_value</span> <span class="o">=</span> <span class="n">funclist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">default_value</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
                 <span class="s2">&quot;Callable functions are not supported currently&quot;</span>
             <span class="p">)</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
-            <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">default_value</span> <span class="o">=</span> <span class="n">default_value</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">default_value</span> <span class="o">=</span> <span class="n">x_dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">default_value</span><span class="p">)</span>
+        <span class="n">funclist</span> <span class="o">=</span> <span class="n">funclist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;with </span><span class="si">{</span><span class="n">condlen</span><span class="si">}</span><span class="s2"> condition(s), either </span><span class="si">{</span><span class="n">condlen</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">condlen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> &quot;</span>
@@ -492,24 +494,11 @@
                 <span class="s2">&quot;Callable functions are not supported currently&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="n">func</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">func</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-
-        <span class="c1"># TODO: possibly can use func.item() to make sure that func is always</span>
-        <span class="c1"># a scalar and simplify the backend but current implementation of</span>
-        <span class="c1"># ndarray.item() copies to host memory and it is not efficient for</span>
-        <span class="c1"># large arrays</span>
-        <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
-        <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
-        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">fun_ev</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">_piecewise</span><span class="p">(</span>
-            <span class="n">exec_q</span><span class="p">,</span>
-            <span class="n">func</span><span class="p">,</span>  <span class="c1"># it is a scalar or 0d array</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">condition</span><span class="p">),</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">result</span><span class="p">),</span>
-            <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">fun_ev</span><span class="p">)</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">x_dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">default_value</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">default_value</span> <span class="o">=</span> <span class="n">result</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
 
