@@ -28,7 +28,7 @@
 from libcpp cimport bool as cpp_bool
 
 from dpnp.dpnp_algo cimport shape_type_c
-from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncData, DPNPFuncName, DPNPFuncType
+from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncType
 
 
 cpdef checker_throw_value_error(function_name, param_name, param, expected)
@@ -59,11 +59,6 @@ Return:
 cpdef tuple _object_to_tuple(object obj)
 
 
-cpdef tuple get_axis_offsets(shape)
-"""
-Compute axis offsets in the linear array memory
-"""
-
 cdef class dpnp_descriptor:
     """array DPNP descriptor"""
 
@@ -85,19 +80,7 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
 Create output dpnp_descriptor based on shape, type and 'out' parameters
 """
 
-cdef shape_type_c strides_to_vector(object strides, object shape) except *
-"""
-Get or calculate srtides based on shape.
-"""
-
 cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2)
 """
 Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)
-"""
-
-cdef (DPNPFuncType, void *) get_ret_type_and_func(DPNPFuncData kernel_data,
-                                                  cpp_bool has_aspect_fp64)
-"""
-Get the corresponding return type and function pointer based on the
-capability of the allocated result array device.
 """

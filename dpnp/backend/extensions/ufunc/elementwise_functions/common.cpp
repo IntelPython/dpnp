@@ -27,6 +27,7 @@
 
 #include "bitwise_count.hpp"
 #include "degrees.hpp"
+#include "erf.hpp"
 #include "fabs.hpp"
 #include "fix.hpp"
 #include "float_power.hpp"
@@ -56,6 +57,7 @@ void init_elementwise_functions(py::module_ m)
 {
     init_bitwise_count(m);
     init_degrees(m);
+    init_erf(m);
     init_fabs(m);
     init_fix(m);
     init_float_power(m);
