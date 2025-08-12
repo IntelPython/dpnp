@@ -2314,10 +2314,10 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
         if not dpnp.isfinite(a).all():
             raise ValueError("array must not contain infs or NaNs")
 
-    # if a.ndim > 2:
-    # return _batched_lu_factor_scipy(a, res_type, overwrite_a=overwrite_a)
+    if a.ndim > 2:
+        raise NotImplementedError("Batched matrices are not supported")
 
-    n = a.shape[-2]
+    m, n = a.shape
 
     a_sycl_queue = a.sycl_queue
     a_usm_type = a.usm_type
@@ -2346,7 +2346,7 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
         copy_ev = None
 
     ipiv_h = dpnp.empty(
-        n,
+        min(m, n),
         dtype=dpnp.int64,
         order="C",
         usm_type=a_usm_type,
