@@ -2303,11 +2303,15 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
     """
 
     res_type = _common_type(a)
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
 
     # accommodate empty arrays
     if a.size == 0:
         lu = dpnp.empty_like(a)
-        piv = dpnp.arange(0, dtype=dpnp.int64)
+        piv = dpnp.arange(
+            0, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+        )
         return lu, piv
 
     if check_finite:
@@ -2317,12 +2321,7 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
     if a.ndim > 2:
         raise NotImplementedError("Batched matrices are not supported")
 
-    m, n = a.shape
-
-    a_sycl_queue = a.sycl_queue
-    a_usm_type = a.usm_type
     _manager = dpu.SequentialOrderManager[a_sycl_queue]
-
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
     # SciPy-compatible behavior
@@ -2344,6 +2343,8 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
         # input is suitable for in-place modification
         a_h = a
         copy_ev = None
+
+    m, n = a.shape
 
     ipiv_h = dpnp.empty(
         min(m, n),
