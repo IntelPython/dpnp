@@ -2307,7 +2307,7 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
     # accommodate empty arrays
     if a.size == 0:
         lu = dpnp.empty_like(a)
-        piv = dpnp.arange(0, dtype=dpnp.int32)
+        piv = dpnp.arange(0, dtype=dpnp.int64)
         return lu, piv
 
     if check_finite:
