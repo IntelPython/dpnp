@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.19.0dev3+13.gd1f6df38493 documentation</title>
+  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.19.0dev3+15.g368a9b909f7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c7ba9818"></script>
+      <script src="../../_static/documentation_options.js?v=a7916c82"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -466,6 +466,7 @@
         <span class="n">funclen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">funclist</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;funclist must be a sequence of scalars&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
     <span class="k">if</span> <span class="n">condlen</span> <span class="o">==</span> <span class="n">funclen</span><span class="p">:</span>
         <span class="c1"># default value is zero</span>
         <span class="n">default_value</span> <span class="o">=</span> <span class="n">x_dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -477,11 +478,10 @@
                 <span class="s2">&quot;Callable functions are not supported currently&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="n">default_value</span> <span class="o">=</span> <span class="n">default_value</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">)</span>
+            <span class="n">default_value</span> <span class="o">=</span> <span class="n">default_value</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">default_value</span> <span class="o">=</span> <span class="n">x_dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">default_value</span><span class="p">)</span>
         <span class="n">funclist</span> <span class="o">=</span> <span class="n">funclist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;with </span><span class="si">{</span><span class="n">condlen</span><span class="si">}</span><span class="s2"> condition(s), either </span><span class="si">{</span><span class="n">condlen</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">condlen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> &quot;</span>
@@ -494,7 +494,7 @@
                 <span class="s2">&quot;Callable functions are not supported currently&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="n">func</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">)</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">func</span> <span class="o">=</span> <span class="n">x_dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">default_value</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
