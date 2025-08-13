@@ -373,6 +373,7 @@ def piecewise(x, condlist, funclist):
         funclen = len(funclist)
     except TypeError as e:
         raise TypeError("funclist must be a sequence of scalars") from e
+
     if condlen == funclen:
         # default value is zero
         default_value = x_dtype.type(0)
@@ -384,11 +385,10 @@ def piecewise(x, condlist, funclist):
                 "Callable functions are not supported currently"
             )
         if isinstance(default_value, dpnp.ndarray):
-            default_value = default_value.astype(x_dtype)
+            default_value = default_value.astype(x_dtype, copy=False)
         else:
             default_value = x_dtype.type(default_value)
         funclist = funclist[:-1]
-
     else:
         raise ValueError(
             f"with {condlen} condition(s), either {condlen} or {condlen + 1} "
@@ -401,7 +401,7 @@ def piecewise(x, condlist, funclist):
                 "Callable functions are not supported currently"
             )
         if isinstance(func, dpnp.ndarray):
-            func = func.astype(x_dtype)
+            func = func.astype(x_dtype, copy=False)
         else:
             func = x_dtype.type(func)
         dpnp.where(condition, func, default_value, out=result)

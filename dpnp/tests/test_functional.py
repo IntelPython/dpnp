@@ -161,70 +161,6 @@ class TestPiecewise:
         result = dpnp.piecewise(ia, (True, False), [1])
         assert_array_equal(result, expected)
 
-    def test_error_dpnp(self):
-        ia = dpnp.array([0, 0])
-        # values cannot be a callable function
-        assert_raises_regex(
-            NotImplementedError,
-            "Callable functions are not supported currently",
-            dpnp.piecewise,
-            ia,
-            [dpnp.array([True, False])],
-            [lambda x: -1],
-        )
-
-        # default value cannot be a callable function
-        assert_raises_regex(
-            NotImplementedError,
-            "Callable functions are not supported currently",
-            dpnp.piecewise,
-            ia,
-            [dpnp.array([True, False])],
-            [-1, lambda x: 1],
-        )
-
-        # funclist is not array-like
-        assert_raises_regex(
-            TypeError,
-            "funclist must be a sequence of scalars",
-            dpnp.piecewise,
-            ia,
-            [dpnp.array([True, False])],
-            1,
-        )
-
-        assert_raises_regex(
-            TypeError,
-            "object of type",
-            numpy.piecewise,
-            ia.asnumpy(),
-            [numpy.array([True, False])],
-            1,
-        )
-
-    @pytest.mark.parametrize("xp", [dpnp, numpy])
-    def test_error(self, xp):
-        ia = xp.array([0, 0])
-        # not enough functions
-        assert_raises_regex(
-            ValueError,
-            "1 or 2 functions are expected",
-            xp.piecewise,
-            ia,
-            [xp.array([True, False])],
-            [],
-        )
-
-        # extra function
-        assert_raises_regex(
-            ValueError,
-            "1 or 2 functions are expected",
-            xp.piecewise,
-            ia,
-            [xp.array([True, False])],
-            [1, 2, 3],
-        )
-
     def test_two_conditions(self):
         a = numpy.array([1, 2])
         ia = dpnp.array(a)
@@ -316,3 +252,87 @@ class TestPiecewise:
         expected = numpy.piecewise(a, [a < 0, a >= 2], [-1, 1, 3])
         result = dpnp.piecewise(ia, [ia < 0, ia >= 2], [-1, 1, 3])
         assert_array_equal(result, expected)
+
+    def test_error_dpnp(self):
+        ia = dpnp.array([0, 0])
+        # values cannot be a callable function
+        assert_raises_regex(
+            NotImplementedError,
+            "Callable functions are not supported currently",
+            dpnp.piecewise,
+            ia,
+            [dpnp.array([True, False])],
+            [lambda x: -1],
+        )
+
+        # default value cannot be a callable function
+        assert_raises_regex(
+            NotImplementedError,
+            "Callable functions are not supported currently",
+            dpnp.piecewise,
+            ia,
+            [dpnp.array([True, False])],
+            [-1, lambda x: 1],
+        )
+
+        # funclist is not array-like
+        assert_raises_regex(
+            TypeError,
+            "funclist must be a sequence of scalars",
+            dpnp.piecewise,
+            ia,
+            [dpnp.array([True, False])],
+            1,
+        )
+
+        # funclist is a string
+        assert_raises_regex(
+            TypeError,
+            "funclist must be a sequence of scalars",
+            dpnp.piecewise,
+            ia,
+            [ia > 0],
+            "q",
+        )
+
+        assert_raises_regex(
+            TypeError,
+            "object of type",
+            numpy.piecewise,
+            ia.asnumpy(),
+            [numpy.array([True, False])],
+            1,
+        )
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_error(self, xp):
+        ia = xp.array([0, 0])
+        # not enough functions
+        assert_raises_regex(
+            ValueError,
+            "1 or 2 functions are expected",
+            xp.piecewise,
+            ia,
+            [xp.array([True, False])],
+            [],
+        )
+
+        # extra function
+        assert_raises_regex(
+            ValueError,
+            "1 or 2 functions are expected",
+            xp.piecewise,
+            ia,
+            [xp.array([True, False])],
+            [1, 2, 3],
+        )
+
+        # condlist is empty
+        assert_raises_regex(
+            IndexError,
+            "index out of range",
+            xp.piecewise,
+            ia,
+            [],
+            [1, 2],
+        )
