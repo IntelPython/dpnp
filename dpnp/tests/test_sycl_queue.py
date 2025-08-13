@@ -1570,6 +1570,18 @@ class TestLinAlgebra:
             assert_sycl_queue_equal(param_queue, a.sycl_queue)
             assert_sycl_queue_equal(param_queue, b.sycl_queue)
 
+    @pytest.mark.parametrize(
+        "data",
+        [[[1.0, 2.0], [3.0, 5.0]], [[]]],
+    )
+    def test_lu_factor(self, data, device):
+        a = dpnp.array(data, device=device)
+        result = dpnp.linalg.lu_factor(a)
+
+        for param in result:
+            param_queue = param.sycl_queue
+            assert_sycl_queue_equal(param_queue, a.sycl_queue)
+
     @pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
     def test_matrix_power(self, n, device):
         x = dpnp.array([[1.0, 2.0], [3.0, 5.0]], device=device)
