@@ -279,12 +279,15 @@ class TestCholesky:
 
 
 class TestCond:
-    _norms = [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+    def setup_method(self):
+        numpy.random.seed(70)
 
     @pytest.mark.parametrize(
-        "shape", [(0, 4, 4), (4, 0, 3, 3)], ids=["(0, 4, 4)", "(4, 0, 3, 3)"]
+        "shape", [(0, 4, 4), (4, 0, 3, 3)], ids=["(0, 5, 3)", "(4, 0, 2, 3)"]
     )
-    @pytest.mark.parametrize("p", _norms)
+    @pytest.mark.parametrize(
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+    )
     def test_empty(self, shape, p):
         a = numpy.empty(shape)
         ia = dpnp.array(a)
@@ -293,27 +296,26 @@ class TestCond:
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
-    # TODO: uncomment once numpy 2.3.3 release is published
-    # @testing.with_requires("numpy>=2.3.3")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
     @pytest.mark.parametrize(
         "shape", [(4, 4), (2, 4, 3, 3)], ids=["(4, 4)", "(2, 4, 3, 3)"]
     )
-    @pytest.mark.parametrize("p", _norms)
+    @pytest.mark.parametrize(
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+    )
     def test_basic(self, dtype, shape, p):
         a = generate_random_numpy_array(shape, dtype)
         ia = dpnp.array(a)
 
         result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
-        # TODO: remove when numpy#29333 is released
-        if numpy_version() < "2.3.3":
-            expected = expected.real
         assert_dtype_allclose(result, expected, factor=16)
 
-    @pytest.mark.parametrize("p", _norms)
+    @pytest.mark.parametrize(
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+    )
     def test_bool(self, p):
         a = numpy.array([[True, True], [True, False]])
         ia = dpnp.array(a)
@@ -322,7 +324,9 @@ class TestCond:
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("p", _norms)
+    @pytest.mark.parametrize(
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+    )
     def test_nan_to_inf(self, p):
         a = numpy.zeros((2, 2))
         ia = dpnp.array(a)
@@ -340,7 +344,9 @@ class TestCond:
         else:
             assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p)
 
-    @pytest.mark.parametrize("p", _norms)
+    @pytest.mark.parametrize(
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+    )
     @pytest.mark.parametrize(
         "stride",
         [(-2, -3, 2, -2), (-2, 4, -4, -4), (2, 3, 4, 4), (-1, 3, 3, -3)],
@@ -352,23 +358,21 @@ class TestCond:
         ],
     )
     def test_strided(self, p, stride):
-        A = generate_random_numpy_array(
-            (6, 8, 10, 10), seed_value=70, low=0, high=1
-        )
-        iA = dpnp.array(A)
+        A = numpy.random.rand(6, 8, 10, 10)
+        B = dpnp.asarray(A)
         slices = tuple(slice(None, None, stride[i]) for i in range(A.ndim))
-        a, ia = A[slices], iA[slices]
+        a = A[slices]
+        b = B[slices]
 
-        result = dpnp.linalg.cond(ia, p=p)
+        result = dpnp.linalg.cond(b, p=p)
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected, factor=24)
 
-    @pytest.mark.parametrize("xp", [dpnp, numpy])
-    def test_error(self, xp):
+    def test_error(self):
         # cond is not defined on empty arrays
-        a = xp.empty((2, 0))
+        ia = dpnp.empty((2, 0))
         with pytest.raises(ValueError):
-            xp.linalg.cond(a, p=1)
+            dpnp.linalg.cond(ia, p=1)
 
 
 class TestDet:
@@ -1948,6 +1952,33 @@ class TestLuFactor:
         LU = L @ U
 
         assert_allclose(LU, PA, rtol=1e-6, atol=1e-6)
+
+    def test_overwrite_copy_special(self):
+        # F-contig but dtype != res_type
+        a1 = dpnp.array([[4, 3], [6, 3]], dtype=dpnp.int32, order="F")
+        a1_orig = a1.copy()
+
+        # F-contig, match dtype but read-only input
+        a2 = dpnp.array(
+            [[4, 3], [6, 3]], dtype=dpnp.default_float_type(), order="F"
+        )
+        a2_orig = a2.copy()
+        a2.flags["WRITABLE"] = False
+
+        for a_dp, a_orig in zip((a1, a1), (a1_orig, a2_orig)):
+            lu, piv = dpnp.linalg.lu_factor(
+                a_dp, overwrite_a=True, check_finite=False
+            )
+
+            assert lu is not a_dp
+            assert lu.flags["F_CONTIGUOUS"] is True
+
+            L, U = self._split_lu(lu, 2, 2)
+            PA = self._apply_pivots_rows(
+                a_orig.astype(L.dtype, copy=False), piv
+            )
+            LU = L @ U
+            assert_allclose(LU, PA, rtol=1e-6, atol=1e-6)
 
     @pytest.mark.parametrize("shape", [(0, 0), (0, 2), (2, 0)])
     def test_empty_inputs(self, shape):
