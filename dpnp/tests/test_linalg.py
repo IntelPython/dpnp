@@ -15,6 +15,7 @@ from numpy.testing import (
 )
 
 import dpnp
+import dpnp.linalg
 
 from .helper import (
     assert_dtype_allclose,
