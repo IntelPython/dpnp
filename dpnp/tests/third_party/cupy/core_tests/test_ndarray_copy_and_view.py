@@ -120,7 +120,7 @@ class TestView:
         [
             ("C", (6,)),
             ("C", (3, 10)),
-            # ("C", (0,)), # dpctl-2119
+            ("C", (0,)),
             ("C", (1, 6)),
             ("C", (3, 2)),
         ],
@@ -386,7 +386,6 @@ class TestArrayAsType:
         dst = astype_without_warning(src, dst_dtype, order="K")
         return get_strides(xp, dst)
 
-    @pytest.mark.skip("dpctl-2121")
     @testing.numpy_cupy_array_equal()
     def test_astype_boolean_view(self, xp):
         # See #4354

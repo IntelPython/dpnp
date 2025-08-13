@@ -1,14 +1,8 @@
-# See https://pre-commit.ci for more details
-ci:
-    autofix_commit_msg: 'style: pre-commit fixes'
-    autoupdate_commit_msg: 'chore: update pre-commit hooks'
-    autoupdate_schedule: weekly
-
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 -   repo: https://github.com/PyCQA/bandit
-    rev: '1.8.3'
+    rev: '1.8.6'
     hooks:
     -   id: bandit
         pass_filenames: false
@@ -83,7 +77,7 @@ repos:
         name: isort (pyi)
         types: [pyi]
 -   repo: https://github.com/pycqa/flake8
-    rev: 7.2.0
+    rev: 7.3.0
     hooks:
     -   id: flake8
         args: ["--config=.flake8"]
@@ -96,7 +90,7 @@ repos:
     -   id: clang-format
         args: ["-i"]
 -   repo: https://github.com/gitleaks/gitleaks
-    rev: v8.26.0
+    rev: v8.28.0
     hooks:
     -   id: gitleaks
 -   repo: https://github.com/jumanjihouse/pre-commit-hooks
@@ -121,7 +115,7 @@ repos:
             ]
         files: '^dpnp/(dpnp_iface.*|fft|linalg|dpnp_array)'
 -   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.14.0
+    rev: v2.15.0
     hooks:
     -   id: pretty-format-toml
         args: [--autofix]

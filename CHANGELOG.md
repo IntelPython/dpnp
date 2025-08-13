@@ -31,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Replaced the use of `numpy.testing.suppress_warnings` with appropriate calls from the warnings module [#2529](https://github.com/IntelPython/dpnp/pull/2529)
 * Improved documentations of `dpnp.ndarray` class and added a page with description of supported constants [#2422](https://github.com/IntelPython/dpnp/pull/2422)
 * Updated `dpnp.size` to accept tuple of ints for `axes` argument [#2536](https://github.com/IntelPython/dpnp/pull/2536)
+* Replaced `ci` section in `.pre-commit-config.yaml` with a new GitHub workflow with scheduled run to autoupdate the `pre-commit` configuration [#2542](https://github.com/IntelPython/dpnp/pull/2542)
+* FFT module is updated to perform in-place FFT in intermediate steps of ND FFT [#2543](https://github.com/IntelPython/dpnp/pull/2543)
+* Reused dpctl tensor include to enable experimental SYCL namespace for complex types [#2546](https://github.com/IntelPython/dpnp/pull/2546)
 
 ### Deprecated
 
@@ -47,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Avoided negating unsigned integers in ceil division used in `dpnp.resize` implementation [#2508](https://github.com/IntelPython/dpnp/pull/2508)
 * Fixed `dpnp.unique` with 1d input array and `axis=0`, `equal_nan=True` keywords passed where the produced result doesn't collapse the NaNs [#2530](https://github.com/IntelPython/dpnp/pull/2530)
 * Resolved issue when `dpnp.ndarray` constructor is called with `dpnp.ndarray.data` as `buffer` keyword [#2533](https://github.com/IntelPython/dpnp/pull/2533)
+* Fixed `dpnp.linalg.cond` to always return a real dtype [#2547](https://github.com/IntelPython/dpnp/pull/2547)
 
 ### Security
 
