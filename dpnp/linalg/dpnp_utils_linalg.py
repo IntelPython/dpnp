@@ -2632,6 +2632,12 @@ def dpnp_solve(a, b):
     _manager = dpu.SequentialOrderManager[exec_q]
     dev_evs = _manager.submitted_events
 
+    # TODO: remove after PR #2558 is merged
+    # Temporarily set trans_code=1 (transpose) because the LU-factorized
+    # array is C-contiguous.
+    # For F-contiguous arrays use 0 (non-transpose)
+    trans_code = 1
+
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
     ht_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -2688,6 +2694,7 @@ def dpnp_solve(a, b):
         a_h.get_array(),
         ipiv_h.get_array(),
         b_h.get_array(),
+        trans_code,
         depends=[b_copy_ev, getrf_ev],
     )
     _manager.add_event_pair(ht_ev, getrs_ev)
