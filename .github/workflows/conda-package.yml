@@ -54,7 +54,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
 
@@ -140,7 +140,7 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
@@ -268,7 +268,7 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
@@ -425,7 +425,7 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: ${{ env.fetch-depth }}
 
@@ -513,7 +513,7 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
@@ -585,7 +585,7 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Clone array API tests repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: 'data-apis/array-api-tests'
           path: ${{ env.array-api-tests-path }}
@@ -666,7 +666,7 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: ${{ env.fetch-depth }}
 
@@ -692,7 +692,7 @@ jobs:
           activate-environment: ${{ env.cleanup-env-name }}
 
       - name: Checkout repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: IntelPython/devops-tools
           fetch-depth: ${{ env.fetch-depth }}
