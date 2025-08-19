@@ -225,8 +225,7 @@ std::pair<sycl::event, sycl::event>
     bool is_ipiv_array_c_contig = ipiv_array.is_c_contiguous();
     if (!is_a_array_c_contig && !is_a_array_f_contig) {
         throw py::value_error("The input array "
-                              "must be must be either C-contiguous "
-                              "or F-contiguous");
+                              "must be must contiguous");
     }
     if (!is_ipiv_array_c_contig) {
         throw py::value_error("The array of pivot indices "
