@@ -115,12 +115,17 @@ def _isclose_scalar_tol(a, b, rtol, atol, equal_nan):
     a = dpnp.astype(a, dt, casting="same_kind", copy=False)
     b = dpnp.astype(b, dt, casting="same_kind", copy=False)
 
-    # Convert complex rtol/atol to to their real parts
+    # Convert complex rtol/atol to their real parts
     # to avoid pybind11 cast errors and match NumPy behavior
     if isinstance(rtol, complex):
         rtol = rtol.real
     if isinstance(atol, complex):
         atol = atol.real
+
+    # Convert equal_nan to bool to avoid pybind11 cast errors
+    # and match NumPy behavior
+    if not isinstance(equal_nan, bool):
+        equal_nan = bool(equal_nan)
 
     # pylint: disable=W0707
     try:
@@ -131,9 +136,8 @@ def _isclose_scalar_tol(a, b, rtol, atol, equal_nan):
             f"{a.shape} and {b.shape}"
         )
 
-    out_dtype = dpnp.bool
     output = dpnp.empty(
-        a.shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
+        a.shape, dtype=dpnp.bool, sycl_queue=exec_q, usm_type=usm_type
     )
 
     _manager = dpu.SequentialOrderManager[exec_q]
@@ -871,7 +875,7 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
         The absolute tolerance parameter.
 
         Default: ``1e-08``.
-    equal_nan : bool
+    equal_nan : bool, optional
         Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will
         be considered equal to ``NaNs`` in `b` in the output array.
 

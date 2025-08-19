@@ -519,7 +519,9 @@ def test_infinity_sign_errors(func):
 
 
 class TestIsClose:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
     @pytest.mark.parametrize(
         "rtol", [1e-5, dpnp.array(1e-5), dpnp.full((10,), 1e-5)]
     )
@@ -527,15 +529,15 @@ class TestIsClose:
         "atol", [1e-8, dpnp.array(1e-8), dpnp.full((10,), 1e-8)]
     )
     def test_isclose(self, dtype, rtol, atol):
-        a = numpy.random.rand(10)
-        b = a + numpy.random.rand(10) * 1e-8
+        a = generate_random_numpy_array((10,), dtype=dtype)
+        b = a + numpy.array(1e-8, dtype=dtype)
 
         dpnp_a = dpnp.array(a, dtype=dtype)
         dpnp_b = dpnp.array(b, dtype=dtype)
 
         np_res = numpy.isclose(a, b, rtol=1e-5, atol=1e-8)
         dpnp_res = dpnp.isclose(dpnp_a, dpnp_b, rtol=rtol, atol=atol)
-        assert_allclose(dpnp_res, np_res)
+        assert_equal(dpnp_res, np_res)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("shape", [(4, 4), (16, 16), (4, 4, 4)])
@@ -543,14 +545,14 @@ class TestIsClose:
         a = generate_random_numpy_array(shape, dtype=dtype, seed_value=81)
         b = a.copy()
 
-        b = b + (1e-6 + 1e-6j)
+        b = b + numpy.array(1e-6 + 1e-6j, dtype=dtype)
 
         dpnp_a = dpnp.array(a, dtype=dtype)
         dpnp_b = dpnp.array(b, dtype=dtype)
 
         np_res = numpy.isclose(a, b)
         dpnp_res = dpnp.isclose(dpnp_a, dpnp_b)
-        assert_allclose(dpnp_res, np_res)
+        assert_equal(dpnp_res, np_res)
 
     @pytest.mark.parametrize(
         "rtol, atol",
@@ -568,7 +570,7 @@ class TestIsClose:
 
         np_res = numpy.isclose(a, b, rtol=1e-5, atol=1e-8)
         dpnp_res = dpnp.isclose(dpnp_a, dpnp_b, rtol=rtol, atol=atol)
-        assert_allclose(dpnp_res, np_res)
+        assert_equal(dpnp_res, np_res)
 
     @pytest.mark.parametrize(
         "rtol, atol",
@@ -585,17 +587,17 @@ class TestIsClose:
         # array & scalar
         dp_res = dpnp.isclose(dp_arr, val, rtol=rtol, atol=atol)
         np_res = numpy.isclose(np_arr, val, rtol=1e-5, atol=1e-8)
-        assert_allclose(dp_res, np_res)
+        assert_equal(dp_res, np_res)
 
         # scalar & array
         dp_res = dpnp.isclose(val, dp_arr, rtol=rtol, atol=atol)
         np_res = numpy.isclose(val, np_arr, rtol=1e-5, atol=1e-8)
-        assert_allclose(dp_res, np_res)
+        assert_equal(dp_res, np_res)
 
         # array & array
         dp_res = dpnp.isclose(dp_arr, dp_arr, rtol=rtol, atol=atol)
         np_res = numpy.isclose(np_arr, np_arr, rtol=1e-5, atol=1e-8)
-        assert_allclose(dp_res, np_res)
+        assert_equal(dp_res, np_res)
 
     @pytest.mark.parametrize(
         "sh_a, sh_b",
@@ -615,7 +617,7 @@ class TestIsClose:
 
         np_res = numpy.isclose(a_np, b_np)
         dp_res = dpnp.isclose(a_dp, b_dp)
-        assert_allclose(dp_res, np_res)
+        assert_equal(dp_res, np_res)
 
     @pytest.mark.parametrize(
         "rtol, atol",
@@ -624,16 +626,19 @@ class TestIsClose:
             (dpnp.array(1e-5), dpnp.array(1e-8)),
         ],
     )
-    def test_equal_nan(self, rtol, atol):
+    @pytest.mark.parametrize("equal_nan", [True, 1, "1"])
+    def test_equal_nan(self, rtol, atol, equal_nan):
         a = numpy.array([numpy.nan, 1.0])
         b = numpy.array([numpy.nan, 1.0])
 
         dp_a = dpnp.array(a)
         dp_b = dpnp.array(b)
 
-        np_res = numpy.isclose(a, b, rtol=1e-5, atol=1e-8, equal_nan=True)
-        dp_res = dpnp.isclose(dp_a, dp_b, rtol=rtol, atol=atol, equal_nan=True)
-        assert_allclose(dp_res, np_res)
+        np_res = numpy.isclose(a, b, rtol=1e-5, atol=1e-8, equal_nan=equal_nan)
+        dp_res = dpnp.isclose(
+            dp_a, dp_b, rtol=rtol, atol=atol, equal_nan=equal_nan
+        )
+        assert_equal(dp_res, np_res)
 
     # array-like rtol/atol support requires NumPy >= 2.0
     @testing.with_requires("numpy>=2.0")
@@ -650,7 +655,7 @@ class TestIsClose:
 
         np_res = numpy.isclose(a, b, rtol=rtol, atol=atol)
         dp_res = dpnp.isclose(dp_a, dp_b, rtol=dp_rtol, atol=dp_atol)
-        assert_allclose(dp_res, np_res)
+        assert_equal(dp_res, np_res)
 
     @pytest.mark.parametrize(
         "rtol, atol",
@@ -666,7 +671,7 @@ class TestIsClose:
 
         dpnp_res = dpnp.isclose(a, b, rtol=rtol, atol=atol)
         np_res = numpy.isclose(a.asnumpy(), b.asnumpy(), rtol=rtol, atol=atol)
-        assert_allclose(dpnp_res, np_res)
+        assert_equal(dpnp_res, np_res)
 
     # NEP 50: float32 vs Python float comparison requires NumPy >= 2.0
     @testing.with_requires("numpy>=2.0")
@@ -675,7 +680,7 @@ class TestIsClose:
         f32 = numpy.array(below_one, dtype="f4")
         dp_f32 = dpnp.array(f32)
 
-        assert_allclose(
+        assert_equal(
             dpnp.isclose(dp_f32, below_one, rtol=0, atol=0),
             numpy.isclose(f32, below_one, rtol=0, atol=0),
         )
