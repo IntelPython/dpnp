@@ -483,7 +483,7 @@ def numpy_version():
     return numpy.lib.NumpyVersion(numpy.__version__)
 
 
-def requires_intel_mkl_version(version):
+def requires_intel_mkl_version(version):  # pragma: no cover
     """
     Check if Intel MKL is used and its version is greater than or
     equal to the specified one.

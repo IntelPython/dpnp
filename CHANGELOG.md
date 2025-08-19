@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Avoided negating unsigned integers in ceil division used in `dpnp.resize` implementation [#2508](https://github.com/IntelPython/dpnp/pull/2508)
 * Fixed `dpnp.unique` with 1d input array and `axis=0`, `equal_nan=True` keywords passed where the produced result doesn't collapse the NaNs [#2530](https://github.com/IntelPython/dpnp/pull/2530)
 * Resolved issue when `dpnp.ndarray` constructor is called with `dpnp.ndarray.data` as `buffer` keyword [#2533](https://github.com/IntelPython/dpnp/pull/2533)
+* Fixed `dpnp.linalg.cond` to always return a real dtype [#2547](https://github.com/IntelPython/dpnp/pull/2547)
 
 ### Security
 
