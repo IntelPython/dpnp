@@ -141,10 +141,10 @@ PYBIND11_MODULE(_lapack_impl, m)
 
     m.def("_getrf_batch", &lapack_ext::getrf_batch,
           "Call `getrf_batch` from OneMKL LAPACK library to return "
-          "the LU factorization of a batch of general n x n matrices",
+          "the LU factorization of a batch of general m x n matrices",
           py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
-          py::arg("dev_info_array"), py::arg("n"), py::arg("stride_a"),
-          py::arg("stride_ipiv"), py::arg("batch_size"),
+          py::arg("dev_info_array"), py::arg("m"), py::arg("n"),
+          py::arg("stride_a"), py::arg("stride_ipiv"), py::arg("batch_size"),
           py::arg("depends") = py::list());
 
     m.def("_getri_batch", &lapack_ext::getri_batch,
