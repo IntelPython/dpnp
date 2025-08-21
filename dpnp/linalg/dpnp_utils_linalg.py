@@ -398,7 +398,7 @@ def _batched_lu_factor(a, res_type):
     return (out_a, out_ipiv, out_dev_info)
 
 
-def _batched_lu_factor_scipy(a, res_type):
+def _batched_lu_factor_scipy(a, res_type):  # pylint: disable=too-many-locals
     """SciPy-compatible LU factorization for batched inputs."""
 
     # TODO: Find out at which array sizes the best performance is obtained
@@ -414,6 +414,19 @@ def _batched_lu_factor_scipy(a, res_type):
     m, n = a.shape[-2:]
     k = min(m, n)
     orig_shape = a.shape
+    batch_shape = orig_shape[:-2]
+
+    # accommodate empty arrays
+    if a.size == 0:
+        lu = dpnp.empty_like(a)
+        piv = dpnp.empty(
+            (*batch_shape, k),
+            dtype=dpnp.int64,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        return lu, piv
+
     # get 3d input arrays by reshape
     a = dpnp.reshape(a, (-1, m, n))
     batch_size = a.shape[0]
@@ -468,7 +481,7 @@ def _batched_lu_factor_scipy(a, res_type):
         # Batch was moved to the last axis before the call.
         # Move it back to the front and reshape to the original shape.
         a_h = dpnp.moveaxis(a_h, -1, 0).reshape(orig_shape)
-        ipiv_h = ipiv_h.reshape((*orig_shape[:-2], k))
+        ipiv_h = ipiv_h.reshape((*batch_shape, k))
 
         if any(dev_info_h):
             diag_nums = ", ".join(str(v) for v in dev_info_h if v > 0)
@@ -530,7 +543,7 @@ def _batched_lu_factor_scipy(a, res_type):
 
     # Reshape the results back to their original shape
     out_a = dpnp.array(a_vecs).reshape(orig_shape)
-    out_ipiv = dpnp.array(ipiv_vecs).reshape((*orig_shape[:-2], k))
+    out_ipiv = dpnp.array(ipiv_vecs).reshape((*batch_shape, k))
 
     diag_nums = ", ".join(
         str(v) for dev_info_h in dev_info_vecs for v in dev_info_h if v > 0
@@ -2463,14 +2476,6 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
     a_sycl_queue = a.sycl_queue
     a_usm_type = a.usm_type
 
-    # accommodate empty arrays
-    if a.size == 0:
-        lu = dpnp.empty_like(a)
-        piv = dpnp.arange(
-            0, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
-        )
-        return lu, piv
-
     if check_finite:
         if not dpnp.isfinite(a).all():
             raise ValueError("array must not contain infs or NaNs")
@@ -2479,6 +2484,14 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
         # SciPy always copies each 2D slice,
         # so `overwrite_a` is ignored here
         return _batched_lu_factor_scipy(a, res_type)
+
+    # accommodate empty arrays
+    if a.size == 0:
+        lu = dpnp.empty_like(a)
+        piv = dpnp.arange(
+            0, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+        )
+        return lu, piv
 
     _manager = dpu.SequentialOrderManager[a_sycl_queue]
     a_usm_arr = dpnp.get_usm_ndarray(a)
