@@ -2017,10 +2017,6 @@ class TestLuFactor:
             ValueError, dpnp.linalg.lu_factor, a_dp, check_finite=True
         )
 
-    def test_batched_not_supported(self):
-        a_dp = dpnp.ones((2, 2, 2))
-        assert_raises(NotImplementedError, dpnp.linalg.lu_factor, a_dp)
-
 
 class TestLuFactorBatched:
     @staticmethod
