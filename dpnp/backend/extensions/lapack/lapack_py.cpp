@@ -160,7 +160,8 @@ PYBIND11_MODULE(_lapack_impl, m)
           "the solves of linear equations with an LU-factored "
           "square coefficient matrix, with multiple right-hand sides",
           py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
-          py::arg("b_array"), py::arg("depends") = py::list());
+          py::arg("b_array"), py::arg("trans_code"),
+          py::arg("depends") = py::list());
 
     m.def("_orgqr_batch", &lapack_ext::orgqr_batch,
           "Call `_orgqr_batch` from OneMKL LAPACK library to return "
