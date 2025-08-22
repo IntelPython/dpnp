@@ -46,6 +46,7 @@ namespace type_utils = dpctl::tensor::type_utils;
 typedef sycl::event (*getrf_batch_impl_fn_ptr_t)(
     sycl::queue &,
     std::int64_t,
+    std::int64_t,
     char *,
     std::int64_t,
     std::int64_t,
@@ -61,6 +62,7 @@ static getrf_batch_impl_fn_ptr_t
 
 template <typename T>
 static sycl::event getrf_batch_impl(sycl::queue &exec_q,
+                                    std::int64_t m,
                                     std::int64_t n,
                                     char *in_a,
                                     std::int64_t lda,
@@ -77,7 +79,7 @@ static sycl::event getrf_batch_impl(sycl::queue &exec_q,
     T *a = reinterpret_cast<T *>(in_a);
 
     const std::int64_t scratchpad_size =
-        mkl_lapack::getrf_batch_scratchpad_size<T>(exec_q, n, n, lda, stride_a,
+        mkl_lapack::getrf_batch_scratchpad_size<T>(exec_q, m, n, lda, stride_a,
                                                    stride_ipiv, batch_size);
     T *scratchpad = nullptr;
 
@@ -91,11 +93,11 @@ static sycl::event getrf_batch_impl(sycl::queue &exec_q,
 
         getrf_batch_event = mkl_lapack::getrf_batch(
             exec_q,
-            n, // The order of each square matrix in the batch; (0 ≤ n).
+            m, // The number of rows in each matrix in the batch; (0 ≤ m).
                // It must be a non-negative integer.
             n, // The number of columns in each matrix in the batch; (0 ≤ n).
                // It must be a non-negative integer.
-            a, // Pointer to the batch of square matrices, each of size (n x n).
+            a, // Pointer to the batch of input matrices, each of size (m x n).
             lda,      // The leading dimension of each matrix in the batch.
             stride_a, // Stride between consecutive matrices in the batch.
             ipiv, // Pointer to the array of pivot indices for each matrix in
@@ -179,6 +181,7 @@ std::pair<sycl::event, sycl::event>
                 const dpctl::tensor::usm_ndarray &a_array,
                 const dpctl::tensor::usm_ndarray &ipiv_array,
                 py::list dev_info,
+                std::int64_t m,
                 std::int64_t n,
                 std::int64_t stride_a,
                 std::int64_t stride_ipiv,
@@ -191,13 +194,13 @@ std::pair<sycl::event, sycl::event>
     if (a_array_nd < 3) {
         throw py::value_error(
             "The input array has ndim=" + std::to_string(a_array_nd) +
-            ", but an array with ndim >= 3 is expected.");
+            ", but an array with ndim >= 3 is expected");
     }
 
     if (ipiv_array_nd != 2) {
         throw py::value_error("The array of pivot indices has ndim=" +
                               std::to_string(ipiv_array_nd) +
-                              ", but a 2-dimensional array is expected.");
+                              ", but a 2-dimensional array is expected");
     }
 
     const int dev_info_size = py::len(dev_info);
@@ -205,7 +208,7 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("The size of 'dev_info' (" +
                               std::to_string(dev_info_size) +
                               ") does not match the expected batch size (" +
-                              std::to_string(batch_size) + ").");
+                              std::to_string(batch_size) + ")");
     }
 
     // check compatibility of execution queue and allocation queue
@@ -241,7 +244,7 @@ std::pair<sycl::event, sycl::event>
     if (getrf_batch_fn == nullptr) {
         throw py::value_error(
             "No getrf_batch implementation defined for the provided type "
-            "of the input matrix.");
+            "of the input matrix");
     }
 
     auto ipiv_types = dpctl_td_ns::usm_ndarray_types();
@@ -249,19 +252,26 @@ std::pair<sycl::event, sycl::event>
         ipiv_types.typenum_to_lookup_id(ipiv_array.get_typenum());
 
     if (ipiv_array_type_id != static_cast<int>(dpctl_td_ns::typenum_t::INT64)) {
-        throw py::value_error("The type of 'ipiv_array' must be int64.");
+        throw py::value_error("The type of 'ipiv_array' must be int64");
+    }
+
+    const py::ssize_t *ipiv_array_shape = ipiv_array.get_shape_raw();
+    if (ipiv_array_shape[0] != batch_size ||
+        ipiv_array_shape[1] != std::min(m, n)) {
+        throw py::value_error(
+            "The shape of 'ipiv_array' must be (batch_size, min(m, n))");
     }
 
     char *a_array_data = a_array.get_data();
-    const std::int64_t lda = std::max<size_t>(1UL, n);
+    const std::int64_t lda = std::max<size_t>(1UL, m);
 
     char *ipiv_array_data = ipiv_array.get_data();
     std::int64_t *d_ipiv = reinterpret_cast<std::int64_t *>(ipiv_array_data);
 
     std::vector<sycl::event> host_task_events;
     sycl::event getrf_batch_ev = getrf_batch_fn(
-        exec_q, n, a_array_data, lda, stride_a, d_ipiv, stride_ipiv, batch_size,
-        dev_info, host_task_events, depends);
+        exec_q, m, n, a_array_data, lda, stride_a, d_ipiv, stride_ipiv,
+        batch_size, dev_info, host_task_events, depends);
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {a_array, ipiv_array}, host_task_events);
