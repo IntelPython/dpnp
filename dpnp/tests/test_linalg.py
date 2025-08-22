@@ -1863,13 +1863,17 @@ class TestLuFactor:
     @staticmethod
     def _apply_pivots_rows(A_dp, piv_dp):
         m = A_dp.shape[0]
-        rows = dpnp.arange(m)
-        for i in range(int(piv_dp.shape[0])):
-            r = int(piv_dp[i].item())
+
+        if m == 0 or piv_dp.size == 0:
+            return A_dp
+
+        rows = list(range(m))
+        piv_np = dpnp.asnumpy(piv_dp)
+        for i, r in enumerate(piv_np):
             if i != r:
-                tmp = rows[i].copy()
-                rows[i] = rows[r]
-                rows[r] = tmp
+                rows[i], rows[r] = rows[r], rows[i]
+
+        rows = dpnp.asarray(rows)
         return A_dp[rows]
 
     @staticmethod
@@ -1955,7 +1959,7 @@ class TestLuFactor:
         a2_orig = a2.copy()
         a2.flags["WRITABLE"] = False
 
-        for a_dp, a_orig in zip((a1, a1), (a1_orig, a2_orig)):
+        for a_dp, a_orig in zip((a1, a2), (a1_orig, a2_orig)):
             lu, piv = dpnp.linalg.lu_factor(
                 a_dp, overwrite_a=True, check_finite=False
             )

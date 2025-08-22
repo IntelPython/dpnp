@@ -71,7 +71,7 @@ static sycl::event getrf_impl(sycl::queue &exec_q,
     T *a = reinterpret_cast<T *>(in_a);
 
     const std::int64_t scratchpad_size =
-        mkl_lapack::getrf_scratchpad_size<T>(exec_q, n, n, lda);
+        mkl_lapack::getrf_scratchpad_size<T>(exec_q, m, n, lda);
     T *scratchpad = nullptr;
 
     std::stringstream error_msg;
@@ -88,9 +88,9 @@ static sycl::event getrf_impl(sycl::queue &exec_q,
                   // It must be a non-negative integer.
             n,    // The number of columns in the input matrix A (0 ≤ n).
                   // It must be a non-negative integer.
-            a,    // Pointer to the input matrix A (n x n).
+            a,    // Pointer to the input matrix A (m x n).
             lda,  // The leading dimension of matrix A.
-                  // It must be at least max(1, n).
+                  // It must be at least max(1, m).
             ipiv, // Pointer to the output array of pivot indices.
             scratchpad, // Pointer to scratchpad memory to be used by MKL
                         // routine for storing intermediate results.
