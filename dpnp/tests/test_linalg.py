@@ -1955,7 +1955,7 @@ class TestLuFactor:
         a2_orig = a2.copy()
         a2.flags["WRITABLE"] = False
 
-        for a_dp, a_orig in zip((a1, a1), (a1_orig, a2_orig)):
+        for a_dp, a_orig in zip((a1, a2), (a1_orig, a2_orig)):
             lu, piv = dpnp.linalg.lu_factor(
                 a_dp, overwrite_a=True, check_finite=False
             )
