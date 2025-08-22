@@ -2022,13 +2022,17 @@ class TestLuFactorBatched:
     @staticmethod
     def _apply_pivots_rows(A_dp, piv_dp):
         m = A_dp.shape[0]
-        rows = dpnp.arange(m)
-        for i in range(int(piv_dp.shape[0])):
-            r = int(piv_dp[i].item())
+
+        if m == 0 or piv_dp.size == 0:
+            return A_dp
+
+        rows = list(range(m))
+        piv_np = dpnp.asnumpy(piv_dp)
+        for i, r in enumerate(piv_np):
             if i != r:
-                tmp = rows[i].copy()
-                rows[i] = rows[r]
-                rows[r] = tmp
+                rows[i], rows[r] = rows[r], rows[i]
+
+        rows = dpnp.asarray(rows)
         return A_dp[rows]
 
     @staticmethod
@@ -2118,7 +2122,7 @@ class TestLuFactorBatched:
             assert_allclose(L @ U, PA, rtol=1e-6, atol=1e-6)
 
     def test_singular_matrix(self):
-        a = dpnp.zeros((3, 2, 2), dtype=dpnp.float64)
+        a = dpnp.zeros((3, 2, 2), dtype=dpnp.default_float_type())
         a[0] = dpnp.array([[1.0, 2.0], [2.0, 4.0]])
         a[1] = dpnp.eye(2)
         a[2] = dpnp.array([[1.0, 1.0], [1.0, 1.0]])
@@ -2126,7 +2130,7 @@ class TestLuFactorBatched:
             dpnp.linalg.lu_factor(a, check_finite=False)
 
     def test_check_finite_raises(self):
-        a = dpnp.ones((2, 3, 3), dtype=dpnp.float64, order="F")
+        a = dpnp.ones((2, 3, 3), dtype=dpnp.default_float_type(), order="F")
         a[1, 0, 0] = dpnp.nan
         assert_raises(ValueError, dpnp.linalg.lu_factor, a, check_finite=True)
 
