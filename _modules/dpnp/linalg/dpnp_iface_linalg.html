@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.19.0dev3+10.g875bf78b670 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.19.0dev3+11.g6eb6f6f1ef0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=62f5946a"></script>
+      <script src="../../../_static/documentation_options.js?v=23c002d8"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -141,6 +141,7 @@
     <span class="n">dpnp_eigh</span><span class="p">,</span>
     <span class="n">dpnp_inv</span><span class="p">,</span>
     <span class="n">dpnp_lstsq</span><span class="p">,</span>
+    <span class="n">dpnp_lu_factor</span><span class="p">,</span>
     <span class="n">dpnp_matrix_power</span><span class="p">,</span>
     <span class="n">dpnp_matrix_rank</span><span class="p">,</span>
     <span class="n">dpnp_multi_dot</span><span class="p">,</span>
@@ -164,6 +165,7 @@
     <span class="s2">&quot;eigvalsh&quot;</span><span class="p">,</span>
     <span class="s2">&quot;inv&quot;</span><span class="p">,</span>
     <span class="s2">&quot;lstsq&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lu_factor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matmul&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_norm&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_power&quot;</span><span class="p">,</span>
@@ -1017,6 +1019,68 @@
 
     <span class="k">return</span> <span class="n">dpnp_lstsq</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">rcond</span><span class="p">)</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">lu_factor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">overwrite_a</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_finite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the pivoted LU decomposition of a matrix.</span>
+
+<span class="sd">    The decomposition is::</span>
+
+<span class="sd">        A = P @ L @ U</span>
+
+<span class="sd">    where `P` is a permutation matrix, `L` is lower triangular with unit</span>
+<span class="sd">    diagonal elements, and `U` is upper triangular.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : (M, N) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array to decompose.</span>
+<span class="sd">    overwrite_a : {None, bool}, optional</span>
+<span class="sd">        Whether to overwrite data in `a` (may increase performance)</span>
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    check_finite : {None, bool}, optional</span>
+<span class="sd">        Whether to check that the input matrix contains only finite numbers.</span>
+<span class="sd">        Disabling may give a performance gain, but may result in problems</span>
+<span class="sd">        (crashes, non-termination) if the inputs do contain infinities or NaNs.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lu :(M, N) dpnp.ndarray</span>
+<span class="sd">        Matrix containing U in its upper triangle, and L in its lower triangle.</span>
+<span class="sd">        The unit diagonal elements of L are not stored.</span>
+<span class="sd">    piv (K, ): dpnp.ndarray</span>
+<span class="sd">        Pivot indices representing the permutation matrix P:</span>
+<span class="sd">        row i of matrix was interchanged with row piv[i].</span>
+<span class="sd">        ``K = min(M, N)``.</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This function synchronizes in order to validate array elements</span>
+<span class="sd">    when ``check_finite=True``.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Only two-dimensional input matrices are supported.</span>
+<span class="sd">    Otherwise, the function raises ``NotImplementedError`` exception.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[4., 3.], [6., 3.]])</span>
+<span class="sd">    &gt;&gt;&gt; lu, piv = np.linalg.lu_factor(a)</span>
+<span class="sd">    &gt;&gt;&gt; lu</span>
+<span class="sd">    array([[6.        , 3.        ],</span>
+<span class="sd">           [0.66666667, 1.        ]])</span>
+<span class="sd">    &gt;&gt;&gt; piv</span>
+<span class="sd">    array([1, 1])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_lu_factor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">overwrite_a</span><span class="o">=</span><span class="n">overwrite_a</span><span class="p">,</span> <span class="n">check_finite</span><span class="o">=</span><span class="n">check_finite</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="matmul">
