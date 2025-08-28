@@ -135,7 +135,7 @@ PYBIND11_MODULE(_lapack_impl, m)
 
     m.def("_getrf", &lapack_ext::getrf,
           "Call `getrf` from OneMKL LAPACK library to return "
-          "the LU factorization of a general n x n matrix",
+          "the LU factorization of a general m x n matrix",
           py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
           py::arg("dev_info"), py::arg("depends") = py::list());
 
