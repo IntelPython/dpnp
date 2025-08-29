@@ -1572,7 +1572,7 @@ class TestLinAlgebra:
 
     @pytest.mark.parametrize(
         "data",
-        [[[1.0, 2.0], [3.0, 5.0]], [[]]],
+        [[[1.0, 2.0], [3.0, 5.0]], [[]], [[[1.0, 2.0], [3.0, 5.0]]], [[[]]]],
     )
     def test_lu_factor(self, data, device):
         a = dpnp.array(data, device=device)

@@ -246,6 +246,7 @@ def _batched_inv(a, res_type):
         ipiv_h.get_array(),
         dev_info,
         n,
+        n,
         a_stride,
         ipiv_stride,
         batch_size,
@@ -327,6 +328,7 @@ def _batched_lu_factor(a, res_type):
             ipiv_h.get_array(),
             dev_info_h,
             n,
+            n,
             a_stride,
             ipiv_stride,
             batch_size,
@@ -394,6 +396,131 @@ def _batched_lu_factor(a, res_type):
     ).reshape(orig_shape[:-2])
 
     return (out_a, out_ipiv, out_dev_info)
+
+
+def _batched_lu_factor_scipy(a, res_type):  # pylint: disable=too-many-locals
+    """SciPy-compatible LU factorization for batched inputs."""
+
+    # TODO: Find out at which array sizes the best performance is obtained
+    # getrf_batch can be slow on large GPU arrays.
+    # Use getrf_batch only on CPU.
+    # On GPU fall back to calling getrf per 2D slice.
+    use_batch = a.sycl_device.has_aspect_cpu
+
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+    _manager = dpu.SequentialOrderManager[a_sycl_queue]
+
+    m, n = a.shape[-2:]
+    k = min(m, n)
+    orig_shape = a.shape
+    batch_shape = orig_shape[:-2]
+
+    # handle empty input
+    if a.size == 0:
+        lu = dpnp.empty_like(a)
+        piv = dpnp.empty(
+            (*batch_shape, k),
+            dtype=dpnp.int64,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
+        return lu, piv
+
+    # get 3d input arrays by reshape
+    a = dpnp.reshape(a, (-1, m, n))
+    batch_size = a.shape[0]
+
+    # Move batch axis to the end (m, n, batch) in Fortran order:
+    # required by getrf_batch
+    # and ensures each a[..., i] is F-contiguous for getrf
+    a = dpnp.moveaxis(a, 0, -1)
+
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+
+    # `a` must be copied because getrf/getrf_batch destroys the input matrix
+    a_h = dpnp.empty_like(a, order="F", dtype=res_type)
+    ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_h.get_array(),
+        sycl_queue=a_sycl_queue,
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(ht_ev, copy_ev)
+
+    ipiv_h = dpnp.empty(
+        (batch_size, k),
+        dtype=dpnp.int64,
+        order="C",
+        usm_type=a_usm_type,
+        sycl_queue=a_sycl_queue,
+    )
+
+    if use_batch:
+        dev_info_h = [0] * batch_size
+
+        ipiv_stride = k
+        a_stride = a_h.strides[-1]
+
+        # Call the LAPACK extension function _getrf_batch
+        # to perform LU decomposition of a batch of general matrices
+        ht_ev, getrf_ev = li._getrf_batch(
+            a_sycl_queue,
+            a_h.get_array(),
+            ipiv_h.get_array(),
+            dev_info_h,
+            m,
+            n,
+            a_stride,
+            ipiv_stride,
+            batch_size,
+            depends=[copy_ev],
+        )
+        _manager.add_event_pair(ht_ev, getrf_ev)
+
+        if any(dev_info_h):
+            diag_nums = ", ".join(str(v) for v in dev_info_h if v > 0)
+            warn(
+                f"Diagonal number {diag_nums} are exactly zero. "
+                "Singular matrix.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+    else:
+        dev_info_vecs = [[0] for _ in range(batch_size)]
+
+        # Sequential LU factorization using getrf per slice
+        for i in range(batch_size):
+            ht_ev, getrf_ev = li._getrf(
+                a_sycl_queue,
+                a_h[..., i].get_array(),
+                ipiv_h[i].get_array(),
+                dev_info_vecs[i],
+                depends=[copy_ev],
+            )
+            _manager.add_event_pair(ht_ev, getrf_ev)
+
+        diag_nums = ", ".join(
+            str(v) for info in dev_info_vecs for v in info if v > 0
+        )
+        if diag_nums:
+            warn(
+                f"Diagonal number {diag_nums} are exactly zero. "
+                "Singular matrix.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+
+    # Restore original shape: move batch axis back and reshape
+    a_h = dpnp.moveaxis(a_h, -1, 0).reshape(orig_shape)
+    ipiv_h = ipiv_h.reshape((*batch_shape, k))
+
+    # oneMKL LAPACK uses 1-origin while SciPy uses 0-origin
+    ipiv_h -= 1
+
+    # Return a tuple containing the factorized matrix 'a_h',
+    # pivot indices 'ipiv_h'
+    return (a_h, ipiv_h)
 
 
 def _batched_solve(a, b, exec_q, res_usm_type, res_type):
@@ -2308,6 +2435,15 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
     a_sycl_queue = a.sycl_queue
     a_usm_type = a.usm_type
 
+    if check_finite:
+        if not dpnp.isfinite(a).all():
+            raise ValueError("array must not contain infs or NaNs")
+
+    if a.ndim > 2:
+        # SciPy always copies each 2D slice,
+        # so `overwrite_a` is ignored here
+        return _batched_lu_factor_scipy(a, res_type)
+
     # accommodate empty arrays
     if a.size == 0:
         lu = dpnp.empty_like(a)
@@ -2315,13 +2451,6 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
             0, dtype=dpnp.int64, usm_type=a_usm_type, sycl_queue=a_sycl_queue
         )
         return lu, piv
-
-    if check_finite:
-        if not dpnp.isfinite(a).all():
-            raise ValueError("array must not contain infs or NaNs")
-
-    if a.ndim > 2:
-        raise NotImplementedError("Batched matrices are not supported")
 
     _manager = dpu.SequentialOrderManager[a_sycl_queue]
     a_usm_arr = dpnp.get_usm_ndarray(a)
