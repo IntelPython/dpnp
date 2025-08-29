@@ -44,6 +44,7 @@ extern std::pair<sycl::event, sycl::event>
                 const dpctl::tensor::usm_ndarray &a_array,
                 const dpctl::tensor::usm_ndarray &ipiv_array,
                 py::list dev_info,
+                std::int64_t m,
                 std::int64_t n,
                 std::int64_t stride_a,
                 std::int64_t stride_ipiv,
