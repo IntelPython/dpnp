@@ -2493,7 +2493,7 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
         a_h.get_array(),
         ipiv_h.get_array(),
         dev_info_h,
-        depends=[copy_ev] if copy_ev is not None else [],
+        depends=[copy_ev] if copy_ev is not None else _manager.submitted_events,
     )
     _manager.add_event_pair(ht_ev, getrf_ev)
 
