@@ -481,7 +481,7 @@ def _batched_lu_factor_scipy(a, res_type):  # pylint: disable=too-many-locals
         if any(dev_info_h):
             diag_nums = ", ".join(str(v) for v in dev_info_h if v > 0)
             warn(
-                f"Diagonal number {diag_nums} are exactly zero. "
+                f"Diagonal numbers {diag_nums} are exactly zero. "
                 "Singular matrix.",
                 RuntimeWarning,
                 stacklevel=2,
@@ -2500,7 +2500,7 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
     if any(dev_info_h):
         diag_nums = ", ".join(str(v) for v in dev_info_h if v > 0)
         warn(
-            f"Diagonal number {diag_nums} are exactly zero. Singular matrix.",
+            f"Diagonal number {diag_nums} is exactly zero. Singular matrix.",
             RuntimeWarning,
             stacklevel=2,
         )
