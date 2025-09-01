@@ -2470,6 +2470,7 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
             depends=_manager.submitted_events,
         )
         _manager.add_event_pair(ht_ev, dep_ev)
+        dep_ev = [dep_ev]
     else:
         # input is suitable for in-place modification
         a_h = a
