@@ -947,11 +947,6 @@ def lu_factor(a, overwrite_a=False, check_finite=True):
     This function synchronizes in order to validate array elements
     when ``check_finite=True``.
 
-    Limitations
-    -----------
-    Only two-dimensional input matrices are supported.
-    Otherwise, the function raises ``NotImplementedError`` exception.
-
     Examples
     --------
     >>> import dpnp as np
