@@ -2463,17 +2463,17 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
     # - not writeable
     if not overwrite_a or _is_copy_required(a, res_type):
         a_h = dpnp.empty_like(a, order="F", dtype=res_type)
-        ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        ht_ev, dep_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=a_usm_arr,
             dst=a_h.get_array(),
             sycl_queue=a_sycl_queue,
             depends=_manager.submitted_events,
         )
-        _manager.add_event_pair(ht_ev, copy_ev)
+        _manager.add_event_pair(ht_ev, dep_ev)
     else:
         # input is suitable for in-place modification
         a_h = a
-        copy_ev = None
+        dep_ev = _manager.submitted_events
 
     m, n = a.shape
 
@@ -2493,7 +2493,7 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
         a_h.get_array(),
         ipiv_h.get_array(),
         dev_info_h,
-        depends=[copy_ev] if copy_ev is not None else _manager.submitted_events,
+        depends=dep_ev,
     )
     _manager.add_event_pair(ht_ev, getrf_ev)
 

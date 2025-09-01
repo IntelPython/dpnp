@@ -914,9 +914,11 @@ def lu_factor(a, overwrite_a=False, check_finite=True):
     where `P` is a permutation matrix, `L` is lower triangular with unit
     diagonal elements, and `U` is upper triangular.
 
+    For full documentation refer to :obj:`scipy.linalg.lu_factor`.
+
     Parameters
     ----------
-    a : (M, N) {dpnp.ndarray, usm_ndarray}
+    a : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Input array to decompose.
     overwrite_a : {None, bool}, optional
         Whether to overwrite data in `a` (may increase performance).
@@ -931,13 +933,14 @@ def lu_factor(a, overwrite_a=False, check_finite=True):
 
     Returns
     -------
-    lu : (M, N) dpnp.ndarray
-        Matrix containing U in its upper triangle, and L in its lower triangle.
-        The unit diagonal elements of L are not stored.
-    piv : (K, ) dpnp.ndarray
-        Pivot indices representing the permutation matrix P:
+    lu : (..., M, N) dpnp.ndarray
+        Matrix containing `U` in its upper triangle,
+        and `L` in its lower triangle.
+        The unit diagonal elements of `L` are not stored.
+    piv : (..., K) dpnp.ndarray
+        Pivot indices representing the permutation matrix `P`:
         row i of matrix was interchanged with row piv[i].
-        ``K = min(M, N)``.
+        Where ``K = min(M, N)``.
 
     Warning
     -------
