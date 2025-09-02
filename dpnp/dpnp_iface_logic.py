@@ -127,14 +127,7 @@ def _isclose_scalar_tol(a, b, rtol, atol, equal_nan):
     if not isinstance(equal_nan, bool):
         equal_nan = bool(equal_nan)
 
-    # pylint: disable=W0707
-    try:
-        a, b = dpnp.broadcast_arrays(a, b)
-    except ValueError:
-        raise ValueError(
-            "operands could not be broadcast together with shapes "
-            f"{a.shape} and {b.shape}"
-        )
+    a, b = dpnp.broadcast_arrays(a, b)
 
     output = dpnp.empty(
         a.shape, dtype=dpnp.bool, sycl_queue=exec_q, usm_type=usm_type
