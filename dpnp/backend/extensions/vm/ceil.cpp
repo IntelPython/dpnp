@@ -23,6 +23,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <cstdint>
 #include <type_traits>
 #include <vector>
 
