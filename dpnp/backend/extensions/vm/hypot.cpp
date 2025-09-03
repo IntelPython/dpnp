@@ -23,6 +23,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <cstddef>
 #include <cstdint>
 #include <stdexcept>
 #include <type_traits>

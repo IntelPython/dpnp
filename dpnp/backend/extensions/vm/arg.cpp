@@ -24,6 +24,7 @@
 //*****************************************************************************
 
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <type_traits>
 #include <vector>
