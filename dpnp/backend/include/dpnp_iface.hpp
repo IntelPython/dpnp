@@ -153,28 +153,6 @@ INP_DLLEXPORT DPCTLSyclEventRef
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_initval_c(void *result1, void *value, size_t size);
 
-#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)          \
-    template <typename _DataType>                                              \
-    INP_DLLEXPORT DPCTLSyclEventRef __name__(                                  \
-        DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size,   \
-        const size_t result_ndim, const shape_elem_type *result_shape,         \
-        const shape_elem_type *result_strides, const void *input1_in,          \
-        const size_t input1_size, const size_t input1_ndim,                    \
-        const shape_elem_type *input1_shape,                                   \
-        const shape_elem_type *input1_strides, const size_t *where,            \
-        const DPCTLEventVectorRef dep_event_vec_ref);                          \
-                                                                               \
-    template <typename _DataType>                                              \
-    INP_DLLEXPORT void __name__(                                               \
-        void *result_out, const size_t result_size, const size_t result_ndim,  \
-        const shape_elem_type *result_shape,                                   \
-        const shape_elem_type *result_strides, const void *input1_in,          \
-        const size_t input1_size, const size_t input1_ndim,                    \
-        const shape_elem_type *input1_shape,                                   \
-        const shape_elem_type *input1_strides, const size_t *where);
-
-#include <dpnp_gen_1arg_1type_tbl.hpp>
-
 /**
  * @ingroup BACKEND_API
  * @brief modf function.
