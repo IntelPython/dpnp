@@ -45,6 +45,7 @@ namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*getrf_impl_fn_ptr_t)(sycl::queue &,
                                            const std::int64_t,
+                                           const std::int64_t,
                                            char *,
                                            std::int64_t,
                                            std::int64_t *,
@@ -56,6 +57,7 @@ static getrf_impl_fn_ptr_t getrf_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
 static sycl::event getrf_impl(sycl::queue &exec_q,
+                              const std::int64_t m,
                               const std::int64_t n,
                               char *in_a,
                               std::int64_t lda,
@@ -69,7 +71,7 @@ static sycl::event getrf_impl(sycl::queue &exec_q,
     T *a = reinterpret_cast<T *>(in_a);
 
     const std::int64_t scratchpad_size =
-        mkl_lapack::getrf_scratchpad_size<T>(exec_q, n, n, lda);
+        mkl_lapack::getrf_scratchpad_size<T>(exec_q, m, n, lda);
     T *scratchpad = nullptr;
 
     std::stringstream error_msg;
@@ -82,13 +84,13 @@ static sycl::event getrf_impl(sycl::queue &exec_q,
 
         getrf_event = mkl_lapack::getrf(
             exec_q,
-            n,    // The order of the square matrix A (0 ≤ n).
+            m,    // The number of rows in the input matrix A (0 ≤ m).
                   // It must be a non-negative integer.
-            n,    // The number of columns in the square matrix A (0 ≤ n).
+            n,    // The number of columns in the input matrix A (0 ≤ n).
                   // It must be a non-negative integer.
-            a,    // Pointer to the square matrix A (n x n).
+            a,    // Pointer to the input matrix A (m x n).
             lda,  // The leading dimension of matrix A.
-                  // It must be at least max(1, n).
+                  // It must be at least max(1, m).
             ipiv, // Pointer to the output array of pivot indices.
             scratchpad, // Pointer to scratchpad memory to be used by MKL
                         // routine for storing intermediate results.
@@ -99,7 +101,7 @@ static sycl::event getrf_impl(sycl::queue &exec_q,
 
         if (info < 0) {
             error_msg << "Parameter number " << -info
-                      << " had an illegal value.";
+                      << " had an illegal value";
         }
         else if (info == scratchpad_size && e.detail() != 0) {
             error_msg
@@ -168,13 +170,13 @@ std::pair<sycl::event, sycl::event>
     if (a_array_nd != 2) {
         throw py::value_error(
             "The input array has ndim=" + std::to_string(a_array_nd) +
-            ", but a 2-dimensional array is expected.");
+            ", but a 2-dimensional array is expected");
     }
 
     if (ipiv_array_nd != 1) {
         throw py::value_error("The array of pivot indices has ndim=" +
                               std::to_string(ipiv_array_nd) +
-                              ", but a 1-dimensional array is expected.");
+                              ", but a 1-dimensional array is expected");
     }
 
     // check compatibility of execution queue and allocation queue
@@ -190,10 +192,11 @@ std::pair<sycl::event, sycl::event>
     }
 
     bool is_a_array_c_contig = a_array.is_c_contiguous();
+    bool is_a_array_f_contig = a_array.is_f_contiguous();
     bool is_ipiv_array_c_contig = ipiv_array.is_c_contiguous();
-    if (!is_a_array_c_contig) {
+    if (!is_a_array_c_contig && !is_a_array_f_contig) {
         throw py::value_error("The input array "
-                              "must be C-contiguous");
+                              "must be contiguous");
     }
     if (!is_ipiv_array_c_contig) {
         throw py::value_error("The array of pivot indices "
@@ -208,7 +211,7 @@ std::pair<sycl::event, sycl::event>
     if (getrf_fn == nullptr) {
         throw py::value_error(
             "No getrf implementation defined for the provided type "
-            "of the input matrix.");
+            "of the input matrix");
     }
 
     auto ipiv_types = dpctl_td_ns::usm_ndarray_types();
@@ -216,19 +219,25 @@ std::pair<sycl::event, sycl::event>
         ipiv_types.typenum_to_lookup_id(ipiv_array.get_typenum());
 
     if (ipiv_array_type_id != static_cast<int>(dpctl_td_ns::typenum_t::INT64)) {
-        throw py::value_error("The type of 'ipiv_array' must be int64.");
+        throw py::value_error("The type of 'ipiv_array' must be int64");
     }
 
-    const std::int64_t n = a_array.get_shape_raw()[0];
+    const py::ssize_t *a_array_shape = a_array.get_shape_raw();
+    const std::int64_t m = a_array_shape[0];
+    const std::int64_t n = a_array_shape[1];
+    const std::int64_t lda = std::max<size_t>(1UL, m);
+
+    if (ipiv_array.get_size() != std::min(m, n)) {
+        throw py::value_error("The size of 'ipiv_array' must be min(m, n)");
+    }
 
     char *a_array_data = a_array.get_data();
-    const std::int64_t lda = std::max<size_t>(1UL, n);
 
     char *ipiv_array_data = ipiv_array.get_data();
     std::int64_t *d_ipiv = reinterpret_cast<std::int64_t *>(ipiv_array_data);
 
     std::vector<sycl::event> host_task_events;
-    sycl::event getrf_ev = getrf_fn(exec_q, n, a_array_data, lda, d_ipiv,
+    sycl::event getrf_ev = getrf_fn(exec_q, m, n, a_array_data, lda, d_ipiv,
                                     dev_info, host_task_events, depends);
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(

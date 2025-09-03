@@ -56,6 +56,7 @@ from .dpnp_utils_linalg import (
     dpnp_eigh,
     dpnp_inv,
     dpnp_lstsq,
+    dpnp_lu_factor,
     dpnp_matrix_power,
     dpnp_matrix_rank,
     dpnp_multi_dot,
@@ -79,6 +80,7 @@ __all__ = [
     "eigvalsh",
     "inv",
     "lstsq",
+    "lu_factor",
     "matmul",
     "matrix_norm",
     "matrix_power",
@@ -899,6 +901,69 @@ def lstsq(a, b, rcond=None):
         raise TypeError("rcond must be integer, floating type, or None")
 
     return dpnp_lstsq(a, b, rcond=rcond)
+
+
+def lu_factor(a, overwrite_a=False, check_finite=True):
+    """
+    Compute the pivoted LU decomposition of a matrix.
+
+    The decomposition is::
+
+        A = P @ L @ U
+
+    where `P` is a permutation matrix, `L` is lower triangular with unit
+    diagonal elements, and `U` is upper triangular.
+
+    For full documentation refer to :obj:`scipy.linalg.lu_factor`.
+
+    Parameters
+    ----------
+    a : (..., M, N) {dpnp.ndarray, usm_ndarray}
+        Input array to decompose.
+    overwrite_a : {None, bool}, optional
+        Whether to overwrite data in `a` (may increase performance).
+
+        Default: ``False``.
+    check_finite : {None, bool}, optional
+        Whether to check that the input matrix contains only finite numbers.
+        Disabling may give a performance gain, but may result in problems
+        (crashes, non-termination) if the inputs do contain infinities or NaNs.
+
+        Default: ``True``.
+
+    Returns
+    -------
+    lu : (..., M, N) dpnp.ndarray
+        Matrix containing `U` in its upper triangle,
+        and `L` in its lower triangle.
+        The unit diagonal elements of `L` are not stored.
+    piv : (..., K) dpnp.ndarray
+        Pivot indices representing the permutation matrix `P`:
+        row i of matrix was interchanged with row piv[i].
+        Where ``K = min(M, N)``.
+
+    Warning
+    -------
+    This function synchronizes in order to validate array elements
+    when ``check_finite=True``.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[4., 3.], [6., 3.]])
+    >>> lu, piv = np.linalg.lu_factor(a)
+    >>> lu
+    array([[6.        , 3.        ],
+           [0.66666667, 1.        ]])
+    >>> piv
+    array([1, 1])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    assert_stacked_2d(a)
+
+    return dpnp_lu_factor(a, overwrite_a=overwrite_a, check_finite=check_finite)
 
 
 def matmul(x1, x2, /):
