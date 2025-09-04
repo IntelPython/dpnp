@@ -1480,6 +1480,24 @@ class TestLinAlgebra:
         for param in result:
             assert param.usm_type == a.usm_type
 
+    @pytest.mark.parametrize("usm_type_rhs", list_of_usm_types)
+    @pytest.mark.parametrize(
+        "data",
+        [[1.0, 2.0], numpy.empty((2, 0))],
+    )
+    def test_lu_solve(self, data, usm_type, usm_type_rhs):
+        a = dpnp.array(data, usm_type=usm_type)
+        lu, piv = dpnp.linalg.lu_factor(a)
+        b = dpnp.array(data, usm_type=usm_type_rhs)
+
+        result = dpnp.linalg.lu_solve((lu, piv), b)
+
+        assert lu.usm_type == usm_type
+        assert b.usm_type == usm_type_rhs
+        assert result.usm_type == du.get_coerced_usm_type(
+            [usm_type, usm_type_rhs]
+        )
+
     @pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
     def test_matrix_power(self, n, usm_type):
         a = dpnp.array([[1, 2], [3, 5]], usm_type=usm_type)
