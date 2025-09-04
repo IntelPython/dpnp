@@ -2873,7 +2873,7 @@ def dpnp_solve(a, b):
     a_h = dpnp.empty_like(a, order="F", dtype=res_type, usm_type=res_usm_type)
 
     _manager = dpu.SequentialOrderManager[exec_q]
-    dev_evs = _manager.submitted_events
+    dep_evs = _manager.submitted_events
 
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
@@ -2881,7 +2881,7 @@ def dpnp_solve(a, b):
         src=a_usm_arr,
         dst=a_h.get_array(),
         sycl_queue=a.sycl_queue,
-        depends=dev_evs,
+        depends=dep_evs,
     )
     _manager.add_event_pair(ht_ev, a_copy_ev)
 
@@ -2897,13 +2897,13 @@ def dpnp_solve(a, b):
         src=b_usm_arr,
         dst=b_h.get_array(),
         sycl_queue=b.sycl_queue,
-        depends=dev_evs,
+        depends=dep_evs,
     )
     _manager.add_event_pair(ht_ev, b_copy_ev)
 
     # Call the LAPACK extension function _gesv to solve the system of linear
     # equations with the coefficient square matrix and
-    # the dependent variables array.
+    # the dependent variables array
     ht_lapack_ev, gesv_ev = li._gesv(
         exec_q, a_h.get_array(), b_h.get_array(), [a_copy_ev, b_copy_ev]
     )
