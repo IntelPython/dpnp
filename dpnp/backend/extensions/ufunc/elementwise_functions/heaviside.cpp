@@ -23,6 +23,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <type_traits>
+#include <vector>
+
 #include <sycl/sycl.hpp>
 
 #include "dpctl4pybind11.hpp"
