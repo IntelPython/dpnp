@@ -74,18 +74,32 @@ def test_ndim():
     assert dpnp.ndim(ia) == exp
 
 
-def test_size():
-    a = [[1, 2, 3], [4, 5, 6]]
-    ia = dpnp.array(a)
+class TestSize:
+    def test_size(self):
+        a = [[1, 2, 3], [4, 5, 6]]
+        ia = dpnp.array(a)
 
-    exp = numpy.size(a)
-    assert ia.size == exp
-    assert dpnp.size(a) == exp
-    assert dpnp.size(ia) == exp
+        exp = numpy.size(a)
+        assert ia.size == exp
+        assert dpnp.size(a) == exp
+        assert dpnp.size(ia) == exp
 
-    exp = numpy.size(a, 0)
-    assert dpnp.size(a, 0) == exp
-    assert dpnp.size(ia, 0) == exp
+        exp = numpy.size(a, 0)
+        assert dpnp.size(a, 0) == exp
+        assert dpnp.size(ia, 0) == exp
+
+        assert dpnp.size(ia, 1) == numpy.size(a, 1)
+
+    # TODO: include commented code in the test when numpy-2.4 is released
+    # @testing.with_requires("numpy>=2.4")
+    def test_size_tuple(self):
+        a = [[1, 2, 3], [4, 5, 6]]
+        ia = dpnp.array(a)
+
+        assert dpnp.size(ia, ()) == 1  # numpy.size(a, ())
+        assert dpnp.size(ia, (0,)) == 2  # numpy.size(a, (0,))
+        assert dpnp.size(ia, (1,)) == 3  # numpy.size(a, (1,))
+        assert dpnp.size(ia, (0, 1)) == 6  # numpy.size(a, (0, 1))
 
 
 class TestAppend:
@@ -1836,8 +1850,8 @@ class TestUnique:
         expected = numpy.unique(a, **eq_nan_kwd)
         assert_array_equal(result, expected)
 
-    # TODO: uncomment once numpy 2.3.2 release is published
-    # @testing.with_requires("numpy>=2.3.2")
+    # TODO: uncomment once numpy 2.4.0 release is published
+    # @testing.with_requires("numpy>=2.4.0")
     def test_1d_equal_nan_axis0(self):
         a = numpy.array([numpy.nan, 0, 0, numpy.nan])
         ia = dpnp.array(a)
@@ -1845,7 +1859,7 @@ class TestUnique:
         result = dpnp.unique(ia, axis=0, equal_nan=True)
         expected = numpy.unique(a, axis=0, equal_nan=True)
         # TODO: remove when numpy#29372 is released
-        if numpy_version() < "2.3.2":
+        if numpy_version() < "2.4.0":
             expected = numpy.array([0.0, numpy.nan])
         assert_array_equal(result, expected)
 

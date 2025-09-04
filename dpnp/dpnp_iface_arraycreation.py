@@ -2180,8 +2180,9 @@ def from_dlpack(x, /, *, device=None, copy=None):
     Parameters
     ----------
     x : object
-        A Python object representing an array that implements the ``__dlpack__``
-        and ``__dlpack_device__`` methods.
+        A Python object representing an array that implements the
+        :meth:`dpnp.ndarray.__dlpack__` and
+        :meth:`dpnp.ndarray.__dlpack_device__`.
     device : {None, string, tuple, device}, optional
         Device where the output array is to be placed. `device` keyword values
         can be:
@@ -2197,10 +2198,10 @@ def from_dlpack(x, /, *, device=None, copy=None):
           ``device.sycl_queue``. The `device` object is obtained via
           :attr:`dpctl.tensor.usm_ndarray.device`.
         * ``(device_type, device_id)`` : 2-tuple matching the format of the
-          output of the ``__dlpack_device__`` method: an integer enumerator
-          representing the device type followed by an integer representing
-          the index of the device. The only supported :class:`dpnp.DLDeviceType`
-          device types are ``"kDLCPU"`` and ``"kDLOneAPI"``.
+          output of the :meth:`dpnp.ndarray.__dlpack_device__`: an integer
+          enumerator representing the device type followed by an integer
+          representing the index of the device. The only supported
+          :class:`dpnp.DLDeviceType` is ``"kDLCPU"`` or ``"kDLOneAPI"``.
 
         Default: ``None``.
     copy : {bool, None}, optional

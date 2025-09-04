@@ -772,10 +772,7 @@ def test_random(func, args, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    # SAT-7414: w/a to avoid crash on Windows (observing on LNL and ARL)
-    # sycl_queue = dpctl.SyclQueue(device, property="in_order")
-    # TODO: remove the w/a once resolved
-    sycl_queue = dpctl.SyclQueue(device, property="enable_profiling")
+    sycl_queue = dpctl.SyclQueue(device, property="in_order")
     kwargs["device"] = None
     kwargs["sycl_queue"] = sycl_queue
 
@@ -814,10 +811,7 @@ def test_random_state(func, args, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    # SAT-7414: w/a to avoid crash on Windows (observing on LNL and ARL)
-    # sycl_queue = dpctl.SyclQueue(device, property="in_order")
-    # TODO: remove the w/a once resolved
-    sycl_queue = dpctl.SyclQueue(device, property="enable_profiling")
+    sycl_queue = dpctl.SyclQueue(device, property="in_order")
 
     # test with in-order SYCL queue per a device and passed as argument
     seed = (147, 56, 896) if device.is_cpu else 987654
@@ -1575,6 +1569,18 @@ class TestLinAlgebra:
             param_queue = param.sycl_queue
             assert_sycl_queue_equal(param_queue, a.sycl_queue)
             assert_sycl_queue_equal(param_queue, b.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "data",
+        [[[1.0, 2.0], [3.0, 5.0]], [[]], [[[1.0, 2.0], [3.0, 5.0]]], [[[]]]],
+    )
+    def test_lu_factor(self, data, device):
+        a = dpnp.array(data, device=device)
+        result = dpnp.linalg.lu_factor(a)
+
+        for param in result:
+            param_queue = param.sycl_queue
+            assert_sycl_queue_equal(param_queue, a.sycl_queue)
 
     @pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
     def test_matrix_power(self, n, device):

@@ -25,7 +25,6 @@ from .helper import (
     has_support_aspect64,
     is_cpu_device,
     numpy_version,
-    requires_intel_mkl_version,
 )
 from .third_party.cupy import testing
 
@@ -278,15 +277,12 @@ class TestCholesky:
 
 
 class TestCond:
-    def setup_method(self):
-        numpy.random.seed(70)
+    _norms = [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
 
     @pytest.mark.parametrize(
-        "shape", [(0, 4, 4), (4, 0, 3, 3)], ids=["(0, 5, 3)", "(4, 0, 2, 3)"]
+        "shape", [(0, 4, 4), (4, 0, 3, 3)], ids=["(0, 4, 4)", "(4, 0, 3, 3)"]
     )
-    @pytest.mark.parametrize(
-        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
-    )
+    @pytest.mark.parametrize("p", _norms)
     def test_empty(self, shape, p):
         a = numpy.empty(shape)
         ia = dpnp.array(a)
@@ -295,26 +291,27 @@ class TestCond:
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
+    # TODO: uncomment once numpy 2.3.3 release is published
+    # @testing.with_requires("numpy>=2.3.3")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
     @pytest.mark.parametrize(
         "shape", [(4, 4), (2, 4, 3, 3)], ids=["(4, 4)", "(2, 4, 3, 3)"]
     )
-    @pytest.mark.parametrize(
-        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
-    )
+    @pytest.mark.parametrize("p", _norms)
     def test_basic(self, dtype, shape, p):
         a = generate_random_numpy_array(shape, dtype)
         ia = dpnp.array(a)
 
         result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
+        # TODO: remove when numpy#29333 is released
+        if numpy_version() < "2.3.3":
+            expected = expected.real
         assert_dtype_allclose(result, expected, factor=16)
 
-    @pytest.mark.parametrize(
-        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
-    )
+    @pytest.mark.parametrize("p", _norms)
     def test_bool(self, p):
         a = numpy.array([[True, True], [True, False]])
         ia = dpnp.array(a)
@@ -323,9 +320,7 @@ class TestCond:
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
-    )
+    @pytest.mark.parametrize("p", _norms)
     def test_nan_to_inf(self, p):
         a = numpy.zeros((2, 2))
         ia = dpnp.array(a)
@@ -343,9 +338,7 @@ class TestCond:
         else:
             assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cond, ia, p=p)
 
-    @pytest.mark.parametrize(
-        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
-    )
+    @pytest.mark.parametrize("p", _norms)
     @pytest.mark.parametrize(
         "stride",
         [(-2, -3, 2, -2), (-2, 4, -4, -4), (2, 3, 4, 4), (-1, 3, 3, -3)],
@@ -357,21 +350,23 @@ class TestCond:
         ],
     )
     def test_strided(self, p, stride):
-        A = numpy.random.rand(6, 8, 10, 10)
-        B = dpnp.asarray(A)
+        A = generate_random_numpy_array(
+            (6, 8, 10, 10), seed_value=70, low=0, high=1
+        )
+        iA = dpnp.array(A)
         slices = tuple(slice(None, None, stride[i]) for i in range(A.ndim))
-        a = A[slices]
-        b = B[slices]
+        a, ia = A[slices], iA[slices]
 
-        result = dpnp.linalg.cond(b, p=p)
+        result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected, factor=24)
 
-    def test_error(self):
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_error(self, xp):
         # cond is not defined on empty arrays
-        ia = dpnp.empty((2, 0))
+        a = xp.empty((2, 0))
         with pytest.raises(ValueError):
-            dpnp.linalg.cond(ia, p=1)
+            xp.linalg.cond(a, p=1)
 
 
 class TestDet:
@@ -1751,10 +1746,6 @@ class TestInv:
         assert_raises(numpy.linalg.LinAlgError, numpy.linalg.inv, a_np)
         assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.inv, a_dp)
 
-    # TODO: remove skipif when Intel MKL 2025.2 is released
-    @pytest.mark.skipif(
-        not requires_intel_mkl_version("2025.2"), reason="mkl<2025.2"
-    )
     def test_inv_singular_matrix_3D(self):
         a_np = numpy.array(
             [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
@@ -1866,6 +1857,282 @@ class TestLstsq:
 
         # unsupported type `rcond`
         assert_raises(TypeError, dpnp.linalg.lstsq, a_dp, b_dp, [-1])
+
+
+class TestLuFactor:
+    @staticmethod
+    def _apply_pivots_rows(A_dp, piv_dp):
+        m = A_dp.shape[0]
+
+        if m == 0 or piv_dp.size == 0:
+            return A_dp
+
+        rows = list(range(m))
+        piv_np = dpnp.asnumpy(piv_dp)
+        for i, r in enumerate(piv_np):
+            if i != r:
+                rows[i], rows[r] = rows[r], rows[i]
+
+        rows = dpnp.asarray(rows)
+        return A_dp[rows]
+
+    @staticmethod
+    def _split_lu(lu, m, n):
+        L = dpnp.tril(lu, k=-1)
+        dpnp.fill_diagonal(L, 1)
+        L = L[:, : min(m, n)]
+        U = dpnp.triu(lu)[: min(m, n), :]
+        return L, U
+
+    @pytest.mark.parametrize(
+        "shape", [(1, 1), (2, 2), (3, 3), (1, 5), (5, 1), (2, 5), (5, 2)]
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_lu_factor(self, shape, order, dtype):
+        a_np = generate_random_numpy_array(shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        lu, piv = dpnp.linalg.lu_factor(
+            a_dp, check_finite=False, overwrite_a=False
+        )
+
+        # verify piv
+        assert piv.shape == (min(shape),)
+        assert piv.dtype == dpnp.int64
+        if shape[0] > 0:
+            assert int(dpnp.min(piv)) >= 0
+            assert int(dpnp.max(piv)) < shape[0]
+
+        m, n = shape
+        L, U = self._split_lu(lu, m, n)
+        LU = L @ U
+
+        A_cast = a_dp.astype(LU.dtype, copy=False)
+        PA = self._apply_pivots_rows(A_cast, piv)
+
+        assert dpnp.allclose(LU, PA, rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_overwrite_inplace(self, dtype):
+        a_dp = dpnp.array([[4, 3], [6, 3]], dtype=dtype, order="F")
+        a_dp_orig = a_dp.copy()
+        lu, piv = dpnp.linalg.lu_factor(
+            a_dp, overwrite_a=True, check_finite=False
+        )
+
+        assert lu is a_dp
+        assert lu.flags["F_CONTIGUOUS"] is True
+
+        L, U = self._split_lu(lu, 2, 2)
+        PA = self._apply_pivots_rows(a_dp_orig, piv)
+        LU = L @ U
+
+        assert dpnp.allclose(LU, PA, rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_overwrite_copy(self, dtype):
+        a_dp = dpnp.array([[4, 3], [6, 3]], dtype=dtype, order="C")
+        a_dp_orig = a_dp.copy()
+        lu, piv = dpnp.linalg.lu_factor(
+            a_dp, overwrite_a=True, check_finite=False
+        )
+
+        assert lu is not a_dp
+        assert lu.flags["F_CONTIGUOUS"] is True
+
+        L, U = self._split_lu(lu, 2, 2)
+        PA = self._apply_pivots_rows(a_dp_orig, piv)
+        LU = L @ U
+
+        assert dpnp.allclose(LU, PA, rtol=1e-6, atol=1e-6)
+
+    def test_overwrite_copy_special(self):
+        # F-contig but dtype != res_type
+        a1 = dpnp.array([[4, 3], [6, 3]], dtype=dpnp.int32, order="F")
+        a1_orig = a1.copy()
+
+        # F-contig, match dtype but read-only input
+        a2 = dpnp.array(
+            [[4, 3], [6, 3]], dtype=dpnp.default_float_type(), order="F"
+        )
+        a2_orig = a2.copy()
+        a2.flags["WRITABLE"] = False
+
+        for a_dp, a_orig in zip((a1, a2), (a1_orig, a2_orig)):
+            lu, piv = dpnp.linalg.lu_factor(
+                a_dp, overwrite_a=True, check_finite=False
+            )
+
+            assert lu is not a_dp
+            assert lu.flags["F_CONTIGUOUS"] is True
+
+            L, U = self._split_lu(lu, 2, 2)
+            PA = self._apply_pivots_rows(
+                a_orig.astype(L.dtype, copy=False), piv
+            )
+            LU = L @ U
+            assert dpnp.allclose(LU, PA, rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize("shape", [(0, 0), (0, 2), (2, 0)])
+    def test_empty_inputs(self, shape):
+        a_dp = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
+        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
+        assert lu.shape == shape
+        assert piv.shape == (min(shape),)
+
+    @pytest.mark.parametrize(
+        "sl",
+        [
+            (slice(None, None, 2), slice(None, None, 2)),
+            (slice(None, None, -1), slice(None, None, -1)),
+        ],
+    )
+    def test_strided(self, sl):
+        base = (
+            numpy.arange(7 * 7, dtype=dpnp.default_float_type()).reshape(
+                7, 7, order="F"
+            )
+            + 0.1
+        )
+        a_np = base[sl]
+        a_dp = dpnp.array(a_np)
+
+        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
+        L, U = self._split_lu(lu, *a_dp.shape)
+        PA = self._apply_pivots_rows(a_dp, piv)
+        LU = L @ U
+
+        assert dpnp.allclose(LU, PA, rtol=1e-6, atol=1e-6)
+
+    def test_singular_matrix(self):
+        a_dp = dpnp.array([[1.0, 2.0], [2.0, 4.0]])
+        with pytest.warns(RuntimeWarning, match="Singular matrix"):
+            dpnp.linalg.lu_factor(a_dp, check_finite=False)
+
+    @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
+    def test_check_finite_raises(self, bad):
+        a_dp = dpnp.array([[1.0, 2.0], [3.0, bad]], order="F")
+        assert_raises(
+            ValueError, dpnp.linalg.lu_factor, a_dp, check_finite=True
+        )
+
+
+class TestLuFactorBatched:
+    @staticmethod
+    def _apply_pivots_rows(A_dp, piv_dp):
+        m = A_dp.shape[0]
+
+        if m == 0 or piv_dp.size == 0:
+            return A_dp
+
+        rows = list(range(m))
+        piv_np = dpnp.asnumpy(piv_dp)
+        for i, r in enumerate(piv_np):
+            if i != r:
+                rows[i], rows[r] = rows[r], rows[i]
+
+        rows = dpnp.asarray(rows)
+        return A_dp[rows]
+
+    @staticmethod
+    def _split_lu(lu, m, n):
+        L = dpnp.tril(lu, k=-1)
+        dpnp.fill_diagonal(L, 1)
+        L = L[:, : min(m, n)]
+        U = dpnp.triu(lu)[: min(m, n), :]
+        return L, U
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2, 2), (3, 4, 4), (2, 3, 5, 2), (4, 1, 3)],
+        ids=["(2,2,2)", "(3,4,4)", "(2,3,5,2)", "(4,1,3)"],
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_lu_factor_batched(self, shape, order, dtype):
+        a_np = generate_random_numpy_array(shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        lu, piv = dpnp.linalg.lu_factor(
+            a_dp, check_finite=False, overwrite_a=False
+        )
+
+        assert lu.shape == a_dp.shape
+        m, n = shape[-2], shape[-1]
+        assert piv.shape == (*shape[:-2], min(m, n))
+        assert piv.dtype == dpnp.int64
+
+        a_3d = a_dp.reshape((-1, m, n))
+        lu_3d = lu.reshape((-1, m, n))
+        piv_2d = piv.reshape((-1, min(m, n)))
+        for i in range(a_3d.shape[0]):
+            L, U = self._split_lu(lu_3d[i], m, n)
+            A_cast = a_3d[i].astype(L.dtype, copy=False)
+            PA = self._apply_pivots_rows(A_cast, piv_2d[i])
+            assert dpnp.allclose(L @ U, PA, rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_overwrite(self, dtype, order):
+        a_dp = dpnp.arange(2 * 2 * 3, dtype=dtype).reshape(3, 2, 2, order=order)
+        a_dp_orig = a_dp.copy()
+        lu, piv = dpnp.linalg.lu_factor(
+            a_dp, overwrite_a=True, check_finite=False
+        )
+
+        assert lu is not a_dp
+        assert dpnp.allclose(a_dp, a_dp_orig)
+
+        m = n = 2
+        lu_3d = lu.reshape((-1, m, n))
+        a_3d = a_dp.reshape((-1, m, n))
+        piv_2d = piv.reshape((-1, min(m, n)))
+        for i in range(a_3d.shape[0]):
+            L, U = self._split_lu(lu_3d[i], m, n)
+            A_cast = a_3d[i].astype(L.dtype, copy=False)
+            PA = self._apply_pivots_rows(A_cast, piv_2d[i])
+            assert dpnp.allclose(L @ U, PA, rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize(
+        "shape", [(0, 2, 2), (2, 0, 2), (2, 2, 0), (0, 0, 0)]
+    )
+    def test_empty_inputs(self, shape):
+        a = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
+
+        lu, piv = dpnp.linalg.lu_factor(a, check_finite=False)
+        assert lu.shape == shape
+        m, n = shape[-2:]
+        assert piv.shape == (*shape[:-2], min(m, n))
+
+    def test_strided(self):
+        a = (
+            dpnp.arange(5 * 3 * 3, dtype=dpnp.default_float_type()).reshape(
+                5, 3, 3, order="F"
+            )
+            + 0.1
+        )
+        a_stride = a[::2]
+        lu, piv = dpnp.linalg.lu_factor(a_stride, check_finite=False)
+        for i in range(a_stride.shape[0]):
+            L, U = self._split_lu(lu[i], 3, 3)
+            PA = self._apply_pivots_rows(
+                a_stride[i].astype(L.dtype, copy=False), piv[i]
+            )
+            assert dpnp.allclose(L @ U, PA, rtol=1e-6, atol=1e-6)
+
+    def test_singular_matrix(self):
+        a = dpnp.zeros((3, 2, 2), dtype=dpnp.default_float_type())
+        a[0] = dpnp.array([[1.0, 2.0], [2.0, 4.0]])
+        a[1] = dpnp.eye(2)
+        a[2] = dpnp.array([[1.0, 1.0], [1.0, 1.0]])
+        with pytest.warns(RuntimeWarning, match="Singular matrix"):
+            dpnp.linalg.lu_factor(a, check_finite=False)
+
+    def test_check_finite_raises(self):
+        a = dpnp.ones((2, 3, 3), dtype=dpnp.default_float_type(), order="F")
+        a[1, 0, 0] = dpnp.nan
+        assert_raises(ValueError, dpnp.linalg.lu_factor, a, check_finite=True)
 
 
 class TestMatrixPower:
@@ -2770,13 +3037,6 @@ class TestSlogdet:
         assert_allclose(sign_result, sign_expected)
         assert_allclose(logdet_result, logdet_expected)
 
-    # TODO: remove skipif when Intel MKL 2025.2 is released
-    # Skip running on CPU because dpnp uses _getrf_batch only on CPU
-    # for dpnp.linalg.det/slogdet.
-    @pytest.mark.skipif(
-        is_cpu_device() and not requires_intel_mkl_version("2025.2"),
-        reason="mkl<2025.2",
-    )
     @pytest.mark.parametrize(
         "matrix",
         [
@@ -2807,13 +3067,6 @@ class TestSlogdet:
         assert_allclose(sign_result, sign_expected)
         assert_allclose(logdet_result, logdet_expected)
 
-    # TODO: remove skipif when Intel MKL 2025.2 is released
-    # Skip running on CPU because dpnp uses _getrf_batch only on CPU
-    # for dpnp.linalg.det/slogdet.
-    @pytest.mark.skipif(
-        is_cpu_device() and not requires_intel_mkl_version("2025.2"),
-        reason="mkl<2025.2",
-    )
     def test_slogdet_singular_matrix_3D(self):
         a_np = numpy.array(
             [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
