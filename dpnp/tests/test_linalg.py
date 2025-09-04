@@ -2841,7 +2841,7 @@ class TestSolve:
         expected = numpy.linalg.solve(a_np, a_np)
         result = dpnp.linalg.solve(a_dp, a_dp)
 
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
@@ -2914,12 +2914,12 @@ class TestSolve:
         # positive strides
         expected = numpy.linalg.solve(a_np[::2, ::2], b_np[::2])
         result = dpnp.linalg.solve(a_dp[::2, ::2], b_dp[::2])
-        assert_allclose(result, expected, rtol=1e-6)
+        assert_dtype_allclose(result, expected)
 
         # negative strides
         expected = numpy.linalg.solve(a_np[::-2, ::-2], b_np[::-2])
         result = dpnp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "matrix, vector",
