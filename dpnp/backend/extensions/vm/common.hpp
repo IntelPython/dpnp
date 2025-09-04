@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
