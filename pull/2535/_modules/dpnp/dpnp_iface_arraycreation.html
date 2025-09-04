@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.19.0dev1+20.g1ba925d8e1b documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.19.0dev3+22.g4399a2b0b9f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=469cb8e0"></script>
+      <script src="../../_static/documentation_options.js?v=a1ee1846"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2321,8 +2321,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : object</span>
-<span class="sd">        A Python object representing an array that implements the ``__dlpack__``</span>
-<span class="sd">        and ``__dlpack_device__`` methods.</span>
+<span class="sd">        A Python object representing an array that implements the</span>
+<span class="sd">        :meth:`dpnp.ndarray.__dlpack__` and</span>
+<span class="sd">        :meth:`dpnp.ndarray.__dlpack_device__`.</span>
 <span class="sd">    device : {None, string, tuple, device}, optional</span>
 <span class="sd">        Device where the output array is to be placed. `device` keyword values</span>
 <span class="sd">        can be:</span>
@@ -2338,10 +2339,10 @@
 <span class="sd">          ``device.sycl_queue``. The `device` object is obtained via</span>
 <span class="sd">          :attr:`dpctl.tensor.usm_ndarray.device`.</span>
 <span class="sd">        * ``(device_type, device_id)`` : 2-tuple matching the format of the</span>
-<span class="sd">          output of the ``__dlpack_device__`` method: an integer enumerator</span>
-<span class="sd">          representing the device type followed by an integer representing</span>
-<span class="sd">          the index of the device. The only supported :class:`dpnp.DLDeviceType`</span>
-<span class="sd">          device types are ``&quot;kDLCPU&quot;`` and ``&quot;kDLOneAPI&quot;``.</span>
+<span class="sd">          output of the :meth:`dpnp.ndarray.__dlpack_device__`: an integer</span>
+<span class="sd">          enumerator representing the device type followed by an integer</span>
+<span class="sd">          representing the index of the device. The only supported</span>
+<span class="sd">          :class:`dpnp.DLDeviceType` is ``&quot;kDLCPU&quot;`` or ``&quot;kDLOneAPI&quot;``.</span>
 
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    copy : {bool, None}, optional</span>

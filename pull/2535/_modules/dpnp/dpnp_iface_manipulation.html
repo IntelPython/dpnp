@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.19.0dev1+20.g1ba925d8e1b documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.19.0dev3+22.g4399a2b0b9f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=469cb8e0"></script>
+      <script src="../../_static/documentation_options.js?v=a1ee1846"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -131,7 +131,11 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisError</span><span class="p">,</span> <span class="n">normalize_axis_index</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AxisError</span><span class="p">,</span>
+    <span class="n">normalize_axis_index</span><span class="p">,</span>
+    <span class="n">normalize_axis_tuple</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
@@ -3752,8 +3756,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
 <span class="sd">        Input data.</span>
-<span class="sd">    axis : {None, int}, optional</span>
-<span class="sd">        Axis along which the elements are counted.</span>
+<span class="sd">    axis : {None, int, tuple of ints}, optional</span>
+<span class="sd">        Axis or axes along which the elements are counted.</span>
 <span class="sd">        By default, give the total number of elements.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -3775,23 +3779,21 @@
 <span class="sd">    &gt;&gt;&gt; a = [[1, 2, 3], [4, 5, 6]]</span>
 <span class="sd">    &gt;&gt;&gt; np.size(a)</span>
 <span class="sd">    6</span>
-<span class="sd">    &gt;&gt;&gt; np.size(a, 1)</span>
+<span class="sd">    &gt;&gt;&gt; np.size(a, axis=1)</span>
 <span class="sd">    3</span>
-<span class="sd">    &gt;&gt;&gt; np.size(a, 0)</span>
+<span class="sd">    &gt;&gt;&gt; np.size(a, axis=0)</span>
 <span class="sd">    2</span>
-
-<span class="sd">    &gt;&gt;&gt; a = np.asarray(a)</span>
-<span class="sd">    &gt;&gt;&gt; np.size(a)</span>
+<span class="sd">    &gt;&gt;&gt; np.size(a, axis=(0, 1))</span>
 <span class="sd">    6</span>
-<span class="sd">    &gt;&gt;&gt; np.size(a, 1)</span>
-<span class="sd">    3</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span>
-        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+        <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">_axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">_axis</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
 
