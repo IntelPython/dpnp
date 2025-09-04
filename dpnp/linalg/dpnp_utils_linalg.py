@@ -2514,6 +2514,118 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
     return (a_h, ipiv_h)
 
 
+def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
+    """
+    dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True)
+
+    Solve an equation system (SciPy-compatible behavior).
+
+    This function mimics the behavior of `scipy.linalg.lu_solve` including
+    support for `trans`, `overwrite_b`, `check_finite`,
+    and 0-based pivot indexing.
+
+    """
+
+    res_usm_type, exec_q = get_usm_allocations([lu, piv, b])
+
+    res_type = _common_type(lu, b)
+
+    # TODO: add broadcasting
+    if lu.shape[0] != b.shape[0]:
+        raise ValueError(
+            f"Shapes of lu {lu.shape} and b {b.shape} are incompatible"
+        )
+
+    if b.size == 0:
+        return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
+
+    if lu.ndim > 2:
+        raise NotImplementedError("Batched matrices are not supported")
+
+    if check_finite:
+        if not dpnp.isfinite(lu).all():
+            raise ValueError(
+                "array must not contain infs or NaNs.\n"
+                "Note that when a singular matrix is given, unlike "
+                "dpnp.linalg.lu_factor returns an array containing NaN."
+            )
+        if not dpnp.isfinite(b).all():
+            raise ValueError("array must not contain infs or NaNs")
+
+    lu_usm_arr = dpnp.get_usm_ndarray(lu)
+    piv_usm_arr = dpnp.get_usm_ndarray(piv)
+    b_usm_arr = dpnp.get_usm_ndarray(b)
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+
+    # oneMKL LAPACK getrf overwrites `a`.
+    lu_h = dpnp.empty_like(lu, order="F", dtype=res_type, usm_type=res_usm_type)
+
+    # use DPCTL tensor function to fill the сopy of the input array
+    # from the input array
+    ht_ev, lu_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=lu_usm_arr,
+        dst=lu_h.get_array(),
+        sycl_queue=lu.sycl_queue,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(ht_ev, lu_copy_ev)
+
+    # SciPy-compatible behavior
+    # Copy is required if:
+    # - overwrite_a is False (always copy),
+    # - dtype mismatch,
+    # - not F-contiguous,s
+    # - not writeable
+    if not overwrite_b or _is_copy_required(b, res_type):
+        b_h = dpnp.empty_like(
+            b, order="F", dtype=res_type, usm_type=res_usm_type
+        )
+        ht_ev, dep_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=b_usm_arr,
+            dst=b_h.get_array(),
+            sycl_queue=b.sycl_queue,
+            depends=_manager.submitted_events,
+        )
+        _manager.add_event_pair(ht_ev, dep_ev)
+        dep_ev = [dep_ev]
+    else:
+        # input is suitable for in-place modification
+        b_h = b
+        dep_ev = _manager.submitted_events
+
+    # oneMKL LAPACK getrf overwrites `a`.
+    piv_h = dpnp.empty_like(piv, order="F", usm_type=res_usm_type)
+
+    # use DPCTL tensor function to fill the сopy of the pivot array
+    # from the pivot array
+    ht_ev, piv_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=piv_usm_arr,
+        dst=piv_h.get_array(),
+        sycl_queue=piv.sycl_queue,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(ht_ev, piv_copy_ev)
+    # MKL lapack uses 1-origin while SciPy uses 0-origin
+    piv_h += 1
+
+    # Call the LAPACK extension function _getrs
+    # to solve the system of linear equations with an LU-factored
+    # coefficient square matrix, with multiple right-hand sides.
+    ht_ev, getrs_ev = li._getrs(
+        exec_q,
+        lu_h.get_array(),
+        piv_h.get_array(),
+        b_h.get_array(),
+        trans,
+        depends=dep_ev,
+    )
+    _manager.add_event_pair(ht_ev, getrs_ev)
+
+    return b_h
+
+
 def dpnp_matrix_power(a, n):
     """
     dpnp_matrix_power(a, n)
