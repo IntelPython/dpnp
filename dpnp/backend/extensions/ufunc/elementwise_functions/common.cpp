@@ -37,6 +37,7 @@
 #include "heaviside.hpp"
 #include "i0.hpp"
 #include "interpolate.hpp"
+#include "isclose.hpp"
 #include "lcm.hpp"
 #include "ldexp.hpp"
 #include "logaddexp2.hpp"
@@ -66,6 +67,7 @@ void init_elementwise_functions(py::module_ m)
     init_heaviside(m);
     init_i0(m);
     init_interpolate(m);
+    init_isclose(m);
     init_lcm(m);
     init_ldexp(m);
     init_logaddexp2(m);

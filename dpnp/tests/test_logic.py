@@ -10,11 +10,14 @@ from numpy.testing import (
 import dpnp
 
 from .helper import (
+    generate_random_numpy_array,
     get_all_dtypes,
+    get_complex_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_float_dtypes,
 )
+from .third_party.cupy import testing
 
 
 class TestAllAny:
@@ -515,23 +518,182 @@ def test_infinity_sign_errors(func):
         getattr(dpnp, func)(x, out=out)
 
 
-@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
-@pytest.mark.parametrize(
-    "rtol", [1e-05, dpnp.array(1e-05), dpnp.full(10, 1e-05)]
-)
-@pytest.mark.parametrize(
-    "atol", [1e-08, dpnp.array(1e-08), dpnp.full(10, 1e-08)]
-)
-def test_isclose(dtype, rtol, atol):
-    a = numpy.random.rand(10)
-    b = a + numpy.random.rand(10) * 1e-8
+class TestIsClose:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    @pytest.mark.parametrize(
+        "rtol", [1e-5, dpnp.array(1e-5), dpnp.full((10,), 1e-5)]
+    )
+    @pytest.mark.parametrize(
+        "atol", [1e-8, dpnp.array(1e-8), dpnp.full((10,), 1e-8)]
+    )
+    def test_isclose(self, dtype, rtol, atol):
+        a = generate_random_numpy_array((10,), dtype=dtype)
+        b = a + numpy.array(1e-8, dtype=dtype)
 
-    dpnp_a = dpnp.array(a, dtype=dtype)
-    dpnp_b = dpnp.array(b, dtype=dtype)
+        dpnp_a = dpnp.array(a, dtype=dtype)
+        dpnp_b = dpnp.array(b, dtype=dtype)
 
-    np_res = numpy.isclose(a, b, 1e-05, 1e-08)
-    dpnp_res = dpnp.isclose(dpnp_a, dpnp_b, rtol, atol)
-    assert_allclose(dpnp_res, np_res)
+        np_res = numpy.isclose(a, b, rtol=1e-5, atol=1e-8)
+        dpnp_res = dpnp.isclose(dpnp_a, dpnp_b, rtol=rtol, atol=atol)
+        assert_equal(dpnp_res, np_res)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize("shape", [(4, 4), (16, 16), (4, 4, 4)])
+    def test_isclose_complex(self, dtype, shape):
+        a = generate_random_numpy_array(shape, dtype=dtype, seed_value=81)
+        b = a.copy()
+
+        b = b + numpy.array(1e-6 + 1e-6j, dtype=dtype)
+
+        dpnp_a = dpnp.array(a, dtype=dtype)
+        dpnp_b = dpnp.array(b, dtype=dtype)
+
+        np_res = numpy.isclose(a, b)
+        dpnp_res = dpnp.isclose(dpnp_a, dpnp_b)
+        assert_equal(dpnp_res, np_res)
+
+    @pytest.mark.parametrize(
+        "rtol, atol",
+        [
+            (1e-5, 1e-8),
+            (dpnp.array(1e-5), dpnp.array(1e-8)),
+        ],
+    )
+    def test_empty_input(self, rtol, atol):
+        a = numpy.array([])
+        b = numpy.array([])
+
+        dpnp_a = dpnp.array(a)
+        dpnp_b = dpnp.array(b)
+
+        np_res = numpy.isclose(a, b, rtol=1e-5, atol=1e-8)
+        dpnp_res = dpnp.isclose(dpnp_a, dpnp_b, rtol=rtol, atol=atol)
+        assert_equal(dpnp_res, np_res)
+
+    @pytest.mark.parametrize(
+        "rtol, atol",
+        [
+            (1e-5, 1e-8),
+            (dpnp.array(1e-5), dpnp.array(1e-8)),
+        ],
+    )
+    @pytest.mark.parametrize("val", [1.0, numpy.inf, -numpy.inf, numpy.nan])
+    def test_input_0d(self, val, rtol, atol):
+        dp_arr = dpnp.array(val)
+        np_arr = numpy.array(val)
+
+        # array & scalar
+        dp_res = dpnp.isclose(dp_arr, val, rtol=rtol, atol=atol)
+        np_res = numpy.isclose(np_arr, val, rtol=1e-5, atol=1e-8)
+        assert_equal(dp_res, np_res)
+
+        # scalar & array
+        dp_res = dpnp.isclose(val, dp_arr, rtol=rtol, atol=atol)
+        np_res = numpy.isclose(val, np_arr, rtol=1e-5, atol=1e-8)
+        assert_equal(dp_res, np_res)
+
+        # array & array
+        dp_res = dpnp.isclose(dp_arr, dp_arr, rtol=rtol, atol=atol)
+        np_res = numpy.isclose(np_arr, np_arr, rtol=1e-5, atol=1e-8)
+        assert_equal(dp_res, np_res)
+
+    @pytest.mark.parametrize(
+        "sh_a, sh_b",
+        [
+            ((10,), (1,)),
+            ((3, 1, 5), (3, 5)),
+            ((3, 1, 5), (1, 3, 5)),
+            ((1, 10), (10,)),
+        ],
+    )
+    def test_broadcast_shapes(self, sh_a, sh_b):
+        a_np = numpy.ones(sh_a)
+        b_np = numpy.ones(sh_b)
+
+        a_dp = dpnp.ones(sh_a)
+        b_dp = dpnp.ones(sh_b)
+
+        np_res = numpy.isclose(a_np, b_np)
+        dp_res = dpnp.isclose(a_dp, b_dp)
+        assert_equal(dp_res, np_res)
+
+    @pytest.mark.parametrize(
+        "rtol, atol",
+        [
+            (1e-5, 1e-8),
+            (dpnp.array(1e-5), dpnp.array(1e-8)),
+        ],
+    )
+    @pytest.mark.parametrize("equal_nan", [True, 1, "1"])
+    def test_equal_nan(self, rtol, atol, equal_nan):
+        a = numpy.array([numpy.nan, 1.0])
+        b = numpy.array([numpy.nan, 1.0])
+
+        dp_a = dpnp.array(a)
+        dp_b = dpnp.array(b)
+
+        np_res = numpy.isclose(a, b, rtol=1e-5, atol=1e-8, equal_nan=equal_nan)
+        dp_res = dpnp.isclose(
+            dp_a, dp_b, rtol=rtol, atol=atol, equal_nan=equal_nan
+        )
+        assert_equal(dp_res, np_res)
+
+    # array-like rtol/atol support requires NumPy >= 2.0
+    @testing.with_requires("numpy>=2.0")
+    def test_rtol_atol_arrays(self):
+        a = numpy.array([2.1, 2.1, 2.1, 2.1, 5, numpy.nan])
+        b = numpy.array([2, 2, 2, 2, numpy.nan, 5])
+        atol = numpy.array([0.11, 0.09, 1e-8, 1e-8, 1, 1])
+        rtol = numpy.array([1e-8, 1e-8, 0.06, 0.04, 1, 1])
+
+        dp_a = dpnp.array(a)
+        dp_b = dpnp.array(b)
+        dp_rtol = dpnp.array(rtol)
+        dp_atol = dpnp.array(atol)
+
+        np_res = numpy.isclose(a, b, rtol=rtol, atol=atol)
+        dp_res = dpnp.isclose(dp_a, dp_b, rtol=dp_rtol, atol=dp_atol)
+        assert_equal(dp_res, np_res)
+
+    @pytest.mark.parametrize(
+        "rtol, atol",
+        [
+            (0 + 1e-5j, 1e-08),
+            (1e-05, 0 + 1e-8j),
+            (0 + 1e-5j, 0 + 1e-8j),
+        ],
+    )
+    def test_rtol_atol_complex(self, rtol, atol):
+        a = dpnp.array([1.0, 1.0])
+        b = dpnp.array([1.0, 1.0 + 1e-6])
+
+        dpnp_res = dpnp.isclose(a, b, rtol=rtol, atol=atol)
+        np_res = numpy.isclose(a.asnumpy(), b.asnumpy(), rtol=rtol, atol=atol)
+        assert_equal(dpnp_res, np_res)
+
+    # NEP 50: float32 vs Python float comparison requires NumPy >= 2.0
+    @testing.with_requires("numpy>=2.0")
+    def test_rtol_atol_nep50(self):
+        below_one = float(1.0 - numpy.finfo("f8").eps)
+        f32 = numpy.array(below_one, dtype="f4")
+        dp_f32 = dpnp.array(f32)
+
+        assert_equal(
+            dpnp.isclose(dp_f32, below_one, rtol=0, atol=0),
+            numpy.isclose(f32, below_one, rtol=0, atol=0),
+        )
+
+    def test_invalid_input(self):
+        # unsupported type
+        assert_raises(TypeError, dpnp.isclose, 1.0, 1.0)
+        assert_raises(TypeError, dpnp.isclose, [1.0], [1.0])
+
+        # broadcast error
+        assert_raises(
+            ValueError, dpnp.isclose, dpnp.ones((10,)), dpnp.ones((3, 5))
+        )
 
 
 @pytest.mark.parametrize("a", [numpy.array([1, 2]), numpy.array([1, 1])])

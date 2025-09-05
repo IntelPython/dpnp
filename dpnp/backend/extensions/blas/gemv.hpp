@@ -41,5 +41,4 @@ extern std::pair<sycl::event, sycl::event>
          const std::vector<sycl::event> &depends);
 
 extern void init_gemv_dispatch_vector(void);
-extern void init_gemv_batch_dispatch_vector(void);
 } // namespace dpnp::extensions::blas

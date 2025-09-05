@@ -35,6 +35,7 @@ skbuild.setup(
         "dpnp.dpnp_utils",
         "dpnp.fft",
         "dpnp.linalg",
+        "dpnp.memory",
         "dpnp.random",
     ],
     package_data={

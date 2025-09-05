@@ -25,16 +25,15 @@
 
 #pragma once
 
-#define SYCL_EXT_ONEAPI_COMPLEX
-#if __has_include(<sycl/ext/oneapi/experimental/sycl_complex.hpp>)
-#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
-#else
-#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
-#endif
+#include <cmath>
+#include <complex>
+#include <limits>
+#include <type_traits>
 
 #include <sycl/sycl.hpp>
 
 // dpctl tensor headers
+#include "kernels/elementwise_functions/sycl_complex.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpnp::kernels::sinc
@@ -43,8 +42,6 @@ namespace tu_ns = dpctl::tensor::type_utils;
 
 namespace impl
 {
-namespace exprm_ns = sycl::ext::oneapi::experimental;
-
 template <typename Tp>
 inline Tp sin(const Tp &in)
 {

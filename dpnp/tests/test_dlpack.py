@@ -78,7 +78,7 @@ class TestDLPack:
         x = dpnp.arange(5)
         y = dpnp.from_dlpack(x, device=x.__dlpack_device__())
         assert x.device == y.device
-        assert x.get_array()._pointer == y.get_array()._pointer
+        assert x.data.ptr == y.data.ptr
 
     def test_numpy_input(self):
         x = numpy.arange(10)
