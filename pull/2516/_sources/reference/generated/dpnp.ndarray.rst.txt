@@ -54,6 +54,7 @@
          ndarray.trace
          ndarray.transpose
          ndarray.var
+         ndarray.view
 
 
 
@@ -64,6 +65,7 @@
          :toctree:
       
          ndarray.T
+         ndarray.data
          ndarray.device
          ndarray.dtype
          ndarray.flags

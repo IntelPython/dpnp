@@ -79,6 +79,8 @@ var hierarchy =
     [ "ext::common::TableBuilder2< FnT, SupportedTypes, Func >::impl< _FnT, T1, T2 >", "structext_1_1common_1_1_table_builder2_1_1impl.html", null ],
     [ "ext::common::TableBuilder< FnT, SupportedTypes, Func >::impl< _FnT, T >", "structext_1_1common_1_1_table_builder_1_1impl.html", null ],
     [ "ext::common::int_pair_hash", "structext_1_1common_1_1int__pair__hash.html", null ],
+    [ "dpnp::kernels::isclose::IsCloseContigScalarFunctor< T, scT, resTy, vec_sz, n_vecs, enable_sg_loadstore >", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_contig_scalar_functor.html", null ],
+    [ "dpnp::kernels::isclose::IsCloseStridedScalarFunctor< T, scT, resTy, ThreeOffsets_IndexerT >", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_strided_scalar_functor.html", null ],
     [ "ext::common::IsNan< T >", "structext_1_1common_1_1_is_nan.html", null ],
     [ "dpnp::kernels::lcm::LcmFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ],
     [ "dpnp::kernels::ldexp::LdexpFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ],
@@ -113,6 +115,7 @@ var hierarchy =
       [ "statistics::sliding_window1d::PaddedSpan< T, SizeT >", "classstatistics_1_1sliding__window1d_1_1_padded_span.html", null ]
     ] ],
     [ "dpnp::extensions::lapack::types::SyevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
+    [ "dpnp::extensions::blas::types::SyrkTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_syrk_type_pair_support_factory.html", null ],
     [ "ext::common::TableBuilder< FnT, SupportedTypes, Func >", "structext_1_1common_1_1_table_builder.html", null ],
     [ "ext::common::TableBuilder2< FnT, SupportedTypes, Func >", "structext_1_1common_1_1_table_builder2.html", null ],
     [ "statistics::histogram::UncachedData< T, Dims >", "structstatistics_1_1histogram_1_1_uncached_data.html", null ],

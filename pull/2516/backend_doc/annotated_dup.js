@@ -9,7 +9,8 @@ var annotated_dup =
             [ "DotuTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
             [ "GemmBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
             [ "GemmTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
-            [ "GemvTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html", null ]
+            [ "GemvTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html", null ],
+            [ "SyrkTypePairSupportFactory", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_syrk_type_pair_support_factory.html", null ]
           ] ],
           [ "DotcContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dotc_contig_factory.html", null ],
           [ "DotContigFactory", "structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html", null ],
@@ -101,6 +102,10 @@ var annotated_dup =
         ] ],
         [ "i0", "namespacedpnp_1_1kernels_1_1i0.html", [
           [ "I0Functor", "structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html", null ]
+        ] ],
+        [ "isclose", null, [
+          [ "IsCloseContigScalarFunctor", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_contig_scalar_functor.html", null ],
+          [ "IsCloseStridedScalarFunctor", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_strided_scalar_functor.html", null ]
         ] ],
         [ "lcm", null, [
           [ "LcmFunctor", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ]

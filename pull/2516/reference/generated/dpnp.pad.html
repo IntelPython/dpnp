@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.pad &mdash; Data Parallel Extension for NumPy 0.19.0dev1+2.g57ce6104763 documentation</title>
+  <title>dpnp.pad &mdash; Data Parallel Extension for NumPy 0.19.0dev3+24.gb80a491e1f7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=43ad65de"></script>
+      <script src="../../_static/documentation_options.js?v=e126fe82"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -58,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../constants.html">Constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#basic-operations">Basic operations</a></li>
@@ -138,13 +139,16 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- The array of rank <code class="docutils literal notranslate"><span class="pre">N</span></code> to pad.</p></li>
-<li><p><strong>pad_width</strong> (<em>{sequence</em><em>, </em><em>array_like</em><em>, </em><em>int}</em>) -- Number of values padded to the edges of each axis.
+<li><p><strong>pad_width</strong> (<em>{sequence</em><em>, </em><em>array_like</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>dict}</em>) -- Number of values padded to the edges of each axis.
 <code class="docutils literal notranslate"><span class="pre">((before_1,</span> <span class="pre">after_1),</span> <span class="pre">...</span> <span class="pre">(before_N,</span> <span class="pre">after_N))</span></code> unique pad widths
 for each axis.
 <code class="docutils literal notranslate"><span class="pre">(before,</span> <span class="pre">after)</span></code> or <code class="docutils literal notranslate"><span class="pre">((before,</span> <span class="pre">after),)</span></code> yields same before
 and after pad for each axis.
 <code class="docutils literal notranslate"><span class="pre">(pad,)</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code> is a shortcut for <code class="docutils literal notranslate"><span class="pre">before</span> <span class="pre">=</span> <span class="pre">after</span> <span class="pre">=</span> <span class="pre">pad</span></code> width
-for all axes.</p></li>
+for all axes.
+If a dictionary, each key is an axis and its corresponding value is an
+integer or a pair of integers describing the padding <code class="docutils literal notranslate"><span class="pre">(before,</span> <span class="pre">after)</span></code>
+or <code class="docutils literal notranslate"><span class="pre">pad</span></code> width for that axis.</p></li>
 <li><p><strong>mode</strong> (<em>{str</em><em>, </em><em>function}</em><em>, </em><em>optional</em>) -- <p>One of the following string values or a user supplied function.</p>
 <dl class="simple">
 <dt>&quot;constant&quot;</dt><dd><p>Pads with a constant value.</p>
@@ -334,6 +338,27 @@ the end of vector.</p>
 <span class="go">       [100, 100,   3,   4,   5, 100, 100],</span>
 <span class="go">       [100, 100, 100, 100, 100, 100, 100],</span>
 <span class="go">       [100, 100, 100, 100, 100, 100, 100]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)})</span>
+<span class="go">array([[0, 1, 2, 3, 0, 0],</span>
+<span class="go">       [0, 4, 5, 6, 0, 0]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="go">array([[0, 0, 1, 2, 3, 0, 0],</span>
+<span class="go">       [0, 0, 4, 5, 6, 0, 0]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)})</span>
+<span class="go">array([[0, 0, 0],</span>
+<span class="go">       [0, 0, 0],</span>
+<span class="go">       [0, 0, 0],</span>
+<span class="go">       [1, 2, 3],</span>
+<span class="go">       [4, 5, 6]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="go">array([[0, 0, 0, 0, 0, 0, 0],</span>
+<span class="go">       [0, 0, 0, 0, 0, 0, 0],</span>
+<span class="go">       [0, 0, 0, 0, 0, 0, 0],</span>
+<span class="go">       [0, 0, 1, 2, 3, 0, 0],</span>
+<span class="go">       [0, 0, 4, 5, 6, 0, 0]])</span>
 </pre></div>
 </div>
 </dd></dl>
