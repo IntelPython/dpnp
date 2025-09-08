@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.19.0dev3+17.gecc8cd1a9a0 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.19.0dev3+30.g9a1d16c88f8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=f8aeedb9"></script>
+      <script src="../../_static/documentation_options.js?v=ab95bffa"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2676,7 +2676,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    array : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        The array of rank ``N`` to pad.</span>
-<span class="sd">    pad_width : {sequence, array_like, int}</span>
+<span class="sd">    pad_width : {sequence, array_like, int, dict}</span>
 <span class="sd">        Number of values padded to the edges of each axis.</span>
 <span class="sd">        ``((before_1, after_1), ... (before_N, after_N))`` unique pad widths</span>
 <span class="sd">        for each axis.</span>
@@ -2684,6 +2684,9 @@
 <span class="sd">        and after pad for each axis.</span>
 <span class="sd">        ``(pad,)`` or ``int`` is a shortcut for ``before = after = pad`` width</span>
 <span class="sd">        for all axes.</span>
+<span class="sd">        If a dictionary, each key is an axis and its corresponding value is an</span>
+<span class="sd">        integer or a pair of integers describing the padding ``(before, after)``</span>
+<span class="sd">        or ``pad`` width for that axis.</span>
 <span class="sd">    mode : {str, function}, optional</span>
 <span class="sd">        One of the following string values or a user supplied function.</span>
 
@@ -2865,6 +2868,26 @@
 <span class="sd">           [100, 100,   3,   4,   5, 100, 100],</span>
 <span class="sd">           [100, 100, 100, 100, 100, 100, 100],</span>
 <span class="sd">           [100, 100, 100, 100, 100, 100, 100]])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(1, 7).reshape(2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, {1: (1, 2)})</span>
+<span class="sd">    array([[0, 1, 2, 3, 0, 0],</span>
+<span class="sd">           [0, 4, 5, 6, 0, 0]])</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, {-1: 2})</span>
+<span class="sd">    array([[0, 0, 1, 2, 3, 0, 0],</span>
+<span class="sd">           [0, 0, 4, 5, 6, 0, 0]])</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, {0: (3, 0)})</span>
+<span class="sd">    array([[0, 0, 0],</span>
+<span class="sd">           [0, 0, 0],</span>
+<span class="sd">           [0, 0, 0],</span>
+<span class="sd">           [1, 2, 3],</span>
+<span class="sd">           [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, {0: (3, 0), 1: 2})</span>
+<span class="sd">    array([[0, 0, 0, 0, 0, 0, 0],</span>
+<span class="sd">           [0, 0, 0, 0, 0, 0, 0],</span>
+<span class="sd">           [0, 0, 0, 0, 0, 0, 0],</span>
+<span class="sd">           [0, 0, 1, 2, 3, 0, 0],</span>
+<span class="sd">           [0, 0, 4, 5, 6, 0, 0]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
