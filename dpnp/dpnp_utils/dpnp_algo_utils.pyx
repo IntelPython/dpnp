@@ -391,7 +391,14 @@ cpdef inline tuple _object_to_tuple(object obj):
         return ()
 
     if cpython.PySequence_Check(obj):
-        return tuple(obj)
+        nd = len(obj)
+        shape = []
+
+        for i in range(0, nd):
+            # Assumes each item is castable to Py_ssize_t,
+            # otherwise TypeError will be raised
+            shape.append(<Py_ssize_t> obj[i])
+        return tuple(shape)
 
     if dpnp.isscalar(obj):
         return (obj, )
