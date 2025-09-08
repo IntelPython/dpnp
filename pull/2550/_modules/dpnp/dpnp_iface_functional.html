@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.19.0dev3+25.ge7121a166b documentation</title>
+  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.19.0dev3+37.g06e4f764d03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3d6e8d0b"></script>
+      <script src="../../_static/documentation_options.js?v=4f50d96f"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -378,7 +378,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        The input domain.</span>
-<span class="sd">    condlist : {list of array-like boolean, bool scalars}</span>
+<span class="sd">    condlist : {sequence of array-like boolean, bool scalars}</span>
 <span class="sd">        Each boolean array/scalar corresponds to a function in `funclist`.</span>
 <span class="sd">        Wherever `condlist[i]` is ``True``, `funclist[i](x)` is used as the</span>
 <span class="sd">        output value.</span>
@@ -429,7 +429,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">x_dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">condlist</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span> <span class="ow">and</span> <span class="n">condlist</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
         <span class="n">condlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">condlist</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">condlist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span>
@@ -441,7 +441,7 @@
                 <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">condlist</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
             <span class="p">)</span>
         <span class="p">]</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condlist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">condlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
         <span class="c1"># convert list of lists to list of arrays</span>
         <span class="c1"># convert list of scalars to a list of 0d arrays (for 0d input)</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
@@ -462,7 +462,7 @@
     <span class="n">condlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">funclist</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;funclist must be a non-string sequence&quot;</span><span class="p">)</span>
         <span class="n">funclen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">funclist</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;funclist must be a sequence of scalars&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
