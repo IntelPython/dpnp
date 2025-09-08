@@ -1125,3 +1125,17 @@ class TestUniform:
         for size in sizes:
             result = RandomState().uniform(size=size)
             assert result.shape == size
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("size", [True, [True], dpnp.bool(True), numpy.array(True), numpy.array([True])])
+    def test_bool_size(self, xp, size):
+        rs = xp.random.RandomState()
+        assert_raises(TypeError, rs.uniform, size=size)
+
+    @pytest.mark.parametrize("size", [numpy.array(1), numpy.array([2])])
+    def test_numpy_ndarray_size(self, size):
+        result = RandomState().uniform(size=size)
+        assert result.shape == size
+
+    def test_dpnp_ndarray_size(self):
+         assert_raises(ValueError, RandomState().uniform, size=dpnp.array(1))
