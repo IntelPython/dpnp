@@ -1115,3 +1115,13 @@ class TestUniform:
     def test_invalid_usm_type(self, usm_type):
         # dtype must be float32 or float64
         assert_raises(ValueError, RandomState().uniform, usm_type=usm_type)
+
+    def test_size_castable_to_integer(self):
+        M = numpy.int64(31)
+        N = numpy.int64(31)
+        K = 63  # plain Python int
+
+        sizes = [(M, K), (M, N), (K, N)]
+        for size in sizes:
+            result = RandomState().uniform(size=size)
+            assert result.shape == size
