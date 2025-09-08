@@ -21,6 +21,7 @@ from .helper import (
     is_cpu_device,
     is_gpu_device,
 )
+from .third_party.cupy import testing
 
 # aspects of default device:
 _def_device = dpctl.SyclQueue().sycl_device
@@ -1126,6 +1127,7 @@ class TestUniform:
             result = RandomState().uniform(size=size)
             assert result.shape == size
 
+    @testing.with_requires("numpy>=2.3.2")
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
         "size",
