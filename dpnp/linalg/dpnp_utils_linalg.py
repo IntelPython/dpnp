@@ -297,7 +297,7 @@ def _batched_lu_factor(a, res_type):
     batch_size = a.shape[0]
     a_usm_arr = dpnp.get_usm_ndarray(a)
 
-    # `a` must be copied because getrf_batch destroys the input matrix
+    # `a` must be copied because getrf/getrf_batch destroys the input matrix
     a_h = dpnp.empty_like(a, order="C", dtype=res_type)
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_usm_arr,
