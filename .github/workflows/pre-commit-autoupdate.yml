@@ -1,14 +1,12 @@
 name: Autoupdate pre-commit
 
 on:
-  # For Branch-Protection check. Only the default branch is supported. See
-  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
-  branch_protection_rule:
+  # To be able to be triggered manually
+  workflow_dispatch:
   # To guarantee Maintained check is occasionally updated. See
   # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
   schedule:
     - cron: '28 2 * * 6' # Saturday at 02:28 UTC
-  workflow_dispatch:
 
 jobs:
   autoupdate:

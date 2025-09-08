@@ -539,3 +539,21 @@ class TestPad:
             dpnp_as_pairs([[1, 2], [3, 4]], 3)
         with pytest.raises(ValueError, match="could not be broadcast"):
             dpnp_as_pairs(dpnp.ones((2, 3)), 3)
+
+    @testing.with_requires("numpy>=2.4")
+    @pytest.mark.parametrize(
+        "sh, pad_width",
+        [
+            ((3, 4, 5), {-2: (1, 3)}),
+            ((3, 4, 5), {0: (5, 2)}),
+            ((3, 4, 5), {0: (5, 2), -1: (3, 4)}),
+            ((3, 4, 5), {1: 5}),
+        ],
+    )
+    def test_dict_pad_width(self, sh, pad_width):
+        a = numpy.zeros(sh)
+        ia = dpnp.array(a)
+
+        result = dpnp.pad(ia, pad_width)
+        expected = numpy.pad(a, pad_width)
+        assert_equal(result, expected)

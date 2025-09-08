@@ -1911,7 +1911,7 @@ class TestLuFactor:
         A_cast = a_dp.astype(LU.dtype, copy=False)
         PA = self._apply_pivots_rows(A_cast, piv)
 
-        assert_allclose(LU, PA, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(LU, PA, rtol=1e-6, atol=1e-6)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_overwrite_inplace(self, dtype):
@@ -1928,7 +1928,7 @@ class TestLuFactor:
         PA = self._apply_pivots_rows(a_dp_orig, piv)
         LU = L @ U
 
-        assert_allclose(LU, PA, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(LU, PA, rtol=1e-6, atol=1e-6)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_overwrite_copy(self, dtype):
@@ -1945,7 +1945,7 @@ class TestLuFactor:
         PA = self._apply_pivots_rows(a_dp_orig, piv)
         LU = L @ U
 
-        assert_allclose(LU, PA, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(LU, PA, rtol=1e-6, atol=1e-6)
 
     def test_overwrite_copy_special(self):
         # F-contig but dtype != res_type
@@ -1972,7 +1972,7 @@ class TestLuFactor:
                 a_orig.astype(L.dtype, copy=False), piv
             )
             LU = L @ U
-            assert_allclose(LU, PA, rtol=1e-6, atol=1e-6)
+            assert dpnp.allclose(LU, PA, rtol=1e-6, atol=1e-6)
 
     @pytest.mark.parametrize("shape", [(0, 0), (0, 2), (2, 0)])
     def test_empty_inputs(self, shape):
@@ -2003,7 +2003,7 @@ class TestLuFactor:
         PA = self._apply_pivots_rows(a_dp, piv)
         LU = L @ U
 
-        assert_allclose(LU, PA, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(LU, PA, rtol=1e-6, atol=1e-6)
 
     def test_singular_matrix(self):
         a_dp = dpnp.array([[1.0, 2.0], [2.0, 4.0]])
@@ -2070,7 +2070,7 @@ class TestLuFactorBatched:
             L, U = self._split_lu(lu_3d[i], m, n)
             A_cast = a_3d[i].astype(L.dtype, copy=False)
             PA = self._apply_pivots_rows(A_cast, piv_2d[i])
-            assert_allclose(L @ U, PA, rtol=1e-6, atol=1e-6)
+            assert dpnp.allclose(L @ U, PA, rtol=1e-6, atol=1e-6)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("order", ["C", "F"])
@@ -2082,7 +2082,7 @@ class TestLuFactorBatched:
         )
 
         assert lu is not a_dp
-        assert_allclose(a_dp, a_dp_orig)
+        assert dpnp.allclose(a_dp, a_dp_orig)
 
         m = n = 2
         lu_3d = lu.reshape((-1, m, n))
@@ -2092,7 +2092,7 @@ class TestLuFactorBatched:
             L, U = self._split_lu(lu_3d[i], m, n)
             A_cast = a_3d[i].astype(L.dtype, copy=False)
             PA = self._apply_pivots_rows(A_cast, piv_2d[i])
-            assert_allclose(L @ U, PA, rtol=1e-6, atol=1e-6)
+            assert dpnp.allclose(L @ U, PA, rtol=1e-6, atol=1e-6)
 
     @pytest.mark.parametrize(
         "shape", [(0, 2, 2), (2, 0, 2), (2, 2, 0), (0, 0, 0)]
@@ -2119,7 +2119,7 @@ class TestLuFactorBatched:
             PA = self._apply_pivots_rows(
                 a_stride[i].astype(L.dtype, copy=False), piv[i]
             )
-            assert_allclose(L @ U, PA, rtol=1e-6, atol=1e-6)
+            assert dpnp.allclose(L @ U, PA, rtol=1e-6, atol=1e-6)
 
     def test_singular_matrix(self):
         a = dpnp.zeros((3, 2, 2), dtype=dpnp.default_float_type())
@@ -2841,7 +2841,7 @@ class TestSolve:
         expected = numpy.linalg.solve(a_np, a_np)
         result = dpnp.linalg.solve(a_dp, a_dp)
 
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
@@ -2914,12 +2914,12 @@ class TestSolve:
         # positive strides
         expected = numpy.linalg.solve(a_np[::2, ::2], b_np[::2])
         result = dpnp.linalg.solve(a_dp[::2, ::2], b_dp[::2])
-        assert_allclose(result, expected, rtol=1e-6)
+        assert_dtype_allclose(result, expected)
 
         # negative strides
         expected = numpy.linalg.solve(a_np[::-2, ::-2], b_np[::-2])
         result = dpnp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "matrix, vector",

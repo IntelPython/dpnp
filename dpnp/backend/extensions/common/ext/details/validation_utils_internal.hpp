@@ -114,8 +114,10 @@ inline void check_no_overlap(const array_ptr &input,
     }
 
     const auto &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    const auto &same_logical_tensors =
+        dpctl::tensor::overlap::SameLogicalTensors();
 
-    if (overlap(*input, *output)) {
+    if (overlap(*input, *output) && !same_logical_tensors(*input, *output)) {
         throw py::value_error(name_of(input, names) +
                               " has overlapping memory segments with " +
                               name_of(output, names));
