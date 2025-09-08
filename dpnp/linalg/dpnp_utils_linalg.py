@@ -2831,18 +2831,12 @@ def dpnp_solve(a, b):
     a_usm_arr = dpnp.get_usm_ndarray(a)
     b_usm_arr = dpnp.get_usm_ndarray(b)
 
-    # Due to MKLD-17226 (bug with incorrect checking ldb parameter
-    # in oneapi::mkl::lapack::gesv_scratchad_size that raises an error
-    # `invalid argument` when nrhs > n) we can not use _gesv directly.
-    # This w/a uses _getrf and _getrs instead
-    # to handle cases where nrhs > n for a.shape = (n x n)
-    # and b.shape = (n x nrhs).
-
-    # oneMKL LAPACK getrf overwrites `a`.
-    a_h = dpnp.empty_like(a, order="C", dtype=res_type, usm_type=res_usm_type)
+    # oneMKL LAPACK getrs overwrites `a` and assumes fortran-like array as
+    # input
+    a_h = dpnp.empty_like(a, order="F", dtype=res_type, usm_type=res_usm_type)
 
     _manager = dpu.SequentialOrderManager[exec_q]
-    dev_evs = _manager.submitted_events
+    dep_evs = _manager.submitted_events
 
     # use DPCTL tensor function to fill the сopy of the input array
     # from the input array
@@ -2850,7 +2844,7 @@ def dpnp_solve(a, b):
         src=a_usm_arr,
         dst=a_h.get_array(),
         sycl_queue=a.sycl_queue,
-        depends=dev_evs,
+        depends=dep_evs,
     )
     _manager.add_event_pair(ht_ev, a_copy_ev)
 
@@ -2866,43 +2860,18 @@ def dpnp_solve(a, b):
         src=b_usm_arr,
         dst=b_h.get_array(),
         sycl_queue=b.sycl_queue,
-        depends=dev_evs,
+        depends=dep_evs,
     )
     _manager.add_event_pair(ht_ev, b_copy_ev)
 
-    n = a.shape[0]
-
-    ipiv_h = dpnp.empty_like(
-        a,
-        shape=(n,),
-        dtype=dpnp.int64,
+    # Call the LAPACK extension function _gesv to solve the system of linear
+    # equations with the coefficient square matrix and
+    # the dependent variables array
+    ht_lapack_ev, gesv_ev = li._gesv(
+        exec_q, a_h.get_array(), b_h.get_array(), [a_copy_ev, b_copy_ev]
     )
-    dev_info_h = [0]
 
-    # Call the LAPACK extension function _getrf
-    # to perform LU decomposition of the input matrix
-    ht_ev, getrf_ev = li._getrf(
-        exec_q,
-        a_h.get_array(),
-        ipiv_h.get_array(),
-        dev_info_h,
-        depends=[a_copy_ev],
-    )
-    _manager.add_event_pair(ht_ev, getrf_ev)
-
-    _check_lapack_dev_info(dev_info_h)
-
-    # Call the LAPACK extension function _getrs
-    # to solve the system of linear equations with an LU-factored
-    # coefficient square matrix, with multiple right-hand sides.
-    ht_ev, getrs_ev = li._getrs(
-        exec_q,
-        a_h.get_array(),
-        ipiv_h.get_array(),
-        b_h.get_array(),
-        depends=[b_copy_ev, getrf_ev],
-    )
-    _manager.add_event_pair(ht_ev, getrs_ev)
+    _manager.add_event_pair(ht_lapack_ev, gesv_ev)
     return b_h
 
 

@@ -23,6 +23,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <vector>
+
 #include <sycl/sycl.hpp>
 
 #include "dpctl4pybind11.hpp"
