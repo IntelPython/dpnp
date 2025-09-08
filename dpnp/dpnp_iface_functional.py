@@ -336,7 +336,7 @@ def piecewise(x, condlist, funclist):
     """
     dpnp.check_supported_arrays_type(x)
     x_dtype = x.dtype
-    if isinstance(condlist, dpnp.ndarray) and condlist.ndim in [0, 1]:
+    if dpnp.is_supported_array_type(condlist) and condlist.ndim in [0, 1]:
         condlist = [condlist]
     elif dpnp.isscalar(condlist) or (
         dpnp.isscalar(condlist[0]) and x.ndim != 0
@@ -348,7 +348,7 @@ def piecewise(x, condlist, funclist):
                 x.shape, condlist, usm_type=x.usm_type, sycl_queue=x.sycl_queue
             )
         ]
-    elif not isinstance(condlist[0], (dpnp.ndarray)):
+    elif not dpnp.is_supported_array_type(condlist[0]):
         # convert list of lists to list of arrays
         # convert list of scalars to a list of 0d arrays (for 0d input)
         tmp = []
@@ -369,7 +369,7 @@ def piecewise(x, condlist, funclist):
     condlen = len(condlist)
     try:
         if isinstance(funclist, str):
-            raise TypeError
+            raise TypeError("funclist must be a non-string sequence")
         funclen = len(funclist)
     except TypeError as e:
         raise TypeError("funclist must be a sequence of scalars") from e
