@@ -21,6 +21,7 @@ from .helper import (
     is_cpu_device,
     is_gpu_device,
 )
+from .third_party.cupy import testing
 
 # aspects of default device:
 _def_device = dpctl.SyclQueue().sycl_device
@@ -1115,3 +1116,31 @@ class TestUniform:
     def test_invalid_usm_type(self, usm_type):
         # dtype must be float32 or float64
         assert_raises(ValueError, RandomState().uniform, usm_type=usm_type)
+
+    def test_size_castable_to_integer(self):
+        M = numpy.int64(31)
+        N = numpy.int64(31)
+        K = 63  # plain Python int
+
+        sizes = [(M, K), (M, N), (K, N)]
+        for size in sizes:
+            result = RandomState().uniform(size=size)
+            assert result.shape == size
+
+    @testing.with_requires("numpy>=2.3.2")
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize(
+        "size",
+        [True, [True], dpnp.bool(True), numpy.array(True), numpy.array([True])],
+    )
+    def test_bool_size(self, xp, size):
+        rs = xp.random.RandomState()
+        assert_raises(TypeError, rs.uniform, size=size)
+
+    @pytest.mark.parametrize("size", [numpy.array(1), numpy.array([2])])
+    def test_numpy_ndarray_size(self, size):
+        result = RandomState().uniform(size=size)
+        assert result.shape == size
+
+    def test_dpnp_ndarray_size(self):
+        assert_raises(ValueError, RandomState().uniform, size=dpnp.array(1))
