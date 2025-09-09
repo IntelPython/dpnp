@@ -110,6 +110,8 @@ def test_usm_ndarray_linalg_batch(func, gen_kwargs, func_kwargs):
             )
             for _ in range(2)
         ]
+    elif func == "cholesky" and is_win_platform() and is_arl_or_mtl():
+        pytest.skip("SAT-8206")
     else:
         dpt_args = [
             dpt.asarray(generate_random_numpy_array(shape, **gen_kwargs))
