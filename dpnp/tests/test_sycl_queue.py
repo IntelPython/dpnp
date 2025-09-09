@@ -15,7 +15,7 @@ from dpnp.dpnp_utils import get_usm_allocations
 from .helper import (
     generate_random_numpy_array,
     get_all_dtypes,
-    is_dg2,
+    is_arl_or_mtl,
     is_win_platform,
 )
 
@@ -1493,7 +1493,7 @@ class TestLinAlgebra:
         else:
             dtype = dpnp.default_float_type(device)
             x = dpnp.array(data, dtype=dtype, device=device)
-            if x.ndim > 2 and is_win_platform() and is_dg2():
+            if x.ndim > 2 and is_win_platform() and is_arl_or_mtl():
                 pytest.skip("SAT-8206")
 
         result = dpnp.linalg.cholesky(x)

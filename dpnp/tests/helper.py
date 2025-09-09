@@ -404,6 +404,14 @@ def has_support_aspect64(device=None):
     return dev.has_aspect_fp64
 
 
+def is_arl_or_mtl(device=None):
+    """
+    Return True if a test is running on Arrow Lake or Meteor Lake GPU device,
+    False otherwise.
+    """
+    return _get_dev_mask(device) == 0x7D00
+
+
 def is_cpu_device(device=None):
     """
     Return True if a test is running on CPU device, False otherwise.
@@ -462,14 +470,6 @@ def is_lts_driver(device=None):
     """
     dev = dpctl.select_default_device() if device is None else device
     return dev.has_aspect_gpu and "1.3" in dev.driver_version
-
-
-def is_dg2(device=None):
-    """
-    Return True if a test is running on DG2 (Intel Arc Alchemist family) GPU device,
-    False otherwise.
-    """
-    return _get_dev_mask(device) in (0x4F00, 0x5600)
 
 
 def is_ptl(device=None):
