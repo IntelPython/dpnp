@@ -473,10 +473,10 @@ def is_lts_driver(device=None):
 
 def is_ptl(device=None):
     """
-    Return True if a test is running on Panther Lake with Iris Xe3 GPU device,
-    False otherwise.
+    Return True if a test is running on Panther Lake with Iris Xe3 GPU device
+    (which includes PTL-U, PTL-H and WCL), False otherwise.
     """
-    return _get_dev_mask(device) == 0xB000
+    return _get_dev_mask(device) in (0xB000, 0xFD00)
 
 
 def is_win_platform():
