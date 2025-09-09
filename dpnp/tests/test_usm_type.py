@@ -10,7 +10,7 @@ import pytest
 import dpnp
 from dpnp.dpnp_utils import get_usm_allocations
 
-from .helper import generate_random_numpy_array, is_win_platform
+from .helper import generate_random_numpy_array, is_dg2, is_win_platform
 
 list_of_usm_types = ["device", "shared", "host"]
 
@@ -1341,6 +1341,8 @@ class TestLinAlgebra:
             x = dpnp.empty(data, dtype=dtype, usm_type=usm_type)
         else:
             x = dpnp.array(data, dtype=dtype, usm_type=usm_type)
+            if x.ndim > 2 and is_win_platform() and is_dg2():
+                pytest.skip("SAT-8206")
 
         result = dpnp.linalg.cholesky(x)
         assert x.usm_type == result.usm_type

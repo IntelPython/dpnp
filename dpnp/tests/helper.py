@@ -464,6 +464,14 @@ def is_lts_driver(device=None):
     return dev.has_aspect_gpu and "1.3" in dev.driver_version
 
 
+def is_dg2(device=None):
+    """
+    Return True if a test is running on DG2 (Intel Arc Alchemist family) GPU device,
+    False otherwise.
+    """
+    return _get_dev_mask(device) in (0x4F00, 0x5600)
+
+
 def is_ptl(device=None):
     """
     Return True if a test is running on Panther Lake with Iris Xe3 GPU device,
