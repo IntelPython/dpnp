@@ -485,7 +485,7 @@ def is_tgllp_iris_xe(device=None):
     Return True if a test is running on Tiger Lake-LP with Iris Xe GPU device,
     False otherwise.
     """
-    return _get_dev_id(device) in (0x9A49, 0x9A40)
+    return get_dev_id(device) in (0x9A49, 0x9A40)
 
 
 def is_win_platform():
