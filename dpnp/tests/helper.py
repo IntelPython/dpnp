@@ -108,6 +108,19 @@ def assert_dtype_allclose(
             _assert_dtype(dpnp_arr.dtype, numpy_arr.dtype, check_only_type_kind)
 
 
+def factor_to_tol(dtype, factor):
+    """
+    Calculate the tolerance for comparing floating point and complex arrays.
+    The tolerance is based on the maximum resolution of the input dtype multiplied by the factor.
+    """
+
+    tol = 0
+    if numpy.issubdtype(dtype, numpy.inexact):
+        tol = numpy.finfo(dtype).resolution
+
+    return factor * tol
+
+
 def generate_random_numpy_array(
     shape,
     dtype=None,
@@ -204,19 +217,6 @@ def generate_random_numpy_array(
     if order != "C" and a.ndim > 1:
         a = numpy.array(a, order=order)
     return a
-
-
-def factor_to_tol(dtype, factor):
-    """
-    Calculate the tolerance for comparing floating point and complex arrays.
-    The tolerance is based on the maximum resolution of the input dtype multiplied by the factor.
-    """
-
-    tol = 0
-    if numpy.issubdtype(dtype, numpy.inexact):
-        tol = numpy.finfo(dtype).resolution
-
-    return factor * tol
 
 
 def get_abs_array(data, dtype=None):
