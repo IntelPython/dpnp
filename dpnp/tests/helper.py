@@ -26,14 +26,8 @@ def _assert_shape(a, b):
         assert a.shape == (), f"{a.shape} != ()"
 
 
-def _get_dev_id(device=None):
-    dev = dpctl.select_default_device() if device is None else device
-    dev_info = dpctl.utils.intel_device_info(dev)
-    return dev_info.get("device_id", 0)
-
-
 def _get_dev_mask(device=None):
-    return _get_dev_id(device) & 0xFF00
+    return get_dev_id(device) & 0xFF00
 
 
 def assert_dtype_allclose(
@@ -307,6 +301,16 @@ def get_complex_dtypes(device=None):
     if dev.has_aspect_fp64:
         dtypes.append(dpnp.complex128)
     return dtypes
+
+
+def get_dev_id(device=None):
+    """
+    Obtain Intel Device ID for a device (the default device if not provided).
+    """
+
+    dev = dpctl.select_default_device() if device is None else device
+    dev_info = dpctl.utils.intel_device_info(dev)
+    return dev_info.get("device_id", 0)
 
 
 def get_float_dtypes(no_float16=True, device=None):

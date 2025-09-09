@@ -41,6 +41,8 @@ else:
 
 import dpnp
 
+from .helper import get_dev_id
+
 skip_mark = pytest.mark.skip(reason="Skipping test.")
 
 
@@ -129,7 +131,6 @@ def pytest_collection_modifyitems(config, items):
     test_exclude_file_cuda = os.path.join(test_path, "skipped_tests_cuda.tbl")
 
     dev = dpctl.select_default_device()
-    dev_id = dpctl.utils.intel_device_info(dev).get("device_id", 0)
     is_cpu = dev.is_cpu
     is_gpu = dev.is_gpu
     support_fp64 = dev.has_aspect_fp64
@@ -139,7 +140,7 @@ def pytest_collection_modifyitems(config, items):
     print(
         f"DPNP Test scope includes all integer dtypes: {bool(dtype_config.all_int_types)}"
     )
-    print(f"DPNP current device ID: {dev_id:#x}")
+    print(f"DPNP current device ID: {get_dev_id(dev):#x}")
     print(f"DPNP current device is CPU: {is_cpu}")
     print(f"DPNP current device is GPU: {is_gpu}")
     print(f"DPNP current device supports fp64: {support_fp64}")
