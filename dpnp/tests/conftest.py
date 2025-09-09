@@ -139,7 +139,7 @@ def pytest_collection_modifyitems(config, items):
     print(
         f"DPNP Test scope includes all integer dtypes: {bool(dtype_config.all_int_types)}"
     )
-    print(f"DPNP current device ID: {dev_id}")
+    print(f"DPNP current device ID: {dev_id:#x}")
     print(f"DPNP current device is CPU: {is_cpu}")
     print(f"DPNP current device is GPU: {is_gpu}")
     print(f"DPNP current device supports fp64: {support_fp64}")
