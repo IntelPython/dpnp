@@ -26,10 +26,14 @@ def _assert_shape(a, b):
         assert a.shape == (), f"{a.shape} != ()"
 
 
-def _get_dev_mask(device=None):
+def _get_dev_id(device=None):
     dev = dpctl.select_default_device() if device is None else device
     dev_info = dpctl.utils.intel_device_info(dev)
-    return dev_info.get("device_id", 0) & 0xFF00
+    return dev_info.get("device_id", 0)
+
+
+def _get_dev_mask(device=None):
+    return _get_dev_id(device) & 0xFF00
 
 
 def assert_dtype_allclose(
@@ -448,13 +452,6 @@ def is_intel_numpy():
     return all(dep["name"].startswith("mkl") for dep in [blas, lapack])
 
 
-def is_iris_xe(device=None):
-    """
-    Return True if a test is running on Iris Xe GPU device, False otherwise.
-    """
-    return _get_dev_mask(device) == 0x9A00
-
-
 def is_lnl(device=None):
     """
     Return True if a test is running on Lunar Lake GPU device, False otherwise.
@@ -477,6 +474,14 @@ def is_ptl(device=None):
     (which includes PTL-U, PTL-H and WCL), False otherwise.
     """
     return _get_dev_mask(device) in (0xB000, 0xFD00)
+
+
+def is_tgllp_iris_xe(device=None):
+    """
+    Return True if a test is running on Tiger Lake-LP with Iris Xe GPU device,
+    False otherwise.
+    """
+    return _get_dev_id(device) in (0x9A49, 0x9A40)
 
 
 def is_win_platform():
