@@ -134,6 +134,7 @@ class TestArithmeticRaisesWithNumpyInput:
 )
 class TestArithmeticUnary:
 
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_unary(self, xp):
         arg1 = self.arg1
