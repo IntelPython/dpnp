@@ -23,7 +23,8 @@ from .helper import (
     get_float_complex_dtypes,
     get_integer_float_dtypes,
     has_support_aspect64,
-    is_cpu_device,
+    is_arl_or_mtl,
+    is_win_platform,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -109,6 +110,8 @@ def test_usm_ndarray_linalg_batch(func, gen_kwargs, func_kwargs):
             )
             for _ in range(2)
         ]
+    elif func == "cholesky" and is_win_platform() and is_arl_or_mtl():
+        pytest.skip("SAT-8206")
     else:
         dpt_args = [
             dpt.asarray(generate_random_numpy_array(shape, **gen_kwargs))
@@ -158,6 +161,8 @@ class TestCholesky:
     def test_cholesky(self, array, dtype):
         a = numpy.array(array, dtype=dtype)
         ia = dpnp.array(a)
+        if ia.ndim > 2 and is_win_platform() and is_arl_or_mtl():
+            pytest.skip("SAT-8206")
         result = dpnp.linalg.cholesky(ia)
         expected = numpy.linalg.cholesky(a)
         assert_dtype_allclose(result, expected)
@@ -177,6 +182,8 @@ class TestCholesky:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_cholesky_upper(self, array, dtype):
         ia = dpnp.array(array, dtype=dtype)
+        if ia.ndim > 2 and is_win_platform() and is_arl_or_mtl():
+            pytest.skip("SAT-8206")
         result = dpnp.linalg.cholesky(ia, upper=True)
 
         if ia.ndim > 2:
@@ -219,6 +226,8 @@ class TestCholesky:
     def test_cholesky_upper_numpy(self, array, dtype):
         a = numpy.array(array, dtype=dtype)
         ia = dpnp.array(a)
+        if ia.ndim > 2 and is_win_platform() and is_arl_or_mtl():
+            pytest.skip("SAT-8206")
         result = dpnp.linalg.cholesky(ia, upper=True)
         expected = numpy.linalg.cholesky(a, upper=True)
         assert_dtype_allclose(result, expected)

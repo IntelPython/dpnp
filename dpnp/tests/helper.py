@@ -412,6 +412,14 @@ def has_support_aspect64(device=None):
     return dev.has_aspect_fp64
 
 
+def is_arl_or_mtl(device=None):
+    """
+    Return True if a test is running on Arrow Lake or Meteor Lake GPU device,
+    False otherwise.
+    """
+    return _get_dev_mask(device) == 0x7D00
+
+
 def is_cpu_device(device=None):
     """
     Return True if a test is running on CPU device, False otherwise.
