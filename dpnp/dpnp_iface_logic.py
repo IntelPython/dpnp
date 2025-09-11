@@ -44,9 +44,11 @@ it contains:
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
+import dpctl.utils as dpu
 import numpy
 
 import dpnp
+import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
 from .dpnp_utils import get_usm_allocations
@@ -80,6 +82,71 @@ __all__ = [
     "logical_xor",
     "not_equal",
 ]
+
+
+def _isclose_scalar_tol(a, b, rtol, atol, equal_nan):
+    """
+    Specialized implementation of dpnp.isclose() for scalar rtol and atol
+    using a dedicated SYCL kernel.
+    """
+    dt = dpnp.result_type(a, b, 1.0)
+
+    if dpnp.isscalar(a):
+        usm_type = b.usm_type
+        exec_q = b.sycl_queue
+        a = dpnp.array(
+            a,
+            dt,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
+        )
+    elif dpnp.isscalar(b):
+        usm_type = a.usm_type
+        exec_q = a.sycl_queue
+        b = dpnp.array(
+            b,
+            dt,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
+        )
+    else:
+        usm_type, exec_q = get_usm_allocations([a, b])
+
+    a = dpnp.astype(a, dt, casting="same_kind", copy=False)
+    b = dpnp.astype(b, dt, casting="same_kind", copy=False)
+
+    # Convert complex rtol/atol to their real parts
+    # to avoid pybind11 cast errors and match NumPy behavior
+    if isinstance(rtol, complex):
+        rtol = rtol.real
+    if isinstance(atol, complex):
+        atol = atol.real
+
+    # Convert equal_nan to bool to avoid pybind11 cast errors
+    # and match NumPy behavior
+    if not isinstance(equal_nan, bool):
+        equal_nan = bool(equal_nan)
+
+    a, b = dpnp.broadcast_arrays(a, b)
+
+    output = dpnp.empty(
+        a.shape, dtype=dpnp.bool, sycl_queue=exec_q, usm_type=usm_type
+    )
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+    mem_ev, ht_ev = ufi._isclose_scalar(
+        a.get_array(),
+        b.get_array(),
+        rtol,
+        atol,
+        equal_nan,
+        output.get_array(),
+        exec_q,
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(mem_ev, ht_ev)
+
+    return output
 
 
 def all(a, /, axis=None, out=None, keepdims=False, *, where=True):
@@ -801,7 +868,7 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
         The absolute tolerance parameter.
 
         Default: ``1e-08``.
-    equal_nan : bool
+    equal_nan : bool, optional
         Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will
         be considered equal to ``NaNs`` in `b` in the output array.
 
@@ -869,6 +936,10 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     dpnp.check_supported_arrays_type(
         rtol, atol, scalar_type=True, all_scalars=True
     )
+
+    # Use own SYCL kernel for scalar rtol/atol
+    if dpnp.isscalar(rtol) and dpnp.isscalar(atol):
+        return _isclose_scalar_tol(a, b, rtol, atol, equal_nan)
 
     # make sure b is an inexact type to avoid bad behavior on abs(MIN_INT)
     if dpnp.isscalar(b):

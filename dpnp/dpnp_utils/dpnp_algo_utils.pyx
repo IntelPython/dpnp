@@ -390,10 +390,26 @@ cpdef inline tuple _object_to_tuple(object obj):
     if obj is None:
         return ()
 
-    if cpython.PySequence_Check(obj):
-        return tuple(obj)
+    # dpnp.ndarray unconditionally succeeds in PySequence_Check as it implements __getitem__
+    if cpython.PySequence_Check(obj) and not dpnp.is_supported_array_type(obj):
+        if isinstance(obj, numpy.ndarray):
+            obj = numpy.atleast_1d(obj)
+
+        nd = len(obj)
+        shape = []
+
+        for i in range(0, nd):
+            if cpython.PyBool_Check(obj[i]):
+                raise TypeError("DPNP object_to_tuple(): no item in size can be bool")
+
+            # Assumes each item is castable to Py_ssize_t,
+            # otherwise TypeError will be raised
+            shape.append(<Py_ssize_t> obj[i])
+        return tuple(shape)
 
     if dpnp.isscalar(obj):
+        if cpython.PyBool_Check(obj):
+            raise TypeError("DPNP object_to_tuple(): 'obj' can't be bool")
         return (obj, )
 
     raise ValueError("DPNP object_to_tuple(): 'obj' should be 'None', collections.abc.Sequence, or 'int'")

@@ -273,6 +273,47 @@ def _get_stats(padded, axis, width_pair, length_pair, stat_func):
     return left_stat, right_stat
 
 
+def _pad_normalize_dict_width(pad_width, ndim):
+    """
+    Normalize pad width passed as a dictionary.
+
+    Parameters
+    ----------
+    pad_width : dict
+        Padding specification. The keys must be integer axis indices, and
+        the values must be either:
+          - a single int (same padding before and after),
+          - a tuple of two ints (before, after).
+    ndim : int
+        Number of dimensions in the input array.
+
+    Returns
+    -------
+    seq : list
+        A (ndim, 2) list of padding widths for each axis.
+
+    Raises
+    ------
+    TypeError
+        If the padding format for any axis is invalid.
+
+    """
+
+    seq = [(0, 0)] * ndim
+    for axis, width in pad_width.items():
+        if isinstance(width, int):
+            seq[axis] = (width, width)
+        elif (
+            isinstance(width, tuple)
+            and len(width) == 2
+            and all(isinstance(w, int) for w in width)
+        ):
+            seq[axis] = width
+        else:
+            raise TypeError(f"Invalid pad width for axis {axis}: {width}")
+    return seq
+
+
 def _pad_simple(array, pad_width, fill_value=None):
     """
     Copied from numpy/lib/_arraypad_impl.py
@@ -616,21 +657,25 @@ def _view_roi(array, original_area_slice, axis):
 def dpnp_pad(array, pad_width, mode="constant", **kwargs):
     """Pad an array."""
 
+    nd = array.ndim
+
     if isinstance(pad_width, int):
         if pad_width < 0:
             raise ValueError("index can't contain negative values")
-        pad_width = ((pad_width, pad_width),) * array.ndim
+        pad_width = ((pad_width, pad_width),) * nd
     else:
         if dpnp.is_supported_array_type(pad_width):
             pad_width = dpnp.asnumpy(pad_width)
         else:
+            if isinstance(pad_width, dict):
+                pad_width = _pad_normalize_dict_width(pad_width, nd)
             pad_width = numpy.asarray(pad_width)
 
         if not pad_width.dtype.kind == "i":
             raise TypeError("`pad_width` must be of integral type.")
 
-        # Broadcast to shape (array.ndim, 2)
-        pad_width = _as_pairs(pad_width, array.ndim, as_index=True)
+        # Broadcast to shape (nd, 2)
+        pad_width = _as_pairs(pad_width, nd, as_index=True)
 
     if callable(mode):
         function = mode
@@ -683,7 +728,7 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
         if (
             dpnp.isscalar(values)
             and values == 0
-            and (array.ndim == 1 or array.size < 3e7)
+            and (nd == 1 or array.size < 3e7)
         ):
             # faster path for 1d arrays or small n-dimensional arrays
             return _pad_simple(array, pad_width, 0)[0]

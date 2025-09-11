@@ -43,6 +43,7 @@ Decompositions
    dpnp.linalg.cholesky
    dpnp.linalg.outer
    dpnp.linalg.qr
+   dpnp.linalg.lu_factor
    dpnp.linalg.svd
    dpnp.linalg.svdvals
 
