@@ -1,0 +1,6 @@
+name: Packages to test DPNP
+channels:
+  - conda-forge
+dependencies:
+  - pytest
+  - scipy

@@ -35,7 +35,6 @@ This module contains different helpers and utilities
 import dpctl
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp
 import dpnp.config as config
@@ -46,12 +45,9 @@ cimport cpython
 cimport cython
 cimport numpy
 from libcpp cimport bool as cpp_bool
-from libcpp.complex cimport complex as cpp_complex
 
 from dpnp.dpnp_algo.dpnp_algo cimport (
     dpnp_DPNPFuncType_to_dtype,
-    dpnp_dtype_to_DPNPFuncType,
-    get_dpnp_function_ptr,
 )
 
 """
@@ -61,10 +57,8 @@ __all__ = [
     "call_origin",
     "checker_throw_type_error",
     "checker_throw_value_error",
-    "create_output_descriptor_py",
     "convert_item",
     "dpnp_descriptor",
-    "get_axis_offsets",
     "get_usm_allocations",
     "map_dtype_to_device",
     "_object_to_tuple",
@@ -316,39 +310,6 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected):
     raise ValueError(err_msg)
 
 
-cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape,
-                                                  d_type,
-                                                  requested_out,
-                                                  device=None,
-                                                  usm_type="device",
-                                                  sycl_queue=None):
-    py_type = dpnp.default_float_type() if d_type is None else d_type
-
-    cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(py_type)
-
-    return create_output_descriptor(output_shape,
-                                    c_type,
-                                    requested_out,
-                                    device=device,
-                                    usm_type=usm_type,
-                                    sycl_queue=sycl_queue)
-
-
-cpdef tuple get_axis_offsets(shape):
-    """
-    Compute axis offsets in the linear array memory
-    """
-
-    res_size = len(shape)
-    result = [0] * res_size
-    acc = 1
-    for i in range(res_size - 1, -1, -1):
-        result[i] = acc
-        acc *= shape[i]
-
-    return _object_to_tuple(result)
-
-
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
                                               dpnp_descriptor requested_out,
@@ -432,19 +393,6 @@ cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
     return False
 
 
-cdef shape_type_c strides_to_vector(object strides, object shape) except *:
-    """
-    Get or calculate srtides based on shape.
-    """
-    cdef shape_type_c res
-    if strides is None:
-        res = get_axis_offsets(shape)
-    else:
-        res = strides
-
-    return res
-
-
 cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
     """Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)."""
     array1_obj = x1.get_array()
@@ -463,24 +411,6 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
             "".format(array1_obj.sycl_queue, array2_obj.sycl_queue))
 
     return (common_sycl_queue.sycl_device, common_usm_type, common_sycl_queue)
-
-
-@cython.linetrace(False)
-cdef (DPNPFuncType, void *) get_ret_type_and_func(DPNPFuncData kernel_data,
-                                                  cpp_bool has_aspect_fp64):
-    """
-    This function is responsible for determining the appropriate return type
-    and function pointer based on the capability of the allocated result array device.
-    """
-    return_type = kernel_data.return_type
-    func = kernel_data.ptr
-
-    if kernel_data.ptr_no_fp64 != NULL and not has_aspect_fp64:
-
-        return_type = kernel_data.return_type_no_fp64
-        func = kernel_data.ptr_no_fp64
-
-    return return_type, func
 
 
 cdef class dpnp_descriptor:

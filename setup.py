@@ -37,6 +37,7 @@ skbuild.setup(
         "dpnp.linalg",
         "dpnp.memory",
         "dpnp.random",
+        "dpnp.special",
     ],
     package_data={
         "dpnp": [
@@ -48,6 +49,8 @@ skbuild.setup(
             "tests/testing/*.py",
             "tests/third_party/cupy/*.py",
             "tests/third_party/cupy/*/*.py",
+            "tests/third_party/cupyx/*.py",
+            "tests/third_party/cupyx/*/*.py",
         ]
     },
     include_package_data=False,
