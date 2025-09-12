@@ -72,7 +72,7 @@ class DPNPErf(DPNPUnaryFunc):
 
 
 _ERF_DOCSTRING = r"""
-Returns the error function of complex argument.
+Calculates the Gauss error function of a given input array.
 
 It is defined as :math:`\frac{2}{\sqrt{\pi}} \int_{0}^{z} e^{-t^2} \, dt`.
 
@@ -81,7 +81,7 @@ For full documentation refer to :obj:`scipy.special.erf`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array.
+    Input array, expected to have a real-valued floating-point data type.
 out : {dpnp.ndarray, usm_ndarray}, optional
     Optional output array for the function values.
 
