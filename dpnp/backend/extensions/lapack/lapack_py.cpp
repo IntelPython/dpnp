@@ -76,6 +76,13 @@ void init_dispatch_tables(void)
 
 PYBIND11_MODULE(_lapack_impl, m)
 {
+    // Expose oneMKL transpose enum to Python
+    py::enum_<oneapi::mkl::transpose>(m, "Transpose")
+        .value("N", oneapi::mkl::transpose::N)
+        .value("T", oneapi::mkl::transpose::T)
+        .value("C", oneapi::mkl::transpose::C)
+        .export_values(); // Optional, allows access like `Transpose.N`
+
     // Register a custom LinAlgError exception in the dpnp.linalg submodule
     py::module_ linalg_module = py::module_::import("dpnp.linalg");
     py::register_exception<lapack_ext::LinAlgError>(
@@ -160,7 +167,7 @@ PYBIND11_MODULE(_lapack_impl, m)
           "the solves of linear equations with an LU-factored "
           "square coefficient matrix, with multiple right-hand sides",
           py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
-          py::arg("b_array"), py::arg("trans_code"),
+          py::arg("b_array"), py::arg("trans") = oneapi::mkl::transpose::N,
           py::arg("depends") = py::list());
 
     m.def("_orgqr_batch", &lapack_ext::orgqr_batch,

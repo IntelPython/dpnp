@@ -37,7 +37,7 @@ extern std::pair<sycl::event, sycl::event>
           const dpctl::tensor::usm_ndarray &a_array,
           const dpctl::tensor::usm_ndarray &ipiv_array,
           const dpctl::tensor::usm_ndarray &b_array,
-          const int trans_code,
+          oneapi::mkl::transpose trans,
           const std::vector<sycl::event> &depends = {});
 
 extern void init_getrs_dispatch_vector(void);

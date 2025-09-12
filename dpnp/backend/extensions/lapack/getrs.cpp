@@ -166,7 +166,7 @@ std::pair<sycl::event, sycl::event>
           const dpctl::tensor::usm_ndarray &a_array,
           const dpctl::tensor::usm_ndarray &ipiv_array,
           const dpctl::tensor::usm_ndarray &b_array,
-          const int trans_code,
+          oneapi::mkl::transpose trans,
           const std::vector<sycl::event> &depends)
 {
     const int a_array_nd = a_array.get_ndim();
@@ -264,21 +264,6 @@ std::pair<sycl::event, sycl::event>
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
-
-    oneapi::mkl::transpose trans;
-    switch (trans_code) {
-    case 0:
-        trans = oneapi::mkl::transpose::N;
-        break;
-    case 1:
-        trans = oneapi::mkl::transpose::T;
-        break;
-    case 2:
-        trans = oneapi::mkl::transpose::C;
-        break;
-    default:
-        throw py::value_error("`trans_code` must be 0 (N), 1 (T), or 2 (C)");
-    }
 
     char *a_array_data = a_array.get_data();
     char *b_array_data = b_array.get_data();
