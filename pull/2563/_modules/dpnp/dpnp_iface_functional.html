@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.19.0dev3+10.g8888b666596 documentation</title>
+  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.19.0dev3+35.g154676a032a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=06196ec1"></script>
+      <script src="../../_static/documentation_options.js?v=62a1f944"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -121,6 +121,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1"># pylint: disable=protected-access</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">normalize_axis_index</span><span class="p">,</span>
@@ -129,7 +130,10 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;apply_along_axis&quot;</span><span class="p">,</span> <span class="s2">&quot;apply_over_axes&quot;</span><span class="p">]</span>
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;apply_along_axis&quot;</span><span class="p">,</span> <span class="s2">&quot;apply_over_axes&quot;</span><span class="p">,</span> <span class="s2">&quot;piecewise&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="apply_along_axis">
@@ -356,6 +360,147 @@
                 <span class="p">)</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">res</span>
     <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<div class="viewcode-block" id="piecewise">
+<a class="viewcode-back" href="../../reference/generated/dpnp.piecewise.html#dpnp.piecewise">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">piecewise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">condlist</span><span class="p">,</span> <span class="n">funclist</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Evaluate a piecewise-defined function.</span>
+
+<span class="sd">    Given a set of conditions and corresponding functions, evaluate each</span>
+<span class="sd">    function on the input data wherever its condition is true.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.piecewise`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        The input domain.</span>
+<span class="sd">    condlist : {sequence of array-like boolean, bool scalars}</span>
+<span class="sd">        Each boolean array/scalar corresponds to a function in `funclist`.</span>
+<span class="sd">        Wherever `condlist[i]` is ``True``, `funclist[i](x)` is used as the</span>
+<span class="sd">        output value.</span>
+
+<span class="sd">        Each boolean array in `condlist` selects a piece of `x`, and should</span>
+<span class="sd">        therefore be of the same shape as `x`.</span>
+
+<span class="sd">        The length of `condlist` must correspond to that of `funclist`.</span>
+<span class="sd">        If one extra function is given, i.e. if</span>
+<span class="sd">        ``len(funclist) == len(condlist) + 1``, then that extra function</span>
+<span class="sd">        is the default value, used wherever all conditions are ``False``.</span>
+<span class="sd">    funclist : {array-like of scalars}</span>
+<span class="sd">        A constant value is returned wherever corresponding condition of `x`</span>
+<span class="sd">        is ``True``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The output is the same shape and type as `x` and is found by</span>
+<span class="sd">        calling the functions in `funclist` on the appropriate portions of `x`,</span>
+<span class="sd">        as defined by the boolean arrays in `condlist`. Portions not covered</span>
+<span class="sd">        by any condition have a default value of ``0``.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `args` and `kw` are not supported and `funclist` cannot include a</span>
+<span class="sd">    callable functions.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.choose` : Construct an array from an index array and a set of</span>
+<span class="sd">                         arrays to choose from.</span>
+<span class="sd">    :obj:`dpnp.select` : Return an array drawn from elements in `choicelist`,</span>
+<span class="sd">                         depending on conditions.</span>
+<span class="sd">    :obj:`dpnp.where` : Return elements from one of two arrays depending</span>
+<span class="sd">                        on condition.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+
+<span class="sd">    Define the signum function, which is -1 for ``x &lt; 0`` and +1 for ``x &gt;= 0``.</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.linspace(-2.5, 2.5, 6)</span>
+<span class="sd">    &gt;&gt;&gt; np.piecewise(x, [x &lt; 0, x &gt;= 0], [-1, 1])</span>
+<span class="sd">    array([-1., -1., -1.,  1.,  1.,  1.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x_dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span> <span class="ow">and</span> <span class="n">condlist</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+        <span class="n">condlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">condlist</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">condlist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span>
+    <span class="p">):</span>
+        <span class="c1"># convert scalar to a list of one array</span>
+        <span class="c1"># convert list of scalars to a list of one array</span>
+        <span class="n">condlist</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">condlist</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">condlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="c1"># convert list of lists to list of arrays</span>
+        <span class="c1"># convert list of scalars to a list of 0d arrays (for 0d input)</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">cond</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">condlist</span><span class="p">):</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">condlist</span> <span class="o">=</span> <span class="n">tmp</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">condlist</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">funclist</span><span class="p">):</span>
+        <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">condlist</span><span class="p">,</span> <span class="n">funclist</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">condlist</span><span class="p">])</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+
+    <span class="n">condlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">funclist</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;funclist must be a non-string sequence&quot;</span><span class="p">)</span>
+        <span class="n">funclen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">funclist</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;funclist must be a sequence of scalars&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="k">if</span> <span class="n">condlen</span> <span class="o">==</span> <span class="n">funclen</span><span class="p">:</span>
+        <span class="c1"># default value is zero</span>
+        <span class="n">default_value</span> <span class="o">=</span> <span class="n">x_dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">condlen</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">funclen</span><span class="p">:</span>
+        <span class="c1"># default value is the last element of funclist</span>
+        <span class="n">default_value</span> <span class="o">=</span> <span class="n">funclist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">default_value</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;Callable functions are not supported currently&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">default_value</span> <span class="o">=</span> <span class="n">default_value</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">default_value</span> <span class="o">=</span> <span class="n">x_dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">default_value</span><span class="p">)</span>
+        <span class="n">funclist</span> <span class="o">=</span> <span class="n">funclist</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;with </span><span class="si">{</span><span class="n">condlen</span><span class="si">}</span><span class="s2"> condition(s), either </span><span class="si">{</span><span class="n">condlen</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">condlen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="s2">&quot;functions are expected&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">funclist</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;Callable functions are not supported currently&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">x_dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">default_value</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">default_value</span> <span class="o">=</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
 
 </pre></div>
 
