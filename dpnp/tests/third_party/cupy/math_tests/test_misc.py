@@ -250,6 +250,7 @@ class TestMisc:
     def test_nan_to_num_negative_for_old_numpy(self):
         self.check_unary_negative("nan_to_num", no_bool=True)
 
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     def test_nan_to_num_inf(self):
         self.check_unary_inf("nan_to_num")
 
@@ -260,6 +261,7 @@ class TestMisc:
     def test_nan_to_num_scalar_nan(self, xp):
         return xp.nan_to_num(xp.array(xp.nan))
 
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     def test_nan_to_num_inf_nan(self):
         self.check_unary_inf_nan("nan_to_num")
 
