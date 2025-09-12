@@ -80,7 +80,8 @@ coverage = ["coverage",
   "pytest",
   "pytest-cov",
   "scipy",
-  "tomli"]
+  "tomli"
+]
 docs = [
   "Cython",
   "cupy",
