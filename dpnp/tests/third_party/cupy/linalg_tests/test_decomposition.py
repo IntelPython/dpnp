@@ -6,7 +6,9 @@ import pytest
 import dpnp as cupy
 from dpnp.tests.helper import (
     has_support_aspect64,
+    is_arl_or_mtl,
     is_cpu_device,
+    is_win_platform,
 )
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
@@ -82,6 +84,9 @@ class TestCholeskyDecomposition:
         # np.linalg.cholesky only uses a lower triangle of an array
         self.check_L(numpy.array([[1, 2], [1, 9]], dtype))
 
+    @pytest.mark.skipif(
+        is_win_platform() and is_arl_or_mtl(), reason="SAT-8206"
+    )
     @testing.for_dtypes(
         [
             numpy.int32,

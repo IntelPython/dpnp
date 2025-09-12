@@ -445,7 +445,7 @@ class TestRadians:
 
 
 class TestReciprocal:
-    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_reciprocal(self, dtype):
         a = generate_random_numpy_array(10, dtype)
