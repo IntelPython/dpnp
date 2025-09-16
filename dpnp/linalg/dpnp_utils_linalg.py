@@ -2559,7 +2559,7 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
     _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
 
-    # oneMKL LAPACK getrf overwrites `a`.
+    # oneMKL LAPACK getrf overwrites `lu`.
     lu_h = dpnp.empty_like(lu, order="F", dtype=res_type, usm_type=res_usm_type)
 
     # use DPCTL tensor function to fill the сopy of the input array
@@ -2574,9 +2574,9 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
 
     # SciPy-compatible behavior
     # Copy is required if:
-    # - overwrite_a is False (always copy),
+    # - overwrite_b is False (always copy),
     # - dtype mismatch,
-    # - not F-contiguous,s
+    # - not F-contiguous,
     # - not writeable
     if not overwrite_b or _is_copy_required(b, res_type):
         b_h = dpnp.empty_like(
@@ -2595,7 +2595,7 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
         b_h = b
         dep_ev = _manager.submitted_events
 
-    # oneMKL LAPACK getrf overwrites `a`.
+    # oneMKL LAPACK getrf overwrites `piv`.
     piv_h = dpnp.empty_like(piv, order="F", usm_type=res_usm_type)
 
     # use DPCTL tensor function to fill the сopy of the pivot array

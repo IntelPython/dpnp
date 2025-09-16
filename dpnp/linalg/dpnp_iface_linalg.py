@@ -970,14 +970,14 @@ def lu_factor(a, overwrite_a=False, check_finite=True):
 
 def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
     """
-    Solve an equation system, a x = b, given the LU factorization of `a`
+    Solve an equation system, a x = b, given the LU factorization of `a`.
 
     For full documentation refer to :obj:`scipy.linalg.lu_solve`.
 
     Parameters
     ----------
-    (lu, piv) : {tuple of dpnp.ndarrays or usm_ndarrays}
-        LU factorization of matrix `a` ((M, N)) together with pivot indices.
+    lu, piv : {tuple of dpnp.ndarrays or usm_ndarrays}
+        LU factorization of matrix `a` (M, N) together with pivot indices.
     b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}
         Right-hand side
     trans : {0, 1, 2} , optional
