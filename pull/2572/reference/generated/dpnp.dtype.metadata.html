@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dtype.metadata &mdash; Data Parallel Extension for NumPy 0.19.0dev3+32.g67f119df64b documentation</title>
+  <title>dpnp.dtype.metadata &mdash; Data Parallel Extension for NumPy 0.19.0dev3+38.g8b21c8fd56c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=075cdd27"></script>
+      <script src="../../_static/documentation_options.js?v=82aa6ae8"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -115,12 +115,11 @@ are expected to change in the future.</p>
 <span class="go">mappingproxy({&#39;key&#39;: &#39;value&#39;})</span>
 </pre></div>
 </div>
-<p>But if the arrays have different dtype metadata, the metadata may be
-dropped:</p>
+<p>If the arrays have different dtype metadata, the first one wins:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dt2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key2&quot;</span><span class="p">:</span> <span class="s2">&quot;value2&quot;</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">arr</span> <span class="o">+</span> <span class="n">arr2</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span>
-<span class="go">True  # The metadata field is cleared so None is returned</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">arr</span> <span class="o">+</span> <span class="n">arr2</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+<span class="go">{&#39;key&#39;: &#39;value&#39;}</span>
 </pre></div>
 </div>
 </dd></dl>
