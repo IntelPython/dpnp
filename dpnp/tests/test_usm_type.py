@@ -10,7 +10,7 @@ import pytest
 import dpnp
 from dpnp.dpnp_utils import get_usm_allocations
 
-from .helper import generate_random_numpy_array, is_win_platform
+from .helper import generate_random_numpy_array, is_arl_or_mtl, is_win_platform
 
 list_of_usm_types = ["device", "shared", "host"]
 
@@ -755,6 +755,23 @@ def test_apply_over_axes(usm_type):
     assert x.usm_type == y.usm_type
 
 
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types)
+@pytest.mark.parametrize("usm_type_z", list_of_usm_types)
+def test_piecewise(usm_type_x, usm_type_y, usm_type_z):
+    x = dpnp.array([0, 0], usm_type=usm_type_x)
+    y = dpnp.array([True, False], usm_type=usm_type_y)
+    z = dpnp.array([1, -1], usm_type=usm_type_z)
+    result = dpnp.piecewise(x, y, z)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == usm_type_z
+    assert result.usm_type == du.get_coerced_usm_type(
+        [usm_type_x, usm_type_y, usm_type_z]
+    )
+
+
 @pytest.mark.parametrize(
     "func,data1,data2",
     [
@@ -1341,6 +1358,8 @@ class TestLinAlgebra:
             x = dpnp.empty(data, dtype=dtype, usm_type=usm_type)
         else:
             x = dpnp.array(data, dtype=dtype, usm_type=usm_type)
+            if x.ndim > 2 and is_win_platform() and is_arl_or_mtl():
+                pytest.skip("SAT-8206")
 
         result = dpnp.linalg.cholesky(x)
         assert x.usm_type == result.usm_type

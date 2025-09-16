@@ -182,6 +182,7 @@ def test_erf(dtype):
     assert_dtype_allclose(result, expected)
 
 
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
 @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
 @pytest.mark.parametrize("stride", [2, -1, -3])
 def test_reciprocal(dtype, stride):
