@@ -51,8 +51,9 @@ class _TestBase:
 @testing.with_requires("scipy")
 class TestSpecial(unittest.TestCase, _TestBase):
 
+    # scipy>=1.16: 'e -> d', which causes type_check=False
     @testing.for_dtypes(["e", "f", "d"])
-    @testing.numpy_cupy_allclose(atol=1e-5, scipy_name="scp")
+    @testing.numpy_cupy_allclose(atol=1e-5, scipy_name="scp", type_check=False)
     def check_unary(self, name, xp, scp, dtype):
         import scipy.special
 
