@@ -62,10 +62,15 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 template <typename T>
 struct OutputType
 {
-    using value_type =
-        typename std::disjunction<td_ns::TypeMapResultEntry<T, float>,
-                                  td_ns::TypeMapResultEntry<T, double>,
-                                  td_ns::DefaultResultEntry<void>>::result_type;
+    /**
+     * scipy>=1.16 assumes a pair 'e->d', but dpnp 'e->f' without an extra
+     * kernel 'e->d' (when fp64 supported) to reduce memory footprint
+     */
+    using value_type = typename std::disjunction<
+        td_ns::TypeMapResultEntry<T, sycl::half, float>,
+        td_ns::TypeMapResultEntry<T, float>,
+        td_ns::TypeMapResultEntry<T, double>,
+        td_ns::DefaultResultEntry<void>>::result_type;
 };
 
 using dpnp::kernels::erf::ErfFunctor;

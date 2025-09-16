@@ -45,7 +45,14 @@ struct ErfFunctor
 
     Tp operator()(const argT &x) const
     {
-        return sycl::erf(x);
+        if constexpr (std::is_same_v<argT, sycl::half> &&
+                      std::is_same_v<Tp, float>) {
+            // cast sycl::half to float for accuracy reasons
+            return sycl::erf(float(x));
+        }
+        else {
+            return sycl::erf(x);
+        }
     }
 };
 } // namespace dpnp::kernels::erf
