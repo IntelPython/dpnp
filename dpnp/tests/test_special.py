@@ -1,6 +1,6 @@
 import numpy
 import pytest
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_equal
 
 import dpnp
 
@@ -43,6 +43,17 @@ class TestErf:
         result = dpnp.special.erf(ia)
         expected = scipy.special.erf(a)
         assert_allclose(result, expected)
+
+    def test_zeros(self):
+        import scipy.special
+
+        a = numpy.array([0.0, -0.0])
+        ia = dpnp.array(a)
+
+        result = dpnp.special.erf(ia)
+        expected = scipy.special.erf(a)
+        assert_allclose(result, expected)
+        assert_equal(dpnp.signbit(result), numpy.signbit(expected))
 
     @pytest.mark.parametrize("dt", get_complex_dtypes())
     def test_complex(self, dt):
