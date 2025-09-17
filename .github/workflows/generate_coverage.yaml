@@ -25,6 +25,7 @@ jobs:
       environment-file: 'environments/environment.yml'
       build-with-oneapi-env: 'environments/build_with_oneapi.yml'
       coverage-env: 'environments/coverage.yml'
+      test-pkg-env: 'environments/test.yml'
       oneapi-pkgs-env: ''
       # Enable env when it's required to use only conda packages without OneAPI installation
       # oneapi-pkgs-env: '${{ github.workspace }}/environments/oneapi_pkgs.yml'
@@ -73,7 +74,10 @@ jobs:
 
       - name: Merge conda env files
         run: |
-          conda-merge ${{ env.build-with-oneapi-env }} ${{ env.coverage-env }} ${{ env.oneapi-pkgs-env }} > ${{ env.environment-file }}
+          conda-merge ${{ env.build-with-oneapi-env }} \
+                      ${{ env.coverage-env }}          \
+                      ${{ env.oneapi-pkgs-env }}       \
+                      ${{ env.test-pkg-env }} > ${{ env.environment-file }}
           cat ${{ env.environment-file }}
 
       - name: Setup miniconda
