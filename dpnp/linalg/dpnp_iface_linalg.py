@@ -977,7 +977,7 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
     Parameters
     ----------
     lu, piv : {tuple of dpnp.ndarrays or usm_ndarrays}
-        LU factorization of matrix `a` (M, N) together with pivot indices.
+        LU factorization of matrix `a` (M, M) together with pivot indices.
     b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}
         Right-hand side
     trans : {0, 1, 2} , optional
