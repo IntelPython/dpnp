@@ -41,6 +41,7 @@ var hierarchy =
       [ "mcg59_struct", "structmcg59__struct.html", null ],
       [ "mt19937_struct", "structmt19937__struct.html", null ]
     ] ],
+    [ "dpnp::kernels::erf::ErfFunctor< argT, Tp >", "structdpnp_1_1kernels_1_1erf_1_1_erf_functor.html", null ],
     [ "std::exception", null, [
       [ "dpnp::extensions::lapack::LinAlgError", "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html", null ]
     ] ],
