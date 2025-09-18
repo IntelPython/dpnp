@@ -2572,29 +2572,6 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
     )
     _manager.add_event_pair(ht_ev, lu_copy_ev)
 
-    # SciPy-compatible behavior
-    # Copy is required if:
-    # - overwrite_b is False (always copy),
-    # - dtype mismatch,
-    # - not F-contiguous,
-    # - not writeable
-    if not overwrite_b or _is_copy_required(b, res_type):
-        b_h = dpnp.empty_like(
-            b, order="F", dtype=res_type, usm_type=res_usm_type
-        )
-        ht_ev, dep_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=b_usm_arr,
-            dst=b_h.get_array(),
-            sycl_queue=b.sycl_queue,
-            depends=_manager.submitted_events,
-        )
-        _manager.add_event_pair(ht_ev, dep_ev)
-        dep_ev = [dep_ev]
-    else:
-        # input is suitable for in-place modification
-        b_h = b
-        dep_ev = _manager.submitted_events
-
     # oneMKL LAPACK getrf overwrites `piv`.
     piv_h = dpnp.empty_like(piv, order="F", usm_type=res_usm_type)
 
@@ -2607,6 +2584,30 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
         depends=dep_evs,
     )
     _manager.add_event_pair(ht_ev, piv_copy_ev)
+
+    # SciPy-compatible behavior
+    # Copy is required if:
+    # - overwrite_b is False (always copy),
+    # - dtype mismatch,
+    # - not F-contiguous,
+    # - not writeable
+    if not overwrite_b or _is_copy_required(b, res_type):
+        b_h = dpnp.empty_like(
+            b, order="F", dtype=res_type, usm_type=res_usm_type
+        )
+        ht_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=b_usm_arr,
+            dst=b_h.get_array(),
+            sycl_queue=b.sycl_queue,
+            depends=dep_evs,
+        )
+        _manager.add_event_pair(ht_ev, b_copy_ev)
+        dep_evs = [lu_copy_ev, piv_copy_ev, b_copy_ev]
+    else:
+        # input is suitable for in-place modification
+        b_h = b
+        dep_evs = [lu_copy_ev, piv_copy_ev]
+
     # MKL lapack uses 1-origin while SciPy uses 0-origin
     piv_h += 1
 
@@ -2619,7 +2620,7 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
         piv_h.get_array(),
         b_h.get_array(),
         trans,
-        depends=dep_ev,
+        depends=dep_evs,
     )
     _manager.add_event_pair(ht_ev, getrs_ev)
 
