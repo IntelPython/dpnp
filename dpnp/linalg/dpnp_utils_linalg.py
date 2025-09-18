@@ -2611,6 +2611,19 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
     # MKL lapack uses 1-origin while SciPy uses 0-origin
     piv_h += 1
 
+    if not isinstance(trans, int):
+        raise TypeError("`trans` must be an integer")
+
+    # Map SciPy-style trans codes (0, 1, 2) to MKL transpose enums
+    if trans == 0:
+        trans_mkl = li.Transpose.N
+    elif trans == 1:
+        trans_mkl = li.Transpose.T
+    elif trans == 2:
+        trans_mkl = li.Transpose.C
+    else:
+        raise ValueError("`trans` must be 0 (N), 1 (T), or 2 (C)")
+
     # Call the LAPACK extension function _getrs
     # to solve the system of linear equations with an LU-factored
     # coefficient square matrix, with multiple right-hand sides.
@@ -2619,7 +2632,7 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
         lu_h.get_array(),
         piv_h.get_array(),
         b_h.get_array(),
-        trans,
+        trans_mkl,
         depends=dep_evs,
     )
     _manager.add_event_pair(ht_ev, getrs_ev)
