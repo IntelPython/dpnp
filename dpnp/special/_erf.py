@@ -168,6 +168,6 @@ erfc = DPNPErf(
     ufi._erfc_result_type,
     ufi._erfc,
     _ERFC_DOCSTRING,
-    mkl_fn_to_call="_mkl_erfc_to_call",
+    mkl_fn_to_call="_mkl_erf_to_call",
     mkl_impl_fn="_erfc",
 )
