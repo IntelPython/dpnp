@@ -24,16 +24,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
-cimport dpctl as c_dpctl
-from libcpp cimport bool as cpp_bool
-
-from dpnp.dpnp_algo cimport shape_elem_type, shape_type_c
-from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
-        DPNP_FN_ERF_EXT
         DPNP_FN_MODF_EXT
         DPNP_FN_PARTITION_EXT
         DPNP_FN_RNG_BETA_EXT
@@ -93,15 +87,6 @@ cdef extern from "dpnp_iface_fptr.hpp":
         void *ptr_no_fp64
 
     DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
-
-# C function pointer to the C library template functions
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_1out_strides_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                             void *, const size_t, const size_t,
-                                                             const shape_elem_type * , const shape_elem_type * ,
-                                                             void *, const size_t, const size_t,
-                                                             const shape_elem_type * , const shape_elem_type * ,
-                                                             const long * ,
-                                                             const c_dpctl.DPCTLEventVectorRef)
 
 
 """

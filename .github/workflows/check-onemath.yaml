@@ -15,6 +15,7 @@ env:
   build-with-oneapi-env: 'environments/build_with_oneapi.yml'
   dpctl-pkg-env: 'environments/dpctl_pkg.yml'
   oneapi-pkgs-env: 'environments/oneapi_pkgs.yml'
+  test-pkg-env: 'environments/test.yml'
   test-env-name: 'test_onemath'
   rerun-tests-on-failure: 'true'
   rerun-tests-max-attempts: 2
@@ -49,7 +50,10 @@ jobs:
 
       - name: Merge conda env files
         run: |
-          conda-merge ${{ env.dpctl-pkg-env }} ${{ env.oneapi-pkgs-env }} ${{ env.build-with-oneapi-env }} > ${{ env.environment-file }}
+          conda-merge ${{ env.dpctl-pkg-env }}         \
+                      ${{ env.oneapi-pkgs-env }}       \
+                      ${{ env.build-with-oneapi-env }} \
+                      ${{ env.test-pkg-env }} > ${{ env.environment-file }}
           cat ${{ env.environment-file }}
 
       - name: Upload artifact

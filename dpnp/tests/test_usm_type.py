@@ -755,6 +755,23 @@ def test_apply_over_axes(usm_type):
     assert x.usm_type == y.usm_type
 
 
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types)
+@pytest.mark.parametrize("usm_type_z", list_of_usm_types)
+def test_piecewise(usm_type_x, usm_type_y, usm_type_z):
+    x = dpnp.array([0, 0], usm_type=usm_type_x)
+    y = dpnp.array([True, False], usm_type=usm_type_y)
+    z = dpnp.array([1, -1], usm_type=usm_type_z)
+    result = dpnp.piecewise(x, y, z)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == usm_type_z
+    assert result.usm_type == du.get_coerced_usm_type(
+        [usm_type_x, usm_type_y, usm_type_z]
+    )
+
+
 @pytest.mark.parametrize(
     "func,data1,data2",
     [
@@ -1277,6 +1294,13 @@ def test_choose(usm_type_x, usm_type_ind):
     assert chc.usm_type == usm_type_x
     assert ind.usm_type == usm_type_ind
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_erf(usm_type):
+    x = dpnp.linspace(-3, 3, num=5, usm_type=usm_type)
+    y = dpnp.special.erf(x)
+    assert x.usm_type == y.usm_type == usm_type
 
 
 class TestInterp:
