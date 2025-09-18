@@ -2,6 +2,7 @@ var dir_2dc4cca66e7325a4fed455b9bcd79a3e =
 [
     [ "bitwise_count.hpp", "kernels_2elementwise__functions_2bitwise__count_8hpp_source.html", null ],
     [ "degrees.hpp", "kernels_2elementwise__functions_2degrees_8hpp_source.html", null ],
+    [ "erf.hpp", "kernels_2elementwise__functions_2erf_8hpp_source.html", null ],
     [ "fabs.hpp", "kernels_2elementwise__functions_2fabs_8hpp_source.html", null ],
     [ "fix.hpp", "kernels_2elementwise__functions_2fix_8hpp_source.html", null ],
     [ "fmax.hpp", "kernels_2elementwise__functions_2fmax_8hpp_source.html", null ],
@@ -11,6 +12,7 @@ var dir_2dc4cca66e7325a4fed455b9bcd79a3e =
     [ "heaviside.hpp", "kernels_2elementwise__functions_2heaviside_8hpp_source.html", null ],
     [ "i0.hpp", "kernels_2elementwise__functions_2i0_8hpp_source.html", null ],
     [ "interpolate.hpp", "kernels_2elementwise__functions_2interpolate_8hpp_source.html", null ],
+    [ "isclose.hpp", "kernels_2elementwise__functions_2isclose_8hpp_source.html", null ],
     [ "lcm.hpp", "kernels_2elementwise__functions_2lcm_8hpp_source.html", null ],
     [ "ldexp.hpp", "kernels_2elementwise__functions_2ldexp_8hpp_source.html", null ],
     [ "logaddexp2.hpp", "kernels_2elementwise__functions_2logaddexp2_8hpp_source.html", null ],

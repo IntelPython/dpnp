@@ -79,6 +79,9 @@ var annotated_dup =
         [ "degrees", null, [
           [ "DegreesFunctor", "structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html", null ]
         ] ],
+        [ "erf", null, [
+          [ "ErfFunctor", "structdpnp_1_1kernels_1_1erf_1_1_erf_functor.html", null ]
+        ] ],
         [ "fabs", null, [
           [ "FabsFunctor", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ]
         ] ],
@@ -102,6 +105,10 @@ var annotated_dup =
         ] ],
         [ "i0", "namespacedpnp_1_1kernels_1_1i0.html", [
           [ "I0Functor", "structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html", null ]
+        ] ],
+        [ "isclose", null, [
+          [ "IsCloseContigScalarFunctor", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_contig_scalar_functor.html", null ],
+          [ "IsCloseStridedScalarFunctor", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_strided_scalar_functor.html", null ]
         ] ],
         [ "lcm", null, [
           [ "LcmFunctor", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ]

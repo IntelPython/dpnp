@@ -18,6 +18,7 @@ var dir_8ecf9f741f71669d18a115ce11ef5e52 =
     [ "cos.hpp", "cos_8hpp_source.html", null ],
     [ "cosh.hpp", "cosh_8hpp_source.html", null ],
     [ "div.hpp", "div_8hpp_source.html", null ],
+    [ "erf.hpp", "extensions_2vm_2erf_8hpp_source.html", null ],
     [ "exp.hpp", "exp_8hpp_source.html", null ],
     [ "exp2.hpp", "exp2_8hpp_source.html", null ],
     [ "expm1.hpp", "expm1_8hpp_source.html", null ],

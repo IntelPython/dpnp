@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.19.0dev3+27.g1d838c3ae5b documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.19.0dev4+15.g70bdd906e14 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c7c5a404"></script>
+      <script src="../../_static/documentation_options.js?v=d51bea22"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -129,9 +129,11 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
@@ -165,6 +167,71 @@
     <span class="s2">&quot;logical_xor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;not_equal&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_isclose_scalar_tol</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specialized implementation of dpnp.isclose() for scalar rtol and atol</span>
+<span class="sd">    using a dedicated SYCL kernel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="n">usm_type</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="n">a</span><span class="p">,</span>
+            <span class="n">dt</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="n">usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="n">b</span><span class="p">,</span>
+            <span class="n">dt</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Convert complex rtol/atol to their real parts</span>
+    <span class="c1"># to avoid pybind11 cast errors and match NumPy behavior</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rtol</span><span class="p">,</span> <span class="nb">complex</span><span class="p">):</span>
+        <span class="n">rtol</span> <span class="o">=</span> <span class="n">rtol</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atol</span><span class="p">,</span> <span class="nb">complex</span><span class="p">):</span>
+        <span class="n">atol</span> <span class="o">=</span> <span class="n">atol</span><span class="o">.</span><span class="n">real</span>
+
+    <span class="c1"># Convert equal_nan to bool to avoid pybind11 cast errors</span>
+    <span class="c1"># and match NumPy behavior</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">equal_nan</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="n">equal_nan</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">equal_nan</span><span class="p">)</span>
+
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="n">output</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+    <span class="p">)</span>
+
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+    <span class="n">mem_ev</span><span class="p">,</span> <span class="n">ht_ev</span> <span class="o">=</span> <span class="n">ufi</span><span class="o">.</span><span class="n">_isclose_scalar</span><span class="p">(</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
+        <span class="n">rtol</span><span class="p">,</span>
+        <span class="n">atol</span><span class="p">,</span>
+        <span class="n">equal_nan</span><span class="p">,</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">get_array</span><span class="p">(),</span>
+        <span class="n">exec_q</span><span class="p">,</span>
+        <span class="n">depends</span><span class="o">=</span><span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">mem_ev</span><span class="p">,</span> <span class="n">ht_ev</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span>
 
 
 <div class="viewcode-block" id="all">
@@ -903,7 +970,7 @@
 <span class="sd">        The absolute tolerance parameter.</span>
 
 <span class="sd">        Default: ``1e-08``.</span>
-<span class="sd">    equal_nan : bool</span>
+<span class="sd">    equal_nan : bool, optional</span>
 <span class="sd">        Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will</span>
 <span class="sd">        be considered equal to ``NaNs`` in `b` in the output array.</span>
 
@@ -971,6 +1038,10 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span>
         <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
+
+    <span class="c1"># Use own SYCL kernel for scalar rtol/atol</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">rtol</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">atol</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_isclose_scalar_tol</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">)</span>
 
     <span class="c1"># make sure b is an inexact type to avoid bad behavior on abs(MIN_INT)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>

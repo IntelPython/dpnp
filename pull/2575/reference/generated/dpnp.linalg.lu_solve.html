@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.lu_solve &mdash; Data Parallel Extension for NumPy 0.19.0dev3+27.g1d838c3ae5b documentation</title>
+  <title>dpnp.linalg.lu_solve &mdash; Data Parallel Extension for NumPy 0.19.0dev4+15.g70bdd906e14 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c7c5a404"></script>
+      <script src="../../_static/documentation_options.js?v=d51bea22"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -86,7 +86,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../special.html">Special functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.special</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
@@ -130,13 +130,13 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.linalg.lu_solve">
 <span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">lu_solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lu_and_piv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_finite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#lu_solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.lu_solve" title="Link to this definition"></a></dt>
-<dd><p>Solve an equation system, a x = b, given the LU factorization of <cite>a</cite></p>
-<p>For full documentation refer to <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.lu_solve.html#scipy.linalg.lu_solve" title="(in SciPy v1.16.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.linalg.lu_solve</span></code></a>.</p>
+<dd><p>Solve an equation system, a x = b, given the LU factorization of <cite>a</cite>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.lu_solve.html#scipy.linalg.lu_solve" title="(in SciPy v1.16.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.linalg.lu_solve</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>lu</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> ((M, N)) together with pivot indices.</p></li>
-<li><p><strong>piv</strong><strong>)</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> ((M, N)) together with pivot indices.</p></li>
+<li><p><strong>lu</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> (M, M) together with pivot indices.</p></li>
+<li><p><strong>piv</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> (M, M) together with pivot indices.</p></li>
 <li><p><strong>b</strong> (<em>{</em><em>(</em><em>M</em><em>,</em><em>)</em><em>, </em><em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>K</em><em>)</em><em>} {dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Right-hand side</p></li>
 <li><p><strong>trans</strong> (<em>{0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em> , </em><em>optional</em>) -- <p>Type of system to solve:</p>
 <table class="docutils align-default">
