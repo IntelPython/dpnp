@@ -1,17 +1,20 @@
-Special Functions
-=================
+.. currentmodule:: dpnp.special
 
-.. https://docs.scipy.org/doc/scipy/reference/special.html
+Special functions (:mod:`dpnp.special`)
+=======================================
 
-Error Function
---------------
+.. Hint:: `SciPy API Reference: Special functions (scipy.special) <https://docs.scipy.org/doc/scipy/reference/special.html>`_
+
+Error function and Fresnel integrals
+------------------------------------
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
 
-   dpnp.erf
-   dpnp.erfc
-   dpnp.erfcx
-   dpnp.erfinv
-   dpnp.erfcinv
+   erf
+   erfc
+   erfcx
+   erfi
+   erfinv
+   erfcinv

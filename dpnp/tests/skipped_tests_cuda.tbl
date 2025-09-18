@@ -807,11 +807,3 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{extern
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_one_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_sequence_kth
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_zero_dim
-
-# erf
-tests/test_special.py::test_erf
-tests/test_special.py::test_erf_fallback
-tests/test_strides.py::test_erf[int32]
-tests/test_strides.py::test_erf[int64]
-tests/test_strides.py::test_erf[float32]
-tests/test_strides.py::test_erf[float64]
