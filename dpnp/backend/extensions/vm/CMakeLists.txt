@@ -43,6 +43,7 @@ if(NOT _use_onemath)
         ${CMAKE_CURRENT_SOURCE_DIR}/cosh.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/div.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/erf.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/erfc.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/exp.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/exp2.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/expm1.cpp
