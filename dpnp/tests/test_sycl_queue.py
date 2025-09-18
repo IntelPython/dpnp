@@ -1490,6 +1490,14 @@ def test_interp(device, left, right, period):
 
 
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_erf(device):
+    x = dpnp.linspace(-3, 3, num=5, device=device)
+
+    result = dpnp.special.erf(x)
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 class TestLinAlgebra:
     @pytest.mark.parametrize(
         "data, is_empty",

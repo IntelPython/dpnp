@@ -1,8 +1,6 @@
-# cython: language_level=3
-# cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2025, Intel Corporation
+# Copyright (c) 2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,19 +24,25 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Module Backend (Special part)
+"""
+``dpnp.special``
+================
 
-This module contains interface functions between C backend layer
-and the rest of the library
+The submodule provides a large collection of mathematical functions that are
+widely used in science and engineering. It includes special functions of
+mathematical physics (e.g., Bessel, elliptic, gamma,  hypergeometric), as well
+as standard functions like `erf`, `sinc`, and `logit`.
+
+The functions in the submodule invokes VM implementation from pybind11
+extension above OneMKL VM if possible or uses a dedicated SYCL kernel, or,
+alternatively, is implemented through a subset of python calls.
 
 """
 
-# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
+from ._erf import (
+    erf,
+)
 
-__all__ += [
-    'dpnp_erf',
+__all__ = [
+    "erf",
 ]
-
-
-cpdef utils.dpnp_descriptor dpnp_erf(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out_strides(DPNP_FN_ERF_EXT, x1)

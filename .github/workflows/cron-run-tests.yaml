@@ -84,12 +84,12 @@ jobs:
         id: install_dpnp
         continue-on-error: true
         run: |
-          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.channels-list }}
+          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} pytest scipy ${{ env.channels-list }}
 
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.channels-list }}
+          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} pytest scipy ${{ env.channels-list }}
 
       - name: List installed packages
         run: mamba list
