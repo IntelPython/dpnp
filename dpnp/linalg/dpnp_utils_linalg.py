@@ -2508,12 +2508,14 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
     if check_finite:
         if not dpnp.isfinite(lu).all():
             raise ValueError(
-                "array must not contain infs or NaNs.\n"
+                "LU factorization array must not contain infs or NaNs.\n"
                 "Note that when a singular matrix is given, unlike "
                 "dpnp.linalg.lu_factor returns an array containing NaN."
             )
         if not dpnp.isfinite(b).all():
-            raise ValueError("array must not contain infs or NaNs")
+            raise ValueError(
+                "Right-hand side array must not contain infs or NaNs"
+            )
 
     lu_usm_arr = dpnp.get_usm_ndarray(lu)
     piv_usm_arr = dpnp.get_usm_ndarray(piv)
