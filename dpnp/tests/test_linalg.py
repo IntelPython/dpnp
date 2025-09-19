@@ -1931,6 +1931,7 @@ class TestLuFactor:
         )
 
         assert lu is a_dp
+        assert lu.data.ptr == a_dp.data.ptr
         assert lu.flags["F_CONTIGUOUS"] is True
 
         L, U = self._split_lu(lu, 2, 2)
@@ -1948,6 +1949,7 @@ class TestLuFactor:
         )
 
         assert lu is not a_dp
+        assert lu.data.ptr != a_dp.data.ptr
         assert lu.flags["F_CONTIGUOUS"] is True
 
         L, U = self._split_lu(lu, 2, 2)
@@ -1974,6 +1976,7 @@ class TestLuFactor:
             )
 
             assert lu is not a_dp
+            assert lu.data.ptr != a_dp.data.ptr
             assert lu.flags["F_CONTIGUOUS"] is True
 
             L, U = self._split_lu(lu, 2, 2)
@@ -2217,6 +2220,7 @@ class TestLuSolve:
         )
 
         assert x is b_dp
+        assert x.data.ptr == b_dp.data.ptr
         assert dpnp.allclose(a_dp @ x, b_orig, rtol=1e-6, atol=1e-6)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
@@ -2230,6 +2234,7 @@ class TestLuSolve:
             (lu, piv), b1, overwrite_b=True, check_finite=False
         )
         assert x1 is not b1
+        assert x1.data.ptr != b1.data.ptr
 
         # F-contig, match dtype but read-only input
         b2 = dpnp.array([1, 0], dtype=dtype, order="F")
@@ -2238,6 +2243,7 @@ class TestLuSolve:
             (lu, piv), b2, overwrite_b=True, check_finite=False
         )
         assert x2 is not b2
+        assert x2.data.ptr != b2.data.ptr
 
         for x in (x1, x2):
             assert dpnp.allclose(
