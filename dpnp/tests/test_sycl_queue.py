@@ -1612,13 +1612,13 @@ class TestLinAlgebra:
             assert_sycl_queue_equal(param_queue, a.sycl_queue)
 
     @pytest.mark.parametrize(
-        "data",
+        "b_data",
         [[1.0, 2.0], numpy.empty((2, 0))],
     )
-    def test_lu_solve(self, data, device):
+    def test_lu_solve(self, b_data, device):
         a = dpnp.array([[1.0, 2.0], [3.0, 5.0]], device=device)
         lu, piv = dpnp.linalg.lu_factor(a)
-        b = dpnp.array(data, device=device)
+        b = dpnp.array(b_data, device=device)
 
         result = dpnp.linalg.lu_solve((lu, piv), b)
 
