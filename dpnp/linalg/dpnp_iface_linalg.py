@@ -970,7 +970,7 @@ def lu_factor(a, overwrite_a=False, check_finite=True):
 
 def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
     """
-    Solve an equation system, a x = b, given the LU factorization of `a`.
+    Solve a linear system, :math:`a x = b`, given the LU factorization of `a`.
 
     For full documentation refer to :obj:`scipy.linalg.lu_solve`.
 
@@ -983,13 +983,15 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
     trans : {0, 1, 2} , optional
         Type of system to solve:
 
-        =====  =========
+        =====  =================
         trans  system
-        =====  =========
-        0      a x   = b
-        1      a^T x = b
-        2      a^H x = b
-        =====  =========
+        =====  =================
+        0      :math:`a x = b`
+        1      :math:`a^T x = b`
+        2      :math:`a^H x = b`
+        =====  =================
+
+        Default: ``0``.
     overwrite_b : {None, bool}, optional
         Whether to overwrite data in `b` (may increase performance).
 
@@ -1010,6 +1012,10 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
     -------
     This function synchronizes in order to validate array elements
     when ``check_finite=True``.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.lu_factor` : LU factorize a matrix.
 
     Examples
     --------
