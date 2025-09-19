@@ -86,6 +86,7 @@ Solving linear equations
    dpnp.linalg.solve
    dpnp.linalg.tensorsolve
    dpnp.linalg.lstsq
+   dpnp.linalg.lu_solve
    dpnp.linalg.inv
    dpnp.linalg.pinv
    dpnp.linalg.tensorinv
