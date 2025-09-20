@@ -15,20 +15,20 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Special Functions &mdash; Data Parallel Extension for NumPy 0.19.0dev3+33.g65b85504a0f documentation</title>
+  <title>Special functions (dpnp.special) &mdash; Data Parallel Extension for NumPy 0.19.0dev4+8.g79944102bc5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=98549ccc"></script>
+      <script src="../_static/documentation_options.js?v=f4ac6a79"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="dpnp.erf" href="generated/dpnp.erf.html" />
+    <link rel="next" title="dpnp.special.erf" href="generated/dpnp.special.erf.html" />
     <link rel="prev" title="dpnp.kaiser" href="generated/dpnp.kaiser.html" /> 
 </head>
 
@@ -58,9 +58,9 @@
 <li class="toctree-l2"><a class="reference internal" href="ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="routines.html">Routines</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Special Functions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#error-function">Error Function</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.erf.html">dpnp.erf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Special functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.special</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#error-function-and-fresnel-integrals">Error function and Fresnel integrals</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.special.erf.html">dpnp.special.erf</a></li>
 </ul>
 </li>
 </ul>
@@ -91,7 +91,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
-      <li class="breadcrumb-item active">Special Functions</li>
+      <li class="breadcrumb-item active">Special functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.special</span></code>)</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/reference/special.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -101,14 +101,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="special-functions">
-<h1>Special Functions<a class="headerlink" href="#special-functions" title="Link to this heading"></a></h1>
-<section id="error-function">
-<h2>Error Function<a class="headerlink" href="#error-function" title="Link to this heading"></a></h2>
+  <section id="special-functions-dpnp-special">
+<h1>Special functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.special</span></code>)<a class="headerlink" href="#special-functions-dpnp-special" title="Link to this heading"></a></h1>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/special.html">SciPy API Reference: Special functions (scipy.special)</a></p>
+</div>
+<section id="error-function-and-fresnel-integrals">
+<h2>Error function and Fresnel integrals<a class="headerlink" href="#error-function-and-fresnel-integrals" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.erf.html#dpnp.erf" title="dpnp.erf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.erf</span></code></a></p></td>
-<td><p>Returns the error function of complex argument.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.special.erf.html#dpnp.special.erf" title="dpnp.special.erf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">erf</span></code></a></p></td>
+<td><p>Calculates the Gauss error function of a given input array.</p></td>
 </tr>
 </tbody>
 </table>
@@ -120,7 +124,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="generated/dpnp.kaiser.html" class="btn btn-neutral float-left" title="dpnp.kaiser" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="generated/dpnp.erf.html" class="btn btn-neutral float-right" title="dpnp.erf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="generated/dpnp.special.erf.html" class="btn btn-neutral float-right" title="dpnp.special.erf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
