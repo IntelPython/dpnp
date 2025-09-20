@@ -24,7 +24,6 @@ from .helper import (
     get_array,
     get_integer_dtypes,
     has_support_aspect64,
-    is_win_platform,
     numpy_version,
 )
 from .third_party.cupy import testing
