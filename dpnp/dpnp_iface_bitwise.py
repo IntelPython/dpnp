@@ -37,8 +37,9 @@ it contains:
 
 """
 
-# pylint: disable=protected-access
+# pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
+# pylint: disable=protected-access
 
 import dpctl.tensor._tensor_elementwise_impl as ti
 import numpy

@@ -19,8 +19,8 @@ from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
     get_array,
-    is_iris_xe,
     is_lts_driver,
+    is_tgllp_iris_xe,
     is_win_platform,
 )
 from .third_party.cupy import testing
@@ -916,7 +916,7 @@ def test_geomspace_num0():
 @pytest.mark.parametrize("num", [2, 4, 8, 3, 9, 27])
 @pytest.mark.parametrize("endpoint", [True, False])
 def test_logspace(dtype, num, endpoint):
-    if not is_win_platform() and is_iris_xe() and is_lts_driver():
+    if not is_win_platform() and is_tgllp_iris_xe() and is_lts_driver():
         if (
             dpnp.issubdtype(dtype, dpnp.integer)
             and num in [8, 27]
