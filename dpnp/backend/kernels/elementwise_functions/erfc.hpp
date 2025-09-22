@@ -29,7 +29,7 @@
 
 #include <sycl/sycl.hpp>
 
-namespace dpnp::kernels::erfc
+namespace dpnp::kernels::erf
 {
 template <typename argT, typename Tp>
 struct ErfcFunctor
@@ -55,4 +55,4 @@ struct ErfcFunctor
         }
     }
 };
-} // namespace dpnp::kernels::erfc
+} // namespace dpnp::kernels::erf

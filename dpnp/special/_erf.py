@@ -165,7 +165,7 @@ array([[-0.99997791, -0.96610515,  0.        ,  0.96610515,  0.99997791])
 
 erfc = DPNPErf(
     "erfc",
-    ufi._erfc_result_type,
+    ufi._erf_result_type,
     ufi._erfc,
     _ERFC_DOCSTRING,
     mkl_fn_to_call="_mkl_erf_to_call",

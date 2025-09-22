@@ -31,5 +31,5 @@ namespace py = pybind11;
 
 namespace dpnp::extensions::ufunc
 {
-void init_erf(py::module_ m);
+void init_erf_funcs(py::module_ m);
 } // namespace dpnp::extensions::ufunc
