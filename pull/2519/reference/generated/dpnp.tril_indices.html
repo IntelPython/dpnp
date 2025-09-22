@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.tril_indices &mdash; Data Parallel Extension for NumPy 0.19.0dev4+10.ge6c5e04534c documentation</title>
+  <title>dpnp.tril_indices &mdash; Data Parallel Extension for NumPy 0.19.0dev4+12.gb93ab017c69 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0babce11"></script>
+      <script src="../../_static/documentation_options.js?v=d20f39b8"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -162,8 +162,9 @@ a default queue.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>inds</strong> -- The indices for the triangle. The returned tuple contains two arrays,
-each with the indices along one dimension of the array.</p>
+<dd class="field-even"><p><strong>inds</strong> -- The row and column indices, respectively. The row indices are sorted in
+non-decreasing order, and the corresponding column indices are strictly
+increasing for each row.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a> of dpnp.ndarray</p>
@@ -188,9 +189,14 @@ lower triangular part starting at the main diagonal, and one starting two
 diagonals further right:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">il1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">il2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">il1</span>
+<span class="go">(array([0, 1, 1, 2, 2, 2, 3, 3, 3, 3]),</span>
+<span class="go"> array([0, 0, 1, 0, 1, 2, 0, 1, 2, 3]))</span>
 </pre></div>
 </div>
+<p>Note that row indices (first array) are non-decreasing, and the
+corresponding column indices (second array) are strictly increasing for
+each row.</p>
 <p>Here is how they can be used with a sample array:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
@@ -215,7 +221,8 @@ diagonals further right:</p>
 </pre></div>
 </div>
 <p>These cover almost the whole array (two diagonals right of the main one):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="n">il2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">il2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="n">il2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
 <span class="go">array([[-10, -10, -10,   3],</span>
 <span class="go">       [-10, -10, -10, -10],</span>
