@@ -37,5 +37,11 @@ if %errorlevel% neq 0 exit 1
 "%PYTHON%" -m dpctl -f
 if %errorlevel% neq 0 exit 1
 
+"%PYTHON%" -m pytest -ra --pyargs dpnp dpnp.tests.test_fft::TestFftn
+if %errorlevel% neq 0 exit 1
+
+"%PYTHON%" -m pytest -ra --pyargs dpnp dpnp.tests.test_fft::TestRfftn
+if %errorlevel% neq 0 exit 1
+
 "%PYTHON%" -m pytest -ra --pyargs dpnp
 if %errorlevel% neq 0 exit 1
