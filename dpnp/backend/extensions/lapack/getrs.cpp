@@ -166,6 +166,7 @@ std::pair<sycl::event, sycl::event>
           const dpctl::tensor::usm_ndarray &a_array,
           const dpctl::tensor::usm_ndarray &ipiv_array,
           const dpctl::tensor::usm_ndarray &b_array,
+          oneapi::mkl::transpose trans,
           const std::vector<sycl::event> &depends)
 {
     const int a_array_nd = a_array.get_ndim();
@@ -263,12 +264,6 @@ std::pair<sycl::event, sycl::event>
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
-
-    // Use transpose::T if the LU-factorized array is passed as C-contiguous.
-    // For F-contiguous we use transpose::N.
-    oneapi::mkl::transpose trans = is_a_array_c_contig
-                                       ? oneapi::mkl::transpose::T
-                                       : oneapi::mkl::transpose::N;
 
     char *a_array_data = a_array.get_data();
     char *b_array_data = b_array.get_data();

@@ -27,12 +27,12 @@
 #ifndef BACKEND_UTILS_H // Cython compatibility
 #define BACKEND_UTILS_H
 
-#include <algorithm>
-#include <cassert>
 #include <complex>
 #include <iostream>
-#include <iterator>
 #include <stdexcept>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 #include <sycl/sycl.hpp>
 
@@ -69,99 +69,6 @@
  * This section describes utilities used in Backend API.
  * @}
  */
-
-/**
- * @ingroup BACKEND_UTILS
- * @brief Shape offset calculation used in kernels
- *
- * Calculates offsets of the array with given shape
- * for example:
- *   input_array_shape[3, 4, 5]
- *   offsets should be [20, 5, 1]
- *
- * @param [in]  shape       array with input shape.
- * @param [in]  shape_size  array size for @ref shape parameter.
- * @param [out] offsets     Result array with @ref shape_size size.
- */
-template <typename _DataType>
-void get_shape_offsets_inkernel(const _DataType *shape,
-                                size_t shape_size,
-                                _DataType *offsets)
-{
-    size_t dim_prod_input = 1;
-    for (size_t i = 0; i < shape_size; ++i) {
-        long i_reverse = shape_size - 1 - i;
-        offsets[i_reverse] = dim_prod_input;
-        dim_prod_input *= shape[i_reverse];
-    }
-
-    return;
-}
-
-/**
- * @ingroup BACKEND_UTILS
- * @brief Calculate xyz id for given axis from linear index
- *
- * Calculates xyz id of the array with given shape.
- * for example:
- *   input_array_shape_offsets[20, 5, 1]
- *   global_id == 5
- *   axis == 1
- *   xyz_id should be 1
- *
- * @param [in]  global_id     linear index of the element in multy-D array.
- * @param [in]  offsets       array with input offsets.
- * @param [in]  offsets_size  array size for @ref offsets parameter.
- * @param [in]  axis          axis.
- */
-template <typename _DataType>
-_DataType get_xyz_id_by_id_inkernel(size_t global_id,
-                                    const _DataType *offsets,
-                                    size_t offsets_size,
-                                    size_t axis)
-{
-    /* avoid warning unused variable*/
-    (void)offsets_size;
-
-    assert(axis < offsets_size);
-
-    _DataType xyz_id = 0;
-    long reminder = global_id;
-    for (size_t i = 0; i < axis + 1; ++i) {
-        const _DataType axis_val = offsets[i];
-        xyz_id = reminder / axis_val;
-        reminder = reminder % axis_val;
-    }
-
-    return xyz_id;
-}
-
-/**
- * @ingroup BACKEND_UTILS
- * @brief Check arrays are equal.
- *
- * @param [in] input1        Input1.
- * @param [in] input1_size   Input1 size.
- * @param [in] input2        Input2.
- * @param [in] input2_size   Input2 size.
- *
- * @return                   Arrays are equal.
- */
-template <typename _DataType>
-static inline bool array_equal(const _DataType *input1,
-                               const size_t input1_size,
-                               const _DataType *input2,
-                               const size_t input2_size)
-{
-    if (input1_size != input2_size)
-        return false;
-
-    const std::vector<_DataType> input1_vec(input1, input1 + input1_size);
-    const std::vector<_DataType> input2_vec(input2, input2 + input2_size);
-
-    return std::equal(std::begin(input1_vec), std::end(input1_vec),
-                      std::begin(input2_vec));
-}
 
 /**
  * @ingroup BACKEND_UTILS

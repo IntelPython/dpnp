@@ -74,7 +74,15 @@ readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.9,<3.14"
 
 [project.optional-dependencies]
-coverage = ["Cython", "pytest", "pytest-cov", "coverage", "tomli", "llvm"]
+coverage = [
+  "coverage",
+  "Cython",
+  "llvm",
+  "pytest",
+  "pytest-cov",
+  "scipy",
+  "tomli"
+]
 docs = [
   "Cython",
   "cupy",
@@ -84,6 +92,7 @@ docs = [
   "sphinxcontrib-googleanalytics",
   "sphinxcontrib-spelling"
 ]
+test = ["pytest", "scipy"]
 
 [project.urls]
 Changelog = "https://github.com/IntelPython/dpnp/blob/master/CHANGELOG.md"
@@ -139,7 +148,7 @@ exclude-protected = ["_create_from_usm_ndarray"]
 
 [tool.pylint.design]
 max-args = 11
-max-branches = 17
+max-branches = 18
 max-locals = 30
 max-positional-arguments = 9
 max-returns = 8

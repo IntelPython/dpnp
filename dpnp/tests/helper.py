@@ -27,9 +27,7 @@ def _assert_shape(a, b):
 
 
 def _get_dev_mask(device=None):
-    dev = dpctl.select_default_device() if device is None else device
-    dev_info = dpctl.utils.intel_device_info(dev)
-    return dev_info.get("device_id", 0) & 0xFF00
+    return get_dev_id(device) & 0xFF00
 
 
 def assert_dtype_allclose(
@@ -108,6 +106,19 @@ def assert_dtype_allclose(
         assert_array_equal(dpnp_arr, numpy_arr, strict=False)
         if check_type and hasattr(numpy_arr, "dtype"):
             _assert_dtype(dpnp_arr.dtype, numpy_arr.dtype, check_only_type_kind)
+
+
+def factor_to_tol(dtype, factor):
+    """
+    Calculate the tolerance for comparing floating point and complex arrays.
+    The tolerance is based on the maximum resolution of the input dtype multiplied by the factor.
+    """
+
+    tol = 0
+    if numpy.issubdtype(dtype, numpy.inexact):
+        tol = numpy.finfo(dtype).resolution
+
+    return factor * tol
 
 
 def generate_random_numpy_array(
@@ -208,19 +219,6 @@ def generate_random_numpy_array(
     return a
 
 
-def factor_to_tol(dtype, factor):
-    """
-    Calculate the tolerance for comparing floating point and complex arrays.
-    The tolerance is based on the maximum resolution of the input dtype multiplied by the factor.
-    """
-
-    tol = 0
-    if numpy.issubdtype(dtype, numpy.inexact):
-        tol = numpy.finfo(dtype).resolution
-
-    return factor * tol
-
-
 def get_abs_array(data, dtype=None):
     if numpy.issubdtype(dtype, numpy.unsignedinteger):
         data = numpy.abs(data)
@@ -303,6 +301,16 @@ def get_complex_dtypes(device=None):
     if dev.has_aspect_fp64:
         dtypes.append(dpnp.complex128)
     return dtypes
+
+
+def get_dev_id(device=None):
+    """
+    Obtain Intel Device ID for a device (the default device if not provided).
+    """
+
+    dev = dpctl.select_default_device() if device is None else device
+    dev_info = dpctl.utils.intel_device_info(dev)
+    return dev_info.get("device_id", 0)
 
 
 def get_float_dtypes(no_float16=True, device=None):
@@ -456,11 +464,11 @@ def is_intel_numpy():
     return all(dep["name"].startswith("mkl") for dep in [blas, lapack])
 
 
-def is_iris_xe(device=None):
+def is_lnl(device=None):
     """
-    Return True if a test is running on Iris Xe GPU device, False otherwise.
+    Return True if a test is running on Lunar Lake GPU device, False otherwise.
     """
-    return _get_dev_mask(device) == 0x9A00
+    return _get_dev_mask(device) == 0x6400
 
 
 def is_lts_driver(device=None):
@@ -474,10 +482,18 @@ def is_lts_driver(device=None):
 
 def is_ptl(device=None):
     """
-    Return True if a test is running on Panther Lake with Iris Xe3 GPU device,
+    Return True if a test is running on Panther Lake with Iris Xe3 GPU device
+    (which includes PTL-U, PTL-H and WCL), False otherwise.
+    """
+    return _get_dev_mask(device) in (0xB000, 0xFD00)
+
+
+def is_tgllp_iris_xe(device=None):
+    """
+    Return True if a test is running on Tiger Lake-LP with Iris Xe GPU device,
     False otherwise.
     """
-    return _get_dev_mask(device) == 0xB000
+    return get_dev_id(device) in (0x9A49, 0x9A40)
 
 
 def is_win_platform():

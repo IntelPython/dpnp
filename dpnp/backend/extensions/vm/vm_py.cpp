@@ -45,6 +45,7 @@
 #include "cos.hpp"
 #include "cosh.hpp"
 #include "div.hpp"
+#include "erf.hpp"
 #include "exp.hpp"
 #include "exp2.hpp"
 #include "expm1.hpp"
@@ -97,6 +98,7 @@ PYBIND11_MODULE(_vm_impl, m)
     vm_ns::init_cos(m);
     vm_ns::init_cosh(m);
     vm_ns::init_div(m);
+    vm_ns::init_erf(m);
     vm_ns::init_exp(m);
     vm_ns::init_exp2(m);
     vm_ns::init_expm1(m);

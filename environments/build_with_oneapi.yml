@@ -6,7 +6,6 @@ dependencies:
   - cython
   - ninja
   - numpy
-  - pytest
   - setuptools
   - scikit-build
   - versioneer

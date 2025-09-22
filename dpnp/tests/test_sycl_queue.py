@@ -1184,6 +1184,19 @@ def test_apply_over_axes(device):
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_piecewise(device):
+    x = dpnp.array([0, 0], device=device)
+    y = dpnp.array([True, False], device=device)
+    z = dpnp.array([1, -1], device=device)
+    result = dpnp.piecewise(x, y, z)
+    res_sycl_queue = result.sycl_queue
+
+    assert_sycl_queue_equal(res_sycl_queue, x.sycl_queue)
+    assert_sycl_queue_equal(res_sycl_queue, y.sycl_queue)
+    assert_sycl_queue_equal(res_sycl_queue, z.sycl_queue)
+
+
 @pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
 def test_asarray(device_x, device_y):
@@ -1472,6 +1485,14 @@ def test_interp(device, left, right, period):
     r = None if right is None else dpnp.array(right, sycl_queue=x.sycl_queue)
     result = dpnp.interp(x, xp, fp, left=l, right=r, period=period)
 
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_erf(device):
+    x = dpnp.linspace(-3, 3, num=5, device=device)
+
+    result = dpnp.special.erf(x)
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
