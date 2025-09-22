@@ -125,10 +125,8 @@ class TestLUFactor(unittest.TestCase):
 )
 @testing.fix_random()
 @testing.with_requires("scipy")
+@pytest.mark.skip("lu() is not supported yet")
 class TestLU(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        pytest.skip("lu() is not supported yet")
 
     @testing.for_dtypes("fdFD")
     def test_lu(self, dtype):
