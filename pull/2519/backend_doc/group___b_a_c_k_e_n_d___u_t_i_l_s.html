@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.19.0dev3</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.19.0dev4</span>
    </div>
    <div id="projectbrief">Data Parallel Extension for NumPy*</div>
   </td>
@@ -112,14 +112,6 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga4706968b8ce210d69309a0cae330cea5" id="r_ga4706968b8ce210d69309a0cae330cea5"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga4706968b8ce210d69309a0cae330cea5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ga4706968b8ce210d69309a0cae330cea5">get_shape_offsets_inkernel</a> (const _DataType *shape, size_t shape_size, _DataType *offsets)</td></tr>
-<tr class="memdesc:ga4706968b8ce210d69309a0cae330cea5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shape offset calculation used in kernels.  <br /></td></tr>
-<tr class="separator:ga4706968b8ce210d69309a0cae330cea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad37eb9ce0ad29590cc931a9b6cd538e2" id="r_gad37eb9ce0ad29590cc931a9b6cd538e2"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:gad37eb9ce0ad29590cc931a9b6cd538e2"><td class="memTemplItemLeft" align="right" valign="top">_DataType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#gad37eb9ce0ad29590cc931a9b6cd538e2">get_xyz_id_by_id_inkernel</a> (size_t global_id, const _DataType *offsets, size_t offsets_size, size_t axis)</td></tr>
-<tr class="memdesc:gad37eb9ce0ad29590cc931a9b6cd538e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate xyz id for given axis from linear index.  <br /></td></tr>
-<tr class="separator:gad37eb9ce0ad29590cc931a9b6cd538e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2d677a923f4dc4c31e302b0c3bb692f0" id="r_ga2d677a923f4dc4c31e302b0c3bb692f0"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ga2d677a923f4dc4c31e302b0c3bb692f0"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ga2d677a923f4dc4c31e302b0c3bb692f0">operator&lt;&lt;</a> (std::ostream &amp;out, const std::vector&lt; T &gt; &amp;vec)</td></tr>
 <tr class="memdesc:ga2d677a923f4dc4c31e302b0c3bb692f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">print std::vector to std::ostream.  <br /></td></tr>
@@ -132,94 +124,6 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>This section describes utilities used in Backend API. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga4706968b8ce210d69309a0cae330cea5" name="ga4706968b8ce210d69309a0cae330cea5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga4706968b8ce210d69309a0cae330cea5">&#9670;&#160;</a></span>get_shape_offsets_inkernel()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void get_shape_offsets_inkernel </td>
-          <td>(</td>
-          <td class="paramtype">const _DataType *</td>          <td class="paramname"><span class="paramname"><em>shape</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>shape_size</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">_DataType *</td>          <td class="paramname"><span class="paramname"><em>offsets</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Shape offset calculation used in kernels. </p>
-<p>Calculates offsets of the array with given shape for example: input_array_shape[3, 4, 5] offsets should be [20, 5, 1]</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>array with input shape. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">shape_size</td><td>array size for shape parameter. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">offsets</td><td>Result array with shape_size size. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00087">87</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
-
-</div>
-</div>
-<a id="gad37eb9ce0ad29590cc931a9b6cd538e2" name="gad37eb9ce0ad29590cc931a9b6cd538e2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad37eb9ce0ad29590cc931a9b6cd538e2">&#9670;&#160;</a></span>get_xyz_id_by_id_inkernel()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">_DataType get_xyz_id_by_id_inkernel </td>
-          <td>(</td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>global_id</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const _DataType *</td>          <td class="paramname"><span class="paramname"><em>offsets</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>offsets_size</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>axis</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Calculate xyz id for given axis from linear index. </p>
-<p>Calculates xyz id of the array with given shape. for example: input_array_shape_offsets[20, 5, 1] global_id == 5 axis == 1 xyz_id should be 1</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">global_id</td><td>linear index of the element in multy-D array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">offsets</td><td>array with input offsets. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">offsets_size</td><td>array size for offsets parameter. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">axis</td><td>axis. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00118">118</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
-
-</div>
-</div>
 <a id="ga2d677a923f4dc4c31e302b0c3bb692f0" name="ga2d677a923f4dc4c31e302b0c3bb692f0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga2d677a923f4dc4c31e302b0c3bb692f0">&#9670;&#160;</a></span>operator&lt;&lt;() <span class="overload">[1/2]</span></h2>
 
@@ -250,7 +154,7 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00227">227</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00134">134</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
 
 </div>
 </div>
@@ -284,7 +188,7 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00255">255</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00162">162</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
 
 </div>
 </div>
