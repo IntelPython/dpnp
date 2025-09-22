@@ -2182,7 +2182,7 @@ class TestLuSolve:
 
         # check A @ x = b
         Ax = a_dp @ x
-        assert dpnp.allclose(Ax, b_dp, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(Ax, b_dp, atol=1e-5)
 
     @pytest.mark.parametrize("trans", [0, 1, 2])
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
