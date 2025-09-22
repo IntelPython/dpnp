@@ -39,6 +39,16 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         runner: [ubuntu-22.04, ubuntu-24.04, windows-2022]
+        include:
+          - python: 3.9
+            # do not install scipy due to import issue
+            test-packages: "pytest"
+          - python: 3.10
+            test-packages: "pytest scipy"
+          - python: 3.11
+            test-packages: "pytest scipy"
+          - python: 3.12
+            test-packages: "pytest scipy"
 
     steps:
       - name: Cancel Previous Runs
@@ -84,12 +94,12 @@ jobs:
         id: install_dpnp
         continue-on-error: true
         run: |
-          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} pytest scipy ${{ env.channels-list }}
+          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} ${{ matrix.test-packages }} ${{ env.channels-list }}
 
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} pytest scipy ${{ env.channels-list }}
+          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} ${{ matrix.test-packages }} ${{ env.channels-list }}
 
       - name: List installed packages
         run: mamba list

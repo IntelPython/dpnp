@@ -62,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Resolved issue when `dpnp.ndarray` constructor is called with `dpnp.ndarray.data` as `buffer` keyword [#2533](https://github.com/IntelPython/dpnp/pull/2533)
 * Fixed `dpnp.linalg.cond` to always return a real dtype [#2547](https://github.com/IntelPython/dpnp/pull/2547)
 * Resolved the issue in `dpnp.random` functions to allow any value of `size` where each element is castable to `Py_ssize_t` type [#2578](https://github.com/IntelPython/dpnp/pull/2578)
+* Resolved `conda build --test` issue in python 3.9 environment [#2583](https://github.com/IntelPython/dpnp/pull/2583)
 
 ### Security
 
