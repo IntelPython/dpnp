@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.19.0dev4+24.gee6f9df55b2 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.19.0dev4+28.gf8a195be9aa documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2ab9cc23"></script>
+      <script src="../../_static/documentation_options.js?v=d2d15dbc"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2528,8 +2528,9 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    inds : tuple of dpnp.ndarray</span>
-<span class="sd">        The indices for the triangle. The returned tuple contains two arrays,</span>
-<span class="sd">        each with the indices along one dimension of the array.</span>
+<span class="sd">        The row and column indices, respectively. The row indices are sorted in</span>
+<span class="sd">        non-decreasing order, and the corresponding column indices are strictly</span>
+<span class="sd">        increasing for each row.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -2547,7 +2548,13 @@
 
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; il1 = np.tril_indices(4)</span>
-<span class="sd">    &gt;&gt;&gt; il2 = np.tril_indices(4, 2)</span>
+<span class="sd">    &gt;&gt;&gt; il1</span>
+<span class="sd">    (array([0, 1, 1, 2, 2, 2, 3, 3, 3, 3]),</span>
+<span class="sd">     array([0, 0, 1, 0, 1, 2, 0, 1, 2, 3]))</span>
+
+<span class="sd">    Note that row indices (first array) are non-decreasing, and the</span>
+<span class="sd">    corresponding column indices (second array) are strictly increasing for</span>
+<span class="sd">    each row.</span>
 
 <span class="sd">    Here is how they can be used with a sample array:</span>
 
@@ -2574,6 +2581,7 @@
 
 <span class="sd">    These cover almost the whole array (two diagonals right of the main one):</span>
 
+<span class="sd">    &gt;&gt;&gt; il2 = np.tril_indices(4, 2)</span>
 <span class="sd">    &gt;&gt;&gt; a[il2] = -10</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([[-10, -10, -10,   3],</span>
@@ -2743,9 +2751,9 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    inds : tuple of dpnp.ndarray</span>
-<span class="sd">        The indices for the triangle. The returned tuple contains two arrays,</span>
-<span class="sd">        each with the indices along one dimension of the array. Can be used</span>
-<span class="sd">        to slice a ndarray of shape(`n`, `n`).</span>
+<span class="sd">        The row and column indices, respectively. The row indices are sorted in</span>
+<span class="sd">        non-decreasing order, and the corresponding column indices are strictly</span>
+<span class="sd">        increasing for each row.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -2763,7 +2771,13 @@
 
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; iu1 = np.triu_indices(4)</span>
-<span class="sd">    &gt;&gt;&gt; iu2 = np.triu_indices(4, 2)</span>
+<span class="sd">    &gt;&gt;&gt; iu1</span>
+<span class="sd">    (array([0, 0, 0, 0, 1, 1, 1, 2, 2, 3]),</span>
+<span class="sd">     array([0, 1, 2, 3, 1, 2, 3, 2, 3, 3]))</span>
+
+<span class="sd">    Note that row indices (first array) are non-decreasing, and the</span>
+<span class="sd">    corresponding column indices (second array) are strictly increasing for</span>
+<span class="sd">    each row.</span>
 
 <span class="sd">    Here is how they can be used with a sample array:</span>
 
@@ -2791,6 +2805,7 @@
 <span class="sd">    These cover only a small part of the whole array (two diagonals right</span>
 <span class="sd">    of the main one):</span>
 
+<span class="sd">    &gt;&gt;&gt; iu2 = np.triu_indices(4, 2)</span>
 <span class="sd">    &gt;&gt;&gt; a[iu2] = -10</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([[ -1,  -1, -10, -10],</span>
