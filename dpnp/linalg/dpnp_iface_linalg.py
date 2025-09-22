@@ -907,7 +907,7 @@ def lstsq(a, b, rcond=None):
 
 def lu_factor(a, overwrite_a=False, check_finite=True):
     """
-    Compute the pivoted LU decomposition of a matrix.
+    Compute the pivoted LU decomposition of `a` matrix.
 
     The decomposition is::
 
@@ -948,6 +948,11 @@ def lu_factor(a, overwrite_a=False, check_finite=True):
     -------
     This function synchronizes in order to validate array elements
     when ``check_finite=True``.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.lu_solve` : Solve an equation system using
+                                  the LU factorization of `a` matrix.
 
     Examples
     --------
