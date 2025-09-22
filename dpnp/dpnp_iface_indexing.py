@@ -2375,8 +2375,9 @@ def tril_indices(
     Returns
     -------
     inds : tuple of dpnp.ndarray
-        The indices for the triangle. The returned tuple contains two arrays,
-        each with the indices along one dimension of the array.
+        The row and column indices, respectively. The row indices are sorted in
+        non-decreasing order, and the corresponding column indices are strictly
+        increasing for each row.
 
     See Also
     --------
@@ -2394,7 +2395,13 @@ def tril_indices(
 
     >>> import dpnp as np
     >>> il1 = np.tril_indices(4)
-    >>> il2 = np.tril_indices(4, 2)
+    >>> il1
+    (array([0, 1, 1, 2, 2, 2, 3, 3, 3, 3]),
+     array([0, 0, 1, 0, 1, 2, 0, 1, 2, 3]))
+
+    Note that row indices (first array) are non-decreasing, and the
+    corresponding column indices (second array) are strictly increasing for
+    each row.
 
     Here is how they can be used with a sample array:
 
@@ -2421,6 +2428,7 @@ def tril_indices(
 
     These cover almost the whole array (two diagonals right of the main one):
 
+    >>> il2 = np.tril_indices(4, 2)
     >>> a[il2] = -10
     >>> a
     array([[-10, -10, -10,   3],
@@ -2584,9 +2592,9 @@ def triu_indices(
     Returns
     -------
     inds : tuple of dpnp.ndarray
-        The indices for the triangle. The returned tuple contains two arrays,
-        each with the indices along one dimension of the array. Can be used
-        to slice a ndarray of shape(`n`, `n`).
+        The row and column indices, respectively. The row indices are sorted in
+        non-decreasing order, and the corresponding column indices are strictly
+        increasing for each row.
 
     See Also
     --------
@@ -2604,7 +2612,13 @@ def triu_indices(
 
     >>> import dpnp as np
     >>> iu1 = np.triu_indices(4)
-    >>> iu2 = np.triu_indices(4, 2)
+    >>> iu1
+    (array([0, 0, 0, 0, 1, 1, 1, 2, 2, 3]),
+     array([0, 1, 2, 3, 1, 2, 3, 2, 3, 3]))
+
+    Note that row indices (first array) are non-decreasing, and the
+    corresponding column indices (second array) are strictly increasing for
+    each row.
 
     Here is how they can be used with a sample array:
 
@@ -2632,6 +2646,7 @@ def triu_indices(
     These cover only a small part of the whole array (two diagonals right
     of the main one):
 
+    >>> iu2 = np.triu_indices(4, 2)
     >>> a[iu2] = -10
     >>> a
     array([[ -1,  -1, -10, -10],
