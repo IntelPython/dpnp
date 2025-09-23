@@ -52,6 +52,7 @@
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
+// utils extension header
 #include "ext/common.hpp"
 
 namespace py = pybind11;
@@ -65,6 +66,7 @@ namespace dpnp::extensions::ufunc
 
 namespace impl
 {
+using ext::common::init_dispatch_vector;
 
 template <typename T>
 using value_type_of_t = typename value_type_of<T>::type;
@@ -370,17 +372,10 @@ struct NanToNumContigFactory
     }
 };
 
-void populate_nan_to_num_dispatch_vectors(void)
+static void populate_nan_to_num_dispatch_vectors(void)
 {
-    using namespace td_ns;
-
-    DispatchVectorBuilder<nan_to_num_fn_ptr_t, NanToNumFactory, num_types> dvb1;
-    dvb1.populate_dispatch_vector(nan_to_num_dispatch_vector);
-
-    DispatchVectorBuilder<nan_to_num_contig_fn_ptr_t, NanToNumContigFactory,
-                          num_types>
-        dvb2;
-    dvb2.populate_dispatch_vector(nan_to_num_contig_dispatch_vector);
+    init_dispatch_vector<nan_to_num_fn_ptr_t, NanToNumFactory>(
+        nan_to_num_dispatch_vector);
 }
 
 } // namespace impl
