@@ -52,6 +52,8 @@ namespace py = pybind11;
 namespace py_int = dpnp::extensions::py_internal;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
+using ext::common::init_dispatch_vector;
+
 namespace impl
 {
 namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
@@ -135,8 +137,8 @@ static void populate(py::module_ m,
                      const char *docstring,
                      unary_contig_impl_fn_ptr_t *contig_dispatch_vector)
 {
-    py_internal::init_ufunc_dispatch_vector<unary_contig_impl_fn_ptr_t,
-                                            factoryT>(contig_dispatch_vector);
+    init_dispatch_vector<unary_contig_impl_fn_ptr_t, factoryT>(
+        contig_dispatch_vector);
 
     using arrayT = dpctl::tensor::usm_ndarray;
     auto pyapi = [&, contig_dispatch_vector](
@@ -158,8 +160,7 @@ void init_erf_funcs(py::module_ m)
     using arrayT = dpctl::tensor::usm_ndarray;
     using impl::output_typeid_vector;
 
-    py_internal::init_ufunc_dispatch_vector<int, impl::TypeMapFactory>(
-        output_typeid_vector);
+    init_dispatch_vector<int, impl::TypeMapFactory>(output_typeid_vector);
 
     auto erf_need_to_call_pyapi = [&](sycl::queue &exec_q, const arrayT &src,
                                       const arrayT &dst) {

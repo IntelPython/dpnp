@@ -33,15 +33,14 @@
 #include "erf_funcs.hpp"
 #include "kernels/elementwise_functions/erf.hpp"
 #include "kernels/elementwise_functions/erfc.hpp"
-// #include "populate.hpp"
+
+// utils extension header
+#include "ext/common.hpp"
 
 // include a local copy of elementwise common header from dpctl tensor:
 // dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
 // TODO: replace by including dpctl header once available
 #include "../../elementwise_functions/elementwise_functions.hpp"
-
-// TODO: make it common for all extensions
-#include "../vm/common.hpp"
 
 // dpctl tensor headers
 #include "kernels/elementwise_functions/common.hpp"
@@ -51,6 +50,8 @@ namespace dpnp::extensions::ufunc
 {
 namespace py = pybind11;
 namespace py_int = dpnp::extensions::py_internal;
+
+using ext::common::init_dispatch_vector;
 
 namespace impl
 {
@@ -189,12 +190,10 @@ static void populate(py::module_ m,
                      unary_contig_impl_fn_ptr_t *contig_dispatch_vector,
                      unary_strided_impl_fn_ptr_t *strided_dispatch_vector)
 {
-    vm::py_internal::init_ufunc_dispatch_vector<unary_contig_impl_fn_ptr_t,
-                                                contigFactoryT>(
+    init_dispatch_vector<unary_contig_impl_fn_ptr_t, contigFactoryT>(
         contig_dispatch_vector);
 
-    vm::py_internal::init_ufunc_dispatch_vector<unary_strided_impl_fn_ptr_t,
-                                                stridedFactoryT>(
+    init_dispatch_vector<unary_strided_impl_fn_ptr_t, stridedFactoryT>(
         strided_dispatch_vector);
 
     using arrayT = dpctl::tensor::usm_ndarray;
@@ -216,8 +215,7 @@ MACRO_DEFINE_IMPL(erfc, Erfc);
 void init_erf_funcs(py::module_ m)
 {
     using impl::output_typeid_vector;
-    vm::py_internal::init_ufunc_dispatch_vector<int, impl::TypeMapFactory>(
-        output_typeid_vector);
+    init_dispatch_vector<int, impl::TypeMapFactory>(output_typeid_vector);
 
     auto erf_result_type_pyapi = [&](const py::dtype &dtype) {
         return py_int::py_unary_ufunc_result_type(dtype, output_typeid_vector);
