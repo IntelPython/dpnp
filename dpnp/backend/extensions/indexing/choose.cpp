@@ -36,6 +36,11 @@
 
 #include "choose_kernel.hpp"
 #include "dpctl4pybind11.hpp"
+
+// utils extension header
+#include "ext/common.hpp"
+
+// dpctl tensor headers
 #include "utils/indexing_utils.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
@@ -432,18 +437,13 @@ using ChooseClipFactory = ChooseFactory<fnT, IndT, T, ClipIndex<IndT>>;
 
 void init_choose_dispatch_tables(void)
 {
-    using namespace td_ns;
+    using ext::common::init_dispatch_table;
     using kernels::choose_fn_ptr_t;
 
-    DispatchTableBuilder<choose_fn_ptr_t, ChooseClipFactory, num_types>
-        dtb_choose_clip;
-    dtb_choose_clip.populate_dispatch_table(choose_clip_dispatch_table);
-
-    DispatchTableBuilder<choose_fn_ptr_t, ChooseWrapFactory, num_types>
-        dtb_choose_wrap;
-    dtb_choose_wrap.populate_dispatch_table(choose_wrap_dispatch_table);
-
-    return;
+    init_dispatch_table<choose_fn_ptr_t, ChooseClipFactory>(
+        choose_clip_dispatch_table);
+    init_dispatch_table<choose_fn_ptr_t, ChooseWrapFactory>(
+        choose_wrap_dispatch_table);
 }
 
 void init_choose(py::module_ m)
