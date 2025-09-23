@@ -1,0 +1,10 @@
+﻿
+
+dpnp.special.erf
+================
+
+.. currentmodule:: dpnp.special
+
+
+
+.. autofunction:: erf
