@@ -32,7 +32,7 @@
 
 #include "erf_funcs.hpp"
 #include "kernels/elementwise_functions/erf.hpp"
-#include "kernels/elementwise_functions/erfc.hpp"
+// #include "kernels/elementwise_functions/erfc.hpp"
 
 // utils extension header
 #include "ext/common.hpp"

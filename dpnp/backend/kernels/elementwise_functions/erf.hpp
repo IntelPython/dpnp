@@ -31,28 +31,44 @@
 
 namespace dpnp::kernels::erf
 {
-template <typename argT, typename Tp>
-struct ErfFunctor
+template <typename OpT, typename ArgT, typename ResT>
+struct BaseFunctor
 {
-    // is function constant for given argT
+    // is function constant for given ArgT
     using is_constant = typename std::false_type;
     // constant value, if constant
-    // constexpr Tp constant_value = Tp{};
+    // constexpr ResT constant_value = ResT{};
     // is function defined for sycl::vec
     using supports_vec = typename std::false_type;
-    // do both argT and Tp support subgroup store/load operation
+    // do both ArgT and ResT support subgroup store/load operation
     using supports_sg_loadstore = typename std::true_type;
 
-    Tp operator()(const argT &x) const
+    ResT operator()(const ArgT &x) const
     {
-        if constexpr (std::is_same_v<argT, sycl::half> &&
-                      std::is_same_v<Tp, float>) {
+        if constexpr (std::is_same_v<ArgT, sycl::half> &&
+                      std::is_same_v<ResT, float>) {
             // cast sycl::half to float for accuracy reasons
-            return sycl::erf(float(x));
+            return OpT::apply(float(x));
         }
         else {
-            return sycl::erf(x);
+            return OpT::apply(x);
         }
     }
 };
+
+#define MACRO_DEFINE_FUNCTOR(__name__, __f_name__)                             \
+    struct __f_name__##Op                                                      \
+    {                                                                          \
+        template <typename Tp>                                                 \
+        static Tp apply(const Tp &x)                                           \
+        {                                                                      \
+            return sycl::__name__(x);                                          \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    template <typename ArgT, typename ResT>                                    \
+    using __f_name__##Functor = BaseFunctor<__f_name__##Op, ArgT, ResT>;
+
+MACRO_DEFINE_FUNCTOR(erf, Erf);
+MACRO_DEFINE_FUNCTOR(erfc, Erfc);
 } // namespace dpnp::kernels::erf
