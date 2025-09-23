@@ -2518,8 +2518,11 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
             )
 
     lu_usm_arr = dpnp.get_usm_ndarray(lu)
-    piv_usm_arr = dpnp.get_usm_ndarray(piv)
     b_usm_arr = dpnp.get_usm_ndarray(b)
+
+    # dpnp.linalg.lu_factor() returns 0-based pivots to match SciPy,
+    # convert to 1-based for oneMKL getrs
+    piv_h = piv + 1
 
     _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
@@ -2536,19 +2539,6 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
         depends=dep_evs,
     )
     _manager.add_event_pair(ht_ev, lu_copy_ev)
-
-    # oneMKL LAPACK getrf overwrites `piv`.
-    piv_h = dpnp.empty_like(piv, order="F", usm_type=res_usm_type)
-
-    # use DPCTL tensor function to fill the сopy of the pivot array
-    # from the pivot array
-    ht_ev, piv_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=piv_usm_arr,
-        dst=piv_h.get_array(),
-        sycl_queue=piv.sycl_queue,
-        depends=dep_evs,
-    )
-    _manager.add_event_pair(ht_ev, piv_copy_ev)
 
     # SciPy-compatible behavior
     # Copy is required if:
@@ -2567,14 +2557,11 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
             depends=dep_evs,
         )
         _manager.add_event_pair(ht_ev, b_copy_ev)
-        dep_evs = [lu_copy_ev, piv_copy_ev, b_copy_ev]
+        dep_evs = [lu_copy_ev, b_copy_ev]
     else:
         # input is suitable for in-place modification
         b_h = b
-        dep_evs = [lu_copy_ev, piv_copy_ev]
-
-    # MKL lapack uses 1-origin while SciPy uses 0-origin
-    piv_h += 1
+        dep_evs = [lu_copy_ev]
 
     if not isinstance(trans, int):
         raise TypeError("`trans` must be an integer")
