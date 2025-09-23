@@ -376,6 +376,8 @@ static void populate_nan_to_num_dispatch_vectors(void)
 {
     init_dispatch_vector<nan_to_num_fn_ptr_t, NanToNumFactory>(
         nan_to_num_dispatch_vector);
+    init_dispatch_vector<nan_to_num_contig_fn_ptr_t, NanToNumContigFactory>(
+        nan_to_num_contig_dispatch_vector);
 }
 
 } // namespace impl
