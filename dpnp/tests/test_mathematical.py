@@ -2302,6 +2302,7 @@ class TestProjection:
 
 @pytest.mark.parametrize("func", ["ceil", "floor", "trunc", "fix"])
 class TestRoundingFuncs:
+    @testing.with_requires("numpy>=2.1.0")
     @pytest.mark.parametrize(
         "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
