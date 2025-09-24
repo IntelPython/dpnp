@@ -1992,6 +1992,7 @@ class TestUnwrap:
         assert result.dtype == ia.dtype == a.dtype
 
 
+@testing.with_requires("numpy>=2.1.0")
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 @pytest.mark.parametrize("val_type", [bool, int, float])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
