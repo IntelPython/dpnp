@@ -2527,7 +2527,7 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
     _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
 
-    # oneMKL LAPACK getrf overwrites `lu`.
+    # oneMKL LAPACK getrs overwrites `lu`.
     lu_h = dpnp.empty_like(lu, order="F", dtype=res_type, usm_type=res_usm_type)
 
     # use DPCTL tensor function to fill the сopy of the input array
