@@ -2297,7 +2297,6 @@ class TestLuSolve:
 
         assert dpnp.allclose(a_dp @ x, b_dp, rtol=1e-6, atol=1e-6)
 
-    @pytest.mark.skip("Not implemented yet")
     @pytest.mark.parametrize(
         "b_shape",
         [
@@ -2320,7 +2319,7 @@ class TestLuSolve:
 
         lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
         x = dpnp.linalg.lu_solve(
-            (lu, piv), b_dp, overwrite_b=True, check_finite=False
+            (lu, piv), b_dp, overwrite_b=False, check_finite=False
         )
 
         assert x.shape == b_dp.shape
