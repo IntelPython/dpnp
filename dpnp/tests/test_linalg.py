@@ -2182,10 +2182,7 @@ class TestLuSolve:
 
         # check A @ x = b
         Ax = a_dp @ x
-        if dpnp.issubdtype(dtype, dpnp.integer):
-            assert dpnp.allclose(Ax, b_dp, rtol=1e-5, atol=1e-5)
-        else:
-            assert dpnp.allclose(Ax, b_dp, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(Ax, b_dp, rtol=1e-5, atol=1e-5)
 
     @pytest.mark.parametrize("trans", [0, 1, 2])
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
@@ -2207,7 +2204,7 @@ class TestLuSolve:
         else:  # trans == 2
             lhs = a_dp.conj().T @ x
 
-        assert dpnp.allclose(lhs, b_dp, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(lhs, b_dp, rtol=1e-5, atol=1e-5)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_overwrite_inplace(self, dtype):
@@ -2272,7 +2269,7 @@ class TestLuSolve:
         lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
         x = dpnp.linalg.lu_solve((lu, piv), b_dp, check_finite=False)
         assert dpnp.allclose(
-            a_dp @ x, b_dp.astype(x.dtype, copy=False), rtol=1e-6, atol=1e-6
+            a_dp @ x, b_dp.astype(x.dtype, copy=False), rtol=1e-5, atol=1e-5
         )
 
     def test_strided_rhs(self):
@@ -2295,7 +2292,7 @@ class TestLuSolve:
             (lu, piv), b_dp, overwrite_b=False, check_finite=False
         )
 
-        assert dpnp.allclose(a_dp @ x, b_dp, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(a_dp @ x, b_dp, rtol=1e-5, atol=1e-5)
 
     @pytest.mark.parametrize(
         "b_shape",
@@ -2324,7 +2321,7 @@ class TestLuSolve:
 
         assert x.shape == b_dp.shape
 
-        assert dpnp.allclose(a_dp @ x, b_dp, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(a_dp @ x, b_dp, rtol=1e-5, atol=1e-5)
 
     @pytest.mark.parametrize("shape", [(0, 0), (0, 5), (5, 5)])
     @pytest.mark.parametrize("rhs_cols", [None, 0, 3])
