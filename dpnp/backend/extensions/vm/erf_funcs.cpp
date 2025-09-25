@@ -193,6 +193,6 @@ void init_erf_funcs(py::module_ m)
         m, "_erfcx",
         "Call `erfcx` function from OneMKL VM library to compute the scaled "
         "complementary error function value of vector elements",
-        impl::erfc_contig_dispatch_vector);
+        impl::erfcx_contig_dispatch_vector);
 }
 } // namespace dpnp::extensions::vm

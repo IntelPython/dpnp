@@ -1296,7 +1296,7 @@ def test_choose(usm_type_x, usm_type_ind):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
 
 
-@pytest.mark.parametrize("func", ["erf", "erfc"])
+@pytest.mark.parametrize("func", ["erf", "erfc", "erfcx"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
 def test_erf_funcs(func, usm_type):
     x = dpnp.linspace(-3, 3, num=5, usm_type=usm_type)
