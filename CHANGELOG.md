@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Redesigned `dpnp.erf` function through pybind11 extension of OneMKL call or dedicated kernel in `ufunc` namespace [#2551](https://github.com/IntelPython/dpnp/pull/2551)
 * Improved performance of batched implementation of `dpnp.linalg.det` and `dpnp.linalg.slogdet` [#2572](https://github.com/IntelPython/dpnp/pull/2572)
 * Improved documentations of `dpnp.tril_indices` and `dpnp.triu_indices` to clarify the returned order of indices [#2586](https://github.com/IntelPython/dpnp/pull/2586)
+* `dpnp` uses pybind11 3.0.1 [#2594](https://github.com/IntelPython/dpnp/pull/2594)
 
 ### Deprecated
 
