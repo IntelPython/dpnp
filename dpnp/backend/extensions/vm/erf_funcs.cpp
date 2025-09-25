@@ -133,6 +133,7 @@ using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 
 MACRO_DEFINE_IMPL(erf, Erf);
 MACRO_DEFINE_IMPL(erfc, Erfc);
+MACRO_DEFINE_IMPL(erfcx, Erfcx);
 
 template <template <typename fnT, typename T> typename factoryT>
 static void populate(py::module_ m,
@@ -185,6 +186,12 @@ void init_erf_funcs(py::module_ m)
     impl::populate<impl::ErfcContigFactory>(
         m, "_erfc",
         "Call `erfc` function from OneMKL VM library to compute the "
+        "complementary error function value of vector elements",
+        impl::erfc_contig_dispatch_vector);
+
+    impl::populate<impl::ErfcxContigFactory>(
+        m, "_erfcx",
+        "Call `erfcx` function from OneMKL VM library to compute the scaled "
         "complementary error function value of vector elements",
         impl::erfc_contig_dispatch_vector);
 }
