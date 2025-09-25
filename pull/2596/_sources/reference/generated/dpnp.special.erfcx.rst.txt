@@ -1,0 +1,10 @@
+﻿
+
+dpnp.special.erfcx
+==================
+
+.. currentmodule:: dpnp.special
+
+
+
+.. autofunction:: erfcx
