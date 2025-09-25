@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.19.0dev5+17.g4124aa8bc58 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.19.0dev6+19.g9d1232312c1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c31e2101"></script>
+      <script src="../../../_static/documentation_options.js?v=c83334ff"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -142,6 +142,7 @@
     <span class="n">dpnp_inv</span><span class="p">,</span>
     <span class="n">dpnp_lstsq</span><span class="p">,</span>
     <span class="n">dpnp_lu_factor</span><span class="p">,</span>
+    <span class="n">dpnp_lu_solve</span><span class="p">,</span>
     <span class="n">dpnp_matrix_power</span><span class="p">,</span>
     <span class="n">dpnp_matrix_rank</span><span class="p">,</span>
     <span class="n">dpnp_multi_dot</span><span class="p">,</span>
@@ -166,6 +167,7 @@
     <span class="s2">&quot;inv&quot;</span><span class="p">,</span>
     <span class="s2">&quot;lstsq&quot;</span><span class="p">,</span>
     <span class="s2">&quot;lu_factor&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lu_solve&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matmul&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_norm&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_power&quot;</span><span class="p">,</span>
@@ -1025,7 +1027,7 @@
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.lu_factor.html#dpnp.linalg.lu_factor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">lu_factor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">overwrite_a</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_finite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the pivoted LU decomposition of a matrix.</span>
+<span class="sd">    Compute the pivoted LU decomposition of `a` matrix.</span>
 
 <span class="sd">    The decomposition is::</span>
 
@@ -1067,6 +1069,11 @@
 <span class="sd">    This function synchronizes in order to validate array elements</span>
 <span class="sd">    when ``check_finite=True``.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.linalg.lu_solve` : Solve an equation system using</span>
+<span class="sd">                                  the LU factorization of `a` matrix.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -1084,6 +1091,84 @@
     <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_lu_factor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">overwrite_a</span><span class="o">=</span><span class="n">overwrite_a</span><span class="p">,</span> <span class="n">check_finite</span><span class="o">=</span><span class="n">check_finite</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="lu_solve">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.lu_solve.html#dpnp.linalg.lu_solve">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">lu_solve</span><span class="p">(</span><span class="n">lu_and_piv</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">overwrite_b</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_finite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solve a linear system, :math:`a x = b`, given the LU factorization of `a`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`scipy.linalg.lu_solve`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lu, piv : {tuple of dpnp.ndarrays or usm_ndarrays}</span>
+<span class="sd">        LU factorization of matrix `a` (M, M) together with pivot indices.</span>
+<span class="sd">    b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Right-hand side</span>
+<span class="sd">    trans : {0, 1, 2} , optional</span>
+<span class="sd">        Type of system to solve:</span>
+
+<span class="sd">        =====  =================</span>
+<span class="sd">        trans  system</span>
+<span class="sd">        =====  =================</span>
+<span class="sd">        0      :math:`a x = b`</span>
+<span class="sd">        1      :math:`a^T x = b`</span>
+<span class="sd">        2      :math:`a^H x = b`</span>
+<span class="sd">        =====  =================</span>
+
+<span class="sd">        Default: ``0``.</span>
+<span class="sd">    overwrite_b : {None, bool}, optional</span>
+<span class="sd">        Whether to overwrite data in `b` (may increase performance).</span>
+
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    check_finite : {None, bool}, optional</span>
+<span class="sd">        Whether to check that the input matrix contains only finite numbers.</span>
+<span class="sd">        Disabling may give a performance gain, but may result in problems</span>
+<span class="sd">        (crashes, non-termination) if the inputs do contain infinities or NaNs.</span>
+
+<span class="sd">        Default: ``True``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    x : {(M,), (M, K)} dpnp.ndarray</span>
+<span class="sd">        Solution to the system</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This function synchronizes in order to validate array elements</span>
+<span class="sd">    when ``check_finite=True``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.linalg.lu_factor` : LU factorize a matrix.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; A = np.array([[2, 5, 8, 7], [5, 2, 2, 8], [7, 5, 6, 6], [5, 4, 4, 8]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1, 1, 1, 1])</span>
+<span class="sd">    &gt;&gt;&gt; lu, piv = np.linalg.lu_factor(A)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.linalg.lu_solve((lu, piv), b)</span>
+<span class="sd">    &gt;&gt;&gt; np.allclose(A @ x - b, np.zeros((4,)))</span>
+<span class="sd">    array(True)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="p">(</span><span class="n">lu</span><span class="p">,</span> <span class="n">piv</span><span class="p">)</span> <span class="o">=</span> <span class="n">lu_and_piv</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">lu</span><span class="p">,</span> <span class="n">piv</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">lu</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_lu_solve</span><span class="p">(</span>
+        <span class="n">lu</span><span class="p">,</span>
+        <span class="n">piv</span><span class="p">,</span>
+        <span class="n">b</span><span class="p">,</span>
+        <span class="n">trans</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span>
+        <span class="n">overwrite_b</span><span class="o">=</span><span class="n">overwrite_b</span><span class="p">,</span>
+        <span class="n">check_finite</span><span class="o">=</span><span class="n">check_finite</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 

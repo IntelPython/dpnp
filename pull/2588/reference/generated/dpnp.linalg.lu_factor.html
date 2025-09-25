@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.lu_factor &mdash; Data Parallel Extension for NumPy 0.19.0dev5+17.g4124aa8bc58 documentation</title>
+  <title>dpnp.linalg.lu_factor &mdash; Data Parallel Extension for NumPy 0.19.0dev6+19.g9d1232312c1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c31e2101"></script>
+      <script src="../../_static/documentation_options.js?v=c83334ff"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -130,7 +130,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.linalg.lu_factor">
 <span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">lu_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_finite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#lu_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.lu_factor" title="Link to this definition"></a></dt>
-<dd><p>Compute the pivoted LU decomposition of a matrix.</p>
+<dd><p>Compute the pivoted LU decomposition of <cite>a</cite> matrix.</p>
 <p>The decomposition is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">=</span> <span class="n">P</span> <span class="o">@</span> <span class="n">L</span> <span class="o">@</span> <span class="n">U</span>
 </pre></div>
@@ -168,6 +168,13 @@ Where <code class="docutils literal notranslate"><span class="pre">K</span> <spa
 <p class="admonition-title">Warning</p>
 <p>This function synchronizes in order to validate array elements
 when <code class="docutils literal notranslate"><span class="pre">check_finite=True</span></code>.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.linalg.lu_solve.html#dpnp.linalg.lu_solve" title="dpnp.linalg.lu_solve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.lu_solve</span></code></a></dt><dd><p>Solve an equation system using the LU factorization of <cite>a</cite> matrix.</p>
+</dd>
+</dl>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
