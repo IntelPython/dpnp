@@ -1852,16 +1852,27 @@ class TestUnique:
 
     # TODO: uncomment once numpy 2.4.0 release is published
     # @testing.with_requires("numpy>=2.4.0")
-    def test_1d_equal_nan_axis0(self):
+    @pytest.mark.parametrize("axis", [0, -1])
+    def test_1d_equal_nan_axis(self, axis):
         a = numpy.array([numpy.nan, 0, 0, numpy.nan])
         ia = dpnp.array(a)
 
-        result = dpnp.unique(ia, axis=0, equal_nan=True)
-        expected = numpy.unique(a, axis=0, equal_nan=True)
+        result = dpnp.unique(ia, axis=axis, equal_nan=True)
+        expected = numpy.unique(a, axis=axis, equal_nan=True)
         # TODO: remove when numpy#29372 is released
         if numpy_version() < "2.4.0":
             expected = numpy.array([0.0, numpy.nan])
         assert_array_equal(result, expected)
+
+    # TODO: uncomment once numpy 2.4.0 release is published
+    # @testing.with_requires("numpy>=2.4.0")
+    @pytest.mark.parametrize("equal_nan", [True, False])
+    # @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("xp", [dpnp])
+    def test_1d_axis_float_raises_typeerror(self, xp, equal_nan):
+        a = xp.array([xp.nan, 0, 0, xp.nan])
+        with pytest.raises(TypeError, match="integer argument expected"):
+            xp.unique(a, axis=0.0, equal_nan=equal_nan)
 
     @testing.with_requires("numpy>=2.0.1")
     @pytest.mark.parametrize("dt", get_float_complex_dtypes())

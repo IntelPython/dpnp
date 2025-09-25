@@ -4270,7 +4270,13 @@ def unique(
 
     """
 
-    if axis is None or (axis == 0 and ar.ndim == 1):
+    dpnp.check_supported_arrays_type(ar)
+    nd = ar.ndim
+
+    if axis is None or nd == 1:
+        if axis is not None:
+            normalize_axis_index(axis, nd)
+
         return _unique_1d(
             ar, return_index, return_inverse, return_counts, equal_nan
         )
@@ -4280,7 +4286,7 @@ def unique(
         ar = dpnp.moveaxis(ar, axis, 0)
     except AxisError:
         # this removes the "axis1" or "axis2" prefix from the error message
-        raise AxisError(axis, ar.ndim) from None
+        raise AxisError(axis, nd) from None
 
     # reshape input array into a contiguous 2D array
     orig_sh = ar.shape

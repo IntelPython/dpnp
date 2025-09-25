@@ -1,3 +1,4 @@
+import importlib.util
 from sys import platform
 
 import dpctl
@@ -486,6 +487,14 @@ def is_ptl(device=None):
     (which includes PTL-U, PTL-H and WCL), False otherwise.
     """
     return _get_dev_mask(device) in (0xB000, 0xFD00)
+
+
+def is_scipy_available():
+    """
+    Return True if SciPy is installed and can be found,
+    False otherwise.
+    """
+    return importlib.util.find_spec("scipy") is not None
 
 
 def is_tgllp_iris_xe(device=None):
