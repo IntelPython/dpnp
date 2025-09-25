@@ -29,7 +29,7 @@
 
 #include <sycl/sycl.hpp>
 
-namespace dpnp::kernels::erf
+namespace dpnp::kernels::erfs
 {
 template <typename OpT, typename ArgT, typename ResT>
 struct BaseFunctor
@@ -71,4 +71,4 @@ struct BaseFunctor
 
 MACRO_DEFINE_FUNCTOR(erf, Erf);
 MACRO_DEFINE_FUNCTOR(erfc, Erfc);
-} // namespace dpnp::kernels::erf
+} // namespace dpnp::kernels::erfs

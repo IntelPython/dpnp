@@ -32,7 +32,6 @@
 
 #include "erf_funcs.hpp"
 #include "kernels/elementwise_functions/erf.hpp"
-// #include "kernels/elementwise_functions/erfc.hpp"
 
 // utils extension header
 #include "ext/common.hpp"
@@ -95,7 +94,7 @@ using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
 #define MACRO_DEFINE_IMPL(__name__, __f_name__)                                \
                                                                                \
-    using dpnp::kernels::erf::__f_name__##Functor;                             \
+    using dpnp::kernels::erfs::__f_name__##Functor;                            \
                                                                                \
     template <typename argT, typename resT = argT, unsigned int vec_sz = 4,    \
               unsigned int n_vecs = 2, bool enable_sg_loadstore = true>        \
