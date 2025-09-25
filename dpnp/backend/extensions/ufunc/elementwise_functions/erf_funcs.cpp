@@ -212,6 +212,7 @@ static void populate(py::module_ m,
 
 MACRO_DEFINE_IMPL(erf, Erf);
 MACRO_DEFINE_IMPL(erfc, Erfc);
+MACRO_DEFINE_IMPL(erfcx, Erfcx);
 } // namespace impl
 
 void init_erf_funcs(py::module_ m)
@@ -231,5 +232,9 @@ void init_erf_funcs(py::module_ m)
     impl::populate<impl::ErfcContigFactory, impl::ErfcStridedFactory>(
         m, "_erfc", "", impl::erfc_contig_dispatch_vector,
         impl::erfc_strided_dispatch_vector);
+
+    impl::populate<impl::ErfcxContigFactory, impl::ErfcxStridedFactory>(
+        m, "_erfcx", "", impl::erfcx_contig_dispatch_vector,
+        impl::erfcx_strided_dispatch_vector);
 }
 } // namespace dpnp::extensions::ufunc

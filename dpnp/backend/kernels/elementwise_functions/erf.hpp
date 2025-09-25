@@ -32,6 +32,19 @@
 
 #include <sycl/sycl.hpp>
 
+/**
+ * Include <sycl/ext/intel/math.hpp> only when targeting to Intel devices.
+ */
+#if defined(__INTEL_LLVM_COMPILER)
+#define __SYCL_EXT_INTEL_MATH_SUPPORT
+#endif
+
+#if defined(__SYCL_EXT_INTEL_MATH_SUPPORT)
+#include <sycl/ext/intel/math.hpp>
+#else
+#include <cmath>
+#endif
+
 namespace dpnp::kernels::erfs
 {
 template <typename OpT, typename ArgT, typename ResT>
@@ -65,13 +78,20 @@ struct BaseFunctor
         template <typename Tp>                                                 \
         static Tp apply(const Tp &x)                                           \
         {                                                                      \
-            return sycl::__name__(x);                                          \
+            return __name__(x);                                                \
         }                                                                      \
     };                                                                         \
                                                                                \
     template <typename ArgT, typename ResT>                                    \
     using __f_name__##Functor = BaseFunctor<__f_name__##Op, ArgT, ResT>;
 
-MACRO_DEFINE_FUNCTOR(erf, Erf);
-MACRO_DEFINE_FUNCTOR(erfc, Erfc);
+MACRO_DEFINE_FUNCTOR(sycl::erf, Erf);
+MACRO_DEFINE_FUNCTOR(sycl::erfc, Erfc);
+MACRO_DEFINE_FUNCTOR(
+#if defined(__SYCL_EXT_INTEL_MATH_SUPPORT)
+    sycl::ext::intel::math::erfcx,
+#else
+    std::erfc,
+#endif
+    Erfcx);
 } // namespace dpnp::kernels::erfs
