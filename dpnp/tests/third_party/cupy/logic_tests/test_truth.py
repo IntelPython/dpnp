@@ -89,7 +89,6 @@ class TestAllAnyWithNaN:
         return out
 
 
-@pytest.mark.skip("isin() is not supported yet")
 @testing.parameterize(
     *testing.product(
         {
