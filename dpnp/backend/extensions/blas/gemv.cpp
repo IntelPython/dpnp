@@ -27,6 +27,9 @@
 
 #include <pybind11/pybind11.h>
 
+// utils extension header
+#include "ext/common.hpp"
+
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
@@ -35,13 +38,13 @@
 #include "gemv.hpp"
 #include "types_matrix.hpp"
 
-#include "dpnp_utils.hpp"
-
 namespace dpnp::extensions::blas
 {
 namespace mkl_blas = oneapi::mkl::blas;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
+
+using ext::common::init_dispatch_vector;
 
 typedef sycl::event (*gemv_impl_fn_ptr_t)(sycl::queue &,
                                           oneapi::mkl::transpose,
@@ -320,9 +323,7 @@ struct GemvContigFactory
 
 void init_gemv_dispatch_vector(void)
 {
-    dpctl_td_ns::DispatchVectorBuilder<gemv_impl_fn_ptr_t, GemvContigFactory,
-                                       dpctl_td_ns::num_types>
-        contig;
-    contig.populate_dispatch_vector(gemv_dispatch_vector);
+    init_dispatch_vector<gemv_impl_fn_ptr_t, GemvContigFactory>(
+        gemv_dispatch_vector);
 }
 } // namespace dpnp::extensions::blas

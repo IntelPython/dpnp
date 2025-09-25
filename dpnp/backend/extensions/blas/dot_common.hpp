@@ -165,13 +165,4 @@ std::pair<sycl::event, sycl::event>
 
     return std::make_pair(args_ev, dot_ev);
 }
-
-template <template <typename fnT, typename T> typename factoryT>
-void init_dot_dispatch_vector(dot_impl_fn_ptr_t dot_dispatch_vector[])
-{
-    dpctl_td_ns::DispatchVectorBuilder<dot_impl_fn_ptr_t, factoryT,
-                                       dpctl_td_ns::num_types>
-        contig;
-    contig.populate_dispatch_vector(dot_dispatch_vector);
-}
 } // namespace dpnp::extensions::blas::dot

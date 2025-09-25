@@ -30,6 +30,9 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+// utils extension header
+#include "ext/common.hpp"
+
 #include "dot.hpp"
 #include "dot_common.hpp"
 #include "dotc.hpp"
@@ -41,7 +44,9 @@
 namespace blas_ns = dpnp::extensions::blas;
 namespace py = pybind11;
 namespace dot_ns = blas_ns::dot;
+
 using dot_ns::dot_impl_fn_ptr_t;
+using ext::common::init_dispatch_vector;
 
 // populate dispatch vectors and tables
 void init_dispatch_vectors_tables(void)
@@ -64,7 +69,7 @@ PYBIND11_MODULE(_blas_impl, m)
     using event_vecT = std::vector<sycl::event>;
 
     {
-        dot_ns::init_dot_dispatch_vector<blas_ns::DotContigFactory>(
+        init_dispatch_vector<dot_impl_fn_ptr_t, blas_ns::DotContigFactory>(
             dot_dispatch_vector);
 
         auto dot_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
@@ -82,7 +87,7 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        dot_ns::init_dot_dispatch_vector<blas_ns::DotcContigFactory>(
+        init_dispatch_vector<dot_impl_fn_ptr_t, blas_ns::DotcContigFactory>(
             dotc_dispatch_vector);
 
         auto dotc_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
@@ -101,7 +106,7 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        dot_ns::init_dot_dispatch_vector<blas_ns::DotuContigFactory>(
+        init_dispatch_vector<dot_impl_fn_ptr_t, blas_ns::DotuContigFactory>(
             dotu_dispatch_vector);
 
         auto dotu_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,

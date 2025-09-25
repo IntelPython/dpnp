@@ -54,16 +54,6 @@
 #endif
 
 /**
- * Version of Intel MKL at which transition to OneMKL release 2023.2.0 occurs.
- *
- * @note with OneMKL=2023.1.0 the call of oneapi::mkl::vm::div() was dead
- * locked inside ~usm_wrapper_to_host()->{...; q_->wait_and_throw(); ...}
- */
-#ifndef __INTEL_MKL_2023_2_0_VERSION_REQUIRED
-#define __INTEL_MKL_2023_2_0_VERSION_REQUIRED 20230002L
-#endif
-
-/**
  * @defgroup BACKEND_UTILS Backend C++ library utilities
  * @{
  * This section describes utilities used in Backend API.

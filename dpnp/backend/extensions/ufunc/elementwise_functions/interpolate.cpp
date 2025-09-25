@@ -44,6 +44,7 @@
 
 #include "kernels/elementwise_functions/interpolate.hpp"
 
+// utils extension headers
 #include "ext/common.hpp"
 #include "ext/validation_utils.hpp"
 
@@ -67,6 +68,7 @@ namespace dpnp::extensions::ufunc
 
 namespace impl
 {
+using ext::common::init_dispatch_vector;
 
 template <typename T>
 using value_type_of_t = typename value_type_of<T>::type;
@@ -242,13 +244,10 @@ struct InterpolateFactory
     }
 };
 
-void init_interpolate_dispatch_vectors()
+static void init_interpolate_dispatch_vectors()
 {
-    using namespace td_ns;
-
-    DispatchVectorBuilder<interpolate_fn_ptr_t, InterpolateFactory, num_types>
-        dtb_interpolate;
-    dtb_interpolate.populate_dispatch_vector(interpolate_dispatch_vector);
+    init_dispatch_vector<interpolate_fn_ptr_t, InterpolateFactory>(
+        interpolate_dispatch_vector);
 }
 
 } // namespace impl
