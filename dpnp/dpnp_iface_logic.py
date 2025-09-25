@@ -1166,6 +1166,95 @@ def isfortran(a):
     return a.flags.fnc
 
 
+def isin(element, test_elements, assume_unique=False, invert=False):
+    """
+    Calculates ``element in test_elements``, broadcasting over `element` only.
+    Returns a boolean array of the same shape as `element` that is True
+    where an element of `element` is in `test_elements` and False otherwise.
+
+    Parameters
+    ----------
+    element : {array_like, dpnp.ndarray, usm_ndarray}
+        Input array.
+    test_elements : {array_like, dpnp.ndarray, usm_ndarray}
+        The values against which to test each value of `element`.
+        This argument is flattened if it is an array or array_like.
+        See notes for behavior with non-array-like parameters.
+    assume_unique : bool, optional
+        Ignored
+    invert : bool, optional
+        If True, the values in the returned array are inverted, as if
+        calculating `element not in test_elements`. Default is False.
+        ``dpnp.isin(a, b, invert=True)`` is equivalent to (but faster
+        than) ``dpnp.invert(dpnp.isin(a, b))``.
+
+
+    Returns
+    -------
+    isin : dpnp.ndarray of bool dtype
+        Has the same shape as `element`. The values `element[isin]`
+        are in `test_elements`.
+
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> element = 2*np.arange(4).reshape((2, 2))
+    >>> element
+    array([[0, 2],
+           [4, 6]])
+    >>> test_elements = [1, 2, 4, 8]
+    >>> mask = np.isin(element, test_elements)
+    >>> mask
+    array([[False,  True],
+           [ True, False]])
+    >>> element[mask]
+    array([2, 4])
+
+    The indices of the matched values can be obtained with `nonzero`:
+
+    >>> np.nonzero(mask)
+    (array([0, 1]), array([1, 0]))
+
+    The test can also be inverted:
+
+    >>> mask = np.isin(element, test_elements, invert=True)
+    >>> mask
+    array([[ True, False],
+           [False,  True]])
+    >>> element[mask]
+    array([0, 6])
+
+    """
+
+    dpnp.check_supported_arrays_type(element, test_elements, scalar_type=True)
+    if dpnp.isscalar(element):
+        usm_element = dpt.asarray(
+            element,
+            sycl_queue=test_elements.sycl_queue,
+            usm_type=test_elements.usm_type,
+        )
+        usm_test = dpnp.get_usm_ndarray(test_elements)
+    elif dpnp.isscalar(test_elements):
+        usm_test = dpt.asarray(
+            test_elements,
+            sycl_queue=element.sycl_queue,
+            usm_type=element.usm_type,
+        )
+        usm_element = dpnp.get_usm_ndarray(element)
+    else:
+        usm_element = dpnp.get_usm_ndarray(element)
+        usm_test = dpnp.get_usm_ndarray(test_elements)
+    return dpnp.get_result_array(
+        dpt.isin(
+            usm_element,
+            usm_test,
+            assume_unique=assume_unique,
+            invert=invert,
+        )
+    )
+
+
 _ISINF_DOCSTRING = """
 Tests each element :math:`x_i` of the input array `x` to determine if equal to
 positive or negative infinity.
