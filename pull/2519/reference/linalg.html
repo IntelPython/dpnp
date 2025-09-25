@@ -15,16 +15,17 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Linear algebra &mdash; Data Parallel Extension for NumPy 0.19.0dev4+12.gb93ab017c69 documentation</title>
+  <title>Linear algebra &mdash; Data Parallel Extension for NumPy 0.19.0dev6+9.g13cc33e7ac9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=d20f39b8"></script>
+      <script src="../_static/documentation_options.js?v=f6e29787"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -201,7 +202,7 @@
 <td><p>Compute the qr factorization of a matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.lu_factor.html#dpnp.linalg.lu_factor" title="dpnp.linalg.lu_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.lu_factor</span></code></a></p></td>
-<td><p>Compute the pivoted LU decomposition of a matrix.</p></td>
+<td><p>Compute the pivoted LU decomposition of <cite>a</cite> matrix.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.svd.html#dpnp.linalg.svd" title="dpnp.linalg.svd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.svd</span></code></a></p></td>
 <td><p>Singular Value Decomposition.</p></td>
@@ -278,13 +279,16 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.lstsq.html#dpnp.linalg.lstsq" title="dpnp.linalg.lstsq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.lstsq</span></code></a></p></td>
 <td><p>Return the least-squares solution to a linear matrix equation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.inv.html#dpnp.linalg.inv" title="dpnp.linalg.inv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.inv</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.lu_solve.html#dpnp.linalg.lu_solve" title="dpnp.linalg.lu_solve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.lu_solve</span></code></a></p></td>
+<td><p>Solve a linear system, <span class="math notranslate nohighlight">\(a x = b\)</span>, given the LU factorization of <cite>a</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.inv.html#dpnp.linalg.inv" title="dpnp.linalg.inv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.inv</span></code></a></p></td>
 <td><p>Compute the (multiplicative) inverse of a matrix.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.pinv.html#dpnp.linalg.pinv" title="dpnp.linalg.pinv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.pinv</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.pinv.html#dpnp.linalg.pinv" title="dpnp.linalg.pinv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.pinv</span></code></a></p></td>
 <td><p>Compute the (Moore-Penrose) pseudo-inverse of a matrix.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.tensorinv.html#dpnp.linalg.tensorinv" title="dpnp.linalg.tensorinv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.tensorinv</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.tensorinv.html#dpnp.linalg.tensorinv" title="dpnp.linalg.tensorinv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.tensorinv</span></code></a></p></td>
 <td><p>Compute the 'inverse' of an N-dimensional array.</p></td>
 </tr>
 </tbody>
