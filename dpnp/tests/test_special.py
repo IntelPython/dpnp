@@ -65,6 +65,8 @@ class TestCommon:
 
 class TestConsistency:
 
+    tol = 8 * dpnp.finfo(dpnp.default_float_type()).resolution
+
     def _check_variant_func(self, func, other_func, rtol, atol=0):
         # TODO: replace with dpnp.random.RandomState, once pareto is added
         rng = numpy.random.RandomState(1234)
@@ -77,19 +79,22 @@ class TestConsistency:
         mask = dpnp.isfinite(res)
         a = a[mask]
 
-        assert dpnp.allclose(func(a), res[mask], rtol=rtol, atol=atol)
+        x, y = func(a), res[mask]
+        if not dpnp.allclose(x, y, rtol=rtol, atol=atol):
+            # calling numpy testing func, because it's more verbose
+            assert_allclose(x.asnumpy(), y.asnumpy(), rtol=rtol, atol=atol)
 
     def test_erfc(self):
         self._check_variant_func(
             dpnp.special.erfc,
             lambda z: 1 - dpnp.special.erf(z),
-            rtol=1e-12,
-            atol=1e-14,
+            rtol=self.tol,
+            atol=self.tol,
         )
 
     def test_erfcx(self):
         self._check_variant_func(
             dpnp.special.erfcx,
             lambda z: dpnp.exp(z * z) * dpnp.special.erfc(z),
-            rtol=1e-12,
+            rtol=10 * self.tol,
         )
