@@ -2144,7 +2144,7 @@ class TestLuFactorBatched:
         a_np = self._make_nonsingular_nd_np(
             (5, 3, 3), dpnp.default_float_type(), "F"
         )
-        a_dp = dpnp.array(a_np, order=order)
+        a_dp = dpnp.array(a_np, order="F")
         a_stride = a_dp[::2]
         lu, piv = dpnp.linalg.lu_factor(a_stride, check_finite=False)
         for i in range(a_stride.shape[0]):
