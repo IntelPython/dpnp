@@ -1,0 +1,10 @@
+﻿
+
+dpnp.nanmax
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: nanmax
