@@ -1296,10 +1296,11 @@ def test_choose(usm_type_x, usm_type_ind):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
 
 
+@pytest.mark.parametrize("func", ["erf", "erfc"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
-def test_erf(usm_type):
+def test_erf_funcs(func, usm_type):
     x = dpnp.linspace(-3, 3, num=5, usm_type=usm_type)
-    y = dpnp.special.erf(x)
+    y = getattr(dpnp.special, func)(x)
     assert x.usm_type == y.usm_type == usm_type
 
 
@@ -1484,6 +1485,24 @@ class TestLinAlgebra:
         assert a.usm_type == usm_type
         for param in result:
             assert param.usm_type == a.usm_type
+
+    @pytest.mark.parametrize("usm_type_rhs", list_of_usm_types)
+    @pytest.mark.parametrize(
+        "b_data",
+        [[1.0, 2.0], numpy.empty((2, 0))],
+    )
+    def test_lu_solve(self, b_data, usm_type, usm_type_rhs):
+        a = dpnp.array([[1.0, 2.0], [3.0, 5.0]], usm_type=usm_type)
+        lu, piv = dpnp.linalg.lu_factor(a)
+        b = dpnp.array(b_data, usm_type=usm_type_rhs)
+
+        result = dpnp.linalg.lu_solve((lu, piv), b)
+
+        assert lu.usm_type == usm_type
+        assert b.usm_type == usm_type_rhs
+        assert result.usm_type == du.get_coerced_usm_type(
+            [usm_type, usm_type_rhs]
+        )
 
     @pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
     def test_matrix_power(self, n, usm_type):

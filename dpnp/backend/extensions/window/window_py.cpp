@@ -37,8 +37,13 @@
 #include "hanning.hpp"
 #include "kaiser.hpp"
 
+// utils extension header
+#include "ext/common.hpp"
+
 namespace window_ns = dpnp::extensions::window;
 namespace py = pybind11;
+
+using ext::common::init_dispatch_vector;
 using window_ns::window_fn_ptr_t;
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
@@ -54,8 +59,8 @@ PYBIND11_MODULE(_window_impl, m)
     using event_vecT = std::vector<sycl::event>;
 
     {
-        window_ns::init_window_dispatch_vectors<
-            window_ns::window_fn_ptr_t, window_ns::kernels::BartlettFactory>(
+        init_dispatch_vector<window_ns::window_fn_ptr_t,
+                             window_ns::kernels::BartlettFactory>(
             bartlett_dispatch_vector);
 
         auto bartlett_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
@@ -70,8 +75,8 @@ PYBIND11_MODULE(_window_impl, m)
     }
 
     {
-        window_ns::init_window_dispatch_vectors<
-            window_ns::window_fn_ptr_t, window_ns::kernels::BlackmanFactory>(
+        init_dispatch_vector<window_ns::window_fn_ptr_t,
+                             window_ns::kernels::BlackmanFactory>(
             blackman_dispatch_vector);
 
         auto blackman_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
@@ -86,8 +91,8 @@ PYBIND11_MODULE(_window_impl, m)
     }
 
     {
-        window_ns::init_window_dispatch_vectors<
-            window_ns::window_fn_ptr_t, window_ns::kernels::HammingFactory>(
+        init_dispatch_vector<window_ns::window_fn_ptr_t,
+                             window_ns::kernels::HammingFactory>(
             hamming_dispatch_vector);
 
         auto hamming_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
@@ -102,8 +107,8 @@ PYBIND11_MODULE(_window_impl, m)
     }
 
     {
-        window_ns::init_window_dispatch_vectors<
-            window_ns::window_fn_ptr_t, window_ns::kernels::HanningFactory>(
+        init_dispatch_vector<window_ns::window_fn_ptr_t,
+                             window_ns::kernels::HanningFactory>(
             hanning_dispatch_vector);
 
         auto hanning_pyapi = [&](sycl::queue &exec_q, const arrayT &result,

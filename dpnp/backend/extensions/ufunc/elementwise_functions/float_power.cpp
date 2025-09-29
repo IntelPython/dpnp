@@ -33,6 +33,9 @@
 
 #include "float_power.hpp"
 
+// utils extension header
+#include "ext/common.hpp"
+
 // include a local copy of elementwise common header from dpctl tensor:
 // dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
 // TODO: replace by including dpctl header once available
@@ -49,6 +52,8 @@ namespace py_int = dpnp::extensions::py_internal;
 namespace impl
 {
 namespace td_ns = dpctl::tensor::type_dispatch;
+
+using ext::common::init_dispatch_table;
 
 // Supports only float and complex types
 template <typename T1, typename T2>
@@ -82,10 +87,9 @@ struct TypeMapFactory
     }
 };
 
-void populate_float_power_dispatch_tables(void)
+static void populate_float_power_dispatch_tables(void)
 {
-    td_ns::DispatchTableBuilder<int, TypeMapFactory, td_ns::num_types> dvb;
-    dvb.populate_dispatch_table(float_power_output_typeid_table);
+    init_dispatch_table<int, TypeMapFactory>(float_power_output_typeid_table);
 }
 } // namespace impl
 

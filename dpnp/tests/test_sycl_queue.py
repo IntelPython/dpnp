@@ -9,6 +9,7 @@ from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_array_equal, assert_raises
 
 import dpnp
+import dpnp.linalg
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 
@@ -1487,11 +1488,12 @@ def test_interp(device, left, right, period):
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
+@pytest.mark.parametrize("func", ["erf", "erfc"])
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-def test_erf(device):
+def test_erf_funcs(func, device):
     x = dpnp.linspace(-3, 3, num=5, device=device)
 
-    result = dpnp.special.erf(x)
+    result = getattr(dpnp.special, func)(x)
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
@@ -1606,6 +1608,20 @@ class TestLinAlgebra:
         for param in result:
             param_queue = param.sycl_queue
             assert_sycl_queue_equal(param_queue, a.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "b_data",
+        [[1.0, 2.0], numpy.empty((2, 0))],
+    )
+    def test_lu_solve(self, b_data, device):
+        a = dpnp.array([[1.0, 2.0], [3.0, 5.0]], device=device)
+        lu, piv = dpnp.linalg.lu_factor(a)
+        b = dpnp.array(b_data, device=device)
+
+        result = dpnp.linalg.lu_solve((lu, piv), b)
+
+        assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, b.sycl_queue)
 
     @pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
     def test_matrix_power(self, n, device):

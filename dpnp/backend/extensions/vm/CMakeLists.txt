@@ -42,7 +42,7 @@ if(NOT _use_onemath)
         ${CMAKE_CURRENT_SOURCE_DIR}/cos.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cosh.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/div.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/erf.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/erf_funcs.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/exp.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/exp2.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/expm1.cpp
@@ -95,8 +95,8 @@ endif()
 
 set_target_properties(${python_module_name} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
-target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
+target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../)
+target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../common)
 
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIR})
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})

@@ -367,6 +367,7 @@ class ArithmeticBinaryBase:
         return y
 
 
+@testing.with_requires("numpy>=2.1.0")
 @testing.parameterize(
     *(
         testing.product(
@@ -409,6 +410,7 @@ class TestArithmeticBinary(ArithmeticBinaryBase):
         self.check_binary()
 
 
+@testing.with_requires("numpy>=2.1.0")
 @testing.parameterize(
     *(
         testing.product(
@@ -487,7 +489,7 @@ class TestArithmeticBinary2(ArithmeticBinaryBase):
         self.check_binary()
 
 
-@testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.1.0")
 class TestArithmeticBinary3(ArithmeticBinaryBase):
 
     @pytest.mark.parametrize(

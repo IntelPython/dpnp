@@ -27,6 +27,9 @@
 
 #include <pybind11/pybind11.h>
 
+// utils extension header
+#include "ext/common.hpp"
+
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/sycl_alloc_utils.hpp"
@@ -35,13 +38,13 @@
 #include "geqrf.hpp"
 #include "types_matrix.hpp"
 
-#include "dpnp_utils.hpp"
-
 namespace dpnp::extensions::lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
+
+using ext::common::init_dispatch_vector;
 
 typedef sycl::event (*geqrf_impl_fn_ptr_t)(sycl::queue &,
                                            const std::int64_t,
@@ -250,9 +253,7 @@ struct GeqrfContigFactory
 
 void init_geqrf_dispatch_vector(void)
 {
-    dpctl_td_ns::DispatchVectorBuilder<geqrf_impl_fn_ptr_t, GeqrfContigFactory,
-                                       dpctl_td_ns::num_types>
-        contig;
-    contig.populate_dispatch_vector(geqrf_dispatch_vector);
+    init_dispatch_vector<geqrf_impl_fn_ptr_t, GeqrfContigFactory>(
+        geqrf_dispatch_vector);
 }
 } // namespace dpnp::extensions::lapack

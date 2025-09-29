@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `dpnp.ndarray.__contains__` method [#2534](https://github.com/IntelPython/dpnp/pull/2534)
 * Added implementation of `dpnp.linalg.lu_factor` (SciPy-compatible) [#2557](https://github.com/IntelPython/dpnp/pull/2557), [#2565](https://github.com/IntelPython/dpnp/pull/2565)
 * Added implementation of `dpnp.piecewise` [#2550](https://github.com/IntelPython/dpnp/pull/2550)
+* Added implementation of `dpnp.linalg.lu_solve` for 2D inputs (SciPy-compatible) [#2575](https://github.com/IntelPython/dpnp/pull/2575)
+* Added implementation of `dpnp.special.erfc` [#2588](https://github.com/IntelPython/dpnp/pull/2588)
 
 ### Changed
 
@@ -43,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Extended `dpnp.pad` to support `pad_width` keyword as a dictionary [#2535](https://github.com/IntelPython/dpnp/pull/2535)
 * Redesigned `dpnp.erf` function through pybind11 extension of OneMKL call or dedicated kernel in `ufunc` namespace [#2551](https://github.com/IntelPython/dpnp/pull/2551)
 * Improved performance of batched implementation of `dpnp.linalg.det` and `dpnp.linalg.slogdet` [#2572](https://github.com/IntelPython/dpnp/pull/2572)
+* Improved documentations of `dpnp.tril_indices` and `dpnp.triu_indices` to clarify the returned order of indices [#2586](https://github.com/IntelPython/dpnp/pull/2586)
+* `dpnp` uses pybind11 3.0.1 [#2594](https://github.com/IntelPython/dpnp/pull/2594)
 
 ### Deprecated
 
@@ -57,10 +61,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Updated `pre-commit` GitHub workflow to pass `no-commit-to-branch` check [#2501](https://github.com/IntelPython/dpnp/pull/2501)
 * Updated the math formulas in summary of `dpnp.matvec` and `dpnp.vecmat` to correct a typo [#2503](https://github.com/IntelPython/dpnp/pull/2503)
 * Avoided negating unsigned integers in ceil division used in `dpnp.resize` implementation [#2508](https://github.com/IntelPython/dpnp/pull/2508)
-* Fixed `dpnp.unique` with 1d input array and `axis=0`, `equal_nan=True` keywords passed where the produced result doesn't collapse the NaNs [#2530](https://github.com/IntelPython/dpnp/pull/2530)
+* Fixed `dpnp.unique` with 1d input array and `axis=0`, `equal_nan=True` keywords passed where the produced result doesn't collapse the NaNs [#2530](https://github.com/IntelPython/dpnp/pull/2530), [#2587](https://github.com/IntelPython/dpnp/pull/2587)
 * Resolved issue when `dpnp.ndarray` constructor is called with `dpnp.ndarray.data` as `buffer` keyword [#2533](https://github.com/IntelPython/dpnp/pull/2533)
 * Fixed `dpnp.linalg.cond` to always return a real dtype [#2547](https://github.com/IntelPython/dpnp/pull/2547)
 * Resolved the issue in `dpnp.random` functions to allow any value of `size` where each element is castable to `Py_ssize_t` type [#2578](https://github.com/IntelPython/dpnp/pull/2578)
+* Resolved `conda build --test` issue in python 3.9 environment [#2583](https://github.com/IntelPython/dpnp/pull/2583)
+* Fixed tests for the rounding functions to depend on minimum required numpy version [#2589](https://github.com/IntelPython/dpnp/pull/2589)
+* Fixed tests for the ufuncs to depend on minimum required numpy version [#2590](https://github.com/IntelPython/dpnp/pull/2590)
+* Added missing permission definition in `Autoupdate pre-commit` GitHub workflow [#2591](https://github.com/IntelPython/dpnp/pull/2591)
 
 ### Security
 

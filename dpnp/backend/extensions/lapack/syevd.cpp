@@ -30,6 +30,9 @@
 #include "evd_common.hpp"
 #include "syevd.hpp"
 
+// utils extension header
+#include "ext/common.hpp"
+
 // dpctl tensor headers
 #include "utils/type_utils.hpp"
 
@@ -37,6 +40,8 @@ namespace dpnp::extensions::lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace type_utils = dpctl::tensor::type_utils;
+
+using ext::common::init_dispatch_table;
 
 template <typename T, typename RealT>
 static sycl::event syevd_impl(sycl::queue &exec_q,
@@ -137,7 +142,7 @@ void init_syevd(py::module_ m)
                                                  [dpctl_td_ns::num_types];
 
     {
-        evd::init_evd_dispatch_table<evd_impl_fn_ptr_t, SyevdContigFactory>(
+        init_dispatch_table<evd_impl_fn_ptr_t, SyevdContigFactory>(
             syevd_dispatch_table);
 
         auto syevd_pyapi = [&](sycl::queue &exec_q, const std::int8_t jobz,

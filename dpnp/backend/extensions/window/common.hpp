@@ -30,6 +30,8 @@
 #include <sycl/sycl.hpp>
 
 #include "dpctl4pybind11.hpp"
+
+// dpctl tensor headers
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -127,18 +129,4 @@ inline std::pair<sycl::event, sycl::event>
 
     return std::make_pair(args_ev, window_ev);
 }
-
-template <typename funcPtrT,
-          template <typename fnT, typename T>
-          typename factoryT>
-void init_window_dispatch_vectors(funcPtrT window_dispatch_vector[])
-{
-    dpctl_td_ns::DispatchVectorBuilder<funcPtrT, factoryT,
-                                       dpctl_td_ns::num_types>
-        contig;
-    contig.populate_dispatch_vector(window_dispatch_vector);
-
-    return;
-}
-
 } // namespace dpnp::extensions::window

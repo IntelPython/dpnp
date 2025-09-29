@@ -30,10 +30,13 @@
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
+// dpctl tensor headers
 #include "utils/math_utils.hpp"
+#include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
 namespace type_utils = dpctl::tensor::type_utils;
+namespace type_dispatch = dpctl::tensor::type_dispatch;
 
 namespace ext::common
 {
@@ -206,6 +209,25 @@ sycl::nd_range<1>
 // headers of dpctl.
 pybind11::dtype dtype_from_typenum(int dst_typenum);
 
+template <typename dispatchT,
+          template <typename fnT, typename T>
+          typename factoryT,
+          int _num_types = type_dispatch::num_types>
+inline void init_dispatch_vector(dispatchT dispatch_vector[])
+{
+    type_dispatch::DispatchVectorBuilder<dispatchT, factoryT, _num_types> dvb;
+    dvb.populate_dispatch_vector(dispatch_vector);
+}
+
+template <typename dispatchT,
+          template <typename fnT, typename D, typename S>
+          typename factoryT,
+          int _num_types = type_dispatch::num_types>
+inline void init_dispatch_table(dispatchT dispatch_table[][_num_types])
+{
+    type_dispatch::DispatchTableBuilder<dispatchT, factoryT, _num_types> dtb;
+    dtb.populate_dispatch_table(dispatch_table);
+}
 } // namespace ext::common
 
 #include "ext/details/common_internal.hpp"

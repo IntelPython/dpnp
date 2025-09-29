@@ -31,6 +31,9 @@
 #include "evd_batch_common.hpp"
 #include "syevd_batch.hpp"
 
+// utils extension header
+#include "ext/common.hpp"
+
 // dpctl tensor headers
 #include "utils/type_utils.hpp"
 
@@ -38,6 +41,8 @@ namespace dpnp::extensions::lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace type_utils = dpctl::tensor::type_utils;
+
+using ext::common::init_dispatch_table;
 
 template <typename T, typename RealT>
 static sycl::event syevd_batch_impl(sycl::queue &exec_q,
@@ -175,8 +180,7 @@ void init_syevd_batch(py::module_ m)
                                   [dpctl_td_ns::num_types];
 
     {
-        evd::init_evd_dispatch_table<evd_batch_impl_fn_ptr_t,
-                                     SyevdBatchContigFactory>(
+        init_dispatch_table<evd_batch_impl_fn_ptr_t, SyevdBatchContigFactory>(
             syevd_batch_dispatch_table);
 
         auto syevd_batch_pyapi =
