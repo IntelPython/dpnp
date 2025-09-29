@@ -49,6 +49,8 @@ jobs:
             test-packages: "pytest scipy"
           - python: 3.12
             test-packages: "pytest scipy"
+          - python: 3.13
+            test-packages: "pytest scipy"
 
     steps:
       - name: Cancel Previous Runs
