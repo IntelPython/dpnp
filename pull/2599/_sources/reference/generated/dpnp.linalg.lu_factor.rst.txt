@@ -1,0 +1,10 @@
+﻿
+
+dpnp.linalg.lu\_factor
+======================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: lu_factor
