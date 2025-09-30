@@ -6,9 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.19.0] - 2025-MM-DD
 
-This release introduces a set of new `dpnp.ndarray` methods and SciPy-compatible functions to improve CuPy compatibility..
+This release introduces a set of new `dpnp.ndarray` methods and SciPy-compatible functions to improve CuPy compatibility.
 It also enhances the performance of existing functions and improves documentation completeness.
-Additionally, it extend support for building `dpnp` from the source for NVIDIA GPUs, with optional architecture selection.
+Additionally, it extends support for building `dpnp` from the source for NVIDIA GPUs, with optional architecture selection.
 This release is compatible with NumPy 2.3.3.
 
 ### Added
