@@ -65,6 +65,7 @@ class TestCommon:
 
 class TestConsistency:
 
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     def test_erfc(self):
         # TODO: replace with dpnp.random.RandomState, once pareto is added
         rng = numpy.random.RandomState(1234)
