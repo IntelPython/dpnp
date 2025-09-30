@@ -5,7 +5,6 @@ from numpy.testing import assert_array_equal
 import dpnp
 
 from .helper import (
-    assert_dtype_allclose,
     get_abs_array,
     get_integer_dtypes,
     numpy_version,
