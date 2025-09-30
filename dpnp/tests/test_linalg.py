@@ -2054,9 +2054,8 @@ class TestLuFactorBatched:
                 B[i, i] = A.dtype.type(off + 1.0)
 
         A = A3.reshape(shape)
-        # A3.reshape returns an array in C order by default
-        if order != "C":
-            A = numpy.array(A, order=order)
+        # Ensure reshapes did not break memory order
+        A = numpy.array(A, order=order)
         return A
 
     @staticmethod
