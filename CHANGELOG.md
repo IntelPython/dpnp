@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.19.0] - 2025-MM-DD
 
+This release introduces a set of new `dpnp.ndarray` methods and SciPy-compatible functions to improve CuPy compatibility.
+It also enhances the performance of existing functions and improves documentation completeness.
+Additionally, it extends support for building `dpnp` from the source for NVIDIA GPUs, with optional architecture selection.
+This release is compatible with NumPy 2.3.3.
+
 ### Added
 
 * Added `--target-cuda[=ARCH]` option to replace the deprecated `--target=cuda`, allowing users to build for CUDA devices with optional architecture selection using [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/nvidia/home/) [#2478](https://github.com/IntelPython/dpnp/pull/2478)
