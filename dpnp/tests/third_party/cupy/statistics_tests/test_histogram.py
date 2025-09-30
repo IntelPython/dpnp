@@ -1,6 +1,8 @@
 import sys
+import time
 import unittest
 
+import dpctl
 import numpy
 import pytest
 
@@ -42,6 +44,24 @@ def for_signed_dtypes_bincount(name="dtype"):
 
 def for_all_dtypes_combination_bincount(names):
     return testing.for_dtypes_combination(_all_types, names=names)
+
+
+# TODO: comments
+_dev = dpctl.select_default_device()
+
+
+@pytest.fixture(autouse=True)
+def setup_each():
+    print("\n[Setup] Run before each test")
+    start_time = time.time()
+    free_mem = dpctl.utils.intel_device_info(_dev).get("free_memory", None)
+    if free_mem:
+        print(f"Global memory available: {free_mem}")
+    yield
+    end_time = time.time()
+    duration = end_time - start_time
+    print(f"\n[Test Duration] {duration:.4f} seconds")
+    print("[Teardown] Run after each test")
 
 
 class TestHistogram(unittest.TestCase):
