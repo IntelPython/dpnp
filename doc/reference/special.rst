@@ -15,6 +15,5 @@ Error function and Fresnel integrals
    erf
    erfc
    erfcx
-   erfi
    erfinv
    erfcinv

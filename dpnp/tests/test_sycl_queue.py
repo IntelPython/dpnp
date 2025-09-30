@@ -1488,7 +1488,7 @@ def test_interp(device, left, right, period):
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize("func", ["erf", "erfc"])
+@pytest.mark.parametrize("func", ["erf", "erfc", "erfcx"])
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_erf_funcs(func, device):
     x = dpnp.linspace(-3, 3, num=5, device=device)

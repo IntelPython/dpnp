@@ -27,7 +27,6 @@ class _TestBase:
     def test_erfc(self):
         self.check_unary("erfc")
 
-    @pytest.mark.skip("erfcx() is not supported yet")
     @testing.with_requires("scipy>=1.16.0")
     def test_erfcx(self):
         self.check_unary("erfcx")
