@@ -1892,7 +1892,7 @@ class TestLuFactor:
         a_np = generate_random_numpy_array(shape, dtype, order)
         a_dp = dpnp.array(a_np, order=order)
 
-        lu, piv = dpnp.linalg.lu_factor(
+        lu, piv = dpnp.scipy.linalg.lu_factor(
             a_dp, check_finite=False, overwrite_a=False
         )
 
@@ -1916,7 +1916,7 @@ class TestLuFactor:
     def test_overwrite_inplace(self, dtype):
         a_dp = dpnp.array([[4, 3], [6, 3]], dtype=dtype, order="F")
         a_dp_orig = a_dp.copy()
-        lu, piv = dpnp.linalg.lu_factor(
+        lu, piv = dpnp.scipy.linalg.lu_factor(
             a_dp, overwrite_a=True, check_finite=False
         )
 
@@ -1934,7 +1934,7 @@ class TestLuFactor:
     def test_overwrite_copy(self, dtype):
         a_dp = dpnp.array([[4, 3], [6, 3]], dtype=dtype, order="C")
         a_dp_orig = a_dp.copy()
-        lu, piv = dpnp.linalg.lu_factor(
+        lu, piv = dpnp.scipy.linalg.lu_factor(
             a_dp, overwrite_a=True, check_finite=False
         )
 
@@ -1961,7 +1961,7 @@ class TestLuFactor:
         a2.flags["WRITABLE"] = False
 
         for a_dp, a_orig in zip((a1, a2), (a1_orig, a2_orig)):
-            lu, piv = dpnp.linalg.lu_factor(
+            lu, piv = dpnp.scipy.linalg.lu_factor(
                 a_dp, overwrite_a=True, check_finite=False
             )
 
@@ -1979,7 +1979,7 @@ class TestLuFactor:
     @pytest.mark.parametrize("shape", [(0, 0), (0, 2), (2, 0)])
     def test_empty_inputs(self, shape):
         a_dp = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
         assert lu.shape == shape
         assert piv.shape == (min(shape),)
 
@@ -2000,7 +2000,7 @@ class TestLuFactor:
         a_np = base[sl]
         a_dp = dpnp.array(a_np)
 
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
         L, U = self._split_lu(lu, *a_dp.shape)
         PA = self._apply_pivots_rows(a_dp, piv)
         LU = L @ U
@@ -2010,13 +2010,13 @@ class TestLuFactor:
     def test_singular_matrix(self):
         a_dp = dpnp.array([[1.0, 2.0], [2.0, 4.0]])
         with pytest.warns(RuntimeWarning, match="Singular matrix"):
-            dpnp.linalg.lu_factor(a_dp, check_finite=False)
+            dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
 
     @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
     def test_check_finite_raises(self, bad):
         a_dp = dpnp.array([[1.0, 2.0], [3.0, bad]], order="F")
         assert_raises(
-            ValueError, dpnp.linalg.lu_factor, a_dp, check_finite=True
+            ValueError, dpnp.scipy.linalg.lu_factor, a_dp, check_finite=True
         )
 
 
@@ -2056,7 +2056,7 @@ class TestLuFactorBatched:
         a_np = generate_random_numpy_array(shape, dtype, order)
         a_dp = dpnp.array(a_np, order=order)
 
-        lu, piv = dpnp.linalg.lu_factor(
+        lu, piv = dpnp.scipy.linalg.lu_factor(
             a_dp, check_finite=False, overwrite_a=False
         )
 
@@ -2079,7 +2079,7 @@ class TestLuFactorBatched:
     def test_overwrite(self, dtype, order):
         a_dp = dpnp.arange(2 * 2 * 3, dtype=dtype).reshape(3, 2, 2, order=order)
         a_dp_orig = a_dp.copy()
-        lu, piv = dpnp.linalg.lu_factor(
+        lu, piv = dpnp.scipy.linalg.lu_factor(
             a_dp, overwrite_a=True, check_finite=False
         )
 
@@ -2102,7 +2102,7 @@ class TestLuFactorBatched:
     def test_empty_inputs(self, shape):
         a = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
 
-        lu, piv = dpnp.linalg.lu_factor(a, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a, check_finite=False)
         assert lu.shape == shape
         m, n = shape[-2:]
         assert piv.shape == (*shape[:-2], min(m, n))
@@ -2115,7 +2115,7 @@ class TestLuFactorBatched:
             + 0.1
         )
         a_stride = a[::2]
-        lu, piv = dpnp.linalg.lu_factor(a_stride, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_stride, check_finite=False)
         for i in range(a_stride.shape[0]):
             L, U = self._split_lu(lu[i], 3, 3)
             PA = self._apply_pivots_rows(
@@ -2129,12 +2129,14 @@ class TestLuFactorBatched:
         a[1] = dpnp.eye(2)
         a[2] = dpnp.array([[1.0, 1.0], [1.0, 1.0]])
         with pytest.warns(RuntimeWarning, match="Singular matrix"):
-            dpnp.linalg.lu_factor(a, check_finite=False)
+            dpnp.scipy.linalg.lu_factor(a, check_finite=False)
 
     def test_check_finite_raises(self):
         a = dpnp.ones((2, 3, 3), dtype=dpnp.default_float_type(), order="F")
         a[1, 0, 0] = dpnp.nan
-        assert_raises(ValueError, dpnp.linalg.lu_factor, a, check_finite=True)
+        assert_raises(
+            ValueError, dpnp.scipy.linalg.lu_factor, a, check_finite=True
+        )
 
 
 class TestLuSolve:
@@ -2165,8 +2167,8 @@ class TestLuSolve:
             b_np = generate_random_numpy_array((n, rhs_cols), dtype, order)
         b_dp = dpnp.array(b_np, order=order)
 
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
-        x = dpnp.linalg.lu_solve(
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve(
             (lu, piv), b_dp, trans=0, overwrite_b=False, check_finite=False
         )
 
@@ -2182,8 +2184,8 @@ class TestLuSolve:
         a_dp = dpnp.array(a_np, order="F")
         b_dp = dpnp.array(generate_random_numpy_array((n, 2), dtype, "F"))
 
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
-        x = dpnp.linalg.lu_solve(
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve(
             (lu, piv), b_dp, trans=trans, overwrite_b=False, check_finite=False
         )
 
@@ -2202,10 +2204,10 @@ class TestLuSolve:
         b_dp = dpnp.array([1, 0], dtype=dtype, order="F")
         b_orig = b_dp.copy()
 
-        lu, piv = dpnp.linalg.lu_factor(
+        lu, piv = dpnp.scipy.linalg.lu_factor(
             a_dp, overwrite_a=False, check_finite=False
         )
-        x = dpnp.linalg.lu_solve(
+        x = dpnp.scipy.linalg.lu_solve(
             (lu, piv), b_dp, trans=0, overwrite_b=True, check_finite=False
         )
 
@@ -2216,11 +2218,11 @@ class TestLuSolve:
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_overwrite_copy_special(self, dtype):
         a_dp = dpnp.array([[4, 3], [6, 3]], dtype=dtype, order="F")
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
 
         # F-contig but dtype != res_type
         b1 = dpnp.array([1, 0], dtype=dpnp.int32, order="F")
-        x1 = dpnp.linalg.lu_solve(
+        x1 = dpnp.scipy.linalg.lu_solve(
             (lu, piv), b1, overwrite_b=True, check_finite=False
         )
         assert x1 is not b1
@@ -2229,7 +2231,7 @@ class TestLuSolve:
         # F-contig, match dtype but read-only input
         b2 = dpnp.array([1, 0], dtype=dtype, order="F")
         b2.flags["WRITABLE"] = False
-        x2 = dpnp.linalg.lu_solve(
+        x2 = dpnp.scipy.linalg.lu_solve(
             (lu, piv), b2, overwrite_b=True, check_finite=False
         )
         assert x2 is not b2
@@ -2256,8 +2258,8 @@ class TestLuSolve:
         b_np = generate_random_numpy_array((3,), dtype_b, order="F")
         b_dp = dpnp.array(b_np, order="F")
 
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
-        x = dpnp.linalg.lu_solve((lu, piv), b_dp, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve((lu, piv), b_dp, check_finite=False)
         assert dpnp.allclose(
             a_dp @ x, b_dp.astype(x.dtype, copy=False), rtol=1e-5, atol=1e-5
         )
@@ -2277,8 +2279,8 @@ class TestLuSolve:
         )
         b_dp = rhs_full[:, ::2][:, :3]
 
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
-        x = dpnp.linalg.lu_solve(
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve(
             (lu, piv), b_dp, overwrite_b=False, check_finite=False
         )
 
@@ -2304,8 +2306,8 @@ class TestLuSolve:
         b_np = generate_random_numpy_array(b_shape, dtype, order="F")
         b_dp = dpnp.array(b_np, order="F")
 
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
-        x = dpnp.linalg.lu_solve(
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve(
             (lu, piv), b_dp, overwrite_b=False, check_finite=False
         )
 
@@ -2328,20 +2330,20 @@ class TestLuSolve:
             b_shape = (n, rhs_cols)
         b_dp = dpnp.empty(b_shape, dtype=dpnp.default_float_type(), order="F")
 
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
-        x = dpnp.linalg.lu_solve((lu, piv), b_dp, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve((lu, piv), b_dp, check_finite=False)
 
         assert x.shape == b_shape
 
     @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
     def test_check_finite_raises(self, bad):
         a_dp = dpnp.array([[1.0, 0.0], [0.0, 1.0]], order="F")
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
 
         b_bad = dpnp.array([1.0, bad], order="F")
         assert_raises(
             ValueError,
-            dpnp.linalg.lu_solve,
+            dpnp.scipy.linalg.lu_solve,
             (lu, piv),
             b_bad,
             check_finite=True,
