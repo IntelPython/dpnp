@@ -1876,6 +1876,16 @@ class TestLuFactor:
         return A_dp[rows]
 
     @staticmethod
+    def _make_nonsingular_np(shape, dtype, order):
+        A = generate_random_numpy_array(shape, dtype, order)
+        m, n = shape
+        k = min(m, n)
+        for i in range(k):
+            off = numpy.sum(numpy.abs(A[i, :n])) - numpy.abs(A[i, i])
+            A[i, i] = A.dtype.type(off + 1.0)
+        return A
+
+    @staticmethod
     def _split_lu(lu, m, n):
         L = dpnp.tril(lu, k=-1)
         dpnp.fill_diagonal(L, 1)
@@ -1889,7 +1899,7 @@ class TestLuFactor:
     @pytest.mark.parametrize("order", ["C", "F"])
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_lu_factor(self, shape, order, dtype):
-        a_np = generate_random_numpy_array(shape, dtype, order)
+        a_np = self._make_nonsingular_np(shape, dtype, order)
         a_dp = dpnp.array(a_np, order=order)
 
         lu, piv = dpnp.scipy.linalg.lu_factor(
@@ -1991,12 +2001,7 @@ class TestLuFactor:
         ],
     )
     def test_strided(self, sl):
-        base = (
-            numpy.arange(7 * 7, dtype=dpnp.default_float_type()).reshape(
-                7, 7, order="F"
-            )
-            + 0.1
-        )
+        base = self._make_nonsingular_np((7, 7), dpnp.default_float_type(), "F")
         a_np = base[sl]
         a_dp = dpnp.array(a_np)
 
@@ -2038,6 +2043,22 @@ class TestLuFactorBatched:
         return A_dp[rows]
 
     @staticmethod
+    def _make_nonsingular_nd_np(shape, dtype, order):
+        A = generate_random_numpy_array(shape, dtype, order)
+        m, n = shape[-2], shape[-1]
+        k = min(m, n)
+        A3 = A.reshape((-1, m, n))
+        for B in A3:
+            for i in range(k):
+                off = numpy.sum(numpy.abs(B[i, :n])) - numpy.abs(B[i, i])
+                B[i, i] = A.dtype.type(off + 1.0)
+
+        A = A3.reshape(shape)
+        # Ensure reshapes did not break memory order
+        A = numpy.array(A, order=order)
+        return A
+
+    @staticmethod
     def _split_lu(lu, m, n):
         L = dpnp.tril(lu, k=-1)
         dpnp.fill_diagonal(L, 1)
@@ -2053,7 +2074,7 @@ class TestLuFactorBatched:
     @pytest.mark.parametrize("order", ["C", "F"])
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_lu_factor_batched(self, shape, order, dtype):
-        a_np = generate_random_numpy_array(shape, dtype, order)
+        a_np = self._make_nonsingular_nd_np(shape, dtype, order)
         a_dp = dpnp.array(a_np, order=order)
 
         lu, piv = dpnp.scipy.linalg.lu_factor(
@@ -2077,7 +2098,8 @@ class TestLuFactorBatched:
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_overwrite(self, dtype, order):
-        a_dp = dpnp.arange(2 * 2 * 3, dtype=dtype).reshape(3, 2, 2, order=order)
+        a_np = self._make_nonsingular_nd_np((3, 2, 2), dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
         a_dp_orig = a_dp.copy()
         lu, piv = dpnp.scipy.linalg.lu_factor(
             a_dp, overwrite_a=True, check_finite=False
@@ -2108,14 +2130,12 @@ class TestLuFactorBatched:
         assert piv.shape == (*shape[:-2], min(m, n))
 
     def test_strided(self):
-        a = (
-            dpnp.arange(5 * 3 * 3, dtype=dpnp.default_float_type()).reshape(
-                5, 3, 3, order="F"
-            )
-            + 0.1
+        a_np = self._make_nonsingular_nd_np(
+            (5, 3, 3), dpnp.default_float_type(), "F"
         )
-        a_stride = a[::2]
-        lu, piv = dpnp.scipy.linalg.lu_factor(a_stride, check_finite=False)
+        a_dp = dpnp.array(a_np, order="F")
+        a_stride = a_dp[::2]
+        lu, piv = dpnp.linalg.lu_factor(a_stride, check_finite=False)
         for i in range(a_stride.shape[0]):
             L, U = self._split_lu(lu[i], 3, 3)
             PA = self._apply_pivots_rows(
