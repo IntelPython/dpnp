@@ -37,9 +37,9 @@ skbuild.setup(
         "dpnp.linalg",
         "dpnp.memory",
         "dpnp.random",
-        "dpnp.special",
         "dpnp.scipy",
         "dpnp.scipy.linalg",
+        "dpnp.scipy.special",
     ],
     package_data={
         "dpnp": [
