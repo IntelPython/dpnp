@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import unittest
+from functools import wraps
 
 import numpy
 import pytest
 
 import dpnp as cupy
-import dpnp.special
+import dpnp.scipy.special
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -14,6 +15,19 @@ def _boundary_inputs(boundary, rtol, atol):
     left = boundary * (1 - numpy.copysign(rtol, boundary)) - atol
     right = boundary * (1 + numpy.copysign(rtol, boundary)) + atol
     return [left, boundary, right]
+
+
+# Ensure `scp` exposes `.special` submodule:
+# use `dpnp.scipy` for DPNP, `scipy` for SciPy
+def resolve_special_scp(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        scp = kwargs.get("scp")
+        if scp is not None and not hasattr(scp, "special"):
+            kwargs["scp"] = getattr(scp, "scipy", scp)  # dpnp -> dpnp.scipy
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 @testing.with_requires("scipy")
@@ -53,14 +67,18 @@ class TestSpecial(unittest.TestCase, _TestBase):
     # scipy>=1.16: 'e -> d', which causes type_check=False
     @testing.for_dtypes(["e", "f", "d"])
     @testing.numpy_cupy_allclose(atol=1e-5, scipy_name="scp", type_check=False)
+    @resolve_special_scp
     def check_unary(self, name, xp, scp, dtype):
         import scipy.special
 
         a = testing.shaped_arange((2, 3), xp, dtype)
+        # _scp = getattr(scp, "scipy", scp)
+        # return getattr(_scp.special, name)(a)
         return getattr(scp.special, name)(a)
 
     @testing.for_dtypes(["f", "d"])
     @testing.numpy_cupy_allclose(atol=1e-5, scipy_name="scp")
+    @resolve_special_scp
     def check_unary_random(self, name, xp, scp, dtype, scale, offset):
         import scipy.special
 
@@ -69,6 +87,7 @@ class TestSpecial(unittest.TestCase, _TestBase):
 
     @testing.for_dtypes(["f", "d"])
     @testing.numpy_cupy_allclose(atol=1e-5, scipy_name="scp")
+    @resolve_special_scp
     def check_unary_boundary(self, name, xp, scp, dtype, boundary):
         import scipy.special
 

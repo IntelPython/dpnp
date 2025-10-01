@@ -1493,7 +1493,7 @@ def test_interp(device, left, right, period):
 def test_erf_funcs(func, device):
     x = dpnp.linspace(-3, 3, num=5, device=device)
 
-    result = getattr(dpnp.special, func)(x)
+    result = getattr(dpnp.scipy.special, func)(x)
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 

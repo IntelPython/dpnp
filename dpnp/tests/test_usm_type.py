@@ -1300,7 +1300,7 @@ def test_choose(usm_type_x, usm_type_ind):
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
 def test_erf_funcs(func, usm_type):
     x = dpnp.linspace(-3, 3, num=5, usm_type=usm_type)
-    y = getattr(dpnp.special, func)(x)
+    y = getattr(dpnp.scipy.special, func)(x)
     assert x.usm_type == y.usm_type == usm_type
 
 
