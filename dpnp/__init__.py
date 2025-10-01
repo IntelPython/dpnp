@@ -26,6 +26,7 @@
 
 import os
 import sys
+from importlib import import_module
 
 mypath = os.path.dirname(os.path.realpath(__file__))
 
@@ -74,6 +75,21 @@ from ._version import get_versions
 __all__ = _iface__all__
 __all__ += _ifaceutils__all__
 
+
+# expose dpnp.scipy submodule lazily (PEP 562)
+def __getattr__(name):
+    if name == "scipy":
+        mod = import_module("dpnp.scipy")
+        globals()["scipy"] = mod
+        return mod
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+# make "scipy" visible in dir(dpnp) and star-imports
+try:
+    __all__.append("scipy")
+except Exception:
+    pass
 
 __version__ = get_versions()["version"]
 del get_versions

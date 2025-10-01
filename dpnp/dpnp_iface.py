@@ -55,7 +55,6 @@ from dpnp.fft import *
 from dpnp.linalg import *
 from dpnp.memory import *
 from dpnp.random import *
-from dpnp.scipy import *
 from dpnp.special import *
 
 __all__ = [
