@@ -1,0 +1,86 @@
+﻿dpnp.ndarray
+============
+
+.. currentmodule:: dpnp
+
+.. autoclass:: ndarray
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         ndarray.all
+         ndarray.any
+         ndarray.argmax
+         ndarray.argmin
+         ndarray.argsort
+         ndarray.asnumpy
+         ndarray.astype
+         ndarray.choose
+         ndarray.clip
+         ndarray.compress
+         ndarray.conj
+         ndarray.conjugate
+         ndarray.copy
+         ndarray.cumprod
+         ndarray.cumsum
+         ndarray.diagonal
+         ndarray.dot
+         ndarray.fill
+         ndarray.flatten
+         ndarray.get_array
+         ndarray.item
+         ndarray.max
+         ndarray.mean
+         ndarray.min
+         ndarray.nonzero
+         ndarray.partition
+         ndarray.prod
+         ndarray.put
+         ndarray.ravel
+         ndarray.repeat
+         ndarray.reshape
+         ndarray.round
+         ndarray.searchsorted
+         ndarray.sort
+         ndarray.squeeze
+         ndarray.std
+         ndarray.sum
+         ndarray.swapaxes
+         ndarray.take
+         ndarray.to_device
+         ndarray.trace
+         ndarray.transpose
+         ndarray.var
+         ndarray.view
+
+
+
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         ndarray.T
+         ndarray.data
+         ndarray.device
+         ndarray.dtype
+         ndarray.flags
+         ndarray.flat
+         ndarray.imag
+         ndarray.itemsize
+         ndarray.mT
+         ndarray.nbytes
+         ndarray.ndim
+         ndarray.real
+         ndarray.shape
+         ndarray.size
+         ndarray.strides
+         ndarray.sycl_context
+         ndarray.sycl_device
+         ndarray.sycl_queue
+         ndarray.usm_type
+
