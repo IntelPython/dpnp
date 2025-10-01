@@ -11,3 +11,4 @@ These functions cover a subset of
    :maxdepth: 2
 
    scipy_linalg
+   scipy_special
