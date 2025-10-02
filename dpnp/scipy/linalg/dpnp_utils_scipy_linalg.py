@@ -35,10 +35,10 @@ available as a pybind11 extension.
 
 """
 
-# pylint: disable=invalid-name
+
+# pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
-# pylint: disable=useless-import-alias
 
 from warnings import warn
 

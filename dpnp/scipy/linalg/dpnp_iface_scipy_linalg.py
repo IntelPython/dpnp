@@ -37,8 +37,6 @@ It contains:
 
 """
 
-# pylint: disable=invalid-name
-# pylint: disable=no-member
 
 import dpnp
 from dpnp.linalg.dpnp_utils_linalg import assert_stacked_2d
