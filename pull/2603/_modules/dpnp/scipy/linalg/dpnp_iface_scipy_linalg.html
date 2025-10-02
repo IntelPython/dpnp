@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.scipy.linalg.dpnp_iface_scipy_linalg &mdash; Data Parallel Extension for NumPy 0.19.0rc0+14.g70d5f777f0f documentation</title>
+  <title>dpnp.scipy.linalg.dpnp_iface_scipy_linalg &mdash; Data Parallel Extension for NumPy 0.19.0rc0+17.g782a40a2669 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=3ceca996"></script>
+      <script src="../../../../_static/documentation_options.js?v=e003a4bb"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -122,8 +122,6 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c1"># pylint: disable=invalid-name</span>
-<span class="c1"># pylint: disable=no-member</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.linalg.dpnp_utils_linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_stacked_2d</span>
@@ -267,7 +265,7 @@
 <span class="sd">    &gt;&gt;&gt; A = np.array([[2, 5, 8, 7], [5, 2, 2, 8], [7, 5, 6, 6], [5, 4, 4, 8]])</span>
 <span class="sd">    &gt;&gt;&gt; b = np.array([1, 1, 1, 1])</span>
 <span class="sd">    &gt;&gt;&gt; lu, piv = np.scipy.linalg.lu_factor(A)</span>
-<span class="sd">    &gt;&gt;&gt; x = np.linalg.scipy.lu_solve((lu, piv), b)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.scipy.linalg.lu_solve((lu, piv), b)</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(A @ x - b, np.zeros((4,)))</span>
 <span class="sd">    array(True)</span>
 
