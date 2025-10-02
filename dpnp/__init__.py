@@ -26,7 +26,6 @@
 
 import os
 import sys
-from importlib import import_module
 
 mypath = os.path.dirname(os.path.realpath(__file__))
 
