@@ -2135,7 +2135,7 @@ class TestLuFactorBatched:
         )
         a_dp = dpnp.array(a_np, order="F")
         a_stride = a_dp[::2]
-        lu, piv = dpnp.linalg.lu_factor(a_stride, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_stride, check_finite=False)
         for i in range(a_stride.shape[0]):
             L, U = self._split_lu(lu[i], 3, 3)
             PA = self._apply_pivots_rows(
