@@ -33,6 +33,7 @@ available as a pybind11 extension.
 
 """
 
+# pylint: disable=duplicate-code
 # pylint: disable=invalid-name
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
