@@ -177,7 +177,7 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
     >>> A = np.array([[2, 5, 8, 7], [5, 2, 2, 8], [7, 5, 6, 6], [5, 4, 4, 8]])
     >>> b = np.array([1, 1, 1, 1])
     >>> lu, piv = np.scipy.linalg.lu_factor(A)
-    >>> x = np.linalg.scipy.lu_solve((lu, piv), b)
+    >>> x = np.scipy.linalg.lu_solve((lu, piv), b)
     >>> np.allclose(A @ x - b, np.zeros((4,)))
     array(True)
 

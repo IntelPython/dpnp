@@ -72,8 +72,6 @@ class TestSpecial(unittest.TestCase, _TestBase):
         import scipy.special
 
         a = testing.shaped_arange((2, 3), xp, dtype)
-        # _scp = getattr(scp, "scipy", scp)
-        # return getattr(_scp.special, name)(a)
         return getattr(scp.special, name)(a)
 
     @testing.for_dtypes(["f", "d"])
