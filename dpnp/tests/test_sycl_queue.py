@@ -1493,7 +1493,7 @@ def test_interp(device, left, right, period):
 def test_erf_funcs(func, device):
     x = dpnp.linspace(-3, 3, num=5, device=device)
 
-    result = getattr(dpnp.special, func)(x)
+    result = getattr(dpnp.scipy.special, func)(x)
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
@@ -1603,7 +1603,7 @@ class TestLinAlgebra:
     )
     def test_lu_factor(self, data, device):
         a = dpnp.array(data, device=device)
-        result = dpnp.linalg.lu_factor(a)
+        result = dpnp.scipy.linalg.lu_factor(a)
 
         for param in result:
             param_queue = param.sycl_queue
@@ -1615,10 +1615,10 @@ class TestLinAlgebra:
     )
     def test_lu_solve(self, b_data, device):
         a = dpnp.array([[1.0, 2.0], [3.0, 5.0]], device=device)
-        lu, piv = dpnp.linalg.lu_factor(a)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a)
         b = dpnp.array(b_data, device=device)
 
-        result = dpnp.linalg.lu_solve((lu, piv), b)
+        result = dpnp.scipy.linalg.lu_solve((lu, piv), b)
 
         assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
         assert_sycl_queue_equal(result.sycl_queue, b.sycl_queue)

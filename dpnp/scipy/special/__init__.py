@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2025, Intel Corporation
 # All rights reserved.
@@ -23,37 +24,27 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import skbuild
-import versioneer
+"""
+``dpnp.scipy.special``
+======================
 
-skbuild.setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=[
-        "dpnp",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.memory",
-        "dpnp.random",
-        "dpnp.scipy",
-        "dpnp.scipy.linalg",
-        "dpnp.scipy.special",
-    ],
-    package_data={
-        "dpnp": [
-            "backend/include/*.hpp",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "tests/*.*",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-            "tests/third_party/cupyx/*.py",
-            "tests/third_party/cupyx/*/*.py",
-        ]
-    },
-    include_package_data=False,
+The submodule provides a large collection of mathematical functions that are
+widely used in science and engineering. It includes special functions of
+mathematical physics (e.g., Bessel, elliptic, gamma,  hypergeometric), as well
+as standard functions like `erf`, `sinc`, and `logit`.
+
+The functions in the submodule invokes VM implementation from pybind11
+extension above OneMKL VM if possible or uses a dedicated SYCL kernel, or,
+alternatively, is implemented through a subset of python calls.
+
+"""
+
+from ._erf import (
+    erf,
+    erfc,
 )
+
+__all__ = [
+    "erf",
+    "erfc",
+]

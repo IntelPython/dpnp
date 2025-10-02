@@ -25,7 +25,7 @@ class TestCommon:
         a = generate_random_numpy_array((2, 5), dtype=dt)
         ia = dpnp.array(a)
 
-        result = getattr(dpnp.special, func)(ia)
+        result = getattr(dpnp.scipy.special, func)(ia)
         expected = getattr(scipy.special, func)(a)
 
         # scipy >= 0.16.0 returns float64, but dpnp returns float32
@@ -41,7 +41,7 @@ class TestCommon:
         a = numpy.array([numpy.nan, -numpy.inf, numpy.inf])
         ia = dpnp.array(a)
 
-        result = getattr(dpnp.special, func)(ia)
+        result = getattr(dpnp.scipy.special, func)(ia)
         expected = getattr(scipy.special, func)(a)
         assert_allclose(result, expected)
 
@@ -51,7 +51,7 @@ class TestCommon:
         a = numpy.array([0.0, -0.0])
         ia = dpnp.array(a)
 
-        result = getattr(dpnp.special, func)(ia)
+        result = getattr(dpnp.scipy.special, func)(ia)
         expected = getattr(scipy.special, func)(a)
         assert_allclose(result, expected)
         assert_equal(dpnp.signbit(result), numpy.signbit(expected))
@@ -60,7 +60,7 @@ class TestCommon:
     def test_complex(self, func, dt):
         x = dpnp.empty(5, dtype=dt)
         with pytest.raises(ValueError):
-            getattr(dpnp.special, func)(x)
+            getattr(dpnp.scipy.special, func)(x)
 
 
 class TestConsistency:
@@ -73,11 +73,11 @@ class TestConsistency:
         a = rng.pareto(0.02, n) * (2 * rng.randint(0, 2, n) - 1)
         a = dpnp.array(a)
 
-        res = 1 - dpnp.special.erf(a)
+        res = 1 - dpnp.scipy.special.erf(a)
         mask = dpnp.isfinite(res)
         a = a[mask]
 
         tol = 8 * dpnp.finfo(a).resolution
         assert dpnp.allclose(
-            dpnp.special.erfc(a), res[mask], rtol=tol, atol=tol
+            dpnp.scipy.special.erfc(a), res[mask], rtol=tol, atol=tol
         )

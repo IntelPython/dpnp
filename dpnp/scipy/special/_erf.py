@@ -29,7 +29,7 @@ Interface of the Error functions
 
 Notes
 -----
-This module is a face or public interface file for the library
+This module exposes the public interface for ``dpnp.scipy.special``.
 it contains:
  - Interface functions
  - documentation for the functions
@@ -92,11 +92,11 @@ out : dpnp.ndarray
 
 See Also
 --------
-:obj:`dpnp.special.erfc` : Complementary error function.
-:obj:`dpnp.special.erfinv` : Inverse of the error function.
-:obj:`dpnp.special.erfcinv` : Inverse of the complementary error function.
-:obj:`dpnp.special.erfcx` : Scaled complementary error function.
-:obj:`dpnp.special.erfi` : Imaginary error function.
+:obj:`dpnp.scipy.special.erfc` : Complementary error function.
+:obj:`dpnp.scipy.special.erfinv` : Inverse of the error function.
+:obj:`dpnp.scipy.special.erfcinv` : Inverse of the complementary error function.
+:obj:`dpnp.scipy.special.erfcx` : Scaled complementary error function.
+:obj:`dpnp.scipy.special.erfi` : Imaginary error function.
 
 Notes
 -----
@@ -113,7 +113,7 @@ Examples
 --------
 >>> import dpnp as np
 >>> x = np.linspace(-3, 3, num=5)
->>> np.special.erf(x)
+>>> np.scipy.special.erf(x)
 array([[-0.99997791, -0.96610515,  0.        ,  0.96610515,  0.99997791])
 
 """
@@ -148,17 +148,17 @@ out : dpnp.ndarray
 
 See Also
 --------
-:obj:`dpnp.special.erf` : Gauss error function.
-:obj:`dpnp.special.erfinv` : Inverse of the error function.
-:obj:`dpnp.special.erfcinv` : Inverse of the complementary error function.
-:obj:`dpnp.special.erfcx` : Scaled complementary error function.
-:obj:`dpnp.special.erfi` : Imaginary error function.
+:obj:`dpnp.scipy.special.erf` : Gauss error function.
+:obj:`dpnp.scipy.special.erfinv` : Inverse of the error function.
+:obj:`dpnp.scipy.special.erfcinv` : Inverse of the complementary error function.
+:obj:`dpnp.scipy.special.erfcx` : Scaled complementary error function.
+:obj:`dpnp.scipy.special.erfi` : Imaginary error function.
 
 Examples
 --------
 >>> import dpnp as np
 >>> x = np.linspace(-3, 3, num=5)
->>> np.special.erfc(x)
+>>> np.scipy.special.erfc(x)
 array([[-0.99997791, -0.96610515,  0.        ,  0.96610515,  0.99997791])
 
 """

@@ -175,7 +175,7 @@ def test_erf_funcs(func, stride):
     x = generate_random_numpy_array(10)
     a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    result = getattr(dpnp.special, func)(ia)
+    result = getattr(dpnp.scipy.special, func)(ia)
     expected = getattr(scipy.special, func)(a)
     assert_dtype_allclose(result, expected)
 

@@ -25,26 +25,18 @@
 # *****************************************************************************
 
 """
-``dpnp.special``
-================
+``dpnp.scipy.linalg``
+=====================
 
-The submodule provides a large collection of mathematical functions that are
-widely used in science and engineering. It includes special functions of
-mathematical physics (e.g., Bessel, elliptic, gamma,  hypergeometric), as well
-as standard functions like `erf`, `sinc`, and `logit`.
-
-The functions in the submodule invokes VM implementation from pybind11
-extension above OneMKL VM if possible or uses a dedicated SYCL kernel, or,
-alternatively, is implemented through a subset of python calls.
+The SciPy-compatible linear algebra functions in DPNP rely on LAPACK
+to provide efficient low-level implementations of standard algorithms.
 
 """
 
-from ._erf import (
-    erf,
-    erfc,
+
+from dpnp.scipy.linalg.dpnp_iface_scipy_linalg import *
+from dpnp.scipy.linalg.dpnp_iface_scipy_linalg import (
+    __all__ as __all__scipy__linalg,
 )
 
-__all__ = [
-    "erf",
-    "erfc",
-]
+__all__ = __all__scipy__linalg
