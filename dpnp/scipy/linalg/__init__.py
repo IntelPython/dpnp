@@ -34,9 +34,9 @@ to provide efficient low-level implementations of standard algorithms.
 """
 
 
-from dpnp.scipy.linalg.dpnp_iface_scipy_linalg import *
-from dpnp.scipy.linalg.dpnp_iface_scipy_linalg import (
-    __all__ as __all__scipy__linalg,
-)
+from ._decomp_lu import lu_factor, lu_solve
 
-__all__ = __all__scipy__linalg
+__all__ = [
+    "lu_factor",
+    "lu_solve",
+]

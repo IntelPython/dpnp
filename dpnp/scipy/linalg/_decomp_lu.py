@@ -41,7 +41,7 @@ It contains:
 import dpnp
 from dpnp.linalg.dpnp_utils_linalg import assert_stacked_2d
 
-from .dpnp_utils_scipy_linalg import (
+from ._utils import (
     dpnp_lu_factor,
     dpnp_lu_solve,
 )
