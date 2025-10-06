@@ -49,7 +49,6 @@ class TestLUFactor(unittest.TestCase):
         a_cpu = testing.shaped_random(self.shape, numpy, dtype=dtype)
         a_gpu = cupy.asarray(a_cpu)
         result_cpu = scipy.linalg.lu_factor(a_cpu)
-        # Originally used cupyx.scipy.linalg.lu_factor
         result_gpu = cupy.scipy.linalg.lu_factor(a_gpu)
         assert len(result_cpu) == len(result_gpu)
         assert result_cpu[0].dtype == result_gpu[0].dtype
@@ -177,8 +176,6 @@ class TestLUSolve(unittest.TestCase):
         a_shape, b_shape = self.shapes
         A = testing.shaped_random(a_shape, xp, dtype=dtype)
         b = testing.shaped_random(b_shape, xp, dtype=dtype)
-        if scp == cupy:
-            scp = cupy.scipy
         lu = scp.linalg.lu_factor(A)
         return scp.linalg.lu_solve(lu, b, trans=self.trans)
 
