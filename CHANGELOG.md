@@ -24,6 +24,7 @@ This release is compatible with NumPy 2.3.3.
 * Added implementation of `dpnp.piecewise` [#2550](https://github.com/IntelPython/dpnp/pull/2550)
 * Added implementation of `dpnp.linalg.lu_solve` for 2D inputs (SciPy-compatible) [#2575](https://github.com/IntelPython/dpnp/pull/2575)
 * Added implementation of `dpnp.special.erfc` [#2588](https://github.com/IntelPython/dpnp/pull/2588)
+* Added `dpnp.scipy` submodule to aggregate new SciPy-compatible functions from `linalg` and `special` namespaces [#2603](https://github.com/IntelPython/dpnp/pull/2603)
 
 ### Changed
 

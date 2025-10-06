@@ -6,7 +6,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-import dpnp.special
+import dpnp.scipy.special
 from dpnp.tests.third_party.cupy import testing
 
 

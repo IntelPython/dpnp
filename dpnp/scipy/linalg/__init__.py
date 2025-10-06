@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2025, Intel Corporation
 # All rights reserved.
@@ -23,37 +24,19 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import skbuild
-import versioneer
+"""
+``dpnp.scipy.linalg``
+=====================
 
-skbuild.setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=[
-        "dpnp",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.memory",
-        "dpnp.random",
-        "dpnp.scipy",
-        "dpnp.scipy.linalg",
-        "dpnp.scipy.special",
-    ],
-    package_data={
-        "dpnp": [
-            "backend/include/*.hpp",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "tests/*.*",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-            "tests/third_party/cupyx/*.py",
-            "tests/third_party/cupyx/*/*.py",
-        ]
-    },
-    include_package_data=False,
-)
+The SciPy-compatible linear algebra functions in DPNP rely on LAPACK
+to provide efficient low-level implementations of standard algorithms.
+
+"""
+
+
+from ._decomp_lu import lu_factor, lu_solve
+
+__all__ = [
+    "lu_factor",
+    "lu_solve",
+]
