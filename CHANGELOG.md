@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.19.0] - 2025-MM-DD
+## [0.19.0] - 2025-10-06
 
 This release introduces a set of new `dpnp.ndarray` methods and SciPy-compatible functions to improve CuPy compatibility.
 It also enhances the performance of existing functions and improves documentation completeness.
