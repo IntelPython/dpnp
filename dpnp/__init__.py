@@ -71,12 +71,13 @@ from .dpnp_iface_utils import *
 from .dpnp_iface_utils import __all__ as _ifaceutils__all__
 from ._version import get_versions
 from . import linalg as linalg
+from . import scipy as scipy
 
 __all__ = _iface__all__
 __all__ += _ifaceutils__all__
 
 # add submodules
-__all__ += ["linalg"]
+__all__ += ["linalg", "scipy"]
 
 
 __version__ = get_versions()["version"]

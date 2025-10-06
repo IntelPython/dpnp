@@ -1,6 +1,6 @@
-.. currentmodule:: dpnp.special
+.. currentmodule:: dpnp.scipy.special
 
-Special functions (:mod:`dpnp.special`)
+Special functions (:mod:`dpnp.scipy.special`)
 =======================================
 
 .. Hint:: `SciPy API Reference: Special functions (scipy.special) <https://docs.scipy.org/doc/scipy/reference/special.html>`_

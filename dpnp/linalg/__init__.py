@@ -50,8 +50,6 @@ from .dpnp_iface_linalg import (
     eigvalsh,
     inv,
     lstsq,
-    lu_factor,
-    lu_solve,
     matmul,
     matrix_norm,
     matrix_power,
