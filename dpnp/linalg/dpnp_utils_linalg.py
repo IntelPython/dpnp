@@ -50,7 +50,6 @@ from numpy import prod
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
-from dpnp.linalg import LinAlgError as LinAlgError
 
 __all__ = [
     "assert_2d",
@@ -943,7 +942,7 @@ def _check_lapack_dev_info(dev_info, error_msg=None):
     if any(dev_info):
         error_msg = error_msg or "Singular matrix"
 
-        raise LinAlgError(error_msg)
+        raise li.LinAlgError(error_msg)
 
 
 def _common_type(*arrays):
@@ -1879,7 +1878,7 @@ def assert_2d(*arrays):
 
     for a in arrays:
         if a.ndim != 2:
-            raise LinAlgError(
+            raise li.LinAlgError(
                 f"{a.ndim}-dimensional array given. The input "
                 "array must be exactly two-dimensional"
             )
@@ -1906,7 +1905,7 @@ def assert_stacked_2d(*arrays):
 
     for a in arrays:
         if a.ndim < 2:
-            raise LinAlgError(
+            raise li.LinAlgError(
                 f"{a.ndim}-dimensional array given. The input "
                 "array must be at least two-dimensional"
             )
@@ -1942,7 +1941,7 @@ def assert_stacked_square(*arrays):
     for a in arrays:
         m, n = a.shape[-2:]
         if m != n:
-            raise LinAlgError(
+            raise li.LinAlgError(
                 "Last 2 dimensions of the input array must be square"
             )
 
@@ -2086,7 +2085,7 @@ def dpnp_cond(x, p=None):
     """Compute the condition number of a matrix."""
 
     if _is_empty_2d(x):
-        raise LinAlgError("cond is not defined on empty arrays")
+        raise li.LinAlgError("cond is not defined on empty arrays")
     if p is None or p == 2 or p == -2:
         s = dpnp.linalg.svd(x, compute_uv=False)
         if p == -2:
@@ -2340,7 +2339,7 @@ def dpnp_lstsq(a, b, rcond=None):
     """
 
     if b.ndim > 2:
-        raise LinAlgError(
+        raise li.LinAlgError(
             f"{b.ndim}-dimensional array given. The input "
             "array must be exactly two-dimensional"
         )
@@ -2348,7 +2347,7 @@ def dpnp_lstsq(a, b, rcond=None):
     m, n = a.shape[-2:]
     m2 = b.shape[0]
     if m != m2:
-        raise LinAlgError("Incompatible dimensions")
+        raise li.LinAlgError("Incompatible dimensions")
 
     u, s, vh = dpnp_svd(a, full_matrices=False, related_arrays=[b])
 
@@ -2669,20 +2668,20 @@ def dpnp_multi_dot(n, arrays, out=None):
     """Compute dot product of two or more arrays in a single function call."""
 
     if not arrays[0].ndim in [1, 2]:
-        raise LinAlgError(
+        raise li.LinAlgError(
             f"{arrays[0].ndim}-dimensional array given. "
             "First array must be 1-D or 2-D."
         )
 
     if not arrays[-1].ndim in [1, 2]:
-        raise LinAlgError(
+        raise li.LinAlgError(
             f"{arrays[-1].ndim}-dimensional array given. "
             "Last array must be 1-D or 2-D."
         )
 
     for arr in arrays[1:-1]:
         if arr.ndim != 2:
-            raise LinAlgError(
+            raise li.LinAlgError(
                 f"{arr.ndim}-dimensional array given. Inner arrays must be 2-D."
             )
 
