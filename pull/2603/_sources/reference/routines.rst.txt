@@ -1,5 +1,5 @@
-Routines (NumPy) (:mod:`dpnp`)
-==============================
+Routines (NumPy)
+================
 
 The following pages describe NumPy-compatible routines.
 These functions cover a subset of
