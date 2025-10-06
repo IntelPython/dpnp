@@ -75,10 +75,9 @@ from . import scipy as scipy
 
 __all__ = _iface__all__
 __all__ += _ifaceutils__all__
-__all__ += ["scipy"]
 
 # add submodules
-__all__ += ["linalg"]
+__all__ += ["linalg", "scipy"]
 
 
 __version__ = get_versions()["version"]
