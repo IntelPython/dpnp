@@ -38,6 +38,7 @@ it contains:
 
 # pylint: disable=invalid-name
 # pylint: disable=no-member
+# pylint: disable=no-name-in-module
 
 from typing import NamedTuple
 
@@ -45,6 +46,7 @@ import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_tuple
 
 import dpnp
+from dpnp.backend.extensions.lapack._lapack_impl import LinAlgError
 
 from .dpnp_utils_linalg import (
     assert_2d,
@@ -70,6 +72,7 @@ from .dpnp_utils_linalg import (
 )
 
 __all__ = [
+    "LinAlgError",
     "cholesky",
     "cond",
     "cross",
@@ -104,6 +107,9 @@ __all__ = [
     "vecdot",
     "vector_norm",
 ]
+
+# Need to set the module explicitly, since exposed by LAPACK pybind11 extension
+LinAlgError.__module__ = "dpnp.linalg"
 
 
 # pylint:disable=missing-class-docstring
@@ -2330,7 +2336,7 @@ def tensorsolve(a, b, axes=None):
     prod = numpy.prod(old_shape)
 
     if a.size != prod**2:
-        raise dpnp.linalg.LinAlgError(
+        raise LinAlgError(
             "Input arrays must satisfy the requirement "
             "prod(a.shape[b.ndim:]) == prod(a.shape[:b.ndim])"
         )
