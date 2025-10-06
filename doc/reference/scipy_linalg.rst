@@ -12,6 +12,6 @@ Decompositions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.scipy.linalg.lu
-   dpnp.scipy.linalg.lu_factor
-   dpnp.scipy.linalg.lu_solve
+   lu
+   lu_factor
+   lu_solve
