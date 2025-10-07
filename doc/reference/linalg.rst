@@ -107,4 +107,4 @@ Exceptions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.linalg.linAlgError
+   dpnp.linalg.LinAlgError
