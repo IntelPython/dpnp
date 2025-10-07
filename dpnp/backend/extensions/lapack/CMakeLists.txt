@@ -37,6 +37,7 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/getrf_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/getri_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/getrs.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/getrs_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/heevd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/heevd_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/orgqr.cpp

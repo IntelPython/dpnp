@@ -58,6 +58,7 @@ void init_dispatch_vectors(void)
     lapack_ext::init_getrf_batch_dispatch_vector();
     lapack_ext::init_getrf_dispatch_vector();
     lapack_ext::init_getri_batch_dispatch_vector();
+    lapack_ext::init_getrs_batch_dispatch_vector();
     lapack_ext::init_getrs_dispatch_vector();
     lapack_ext::init_orgqr_batch_dispatch_vector();
     lapack_ext::init_orgqr_dispatch_vector();
@@ -164,10 +165,20 @@ PYBIND11_MODULE(_lapack_impl, m)
 
     m.def("_getrs", &lapack_ext::getrs,
           "Call `getrs` from OneMKL LAPACK library to return "
-          "the solves of linear equations with an LU-factored "
+          "the solutions of linear equations with an LU-factored "
           "square coefficient matrix, with multiple right-hand sides",
           py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
           py::arg("b_array"), py::arg("trans") = oneapi::mkl::transpose::N,
+          py::arg("depends") = py::list());
+
+    m.def("_getrs_batch", &lapack_ext::getrs_batch,
+          "Call `getrs_batch` from OneMKL LAPACK library to return "
+          "the solutions of batch linear equations with an LU-factored "
+          "square coefficient matrix, with multiple right-hand sides",
+          py::arg("sycl_queue"), py::arg("a_array"), py::arg("ipiv_array"),
+          py::arg("b_array"), py::arg("trans") = oneapi::mkl::transpose::N,
+          py::arg("n"), py::arg("nrhs"), py::arg("stride_a"),
+          py::arg("stride_ipiv"), py::arg("stride_b"), py::arg("batch_size"),
           py::arg("depends") = py::list());
 
     m.def("_orgqr_batch", &lapack_ext::orgqr_batch,
