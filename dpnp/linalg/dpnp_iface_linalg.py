@@ -104,8 +104,29 @@ __all__ = [
     "vector_norm",
 ]
 
-# Need to set the module explicitly, since exposed by LAPACK pybind11 extension
+# Need to set the module explicitly, because it's initially exposed by LAPACK
+# pybind11 extension and to add the docstrings
 LinAlgError.__module__ = "dpnp.linalg"
+LinAlgError.__doc__ = """
+Generic Python-exception-derived object raised by LinAlg functions.
+
+General purpose exception class, derived from Python's ``ValueError`` class,
+programmatically raised in LinAlg functions when a Linear Algebra-related
+condition would prevent further correct execution of the function.
+
+Parameters
+----------
+None
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.linalg.inv(np.zeros((2, 2)))
+Traceback (most recent call last):
+...
+dpnp.linalg.LinAlgError: The input coefficient matrix is singular.
+
+"""
 
 
 # pylint:disable=missing-class-docstring
