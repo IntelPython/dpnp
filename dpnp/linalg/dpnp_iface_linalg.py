@@ -110,13 +110,11 @@ LinAlgError.__module__ = "dpnp.linalg"
 LinAlgError.__doc__ = """
 Generic Python-exception-derived object raised by LinAlg functions.
 
+For full documentation refer to :obj:`numpy.linalg.LinAlgError`.
+
 General purpose exception class, derived from Python's ``ValueError`` class,
 programmatically raised in LinAlg functions when a Linear Algebra-related
 condition would prevent further correct execution of the function.
-
-Parameters
-----------
-None
 
 Examples
 --------
