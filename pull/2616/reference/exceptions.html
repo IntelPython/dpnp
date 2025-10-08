@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Exceptions and Warnings &mdash; Data Parallel Extension for NumPy 0.20.0dev0+4.ge2479b987cb documentation</title>
+  <title>Exceptions and Warnings &mdash; Data Parallel Extension for NumPy 0.20.0dev0+6.g846b3193047 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5bbc8bb7"></script>
+      <script src="../_static/documentation_options.js?v=3823c1c2"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -126,11 +126,30 @@ specific, such as linear algebra errors.</p>
 <section id="exceptions">
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading"></a></h2>
 <dl class="py data">
+<dt class="sig sig-object py" id="dpnp.exceptions.AxisError">
+<span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">AxisError</span></span><a class="reference internal" href="../_modules/numpy/exceptions.html#AxisError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.exceptions.AxisError" title="Link to this definition"></a></dt>
+<dd><p>Given when an axis is invalid.</p>
+</dd></dl>
+
+<dl class="py data">
 <dt class="sig sig-object py" id="dpnp.exceptions.DLPackCreationError">
-<span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">DLPackCreationError</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;class</span> <span class="pre">'dpctl.tensor._dlpack.DLPackCreationError'&gt;</span></em><a class="headerlink" href="#dpnp.exceptions.DLPackCreationError" title="Link to this definition"></a></dt>
-<dd><p>A DLPackCreateError exception is raised when constructing
-DLPack capsule from <cite>usm_ndarray</cite> based on a USM allocation
+<span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">DLPackCreationError</span></span><a class="headerlink" href="#dpnp.exceptions.DLPackCreationError" title="Link to this definition"></a></dt>
+<dd><p>Given when constructing DLPack capsule from either <a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or
+<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="(in Data Parallel Control (dpctl) v0.21.0+19.gbf684387d4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> based on a USM allocation
 on a partitioned SYCL device.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sdevs</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">sdevs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">DLPackCreationError</span>: <span class="n">to_dlpack_capsule: DLPack can only export arrays based on USM allocations bound to a default platform SYCL context</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
