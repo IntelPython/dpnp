@@ -9,7 +9,7 @@ requires = [
   "dpctl>=0.20.0",
   "ninja>=1.11.1; platform_system!='Windows'",
   # NOTE: no DPNP restriction on NumPy version, so follow NumPy's drop schedule
-  "numpy>=1.26.0",
+  "numpy>=2.0.0",
   "scikit-build>=0.18.1",
   "setuptools>=79.0.1",
   "wheel>=0.45.1",
@@ -51,7 +51,7 @@ dependencies = [
   # "intel-cmplr-lib-rt>=0.59.0"
   # WARNING: use the latest dpctl dev version, otherwise stable w/f will fail
   "dpctl>=0.21.0dev0",
-  "numpy>=1.26.0"
+  "numpy>=2.0.0"
 ]
 description = "Data Parallel Extension for NumPy"
 dynamic = ["version"]
