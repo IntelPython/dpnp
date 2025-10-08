@@ -938,12 +938,9 @@ def test_logspace(dtype, num, endpoint):
     assert_allclose(dpnp_res, np_res, rtol=1e-06)
 
 
+@testing.with_requires("numpy>=1.25.0")
 @pytest.mark.parametrize("axis", [0, 1])
 def test_logspace_axis(axis):
-    if numpy.lib.NumpyVersion(numpy.__version__) < "1.25.0":
-        pytest.skip(
-            "numpy.logspace supports a non-scalar base argument since 1.25.0"
-        )
     func = lambda xp: xp.logspace(
         [2, 3], [20, 15], num=2, base=[[1, 3], [5, 7]], axis=axis
     )

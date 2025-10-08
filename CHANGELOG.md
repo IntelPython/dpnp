@@ -4,7 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.19.0] - 2025-MM-DD
+## [0.20.0] - MM/DD/2026
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [0.19.0] - 2025-10-06
 
 This release introduces a set of new `dpnp.ndarray` methods and SciPy-compatible functions to improve CuPy compatibility.
 It also enhances the performance of existing functions and improves documentation completeness.
@@ -77,7 +92,6 @@ This release is compatible with NumPy 2.3.3.
 * Added missing permission definition in `Autoupdate pre-commit` GitHub workflow [#2591](https://github.com/IntelPython/dpnp/pull/2591)
 * Resolved issue with the cyclic import in `linalg` submodule [#2608](https://github.com/IntelPython/dpnp/pull/2608)
 
-### Security
 
 ## [0.18.1] - 2025-06-24
 
