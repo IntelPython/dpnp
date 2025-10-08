@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Silenced `pybind11` cmake message due to using compatibility mode for Python [#2614](https://github.com/IntelPython/dpnp/pull/2614)
+* Silenced `pybind11` CMake message due to using compatibility mode for Python [#2614](https://github.com/IntelPython/dpnp/pull/2614)
 
 ### Deprecated
 
