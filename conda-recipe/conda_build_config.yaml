@@ -1,5 +1,5 @@
 numpy:
-    - '1.25'
+    - '1.26'
 c_compiler:                   # [linux]
     - gcc                     # [linux]
 cxx_compiler:                 # [linux]
