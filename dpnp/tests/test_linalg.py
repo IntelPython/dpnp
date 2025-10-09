@@ -2421,8 +2421,8 @@ class TestLuSolveBatched:
         b_np = generate_random_numpy_array(b_shape, dtype, order)
         b_dp = dpnp.array(b_np, order=order)
 
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
-        x = dpnp.linalg.lu_solve(
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve(
             (lu, piv), b_dp, overwrite_b=True, check_finite=False
         )
 
@@ -2449,10 +2449,10 @@ class TestLuSolveBatched:
             generate_random_numpy_array(b_shape, dtype, order), order=order
         )
 
-        lu, piv = dpnp.linalg.lu_factor(
+        lu, piv = dpnp.scipy.linalg.lu_factor(
             a_dp, overwrite_a=False, check_finite=False
         )
-        x = dpnp.linalg.lu_solve(
+        x = dpnp.scipy.linalg.lu_solve(
             (lu, piv), b_dp, trans=trans, overwrite_b=False, check_finite=False
         )
 
@@ -2471,7 +2471,7 @@ class TestLuSolveBatched:
         a_np = self._make_nonsingular_nd_np((2, 4, 4), dtype, order)
         a_dp = dpnp.array(a_np, order=order)
 
-        lu, piv = dpnp.linalg.lu_factor(
+        lu, piv = dpnp.scipy.linalg.lu_factor(
             a_dp, overwrite_a=False, check_finite=False
         )
 
@@ -2479,7 +2479,7 @@ class TestLuSolveBatched:
             generate_random_numpy_array((2, 4, 2), dtype, "F"), order="F"
         )
         b_dp_orig = b_dp.copy()
-        x = dpnp.linalg.lu_solve(
+        x = dpnp.scipy.linalg.lu_solve(
             (lu, piv), b_dp, overwrite_b=True, check_finite=False
         )
 
@@ -2504,8 +2504,8 @@ class TestLuSolveBatched:
         )
         b_dp = rhs_full[::2, :, ::-1]
 
-        lu, piv = dpnp.linalg.lu_factor(a_stride, check_finite=False)
-        x = dpnp.linalg.lu_solve(
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_stride, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve(
             (lu, piv), b_dp, overwrite_b=False, check_finite=False
         )
 
@@ -2526,8 +2526,8 @@ class TestLuSolveBatched:
         b_np = generate_random_numpy_array(b_shape, dtype_b, "F")
         b_dp = dpnp.array(b_np, order="F")
 
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
-        x = dpnp.linalg.lu_solve((lu, piv), b_dp, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve((lu, piv), b_dp, check_finite=False)
 
         exp_shape = (B, n, k)
         assert x.shape == exp_shape
@@ -2549,8 +2549,8 @@ class TestLuSolveBatched:
         a = dpnp.empty(a_shape, dtype=dpnp.default_float_type(), order="F")
         b = dpnp.empty(b_shape, dtype=dpnp.default_float_type(), order="F")
 
-        lu, piv = dpnp.linalg.lu_factor(a, check_finite=False)
-        x = dpnp.linalg.lu_solve((lu, piv), b, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve((lu, piv), b, check_finite=False)
 
         assert x.shape == b_shape
 
@@ -2560,13 +2560,13 @@ class TestLuSolveBatched:
             (B, n, n), dpnp.default_float_type(), "F"
         )
         a_dp = dpnp.array(a_np, order="F")
-        lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
 
         b_bad = dpnp.ones((B, n), dtype=dpnp.default_float_type(), order="F")
         b_bad[1, 0] = dpnp.nan
         assert_raises(
             ValueError,
-            dpnp.linalg.lu_solve,
+            dpnp.scipy.linalg.lu_solve,
             (lu, piv),
             b_bad,
             check_finite=True,
@@ -2593,9 +2593,9 @@ class TestLuSolveBatched:
             generate_random_numpy_array(b_shape, dtype, "F"), order="F"
         )
 
-        lu, piv = dpnp.linalg.lu_factor(a, check_finite=False)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a, check_finite=False)
         with pytest.raises(ValueError):
-            dpnp.linalg.lu_solve((lu, piv), b, check_finite=False)
+            dpnp.scipy.linalg.lu_solve((lu, piv), b, check_finite=False)
 
 
 class TestMatrixPower:

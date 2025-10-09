@@ -106,37 +106,6 @@ _real_types_map = {
 }
 
 
-def _align_lu_solve_broadcast(lu, b):
-    """Align LU and RHS batch dimensions with SciPy-like rules."""
-    lu_shape = lu.shape
-    b_shape = b.shape
-
-    if b.ndim < 2:
-        if lu_shape[-2] != b_shape[0]:
-            raise ValueError(
-                f"Shapes of lu {lu_shape} and b {b_shape} are incompatible"
-            )
-        b = dpnp.broadcast_to(b, lu_shape[:-1])
-        return lu, b
-
-    if lu_shape[-2] != b_shape[-2]:
-        raise ValueError(
-            f"Shapes of lu {lu_shape} and b {b_shape} are incompatible"
-        )
-
-    # Use dpnp.broadcast_shapes() to align the resulting batch shapes
-    batch = dpnp.broadcast_shapes(lu_shape[:-2], b_shape[:-2])
-    lu_bshape = batch + lu_shape[-2:]
-    b_bshape = batch + b_shape[-2:]
-
-    if lu_shape != lu_bshape:
-        lu = dpnp.broadcast_to(lu, lu_bshape)
-    if b_shape != b_bshape:
-        b = dpnp.broadcast_to(b, b_bshape)
-
-    return lu, b
-
-
 def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
     """
     _batched_eigh(a, UPLO, eigen_mode, w_type, v_type)
@@ -985,20 +954,6 @@ def _hermitian_svd(a, compute_uv):
 def _is_empty_2d(arr):
     # check size first for efficiency
     return arr.size == 0 and numpy.prod(arr.shape[-2:]) == 0
-
-
-def _map_trans_to_mkl(trans):
-    """Map SciPy-style trans code (0,1,2) to oneMKL transpose enum."""
-    if not isinstance(trans, int):
-        raise TypeError("`trans` must be an integer")
-
-    if trans == 0:
-        return li.Transpose.N
-    if trans == 1:
-        return li.Transpose.T
-    if trans == 2:
-        return li.Transpose.C
-    raise ValueError("`trans` must be 0 (N), 1 (T), or 2 (C)")
 
 
 def _lu_factor(a, res_type):
