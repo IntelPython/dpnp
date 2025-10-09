@@ -12,6 +12,7 @@ var hierarchy =
     [ "backend_sycl", "classbackend__sycl.html", null ],
     [ "dpnp::extensions::window::kernels::BartlettFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_factory.html", null ],
     [ "dpnp::extensions::window::kernels::BartlettFunctor< T >", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_functor.html", null ],
+    [ "dpnp::kernels::erfs::BaseFunctor< OpT, ArgT, ResT >", "structdpnp_1_1kernels_1_1erfs_1_1_base_functor.html", null ],
     [ "statistics::histogram::Bincount", "structstatistics_1_1histogram_1_1_bincount.html", null ],
     [ "dpnp::kernels::bitwise_count::BitwiseCountFunctor< argT, resT >", "structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html", null ],
     [ "dpnp::extensions::window::kernels::BlackmanFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html", null ],
@@ -41,7 +42,8 @@ var hierarchy =
       [ "mcg59_struct", "structmcg59__struct.html", null ],
       [ "mt19937_struct", "structmt19937__struct.html", null ]
     ] ],
-    [ "dpnp::kernels::erf::ErfFunctor< argT, Tp >", "structdpnp_1_1kernels_1_1erf_1_1_erf_functor.html", null ],
+    [ "dpnp::kernels::erfs::ErfcOp", "structdpnp_1_1kernels_1_1erfs_1_1_erfc_op.html", null ],
+    [ "dpnp::kernels::erfs::ErfOp", "structdpnp_1_1kernels_1_1erfs_1_1_erf_op.html", null ],
     [ "std::exception", null, [
       [ "dpnp::extensions::lapack::LinAlgError", "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html", null ]
     ] ],
