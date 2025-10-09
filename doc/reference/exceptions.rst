@@ -35,3 +35,5 @@ Exceptions
         Traceback (most recent call last):
         ...
         DLPackCreationError: to_dlpack_capsule: DLPack can only export arrays based on USM allocations bound to a default platform SYCL context
+
+.. autodata:: SyclDeviceCreationError
