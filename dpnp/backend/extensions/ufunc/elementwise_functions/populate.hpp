@@ -25,6 +25,11 @@
 
 #pragma once
 
+// utils extension header
+#include "ext/common.hpp"
+
+namespace ext_ns = ext::common;
+
 /**
  * @brief A macro used to define factories and a populating unary universal
  * functions.
@@ -107,19 +112,14 @@
                                                                                \
     void populate_##__name__##_dispatch_vectors(void)                          \
     {                                                                          \
-        td_ns::DispatchVectorBuilder<unary_contig_impl_fn_ptr_t,               \
-                                     ContigFactory, td_ns::num_types>          \
-            dvb1;                                                              \
-        dvb1.populate_dispatch_vector(__name__##_contig_dispatch_vector);      \
-                                                                               \
-        td_ns::DispatchVectorBuilder<unary_strided_impl_fn_ptr_t,              \
-                                     StridedFactory, td_ns::num_types>         \
-            dvb2;                                                              \
-        dvb2.populate_dispatch_vector(__name__##_strided_dispatch_vector);     \
-                                                                               \
-        td_ns::DispatchVectorBuilder<int, TypeMapFactory, td_ns::num_types>    \
-            dvb3;                                                              \
-        dvb3.populate_dispatch_vector(__name__##_output_typeid_vector);        \
+        ext_ns::init_dispatch_vector<unary_contig_impl_fn_ptr_t,               \
+                                     ContigFactory>(                           \
+            __name__##_contig_dispatch_vector);                                \
+        ext_ns::init_dispatch_vector<unary_strided_impl_fn_ptr_t,              \
+                                     StridedFactory>(                          \
+            __name__##_strided_dispatch_vector);                               \
+        ext_ns::init_dispatch_vector<int, TypeMapFactory>(                     \
+            __name__##_output_typeid_vector);                                  \
     };
 
 /**
@@ -214,17 +214,12 @@
                                                                                \
     void populate_##__name__##_dispatch_tables(void)                           \
     {                                                                          \
-        td_ns::DispatchTableBuilder<binary_contig_impl_fn_ptr_t,               \
-                                    ContigFactory, td_ns::num_types>           \
-            dvb1;                                                              \
-        dvb1.populate_dispatch_table(__name__##_contig_dispatch_table);        \
-                                                                               \
-        td_ns::DispatchTableBuilder<binary_strided_impl_fn_ptr_t,              \
-                                    StridedFactory, td_ns::num_types>          \
-            dvb2;                                                              \
-        dvb2.populate_dispatch_table(__name__##_strided_dispatch_table);       \
-                                                                               \
-        td_ns::DispatchTableBuilder<int, TypeMapFactory, td_ns::num_types>     \
-            dvb3;                                                              \
-        dvb3.populate_dispatch_table(__name__##_output_typeid_table);          \
+        ext_ns::init_dispatch_table<binary_contig_impl_fn_ptr_t,               \
+                                    ContigFactory>(                            \
+            __name__##_contig_dispatch_table);                                 \
+        ext_ns::init_dispatch_table<binary_strided_impl_fn_ptr_t,              \
+                                    StridedFactory>(                           \
+            __name__##_strided_dispatch_table);                                \
+        ext_ns::init_dispatch_table<int, TypeMapFactory>(                      \
+            __name__##_output_typeid_table);                                   \
     };

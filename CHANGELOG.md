@@ -4,7 +4,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.19.0] - 2025-MM-DD
+## [0.20.0] - MM/DD/2026
+
+### Added
+
+* Added the docstrings to `dpnp.linalg.LinAlgError` exception [#2613](https://github.com/IntelPython/dpnp/pull/2613)
+
+### Changed
+
+* Silenced `pybind11` CMake message due to using compatibility mode for Python [#2614](https://github.com/IntelPython/dpnp/pull/2614)
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [0.19.0] - 2025-10-06
+
+This release introduces a set of new `dpnp.ndarray` methods and SciPy-compatible functions to improve CuPy compatibility.
+It also enhances the performance of existing functions and improves documentation completeness.
+Additionally, it extends support for building `dpnp` from the source for NVIDIA GPUs, with optional architecture selection.
+This release is compatible with NumPy 2.3.3.
 
 ### Added
 
@@ -18,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added implementation of `dpnp.linalg.lu_factor` (SciPy-compatible) [#2557](https://github.com/IntelPython/dpnp/pull/2557), [#2565](https://github.com/IntelPython/dpnp/pull/2565)
 * Added implementation of `dpnp.piecewise` [#2550](https://github.com/IntelPython/dpnp/pull/2550)
 * Added implementation of `dpnp.linalg.lu_solve` for 2D inputs (SciPy-compatible) [#2575](https://github.com/IntelPython/dpnp/pull/2575)
+* Added implementation of `dpnp.special.erfc` [#2588](https://github.com/IntelPython/dpnp/pull/2588)
+* Added `dpnp.scipy` submodule to aggregate new SciPy-compatible functions from `linalg` and `special` namespaces [#2603](https://github.com/IntelPython/dpnp/pull/2603)
 
 ### Changed
 
@@ -45,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Redesigned `dpnp.erf` function through pybind11 extension of OneMKL call or dedicated kernel in `ufunc` namespace [#2551](https://github.com/IntelPython/dpnp/pull/2551)
 * Improved performance of batched implementation of `dpnp.linalg.det` and `dpnp.linalg.slogdet` [#2572](https://github.com/IntelPython/dpnp/pull/2572)
 * Improved documentations of `dpnp.tril_indices` and `dpnp.triu_indices` to clarify the returned order of indices [#2586](https://github.com/IntelPython/dpnp/pull/2586)
+* `dpnp` uses pybind11 3.0.1 [#2594](https://github.com/IntelPython/dpnp/pull/2594)
 
 ### Deprecated
 
@@ -67,8 +94,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fixed tests for the rounding functions to depend on minimum required numpy version [#2589](https://github.com/IntelPython/dpnp/pull/2589)
 * Fixed tests for the ufuncs to depend on minimum required numpy version [#2590](https://github.com/IntelPython/dpnp/pull/2590)
 * Added missing permission definition in `Autoupdate pre-commit` GitHub workflow [#2591](https://github.com/IntelPython/dpnp/pull/2591)
+* Resolved issue with the cyclic import in `linalg` submodule [#2608](https://github.com/IntelPython/dpnp/pull/2608)
 
-### Security
 
 ## [0.18.1] - 2025-06-24
 

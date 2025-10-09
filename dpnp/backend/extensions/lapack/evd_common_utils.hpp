@@ -30,24 +30,10 @@
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
-#include "utils/type_dispatch.hpp"
 
 namespace dpnp::extensions::lapack::evd
 {
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 namespace py = pybind11;
-
-template <typename dispatchT,
-          template <typename fnT, typename T, typename RealT>
-          typename factoryT>
-void init_evd_dispatch_table(
-    dispatchT evd_dispatch_table[][dpctl_td_ns::num_types])
-{
-    dpctl_td_ns::DispatchTableBuilder<dispatchT, factoryT,
-                                      dpctl_td_ns::num_types>
-        contig;
-    contig.populate_dispatch_table(evd_dispatch_table);
-}
 
 inline void common_evd_checks(sycl::queue &exec_q,
                               const dpctl::tensor::usm_ndarray &eig_vecs,

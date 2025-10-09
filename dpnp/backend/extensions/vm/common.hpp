@@ -33,15 +33,27 @@
 #include <dpctl4pybind11.hpp>
 #include <pybind11/pybind11.h>
 
+// utils extension header
+#include "ext/common.hpp"
+
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/type_dispatch.hpp"
 
-#include "dpnp_utils.hpp"
+/**
+ * Version of Intel MKL at which transition to OneMKL release 2023.2.0 occurs.
+ *
+ * @note with OneMKL=2023.1.0 the call of oneapi::mkl::vm::div() was dead
+ * locked inside ~usm_wrapper_to_host()->{...; q_->wait_and_throw(); ...}
+ */
+#ifndef __INTEL_MKL_2023_2_0_VERSION_REQUIRED
+#define __INTEL_MKL_2023_2_0_VERSION_REQUIRED 20230002L
+#endif
 
 static_assert(INTEL_MKL_VERSION >= __INTEL_MKL_2023_2_0_VERSION_REQUIRED,
               "OneMKL does not meet minimum version requirement");
 
+namespace ext_ns = ext::common;
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
@@ -278,11 +290,10 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
                                                                                \
     static void populate_dispatch_vectors(void)                                \
     {                                                                          \
-        py_internal::init_ufunc_dispatch_vector<int, TypeMapFactory>(          \
+        ext_ns::init_dispatch_vector<int, TypeMapFactory>(                     \
             output_typeid_vector);                                             \
-        py_internal::init_ufunc_dispatch_vector<unary_contig_impl_fn_ptr_t,    \
-                                                ContigFactory>(                \
-            contig_dispatch_vector);                                           \
+        ext_ns::init_dispatch_vector<unary_contig_impl_fn_ptr_t,               \
+                                     ContigFactory>(contig_dispatch_vector);   \
     };
 
 /**
@@ -319,30 +330,9 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
                                                                                \
     static void populate_dispatch_tables(void)                                 \
     {                                                                          \
-        py_internal::init_ufunc_dispatch_table<int, TypeMapFactory>(           \
+        ext_ns::init_dispatch_table<int, TypeMapFactory>(                      \
             output_typeid_vector);                                             \
-        py_internal::init_ufunc_dispatch_table<binary_contig_impl_fn_ptr_t,    \
-                                               ContigFactory>(                 \
-            contig_dispatch_vector);                                           \
+        ext_ns::init_dispatch_table<binary_contig_impl_fn_ptr_t,               \
+                                    ContigFactory>(contig_dispatch_vector);    \
     };
-
-template <typename dispatchT,
-          template <typename fnT, typename T>
-          typename factoryT,
-          int _num_types = td_ns::num_types>
-void init_ufunc_dispatch_vector(dispatchT dispatch_vector[])
-{
-    td_ns::DispatchVectorBuilder<dispatchT, factoryT, _num_types> dvb;
-    dvb.populate_dispatch_vector(dispatch_vector);
-}
-
-template <typename dispatchT,
-          template <typename fnT, typename D, typename S>
-          typename factoryT,
-          int _num_types = td_ns::num_types>
-void init_ufunc_dispatch_table(dispatchT dispatch_table[][_num_types])
-{
-    td_ns::DispatchTableBuilder<dispatchT, factoryT, _num_types> dtb;
-    dtb.populate_dispatch_table(dispatch_table);
-}
 } // namespace dpnp::extensions::vm::py_internal

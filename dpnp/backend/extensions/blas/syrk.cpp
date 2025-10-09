@@ -28,6 +28,7 @@
 
 #include <pybind11/pybind11.h>
 
+// utils extension header
 #include "ext/common.hpp"
 
 // dpctl tensor headers
@@ -38,8 +39,6 @@
 #include "syrk.hpp"
 #include "types_matrix.hpp"
 
-#include "dpnp_utils.hpp"
-
 using ext::common::Align;
 
 namespace dpnp::extensions::blas
@@ -47,6 +46,8 @@ namespace dpnp::extensions::blas
 namespace mkl_blas = oneapi::mkl::blas;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
+
+using ext::common::init_dispatch_vector;
 
 typedef sycl::event (*syrk_impl_fn_ptr_t)(sycl::queue &,
                                           const oneapi::mkl::transpose,
@@ -349,9 +350,7 @@ struct SyrkContigFactory
 
 void init_syrk_dispatch_vector(void)
 {
-    dpctl_td_ns::DispatchVectorBuilder<syrk_impl_fn_ptr_t, SyrkContigFactory,
-                                       dpctl_td_ns::num_types>
-        contig;
-    contig.populate_dispatch_vector(syrk_dispatch_vector);
+    init_dispatch_vector<syrk_impl_fn_ptr_t, SyrkContigFactory>(
+        syrk_dispatch_vector);
 }
 } // namespace dpnp::extensions::blas

@@ -25,8 +25,8 @@
 # *****************************************************************************
 
 """
-``dpnp.special``
-================
+``dpnp.scipy.special``
+======================
 
 The submodule provides a large collection of mathematical functions that are
 widely used in science and engineering. It includes special functions of
@@ -41,8 +41,10 @@ alternatively, is implemented through a subset of python calls.
 
 from ._erf import (
     erf,
+    erfc,
 )
 
 __all__ = [
     "erf",
+    "erfc",
 ]

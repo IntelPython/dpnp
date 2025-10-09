@@ -29,7 +29,7 @@ Interface of the Error functions
 
 Notes
 -----
-This module is a face or public interface file for the library
+This module exposes the public interface for ``dpnp.scipy.special``.
 it contains:
  - Interface functions
  - documentation for the functions
@@ -42,7 +42,7 @@ it contains:
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPUnaryFunc
 
-__all__ = ["erf"]
+__all__ = ["erf", "erfc"]
 
 
 # pylint: disable=too-few-public-methods
@@ -85,13 +85,18 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {dpnp.ndarray, usm_ndarray}, optional
     Optional output array for the function values.
 
+Returns
+-------
+out : dpnp.ndarray
+    The values of the error function at the given points `x`.
+
 See Also
 --------
-:obj:`dpnp.special.erfc` : Complementary error function.
-:obj:`dpnp.special.erfinv` : Inverse of the error function.
-:obj:`dpnp.special.erfcinv` : Inverse of the complementary error function.
-:obj:`dpnp.special.erfcx` : Scaled complementary error function.
-:obj:`dpnp.special.erfi` : Imaginary error function.
+:obj:`dpnp.scipy.special.erfc` : Complementary error function.
+:obj:`dpnp.scipy.special.erfinv` : Inverse of the error function.
+:obj:`dpnp.scipy.special.erfcinv` : Inverse of the complementary error function.
+:obj:`dpnp.scipy.special.erfcx` : Scaled complementary error function.
+:obj:`dpnp.scipy.special.erfi` : Imaginary error function.
 
 Notes
 -----
@@ -108,7 +113,7 @@ Examples
 --------
 >>> import dpnp as np
 >>> x = np.linspace(-3, 3, num=5)
->>> np.special.erf(x)
+>>> np.scipy.special.erf(x)
 array([[-0.99997791, -0.96610515,  0.        ,  0.96610515,  0.99997791])
 
 """
@@ -120,4 +125,49 @@ erf = DPNPErf(
     _ERF_DOCSTRING,
     mkl_fn_to_call="_mkl_erf_to_call",
     mkl_impl_fn="_erf",
+)
+
+_ERFC_DOCSTRING = r"""
+Calculates the complementary error function of a given input array.
+
+It is defined as :math:`1 - \operatorname{erf}(x)`.
+
+For full documentation refer to :obj:`scipy.special.erfc`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have a real-valued floating-point data type.
+out : {dpnp.ndarray, usm_ndarray}, optional
+    Optional output array for the function values.
+
+Returns
+-------
+out : dpnp.ndarray
+    The values of the complementary error function at the given points `x`.
+
+See Also
+--------
+:obj:`dpnp.scipy.special.erf` : Gauss error function.
+:obj:`dpnp.scipy.special.erfinv` : Inverse of the error function.
+:obj:`dpnp.scipy.special.erfcinv` : Inverse of the complementary error function.
+:obj:`dpnp.scipy.special.erfcx` : Scaled complementary error function.
+:obj:`dpnp.scipy.special.erfi` : Imaginary error function.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.linspace(-3, 3, num=5)
+>>> np.scipy.special.erfc(x)
+array([[-0.99997791, -0.96610515,  0.        ,  0.96610515,  0.99997791])
+
+"""
+
+erfc = DPNPErf(
+    "erfc",
+    ufi._erf_result_type,
+    ufi._erfc,
+    _ERFC_DOCSTRING,
+    mkl_fn_to_call="_mkl_erf_to_call",
+    mkl_impl_fn="_erfc",
 )

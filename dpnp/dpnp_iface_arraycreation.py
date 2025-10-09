@@ -38,6 +38,8 @@ it contains:
 """
 
 
+# pylint: disable=duplicate-code
+
 import operator
 
 import dpctl.tensor as dpt

@@ -10,7 +10,7 @@ import pytest
 import dpnp
 from dpnp.dpnp_utils import get_usm_allocations
 
-from .helper import generate_random_numpy_array, is_arl_or_mtl, is_win_platform
+from .helper import generate_random_numpy_array
 
 list_of_usm_types = ["device", "shared", "host"]
 
@@ -1296,10 +1296,11 @@ def test_choose(usm_type_x, usm_type_ind):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
 
 
+@pytest.mark.parametrize("func", ["erf", "erfc"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
-def test_erf(usm_type):
+def test_erf_funcs(func, usm_type):
     x = dpnp.linspace(-3, 3, num=5, usm_type=usm_type)
-    y = dpnp.special.erf(x)
+    y = getattr(dpnp.scipy.special, func)(x)
     assert x.usm_type == y.usm_type == usm_type
 
 
@@ -1365,8 +1366,6 @@ class TestLinAlgebra:
             x = dpnp.empty(data, dtype=dtype, usm_type=usm_type)
         else:
             x = dpnp.array(data, dtype=dtype, usm_type=usm_type)
-            if x.ndim > 2 and is_win_platform() and is_arl_or_mtl():
-                pytest.skip("SAT-8206")
 
         result = dpnp.linalg.cholesky(x)
         assert x.usm_type == result.usm_type
@@ -1481,7 +1480,7 @@ class TestLinAlgebra:
     )
     def test_lu_factor(self, data, usm_type):
         a = dpnp.array(data, usm_type=usm_type)
-        result = dpnp.linalg.lu_factor(a)
+        result = dpnp.scipy.linalg.lu_factor(a)
 
         assert a.usm_type == usm_type
         for param in result:
@@ -1499,10 +1498,10 @@ class TestLinAlgebra:
     )
     def test_lu_solve(self, a_data, b_data, usm_type, usm_type_rhs):
         a = dpnp.array(a_data, usm_type=usm_type)
-        lu, piv = dpnp.linalg.lu_factor(a)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a)
         b = dpnp.array(b_data, usm_type=usm_type_rhs)
 
-        result = dpnp.linalg.lu_solve((lu, piv), b)
+        result = dpnp.scipy.linalg.lu_solve((lu, piv), b)
 
         assert lu.usm_type == usm_type
         assert b.usm_type == usm_type_rhs

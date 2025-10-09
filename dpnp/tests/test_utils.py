@@ -1,4 +1,3 @@
-import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest

@@ -3,4 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - python=3.13
-  - conda-build=25.7.0
+  - conda-build=25.9.0

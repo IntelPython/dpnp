@@ -16,7 +16,6 @@ from dpnp.dpnp_utils import get_usm_allocations
 from .helper import (
     generate_random_numpy_array,
     get_all_dtypes,
-    is_arl_or_mtl,
     is_win_platform,
 )
 
@@ -1489,11 +1488,12 @@ def test_interp(device, left, right, period):
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
+@pytest.mark.parametrize("func", ["erf", "erfc"])
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-def test_erf(device):
+def test_erf_funcs(func, device):
     x = dpnp.linspace(-3, 3, num=5, device=device)
 
-    result = dpnp.special.erf(x)
+    result = getattr(dpnp.scipy.special, func)(x)
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
@@ -1515,8 +1515,6 @@ class TestLinAlgebra:
         else:
             dtype = dpnp.default_float_type(device)
             x = dpnp.array(data, dtype=dtype, device=device)
-            if x.ndim > 2 and is_win_platform() and is_arl_or_mtl():
-                pytest.skip("SAT-8206")
 
         result = dpnp.linalg.cholesky(x)
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
@@ -1605,7 +1603,7 @@ class TestLinAlgebra:
     )
     def test_lu_factor(self, data, device):
         a = dpnp.array(data, device=device)
-        result = dpnp.linalg.lu_factor(a)
+        result = dpnp.scipy.linalg.lu_factor(a)
 
         for param in result:
             param_queue = param.sycl_queue
@@ -1622,10 +1620,10 @@ class TestLinAlgebra:
     )
     def test_lu_solve(self, a_data, b_data, device):
         a = dpnp.array(a_data, device=device)
-        lu, piv = dpnp.linalg.lu_factor(a)
+        lu, piv = dpnp.scipy.linalg.lu_factor(a)
         b = dpnp.array(b_data, device=device)
 
-        result = dpnp.linalg.lu_solve((lu, piv), b)
+        result = dpnp.scipy.linalg.lu_solve((lu, piv), b)
 
         assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
         assert_sycl_queue_equal(result.sycl_queue, b.sycl_queue)

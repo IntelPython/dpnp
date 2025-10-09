@@ -45,6 +45,7 @@
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
+// utils extension headers
 #include "ext/common.hpp"
 #include "ext/validation_utils.hpp"
 
@@ -68,6 +69,7 @@ namespace dpnp::extensions::ufunc
 
 namespace impl
 {
+using ext::common::init_dispatch_vector;
 
 typedef sycl::event (*isclose_strided_scalar_fn_ptr_t)(
     sycl::queue &,
@@ -351,19 +353,14 @@ struct IsCloseContigScalarFactory
     }
 };
 
-void populate_isclose_dispatch_vectors()
+static void populate_isclose_dispatch_vectors()
 {
-    using namespace td_ns;
-
-    DispatchVectorBuilder<isclose_strided_scalar_fn_ptr_t,
-                          IsCloseStridedScalarFactory, num_types>
-        dvb1;
-    dvb1.populate_dispatch_vector(isclose_strided_scalar_dispatch_vector);
-
-    DispatchVectorBuilder<isclose_contig_scalar_fn_ptr_t,
-                          IsCloseContigScalarFactory, num_types>
-        dvb2;
-    dvb2.populate_dispatch_vector(isclose_contig_dispatch_vector);
+    init_dispatch_vector<isclose_strided_scalar_fn_ptr_t,
+                         IsCloseStridedScalarFactory>(
+        isclose_strided_scalar_dispatch_vector);
+    init_dispatch_vector<isclose_contig_scalar_fn_ptr_t,
+                         IsCloseContigScalarFactory>(
+        isclose_contig_dispatch_vector);
 }
 
 } // namespace impl

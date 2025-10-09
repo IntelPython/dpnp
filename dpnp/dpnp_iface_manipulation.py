@@ -38,6 +38,8 @@ it contains:
 """
 
 
+# pylint: disable=duplicate-code
+
 import math
 import operator
 import warnings

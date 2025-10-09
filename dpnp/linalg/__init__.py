@@ -34,7 +34,42 @@ low level implementations of standard linear algebra algorithms.
 """
 
 
-from dpnp.linalg.dpnp_iface_linalg import *
-from dpnp.linalg.dpnp_iface_linalg import __all__ as __all__linalg
+from .dpnp_iface_linalg import (
+    LinAlgError,
+)
+from .dpnp_iface_linalg import __all__ as __all__linalg
+from .dpnp_iface_linalg import (
+    cholesky,
+    cond,
+    cross,
+    det,
+    diagonal,
+    eig,
+    eigh,
+    eigvals,
+    eigvalsh,
+    inv,
+    lstsq,
+    matmul,
+    matrix_norm,
+    matrix_power,
+    matrix_rank,
+    matrix_transpose,
+    multi_dot,
+    norm,
+    outer,
+    pinv,
+    qr,
+    slogdet,
+    solve,
+    svd,
+    svdvals,
+    tensordot,
+    tensorinv,
+    tensorsolve,
+    trace,
+    vecdot,
+    vector_norm,
+)
 
 __all__ = __all__linalg

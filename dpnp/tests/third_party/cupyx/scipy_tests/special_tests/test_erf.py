@@ -6,7 +6,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-import dpnp.special
+import dpnp.scipy.special
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -19,11 +19,10 @@ def _boundary_inputs(boundary, rtol, atol):
 @testing.with_requires("scipy")
 class _TestBase:
 
-    # @testing.with_requires('scipy>=1.16.0')
+    @testing.with_requires("scipy>=1.16.0")
     def test_erf(self):
         self.check_unary("erf")
 
-    @pytest.mark.skip("erfc() is not supported yet")
     @testing.with_requires("scipy>=1.16.0")
     def test_erfc(self):
         self.check_unary("erfc")

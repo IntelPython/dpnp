@@ -27,6 +27,9 @@
 
 #include <pybind11/pybind11.h>
 
+// utils extension header
+#include "ext/common.hpp"
+
 // dpctl tensor headers
 #include "utils/type_utils.hpp"
 
@@ -40,6 +43,8 @@ namespace dpnp::extensions::lapack
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
+
+using ext::common::init_dispatch_table;
 
 typedef sycl::event (*gesvd_batch_impl_fn_ptr_t)(
     sycl::queue &,
@@ -296,10 +301,7 @@ struct GesvdBatchContigFactory
 
 void init_gesvd_batch_dispatch_table(void)
 {
-    dpctl_td_ns::DispatchTableBuilder<gesvd_batch_impl_fn_ptr_t,
-                                      GesvdBatchContigFactory,
-                                      dpctl_td_ns::num_types>
-        contig;
-    contig.populate_dispatch_table(gesvd_batch_dispatch_table);
+    init_dispatch_table<gesvd_batch_impl_fn_ptr_t, GesvdBatchContigFactory>(
+        gesvd_batch_dispatch_table);
 }
 } // namespace dpnp::extensions::lapack

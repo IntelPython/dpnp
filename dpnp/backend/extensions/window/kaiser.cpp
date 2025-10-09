@@ -26,17 +26,23 @@
 #include "kaiser.hpp"
 #include "common.hpp"
 
+// utils extension header
+#include "ext/common.hpp"
+
+// dpctl tensor headers
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
 #include <sycl/sycl.hpp>
 
-#include "../kernels/elementwise_functions/i0.hpp"
+#include "kernels/elementwise_functions/i0.hpp"
 
 namespace dpnp::extensions::window
 {
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+
+using ext::common::init_dispatch_vector;
 
 typedef sycl::event (*kaiser_fn_ptr_t)(sycl::queue &,
                                        char *,
@@ -132,7 +138,7 @@ std::pair<sycl::event, sycl::event>
 
 void init_kaiser_dispatch_vectors()
 {
-    init_window_dispatch_vectors<kaiser_fn_ptr_t, KaiserFactory>(
+    init_dispatch_vector<kaiser_fn_ptr_t, KaiserFactory>(
         kaiser_dispatch_vector);
 }
 
