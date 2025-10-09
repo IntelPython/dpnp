@@ -128,6 +128,20 @@ static sycl::event getrs_batch_impl(sycl::queue &exec_q,
             scratchpad, // Pointer to scratchpad memory to be used by MKL
                         // routine for storing intermediate results.
             scratchpad_size, depends);
+    } catch (mkl_lapack::batch_error const &be) {
+        // Get the indices of matrices within the batch that encountered an
+        // error
+        auto error_matrices_ids = be.ids();
+
+        // OneMKL batched functions throw a single `batch_error`
+        // instead of per-matrix exceptions or an info array.
+        // This is interpreted as a computation_error (singular matrix),
+        // consistent with non-batched LAPACK behavior.
+        is_exception_caught = false;
+        if (scratchpad != nullptr) {
+            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
+        }
+        throw LinAlgError("The solve could not be completed.");
     } catch (mkl_lapack::exception const &e) {
         is_exception_caught = true;
         info = e.info();
@@ -203,15 +217,23 @@ std::pair<sycl::event, sycl::event>
             "The LU-factorized array has ndim=" + std::to_string(a_array_nd) +
             ", but an array with ndim >= 3 is expected");
     }
-    if (b_array_nd < 3) {
+    if (b_array_nd < 2) {
         throw py::value_error("The right-hand sides array has ndim=" +
                               std::to_string(b_array_nd) +
-                              ", but an array with ndim >= 3 is expected");
+                              ", but an array with ndim >= 2 is expected");
     }
     if (ipiv_array_nd < 1) {
         throw py::value_error("The array of pivot indices has ndim=" +
                               std::to_string(ipiv_array_nd) +
                               ", but an array with ndim >= 2 is expected");
+    }
+
+    const py::ssize_t *a_array_shape = a_array.get_shape_raw();
+    if (a_array_shape[0] != a_array_shape[1]) {
+        throw py::value_error("Expected batch of square matrices , but got "
+                              "matrix shape (" +
+                              std::to_string(a_array_shape[0]) + ", " +
+                              std::to_string(a_array_shape[1]) + ") in batch");
     }
 
     if (ipiv_array_nd != a_array_nd - 1) {
@@ -220,16 +242,6 @@ std::pair<sycl::event, sycl::event>
             std::to_string(ipiv_array_nd) +
             ", but an array with ndim=" + std::to_string(a_array_nd - 1) +
             " is expected to match LU batch dimensions");
-    }
-
-    const py::ssize_t *a_array_shape = a_array.get_shape_raw();
-
-    if (a_array_shape[a_array_nd - 1] != a_array_shape[a_array_nd - 2]) {
-        throw py::value_error(
-            "The last two dimensions of the LU array must be square,"
-            " but got a shape of (" +
-            std::to_string(a_array_shape[a_array_nd - 1]) + ", " +
-            std::to_string(a_array_shape[a_array_nd - 2]) + ").");
     }
 
     // check compatibility of execution queue and allocation queue
@@ -281,7 +293,7 @@ std::pair<sycl::event, sycl::event>
     if (getrs_batch_fn == nullptr) {
         throw py::value_error(
             "No getrs_batch implementation defined for the provided type "
-            "of the input matrix.");
+            "of the input matrix");
     }
 
     auto ipiv_types = td_ns::usm_ndarray_types();
@@ -289,7 +301,7 @@ std::pair<sycl::event, sycl::event>
         ipiv_types.typenum_to_lookup_id(ipiv_array.get_typenum());
 
     if (ipiv_array_type_id != static_cast<int>(td_ns::typenum_t::INT64)) {
-        throw py::value_error("The type of 'ipiv_array' must be int64.");
+        throw py::value_error("The type of 'ipiv_array' must be int64");
     }
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
