@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Added the docstrings to `dpnp.linalg.LinAlgError` exception [#2613](https://github.com/IntelPython/dpnp/pull/2613)
+* Added implementation of `dpnp.linalg.lu_solve` for batch inputs (SciPy-compatible) [#2618](https://github.com/IntelPython/dpnp/pull/2618)
 
 ### Changed
 
