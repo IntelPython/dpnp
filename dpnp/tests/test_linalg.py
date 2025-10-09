@@ -2320,19 +2320,15 @@ class TestLuSolve:
 
         assert dpnp.allclose(a_dp @ x, b_dp, rtol=1e-5, atol=1e-5)
 
-    @pytest.mark.parametrize("shape", [(0, 0), (0, 5), (5, 5)])
-    @pytest.mark.parametrize("rhs_cols", [None, 0, 3])
-    def test_empty_shapes(self, shape, rhs_cols):
-        a_dp = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
-        if min(shape) > 0:
-            for i in range(min(shape)):
-                a_dp[i, i] = a_dp.dtype.type(1.0)
+    @pytest.mark.parametrize("a_shape", [(0, 0), (5, 5)])
+    @pytest.mark.parametrize("b_shape", [(0,), (0, 0), (0, 5)])
+    def test_empty_shapes(self, a_shape, b_shape):
+        a_dp = dpnp.empty(a_shape, dtype=dpnp.default_float_type(), order="F")
+        n = a_shape[0]
 
-        n = shape[0]
-        if rhs_cols is None:
-            b_shape = (n,)
-        else:
-            b_shape = (n, rhs_cols)
+        if n > 0:
+            for i in range(n):
+                a_dp[i, i] = a_dp.dtype.type(1.0)
         b_dp = dpnp.empty(b_shape, dtype=dpnp.default_float_type(), order="F")
 
         lu, piv = dpnp.linalg.lu_factor(a_dp, check_finite=False)
@@ -2537,7 +2533,7 @@ class TestLuSolveBatched:
             ((0, 0, 0), (0, 0)),
         ],
     )
-    def test_empty_inputs(self, a_shape, b_shape):
+    def test_empty_shapes(self, a_shape, b_shape):
         a = dpnp.empty(a_shape, dtype=dpnp.default_float_type(), order="F")
         b = dpnp.empty(b_shape, dtype=dpnp.default_float_type(), order="F")
 
