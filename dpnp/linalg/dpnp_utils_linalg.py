@@ -586,12 +586,9 @@ def _batched_lu_solve(lu, piv, b, res_type, trans=0):
     _manager.add_event_pair(ht_ev, b_copy_ev)
     dep_evs = [lu_copy_ev, b_copy_ev]
 
-    lu_stride = lu_h.strides[-1]
-    piv_stride = piv.strides[0]
-    b_stride = b_h.strides[-1]
-
-    if not isinstance(trans, int):
-        raise TypeError("`trans` must be an integer")
+    lu_stride = n * n
+    piv_stride = n
+    b_stride = n * nrhs
 
     trans_mkl = _map_trans_to_mkl(trans)
 
