@@ -1489,11 +1489,16 @@ class TestLinAlgebra:
 
     @pytest.mark.parametrize("usm_type_rhs", list_of_usm_types)
     @pytest.mark.parametrize(
-        "b_data",
-        [[1.0, 2.0], numpy.empty((2, 0))],
+        "a_data, b_data",
+        [
+            ([[1.0, 2.0], [3.0, 5.0]], [1.0, 2.0]),
+            ([[1.0, 2.0], [3.0, 5.0]], numpy.empty((2, 0))),
+            ([[[1.0, 2.0], [3.0, 5.0]]], [1.0, 2.0]),
+            ([[[1.0, 2.0], [3.0, 5.0]]], numpy.empty((2, 0, 2))),
+        ],
     )
-    def test_lu_solve(self, b_data, usm_type, usm_type_rhs):
-        a = dpnp.array([[1.0, 2.0], [3.0, 5.0]], usm_type=usm_type)
+    def test_lu_solve(self, a_data, b_data, usm_type, usm_type_rhs):
+        a = dpnp.array(a_data, usm_type=usm_type)
         lu, piv = dpnp.linalg.lu_factor(a)
         b = dpnp.array(b_data, usm_type=usm_type_rhs)
 
