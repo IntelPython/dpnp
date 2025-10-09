@@ -1037,6 +1037,7 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
     (lu, piv) = lu_and_piv
     dpnp.check_supported_arrays_type(lu, piv, b)
     assert_stacked_2d(lu)
+    assert_stacked_square(lu)
 
     return dpnp_lu_solve(
         lu,
