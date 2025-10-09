@@ -11,6 +11,7 @@ This release changes the license from `BSD-2-Clause` to `BSD-3-Clause`.
 ### Added
 
 * Added the docstrings to `dpnp.linalg.LinAlgError` exception [#2613](https://github.com/IntelPython/dpnp/pull/2613)
+* Added `dpnp.exceptions` submodule to aggregate the generic exceptions used by dpnp [#2616](https://github.com/IntelPython/dpnp/pull/2616)
 
 ### Changed
 
