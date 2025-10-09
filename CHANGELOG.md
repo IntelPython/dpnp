@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added `dpnp.exceptions` submodule to aggregate the generic exceptions used by dpnp [#2616](https://github.com/IntelPython/dpnp/pull/2616)
+
 ### Changed
 
 ### Deprecated
