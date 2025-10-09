@@ -49,6 +49,9 @@ endif()
 
 include(GNUInstallDirs)
 
+# find Python before enabling pybind11
+find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
+
 # Fetch pybind11
 include(FetchContent)
 FetchContent_Declare(
@@ -58,8 +61,6 @@ FetchContent_Declare(
     FIND_PACKAGE_ARGS NAMES pybind11
 )
 FetchContent_MakeAvailable(pybind11)
-
-find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 
 set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
 find_package(Cython REQUIRED)
