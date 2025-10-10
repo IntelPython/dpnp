@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.20.0] - MM/DD/2026
 
+This release changes the license from `BSD-2-Clause` to `BSD-3-Clause`.
+
 ### Added
 
 * Added the docstrings to `dpnp.linalg.LinAlgError` exception [#2613](https://github.com/IntelPython/dpnp/pull/2613)
@@ -13,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Silenced `pybind11` CMake message due to using compatibility mode for Python [#2614](https://github.com/IntelPython/dpnp/pull/2614)
+* Changed the license from `BSD-2-Clause` to `BSD-3-Clause` [#2593](https://github.com/IntelPython/dpnp/pull/2593)
 
 ### Deprecated
 
