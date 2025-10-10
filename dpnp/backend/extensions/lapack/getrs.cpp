@@ -234,7 +234,7 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("The right-hand sides array "
                               "must be F-contiguous");
     }
-    if (!is_ipiv_array_c_contig || !is_ipiv_array_f_contig) {
+    if (!is_ipiv_array_c_contig && !is_ipiv_array_f_contig) {
         throw py::value_error("The array of pivot indices "
                               "must be contiguous");
     }
