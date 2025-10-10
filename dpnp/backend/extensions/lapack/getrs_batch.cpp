@@ -56,14 +56,14 @@ typedef sycl::event (*getrs_batch_impl_fn_ptr_t)(
     const std::int64_t,     // n
     const std::int64_t,     // nrhs
     char *,                 // a
-    std::int64_t,           // lda
-    std::int64_t,           // stride_a
-    std::int64_t *,         // ipiv
-    std::int64_t,           // stride_ipiv
+    const std::int64_t,     // lda
+    const std::int64_t,     // stride_a
+    const std::int64_t *,   // ipiv
+    const std::int64_t,     // stride_ipiv
     char *,                 // b
-    std::int64_t,           // ldb
-    std::int64_t,           // stride_b
-    std::int64_t,           // batch_size
+    const std::int64_t,     // ldb
+    const std::int64_t,     // stride_b
+    const std::int64_t,     // batch_size
     std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
@@ -75,14 +75,14 @@ static sycl::event getrs_batch_impl(sycl::queue &exec_q,
                                     const std::int64_t n,
                                     const std::int64_t nrhs,
                                     char *in_a,
-                                    std::int64_t lda,
-                                    std::int64_t stride_a,
-                                    std::int64_t *ipiv,
-                                    std::int64_t stride_ipiv,
+                                    const std::int64_t lda,
+                                    const std::int64_t stride_a,
+                                    const std::int64_t *ipiv,
+                                    const std::int64_t stride_ipiv,
                                     char *in_b,
-                                    std::int64_t ldb,
-                                    std::int64_t stride_b,
-                                    std::int64_t batch_size,
+                                    const std::int64_t ldb,
+                                    const std::int64_t stride_b,
+                                    const std::int64_t batch_size,
                                     std::vector<sycl::event> &host_task_events,
                                     const std::vector<sycl::event> &depends)
 {

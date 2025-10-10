@@ -48,14 +48,14 @@ namespace type_utils = dpctl::tensor::type_utils;
 using ext::common::init_dispatch_vector;
 
 typedef sycl::event (*getrs_impl_fn_ptr_t)(sycl::queue &,
-                                           oneapi::mkl::transpose,
+                                           const oneapi::mkl::transpose,
                                            const std::int64_t,
                                            const std::int64_t,
                                            char *,
-                                           std::int64_t,
-                                           std::int64_t *,
+                                           const std::int64_t,
+                                           const std::int64_t *,
                                            char *,
-                                           std::int64_t,
+                                           const std::int64_t,
                                            std::vector<sycl::event> &,
                                            const std::vector<sycl::event> &);
 
@@ -67,10 +67,10 @@ static sycl::event getrs_impl(sycl::queue &exec_q,
                               const std::int64_t n,
                               const std::int64_t nrhs,
                               char *in_a,
-                              std::int64_t lda,
-                              std::int64_t *ipiv,
+                              const std::int64_t lda,
+                              const std::int64_t *ipiv,
                               char *in_b,
-                              std::int64_t ldb,
+                              const std::int64_t ldb,
                               std::vector<sycl::event> &host_task_events,
                               const std::vector<sycl::event> &depends)
 {
