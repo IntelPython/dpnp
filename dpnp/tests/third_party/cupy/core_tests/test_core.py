@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 import unittest
 
@@ -97,7 +99,7 @@ class TestMinScalarType:
 @testing.parameterize(
     *testing.product(
         {
-            "cxx": (None, "--std=c++11"),
+            "cxx": (None, "--std=c++14"),
         }
     )
 )
