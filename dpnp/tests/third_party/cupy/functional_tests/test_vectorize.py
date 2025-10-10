@@ -24,6 +24,9 @@ from dpnp.tests.third_party.cupy import testing
 # _IS_HIP_LT7 = bool(_ROCM_VER_MAJOR != -1 and int(_ROCM_VER_MAJOR) < 7)
 
 
+pytest.skip("dpnp.vectorize is not implemented", allow_module_level=True)
+
+
 # @pytest.mark.skipif(_IS_HIP_LT7, reason="Skip on ROCm < 7 (HIP).")
 class TestVectorizeOps(unittest.TestCase):
 
