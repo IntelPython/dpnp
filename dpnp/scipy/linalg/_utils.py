@@ -215,9 +215,6 @@ def _batched_lu_solve(lu, piv, b, res_type, trans=0):
     """Solve a batched equation system (SciPy-compatible behavior)."""
     res_usm_type, exec_q = get_usm_allocations([lu, piv, b])
 
-    if b.size == 0:
-        return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
-
     b_ndim = b.ndim
 
     lu, b = _align_lu_solve_broadcast(lu, b)
@@ -257,7 +254,7 @@ def _batched_lu_solve(lu, piv, b, res_type, trans=0):
     _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
 
-    # oneMKL LAPACK getrs overwrites `lu`.
+    # oneMKL LAPACK getrs_batch overwrites `lu`
     lu_h = dpnp.empty_like(lu, order="F", dtype=res_type, usm_type=res_usm_type)
 
     # use DPCTL tensor function to fill the сopy of the input array
@@ -270,6 +267,8 @@ def _batched_lu_solve(lu, piv, b, res_type, trans=0):
     )
     _manager.add_event_pair(ht_ev, lu_copy_ev)
 
+    # oneMKL LAPACK getrs_batch overwrites `b` and assumes fortran-like array
+    # as input
     b_h = dpnp.empty_like(b, order="F", dtype=res_type, usm_type=res_usm_type)
     ht_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=b_usm_arr,
