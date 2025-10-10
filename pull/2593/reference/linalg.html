@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Linear algebra &mdash; Data Parallel Extension for NumPy 0.20.0dev0+6.gb372b6c11cb documentation</title>
+  <title>Linear algebra &mdash; Data Parallel Extension for NumPy 0.20.0dev0+8.ga3721b999ff documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=b1843b80"></script>
+      <script src="../_static/documentation_options.js?v=29fdd173"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -74,6 +74,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#solving-linear-equations">Solving linear equations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#other-matrix-operations">Other matrix operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#linear-algebra-on-several-matrices-at-once">Linear algebra on several matrices at once</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="logic.html">Logic functions</a></li>
@@ -307,8 +308,25 @@
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.LinAlgError.html#dpnp.linalg.LinAlgError" title="dpnp.linalg.LinAlgError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.LinAlgError</span></code></a></p></td>
+<td><p>Generic Python-exception-derived object raised by LinAlg functions.</p></td>
+</tr>
 </tbody>
 </table>
+</section>
+<section id="linear-algebra-on-several-matrices-at-once">
+<h2>Linear algebra on several matrices at once<a class="headerlink" href="#linear-algebra-on-several-matrices-at-once" title="Link to this heading"></a></h2>
+<p>Several of the linear algebra routines listed above are able to compute results
+for several matrices at once, if they are stacked into the same array.</p>
+<p>This is indicated in the documentation via input parameter specifications such
+as <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">:</span> <span class="pre">(...,</span> <span class="pre">M,</span> <span class="pre">M)</span> <span class="pre">{dpnp.ndarray,</span> <span class="pre">usm_ndarray}</span></code>. This means that if for
+instance given an input array <code class="docutils literal notranslate"><span class="pre">a.shape</span> <span class="pre">==</span> <span class="pre">(N,</span> <span class="pre">M,</span> <span class="pre">M)</span></code>, it is interpreted as a
+&quot;stack&quot; of N matrices, each of size M-by-M. Similar specification applies to
+return values, for instance the determinant has <code class="docutils literal notranslate"><span class="pre">det</span> <span class="pre">:</span> <span class="pre">(...)</span></code> and will in
+this case return an array of shape <code class="docutils literal notranslate"><span class="pre">det(a).shape</span> <span class="pre">==</span> <span class="pre">(N,)</span></code>. This generalizes
+to linear algebra operations on higher-dimensional arrays: the last 1 or 2
+dimensions of a multidimensional array are interpreted as vectors or matrices,
+as appropriate for each operation.</p>
 </section>
 </section>
 
