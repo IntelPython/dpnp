@@ -33,10 +33,12 @@
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
+// utils extension header
+#include "ext/common.hpp"
+
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/sycl_alloc_utils.hpp"
-#include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
 #include "getrs.hpp"
@@ -48,7 +50,8 @@ namespace dpnp::extensions::lapack
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
-namespace td_ns = dpctl::tensor::type_dispatch;
+
+using ext::common::init_dispatch_vector;
 
 typedef sycl::event (*getrs_batch_impl_fn_ptr_t)(
     sycl::queue &,
@@ -67,7 +70,8 @@ typedef sycl::event (*getrs_batch_impl_fn_ptr_t)(
     std::vector<sycl::event> &,
     const std::vector<sycl::event> &);
 
-static getrs_batch_impl_fn_ptr_t getrs_batch_dispatch_vector[td_ns::num_types];
+static getrs_batch_impl_fn_ptr_t
+    getrs_batch_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
 static sycl::event getrs_batch_impl(sycl::queue &exec_q,
@@ -225,7 +229,7 @@ std::pair<sycl::event, sycl::event>
                               std::to_string(b_array_nd) +
                               ", but an array with ndim >= 2 is expected");
     }
-    if (ipiv_array_nd < 1) {
+    if (ipiv_array_nd < 2) {
         throw py::value_error("The array of pivot indices has ndim=" +
                               std::to_string(ipiv_array_nd) +
                               ", but an array with ndim >= 2 is expected");
@@ -280,7 +284,7 @@ std::pair<sycl::event, sycl::event>
                               "must be contiguous");
     }
 
-    auto array_types = td_ns::usm_ndarray_types();
+    auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
     int b_array_type_id =
@@ -299,11 +303,11 @@ std::pair<sycl::event, sycl::event>
             "of the input matrix");
     }
 
-    auto ipiv_types = td_ns::usm_ndarray_types();
+    auto ipiv_types = dpctl_td_ns::usm_ndarray_types();
     int ipiv_array_type_id =
         ipiv_types.typenum_to_lookup_id(ipiv_array.get_typenum());
 
-    if (ipiv_array_type_id != static_cast<int>(td_ns::typenum_t::INT64)) {
+    if (ipiv_array_type_id != static_cast<int>(dpctl_td_ns::typenum_t::INT64)) {
         throw py::value_error("The type of 'ipiv_array' must be int64");
     }
 
@@ -343,9 +347,7 @@ struct GetrsBatchContigFactory
 
 void init_getrs_batch_dispatch_vector(void)
 {
-    td_ns::DispatchVectorBuilder<getrs_batch_impl_fn_ptr_t,
-                                 GetrsBatchContigFactory, td_ns::num_types>
-        contig;
-    contig.populate_dispatch_vector(getrs_batch_dispatch_vector);
+    init_dispatch_vector<getrs_batch_impl_fn_ptr_t, GetrsBatchContigFactory>(
+        getrs_batch_dispatch_vector);
 }
 } // namespace dpnp::extensions::lapack
