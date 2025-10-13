@@ -68,6 +68,3 @@ Exceptions
 
 .. automodule:: dpnp.exceptions
     :no-index:
-    :members:
-    :undoc-members:
-    :show-inheritance:
