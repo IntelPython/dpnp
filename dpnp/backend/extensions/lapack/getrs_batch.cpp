@@ -61,7 +61,7 @@ typedef sycl::event (*getrs_batch_impl_fn_ptr_t)(
     char *,                 // a
     const std::int64_t,     // lda
     const std::int64_t,     // stride_a
-    const std::int64_t *,   // ipiv
+    std::int64_t *,         // ipiv
     const std::int64_t,     // stride_ipiv
     char *,                 // b
     const std::int64_t,     // ldb
@@ -81,7 +81,7 @@ static sycl::event getrs_batch_impl(sycl::queue &exec_q,
                                     char *in_a,
                                     const std::int64_t lda,
                                     const std::int64_t stride_a,
-                                    const std::int64_t *ipiv,
+                                    std::int64_t *ipiv,
                                     const std::int64_t stride_ipiv,
                                     char *in_b,
                                     const std::int64_t ldb,
