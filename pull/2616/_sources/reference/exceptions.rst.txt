@@ -65,3 +65,6 @@ Exceptions
 
         * insufficient free memory to perform the allocation request
         * allocation size exceeds the maximum supported by targeted backend
+
+.. automodule:: dpnp.exceptions
+    :no-index:
