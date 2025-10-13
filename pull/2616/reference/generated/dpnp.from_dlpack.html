@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.from_dlpack &mdash; Data Parallel Extension for NumPy 0.20.0dev0+14.g31a9bb2ffc4 documentation</title>
+  <title>dpnp.from_dlpack &mdash; Data Parallel Extension for NumPy 0.20.0dev0+18.gf8ef8d28b5f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=f77d48b7"></script>
+      <script src="../../_static/documentation_options.js?v=86c31c23"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -187,7 +187,7 @@ otherwise an exception is raised.</p>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> -- if <cite>x</cite> does not implement <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> method</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> -- if data of the input object resides on an unsupported device</p></li>
-<li><p><strong>DLPackCreationError</strong> -- when <cite>x</cite> is allocated on a partitioned SYCL device, or with
+<li><p><strong>dpnp.exceptions.DLPackCreationError</strong> -- when <cite>x</cite> is allocated on a partitioned SYCL device, or with
     a non-default context</p></li>
 </ul>
 </dd>

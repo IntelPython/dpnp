@@ -45,15 +45,15 @@ Exceptions
 
 .. data:: SyclContextCreationError
 
-    Given when :class:`dpctl.SyclContext` instance could not created.
+    Given when :class:`dpctl.SyclContext` instance could not be created.
 
 .. data:: SyclDeviceCreationError
 
-    Given when :class:`dpctl.SyclDevice` instance could not created.
+    Given when :class:`dpctl.SyclDevice` instance could not be created.
 
 .. data:: SyclQueueCreationError
 
-    Given when :class:`dpctl.SyclQueue` instance could not created.
+    Given when :class:`dpctl.SyclQueue` instance could not be created.
     The creation can fail if the filter string is invalid, or the backend or
     device type values are not supported.
 
