@@ -196,16 +196,16 @@ out : dpnp.ndarray
 
 See Also
 --------
-:obj:`dpnp.special.erf` : Gauss error function.
-:obj:`dpnp.special.erfc` : Complementary error function.
-:obj:`dpnp.special.erfinv` : Inverse of the error function.
-:obj:`dpnp.special.erfcinv` : Inverse of the complementary error function.
+:obj:`dpnp.scipy.special.erf` : Gauss error function.
+:obj:`dpnp.scipy.special.erfc` : Complementary error function.
+:obj:`dpnp.scipy.special.erfinv` : Inverse of the error function.
+:obj:`dpnp.scipy.special.erfcinv` : Inverse of the complementary error function.
 
 Examples
 --------
 >>> import dpnp as np
 >>> x = np.linspace(-3, 3, num=4)
->>> np.special.erfcx(x)
+>>> np.scipy.special.erfcx(x)
 array([1.62059889e+04, 5.00898008e+00, 4.27583576e-01, 1.79001151e-01])
 
 """
