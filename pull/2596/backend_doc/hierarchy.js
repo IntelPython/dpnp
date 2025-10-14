@@ -43,7 +43,7 @@ var hierarchy =
       [ "mt19937_struct", "structmt19937__struct.html", null ]
     ] ],
     [ "dpnp::kernels::erfs::ErfcOp", "structdpnp_1_1kernels_1_1erfs_1_1_erfc_op.html", null ],
-    [ "dpnp::kernels::erfs::std::erfcOp", "structdpnp_1_1kernels_1_1erfs_1_1std_1_1erfc_op.html", null ],
+    [ "dpnp::kernels::erfs::impl::erfcxOp", "structdpnp_1_1kernels_1_1erfs_1_1impl_1_1erfcx_op.html", null ],
     [ "dpnp::kernels::erfs::ErfOp", "structdpnp_1_1kernels_1_1erfs_1_1_erf_op.html", null ],
     [ "std::exception", null, [
       [ "dpnp::extensions::lapack::LinAlgError", "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html", null ]
@@ -64,6 +64,7 @@ var hierarchy =
     [ "dpnp::extensions::lapack::types::GetrfBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::GetrfTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::GetriBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html", null ],
+    [ "dpnp::extensions::lapack::types::GetrsBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::GetrsTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::window::kernels::HammingFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_factory.html", null ],
     [ "dpnp::extensions::window::kernels::HammingFunctor< T >", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html", null ],

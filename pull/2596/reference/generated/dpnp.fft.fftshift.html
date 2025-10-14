@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.fftshift &mdash; Data Parallel Extension for NumPy 0.19.0dev6+11.gc6533b5ae98 documentation</title>
+  <title>dpnp.fft.fftshift &mdash; Data Parallel Extension for NumPy 0.20.0dev0+17.g6ba319bb0ef documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c83ba892"></script>
+      <script src="../../_static/documentation_options.js?v=5600e1ee"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -57,7 +57,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines (NumPy)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../constants.html">Constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
@@ -83,7 +83,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../special.html">Special functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.special</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
@@ -110,7 +110,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
+          <li class="breadcrumb-item"><a href="../routines.html">Routines (NumPy)</a></li>
           <li class="breadcrumb-item"><a href="../fft.html">Discrete Fourier Transform</a></li>
       <li class="breadcrumb-item active">dpnp.fft.fftshift</li>
       <li class="wy-breadcrumbs-aside">
@@ -135,7 +135,7 @@ Note that <code class="docutils literal notranslate"><span class="pre">out[0]</s
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axes</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Axes over which to shift. By default, it shifts over all axes.</p>
+<li><p><strong>axes</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Axes over which to shift. By default, it shifts over all axes.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 </ul>

@@ -15,17 +15,16 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Linear algebra &mdash; Data Parallel Extension for NumPy 0.19.0dev6+11.gc6533b5ae98 documentation</title>
+  <title>Linear algebra &mdash; Data Parallel Extension for NumPy 0.20.0dev0+17.g6ba319bb0ef documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=c83ba892"></script>
+      <script src="../_static/documentation_options.js?v=5600e1ee"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -58,7 +57,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines (NumPy)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="constants.html">Constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="array-creation.html">Array creation routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="array-manipulation.html">Array manipulation routines</a></li>
@@ -75,6 +74,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#solving-linear-equations">Solving linear equations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#other-matrix-operations">Other matrix operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#linear-algebra-on-several-matrices-at-once">Linear algebra on several matrices at once</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="logic.html">Logic functions</a></li>
@@ -87,7 +87,7 @@
 <li class="toctree-l3"><a class="reference internal" href="window.html">Window functions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="special.html">Special functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.special</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="array_api.html">Array API standard compatibility</a></li>
@@ -114,7 +114,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="routines.html">Routines</a></li>
+          <li class="breadcrumb-item"><a href="routines.html">Routines (NumPy)</a></li>
       <li class="breadcrumb-item active">Linear algebra</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/reference/linalg.rst.txt" rel="nofollow"> View page source</a>
@@ -201,13 +201,10 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.qr.html#dpnp.linalg.qr" title="dpnp.linalg.qr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.qr</span></code></a></p></td>
 <td><p>Compute the qr factorization of a matrix.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.lu_factor.html#dpnp.linalg.lu_factor" title="dpnp.linalg.lu_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.lu_factor</span></code></a></p></td>
-<td><p>Compute the pivoted LU decomposition of <cite>a</cite> matrix.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.svd.html#dpnp.linalg.svd" title="dpnp.linalg.svd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.svd</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.svd.html#dpnp.linalg.svd" title="dpnp.linalg.svd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.svd</span></code></a></p></td>
 <td><p>Singular Value Decomposition.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.svdvals.html#dpnp.linalg.svdvals" title="dpnp.linalg.svdvals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.svdvals</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.svdvals.html#dpnp.linalg.svdvals" title="dpnp.linalg.svdvals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.svdvals</span></code></a></p></td>
 <td><p>Returns the singular values of a matrix (or a stack of matrices) <cite>x</cite>.</p></td>
 </tr>
 </tbody>
@@ -279,16 +276,13 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.lstsq.html#dpnp.linalg.lstsq" title="dpnp.linalg.lstsq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.lstsq</span></code></a></p></td>
 <td><p>Return the least-squares solution to a linear matrix equation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.lu_solve.html#dpnp.linalg.lu_solve" title="dpnp.linalg.lu_solve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.lu_solve</span></code></a></p></td>
-<td><p>Solve a linear system, <span class="math notranslate nohighlight">\(a x = b\)</span>, given the LU factorization of <cite>a</cite>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.inv.html#dpnp.linalg.inv" title="dpnp.linalg.inv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.inv</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.inv.html#dpnp.linalg.inv" title="dpnp.linalg.inv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.inv</span></code></a></p></td>
 <td><p>Compute the (multiplicative) inverse of a matrix.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.pinv.html#dpnp.linalg.pinv" title="dpnp.linalg.pinv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.pinv</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.pinv.html#dpnp.linalg.pinv" title="dpnp.linalg.pinv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.pinv</span></code></a></p></td>
 <td><p>Compute the (Moore-Penrose) pseudo-inverse of a matrix.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.tensorinv.html#dpnp.linalg.tensorinv" title="dpnp.linalg.tensorinv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.tensorinv</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.tensorinv.html#dpnp.linalg.tensorinv" title="dpnp.linalg.tensorinv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.tensorinv</span></code></a></p></td>
 <td><p>Compute the 'inverse' of an N-dimensional array.</p></td>
 </tr>
 </tbody>
@@ -314,8 +308,25 @@
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.LinAlgError.html#dpnp.linalg.LinAlgError" title="dpnp.linalg.LinAlgError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.LinAlgError</span></code></a></p></td>
+<td><p>Generic Python-exception-derived object raised by LinAlg functions.</p></td>
+</tr>
 </tbody>
 </table>
+</section>
+<section id="linear-algebra-on-several-matrices-at-once">
+<h2>Linear algebra on several matrices at once<a class="headerlink" href="#linear-algebra-on-several-matrices-at-once" title="Link to this heading"></a></h2>
+<p>Several of the linear algebra routines listed above are able to compute results
+for several matrices at once, if they are stacked into the same array.</p>
+<p>This is indicated in the documentation via input parameter specifications such
+as <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">:</span> <span class="pre">(...,</span> <span class="pre">M,</span> <span class="pre">M)</span> <span class="pre">{dpnp.ndarray,</span> <span class="pre">usm_ndarray}</span></code>. This means that if for
+instance given an input array <code class="docutils literal notranslate"><span class="pre">a.shape</span> <span class="pre">==</span> <span class="pre">(N,</span> <span class="pre">M,</span> <span class="pre">M)</span></code>, it is interpreted as a
+&quot;stack&quot; of N matrices, each of size M-by-M. Similar specification applies to
+return values, for instance the determinant has <code class="docutils literal notranslate"><span class="pre">det</span> <span class="pre">:</span> <span class="pre">(...)</span></code> and will in
+this case return an array of shape <code class="docutils literal notranslate"><span class="pre">det(a).shape</span> <span class="pre">==</span> <span class="pre">(N,)</span></code>. This generalizes
+to linear algebra operations on higher-dimensional arrays: the last 1 or 2
+dimensions of a multidimensional array are interpreted as vectors or matrices,
+as appropriate for each operation.</p>
 </section>
 </section>
 

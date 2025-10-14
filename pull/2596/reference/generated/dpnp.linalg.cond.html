@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.cond &mdash; Data Parallel Extension for NumPy 0.19.0dev6+11.gc6533b5ae98 documentation</title>
+  <title>dpnp.linalg.cond &mdash; Data Parallel Extension for NumPy 0.20.0dev0+17.g6ba319bb0ef documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c83ba892"></script>
+      <script src="../../_static/documentation_options.js?v=5600e1ee"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -57,7 +57,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines (NumPy)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../constants.html">Constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
@@ -74,6 +74,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#solving-linear-equations">Solving linear equations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#other-matrix-operations">Other matrix operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#exceptions">Exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#linear-algebra-on-several-matrices-at-once">Linear algebra on several matrices at once</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
@@ -86,7 +87,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../special.html">Special functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.special</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
@@ -113,7 +114,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
+          <li class="breadcrumb-item"><a href="../routines.html">Routines (NumPy)</a></li>
           <li class="breadcrumb-item"><a href="../linalg.html">Linear algebra</a></li>
       <li class="breadcrumb-item active">dpnp.linalg.cond</li>
       <li class="wy-breadcrumbs-aside">
@@ -191,7 +192,7 @@ the root-of-sum-of-squares norm.</p>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>This function will raise <code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.linalg.LinAlgError</span></code> on singular input
+<p>This function will raise <a class="reference internal" href="dpnp.linalg.LinAlgError.html#dpnp.linalg.LinAlgError" title="dpnp.linalg.LinAlgError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.linalg.LinAlgError</span></code></a> on singular input
 when using any of the norm: <code class="docutils literal notranslate"><span class="pre">1</span></code>, <code class="docutils literal notranslate"><span class="pre">-1</span></code>, <code class="docutils literal notranslate"><span class="pre">inf</span></code>, <code class="docutils literal notranslate"><span class="pre">-inf</span></code>, or <code class="docutils literal notranslate"><span class="pre">'fro'</span></code>.
 In contrast, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.cond.html#numpy.linalg.cond" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.cond</span></code></a> will fill the result array with
 <code class="docutils literal notranslate"><span class="pre">inf</span></code> values for each 2D batch in the input array that is singular
