@@ -8,7 +8,7 @@ dpnp.egg-info
 __pycache__/
 
 # Doc build and generated files
-doc/_build
+doc/_build/
 doc/reference/generated/
 doc/reference/*.inc
 
