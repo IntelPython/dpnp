@@ -35,14 +35,14 @@
 /**
  * Include <sycl/ext/intel/math.hpp> only when targeting to Intel devices.
  */
-#if defined(__INTEL_LLVM_COMPILER)
+#if (defined(__SPIR__) || defined(__SPIRV__)) && defined(__INTEL_LLVM_COMPILER)
 #define __SYCL_EXT_INTEL_MATH_SUPPORT
 #endif
 
 #if defined(__SYCL_EXT_INTEL_MATH_SUPPORT)
 #include <sycl/ext/intel/math.hpp>
 #else
-#include <cmath>
+#include "erfcx.hpp"
 #endif
 
 namespace dpnp::kernels::erfs
@@ -91,7 +91,7 @@ MACRO_DEFINE_FUNCTOR(
 #if defined(__SYCL_EXT_INTEL_MATH_SUPPORT)
     sycl::ext::intel::math::erfcx,
 #else
-    std::erfc,
+    impl::erfcx,
 #endif
     Erfcx);
 } // namespace dpnp::kernels::erfs

@@ -43,7 +43,7 @@
  * This header relies on intel-specific types like _iml_half_internal,
  * which are not suppose to work with other targets (e.g., CUDA, AMD).
  */
-#if defined(__SPIR__) && defined(__INTEL_LLVM_COMPILER)
+#if (defined(__SPIR__) || defined(__SPIRV__)) && defined(__INTEL_LLVM_COMPILER)
 #define __SYCL_EXT_INTEL_MATH_SUPPORT
 #endif
 
