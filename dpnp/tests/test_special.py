@@ -86,15 +86,15 @@ class TestConsistency:
 
     def test_erfc(self):
         self._check_variant_func(
-            dpnp.special.erfc,
-            lambda z: 1 - dpnp.special.erf(z),
+            dpnp.scipy.special.erfc,
+            lambda z: 1 - dpnp.scipy.special.erf(z),
             rtol=self.tol,
             atol=self.tol,
         )
 
     def test_erfcx(self):
         self._check_variant_func(
-            dpnp.special.erfcx,
-            lambda z: dpnp.exp(z * z) * dpnp.special.erfc(z),
+            dpnp.scipy.special.erfcx,
+            lambda z: dpnp.exp(z * z) * dpnp.scipy.special.erfc(z),
             rtol=10 * self.tol,
         )
