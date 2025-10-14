@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.scipy.linalg._decomp_lu &mdash; Data Parallel Extension for NumPy 0.20.0dev0+19.g3ed0067580c documentation</title>
+  <title>dpnp.scipy.linalg._decomp_lu &mdash; Data Parallel Extension for NumPy 0.20.0dev0+22.g4c7875fbf8c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=60e2fe95"></script>
+      <script src="../../../../_static/documentation_options.js?v=f11ffafb"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -127,7 +127,10 @@
 
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.linalg.dpnp_utils_linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_stacked_2d</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.linalg.dpnp_utils_linalg</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">assert_stacked_2d</span><span class="p">,</span>
+    <span class="n">assert_stacked_square</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_lu_factor</span><span class="p">,</span>
@@ -222,7 +225,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    lu, piv : {tuple of dpnp.ndarrays or usm_ndarrays}</span>
-<span class="sd">        LU factorization of matrix `a` (M, M) together with pivot indices.</span>
+<span class="sd">        LU factorization of matrix `a` (..., M, M) together with pivot indices.</span>
 <span class="sd">    b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Right-hand side</span>
 <span class="sd">    trans : {0, 1, 2} , optional</span>
@@ -250,7 +253,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    x : {(M,), (M, K)} dpnp.ndarray</span>
+<span class="sd">    x : {(M,), (..., M, K)} dpnp.ndarray</span>
 <span class="sd">        Solution to the system</span>
 
 <span class="sd">    Warning</span>
@@ -277,6 +280,7 @@
     <span class="p">(</span><span class="n">lu</span><span class="p">,</span> <span class="n">piv</span><span class="p">)</span> <span class="o">=</span> <span class="n">lu_and_piv</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">lu</span><span class="p">,</span> <span class="n">piv</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
     <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">lu</span><span class="p">)</span>
+    <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">lu</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_lu_solve</span><span class="p">(</span>
         <span class="n">lu</span><span class="p">,</span>

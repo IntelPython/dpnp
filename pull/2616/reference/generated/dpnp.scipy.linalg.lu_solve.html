@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.scipy.linalg.lu_solve &mdash; Data Parallel Extension for NumPy 0.20.0dev0+19.g3ed0067580c documentation</title>
+  <title>dpnp.scipy.linalg.lu_solve &mdash; Data Parallel Extension for NumPy 0.20.0dev0+22.g4c7875fbf8c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=60e2fe95"></script>
+      <script src="../../_static/documentation_options.js?v=f11ffafb"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -115,8 +115,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lu</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> (M, M) together with pivot indices.</p></li>
-<li><p><strong>piv</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> (M, M) together with pivot indices.</p></li>
+<li><p><strong>lu</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> (..., M, M) together with pivot indices.</p></li>
+<li><p><strong>piv</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> (..., M, M) together with pivot indices.</p></li>
 <li><p><strong>b</strong> (<em>{</em><em>(</em><em>M</em><em>,</em><em>)</em><em>, </em><em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>K</em><em>)</em><em>} {dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Right-hand side</p></li>
 <li><p><strong>trans</strong> (<em>{0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em> , </em><em>optional</em>) -- <p>Type of system to solve:</p>
 <table class="docutils align-default">
@@ -153,7 +153,7 @@ Disabling may give a performance gain, but may result in problems
 <dd class="field-even"><p><strong>x</strong> -- Solution to the system</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>{(M,), (M, K)} dpnp.ndarray</p>
+<dd class="field-odd"><p>{(M,), (..., M, K)} dpnp.ndarray</p>
 </dd>
 </dl>
 <div class="admonition warning">
