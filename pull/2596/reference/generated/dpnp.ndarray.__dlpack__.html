@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.__dlpack__ &mdash; Data Parallel Extension for NumPy 0.20.0dev0+17.g6ba319bb0ef documentation</title>
+  <title>dpnp.ndarray.__dlpack__ &mdash; Data Parallel Extension for NumPy 0.20.0dev0+19.g5fc50b3438e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5600e1ee"></script>
+      <script src="../../_static/documentation_options.js?v=b56be4d3"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -175,7 +175,7 @@ otherwise, the existing memory buffer will be reused.</p></li>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#MemoryError" title="(in Python v3.14)"><strong>MemoryError</strong></a> -- when host memory can not be allocated.</p></li>
-<li><p><strong>DLPackCreationError</strong> -- when array is allocated on a partitioned SYCL device, or with
+<li><p><a class="reference internal" href="../exceptions.html#dpnp.exceptions.DLPackCreationError" title="dpnp.exceptions.DLPackCreationError"><strong>DLPackCreationError</strong></a> -- when array is allocated on a partitioned SYCL device, or with
     a non-default context.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#BufferError" title="(in Python v3.14)"><strong>BufferError</strong></a> -- when a copy is deemed necessary but <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> or when
     the provided <cite>dl_device</cite> cannot be handled.</p></li>

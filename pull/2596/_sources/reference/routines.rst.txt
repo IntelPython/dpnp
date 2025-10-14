@@ -15,6 +15,7 @@ These functions cover a subset of
    array-manipulation
    bitwise
    dtype
+   exceptions
    fft
    functional
    indexing
