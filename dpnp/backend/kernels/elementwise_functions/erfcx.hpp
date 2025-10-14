@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <cmath>
+#include <limits>
 #include <sycl/sycl.hpp>
 
 namespace dpnp::kernels::erfs::impl
@@ -1646,7 +1646,7 @@ Tp erfcx(Tp x)
     }
 
     return x < -26.7
-               ? std::HUGE_VAL
+               ? std::numeric_limits<Tp>::infinity()
                : (x < -6.1 ? 2 * sycl::exp(x * x)
                            : 2 * sycl::exp(x * x) - erfcx_y100(400 / (4 - x)));
 }
