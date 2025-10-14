@@ -2234,12 +2234,12 @@ def from_dlpack(x, /, *, device=None, copy=None):
     Raises
     ------
     TypeError
-        if `x` does not implement ``__dlpack__`` method
+        If `x` does not implement ``__dlpack__`` method.
     ValueError
-        if data of the input object resides on an unsupported device
+        If data of the input object resides on an unsupported device.
     DLPackCreationError
-        when `x` is allocated on a partitioned SYCL device, or with
-        a non-default context
+        When `x` is allocated on a partitioned SYCL device, or with
+        a non-default context.
 
     Notes
     -----
