@@ -7,6 +7,11 @@ dpnp.egg-info
 # Byte-compiled / optimized / DLL files
 __pycache__/
 
+# Doc build and generated files
+doc/_build/
+doc/reference/generated/
+doc/reference/*.inc
+
 # Code project files
 .vscode
 
