@@ -13,5 +13,6 @@ var searchData=
   ['getrfbatchtypepairsupportfactory_10',['GetrfBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
   ['getrftypepairsupportfactory_11',['GetrfTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
   ['getribatchtypepairsupportfactory_12',['GetriBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
-  ['getrstypepairsupportfactory_13',['GetrsTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]]
+  ['getrsbatchtypepairsupportfactory_13',['GetrsBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['getrstypepairsupportfactory_14',['GetrsTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]]
 ];
