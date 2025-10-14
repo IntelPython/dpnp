@@ -2339,8 +2339,7 @@ class TestLuSolve:
         n = a_shape[0]
 
         if n > 0:
-            for i in range(n):
-                a_dp[i, i] = a_dp.dtype.type(1.0)
+            dpnp.fill_diagonal(a_dp, a_dp.dtype.type(1.0))
         b_dp = dpnp.empty(b_shape, dtype=dpnp.default_float_type(), order="F")
 
         lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)

@@ -218,12 +218,12 @@ def _batched_lu_solve(lu, piv, b, res_type, trans=0):
     """Solve a batched equation system (SciPy-compatible behavior)."""
     res_usm_type, exec_q = get_usm_allocations([lu, piv, b])
 
-    b_ndim = b.ndim
+    b_ndim_orig = b.ndim
 
     lu, b = _align_lu_solve_broadcast(lu, b)
 
     n = lu.shape[-1]
-    nrhs = b.shape[-1] if b_ndim > 1 else 1
+    nrhs = b.shape[-1] if b_ndim_orig > 1 else 1
 
     # get 3d input arrays by reshape
     if lu.ndim > 3:
@@ -235,11 +235,11 @@ def _batched_lu_solve(lu, piv, b, res_type, trans=0):
 
     # Move batch axis to the end (n, n, batch) in Fortran order:
     # required by getrs_batch
-    # and ensures each a[..., i] is F-contiguous for getrs_batch
+    # and ensures each lu[..., i] is F-contiguous for getrs_batch
     lu = dpnp.moveaxis(lu, 0, -1)
 
     b_orig_shape = b.shape
-    if b.ndim > 2:
+    if b.ndim > 3:
         b = dpnp.reshape(b, (-1, n, nrhs))
 
     # Move batch axis to the end (n, nrhs, batch) in Fortran order:
