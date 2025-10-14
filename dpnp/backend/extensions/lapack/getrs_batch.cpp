@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,9 +26,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <cstddef>
 #include <stdexcept>
+#include <vector>
 
 #include <pybind11/pybind11.h>
+#include <sycl/sycl.hpp>
 
 // utils extension header
 #include "ext/common.hpp"
@@ -50,32 +53,42 @@ namespace type_utils = dpctl::tensor::type_utils;
 
 using ext::common::init_dispatch_vector;
 
-typedef sycl::event (*getrs_impl_fn_ptr_t)(sycl::queue &,
-                                           const oneapi::mkl::transpose,
-                                           const std::int64_t,
-                                           const std::int64_t,
-                                           char *,
-                                           const std::int64_t,
-                                           std::int64_t *,
-                                           char *,
-                                           const std::int64_t,
-                                           std::vector<sycl::event> &,
-                                           const std::vector<sycl::event> &);
+typedef sycl::event (*getrs_batch_impl_fn_ptr_t)(
+    sycl::queue &,
+    oneapi::mkl::transpose, // trans
+    const std::int64_t,     // n
+    const std::int64_t,     // nrhs
+    char *,                 // a
+    const std::int64_t,     // lda
+    const std::int64_t,     // stride_a
+    std::int64_t *,         // ipiv
+    const std::int64_t,     // stride_ipiv
+    char *,                 // b
+    const std::int64_t,     // ldb
+    const std::int64_t,     // stride_b
+    const std::int64_t,     // batch_size
+    std::vector<sycl::event> &,
+    const std::vector<sycl::event> &);
 
-static getrs_impl_fn_ptr_t getrs_dispatch_vector[dpctl_td_ns::num_types];
+static getrs_batch_impl_fn_ptr_t
+    getrs_batch_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
-static sycl::event getrs_impl(sycl::queue &exec_q,
-                              oneapi::mkl::transpose trans,
-                              const std::int64_t n,
-                              const std::int64_t nrhs,
-                              char *in_a,
-                              const std::int64_t lda,
-                              std::int64_t *ipiv,
-                              char *in_b,
-                              const std::int64_t ldb,
-                              std::vector<sycl::event> &host_task_events,
-                              const std::vector<sycl::event> &depends)
+static sycl::event getrs_batch_impl(sycl::queue &exec_q,
+                                    oneapi::mkl::transpose trans,
+                                    const std::int64_t n,
+                                    const std::int64_t nrhs,
+                                    char *in_a,
+                                    const std::int64_t lda,
+                                    const std::int64_t stride_a,
+                                    std::int64_t *ipiv,
+                                    const std::int64_t stride_ipiv,
+                                    char *in_b,
+                                    const std::int64_t ldb,
+                                    const std::int64_t stride_b,
+                                    const std::int64_t batch_size,
+                                    std::vector<sycl::event> &host_task_events,
+                                    const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
 
@@ -83,18 +96,20 @@ static sycl::event getrs_impl(sycl::queue &exec_q,
     T *b = reinterpret_cast<T *>(in_b);
 
     const std::int64_t scratchpad_size =
-        mkl_lapack::getrs_scratchpad_size<T>(exec_q, trans, n, nrhs, lda, ldb);
+        mkl_lapack::getrs_batch_scratchpad_size<T>(exec_q, trans, n, nrhs, lda,
+                                                   stride_a, stride_ipiv, ldb,
+                                                   stride_b, batch_size);
     T *scratchpad = nullptr;
 
     std::stringstream error_msg;
     std::int64_t info = 0;
     bool is_exception_caught = false;
 
-    sycl::event getrs_event;
+    sycl::event getrs_batch_event;
     try {
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
-        getrs_event = mkl_lapack::getrs(
+        getrs_batch_event = mkl_lapack::getrs_batch(
             exec_q,
             trans, // Specifies the operation: whether or not to transpose
                    // matrix A. Can be 'N' for no transpose, 'T' for transpose,
@@ -107,14 +122,33 @@ static sycl::event getrs_impl(sycl::queue &exec_q,
             a,     // Pointer to the square matrix A (n x n).
             lda,   // The leading dimension of matrix A, must be at least max(1,
                    // n). It must be at least max(1, n).
+            stride_a, // Stride between consecutive A matrices in the batch.
             ipiv, // Pointer to the output array of pivot indices that were used
                   // during factorization (n, ).
-            b,    // Pointer to the matrix B of right-hand sides (ldb, nrhs).
-            ldb,  // The leading dimension of matrix B, must be at least max(1,
-                  // n).
+            stride_ipiv, // Stride between consecutive pivot arrays in the
+                         // batch.
+            b,   // Pointer to the matrix B of right-hand sides (ldb, nrhs).
+            ldb, // The leading dimension of matrix B, must be at least max(1,
+                 // n).
+            stride_b,   // Stride between consecutive B matrices in the batch.
+            batch_size, // Total number of matrices in the batch.
             scratchpad, // Pointer to scratchpad memory to be used by MKL
                         // routine for storing intermediate results.
             scratchpad_size, depends);
+    } catch (mkl_lapack::batch_error const &be) {
+        // Get the indices of matrices within the batch that encountered an
+        // error
+        auto error_matrices_ids = be.ids();
+
+        // OneMKL batched functions throw a single `batch_error`
+        // instead of per-matrix exceptions or an info array.
+        // This is interpreted as a computation_error (singular matrix),
+        // consistent with non-batched LAPACK behavior.
+        is_exception_caught = false;
+        if (scratchpad != nullptr) {
+            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
+        }
+        throw LinAlgError("The solve could not be completed.");
     } catch (mkl_lapack::exception const &e) {
         is_exception_caught = true;
         info = e.info();
@@ -157,53 +191,64 @@ static sycl::event getrs_impl(sycl::queue &exec_q,
     }
 
     sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(getrs_event);
+        cgh.depends_on(getrs_batch_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad]() {
             dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
         });
     });
     host_task_events.push_back(clean_up_event);
-    return getrs_event;
+    return getrs_batch_event;
 }
 
 std::pair<sycl::event, sycl::event>
-    getrs(sycl::queue &exec_q,
-          const dpctl::tensor::usm_ndarray &a_array,
-          const dpctl::tensor::usm_ndarray &ipiv_array,
-          const dpctl::tensor::usm_ndarray &b_array,
-          oneapi::mkl::transpose trans,
-          const std::vector<sycl::event> &depends)
+    getrs_batch(sycl::queue &exec_q,
+                const dpctl::tensor::usm_ndarray &a_array,
+                const dpctl::tensor::usm_ndarray &ipiv_array,
+                const dpctl::tensor::usm_ndarray &b_array,
+                oneapi::mkl::transpose trans,
+                std::int64_t n,
+                std::int64_t nrhs,
+                std::int64_t stride_a,
+                std::int64_t stride_ipiv,
+                std::int64_t stride_b,
+                std::int64_t batch_size,
+                const std::vector<sycl::event> &depends)
 {
     const int a_array_nd = a_array.get_ndim();
     const int b_array_nd = b_array.get_ndim();
     const int ipiv_array_nd = ipiv_array.get_ndim();
 
-    if (a_array_nd != 2) {
+    if (a_array_nd < 3) {
         throw py::value_error(
             "The LU-factorized array has ndim=" + std::to_string(a_array_nd) +
-            ", but a 2-dimensional array is expected.");
+            ", but an array with ndim >= 3 is expected");
     }
-    if (b_array_nd > 2) {
-        throw py::value_error(
-            "The right-hand sides array has ndim=" +
-            std::to_string(b_array_nd) +
-            ", but a 1-dimensional or a 2-dimensional array is expected.");
+    if (b_array_nd < 2) {
+        throw py::value_error("The right-hand sides array has ndim=" +
+                              std::to_string(b_array_nd) +
+                              ", but an array with ndim >= 2 is expected");
     }
-    if (ipiv_array_nd != 1) {
+    if (ipiv_array_nd < 2) {
         throw py::value_error("The array of pivot indices has ndim=" +
                               std::to_string(ipiv_array_nd) +
-                              ", but a 1-dimensional array is expected.");
+                              ", but an array with ndim >= 2 is expected");
     }
 
     const py::ssize_t *a_array_shape = a_array.get_shape_raw();
-    const py::ssize_t *b_array_shape = b_array.get_shape_raw();
-
     if (a_array_shape[0] != a_array_shape[1]) {
-        throw py::value_error("The LU-factorized array must be square,"
-                              " but got a shape of (" +
+        throw py::value_error("Expected batch of square matrices , but got "
+                              "matrix shape (" +
                               std::to_string(a_array_shape[0]) + ", " +
-                              std::to_string(a_array_shape[1]) + ").");
+                              std::to_string(a_array_shape[1]) + ") in batch");
+    }
+
+    if (ipiv_array_nd != a_array_nd - 1) {
+        throw py::value_error(
+            "The array of pivot indices has ndim=" +
+            std::to_string(ipiv_array_nd) +
+            ", but an array with ndim=" + std::to_string(a_array_nd - 1) +
+            " is expected to match LU batch dimensions");
     }
 
     // check compatibility of execution queue and allocation queue
@@ -250,11 +295,12 @@ std::pair<sycl::event, sycl::event>
                               "right-hand sides arrays are mismatched");
     }
 
-    getrs_impl_fn_ptr_t getrs_fn = getrs_dispatch_vector[a_array_type_id];
-    if (getrs_fn == nullptr) {
+    getrs_batch_impl_fn_ptr_t getrs_batch_fn =
+        getrs_batch_dispatch_vector[a_array_type_id];
+    if (getrs_batch_fn == nullptr) {
         throw py::value_error(
-            "No getrs implementation defined for the provided type "
-            "of the input matrix.");
+            "No getrs_batch implementation defined for the provided type "
+            "of the input matrix");
     }
 
     auto ipiv_types = dpctl_td_ns::usm_ndarray_types();
@@ -262,11 +308,8 @@ std::pair<sycl::event, sycl::event>
         ipiv_types.typenum_to_lookup_id(ipiv_array.get_typenum());
 
     if (ipiv_array_type_id != static_cast<int>(dpctl_td_ns::typenum_t::INT64)) {
-        throw py::value_error("The type of 'ipiv_array' must be int64.");
+        throw py::value_error("The type of 'ipiv_array' must be int64");
     }
-
-    const std::int64_t n = a_array_shape[0];
-    const std::int64_t nrhs = (b_array_nd > 1) ? b_array_shape[1] : 1;
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
@@ -278,23 +321,23 @@ std::pair<sycl::event, sycl::event>
     std::int64_t *ipiv = reinterpret_cast<std::int64_t *>(ipiv_array_data);
 
     std::vector<sycl::event> host_task_events;
-    sycl::event getrs_ev =
-        getrs_fn(exec_q, trans, n, nrhs, a_array_data, lda, ipiv, b_array_data,
-                 ldb, host_task_events, depends);
+    sycl::event getrs_batch_ev = getrs_batch_fn(
+        exec_q, trans, n, nrhs, a_array_data, lda, stride_a, ipiv, stride_ipiv,
+        b_array_data, ldb, stride_b, batch_size, host_task_events, depends);
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {a_array, b_array, ipiv_array}, host_task_events);
 
-    return std::make_pair(args_ev, getrs_ev);
+    return std::make_pair(args_ev, getrs_batch_ev);
 }
 
 template <typename fnT, typename T>
-struct GetrsContigFactory
+struct GetrsBatchContigFactory
 {
     fnT get()
     {
-        if constexpr (types::GetrsTypePairSupportFactory<T>::is_defined) {
-            return getrs_impl<T>;
+        if constexpr (types::GetrsBatchTypePairSupportFactory<T>::is_defined) {
+            return getrs_batch_impl<T>;
         }
         else {
             return nullptr;
@@ -302,9 +345,9 @@ struct GetrsContigFactory
     }
 };
 
-void init_getrs_dispatch_vector(void)
+void init_getrs_batch_dispatch_vector(void)
 {
-    init_dispatch_vector<getrs_impl_fn_ptr_t, GetrsContigFactory>(
-        getrs_dispatch_vector);
+    init_dispatch_vector<getrs_batch_impl_fn_ptr_t, GetrsBatchContigFactory>(
+        getrs_batch_dispatch_vector);
 }
 } // namespace dpnp::extensions::lapack

@@ -58,6 +58,37 @@ __all__ = [
 ]
 
 
+def _align_lu_solve_broadcast(lu, b):
+    """Align LU and RHS batch dimensions with SciPy-like rules."""
+    lu_shape = lu.shape
+    b_shape = b.shape
+
+    if b.ndim < 2:
+        if lu_shape[-2] != b_shape[0]:
+            raise ValueError(
+                f"Shapes of lu {lu_shape} and b {b_shape} are incompatible"
+            )
+        b = dpnp.broadcast_to(b, lu_shape[:-1])
+        return lu, b
+
+    if lu_shape[-2] != b_shape[-2]:
+        raise ValueError(
+            f"Shapes of lu {lu_shape} and b {b_shape} are incompatible"
+        )
+
+    # Use dpnp.broadcast_shapes() to align the resulting batch shapes
+    batch = dpnp.broadcast_shapes(lu_shape[:-2], b_shape[:-2])
+    lu_bshape = batch + lu_shape[-2:]
+    b_bshape = batch + b_shape[-2:]
+
+    if lu_shape != lu_bshape:
+        lu = dpnp.broadcast_to(lu, lu_bshape)
+    if b_shape != b_bshape:
+        b = dpnp.broadcast_to(b, b_bshape)
+
+    return lu, b
+
+
 def _batched_lu_factor_scipy(a, res_type):  # pylint: disable=too-many-locals
     """SciPy-compatible LU factorization for batched inputs."""
 
@@ -183,6 +214,105 @@ def _batched_lu_factor_scipy(a, res_type):  # pylint: disable=too-many-locals
     return (a_h, ipiv_h)
 
 
+def _batched_lu_solve(lu, piv, b, res_type, trans=0):
+    """Solve a batched equation system (SciPy-compatible behavior)."""
+    res_usm_type, exec_q = get_usm_allocations([lu, piv, b])
+
+    b_ndim_orig = b.ndim
+
+    lu, b = _align_lu_solve_broadcast(lu, b)
+
+    n = lu.shape[-1]
+    nrhs = b.shape[-1] if b_ndim_orig > 1 else 1
+
+    # get 3d input arrays by reshape
+    if lu.ndim > 3:
+        lu = dpnp.reshape(lu, (-1, n, n))
+    # get 2d pivot arrays by reshape
+    if piv.ndim > 2:
+        piv = dpnp.reshape(piv, (-1, n))
+    batch_size = lu.shape[0]
+
+    # Move batch axis to the end (n, n, batch) in Fortran order:
+    # required by getrs_batch
+    # and ensures each lu[..., i] is F-contiguous for getrs_batch
+    lu = dpnp.moveaxis(lu, 0, -1)
+
+    b_orig_shape = b.shape
+    if b.ndim > 3:
+        b = dpnp.reshape(b, (-1, n, nrhs))
+
+    # Move batch axis to the end (n, nrhs, batch) in Fortran order:
+    # required by getrs_batch
+    # and ensures each b[..., i] is F-contiguous for getrs_batch
+    b = dpnp.moveaxis(b, 0, -1)
+
+    lu_usm_arr = dpnp.get_usm_ndarray(lu)
+    b_usm_arr = dpnp.get_usm_ndarray(b)
+
+    # dpnp.linalg.lu_factor() returns 0-based pivots to match SciPy,
+    # convert to 1-based for oneMKL getrs_batch
+    piv_h = piv + 1
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+
+    # oneMKL LAPACK getrs_batch overwrites `lu`
+    lu_h = dpnp.empty_like(lu, order="F", dtype=res_type, usm_type=res_usm_type)
+
+    # use DPCTL tensor function to fill the сopy of the input array
+    # from the input array
+    ht_ev, lu_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=lu_usm_arr,
+        dst=lu_h.get_array(),
+        sycl_queue=lu.sycl_queue,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(ht_ev, lu_copy_ev)
+
+    # oneMKL LAPACK getrs_batch overwrites `b` and assumes fortran-like array
+    # as input
+    b_h = dpnp.empty_like(b, order="F", dtype=res_type, usm_type=res_usm_type)
+    ht_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=b_usm_arr,
+        dst=b_h.get_array(),
+        sycl_queue=b.sycl_queue,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(ht_ev, b_copy_ev)
+    dep_evs = [lu_copy_ev, b_copy_ev]
+
+    lu_stride = n * n
+    piv_stride = n
+    b_stride = n * nrhs
+
+    trans_mkl = _map_trans_to_mkl(trans)
+
+    # Call the LAPACK extension function _getrs_batch
+    # to solve the system of linear equations with an LU-factored
+    # coefficient square matrix, with multiple right-hand sides.
+    ht_ev, getrs_batch_ev = li._getrs_batch(
+        exec_q,
+        lu_h.get_array(),
+        piv_h.get_array(),
+        b_h.get_array(),
+        trans_mkl,
+        n,
+        nrhs,
+        lu_stride,
+        piv_stride,
+        b_stride,
+        batch_size,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(ht_ev, getrs_batch_ev)
+
+    # Restore original shape: move batch axis back and reshape
+    b_h = dpnp.moveaxis(b_h, -1, 0).reshape(b_orig_shape)
+
+    return b_h
+
+
 def _is_copy_required(a, res_type):
     """
     Determine if `a` needs to be copied before LU decomposition.
@@ -198,6 +328,20 @@ def _is_copy_required(a, res_type):
         return True
 
     return False
+
+
+def _map_trans_to_mkl(trans):
+    """Map SciPy-style trans code (0,1,2) to oneMKL transpose enum."""
+    if not isinstance(trans, int):
+        raise TypeError("`trans` must be an integer")
+
+    if trans == 0:
+        return li.Transpose.N
+    if trans == 1:
+        return li.Transpose.T
+    if trans == 2:
+        return li.Transpose.C
+    raise ValueError("`trans` must be 0 (N), 1 (T), or 2 (C)")
 
 
 def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
@@ -310,17 +454,8 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
 
     res_type = _common_type(lu, b)
 
-    # TODO: add broadcasting
-    if lu.shape[0] != b.shape[0]:
-        raise ValueError(
-            f"Shapes of lu {lu.shape} and b {b.shape} are incompatible"
-        )
-
     if b.size == 0:
         return dpnp.empty_like(b, dtype=res_type, usm_type=res_usm_type)
-
-    if lu.ndim > 2:
-        raise NotImplementedError("Batched matrices are not supported")
 
     if check_finite:
         if not dpnp.isfinite(lu).all():
@@ -334,6 +469,16 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
                 "Right-hand side array must not contain infs or NaNs"
             )
 
+    if lu.ndim > 2:
+        # SciPy always copies each 2D slice,
+        # so `overwrite_b` is ignored here
+        return _batched_lu_solve(lu, piv, b, trans=trans, res_type=res_type)
+
+    if lu.shape[0] != b.shape[0]:
+        raise ValueError(
+            f"Shapes of lu {lu.shape} and b {b.shape} are incompatible"
+        )
+
     lu_usm_arr = dpnp.get_usm_ndarray(lu)
     b_usm_arr = dpnp.get_usm_ndarray(b)
 
@@ -344,7 +489,7 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
     _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
 
-    # oneMKL LAPACK getrs overwrites `lu`.
+    # oneMKL LAPACK getrs_batch overwrites `lu`.
     lu_h = dpnp.empty_like(lu, order="F", dtype=res_type, usm_type=res_usm_type)
 
     # use DPCTL tensor function to fill the сopy of the input array
@@ -380,18 +525,7 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
         b_h = b
         dep_evs = [lu_copy_ev]
 
-    if not isinstance(trans, int):
-        raise TypeError("`trans` must be an integer")
-
-    # Map SciPy-style trans codes (0, 1, 2) to MKL transpose enums
-    if trans == 0:
-        trans_mkl = li.Transpose.N
-    elif trans == 1:
-        trans_mkl = li.Transpose.T
-    elif trans == 2:
-        trans_mkl = li.Transpose.C
-    else:
-        raise ValueError("`trans` must be 0 (N), 1 (T), or 2 (C)")
+    trans_mkl = _map_trans_to_mkl(trans)
 
     # Call the LAPACK extension function _getrs
     # to solve the system of linear equations with an LU-factored

@@ -2312,9 +2312,6 @@ class TestLuSolve:
             (4,),
             (4, 1),
             (4, 3),
-            # (1, 4, 3),
-            # (2, 4, 3),
-            # (1, 1, 4, 3)
         ],
     )
     def test_broadcast_rhs(self, b_shape):
@@ -2335,19 +2332,14 @@ class TestLuSolve:
 
         assert dpnp.allclose(a_dp @ x, b_dp, rtol=1e-5, atol=1e-5)
 
-    @pytest.mark.parametrize("shape", [(0, 0), (0, 5), (5, 5)])
-    @pytest.mark.parametrize("rhs_cols", [None, 0, 3])
-    def test_empty_shapes(self, shape, rhs_cols):
-        a_dp = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
-        if min(shape) > 0:
-            for i in range(min(shape)):
-                a_dp[i, i] = a_dp.dtype.type(1.0)
+    @pytest.mark.parametrize("a_shape", [(0, 0), (5, 5)])
+    @pytest.mark.parametrize("b_shape", [(0,), (0, 0), (0, 5)])
+    def test_empty_shapes(self, a_shape, b_shape):
+        a_dp = dpnp.empty(a_shape, dtype=dpnp.default_float_type(), order="F")
+        n = a_shape[0]
 
-        n = shape[0]
-        if rhs_cols is None:
-            b_shape = (n,)
-        else:
-            b_shape = (n, rhs_cols)
+        if n > 0:
+            dpnp.fill_diagonal(a_dp, a_dp.dtype.type(1.0))
         b_dp = dpnp.empty(b_shape, dtype=dpnp.default_float_type(), order="F")
 
         lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
@@ -2368,6 +2360,241 @@ class TestLuSolve:
             b_bad,
             check_finite=True,
         )
+
+
+class TestLuSolveBatched:
+    @staticmethod
+    def _make_nonsingular_nd_np(shape, dtype, order):
+        A = generate_random_numpy_array(shape, dtype, order)
+        n = shape[-1]
+        A3 = A.reshape((-1, n, n))
+        for B in A3:
+            off = numpy.sum(numpy.abs(B), axis=1) - numpy.abs(numpy.diag(B))
+            B[numpy.arange(n), numpy.arange(n)] = A.dtype.type(off + 1.0)
+        A = A3.reshape(shape)
+        # Ensure reshapes did not break memory order
+        A = numpy.array(A, order=order)
+        return A
+
+    @staticmethod
+    def _expected_x_shape(a_shape, b_shape):
+        n = a_shape[-1]
+        assert a_shape[-2] == n
+
+        a_batch = a_shape[:-2]
+        if len(b_shape) >= 2 and b_shape[-2] == n:
+            # b : (..., n, nrhs)
+            k = b_shape[-1]
+            b_batch = b_shape[:-2]
+            exp_batch = numpy.broadcast_shapes(a_batch, b_batch)
+            return exp_batch + (n, k)
+        else:
+            # b : (..., n)
+            assert b_shape[-1] == n, "b's last dim must equal n"
+            b_batch = b_shape[:-1]
+            exp_batch = numpy.broadcast_shapes(a_batch, b_batch)
+            return exp_batch + (n,)
+
+    @pytest.mark.parametrize(
+        "a_shape, b_shape",
+        [
+            ((1, 2, 2), (2,)),
+            ((2, 4, 4), (4,)),
+            ((2, 4, 4), (4, 3)),
+            ((2, 4, 4), (2, 4, 4)),
+            ((2, 4, 4), (1, 4, 3)),
+            ((2, 4, 4), (2, 4, 2)),
+            ((2, 3, 4, 4), (1, 3, 4, 2)),
+            ((2, 3, 4, 4), (2, 1, 4, 2)),
+            ((3, 4, 4), (1, 1, 4, 2)),
+        ],
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    def test_lu_solve_batched(self, a_shape, b_shape, dtype, order):
+        a_np = self._make_nonsingular_nd_np(a_shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        b_np = generate_random_numpy_array(b_shape, dtype, order)
+        b_dp = dpnp.array(b_np, order=order)
+
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve(
+            (lu, piv), b_dp, overwrite_b=True, check_finite=False
+        )
+
+        exp_shape = self._expected_x_shape(a_shape, b_shape)
+        assert x.shape == exp_shape
+
+        if b_dp.ndim > 1:
+            Ax = a_dp @ x
+        else:
+            Ax = (a_dp @ x[..., None])[..., 0]
+        b_exp = dpnp.broadcast_to(b_dp, exp_shape)
+        assert dpnp.allclose(Ax, b_exp, rtol=1e-5, atol=1e-5)
+
+    @pytest.mark.parametrize("trans", [0, 1, 2])
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_trans(self, trans, order, dtype):
+        a_shape = (3, 4, 4)
+        b_shape = (3, 4, 2)
+
+        a_np = self._make_nonsingular_nd_np(a_shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+        b_dp = dpnp.array(
+            generate_random_numpy_array(b_shape, dtype, order), order=order
+        )
+
+        lu, piv = dpnp.scipy.linalg.lu_factor(
+            a_dp, overwrite_a=False, check_finite=False
+        )
+        x = dpnp.scipy.linalg.lu_solve(
+            (lu, piv), b_dp, trans=trans, overwrite_b=False, check_finite=False
+        )
+
+        if trans == 0:
+            lhs = a_dp @ x
+        elif trans == 1:
+            lhs = dpnp.swapaxes(a_dp, -1, -2) @ x
+        else:  # trans == 2
+            lhs = dpnp.conj(dpnp.swapaxes(a_dp, -1, -2)) @ x
+
+        assert dpnp.allclose(lhs, b_dp, rtol=1e-5, atol=1e-5)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_overwrite(self, dtype, order):
+        a_np = self._make_nonsingular_nd_np((2, 4, 4), dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        lu, piv = dpnp.scipy.linalg.lu_factor(
+            a_dp, overwrite_a=False, check_finite=False
+        )
+
+        b_dp = dpnp.array(
+            generate_random_numpy_array((2, 4, 2), dtype, "F"), order="F"
+        )
+        b_dp_orig = b_dp.copy()
+        x = dpnp.scipy.linalg.lu_solve(
+            (lu, piv), b_dp, overwrite_b=True, check_finite=False
+        )
+
+        assert x is not b_dp
+        assert dpnp.allclose(b_dp, b_dp_orig)
+
+        assert dpnp.allclose(a_dp @ x, b_dp, rtol=1e-5, atol=1e-5)
+
+    def test_strided(self):
+        n, B = 4, 6
+        a_np = self._make_nonsingular_nd_np(
+            (B, n, n), dpnp.default_float_type(), "F"
+        )
+        a_dp = dpnp.array(a_np, order="F")
+
+        a_stride = a_dp[::2]
+        rhs_full = (
+            dpnp.arange(B * n * 3, dtype=dpnp.default_float_type()).reshape(
+                B, n, 3, order="F"
+            )
+            + 1.0
+        )
+        b_dp = rhs_full[::2, :, ::-1]
+
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_stride, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve(
+            (lu, piv), b_dp, overwrite_b=False, check_finite=False
+        )
+
+        assert dpnp.allclose(a_stride @ x, b_dp, rtol=1e-5, atol=1e-5)
+
+    @pytest.mark.parametrize(
+        "dtype_a", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    @pytest.mark.parametrize(
+        "dtype_b", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    @pytest.mark.parametrize("b_shape", [(4, 2), (1, 4, 2), (2, 4, 2)])
+    def test_diff_type(self, dtype_a, dtype_b, b_shape):
+        B, n, k = 2, 4, 2
+        a_np = self._make_nonsingular_nd_np((B, n, n), dtype_a, "F")
+        a_dp = dpnp.array(a_np, order="F")
+
+        b_np = generate_random_numpy_array(b_shape, dtype_b, "F")
+        b_dp = dpnp.array(b_np, order="F")
+
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve((lu, piv), b_dp, check_finite=False)
+
+        exp_shape = (B, n, k)
+        assert x.shape == exp_shape
+
+        b_exp = dpnp.broadcast_to(b_dp, exp_shape)
+        assert dpnp.allclose(
+            a_dp @ x, b_exp.astype(x.dtype, copy=False), rtol=1e-5, atol=1e-5
+        )
+
+    @pytest.mark.parametrize(
+        "a_shape, b_shape",
+        [
+            ((0, 3, 3), (0, 3)),
+            ((2, 0, 0), (2, 0)),
+            ((0, 0, 0), (0, 0)),
+        ],
+    )
+    def test_empty_shapes(self, a_shape, b_shape):
+        a = dpnp.empty(a_shape, dtype=dpnp.default_float_type(), order="F")
+        b = dpnp.empty(b_shape, dtype=dpnp.default_float_type(), order="F")
+
+        lu, piv = dpnp.scipy.linalg.lu_factor(a, check_finite=False)
+        x = dpnp.scipy.linalg.lu_solve((lu, piv), b, check_finite=False)
+
+        assert x.shape == b_shape
+
+    def test_check_finite_raises(self):
+        B, n = 2, 3
+        a_np = self._make_nonsingular_nd_np(
+            (B, n, n), dpnp.default_float_type(), "F"
+        )
+        a_dp = dpnp.array(a_np, order="F")
+        lu, piv = dpnp.scipy.linalg.lu_factor(a_dp, check_finite=False)
+
+        b_bad = dpnp.ones((B, n), dtype=dpnp.default_float_type(), order="F")
+        b_bad[1, 0] = dpnp.nan
+        assert_raises(
+            ValueError,
+            dpnp.scipy.linalg.lu_solve,
+            (lu, piv),
+            b_bad,
+            check_finite=True,
+        )
+
+    @pytest.mark.parametrize(
+        "a_shape, b_shape",
+        [
+            ((2, 4, 4), (2,)),
+            ((2, 4, 4), (2, 4)),
+            ((2, 4, 4), (4, 4, 2)),
+            ((2, 4, 4), (2, 3, 4, 2)),
+            ((2, 3, 4, 4), (3, 4)),
+            ((2, 3, 4, 4), (2, 4)),
+            ((2, 3, 4, 4), (2, 3, 5, 2)),
+        ],
+    )
+    def test_invalid_shapes(self, a_shape, b_shape):
+        dtype = dpnp.default_float_type()
+        a = dpnp.array(
+            self._make_nonsingular_nd_np(a_shape, dtype, "F"), order="F"
+        )
+        b = dpnp.array(
+            generate_random_numpy_array(b_shape, dtype, "F"), order="F"
+        )
+
+        lu, piv = dpnp.scipy.linalg.lu_factor(a, check_finite=False)
+        with pytest.raises(ValueError):
+            dpnp.scipy.linalg.lu_solve((lu, piv), b, check_finite=False)
 
 
 class TestMatrixPower:
