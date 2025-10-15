@@ -45,9 +45,11 @@ alternatively, is implemented through a subset of python calls.
 from ._erf import (
     erf,
     erfc,
+    erfcx,
 )
 
 __all__ = [
     "erf",
     "erfc",
+    "erfcx",
 ]

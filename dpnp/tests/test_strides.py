@@ -167,7 +167,7 @@ def test_reduce_hypot(dtype, stride):
 
 
 @with_requires("scipy")
-@pytest.mark.parametrize("func", ["erf", "erfc"])
+@pytest.mark.parametrize("func", ["erf", "erfc", "erfcx"])
 @pytest.mark.parametrize("stride", [2, -1, -3])
 def test_erf_funcs(func, stride):
     import scipy.special

@@ -45,7 +45,7 @@ it contains:
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPUnaryFunc
 
-__all__ = ["erf", "erfc"]
+__all__ = ["erf", "erfc", "erfcx"]
 
 
 # pylint: disable=too-few-public-methods
@@ -173,4 +173,48 @@ erfc = DPNPErf(
     _ERFC_DOCSTRING,
     mkl_fn_to_call="_mkl_erf_to_call",
     mkl_impl_fn="_erfc",
+)
+
+_ERFCX_DOCSTRING = r"""
+Calculates the scaled complementary error function of a given input array.
+It is defined as :math:`\exp(x^2) * \operatorname{erfc}(x)`.
+
+For full documentation refer to :obj:`scipy.special.erfcx`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have a real-valued floating-point data type.
+out : {dpnp.ndarray, usm_ndarray}, optional
+    Optional output array for the function values.
+
+Returns
+-------
+out : dpnp.ndarray
+    The values of the scaled complementary error function at the given points
+    `x`.
+
+See Also
+--------
+:obj:`dpnp.scipy.special.erf` : Gauss error function.
+:obj:`dpnp.scipy.special.erfc` : Complementary error function.
+:obj:`dpnp.scipy.special.erfinv` : Inverse of the error function.
+:obj:`dpnp.scipy.special.erfcinv` : Inverse of the complementary error function.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.linspace(-3, 3, num=4)
+>>> np.scipy.special.erfcx(x)
+array([1.62059889e+04, 5.00898008e+00, 4.27583576e-01, 1.79001151e-01])
+
+"""
+
+erfcx = DPNPErf(
+    "erfcx",
+    ufi._erf_result_type,
+    ufi._erfcx,
+    _ERFCX_DOCSTRING,
+    mkl_fn_to_call="_mkl_erf_to_call",
+    mkl_impl_fn="_erfcx",
 )
