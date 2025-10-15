@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 import warnings
 
@@ -6,6 +8,10 @@ import pytest
 
 import dpnp as cupy
 from dpnp.tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy.testing._protocol_helpers import (
+    DummyObjectWithCudaArrayInterface,
+    DummyObjectWithCuPyGetNDArray,
+)
 
 if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
     from numpy.exceptions import ComplexWarning
@@ -130,9 +136,30 @@ else:
 )
 class TestArrayIndexingParameterized(unittest.TestCase):
 
+    _getitem_hip_skip_condition = [
+        ((1, 0, 2), (2, 3, 4), None),
+        ((-1, 0, -2), (2, 3, 4), None),
+        ((1, 0, 2), (2, 3, 4), (2, 0, 1)),
+        ((-1, 0, -2), (2, 3, 4), (2, 0, 1)),
+        ((slice(None, None, None), None), (2,), None),
+        ((slice(-9, -10, -1),), (10,), None),
+        ((slice(-4, -5, -1),), (10,), None),
+        ((slice(-5, -6, -1),), (10,), None),
+    ]
+
+    def _check_getitem_hip_skip_condition(self):
+        return (
+            self.indexes,
+            self.shape,
+            self.transpose,
+        ) in self._getitem_hip_skip_condition
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_getitem(self, xp, dtype):
+        # if cupy.cuda.runtime.is_hip:
+        #     if self._check_getitem_hip_skip_condition():
+        #         pytest.xfail("HIP may have a bug")
         a = testing.shaped_arange(self.shape, xp, dtype)
         if self.transpose:
             a = a.transpose(self.transpose)
@@ -261,3 +288,18 @@ class TestSetItemCompatBroadcast:
         a = xp.zeros((2, 3, 4), dtype=dtype)
         a[0, 1, 2] = testing.shaped_arange((), xp, dtype)
         return a
+
+
+@pytest.mark.skip("CUDA array interface is not supported")
+@pytest.mark.parametrize(
+    "cupy_like",
+    [
+        DummyObjectWithCuPyGetNDArray,
+        DummyObjectWithCudaArrayInterface,
+    ],
+)
+def test_setitem_with_cupy_like(cupy_like):
+    # Test that normal assignment supports interfaces
+    a = cupy.zeros(10)
+    a[...] = cupy_like(cupy.arange(10))
+    testing.assert_array_equal(a, cupy.arange(10))
