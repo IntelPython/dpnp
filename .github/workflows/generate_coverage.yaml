@@ -135,7 +135,7 @@ jobs:
             conda activate coverage
             [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
             git clean -fxd
-            python scripts/gen_coverage.py --verbose
+            python scripts/gen_coverage.py
 
       - name: Total number of coverage attempts
         run: |
