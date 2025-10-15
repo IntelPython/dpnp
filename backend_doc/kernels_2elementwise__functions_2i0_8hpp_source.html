@@ -136,7 +136,7 @@ $(function(){initNavTree('kernels_2elementwise__functions_2i0_8hpp_source.html',
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#define __SYCL_COMPILER_BESSEL_I0_SUPPORT 20241208L</span></div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#if defined(__SPIR__) &amp;&amp; defined(__INTEL_LLVM_COMPILER)</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#if (defined(__SPIR__) || defined(__SPIRV__)) &amp;&amp; defined(__INTEL_LLVM_COMPILER)</span></div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#define __SYCL_EXT_INTEL_MATH_SUPPORT</span></div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
