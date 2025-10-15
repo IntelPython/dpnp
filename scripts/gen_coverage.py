@@ -108,8 +108,6 @@ def run(
     )
 
     def find_objects():
-        import os
-
         objects = []
         dpnp_path = os.getcwd()
         search_path = os.path.join(dpnp_path, "dpnp")
