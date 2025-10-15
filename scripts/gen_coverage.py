@@ -100,7 +100,6 @@ def run(
             "term-missing",
             "--pyargs",
             "dpnp",
-            "-vv",
             *pytest_opts.split(),
         ],
         cwd=setup_dir,
