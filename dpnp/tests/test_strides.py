@@ -167,12 +167,21 @@ def test_reduce_hypot(dtype, stride):
 
 
 @with_requires("scipy")
-@pytest.mark.parametrize("func", ["erf", "erfc", "erfcx"])
+@pytest.mark.parametrize(
+    "func, low, high",
+    [
+        ("erf", -3, 3),
+        ("erfc", -3, 3),
+        ("erfcx", -3, 3),
+        ("erfinv", -1, 1),
+        ("erfcinv", 0, 2),
+    ],
+)
 @pytest.mark.parametrize("stride", [2, -1, -3])
-def test_erf_funcs(func, stride):
+def test_erf_funcs(func, low, high, stride):
     import scipy.special
 
-    x = generate_random_numpy_array(10)
+    x = generate_random_numpy_array(10, low=low, high=high)
     a, ia = x[::stride], dpnp.array(x)[::stride]
 
     result = getattr(dpnp.scipy.special, func)(ia)
