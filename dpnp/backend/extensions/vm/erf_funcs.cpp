@@ -134,6 +134,8 @@ using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 MACRO_DEFINE_IMPL(erf, Erf);
 MACRO_DEFINE_IMPL(erfc, Erfc);
 MACRO_DEFINE_IMPL(erfcx, Erfcx);
+MACRO_DEFINE_IMPL(erfinv, Erfinv);
+MACRO_DEFINE_IMPL(erfcinv, Erfcinv);
 
 template <template <typename fnT, typename T> typename factoryT>
 static void populate(py::module_ m,
@@ -194,5 +196,17 @@ void init_erf_funcs(py::module_ m)
         "Call `erfcx` function from OneMKL VM library to compute the scaled "
         "complementary error function value of vector elements",
         impl::erfcx_contig_dispatch_vector);
+
+    impl::populate<impl::ErfinvContigFactory>(
+        m, "_erfinv",
+        "Call `erfinv` function from OneMKL VM library to compute the inverse "
+        "of the error function value of vector elements",
+        impl::erfinv_contig_dispatch_vector);
+
+    impl::populate<impl::ErfcinvContigFactory>(
+        m, "_erfcinv",
+        "Call `erfcinv` function from OneMKL VM library to compute the inverse "
+        "of the complementary error function value of vector elements",
+        impl::erfcinv_contig_dispatch_vector);
 }
 } // namespace dpnp::extensions::vm
