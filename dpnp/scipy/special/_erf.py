@@ -45,7 +45,7 @@ it contains:
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPUnaryFunc
 
-__all__ = ["erf", "erfc", "erfcx"]
+__all__ = ["erf", "erfc", "erfcx", "erfinv", "erfcinv"]
 
 
 # pylint: disable=too-few-public-methods
@@ -177,6 +177,7 @@ erfc = DPNPErf(
 
 _ERFCX_DOCSTRING = r"""
 Calculates the scaled complementary error function of a given input array.
+
 It is defined as :math:`\exp(x^2) * \operatorname{erfc}(x)`.
 
 For full documentation refer to :obj:`scipy.special.erfcx`.
@@ -217,4 +218,111 @@ erfcx = DPNPErf(
     _ERFCX_DOCSTRING,
     mkl_fn_to_call="_mkl_erf_to_call",
     mkl_impl_fn="_erfcx",
+)
+
+_ERFINV_DOCSTRING = r"""
+Calculates the inverse of the Gauss error function of a given input array.
+
+It is defined as :math:`\operatorname{erf}^{-1}(x)`.
+
+For full documentation refer to :obj:`scipy.special.erfinv`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have a real-valued floating-point data type.
+    Domain: [-1, 1].
+out : {dpnp.ndarray, usm_ndarray}, optional
+    Optional output array for the function values.
+
+Returns
+-------
+out : dpnp.ndarray
+    The values of the inverse of the error function at the given points `x`.
+
+See Also
+--------
+:obj:`dpnp.scipy.special.erf` : Gauss error function.
+:obj:`dpnp.scipy.special.erfc` : Complementary error function.
+:obj:`dpnp.scipy.special.erfcx` : Scaled complementary error function.
+:obj:`dpnp.scipy.special.erfcinv` : Inverse of the complementary error function.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.linspace(-1.0, 1.0, num=9)
+>>> y = np.scipy.special.erfinv(x)
+>>> y
+array([       -inf, -0.81341985, -0.47693628, -0.22531206,  0.        ,
+        0.22531206,  0.47693628,  0.81341985,         inf])
+
+Verify that ``erf(erfinv(x))`` is ``x``:
+
+>>> np.scipy.special.erf(y)
+array([-1.  , -0.75, -0.5 , -0.25,  0.  ,  0.25,  0.5 ,  0.75,  1.  ])
+
+"""
+
+erfinv = DPNPErf(
+    "erfinv",
+    ufi._erf_result_type,
+    ufi._erfinv,
+    _ERFINV_DOCSTRING,
+    mkl_fn_to_call="_mkl_erf_to_call",
+    mkl_impl_fn="_erfinv",
+)
+
+_ERFCINV_DOCSTRING = r"""
+Calculates the inverse of the complementary error function of a given input
+array.
+
+It is defined as :math:`\operatorname{erfinv}(1 - x)`.
+
+For full documentation refer to :obj:`scipy.special.erfcinv`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have a real-valued floating-point data type.
+    Domain: [0, 2].
+out : {dpnp.ndarray, usm_ndarray}, optional
+    Optional output array for the function values.
+
+Returns
+-------
+out : dpnp.ndarray
+    The values of the inverse of the complementary error function at the given
+    points `x`.
+
+See Also
+--------
+:obj:`dpnp.scipy.special.erf` : Gauss error function.
+:obj:`dpnp.scipy.special.erfc` : Complementary error function.
+:obj:`dpnp.scipy.special.erfcx` : Scaled complementary error function.
+:obj:`dpnp.scipy.special.erfinv` : Inverse of the error function.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.linspace(0.0, 2.0, num=11)
+>>> y = np.scipy.special.erfcinv(x)
+>>> y
+array([        inf,  0.9061938 ,  0.59511608,  0.37080716,  0.17914345,
+        0.        , -0.17914345, -0.37080716, -0.59511608, -0.9061938 ,
+              -inf])
+
+Verify that ``erfc(erfcinv(x))`` is ``x``:
+
+>>> np.scipy.special.erfc(y)
+array([0. , 0.2, 0.4, 0.6, 0.8, 1. , 1.2, 1.4, 1.6, 1.8, 2. ])
+
+"""
+
+erfcinv = DPNPErf(
+    "erfcinv",
+    ufi._erf_result_type,
+    ufi._erfcinv,
+    _ERFCINV_DOCSTRING,
+    mkl_fn_to_call="_mkl_erf_to_call",
+    mkl_impl_fn="_erfcinv",
 )

@@ -45,11 +45,15 @@ alternatively, is implemented through a subset of python calls.
 from ._erf import (
     erf,
     erfc,
+    erfcinv,
     erfcx,
+    erfinv,
 )
 
 __all__ = [
     "erf",
     "erfc",
     "erfcx",
+    "erfinv",
+    "erfcinv",
 ]
