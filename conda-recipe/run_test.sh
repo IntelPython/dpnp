@@ -37,4 +37,8 @@ set -e
 
 $PYTHON -c "import dpnp; print(dpnp.__version__)"
 $PYTHON -m dpctl -f
+
+$PYTHON -c "import dpctl, dpctl.utils; dev = dpctl.select_default_device(); dev_info = dpctl.utils.intel_device_info(dev); print(dev_info)"
+$PYTHON -m pytest -sv --pyargs dpnp.tests.test_histogram
+
 $PYTHON -m pytest -ra --pyargs dpnp
