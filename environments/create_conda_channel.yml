@@ -3,4 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - python=3.13
-  - conda-index=0.6.1
+  - conda-index=0.7.0
