@@ -309,9 +309,18 @@ def get_dev_id(device=None):
     Obtain Intel Device ID for a device (the default device if not provided).
     """
 
+    return get_dev_info(device).get("device_id", 0)
+
+
+def get_dev_info(device=None):
+    """
+    Obtain a dictionary with the info for a device (the default device if not
+    provided).
+
+    """
+
     dev = dpctl.select_default_device() if device is None else device
-    dev_info = dpctl.utils.intel_device_info(dev)
-    return dev_info.get("device_id", 0)
+    return dpctl.utils.intel_device_info(dev)
 
 
 def get_float_dtypes(no_float16=True, device=None):
