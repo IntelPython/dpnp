@@ -550,4 +550,4 @@ def requires_memory(no_of_gbs, device=None):
     """
 
     free_mem = get_dev_info(device).get("free_memory", 0)
-    return free_mem > no_of_gbs * (1024**3)
+    return free_mem >= no_of_gbs * (1024**3)
