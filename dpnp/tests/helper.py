@@ -540,3 +540,14 @@ def requires_intel_mkl_version(version):  # pragma: no cover
 
     build_deps = numpy.show_config(mode="dicts")["Build Dependencies"]
     return build_deps["blas"]["version"] >= version
+
+
+def requires_memory(no_of_gbs, device=None):
+    """
+    Check if the required number of GBs in memory of a device (the default one
+    if not provided) is available.
+
+    """
+
+    free_mem = get_dev_info(device).get("free_memory", 0)
+    return free_mem > no_of_gbs * (1024**3)
