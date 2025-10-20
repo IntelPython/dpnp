@@ -259,7 +259,7 @@ std::tuple<sycl::event, sycl::event>
             exec_q, {sample, bins, histogram}, {ev});
     }
 
-    return {args_ev, ev};
+    return std::make_pair(args_ev, ev);
 }
 
 std::unique_ptr<Histogram> hist;
