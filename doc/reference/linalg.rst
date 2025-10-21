@@ -21,6 +21,7 @@ Matrix and vector products
    linalg.vecdot (Array API compatible)
    inner
    outer
+   linalg.outer
    matmul
    linalg.matmul (Array API compatible)
    matvec
@@ -41,7 +42,6 @@ Decompositions
    :nosignatures:
 
    linalg.cholesky
-   linalg.outer
    linalg.qr
    linalg.lu_factor
    linalg.svd
