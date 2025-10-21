@@ -171,7 +171,11 @@ def assert_array_equal(
         )
 
     if strides_check:
-        strides = tuple(el // desired.itemsize for el in desired.strides)
+        strides = desired.strides
+        if isinstance(actual, cupy.ndarray):
+            # need to agreed the strides with numpy.ndarray
+            strides = tuple(el // desired.itemsize for el in desired.strides)
+
         if actual.strides != strides:
             msg = ["Strides are not equal:"]
             if err_msg:
