@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.20.0] - MM/DD/2026
 
 This release changes the license from `BSD-2-Clause` to `BSD-3-Clause`.
+The release drops support for Python 3.9, making Python 3.10 the minimum required version.
 
 ### Added
 
@@ -23,6 +24,8 @@ This release changes the license from `BSD-2-Clause` to `BSD-3-Clause`.
 ### Deprecated
 
 ### Removed
+
+* Dropped support for Python 3.9 [#2626](https://github.com/IntelPython/dpnp/pull/2626)
 
 ### Fixed
 
