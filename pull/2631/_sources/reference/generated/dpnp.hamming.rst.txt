@@ -1,0 +1,10 @@
+﻿
+
+dpnp.hamming
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: hamming
