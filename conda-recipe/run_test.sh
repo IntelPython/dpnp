@@ -37,4 +37,12 @@ set -e
 
 $PYTHON -c "import dpnp; print(dpnp.__version__)"
 $PYTHON -m dpctl -f
+
+uname -r
+echo "Running gdb command"
+gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex thread apply all bt full --args "$PYTHON" -m pytest -ra --pyargs dpnp.tests.test_random
+echo "End gdb command"
+$PYTHON -m pytest -sv --pyargs dpnp.tests.test_random
+echo "End short tests scope"
+
 $PYTHON -m pytest -ra --pyargs dpnp
