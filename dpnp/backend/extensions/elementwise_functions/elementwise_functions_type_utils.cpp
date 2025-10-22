@@ -78,7 +78,8 @@ py::dtype _dtype_from_typenum(td_ns::typenum_t dst_typenum_t)
     }
 }
 
-int _result_typeid(int arg_typeid, const int *fn_output_id)
+template <typename output_idT>
+output_idT _result_typeid(int arg_typeid, const output_idT *fn_output_id)
 {
     if (arg_typeid < 0 || arg_typeid >= td_ns::num_types) {
         throw py::value_error("Input typeid " + std::to_string(arg_typeid) +
