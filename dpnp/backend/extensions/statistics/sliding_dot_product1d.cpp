@@ -135,10 +135,10 @@ std::tuple<sycl::event, sycl::event>
     auto ev = corr_func(exec_q, a.get_data(), v.get_data(), out.get_data(),
                         a.get_shape(0), v.get_shape(0), l_pad, r_pad, depends);
 
-    sycl::event args_ev;
-    args_ev = dpctl::utils::keep_args_alive(exec_q, {a, v, out}, {ev});
+    sycl::event args_ev =
+        dpctl::utils::keep_args_alive(exec_q, {a, v, out}, {ev});
 
-    return {args_ev, ev};
+    return std::make_pair(args_ev, ev);
 }
 
 std::unique_ptr<SlidingDotProduct1d> sdp;
