@@ -36,15 +36,17 @@
 // dpctl tensor headers
 #include "utils/type_dispatch.hpp"
 
+namespace dpnp::extensions::py_internal::type_utils
+{
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-namespace dpnp::extensions::py_internal::type_utils
-{
 /*! @brief Produce dtype from a type number */
 extern py::dtype _dtype_from_typenum(td_ns::typenum_t);
 
 /*! @brief Lookup typeid of the result from typeid of
  *         argument and the mapping table */
-extern int _result_typeid(int, const int *);
+template <typename output_idT>
+extern output_idT _result_typeid(int arg_typeid,
+                                 const output_idT *fn_output_id);
 } // namespace dpnp::extensions::py_internal::type_utils
