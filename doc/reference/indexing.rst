@@ -1,10 +1,12 @@
 .. _routines.indexing:
 .. _arrays.indexing:
 
+.. currentmodule:: dpnp
+
 Indexing routines
 =================
 
-.. https://numpy.org/doc/stable/reference/routines.indexing.html
+.. hint:: `NumPy API Reference: Indexing routines <https://numpy.org/doc/stable/reference/routines.indexing.html>`_
 
 Generating index arrays
 -----------------------
@@ -12,23 +14,23 @@ Generating index arrays
    :toctree: generated/
    :nosignatures:
 
-   dpnp.c_
-   dpnp.r_
-   dpnp.s_
-   dpnp.nonzero
-   dpnp.where
-   dpnp.indices
-   dpnp.ix_
-   dpnp.ogrid
-   dpnp.ravel_multi_index
-   dpnp.unravel_index
-   dpnp.diag_indices
-   dpnp.diag_indices_from
-   dpnp.mask_indices
-   dpnp.tril_indices
-   dpnp.tril_indices_from
-   dpnp.triu_indices
-   dpnp.triu_indices_from
+   c_
+   r_
+   s_
+   nonzero
+   where
+   indices
+   ix_
+   ogrid
+   ravel_multi_index
+   unravel_index
+   diag_indices
+   diag_indices_from
+   mask_indices
+   tril_indices
+   tril_indices_from
+   triu_indices
+   triu_indices_from
 
 
 Indexing-like operations
@@ -37,13 +39,13 @@ Indexing-like operations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.take
-   dpnp.take_along_axis
-   dpnp.choose
-   dpnp.compress
-   dpnp.diag
-   dpnp.diagonal
-   dpnp.select
+   take
+   take_along_axis
+   choose
+   compress
+   diag
+   diagonal
+   select
 
 
 Inserting data into arrays
@@ -52,11 +54,11 @@ Inserting data into arrays
    :toctree: generated/
    :nosignatures:
 
-   dpnp.place
-   dpnp.put
-   dpnp.put_along_axis
-   dpnp.putmask
-   dpnp.fill_diagonal
+   place
+   put
+   put_along_axis
+   putmask
+   fill_diagonal
 
 
 Iterating over arrays
@@ -65,9 +67,9 @@ Iterating over arrays
    :toctree: generated/
    :nosignatures:
 
-   dpnp.nditer
-   dpnp.ndenumerate
-   dpnp.ndindex
-   dpnp.nested_iters
-   dpnp.flatiter
-   dpnp.iterable
+   nditer
+   ndenumerate
+   ndindex
+   nested_iters
+   flatiter
+   iterable

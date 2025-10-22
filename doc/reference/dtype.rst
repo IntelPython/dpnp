@@ -1,19 +1,21 @@
 .. _dtype:
 
+.. currentmodule:: dpnp
+
 Data type routines
 ==================
 
-.. https://numpy.org/doc/stable/reference/routines.dtype.html
+.. hint:: `NumPy API Reference: Data type routines <https://numpy.org/doc/stable/reference/routines.dtype.html>`_
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
 
-   dpnp.can_cast
-   dpnp.promote_types
-   dpnp.min_scalar_type
-   dpnp.result_type
-   dpnp.common_type
+   can_cast
+   promote_types
+   min_scalar_type
+   result_type
+   common_type
 
 Creating data types
 -------------------
@@ -21,8 +23,8 @@ Creating data types
    :toctree: generated/
    :nosignatures:
 
-   dpnp.dtype
-   dpnp.format_parser
+   dtype
+   format_parser
 
 Data type information
 ---------------------
@@ -30,8 +32,8 @@ Data type information
    :toctree: generated/
    :nosignatures:
 
-   dpnp.finfo
-   dpnp.iinfo
+   finfo
+   iinfo
 
 Data type testing
 -----------------
@@ -39,8 +41,8 @@ Data type testing
    :toctree: generated/
    :nosignatures:
 
-   dpnp.isdtype
-   dpnp.issubdtype
+   isdtype
+   issubdtype
 
 Miscellaneous
 -------------
@@ -48,5 +50,5 @@ Miscellaneous
    :toctree: generated/
    :nosignatures:
 
-   dpnp.typename
-   dpnp.mintypecode
+   typename
+   mintypecode

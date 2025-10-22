@@ -1,11 +1,11 @@
 .. _routines.linalg:
 
-.. py:module:: dpnp.linalg
+.. currentmodule:: dpnp
 
-Linear algebra
-==============
+Linear algebra (:mod:`dpnp.linalg`)
+===================================
 
-.. https://numpy.org/doc/stable/reference/routines.linalg.html
+.. hint:: `NumPy API Reference: Linear algebra (numpy.linalg) <https://numpy.org/doc/stable/reference/routines.linalg.html>`_
 
 Matrix and vector products
 --------------------------
@@ -14,24 +14,25 @@ Matrix and vector products
    :toctree: generated/
    :nosignatures:
 
-   dpnp.dot
-   dpnp.linalg.multi_dot
-   dpnp.vdot
-   dpnp.vecdot
-   dpnp.linalg.vecdot (Array API compatible)
-   dpnp.inner
-   dpnp.outer
-   dpnp.matmul
-   dpnp.linalg.matmul (Array API compatible)
-   dpnp.matvec
-   dpnp.vecmat
-   dpnp.tensordot
-   dpnp.linalg.tensordot (Array API compatible)
-   dpnp.einsum
-   dpnp.einsum_path
-   dpnp.linalg.matrix_power
-   dpnp.kron
-   dpnp.linalg.cross (Array API compatible)
+   dot
+   linalg.multi_dot
+   vdot
+   vecdot
+   linalg.vecdot (Array API compatible)
+   inner
+   outer
+   linalg.outer
+   matmul
+   linalg.matmul (Array API compatible)
+   matvec
+   vecmat
+   tensordot
+   linalg.tensordot (Array API compatible)
+   einsum
+   einsum_path
+   linalg.matrix_power
+   kron
+   linalg.cross (Array API compatible)
 
 Decompositions
 --------------
@@ -40,12 +41,11 @@ Decompositions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.linalg.cholesky
-   dpnp.linalg.outer
-   dpnp.linalg.qr
-   dpnp.linalg.lu_factor
-   dpnp.linalg.svd
-   dpnp.linalg.svdvals
+   linalg.cholesky
+   linalg.qr
+   linalg.lu_factor
+   linalg.svd
+   linalg.svdvals
 
 Matrix eigenvalues
 ------------------
@@ -54,10 +54,10 @@ Matrix eigenvalues
    :toctree: generated/
    :nosignatures:
 
-   dpnp.linalg.eig
-   dpnp.linalg.eigh
-   dpnp.linalg.eigvals
-   dpnp.linalg.eigvalsh
+   linalg.eig
+   linalg.eigh
+   linalg.eigvals
+   linalg.eigvalsh
 
 Norms and other numbers
 -----------------------
@@ -66,15 +66,15 @@ Norms and other numbers
    :toctree: generated/
    :nosignatures:
 
-   dpnp.linalg.norm
-   dpnp.linalg.matrix_norm (Array API compatible)
-   dpnp.linalg.vector_norm (Array API compatible)
-   dpnp.linalg.cond
-   dpnp.linalg.det
-   dpnp.linalg.matrix_rank
-   dpnp.linalg.slogdet
-   dpnp.trace
-   dpnp.linalg.trace (Array API compatible)
+   linalg.norm
+   linalg.matrix_norm (Array API compatible)
+   linalg.vector_norm (Array API compatible)
+   linalg.cond
+   linalg.det
+   linalg.matrix_rank
+   linalg.slogdet
+   trace
+   linalg.trace (Array API compatible)
 
 Solving linear equations
 --------------------------
@@ -83,13 +83,13 @@ Solving linear equations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.linalg.solve
-   dpnp.linalg.tensorsolve
-   dpnp.linalg.lstsq
-   dpnp.linalg.lu_solve
-   dpnp.linalg.inv
-   dpnp.linalg.pinv
-   dpnp.linalg.tensorinv
+   linalg.solve
+   linalg.tensorsolve
+   linalg.lstsq
+   linalg.lu_solve
+   linalg.inv
+   linalg.pinv
+   linalg.tensorinv
 
 Other matrix operations
 -----------------------
@@ -97,9 +97,9 @@ Other matrix operations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.diagonal
-   dpnp.linalg.diagonal (Array API compatible)
-   dpnp.linalg.matrix_transpose (Array API compatible)
+   diagonal
+   linalg.diagonal (Array API compatible)
+   linalg.matrix_transpose (Array API compatible)
 
 Exceptions
 ----------
@@ -107,7 +107,7 @@ Exceptions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.linalg.LinAlgError
+   linalg.LinAlgError
 
 Linear algebra on several matrices at once
 ------------------------------------------

@@ -2343,7 +2343,7 @@ fmod = DPNPBinaryFunc(
 )
 
 _GCD_DOCSTRING = r"""
-Returns the greatest common divisor of :math:`\abs{x1}` and :math:`\abs{x2}`.
+Returns the greatest common divisor of :math:`|x_1|` and :math:`|x_2|`.
 
 For full documentation refer to :obj:`numpy.gcd`.
 
@@ -2962,7 +2962,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
 
 _LCM_DOCSTRING = r"""
-Returns the lowest common multiple of :math:`\abs{x1}` and :math:`\abs{x2}`.
+Returns the lowest common multiple of :math:`|x_1|` and :math:`|x_2|`.
 
 For full documentation refer to :obj:`numpy.lcm`.
 
