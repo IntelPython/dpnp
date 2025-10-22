@@ -47,6 +47,13 @@ extern py::dtype _dtype_from_typenum(td_ns::typenum_t);
 /*! @brief Lookup typeid of the result from typeid of
  *         argument and the mapping table */
 template <typename output_idT>
-extern output_idT _result_typeid(int arg_typeid,
-                                 const output_idT *fn_output_id);
+output_idT _result_typeid(int arg_typeid, const output_idT *fn_output_id)
+{
+    if (arg_typeid < 0 || arg_typeid >= td_ns::num_types) {
+        throw py::value_error("Input typeid " + std::to_string(arg_typeid) +
+                              " is outside of expected bounds.");
+    }
+
+    return fn_output_id[arg_typeid];
+}
 } // namespace dpnp::extensions::py_internal::type_utils
