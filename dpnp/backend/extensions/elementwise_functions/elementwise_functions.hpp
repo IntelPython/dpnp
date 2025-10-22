@@ -62,6 +62,8 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::kernels::alignment_utils::is_aligned;
 using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
+using type_utils::_result_typeid;
+
 /*! @brief Template implementing Python API for unary elementwise functions */
 template <typename output_typesT,
           typename contig_dispatchT,
@@ -261,9 +263,7 @@ py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
         throw py::value_error(e.what());
     }
 
-    using type_utils::_result_typeid;
     int dst_typeid = _result_typeid(src_typeid, output_types);
-
     if (dst_typeid < 0) {
         auto res = py::none();
         return py::cast<py::object>(res);
@@ -511,7 +511,6 @@ std::pair<py::object, py::object>
         throw py::value_error(e.what());
     }
 
-    using type_utils::_result_typeid;
     std::pair<int, int> dst_typeids = _result_typeid(src_typeid, output_types);
     int dst1_typeid = dst_typeids.first;
     int dst2_typeid = dst_typeids.second;
