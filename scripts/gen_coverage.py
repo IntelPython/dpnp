@@ -100,7 +100,6 @@ def run(
             "term-missing",
             "--pyargs",
             "dpnp",
-            "-vv",
             *pytest_opts.split(),
         ],
         cwd=setup_dir,
@@ -109,8 +108,6 @@ def run(
     )
 
     def find_objects():
-        import os
-
         objects = []
         dpnp_path = os.getcwd()
         search_path = os.path.join(dpnp_path, "dpnp")
@@ -146,6 +143,7 @@ def run(
                 "export",
                 "-format=lcov",
                 "-ignore-filename-regex=/tmp/icpx*",
+                r"-ignore-filename-regex=.*/backend/kernels/elementwise_functions/.*\.hpp$",
                 "-instr-profile=" + instr_profile_fn,
             ]
             + objects
