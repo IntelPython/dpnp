@@ -29,12 +29,35 @@
 
 from collections.abc import Iterable
 
-from dpctl.tensor._type_utils import _can_cast
+import dpctl.tensor._type_utils as dtu
 
 import dpnp
 from dpnp.dpnp_utils import map_dtype_to_device
 
-__all__ = ["result_type_for_device", "to_supported_dtypes"]
+__all__ = [
+    "find_buf_dtype_3out",
+    "result_type_for_device",
+    "to_supported_dtypes",
+]
+
+
+def find_buf_dtype_3out(arg_dtype, query_fn, sycl_dev):
+    """Works as dpu._find_buf_dtype, but with two output arrays."""
+
+    res1_dt, res2_dt = query_fn(arg_dtype)
+    if res1_dt and res2_dt:
+        return None, res1_dt, res2_dt
+
+    _fp16 = sycl_dev.has_aspect_fp16
+    _fp64 = sycl_dev.has_aspect_fp64
+    all_dts = dtu._all_data_types(_fp16, _fp64)
+    for buf_dt in all_dts:
+        if dtu._can_cast(arg_dtype, buf_dt, _fp16, _fp64):
+            res1_dt, res2_dt = query_fn(buf_dt)
+            if res1_dt and res2_dt:
+                return buf_dt, res1_dt, res2_dt
+
+    return None, None, None
 
 
 def result_type_for_device(dtypes, device):
@@ -55,7 +78,7 @@ def to_supported_dtypes(dtypes, supported_types, device):
     has_fp16 = device.has_aspect_fp16
 
     def is_castable(dtype, stype):
-        return _can_cast(dtype, stype, has_fp16, has_fp64)
+        return dtu._can_cast(dtype, stype, has_fp16, has_fp64)
 
     if not isinstance(supported_types, Iterable):
         supported_types = (supported_types,)  # pragma: no cover
