@@ -79,7 +79,7 @@ endif()
 include(GNUInstallDirs)
 
 # find Python before enabling pybind11
-find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
+find_package(Python 3.10...<3.15 REQUIRED COMPONENTS Development.Module NumPy)
 
 # Fetch pybind11
 include(FetchContent)
