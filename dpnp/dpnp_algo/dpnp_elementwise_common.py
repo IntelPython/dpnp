@@ -179,7 +179,7 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
             )
         elif dtype is not None and out is not None:
             raise TypeError(
-                f"Requested function={self.name_} only takes `out` or `dtype`"
+                f"Requested function={self.name_} only takes `out` or `dtype` "
                 "as an argument, but both were provided."
             )
 
@@ -356,6 +356,12 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
 
             res_dt = res_dts[i]
             if res_dt != res.dtype:
+                if not dpnp.can_cast(res_dt, res.dtype, casting="same_kind"):
+                    raise TypeError(
+                        f"Cannot cast ufunc '{self.name_}' output {i + 1} from "
+                        f"{res_dt} to {res.dtype} with casting rule 'same_kind'"
+                    )
+
                 # Allocate a temporary buffer with the required dtype
                 out[i] = dpt.empty_like(res, dtype=res_dt)
             elif (
@@ -564,7 +570,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             )
         elif dtype is not None and out is not None:
             raise TypeError(
-                f"Requested function={self.name_} only takes `out` or `dtype`"
+                f"Requested function={self.name_} only takes `out` or `dtype` "
                 "as an argument, but both were provided."
             )
 
