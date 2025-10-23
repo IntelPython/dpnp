@@ -53,7 +53,7 @@ from ._erf import (
 __all__ = [
     "erf",
     "erfc",
+    "erfcinv",
     "erfcx",
     "erfinv",
-    "erfcinv",
 ]
