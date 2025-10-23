@@ -37,11 +37,11 @@
 // dpctl tensor headers
 #include "utils/type_dispatch.hpp"
 
+namespace dpnp::extensions::py_internal::type_utils
+{
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-namespace dpnp::extensions::py_internal::type_utils
-{
 py::dtype _dtype_from_typenum(td_ns::typenum_t dst_typenum_t)
 {
     switch (dst_typenum_t) {
@@ -76,15 +76,5 @@ py::dtype _dtype_from_typenum(td_ns::typenum_t dst_typenum_t)
     default:
         throw py::value_error("Unrecognized dst_typeid");
     }
-}
-
-int _result_typeid(int arg_typeid, const int *fn_output_id)
-{
-    if (arg_typeid < 0 || arg_typeid >= td_ns::num_types) {
-        throw py::value_error("Input typeid " + std::to_string(arg_typeid) +
-                              " is outside of expected bounds.");
-    }
-
-    return fn_output_id[arg_typeid];
 }
 } // namespace dpnp::extensions::py_internal::type_utils
