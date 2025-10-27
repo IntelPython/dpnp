@@ -719,7 +719,7 @@ class TestFrexp:
 
     @pytest.mark.parametrize("dt", ALL_DTYPES_NO_COMPLEX)
     def test_basic(self, dt):
-        a = numpy.array([-2, 5, 1, 4, 3], dtype=dt)
+        a = get_abs_array([-2, 5, 1, 4, 3], dtype=dt)
         ia = dpnp.array(a)
 
         res1, res2 = dpnp.frexp(ia)
