@@ -727,11 +727,12 @@ class TestFrexp:
         assert_array_equal(res1, exp1)
         assert_array_equal(res2, exp2)
 
-    def test_out(self):
-        a = numpy.array(5.7)
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_out(self, dt):
+        a = numpy.array(5.7, dtype=dt)
         ia = dpnp.array(a)
 
-        out1 = numpy.empty(())
+        out1 = numpy.empty((), dtype=dt)
         out2 = numpy.empty((), dtype=numpy.int32)
         iout1, iout2 = dpnp.array(out1), dpnp.array(out2)
 
