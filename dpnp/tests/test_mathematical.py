@@ -828,7 +828,7 @@ class TestFrexp:
 
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_empty(self, dt):
-        a = numpy.empty((), dtype=dt)
+        a = numpy.empty(0, dtype=dt)
         ia = dpnp.array(a)
 
         res1, res2 = dpnp.frexp(ia)
