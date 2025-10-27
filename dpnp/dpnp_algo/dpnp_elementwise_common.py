@@ -319,7 +319,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
         if not isinstance(out, tuple):
             raise TypeError("'out' must be a tuple of arrays")
 
-        if len(out) != 2:
+        if len(out) != self.nout:
             raise ValueError(
                 "'out' tuple must have exactly one entry per ufunc output"
             )
@@ -341,7 +341,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
 
             res = dpnp.get_usm_ndarray(out[i])
             if not res.flags.writable:
-                raise ValueError("provided output array is read-only")
+                raise ValueError("output array is read-only")
 
             if res.shape != x.shape:
                 raise ValueError(

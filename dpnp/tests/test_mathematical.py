@@ -786,8 +786,8 @@ class TestFrexp:
         )
         ia = dpnp.array(a)
 
-        out_mant = numpy.ones(8, dtype=dt)
-        out_exp = 2 * numpy.ones(8, dtype="i")
+        out_mant = numpy.ones_like(a)
+        out_exp = 2 * numpy.ones_like(a, dtype="i")
         iout_mant, iout_exp = dpnp.array(out_mant), dpnp.array(out_exp)
 
         res1, res2 = dpnp.frexp(
@@ -802,11 +802,34 @@ class TestFrexp:
         assert_array_equal(iout_mant, out_mant)
         assert_array_equal(iout_exp, out_exp)
 
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_out_wrong_type(self, xp):
-        a = xp.array(0.5)
-        with pytest.raises(TypeError, match="'out' must be a tuple of arrays"):
-            _ = xp.frexp(a, out=xp.empty(()))
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_out_overlap(self, dt):
+        a = numpy.ones(15, dtype=dt)
+        ia = dpnp.array(a)
+
+        out_mant = numpy.ones_like(a)
+        out_exp = 2 * numpy.ones_like(a, dtype="i")
+        iout_mant, iout_exp = dpnp.array(out_mant), dpnp.array(out_exp)
+
+        res1, res2 = dpnp.frexp(ia, out=(iout_mant, iout_exp))
+        exp1, exp2 = numpy.frexp(a, out=(out_mant, out_exp))
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+
+        assert_array_equal(iout_mant, out_mant)
+        assert_array_equal(iout_exp, out_exp)
+        assert res1 is iout_mant
+        assert res2 is iout_exp
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_empty(self, dt):
+        a = numpy.empty((), dtype=dt)
+        ia = dpnp.array(a)
+
+        res1, res2 = dpnp.frexp(ia)
+        exp1, exp2 = numpy.frexp(a)
+        assert_array_equal(res1, exp1, strict=True)
+        assert_array_equal(res2, exp2, strict=True)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize("dt", get_complex_dtypes())
@@ -2080,7 +2103,7 @@ class TestUfunc:
 
     @pytest.mark.parametrize("func", ["abs", "frexp", "add"])
     @pytest.mark.parametrize("x", [1, [1, 2], numpy.ones(5)])
-    def test_wrong_input(self, func, x):
+    def test_unary_wrong_input(self, func, x):
         fn = getattr(dpnp, func)
         args = [x] * fn.nin
         with pytest.raises(TypeError):
@@ -2115,8 +2138,75 @@ class TestUfunc:
         ):
             fn(*args, out=out, dtype="f4")
 
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unary_two_outs_out_ndarray(self, xp):
+        x = xp.array(0.5)
+        with pytest.raises(TypeError, match="'out' must be a tuple of arrays"):
+            _ = xp.frexp(x, out=xp.empty(()))
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("out", [(), (1,), (1, 2, 3)])
+    def test_unary_two_outs_out_wrong_tuple_len(self, xp, out):
+        x = xp.array(0.5)
+        with pytest.raises(
+            ValueError,
+            match="'out' tuple must have exactly one entry per ufunc output",
+        ):
+            _ = xp.frexp(x, out=out)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unary_two_outs_out_mixed(self, xp):
+        x = xp.array(0.5)
+        with pytest.raises(
+            TypeError,
+            match="cannot specify 'out' as both a positional and keyword",
+        ):
+            _ = xp.frexp(x, xp.empty(()), out=(xp.empty(()), None))
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unary_two_outs_out_not_writable(self, xp):
+        x = xp.array(0.5)
+        out1 = xp.empty(())
+        out1.flags["W"] = False
+
+        with pytest.raises(ValueError, match="array is read-only"):
+            _ = xp.frexp(x, out1)
+
+        out2 = xp.empty((), dtype="i")
+        out2.flags["W"] = False
+        with pytest.raises(ValueError, match="array is read-only"):
+            _ = xp.frexp(x, out=(None, out2))
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unary_two_outs_out_wrong_shape(self, xp):
+        x = xp.full(6, fill_value=0.5)
+        out1 = xp.empty(12)
+        with pytest.raises(ValueError):
+            _ = xp.frexp(x, out1)
+
+        out2 = xp.empty((2, 3), dtype="i")
+        with pytest.raises(ValueError):
+            _ = xp.frexp(x, out=(None, out2))
+
+    def test_unary_two_outs_cfd_error(self):
+        x = dpnp.array(0.5, sycl_queue=dpctl.SyclQueue())
+        out1 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
+        out2 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
+        with pytest.raises(
+            ExecutionPlacementError,
+            match="Input and output allocation queues are not compatible",
+        ):
+            _ = dpnp.frexp(x, out1)
+
+        with pytest.raises(
+            ExecutionPlacementError,
+            match="Input and output allocation queues are not compatible",
+        ):
+            _ = dpnp.frexp(x, out=(None, out2))
+
     @pytest.mark.parametrize("func", ["abs", "frexp", "add"])
-    def test_order_none(self, func):
+    @pytest.mark.parametrize("order", [None, "K", "A", "f", "c"])
+    def test_order(self, func, order):
         a = numpy.array([1, 2, 3])
         ia = dpnp.array(a)
 
@@ -2126,8 +2216,8 @@ class TestUfunc:
         args = [a] * fn.nin
         iargs = [ia] * ifn.nin
 
-        result = ifn(*iargs, order=None)
-        expected = fn(*args, order=None)
+        result = ifn(*iargs, order=order)
+        expected = fn(*args, order=order)
         if fn.nout == 1:
             assert_dtype_allclose(result, expected)
         else:
