@@ -33,6 +33,7 @@ from .helper import (
     has_support_aspect16,
     has_support_aspect64,
     is_intel_numpy,
+    is_win_platform,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -777,6 +778,10 @@ class TestFrexp:
             assert res1 is iout1
             assert res2 is iout2
 
+    @pytest.mark.skipif(
+        is_win_platform(),
+        reason="numpy.frexp gives different answers for NAN/INF on Windows and Linux",
+    )
     @pytest.mark.parametrize("stride", [-4, -2, -1, 1, 2, 4])
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_strides_out(self, stride, dt):
