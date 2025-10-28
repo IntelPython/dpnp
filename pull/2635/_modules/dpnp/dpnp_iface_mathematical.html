@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev0+39.g90e9d1447a0 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev0+40.g3f5e7ccb277 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2b11c4d1"></script>
+      <script src="../../_static/documentation_options.js?v=8c0d95c4"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2478,6 +2478,15 @@
 <span class="s2">    as `x` and the expected data type.</span>
 
 <span class="s2">    Default: ``None``.</span>
+
+<span class="s2">out : tuple of None, dpnp.ndarray, or usm_ndarray, optional</span>
+<span class="s2">    A location into which the result is stored. If provided, it must be a tuple</span>
+<span class="s2">    and have length equal to the number of outputs. Each provided array must</span>
+<span class="s2">    have the same shape as `x` and the expected data type.</span>
+<span class="s2">    It is prohibited to pass output arrays through `out` keyword when either</span>
+<span class="s2">    `out1` or `out2` is passed.</span>
+
+<span class="s2">    Default: ``(None, None)``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
@@ -2492,7 +2501,7 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
-<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
