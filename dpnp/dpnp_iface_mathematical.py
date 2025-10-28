@@ -2366,6 +2366,15 @@ out2 : {None, dpnp.ndarray, usm_ndarray}, optional
     as `x` and the expected data type.
 
     Default: ``None``.
+
+out : tuple of None, dpnp.ndarray, or usm_ndarray, optional
+    A location into which the result is stored. If provided, it must be a tuple
+    and have length equal to the number of outputs. Each provided array must
+    have the same shape as `x` and the expected data type.
+    It is prohibited to pass output arrays through `out` keyword when either
+    `out1` or `out2` is passed.
+
+    Default: ``(None, None)``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
@@ -2380,7 +2389,7 @@ exponent : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where` and `subok` are supported with their default values.
+Parameters `where`, `dtype` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
