@@ -11,7 +11,11 @@ from datetime import datetime
 from sphinx.ext.autodoc import FunctionDocumenter
 from sphinx.ext.napoleon import NumpyDocstring, docstring
 
-from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
+from dpnp.dpnp_algo.dpnp_elementwise_common import (
+    DPNPBinaryFunc,
+    DPNPUnaryFunc,
+    DPNPUnaryTwoOutputsFunc,
+)
 
 try:
     import comparison_generator
@@ -206,7 +210,9 @@ texinfo_documents = [
 
 # -- Options for todo extension ----------------------------------------------
 def _can_document_member(member, *args, **kwargs):
-    if isinstance(member, (DPNPBinaryFunc, DPNPUnaryFunc)):
+    if isinstance(
+        member, (DPNPBinaryFunc, DPNPUnaryFunc, DPNPUnaryTwoOutputsFunc)
+    ):
         return True
     return orig(member, *args, **kwargs)
 
