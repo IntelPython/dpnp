@@ -2387,7 +2387,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.ldexp` : Compute :math:`y = x1 * 2^{x2}`, inverse to
-                    :obj:`dpnp.frexp`.
+    :obj:`dpnp.frexp`.
 
 Notes
 -----
