@@ -4,6 +4,7 @@ var dir_2dc4cca66e7325a4fed455b9bcd79a3e =
     [ "degrees.hpp", "kernels_2elementwise__functions_2degrees_8hpp_source.html", null ],
     [ "erf.hpp", "erf_8hpp_source.html", null ],
     [ "erfcx.hpp", "erfcx_8hpp_source.html", null ],
+    [ "erfinv.hpp", "erfinv_8hpp_source.html", null ],
     [ "fabs.hpp", "kernels_2elementwise__functions_2fabs_8hpp_source.html", null ],
     [ "fix.hpp", "kernels_2elementwise__functions_2fix_8hpp_source.html", null ],
     [ "fmax.hpp", "kernels_2elementwise__functions_2fmax_8hpp_source.html", null ],

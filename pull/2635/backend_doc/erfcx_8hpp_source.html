@@ -1688,35 +1688,33 @@ $(function(){initNavTree('erfcx_8hpp_source.html',''); initResizable(true); });
 <div class="line"><a id="l01598" name="l01598"></a><span class="lineno"> 1598</span>}</div>
 <div class="line"><a id="l01599" name="l01599"></a><span class="lineno"> 1599</span> </div>
 <div class="line"><a id="l01624" name="l01624"></a><span class="lineno"> 1624</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tp&gt;</div>
-<div class="line"><a id="l01625" name="l01625"></a><span class="lineno"> 1625</span>Tp erfcx(Tp x)</div>
+<div class="line"><a id="l01625" name="l01625"></a><span class="lineno"> 1625</span><span class="keyword">inline</span> Tp erfcx(Tp x)</div>
 <div class="line"><a id="l01626" name="l01626"></a><span class="lineno"> 1626</span>{</div>
 <div class="line"><a id="l01627" name="l01627"></a><span class="lineno"> 1627</span>    <span class="keyword">static_assert</span>(std::is_floating_point_v&lt;Tp&gt;,</div>
 <div class="line"><a id="l01628" name="l01628"></a><span class="lineno"> 1628</span>                  <span class="stringliteral">&quot;erfcx requires a floating-point type&quot;</span>);</div>
 <div class="line"><a id="l01629" name="l01629"></a><span class="lineno"> 1629</span> </div>
 <div class="line"><a id="l01630" name="l01630"></a><span class="lineno"> 1630</span>    <span class="keywordflow">if</span> (x &gt;= 0) {</div>
-<div class="line"><a id="l01631" name="l01631"></a><span class="lineno"> 1631</span>        <span class="keywordflow">if</span> (x &gt; 50) <span class="comment">// continued-fraction expansion is faster</span></div>
-<div class="line"><a id="l01632" name="l01632"></a><span class="lineno"> 1632</span>        {</div>
-<div class="line"><a id="l01633" name="l01633"></a><span class="lineno"> 1633</span>            <span class="comment">// 1/sqrt(pi)</span></div>
-<div class="line"><a id="l01634" name="l01634"></a><span class="lineno"> 1634</span>            <span class="keyword">constexpr</span> Tp inv_sqrtpi = 0.564189583547756286948079451560772586L;</div>
-<div class="line"><a id="l01635" name="l01635"></a><span class="lineno"> 1635</span> </div>
-<div class="line"><a id="l01636" name="l01636"></a><span class="lineno"> 1636</span>            <span class="keywordflow">if</span> (x &gt; 5e7) <span class="comment">// 1-term expansion, important to avoid overflow</span></div>
-<div class="line"><a id="l01637" name="l01637"></a><span class="lineno"> 1637</span>            {</div>
-<div class="line"><a id="l01638" name="l01638"></a><span class="lineno"> 1638</span>                <span class="keywordflow">return</span> inv_sqrtpi / x;</div>
-<div class="line"><a id="l01639" name="l01639"></a><span class="lineno"> 1639</span>            }</div>
-<div class="line"><a id="l01640" name="l01640"></a><span class="lineno"> 1640</span> </div>
-<div class="line"><a id="l01641" name="l01641"></a><span class="lineno"> 1641</span>            <span class="comment">// 5-term expansion (rely on compiler for CSE)</span></div>
-<div class="line"><a id="l01642" name="l01642"></a><span class="lineno"> 1642</span>            <span class="keywordflow">return</span> inv_sqrtpi * ((x * x) * (x * x + 4.5) + 2) /</div>
-<div class="line"><a id="l01643" name="l01643"></a><span class="lineno"> 1643</span>                   (x * ((x * x) * (x * x + 5) + 3.75));</div>
-<div class="line"><a id="l01644" name="l01644"></a><span class="lineno"> 1644</span>        }</div>
-<div class="line"><a id="l01645" name="l01645"></a><span class="lineno"> 1645</span>        <span class="keywordflow">return</span> erfcx_y100(400 / (4 + x));</div>
-<div class="line"><a id="l01646" name="l01646"></a><span class="lineno"> 1646</span>    }</div>
-<div class="line"><a id="l01647" name="l01647"></a><span class="lineno"> 1647</span> </div>
-<div class="line"><a id="l01648" name="l01648"></a><span class="lineno"> 1648</span>    <span class="keywordflow">return</span> x &lt; -26.7</div>
-<div class="line"><a id="l01649" name="l01649"></a><span class="lineno"> 1649</span>               ? std::numeric_limits&lt;Tp&gt;::infinity()</div>
-<div class="line"><a id="l01650" name="l01650"></a><span class="lineno"> 1650</span>               : (x &lt; -6.1 ? 2 * sycl::exp(x * x)</div>
-<div class="line"><a id="l01651" name="l01651"></a><span class="lineno"> 1651</span>                           : 2 * sycl::exp(x * x) - erfcx_y100(400 / (4 - x)));</div>
-<div class="line"><a id="l01652" name="l01652"></a><span class="lineno"> 1652</span>}</div>
-<div class="line"><a id="l01653" name="l01653"></a><span class="lineno"> 1653</span>} <span class="comment">// namespace dpnp::kernels::erfs::impl</span></div>
+<div class="line"><a id="l01631" name="l01631"></a><span class="lineno"> 1631</span>        <span class="keywordflow">if</span> (x &gt; 50) { <span class="comment">// continued-fraction expansion is faster</span></div>
+<div class="line"><a id="l01632" name="l01632"></a><span class="lineno"> 1632</span>            <span class="comment">// 1/sqrt(pi)</span></div>
+<div class="line"><a id="l01633" name="l01633"></a><span class="lineno"> 1633</span>            <span class="keyword">constexpr</span> Tp inv_sqrtpi = 0.564189583547756286948079451560772586L;</div>
+<div class="line"><a id="l01634" name="l01634"></a><span class="lineno"> 1634</span> </div>
+<div class="line"><a id="l01635" name="l01635"></a><span class="lineno"> 1635</span>            <span class="keywordflow">if</span> (x &gt; 5e7) { <span class="comment">// 1-term expansion, important to avoid overflow</span></div>
+<div class="line"><a id="l01636" name="l01636"></a><span class="lineno"> 1636</span>                <span class="keywordflow">return</span> inv_sqrtpi / x;</div>
+<div class="line"><a id="l01637" name="l01637"></a><span class="lineno"> 1637</span>            }</div>
+<div class="line"><a id="l01638" name="l01638"></a><span class="lineno"> 1638</span> </div>
+<div class="line"><a id="l01639" name="l01639"></a><span class="lineno"> 1639</span>            <span class="comment">// 5-term expansion (rely on compiler for CSE)</span></div>
+<div class="line"><a id="l01640" name="l01640"></a><span class="lineno"> 1640</span>            <span class="keywordflow">return</span> inv_sqrtpi * ((x * x) * (x * x + 4.5) + 2) /</div>
+<div class="line"><a id="l01641" name="l01641"></a><span class="lineno"> 1641</span>                   (x * ((x * x) * (x * x + 5) + 3.75));</div>
+<div class="line"><a id="l01642" name="l01642"></a><span class="lineno"> 1642</span>        }</div>
+<div class="line"><a id="l01643" name="l01643"></a><span class="lineno"> 1643</span>        <span class="keywordflow">return</span> erfcx_y100(400 / (4 + x));</div>
+<div class="line"><a id="l01644" name="l01644"></a><span class="lineno"> 1644</span>    }</div>
+<div class="line"><a id="l01645" name="l01645"></a><span class="lineno"> 1645</span> </div>
+<div class="line"><a id="l01646" name="l01646"></a><span class="lineno"> 1646</span>    <span class="keywordflow">return</span> x &lt; -26.7</div>
+<div class="line"><a id="l01647" name="l01647"></a><span class="lineno"> 1647</span>               ? std::numeric_limits&lt;Tp&gt;::infinity()</div>
+<div class="line"><a id="l01648" name="l01648"></a><span class="lineno"> 1648</span>               : (x &lt; -6.1 ? 2 * sycl::exp(x * x)</div>
+<div class="line"><a id="l01649" name="l01649"></a><span class="lineno"> 1649</span>                           : 2 * sycl::exp(x * x) - erfcx_y100(400 / (4 - x)));</div>
+<div class="line"><a id="l01650" name="l01650"></a><span class="lineno"> 1650</span>}</div>
+<div class="line"><a id="l01651" name="l01651"></a><span class="lineno"> 1651</span>} <span class="comment">// namespace dpnp::kernels::erfs::impl</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
