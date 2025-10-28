@@ -2,5 +2,5 @@ name: Create conda channel with DPNP package
 channels:
   - conda-forge
 dependencies:
-  - python=3.13
+  - python=3.13 # no python 3.14 support by conda-index
   - conda-index=0.7.0

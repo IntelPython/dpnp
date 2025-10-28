@@ -38,6 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Cannot build conda package with python 3.14 due to dependency conflict between stock numpy and Intel MKL
         python: ['3.10', '3.11', '3.12', '3.13']
         runner: [ubuntu-22.04, ubuntu-24.04, windows-2022]
 
