@@ -31,14 +31,12 @@ class _TestBase:
     def test_erfcx(self):
         self.check_unary("erfcx")
 
-    @pytest.mark.skip("erfinv() is not supported yet")
     def test_erfinv(self):
         self.check_unary("erfinv")
         self.check_unary_random("erfinv", scale=2, offset=-1)
         self.check_unary_boundary("erfinv", boundary=-1)
         self.check_unary_boundary("erfinv", boundary=1)
 
-    @pytest.mark.skip("erfcinv() is not supported yet")
     def test_erfcinv(self):
         self.check_unary("erfcinv")
         self.check_unary_random("erfcinv", scale=2, offset=0)
@@ -75,42 +73,40 @@ class TestSpecial(unittest.TestCase, _TestBase):
         a = xp.array(a, dtype=dtype)
         return getattr(scp.special, name)(a)
 
-    @pytest.mark.skip("erfinv() is not supported yet")
     @testing.with_requires("scipy>=1.4.0")
     @testing.for_dtypes(["f", "d"])
     def test_erfinv_behavior(self, dtype):
         a = cupy.empty((1,), dtype=dtype)
 
         a[:] = 1.0 + 1e-6
-        a = cupyx.scipy.special.erfinv(a)
+        a = cupy.scipy.special.erfinv(a)
         assert cupy.isnan(a)
         a[:] = -1.0 - 1e-6
-        a = cupyx.scipy.special.erfinv(a)
+        a = cupy.scipy.special.erfinv(a)
         assert cupy.isnan(a)
         a[:] = 1.0
-        a = cupyx.scipy.special.erfinv(a)
+        a = cupy.scipy.special.erfinv(a)
         assert numpy.isposinf(cupy.asnumpy(a))
         a[:] = -1.0
-        a = cupyx.scipy.special.erfinv(a)
+        a = cupy.scipy.special.erfinv(a)
         assert numpy.isneginf(cupy.asnumpy(a))
 
-    @pytest.mark.skip("erfcinv() is not supported yet")
     @testing.with_requires("scipy>=1.4.0")
     @testing.for_dtypes(["f", "d"])
     def test_erfcinv_behavior(self, dtype):
         a = cupy.empty((1,), dtype=dtype)
 
         a[:] = 2.0 + 1e-6
-        a = cupyx.scipy.special.erfcinv(a)
+        a = cupy.scipy.special.erfcinv(a)
         assert cupy.isnan(a)
         a[:] = 0.0 - 1e-6
-        a = cupyx.scipy.special.erfcinv(a)
+        a = cupy.scipy.special.erfcinv(a)
         assert cupy.isnan(a)
         a[:] = 0.0
-        a = cupyx.scipy.special.erfcinv(a)
+        a = cupy.scipy.special.erfcinv(a)
         assert numpy.isposinf(cupy.asnumpy(a))
         a[:] = 2.0
-        a = cupyx.scipy.special.erfcinv(a)
+        a = cupy.scipy.special.erfcinv(a)
         assert numpy.isneginf(cupy.asnumpy(a))
 
 
