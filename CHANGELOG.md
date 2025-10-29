@@ -15,6 +15,7 @@ The release drops support for Python 3.9, making Python 3.10 the minimum require
 * Added implementation of `dpnp.linalg.lu_solve` for batch inputs (SciPy-compatible) [#2619](https://github.com/IntelPython/dpnp/pull/2619)
 * Added `dpnp.exceptions` submodule to aggregate the generic exceptions used by dpnp [#2616](https://github.com/IntelPython/dpnp/pull/2616)
 * Added implementation of `dpnp.scipy.special.erfcx` [#2596](https://github.com/IntelPython/dpnp/pull/2596)
+* Added implementation of `dpnp.scipy.special.erfinv` and `dpnp.scipy.special.erfcinv` [#2624](https://github.com/IntelPython/dpnp/pull/2624)
 
 ### Changed
 

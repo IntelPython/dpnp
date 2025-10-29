@@ -1622,19 +1622,17 @@ For x < 0, we use the relationship erfcx(-x) = 2 exp(x^2) - erfc(x), with the
 usual checks for overflow etcetera.
 */
 template <typename Tp>
-Tp erfcx(Tp x)
+inline Tp erfcx(Tp x)
 {
     static_assert(std::is_floating_point_v<Tp>,
                   "erfcx requires a floating-point type");
 
     if (x >= 0) {
-        if (x > 50) // continued-fraction expansion is faster
-        {
+        if (x > 50) { // continued-fraction expansion is faster
             // 1/sqrt(pi)
             constexpr Tp inv_sqrtpi = 0.564189583547756286948079451560772586L;
 
-            if (x > 5e7) // 1-term expansion, important to avoid overflow
-            {
+            if (x > 5e7) { // 1-term expansion, important to avoid overflow
                 return inv_sqrtpi / x;
             }
 
