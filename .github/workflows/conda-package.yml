@@ -139,6 +139,11 @@ jobs:
       ver-json-path: '${{ github.workspace }}/version.json'
 
     steps:
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0
+        with:
+          swap-size-gb: 8
+
       - name: Checkout DPNP repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
