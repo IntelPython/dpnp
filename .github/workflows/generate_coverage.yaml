@@ -57,11 +57,6 @@ jobs:
                            intel-oneapi-libdpstd-devel     \
                            intel-oneapi-compiler-dpcpp-cpp
 
-      - name: Install Lcov
-        run: |
-          sudo apt-get install lcov
-          sudo gem install coveralls-lcov
-
       - name: Checkout repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
