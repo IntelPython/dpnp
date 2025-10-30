@@ -650,6 +650,19 @@ def test_1in_1out(func, data, usm_type):
 
 
 @pytest.mark.parametrize(
+    "func, data",
+    [
+        pytest.param("frexp", numpy.arange(9)),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_1in_2out(func, data, usm_type):
+    x = dpnp.array(data, usm_type=usm_type)
+    res1, res2 = getattr(dpnp, func)(x)
+    assert x.usm_type == usm_type == res1.usm_type == res2.usm_type
+
+
+@pytest.mark.parametrize(
     "func,data1,data2",
     [
         pytest.param(

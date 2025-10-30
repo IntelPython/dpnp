@@ -38,6 +38,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmod.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/frexp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/gcd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/heaviside.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/i0.cpp

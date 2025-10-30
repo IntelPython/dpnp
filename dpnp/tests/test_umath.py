@@ -115,7 +115,7 @@ def test_umaths(test_cases):
         and not (vmi._is_available() and has_support_aspect64())
     ):
         pytest.skip("dpctl-2031")
-    elif umath in ["divmod", "frexp"]:
+    elif umath in ["divmod"]:
         pytest.skip("Not implemented umath")
     elif umath == "modf":
         if args[0].dtype == dpnp.float16:
