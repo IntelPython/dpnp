@@ -16,7 +16,7 @@ env:
   ver-script-part1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   ver-script-part2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
   fetch-depth: 1
-  python-ver-test-all-dtypes: '3.13'
+  python-ver-test-all-dtypes: '3.14'
   test-env-name: 'test'
   rerun-tests-on-failure: 'true'
   rerun-tests-max-attempts: 2
@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
         os: [ubuntu-22.04, windows-2022]
 
     permissions:
@@ -128,7 +128,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
         os: [ubuntu-latest]
 
     env:
@@ -256,7 +256,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
         os: [windows-2022]
 
     env:
@@ -405,7 +405,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
         os: [ubuntu-22.04, windows-2022]
 
     runs-on: ${{ matrix.os }}

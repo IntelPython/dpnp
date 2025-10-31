@@ -2,5 +2,5 @@ name: Build DPNP conda package
 channels:
   - conda-forge
 dependencies:
-  - python=3.13
-  - conda-build=25.7.0
+  - python=3.13 # no python 3.14 support by conda-build
+  - conda-build=25.9.0

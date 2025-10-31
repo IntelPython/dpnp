@@ -2,7 +2,7 @@ name: Building docs specific packages
 channels:
   - conda-forge
 dependencies:
-  - python=3.13
+  - python=3.13 # no dpctl package on PyPI with enabled python 3.14 support
   - cupy
   - sphinx
   - sphinx_rtd_theme
