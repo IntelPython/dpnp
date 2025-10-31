@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.20.0] - MM/DD/2026
 
 This release changes the license from `BSD-2-Clause` to `BSD-3-Clause`.
-The release drops support for Python 3.9, making Python 3.10 the minimum required version.
+This release achieves `dpnp` compatibility with Python 3.14 and enables distributing `dpnp` packages with the latest Python version.
+Also, that release drops support for Python 3.9, making Python 3.10 the minimum required version.
 
 ### Added
 
@@ -16,6 +17,7 @@ The release drops support for Python 3.9, making Python 3.10 the minimum require
 * Added `dpnp.exceptions` submodule to aggregate the generic exceptions used by dpnp [#2616](https://github.com/IntelPython/dpnp/pull/2616)
 * Added implementation of `dpnp.scipy.special.erfcx` [#2596](https://github.com/IntelPython/dpnp/pull/2596)
 * Added implementation of `dpnp.scipy.special.erfinv` and `dpnp.scipy.special.erfcinv` [#2624](https://github.com/IntelPython/dpnp/pull/2624)
+* Enabled support of Python 3.14 [#2631](https://github.com/IntelPython/dpnp/pull/2631)
 
 ### Changed
 
