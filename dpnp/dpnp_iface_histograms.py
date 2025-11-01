@@ -284,8 +284,6 @@ def _bincount_run_native(
         size, dtype=n_dtype, usm_type=n_usm_type, sycl_queue=queue
     )
 
-    _manager = dpu.SequentialOrderManager[queue]
-
     x_usm = dpnp.get_usm_ndarray(x_casted)
     weights_usm = (
         dpnp.get_usm_ndarray(weights_casted)
@@ -294,7 +292,9 @@ def _bincount_run_native(
     )
     n_usm = dpnp.get_usm_ndarray(n_casted)
 
-    mem_ev, bc_ev = statistics_ext.bincount(
+    _manager = dpu.SequentialOrderManager[queue]
+
+    ht_ev, bc_ev = statistics_ext.bincount(
         x_usm,
         min_v.item(),
         max_v.item(),
@@ -303,7 +303,7 @@ def _bincount_run_native(
         depends=_manager.submitted_events,
     )
 
-    _manager.add_event_pair(mem_ev, bc_ev)
+    _manager.add_event_pair(ht_ev, bc_ev)
 
     return n_casted
 
@@ -647,8 +647,6 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         usm_type=n_usm_type,
     )
 
-    _manager = dpu.SequentialOrderManager[queue]
-
     a_usm = dpnp.get_usm_ndarray(a_casted)
     bins_usm = dpnp.get_usm_ndarray(bin_edges_casted)
     weights_usm = (
@@ -658,14 +656,16 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     )
     n_usm = dpnp.get_usm_ndarray(n_casted)
 
-    mem_ev, ht_ev = statistics_ext.histogram(
+    _manager = dpu.SequentialOrderManager[queue]
+
+    ht_ev, hist_ev = statistics_ext.histogram(
         a_usm,
         bins_usm,
         weights_usm,
         n_usm,
         depends=_manager.submitted_events,
     )
-    _manager.add_event_pair(mem_ev, ht_ev)
+    _manager.add_event_pair(ht_ev, hist_ev)
 
     n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type)
 
@@ -1039,7 +1039,7 @@ def _histdd_run_native(
 
     _manager = dpu.SequentialOrderManager[queue]
 
-    mem_ev, hdd_ev = statistics_ext.histogramdd(
+    ht_ev, histdd_ev = statistics_ext.histogramdd(
         sample_usm,
         edges_usm,
         edges_count_usm,
@@ -1048,7 +1048,7 @@ def _histdd_run_native(
         depends=_manager.submitted_events,
     )
 
-    _manager.add_event_pair(mem_ev, hdd_ev)
+    _manager.add_event_pair(ht_ev, histdd_ev)
 
     return n
 

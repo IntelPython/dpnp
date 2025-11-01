@@ -137,7 +137,7 @@ def _isclose_scalar_tol(a, b, rtol, atol, equal_nan):
     )
 
     _manager = dpu.SequentialOrderManager[exec_q]
-    mem_ev, ht_ev = ufi._isclose_scalar(
+    ht_ev, isclose_ev = ufi._isclose_scalar(
         a.get_array(),
         b.get_array(),
         rtol,
@@ -147,7 +147,7 @@ def _isclose_scalar_tol(a, b, rtol, atol, equal_nan):
         exec_q,
         depends=_manager.submitted_events,
     )
-    _manager.add_event_pair(mem_ev, ht_ev)
+    _manager.add_event_pair(ht_ev, isclose_ev)
 
     return output
 

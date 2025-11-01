@@ -177,8 +177,8 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
     _manager = dpu.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
 
-    h_ev, choose_ev = indexing_ext._choose(inds, chcs, out, mode, q, dep_evs)
-    _manager.add_event_pair(h_ev, choose_ev)
+    ht_ev, choose_ev = indexing_ext._choose(inds, chcs, out, mode, q, dep_evs)
+    _manager.add_event_pair(ht_ev, choose_ev)
 
     return out
 
@@ -335,7 +335,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
     _manager = dpu.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
 
-    h_ev, take_ev = ti._take(
+    ht_ev, take_ev = ti._take(
         src=x,
         ind=(inds,),
         dst=out,
@@ -344,7 +344,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
         sycl_queue=q,
         depends=dep_evs,
     )
-    _manager.add_event_pair(h_ev, take_ev)
+    _manager.add_event_pair(ht_ev, take_ev)
 
     return out
 
