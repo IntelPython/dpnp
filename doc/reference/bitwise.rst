@@ -1,7 +1,9 @@
+.. currentmodule:: dpnp
+
 Bit-wise operations
 ===================
 
-.. https://numpy.org/doc/stable/reference/routines.bitwise.html
+.. hint:: `NumPy API Reference: Bit-wise operations <https://numpy.org/doc/stable/reference/routines.bitwise.html>`_
 
 Element-wise bit operations
 ---------------------------
@@ -10,17 +12,17 @@ Element-wise bit operations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.bitwise_and
-   dpnp.bitwise_not
-   dpnp.bitwise_or
-   dpnp.bitwise_xor
-   dpnp.invert
-   dpnp.bitwise_invert
-   dpnp.left_shift
-   dpnp.bitwise_left_shift
-   dpnp.right_shift
-   dpnp.bitwise_right_shift
-   dpnp.bitwise_count
+   bitwise_and
+   bitwise_not
+   bitwise_or
+   bitwise_xor
+   invert
+   bitwise_invert
+   left_shift
+   bitwise_left_shift
+   right_shift
+   bitwise_right_shift
+   bitwise_count
 
 Bit packing
 -----------
@@ -29,8 +31,8 @@ Bit packing
    :toctree: generated/
    :nosignatures:
 
-   dpnp.packbits
-   dpnp.unpackbits
+   packbits
+   unpackbits
 
 Output formatting
 -----------------
@@ -39,4 +41,4 @@ Output formatting
    :toctree: generated/
    :nosignatures:
 
-   dpnp.binary_repr
+   binary_repr

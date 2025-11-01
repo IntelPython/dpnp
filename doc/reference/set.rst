@@ -1,7 +1,9 @@
+.. currentmodule:: dpnp
+
 Set routines
 ============
 
-.. https://numpy.org/doc/stable/reference/routines.set.html
+.. hint:: `NumPy API Reference: Set routines <https://numpy.org/doc/stable/reference/routines.set.html>`_
 
 Making proper sets
 ------------------
@@ -9,11 +11,11 @@ Making proper sets
    :toctree: generated/
    :nosignatures:
 
-   dpnp.unique
-   dpnp.unique_all
-   dpnp.unique_counts
-   dpnp.unique_inverse
-   dpnp.unique_values
+   unique
+   unique_all
+   unique_counts
+   unique_inverse
+   unique_values
 
 Boolean operations
 ------------------
@@ -21,9 +23,9 @@ Boolean operations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.in1d
-   dpnp.intersect1d
-   dpnp.isin
-   dpnp.setdiff1d
-   dpnp.setxor1d
-   dpnp.union1d
+   in1d
+   intersect1d
+   isin
+   setdiff1d
+   setxor1d
+   union1d
