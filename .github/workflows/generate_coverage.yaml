@@ -57,11 +57,6 @@ jobs:
                            intel-oneapi-libdpstd-devel     \
                            intel-oneapi-compiler-dpcpp-cpp
 
-      - name: Install Lcov
-        run: |
-          sudo apt-get install lcov
-          sudo gem install coveralls-lcov
-
       - name: Checkout repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
@@ -142,32 +137,6 @@ jobs:
           echo "Total number of coverage attempts: ${{ steps.build_coverage.outputs.total_attempts }}"
 
       - name: Upload coverage data to coveralls.io
-        run: |
-          echo "Processing pytest-coverage"
-          export DPNP_PYTEST_LCOV=$(find . -name dpnp_pytest.lcov)
-          coveralls-lcov -v -n $DPNP_PYTEST_LCOV > pytest-dpnp-c-api-coverage.json
-
-          # merge file with coverage data and upload
-          echo "Merging files with coverage data"
-          coveralls --service=github --merge=pytest-dpnp-c-api-coverage.json
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_PARALLEL: true
-
-  coveralls:
-    name: Indicate completion to coveralls.io
-
-    needs: generate-coverage
-
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    container: python:3-slim
-
-    steps:
-    - name: Finished
-      run: |
-        pip3 install --upgrade coveralls==3.3.1
-        coveralls --service=github --finish
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: coverallsapp/github-action@648a8eb78e6d50909eff900e4ec85cab4524a45b # v2.3.6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
