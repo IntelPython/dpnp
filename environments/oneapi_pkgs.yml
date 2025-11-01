@@ -4,5 +4,6 @@ channels:
 dependencies:
   - dpcpp_linux-64
   - mkl-devel-dpcpp
+  - mkl-devel # w/a to intel_repack-feedstock#120 issue
   - onedpl-devel
   - tbb-devel
