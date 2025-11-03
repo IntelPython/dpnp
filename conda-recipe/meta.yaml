@@ -14,6 +14,7 @@ source:
 requirements:
     host:
       - python
+      - python-gil     # [py>=314]
       - pip >=25.0
       - pybind11 >=2.13.6
       {% for dep in py_build_deps %}
@@ -41,6 +42,7 @@ requirements:
       - {{ compiler('dpcpp') }} >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
     run:
       - python
+      - python-gil     # [py>=314]
       - {{ pin_compatible('dpctl', min_pin='x.x.x', max_pin=None) }}
       - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-blas', min_pin='x.x', max_pin='x') }}
@@ -63,7 +65,7 @@ test:
     requires:
       - pytest
       - setuptools
-      - scipy # [py>39]
+      - scipy # [py<314]
 
 about:
     home: https://github.com/IntelPython/dpnp

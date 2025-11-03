@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.20.0] - MM/DD/2026
 
 This release changes the license from `BSD-2-Clause` to `BSD-3-Clause`.
+This release achieves `dpnp` compatibility with Python 3.14 and enables distributing `dpnp` packages with the latest Python version.
+Also, that release drops support for Python 3.9, making Python 3.10 the minimum required version.
 
 ### Added
 
@@ -14,15 +16,20 @@ This release changes the license from `BSD-2-Clause` to `BSD-3-Clause`.
 * Added implementation of `dpnp.linalg.lu_solve` for batch inputs (SciPy-compatible) [#2619](https://github.com/IntelPython/dpnp/pull/2619)
 * Added `dpnp.exceptions` submodule to aggregate the generic exceptions used by dpnp [#2616](https://github.com/IntelPython/dpnp/pull/2616)
 * Added implementation of `dpnp.scipy.special.erfcx` [#2596](https://github.com/IntelPython/dpnp/pull/2596)
+* Added implementation of `dpnp.scipy.special.erfinv` and `dpnp.scipy.special.erfcinv` [#2624](https://github.com/IntelPython/dpnp/pull/2624)
+* Enabled support of Python 3.14 [#2631](https://github.com/IntelPython/dpnp/pull/2631)
 
 ### Changed
 
 * Silenced `pybind11` CMake message due to using compatibility mode for Python [#2614](https://github.com/IntelPython/dpnp/pull/2614)
 * Changed the license from `BSD-2-Clause` to `BSD-3-Clause` [#2593](https://github.com/IntelPython/dpnp/pull/2593)
+* Defined explicit versions range of the Python interpreter which is needed during the build [#2634](https://github.com/IntelPython/dpnp/pull/2634)
 
 ### Deprecated
 
 ### Removed
+
+* Dropped support for Python 3.9 [#2626](https://github.com/IntelPython/dpnp/pull/2626)
 
 ### Fixed
 

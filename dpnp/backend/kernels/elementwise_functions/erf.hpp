@@ -43,6 +43,7 @@
 #include <sycl/ext/intel/math.hpp>
 #else
 #include "erfcx.hpp"
+#include "erfinv.hpp"
 #endif
 
 namespace dpnp::kernels::erfs
@@ -85,13 +86,15 @@ struct BaseFunctor
     template <typename ArgT, typename ResT>                                    \
     using __f_name__##Functor = BaseFunctor<__f_name__##Op, ArgT, ResT>;
 
+#if defined(__SYCL_EXT_INTEL_MATH_SUPPORT)
+using namespace sycl::ext::intel::math;
+#else
+using namespace impl;
+#endif
+
 MACRO_DEFINE_FUNCTOR(sycl::erf, Erf);
 MACRO_DEFINE_FUNCTOR(sycl::erfc, Erfc);
-MACRO_DEFINE_FUNCTOR(
-#if defined(__SYCL_EXT_INTEL_MATH_SUPPORT)
-    sycl::ext::intel::math::erfcx,
-#else
-    impl::erfcx,
-#endif
-    Erfcx);
+MACRO_DEFINE_FUNCTOR(erfcx, Erfcx);
+MACRO_DEFINE_FUNCTOR(erfinv, Erfinv);
+MACRO_DEFINE_FUNCTOR(erfcinv, Erfcinv);
 } // namespace dpnp::kernels::erfs

@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import os
 import tempfile
 import unittest
 
@@ -8,6 +11,10 @@ import pytest
 import dpnp as cupy
 from dpnp.tests.helper import has_support_aspect64, is_cuda_device
 from dpnp.tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy.testing._protocol_helpers import (
+    DummyObjectWithCudaArrayInterface,
+    DummyObjectWithCuPyGetNDArray,
+)
 
 
 class TestFromData(unittest.TestCase):
@@ -36,6 +43,11 @@ class TestFromData(unittest.TestCase):
     def test_array_from_numpy(self, xp, dtype, order):
         a = testing.shaped_arange((2, 3, 4), numpy, dtype)
         return xp.array(a, order=order)
+
+    @pytest.mark.skip("no blocking keyword")
+    def test_array_from_numpy_blocking(self):
+        a = testing.shaped_arange((2, 3, 4), numpy, numpy.float32)
+        testing.assert_array_equal(cupy.array(a, blocking=True), a)
 
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
@@ -242,7 +254,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_copy_list_of_numpy_with_dtype(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -258,7 +270,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_copy_list_of_numpy_with_dtype_char(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -274,7 +286,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_copy_list_of_cupy_with_dtype(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -290,7 +302,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes(name="dtype1", no_complex=True)
     @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(strides_check=True)
     def test_array_copy_list_of_cupy_with_dtype_char(
         self, xp, dtype1, dtype2, src_order, dst_order
     ):
@@ -401,6 +413,11 @@ class TestFromData(unittest.TestCase):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.asarray(a)
 
+    @pytest.mark.skip("no blocking keyword")
+    def test_asarray_blocking(self):
+        a = testing.shaped_arange((2, 3, 4), numpy, numpy.float32)
+        testing.assert_array_equal(cupy.asarray(a, blocking=True), a)
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_asarray_is_not_copied(self, xp, dtype):
@@ -453,6 +470,11 @@ class TestFromData(unittest.TestCase):
         # Make a computation here as just moving big-endian data back and forth
         # happens to work before the change in #5828
         return b + b
+
+    @pytest.mark.skip("no blocking keyword")
+    def test_asanyarray_blocking(self):
+        a = testing.shaped_arange((2, 3, 4), numpy, numpy.float32)
+        testing.assert_array_equal(cupy.asanyarray(a, blocking=True), a)
 
     @testing.for_CF_orders()
     @testing.for_all_dtypes()
@@ -727,67 +749,6 @@ class TestCudaArrayInterfaceBigArray(unittest.TestCase):
         testing.assert_array_equal(a, b)
 
 
-class DummyObjectWithCudaArrayInterface:
-    def __init__(self, a, ver, include_strides=False, mask=None, stream=None):
-        assert ver in tuple(range(max_cuda_array_interface_version + 1))
-        self.a = None
-        if isinstance(a, cupy.ndarray):
-            self.a = a
-        else:
-            self.shape, self.strides, self.typestr, self.descr, self.data = a
-        self.ver = ver
-        self.include_strides = include_strides
-        self.mask = mask
-        self.stream = stream
-
-    @property
-    def __cuda_array_interface__(self):
-        if self.a is not None:
-            desc = {
-                "shape": self.a.shape,
-                "typestr": self.a.dtype.str,
-                "descr": self.a.dtype.descr,
-                "data": (self.a.data.ptr, False),
-                "version": self.ver,
-            }
-            if self.a.flags.c_contiguous:
-                if self.include_strides is True:
-                    desc["strides"] = self.a.strides
-                elif self.include_strides is None:
-                    desc["strides"] = None
-                else:  # self.include_strides is False
-                    pass
-            else:  # F contiguous or neither
-                desc["strides"] = self.a.strides
-        else:
-            desc = {
-                "shape": self.shape,
-                "typestr": self.typestr,
-                "descr": self.descr,
-                "data": (self.data, False),
-                "version": self.ver,
-            }
-            if self.include_strides is True:
-                desc["strides"] = self.strides
-            elif self.include_strides is None:
-                desc["strides"] = None
-            else:  # self.include_strides is False
-                pass
-        if self.mask is not None:
-            desc["mask"] = self.mask
-        # The stream field is kept here for compliance. However, since the
-        # synchronization is done via calling a cpdef function, which cannot
-        # be mock-tested.
-        if self.stream is not None:
-            if self.stream is cuda.Stream.null:
-                desc["stream"] = cuda.runtime.streamLegacy
-            elif (not cuda.runtime.is_hip) and self.stream is cuda.Stream.ptds:
-                desc["stream"] = cuda.runtime.streamPerThread
-            else:
-                desc["stream"] = self.stream.ptr
-        return desc
-
-
 @testing.parameterize(
     *testing.product(
         {
@@ -848,3 +809,12 @@ class TestArrayInvalidObject(unittest.TestCase):
         a = numpy.array([1, 2, 3], dtype=object)
         with self.assertRaises(TypeError):
             cupy.array(a)
+
+
+@pytest.mark.skip("CUDA array interface is not supported")
+class TestArrayCuPyGetNDArray(unittest.TestCase):
+    def test_cupy_get_ndarray(self):
+        a = cupy.array([1, 2, 3])
+        dummy = DummyObjectWithCuPyGetNDArray(a)
+        res = cupy.asarray(dummy)
+        assert a is res  # OK if it was a view
