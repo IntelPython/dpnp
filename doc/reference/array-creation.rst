@@ -77,12 +77,3 @@ Building matrices
    tril
    triu
    vander
-
-
-The Matrix class
-----------------
-.. autosummary::
-   :toctree: generated/
-   :nosignatures:
-
-   bmat
