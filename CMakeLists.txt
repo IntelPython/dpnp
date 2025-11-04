@@ -45,36 +45,28 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 
 
-find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
-find_package(TBB QUIET)
-if(TBB_FOUND)
-    find_package(TBB REQUIRED)
-else()
-    find_package(TBB REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
-endif()
+# find_package() search order:
+# 1. User-specified overrides (-DMKL_DIR=..., cache variables, package root variables like MKLROOT)
+# 2. Environment variables (ENV{MKLROOT}, CMAKE_PREFIX_PATH which is automatically set by conda)
+# 3. PATHS (if specified, but without NO_DEFAULT_PATH)
+# 4. HINTS
+# 5. System prefixes (/usr, /usr/local, etc.)
+# 6. CMake built-in modules
+find_package(IntelSYCL REQUIRED HINTS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Module)
+find_package(TBB REQUIRED HINTS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Module)
 
 set(MKL_ARCH "intel64")
 set(MKL_LINK "dynamic")
 set(MKL_THREADING "tbb_thread")
 set(MKL_INTERFACE "ilp64")
-find_package(MKL QUIET)
-if(MKL_FOUND)
-    find_package(MKL REQUIRED)
-else()
-    find_package(MKL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
-endif()
+find_package(MKL REQUIRED
+    HINTS ${MKL_ROOT}/lib/cmake
+          ${MKL_ROOT}/lib/cmake/mkl
+          $ENV{MKLROOT}
+          ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Module)
 
 set(ONEDPL_PAR_BACKEND tbb)
-find_package(oneDPL QUIET)
-if(oneDPL_FOUND)
-    if(oneDPL_VERSION VERSION_GREATER_EQUAL "2022.3.0")
-        find_package(oneDPL REQUIRED)
-    else()
-        find_package(oneDPL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
-    endif()
-else()
-    find_package(oneDPL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
-endif()
+find_package(oneDPL REQUIRED HINTS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Module)
 
 include(GNUInstallDirs)
 
