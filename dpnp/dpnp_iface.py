@@ -54,7 +54,6 @@ from dpctl.tensor._device import normalize_queue_device
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
-from dpnp.memory import *
 
 __all__ = [
     "are_same_logical_tensors",
