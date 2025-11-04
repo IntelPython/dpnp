@@ -154,7 +154,26 @@ References
 
 """
 
-from dpnp.fft.dpnp_iface_fft import *
-from dpnp.fft.dpnp_iface_fft import __all__ as __all__fft
+from .dpnp_iface_fft import __all__ as __all__fft
+from .dpnp_iface_fft import (
+    fft,
+    fft2,
+    fftfreq,
+    fftn,
+    fftshift,
+    hfft,
+    ifft,
+    ifft2,
+    ifftn,
+    ifftshift,
+    ihfft,
+    irfft,
+    irfft2,
+    irfftn,
+    rfft,
+    rfft2,
+    rfftfreq,
+    rfftn,
+)
 
 __all__ = __all__fft

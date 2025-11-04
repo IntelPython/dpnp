@@ -54,7 +54,6 @@ from dpctl.tensor._device import normalize_queue_device
 import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
-from dpnp.fft import *
 from dpnp.memory import *
 from dpnp.random import *
 
