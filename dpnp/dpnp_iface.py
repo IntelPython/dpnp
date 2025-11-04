@@ -55,7 +55,6 @@ import dpnp
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_array import dpnp_array
 from dpnp.memory import *
-from dpnp.random import *
 
 __all__ = [
     "are_same_logical_tensors",
