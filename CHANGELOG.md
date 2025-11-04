@@ -30,6 +30,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 ### Removed
 
 * Dropped support for Python 3.9 [#2626](https://github.com/IntelPython/dpnp/pull/2626)
+* Removed the obsolete interface from DPNP to Numba JIT [#2647](https://github.com/IntelPython/dpnp/pull/2647)
 
 ### Fixed
 
