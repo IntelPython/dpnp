@@ -16,7 +16,10 @@ doc/reference/*.inc
 .vscode
 
 # Files from test of code coverage
-coverage.xml
+.coverage
+*.lcov
+dpnp/**/*.cxx
+dpnp_pytest.*
 
 # Backup files kept after git merge/rebase
 *.orig
