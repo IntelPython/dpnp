@@ -96,6 +96,7 @@ def run(
             "pyproject.toml",
             "--cov",
             "dpnp",
+            "--cov-report=term-missing",
             "--cov-report=lcov:coverage-python.lcov",
             "--pyargs",
             "dpnp",
