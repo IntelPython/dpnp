@@ -2014,7 +2014,51 @@ class dpnp_array:
 
     # 'tobytes',
     # 'tofile',
-    # 'tolist',
+
+    def tolist(self):
+        """
+        Converts the array to a (possibly nested) Python list.
+
+        For full documentation refer to :obj:`numpy.ndarray.tolist`.
+
+        Returns
+        -------
+        out : list
+            The possibly nested Python list of array elements.
+
+        Examples
+        --------
+        For a 1D array, ``a.tolist()`` is almost the same as ``list(a)``,
+        except that ``tolist`` changes 0-d arrays to Python scalars:
+
+        >>> import numpy as np
+        >>> a = np.array([1, 2])
+        >>> list(a)
+        [array(1), array(2)]
+        >>> a_tolist = a.tolist()
+        [1, 2]
+
+        Additionally, for a 2D array, ``tolist`` applies recursively:
+
+        >>> a = np.array([[1, 2], [3, 4]])
+        >>> list(a)
+        [array([1, 2]), array([3, 4])]
+        >>> a.tolist()
+        [[1, 2], [3, 4]]
+
+        The base case for this recursion is a 0D array:
+
+        >>> a = np.array(1)
+        >>> list(a)
+        Traceback (most recent call last):
+        ...
+        TypeError: iteration over a 0-d array
+        >>> a.tolist()
+        1
+
+        """
+
+        return self.asnumpy().tolist()
 
     def trace(self, offset=0, axis1=0, axis2=1, dtype=None, *, out=None):
         """
