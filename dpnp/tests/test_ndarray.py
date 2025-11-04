@@ -107,6 +107,16 @@ class TestContains:
         assert xp.full_like(a, fill_value=6) not in a
 
 
+class TestToList:
+    @pytest.mark.parametrize(
+        "data", [[1, 2], [[1, 2], [3, 4]]], ids=["1d", "2d"]
+    )
+    def test_1d(self, data):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+        assert_array_equal(ia.tolist(), a.tolist())
+
+
 class TestView:
     def test_none_dtype(self):
         a = numpy.ones((1, 2, 4), dtype=numpy.int32)
