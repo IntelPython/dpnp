@@ -1,0 +1,10 @@
+﻿
+
+dpnp.unique\_counts
+===================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: unique_counts
