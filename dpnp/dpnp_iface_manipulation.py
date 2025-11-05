@@ -906,6 +906,14 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
 
     """
 
+    warnings.warn(
+        "`dpnp.asfarray` is deprecated, "
+        "and will be removed in a future release. "
+        "Please use `dpnp.asarray` with an appropriate dtype instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     _sycl_queue = dpnp.get_normalized_queue_device(
         a, sycl_queue=sycl_queue, device=device
     )
