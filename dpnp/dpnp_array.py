@@ -2029,7 +2029,7 @@ class dpnp_array:
         Examples
         --------
         For a 1D array, ``a.tolist()`` is almost the same as ``list(a)``,
-        except that ``tolist`` changes 0-d arrays to Python scalars:
+        except that ``tolist`` changes 0D arrays to Python scalars:
 
         >>> import numpy as np
         >>> a = np.array([1, 2])
