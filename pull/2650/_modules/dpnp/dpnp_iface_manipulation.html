@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.20.0dev0+28.g72a788283e1 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.20.0dev0+30.gfbe356d36cc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=43cfe13b"></script>
+      <script src="../../_static/documentation_options.js?v=28a5b166"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -187,6 +187,7 @@
     <span class="s2">&quot;append&quot;</span><span class="p">,</span>
     <span class="s2">&quot;array_split&quot;</span><span class="p">,</span>
     <span class="s2">&quot;asarray_chkfinite&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;asfarray&quot;</span><span class="p">,</span>
     <span class="s2">&quot;atleast_1d&quot;</span><span class="p">,</span>
     <span class="s2">&quot;atleast_2d&quot;</span><span class="p">,</span>
     <span class="s2">&quot;atleast_3d&quot;</span><span class="p">,</span>
@@ -935,6 +936,90 @@
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;array must not contain infs or NaNs&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">a</span></div>
+
+
+
+<div class="viewcode-block" id="asfarray">
+<a class="viewcode-back" href="../../reference/generated/dpnp.asfarray.html#dpnp.asfarray">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">asfarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an array converted to a float type.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.asfarray`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : array_like</span>
+<span class="sd">        Input data, in any form that can be converted to an array.</span>
+<span class="sd">        This includes an instance of :class:`dpnp.ndarray` or</span>
+<span class="sd">        :class:`dpctl.tensor.usm_ndarray`, an object representing</span>
+<span class="sd">        SYCL USM allocation and implementing `__sycl_usm_array_interface__`</span>
+<span class="sd">        protocol, an instance of :class:`numpy.ndarray`, an object supporting</span>
+<span class="sd">        Python buffer protocol, a Python scalar, or a (possibly nested)</span>
+<span class="sd">        sequence of Python scalars.</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
+<span class="sd">        Float type code to coerce input array `a`.  If `dtype` is ``None``,</span>
+<span class="sd">        :obj:`dpnp.bool` or one of the `int` dtypes, it is replaced with</span>
+<span class="sd">        the default floating type (:obj:`dpnp.float64` if a device supports it,</span>
+<span class="sd">        or :obj:`dpnp.float32` type otherwise).</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
+<span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
+<span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
+<span class="sd">        a default queue.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The input `a` as a float ndarray.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.asfarray([2, 3])</span>
+<span class="sd">    array([2.,  3.])</span>
+<span class="sd">    &gt;&gt;&gt; np.asfarray([2, 3], dtype=dpnp.float32)</span>
+<span class="sd">    array([2., 3.], dtype=float32)</span>
+<span class="sd">    &gt;&gt;&gt; np.asfarray([2, 3], dtype=dpnp.int32)</span>
+<span class="sd">    array([2.,  3.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`dpnp.asfarray` is deprecated, &quot;</span>
+        <span class="s2">&quot;and will be removed in a future release. &quot;</span>
+        <span class="s2">&quot;Please use `dpnp.asarray` with an appropriate dtype instead.&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span>
+    <span class="p">)</span></div>
 
 
 
