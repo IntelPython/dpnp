@@ -2031,11 +2031,11 @@ class dpnp_array:
         For a 1D array, ``a.tolist()`` is almost the same as ``list(a)``,
         except that ``tolist`` changes 0D arrays to Python scalars:
 
-        >>> import numpy as np
+        >>> import dpnp as np
         >>> a = np.array([1, 2])
         >>> list(a)
         [array(1), array(2)]
-        >>> a_tolist = a.tolist()
+        >>> a.tolist()
         [1, 2]
 
         Additionally, for a 2D array, ``tolist`` applies recursively:
