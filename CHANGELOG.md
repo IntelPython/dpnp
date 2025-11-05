@@ -27,6 +27,8 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 
 ### Deprecated
 
+* `dpnp.asfarray` is deprecated. Use `dpnp.asarray` with an appropriate dtype instead [#2650](https://github.com/IntelPython/dpnp/pull/2650)
+
 ### Removed
 
 * Dropped support for Python 3.9 [#2626](https://github.com/IntelPython/dpnp/pull/2626)
