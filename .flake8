@@ -55,7 +55,6 @@ exclude =
     benchmarks/*.py,
     build,
     dpnp/_version.py,
-    dpnp/to_numba/*.py,
     conda.recipe,
     dpnp/tests/*.py,
     tests_external/*.py,
