@@ -1,8 +1,9 @@
-Random sampling (``dpnp.random``)
-=================================
+.. currentmodule:: dpnp.random
 
-.. https://numpy.org/doc/stable/reference/random/legacy.html
+Random sampling (:mod:`dpnp.random`)
+====================================
 
+.. hint:: `NumPy API Reference: Legacy random generation <https://numpy.org/doc/stable/reference/random/legacy.html>`_
 
 Simple random data
 ------------------
@@ -11,16 +12,16 @@ Simple random data
    :toctree: generated/
    :nosignatures:
 
-   dpnp.random.rand
-   dpnp.random.randn
-   dpnp.random.randint
-   dpnp.random.random_integers
-   dpnp.random.random_sample
-   dpnp.random.random
-   dpnp.random.ranf
-   dpnp.random.sample
-   dpnp.random.choice
-   dpnp.random.bytes
+   rand
+   randn
+   randint
+   random_integers
+   random_sample
+   random
+   ranf
+   sample
+   choice
+   bytes
 
 
 Permutations
@@ -30,8 +31,8 @@ Permutations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.random.shuffle
-   dpnp.random.permutation
+   shuffle
+   permutation
 
 
 Distributions
@@ -41,41 +42,41 @@ Distributions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.random.beta
-   dpnp.random.binomial
-   dpnp.random.chisquare
-   dpnp.random.dirichlet
-   dpnp.random.exponential
-   dpnp.random.f
-   dpnp.random.gamma
-   dpnp.random.geometric
-   dpnp.random.gumbel
-   dpnp.random.hypergeometric
-   dpnp.random.laplace
-   dpnp.random.logistic
-   dpnp.random.lognormal
-   dpnp.random.logseries
-   dpnp.random.multinomial
-   dpnp.random.multivariate_normal
-   dpnp.random.negative_binomial
-   dpnp.random.noncentral_chisquare
-   dpnp.random.noncentral_f
-   dpnp.random.normal
-   dpnp.random.pareto
-   dpnp.random.poisson
-   dpnp.random.power
-   dpnp.random.rayleigh
-   dpnp.random.standard_cauchy
-   dpnp.random.standard_exponential
-   dpnp.random.standard_gamma
-   dpnp.random.standard_normal
-   dpnp.random.standard_t
-   dpnp.random.triangular
-   dpnp.random.uniform
-   dpnp.random.vonmises
-   dpnp.random.wald
-   dpnp.random.weibull
-   dpnp.random.zipf
+   beta
+   binomial
+   chisquare
+   dirichlet
+   exponential
+   f
+   gamma
+   geometric
+   gumbel
+   hypergeometric
+   laplace
+   logistic
+   lognormal
+   logseries
+   multinomial
+   multivariate_normal
+   negative_binomial
+   noncentral_chisquare
+   noncentral_f
+   normal
+   pareto
+   poisson
+   power
+   rayleigh
+   standard_cauchy
+   standard_exponential
+   standard_gamma
+   standard_normal
+   standard_t
+   triangular
+   uniform
+   vonmises
+   wald
+   weibull
+   zipf
 
 
 Random generator
@@ -85,7 +86,7 @@ Random generator
    :toctree: generated/
    :nosignatures:
 
-   dpnp.random.RandomState
-   dpnp.random.seed
-   dpnp.random.get_random_state
-   dpnp.random.set_random_state
+   RandomState
+   seed
+   get_random_state
+   set_random_state
