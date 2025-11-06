@@ -1,7 +1,9 @@
+.. currentmodule:: dpnp
+
 Logic functions
 ===============
 
-.. https://numpy.org/doc/stable/reference/routines.logic.html
+.. hint:: `NumPy API Reference: Logic functions <https://numpy.org/doc/stable/reference/routines.logic.html>`_
 
 Truth value testing
 -------------------
@@ -10,8 +12,8 @@ Truth value testing
    :toctree: generated/
    :nosignatures:
 
-   dpnp.all
-   dpnp.any
+   all
+   any
 
 
 Array contents
@@ -21,11 +23,11 @@ Array contents
    :toctree: generated/
    :nosignatures:
 
-   dpnp.isfinite
-   dpnp.isinf
-   dpnp.isnan
-   dpnp.isneginf
-   dpnp.isposinf
+   isfinite
+   isinf
+   isnan
+   isneginf
+   isposinf
 
 
 Array type testing
@@ -35,12 +37,12 @@ Array type testing
    :toctree: generated/
    :nosignatures:
 
-   dpnp.iscomplex
-   dpnp.iscomplexobj
-   dpnp.isfortran
-   dpnp.isreal
-   dpnp.isrealobj
-   dpnp.isscalar
+   iscomplex
+   iscomplexobj
+   isfortran
+   isreal
+   isrealobj
+   isscalar
 
 
 Logical operations
@@ -50,10 +52,10 @@ Logical operations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.logical_and
-   dpnp.logical_or
-   dpnp.logical_not
-   dpnp.logical_xor
+   logical_and
+   logical_or
+   logical_not
+   logical_xor
 
 
 Comparison
@@ -63,13 +65,13 @@ Comparison
    :toctree: generated/
    :nosignatures:
 
-   dpnp.allclose
-   dpnp.isclose
-   dpnp.array_equal
-   dpnp.array_equiv
-   dpnp.greater
-   dpnp.greater_equal
-   dpnp.less
-   dpnp.less_equal
-   dpnp.equal
-   dpnp.not_equal
+   allclose
+   isclose
+   array_equal
+   array_equiv
+   greater
+   greater_equal
+   less
+   less_equal
+   equal
+   not_equal

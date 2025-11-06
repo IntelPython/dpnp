@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev0+29.gc1b7434f344 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev0+33.gc8bf1783ccb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e598d6b9"></script>
+      <script src="../../_static/documentation_options.js?v=8e353a0c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2252,7 +2252,53 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span></div>
 
 
-    <span class="c1"># &#39;tolist&#39;,</span>
+<div class="viewcode-block" id="dpnp_array.tolist">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.tolist.html#dpnp.dpnp_array.dpnp_array.tolist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts the array to a (possibly nested) Python list.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.tolist`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : list</span>
+<span class="sd">            The possibly nested Python list of array elements.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        For a 1D array, ``a.tolist()`` is almost the same as ``list(a)``,</span>
+<span class="sd">        except that ``tolist`` changes 0D arrays to Python scalars:</span>
+
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([1, 2])</span>
+<span class="sd">        &gt;&gt;&gt; list(a)</span>
+<span class="sd">        [array(1), array(2)]</span>
+<span class="sd">        &gt;&gt;&gt; a.tolist()</span>
+<span class="sd">        [1, 2]</span>
+
+<span class="sd">        Additionally, for a 2D array, ``tolist`` applies recursively:</span>
+
+<span class="sd">        &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">        &gt;&gt;&gt; list(a)</span>
+<span class="sd">        [array([1, 2]), array([3, 4])]</span>
+<span class="sd">        &gt;&gt;&gt; a.tolist()</span>
+<span class="sd">        [[1, 2], [3, 4]]</span>
+
+<span class="sd">        The base case for this recursion is a 0D array:</span>
+
+<span class="sd">        &gt;&gt;&gt; a = np.array(1)</span>
+<span class="sd">        &gt;&gt;&gt; list(a)</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        TypeError: iteration over a 0-d array</span>
+<span class="sd">        &gt;&gt;&gt; a.tolist()</span>
+<span class="sd">        1</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
 
 <div class="viewcode-block" id="dpnp_array.trace">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.trace.html#dpnp.dpnp_array.dpnp_array.trace">[docs]</a>
