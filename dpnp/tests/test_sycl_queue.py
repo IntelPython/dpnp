@@ -357,6 +357,30 @@ def test_1in_1out(func, data, device):
 
 
 @pytest.mark.parametrize(
+    "func, data",
+    [
+        pytest.param("frexp", numpy.arange(9)),
+    ],
+)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_1in_2out(func, data, device):
+    x = dpnp.array(data, device=device)
+    res1, res2 = getattr(dpnp, func)(x)
+    assert_sycl_queue_equal(res1.sycl_queue, x.sycl_queue)
+    assert_sycl_queue_equal(res2.sycl_queue, x.sycl_queue)
+
+    out1 = dpnp.empty_like(res1)
+    out2 = dpnp.empty_like(res2)
+    try:
+        # some functions do not support out kwarg
+        getattr(dpnp, func)(x, out=(out1, out2))
+        assert_sycl_queue_equal(out1.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(out2.sycl_queue, x.sycl_queue)
+    except TypeError:
+        pass
+
+
+@pytest.mark.parametrize(
     "func,data1,data2",
     [
         pytest.param(

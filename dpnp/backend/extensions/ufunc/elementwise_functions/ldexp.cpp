@@ -3,7 +3,7 @@
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
-// maxification, are permitted provided that the following conditions are met:
+// modification, are permitted provided that the following conditions are met:
 // - Redistributions of source code must retain the above copyright notice,
 //   this list of conditions and the following disclaimer.
 // - Redistributions in binary form must reproduce the above copyright notice,
@@ -45,7 +45,6 @@
 
 // dpctl tensor headers
 #include "kernels/elementwise_functions/common.hpp"
-#include "kernels/elementwise_functions/maximum.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpnp::extensions::ufunc
@@ -57,11 +56,7 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 namespace impl
 {
 namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
-namespace max_ns = dpctl::tensor::kernels::maximum;
 
-// Supports the same types table as for maximum function in dpctl
-// template <typename T1, typename T2>
-// using OutputType = max_ns::MaximumOutputType<T1, T2>;
 template <typename T1, typename T2>
 struct OutputType
 {
