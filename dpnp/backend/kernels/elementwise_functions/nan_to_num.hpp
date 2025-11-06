@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <complex>
 #include <cstddef>
 #include <vector>

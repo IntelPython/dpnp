@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include "utils/math_utils.hpp"
 #include <sycl/sycl.hpp>
 #include <type_traits>

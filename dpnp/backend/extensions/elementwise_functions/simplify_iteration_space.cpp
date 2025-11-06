@@ -26,8 +26,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include "dpctl4pybind11.hpp"
-
+#include <cstddef>
 #include <pybind11/pybind11.h>
 #include <vector>
 
@@ -58,19 +57,19 @@ void simplify_iteration_space(int &nd,
         simplified_shape.reserve(nd);
         simplified_shape.insert(std::begin(simplified_shape), shape,
                                 shape + nd);
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
 
         simplified_src_strides.reserve(nd);
         simplified_src_strides.insert(std::end(simplified_src_strides),
                                       std::begin(src_strides),
                                       std::end(src_strides));
-        assert(simplified_src_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src_strides.size() == static_cast<std::size_t>(nd));
 
         simplified_dst_strides.reserve(nd);
         simplified_dst_strides.insert(std::end(simplified_dst_strides),
                                       std::begin(dst_strides),
                                       std::end(dst_strides));
-        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
 
         int contracted_nd = st_ns::simplify_iteration_two_strides(
             nd, simplified_shape.data(), simplified_src_strides.data(),
@@ -90,7 +89,7 @@ void simplify_iteration_space(int &nd,
         // Populate vectors
         simplified_shape.reserve(nd);
         simplified_shape.push_back(shape[0]);
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
 
         simplified_src_strides.reserve(nd);
         simplified_dst_strides.reserve(nd);
@@ -108,8 +107,8 @@ void simplify_iteration_space(int &nd,
             simplified_dst_strides.push_back(dst_strides[0]);
         }
 
-        assert(simplified_src_strides.size() == static_cast<size_t>(nd));
-        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
     }
 }
 
@@ -136,25 +135,25 @@ void simplify_iteration_space_3(
         // and improve access pattern
         simplified_shape.reserve(nd);
         simplified_shape.insert(std::end(simplified_shape), shape, shape + nd);
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
 
         simplified_src1_strides.reserve(nd);
         simplified_src1_strides.insert(std::end(simplified_src1_strides),
                                        std::begin(src1_strides),
                                        std::end(src1_strides));
-        assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src1_strides.size() == static_cast<std::size_t>(nd));
 
         simplified_src2_strides.reserve(nd);
         simplified_src2_strides.insert(std::end(simplified_src2_strides),
                                        std::begin(src2_strides),
                                        std::end(src2_strides));
-        assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src2_strides.size() == static_cast<std::size_t>(nd));
 
         simplified_dst_strides.reserve(nd);
         simplified_dst_strides.insert(std::end(simplified_dst_strides),
                                       std::begin(dst_strides),
                                       std::end(dst_strides));
-        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
 
         int contracted_nd = st_ns::simplify_iteration_three_strides(
             nd, simplified_shape.data(), simplified_src1_strides.data(),
@@ -177,7 +176,7 @@ void simplify_iteration_space_3(
         // Populate vectors
         simplified_shape.reserve(nd);
         simplified_shape.push_back(shape[0]);
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
 
         simplified_src1_strides.reserve(nd);
         simplified_src2_strides.reserve(nd);
@@ -200,9 +199,9 @@ void simplify_iteration_space_3(
             simplified_dst_strides.push_back(dst_strides[0]);
         }
 
-        assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
-        assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
-        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src1_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_src2_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
     }
 }
 } // namespace dpnp::extensions::py_internal

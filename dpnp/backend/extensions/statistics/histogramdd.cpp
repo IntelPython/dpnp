@@ -26,6 +26,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <algorithm>
 #include <memory>
 
 #include <pybind11/pybind11.h>
