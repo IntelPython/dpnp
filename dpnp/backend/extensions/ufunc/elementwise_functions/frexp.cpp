@@ -37,7 +37,6 @@
 
 #include "frexp.hpp"
 #include "kernels/elementwise_functions/frexp.hpp"
-#include "populate.hpp"
 
 // include a local copy of elementwise common header from dpctl tensor:
 // dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
@@ -226,8 +225,6 @@ void populate_frexp_dispatch_vectors(void)
     init_dispatch_vector<std::pair<int, int>, FrexpTypeMapFactory>(
         frexp_output_typeid_vector);
 };
-
-// MACRO_POPULATE_DISPATCH_TABLES(ldexp);
 } // namespace impl
 
 void init_frexp(py::module_ m)
