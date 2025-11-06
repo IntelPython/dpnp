@@ -42,18 +42,22 @@ option(DPNP_WITH_REDIST "Build DPNP assuming DPC++ redistributable is installed 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+set(CMAKE_MODULES_DIR BOTH)
 
 
-# find_package() search order:
-# 1. User-specified overrides (-DMKL_DIR=..., cache variables, package root variables like MKLROOT)
-# 2. Environment variables (ENV{MKLROOT}, CMAKE_PREFIX_PATH which is automatically set by conda)
-# 3. PATHS (if specified, but without NO_DEFAULT_PATH)
-# 4. HINTS
-# 5. System prefixes (/usr, /usr/local, etc.)
-# 6. CMake built-in modules
-find_package(IntelSYCL REQUIRED HINTS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Module)
-find_package(TBB REQUIRED HINTS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Module)
+# find_package() search order in CONFIG mode:
+# 1. <PackageName>_ROOT variables (CMake variable / environment)
+# 2. CMake-specific cache variables (on the command line with -D<PackageName>_DIR=...)
+# 3. CMake-specific environment variables (<PackageName>_DIR, CMAKE_PREFIX_PATH, etc.)
+# 4. Paths specified by the HINTS option
+# 5. Standard system environment variables (PATH, etc.)
+# 6. Paths stored in the CMake User Package Registry
+# 7. CMake variables defined in the Platform files for the current system (like in /usr/local for Linux)
+# 8. Paths stored in the CMake System Package Registry
+# 9. Paths specified by the PATHS option (assumed hard-coded guesses)
+set(path_to_cmake_dir ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules)
+find_package(IntelSYCL REQUIRED PATHS ${path_to_cmake_dir})
+find_package(TBB REQUIRED PATHS ${path_to_cmake_dir})
 
 set(MKL_ARCH "intel64")
 set(MKL_LINK "dynamic")
@@ -63,10 +67,10 @@ find_package(MKL REQUIRED
     HINTS ${MKL_ROOT}/lib/cmake
           ${MKL_ROOT}/lib/cmake/mkl
           $ENV{MKLROOT}
-          ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Module)
+    PATHS ${path_to_cmake_dir})
 
 set(ONEDPL_PAR_BACKEND tbb)
-find_package(oneDPL REQUIRED HINTS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Module)
+find_package(oneDPL REQUIRED PATHS ${path_to_cmake_dir})
 
 include(GNUInstallDirs)
 
