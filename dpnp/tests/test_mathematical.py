@@ -716,6 +716,7 @@ class TestFrexp:
     ALL_DTYPES_NO_COMPLEX = get_all_dtypes(
         no_none=True, no_float16=False, no_complex=True
     )
+    ALL_FLOAT_DTYPES = get_float_dtypes(no_float16=False)
 
     @pytest.mark.parametrize("dt", ALL_DTYPES_NO_COMPLEX)
     def test_basic(self, dt):
@@ -727,7 +728,7 @@ class TestFrexp:
         assert_array_equal(res1, exp1)
         assert_array_equal(res2, exp2)
 
-    @pytest.mark.parametrize("dt", get_float_dtypes())
+    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
     def test_out(self, dt):
         a = numpy.array(5.7, dtype=dt)
         ia = dpnp.array(a)
@@ -784,7 +785,7 @@ class TestFrexp:
         reason="numpy.frexp gives different answers for NAN/INF on Windows and Linux",
     )
     @pytest.mark.parametrize("stride", [-4, -2, -1, 1, 2, 4])
-    @pytest.mark.parametrize("dt", get_float_dtypes())
+    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
     def test_strides_out(self, stride, dt):
         a = numpy.array(
             [numpy.nan, numpy.nan, numpy.inf, -numpy.inf, 0.0, -0.0, 1.0, -1.0],
@@ -808,26 +809,18 @@ class TestFrexp:
         assert_array_equal(iout_mant, out_mant)
         assert_array_equal(iout_exp, out_exp)
 
-    @pytest.mark.parametrize("dt", get_float_dtypes())
-    def test_out_overlap(self, dt):
-        a = numpy.ones(15, dtype=dt)
+    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
+    def test_out1_overlap(self, dt):
+        size = 15
+        a = numpy.ones(2 * size, dtype=dt)
         ia = dpnp.array(a)
 
-        out_mant = numpy.ones_like(a)
-        out_exp = 2 * numpy.ones_like(a, dtype="i")
-        iout_mant, iout_exp = dpnp.array(out_mant), dpnp.array(out_exp)
+        # out1 overlaps memory of input array
+        _ = dpnp.frexp(ia[size::], ia[::2])
+        _ = numpy.frexp(a[size::], a[::2])
+        assert_array_equal(ia, a)
 
-        res1, res2 = dpnp.frexp(ia, out=(iout_mant, iout_exp))
-        exp1, exp2 = numpy.frexp(a, out=(out_mant, out_exp))
-        assert_array_equal(res1, exp1)
-        assert_array_equal(res2, exp2)
-
-        assert_array_equal(iout_mant, out_mant)
-        assert_array_equal(iout_exp, out_exp)
-        assert res1 is iout_mant
-        assert res2 is iout_exp
-
-    @pytest.mark.parametrize("dt", get_float_dtypes())
+    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
     def test_empty(self, dt):
         a = numpy.empty(0, dtype=dt)
         ia = dpnp.array(a)
