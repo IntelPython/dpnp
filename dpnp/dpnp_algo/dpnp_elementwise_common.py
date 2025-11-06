@@ -73,7 +73,7 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
     ----------
     name : {str}
         Name of the unary function
-    result_type_resovler_fn : {callable}
+    result_type_resolver_fn : {callable}
         Function that takes dtype of the input and returns the dtype of
         the result if the implementation functions supports it, or
         returns `None` otherwise.
@@ -212,7 +212,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
     ----------
     name : {str}
         Name of the unary function
-    result_type_resovler_fn : {callable}
+    result_type_resolver_fn : {callable}
         Function that takes dtype of the input and returns the dtype of
         the result if the implementation functions supports it, or
         returns `None` otherwise.
