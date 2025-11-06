@@ -1,7 +1,9 @@
+.. currentmodule:: dpnp
+
 Sorting, searching, and counting
 ================================
 
-.. https://numpy.org/doc/stable/reference/routines.sort.html
+.. hint:: `NumPy API Reference: Sorting, searching, and counting <https://numpy.org/doc/stable/reference/routines.sort.html>`_
 
 Sorting
 -------
@@ -10,12 +12,12 @@ Sorting
    :toctree: generated/
    :nosignatures:
 
-   dpnp.sort
-   dpnp.lexsort
-   dpnp.argsort
-   dpnp.sort_complex
-   dpnp.partition
-   dpnp.argpartition
+   sort
+   lexsort
+   argsort
+   sort_complex
+   partition
+   argpartition
 
 .. seealso::
    :func:`dpnp.ndarray.sort`
@@ -27,16 +29,16 @@ Searching
    :toctree: generated/
    :nosignatures:
 
-   dpnp.argmax
-   dpnp.nanargmax
-   dpnp.argmin
-   dpnp.nanargmin
-   dpnp.argwhere
-   dpnp.nonzero
-   dpnp.flatnonzero
-   dpnp.where
-   dpnp.searchsorted
-   dpnp.extract
+   argmax
+   nanargmax
+   argmin
+   nanargmin
+   argwhere
+   nonzero
+   flatnonzero
+   where
+   searchsorted
+   extract
 
 Counting
 --------
@@ -45,4 +47,4 @@ Counting
    :toctree: generated/
    :nosignatures:
 
-   dpnp.count_nonzero
+   count_nonzero
