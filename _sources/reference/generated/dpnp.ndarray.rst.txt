@@ -51,6 +51,7 @@
          ndarray.swapaxes
          ndarray.take
          ndarray.to_device
+         ndarray.tolist
          ndarray.trace
          ndarray.transpose
          ndarray.var
