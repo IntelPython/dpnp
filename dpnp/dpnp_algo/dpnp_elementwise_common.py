@@ -429,7 +429,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
             if not isinstance(res, dpnp_array):
                 # Always return dpnp.ndarray
                 out[i] = dpnp_array._create_from_usm_ndarray(res)
-        return out
+        return tuple(out)
 
 
 class DPNPBinaryFunc(BinaryElementwiseFunc):
