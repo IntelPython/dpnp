@@ -26,6 +26,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <algorithm>
+
 #include "ext/common.hpp"
 #include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
