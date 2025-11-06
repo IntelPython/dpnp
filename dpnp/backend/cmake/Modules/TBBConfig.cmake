@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2025 Intel Corporation
+# Copyright (c) 2017-2023 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -50,123 +50,62 @@ endif()
 unset(_tbbmalloc_proxy_ix)
 
 if (CMAKE_SIZEOF_VOID_P STREQUAL "8")
-    set(_tbb_subdir intel64/gcc4.8)
+    set(_tbb_intel_arch intel64)
 else ()
-    set(_tbb_subdir ia32/gcc4.8)
+    set(_tbb_intel_arch ia32)
+    set(_tbb_arch_suffix 32)
 endif()
 
-if (UNIX)
-  set(_tbb_lib_ext ".so")
-  set(_tbb_lib_prefix "lib")
-  set(_tbb_lib_dir_conda "lib")
-  set(_bin_version "")
-elseif (WIN32)
-  set(_bin_version "")
-  set(_tbb_lib_prefix "")
-  set(_tbb_lib_ext ".dll")
-  set(_tbb_impllib_ext ".lib")
-  set(_tbb_lib_dir_conda "bin")
-  set(_tbb_impllib_dir_conda "lib")
-else()
-    message(FATAL_ERROR "Unsupported platform. Only Unix and Windows are supported.")
-endif()
-
+set(_tbb_subdir gcc4.8)
 foreach (_tbb_component ${TBB_FIND_COMPONENTS})
+    unset(_tbb_release_dll CACHE)
+    unset(_tbb_debug_dll   CACHE)
+    unset(_tbb_release_lib CACHE)
+    unset(_tbb_debug_lib   CACHE)
+
     set(TBB_${_tbb_component}_FOUND 0)
 
-if(WIN32)
-    unset(_bin_version)
-    if (_tbb_component STREQUAL tbb)
-        set(_bin_version ${_tbb_bin_version})
-    endif()
-endif()
 
-    if(UNIX)
-       find_library(_tbb_release_lib
-                    NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_lib_ext}
-                    PATHS ${_tbb_root}
-                    HINTS ENV TBB_ROOT_HINT
-                    PATH_SUFFIXES "${_tbb_lib_dir_conda}" "lib/${_tbb_subdir}")
-
-    else()
-       find_file(_tbb_release_lib
-                 NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_lib_ext}
-                 PATHS ${_tbb_root}
-                 HINTS ENV TBB_ROOT_HINT
-                 PATH_SUFFIXES "${_tbb_lib_dir_conda}" "lib/${_tbb_subdir}")
-
-       if (EXISTS "${_tbb_release_lib}")
-          find_library(_tbb_release_impllib
-                       NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}${_tbb_impllib_ext}
-                       PATHS ${_tbb_root}
-                       HINTS ENV TBB_ROOT_HINT
-                       PATH_SUFFIXES "${_tbb_impllib_dir_conda}" "lib/${_tbb_subdir}")
-       endif()
-    endif()
+    find_library(_tbb_release_lib
+        NAMES lib${_tbb_component}${_bin_version}.so.${_${_tbb_component}_bin_version}
+        PATHS ${_tbb_root}
+        PATH_SUFFIXES "lib/${_tbb_intel_arch}/${_tbb_subdir}" "lib${_tbb_arch_suffix}/${_tbb_subdir}" "lib${_tbb_arch_suffix}" "lib"
+        NO_DEFAULT_PATH
+    )
 
     if (NOT TBB_FIND_RELEASE_ONLY)
         find_library(_tbb_debug_lib
-                     NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}_debug.${_tbb_lib_ext}
-                     PATHS ${_tbb_root}
-                     HINTS ENV TBB_ROOT_HINT
-                     PATH_SUFFIXES "${_tbb_lib_dir_conda}" "lib/${_tbb_subdir}")
-        if(WIN32  AND EXISTS "${_tbb_debug_lib}")
-           find_library(_tbb_debug_impllib
-                        NAMES ${_tbb_lib_prefix}${_tbb_component}${_bin_version}_debug.${_tbb_impllib_ext}
-                        PATHS ${_tbb_root}
-                        HINTS ENV TBB_ROOT_HINT
-                        PATH_SUFFIXES "${_tbb_impllib_dir_conda}" "lib/${_tbb_subdir}")
-        endif()
+            NAMES lib${_tbb_component}${_bin_version}_debug.so.${_${_tbb_component}_bin_version}
+            PATHS ${_tbb_root}
+            PATH_SUFFIXES "lib/${_tbb_intel_arch}/${_tbb_subdir}" "lib${_tbb_arch_suffix}/${_tbb_subdir}" "lib${_tbb_arch_suffix}" "lib"
+            NO_DEFAULT_PATH
+        )
     endif()
 
     if (EXISTS "${_tbb_release_lib}" OR EXISTS "${_tbb_debug_lib}")
         if (NOT TARGET TBB::${_tbb_component})
             add_library(TBB::${_tbb_component} SHARED IMPORTED)
 
-	    find_path(_tbb_include_dir
-	      oneapi/tbb.h
-	      PATHS ${_tbb_root}
-	      PATH_SUFFIXES include
-	      HINTS ENV TBB_ROOT_HINT
-	      )
-
-if(WIN32)
-            set_target_properties(
-                TBB::${_tbb_component} PROPERTIES
-                INTERFACE_INCLUDE_DIRECTORIES "${_tbb_include_dir}"
-                INTERFACE_COMPILE_DEFINITIONS "__TBB_NO_IMPLICIT_LINKAGE=1"
-                )
-else()
-            set_target_properties(
-                TBB::${_tbb_component} PROPERTIES
-                INTERFACE_INCLUDE_DIRECTORIES "${_tbb_include_dir}"
-                )
-endif()
+            get_filename_component(_tbb_include_dir "${_tbb_root}/include" ABSOLUTE)
+            set_target_properties(TBB::${_tbb_component} PROPERTIES
+                                  INTERFACE_INCLUDE_DIRECTORIES "${_tbb_include_dir}")
             unset(_tbb_current_realpath)
             unset(_tbb_include_dir)
 
-            if (EXISTS "${_tbb_release_lib}")
-if(WIN32)
+
+            set (_tbb_release_dll ${_tbb_release_lib})
+            set (_tbb_debug_dll ${_tbb_debug_lib})
+
+
+            if (EXISTS "${_tbb_release_dll}")
                 set_target_properties(TBB::${_tbb_component} PROPERTIES
-                                      IMPORTED_LOCATION_RELEASE "${_tbb_release_lib}"
-                                      IMPORTED_IMPLIB_RELEASE "${_tbb_release_impllib}")
-else()
-                set_target_properties(TBB::${_tbb_component} PROPERTIES
-                                      IMPORTED_LOCATION_RELEASE "${_tbb_release_lib}")
-endif()
+                                      IMPORTED_LOCATION_RELEASE "${_tbb_release_dll}")
                 set_property(TARGET TBB::${_tbb_component} APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
             endif()
 
-            if (EXISTS "${_tbb_debug_lib}")
-if(WIN32)
+            if (EXISTS "${_tbb_debug_dll}")
                 set_target_properties(TBB::${_tbb_component} PROPERTIES
-                                      IMPORTED_LOCATION_DEBUG "${_tbb_debug_lib}"
-                                      IMPORTED_IMPLIB_DEBUG "${_tbb_debug_impllib}"
-                )
-else()
-                set_target_properties(TBB::${_tbb_component} PROPERTIES
-                                      IMPORTED_LOCATION_DEBUG "${_tbb_debug_lib}")
-endif()
+                                      IMPORTED_LOCATION_DEBUG "${_tbb_debug_dll}")
                 set_property(TARGET TBB::${_tbb_component} APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
             endif()
 
@@ -188,6 +127,10 @@ endif()
     endif()
 endforeach()
 list(REMOVE_DUPLICATES TBB_IMPORTED_TARGETS)
+unset(_tbb_release_dll)
+unset(_tbb_debug_dll)
 unset(_tbb_release_lib)
 unset(_tbb_debug_lib)
 unset(_tbb_root)
+unset(_tbb_intel_arch)
+unset(_tbb_arch_suffix)
