@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev0+30.g6b8ea9e2b documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev0+31.gb7d1572b2b3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9fdf944d"></script>
+      <script src="../../_static/documentation_options.js?v=9a371350"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -158,6 +158,7 @@
     <span class="n">DPNPRound</span><span class="p">,</span>
     <span class="n">DPNPSinc</span><span class="p">,</span>
     <span class="n">DPNPUnaryFunc</span><span class="p">,</span>
+    <span class="n">DPNPUnaryTwoOutputsFunc</span><span class="p">,</span>
     <span class="n">acceptance_fn_gcd_lcm</span><span class="p">,</span>
     <span class="n">acceptance_fn_negative</span><span class="p">,</span>
     <span class="n">acceptance_fn_positive</span><span class="p">,</span>
@@ -197,6 +198,7 @@
     <span class="s2">&quot;fmax&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fmin&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fmod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;frexp&quot;</span><span class="p">,</span>
     <span class="s2">&quot;gcd&quot;</span><span class="p">,</span>
     <span class="s2">&quot;gradient&quot;</span><span class="p">,</span>
     <span class="s2">&quot;heaviside&quot;</span><span class="p">,</span>
@@ -2453,6 +2455,86 @@
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_fmod_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_fmod&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<span class="n">_FREXP_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Decompose each element :math:`x_i` of the input array `x` into the mantissa and</span>
+<span class="s2">the twos exponent.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.frexp`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Array of numbers to be decomposed, expected to have a real-valued</span>
+<span class="s2">    floating-point data type.</span>
+<span class="s2">out1 : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array for the mantissa to populate. Array must have the same shape</span>
+<span class="s2">    as `x` and the expected data type.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">out2 : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array for the exponent to populate. Array must have the same shape</span>
+<span class="s2">    as `x` and the expected data type.</span>
+
+<span class="s2">    Default: ``None``.</span>
+
+<span class="s2">out : tuple of None, dpnp.ndarray, or usm_ndarray, optional</span>
+<span class="s2">    A location into which the result is stored. If provided, it must be a tuple</span>
+<span class="s2">    and have length equal to the number of outputs. Each provided array must</span>
+<span class="s2">    have the same shape as `x` and the expected data type.</span>
+<span class="s2">    It is prohibited to pass output arrays through `out` keyword when either</span>
+<span class="s2">    `out1` or `out2` is passed.</span>
+
+<span class="s2">    Default: ``(None, None)``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">mantissa : dpnp.ndarray</span>
+<span class="s2">    Floating values between -1 and 1.</span>
+<span class="s2">exponent : dpnp.ndarray</span>
+<span class="s2">    Integer exponents of 2.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.ldexp` : Compute :math:`y = x1 * 2^</span><span class="si">{x2}</span><span class="s2">`, inverse to</span>
+<span class="s2">    :obj:`dpnp.frexp`.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">Complex dtypes are not supported, they will raise a ``TypeError``.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.arange(9)</span>
+<span class="s2">&gt;&gt;&gt; y1, y2 = np.frexp(x)</span>
+<span class="s2">&gt;&gt;&gt; y1</span>
+<span class="s2">array([0.   , 0.5  , 0.5  , 0.75 , 0.5  , 0.625, 0.75 , 0.875, 0.5  ])</span>
+<span class="s2">&gt;&gt;&gt; y2</span>
+<span class="s2">array([0, 1, 2, 2, 3, 3, 3, 3, 4], dtype=int32)</span>
+<span class="s2">&gt;&gt;&gt; y1 * 2**y2</span>
+<span class="s2">array([0., 1., 2., 3., 4., 5., 6., 7., 8.])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">frexp</span> <span class="o">=</span> <span class="n">DPNPUnaryTwoOutputsFunc</span><span class="p">(</span>
+    <span class="s2">&quot;_frexp&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_frexp_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_frexp</span><span class="p">,</span>
+    <span class="n">_FREXP_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
 
 <span class="n">_GCD_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Returns the greatest common divisor of :math:`|x_1|` and :math:`|x_2|`.</span>

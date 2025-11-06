@@ -10,6 +10,7 @@ var dir_4f4d020a650a668743abea55668e1676 =
     [ "fmax.hpp", "extensions_2ufunc_2elementwise__functions_2fmax_8hpp_source.html", null ],
     [ "fmin.hpp", "extensions_2ufunc_2elementwise__functions_2fmin_8hpp_source.html", null ],
     [ "fmod.hpp", "extensions_2ufunc_2elementwise__functions_2fmod_8hpp_source.html", null ],
+    [ "frexp.hpp", "extensions_2ufunc_2elementwise__functions_2frexp_8hpp_source.html", null ],
     [ "gcd.hpp", "extensions_2ufunc_2elementwise__functions_2gcd_8hpp_source.html", null ],
     [ "heaviside.hpp", "extensions_2ufunc_2elementwise__functions_2heaviside_8hpp_source.html", null ],
     [ "i0.hpp", "extensions_2ufunc_2elementwise__functions_2i0_8hpp_source.html", null ],

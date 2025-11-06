@@ -60,6 +60,16 @@ var annotated_dup =
           ] ],
           [ "LinAlgError", "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html", null ]
         ] ],
+        [ "py_internal", null, [
+          [ "elementwise_common", null, [
+            [ "UnaryTwoOutputsContigFunctor", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_unary_two_outputs_contig_functor.html", null ],
+            [ "UnaryTwoOutputsStridedFunctor", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_unary_two_outputs_strided_functor.html", null ]
+          ] ],
+          [ "type_dispatch", null, [
+            [ "DefaultTwoResultsEntry", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry.html", null ],
+            [ "TypeMapTwoResultsEntry", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_type_map_two_results_entry.html", null ]
+          ] ]
+        ] ],
         [ "window", null, [
           [ "kernels", null, [
             [ "BartlettFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_factory.html", null ],
@@ -102,6 +112,9 @@ var annotated_dup =
         ] ],
         [ "fmod", null, [
           [ "FmodFunctor", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ]
+        ] ],
+        [ "frexp", null, [
+          [ "FrexpFunctor", "structdpnp_1_1kernels_1_1frexp_1_1_frexp_functor.html", null ]
         ] ],
         [ "gcd", null, [
           [ "GcdFunctor", "structdpnp_1_1kernels_1_1gcd_1_1_gcd_functor.html", null ]
