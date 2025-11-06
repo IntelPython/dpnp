@@ -2038,6 +2038,11 @@ class dpnp_array:
 
             Default: ``""``.
 
+        See Also
+        --------
+        :obj:`dpnp.fromfile` : Construct an array from data in a text or binary
+            file.
+
         """
 
         self.asnumpy().tofile(fid, sep=sep, format=format)
