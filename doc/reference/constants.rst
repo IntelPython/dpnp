@@ -1,6 +1,8 @@
 Constants
 =========
 
+.. hint:: `NumPy API Reference: Constants <https://numpy.org/doc/stable/reference/constants.html>`_
+
 DPNP includes several constants:
 
 .. currentmodule:: dpnp
