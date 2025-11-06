@@ -117,11 +117,6 @@ def test_umaths(test_cases):
         pytest.skip("dpctl-2031")
     elif umath in ["divmod"]:
         pytest.skip("Not implemented umath")
-    elif umath == "modf":
-        if args[0].dtype == dpnp.float16:
-            pytest.skip("dpnp.modf is not supported with dpnp.float16")
-        elif is_cuda_device():
-            pytest.skip("dpnp.modf is not supported on CUDA device")
     elif umath in ["vecmat", "matvec"]:
         if is_win_platform() and not is_gpu_device():
             pytest.skip("SAT-8073")

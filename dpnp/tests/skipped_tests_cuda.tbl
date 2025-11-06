@@ -1,11 +1,5 @@
 # NotImplementedError
 
-# modf
-tests/test_arithmetic.py::TestArithmetic::test_modf_part1
-tests/test_arithmetic.py::TestArithmetic::test_modf_part2
-tests/test_sycl_queue.py::test_modf[cuda:gpu:0]
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticModf::test_modf
-
 # random
 tests/test_random_state.py::TestNormal::test_distr[host-float32]
 tests/test_random_state.py::TestNormal::test_distr[host-float64]

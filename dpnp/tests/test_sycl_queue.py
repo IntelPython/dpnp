@@ -360,6 +360,7 @@ def test_1in_1out(func, data, device):
     "func, data",
     [
         pytest.param("frexp", numpy.arange(9)),
+        pytest.param("modf", [0, 3.5]),
     ],
 )
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
@@ -848,16 +849,6 @@ def test_random_state(func, args, kwargs, device, usm_type):
     res_array = getattr(rs, func)(*args, **kwargs)
     assert usm_type == res_array.usm_type
     assert_sycl_queue_equal(res_array.sycl_queue, sycl_queue)
-
-
-@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-def test_modf(device):
-    x = dpnp.array([0, 3.5], device=device)
-    result1, result2 = dpnp.modf(x)
-
-    expected_queue = x.sycl_queue
-    assert_sycl_queue_equal(result1.sycl_queue, expected_queue)
-    assert_sycl_queue_equal(result2.sycl_queue, expected_queue)
 
 
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
