@@ -37,6 +37,7 @@
 
 #include "kernels/elementwise_functions/modf.hpp"
 #include "modf.hpp"
+#include "populate.hpp"
 
 // include a local copy of elementwise common header from dpctl tensor:
 // dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
@@ -65,10 +66,9 @@ namespace td_int_ns = py_int::type_dispatch;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpnp::kernels::modf::ModfFunctor;
-using ext::common::init_dispatch_vector;
 
 template <typename T>
-struct ModfOutputType
+struct OutputType
 {
     using table_type = std::disjunction< // disjunction is C++17
                                          // feature, supported by DPC++
@@ -81,15 +81,13 @@ struct ModfOutputType
     using value_type2 = typename table_type::result_type2;
 };
 
-// contiguous implementation
-
 template <typename argTy,
           typename resTy1 = argTy,
           typename resTy2 = argTy,
           std::uint8_t vec_sz = 4u,
           std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
-using ModfContigFunctor =
+using ContigFunctor =
     ew_cmn_ns::UnaryTwoOutputsContigFunctor<argTy,
                                             resTy1,
                                             resTy2,
@@ -98,114 +96,13 @@ using ModfContigFunctor =
                                             n_vecs,
                                             enable_sg_loadstore>;
 
-// strided implementation
-
 template <typename argTy, typename resTy1, typename resTy2, typename IndexerT>
-using ModfStridedFunctor = ew_cmn_ns::UnaryTwoOutputsStridedFunctor<
+using StridedFunctor = ew_cmn_ns::UnaryTwoOutputsStridedFunctor<
     argTy,
     resTy1,
     resTy2,
     IndexerT,
     ModfFunctor<argTy, resTy1, resTy2>>;
-
-template <typename T1,
-          typename T2,
-          typename T3,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
-class modf_contig_kernel;
-
-template <typename argTy>
-sycl::event modf_contig_impl(sycl::queue &exec_q,
-                             size_t nelems,
-                             const char *arg_p,
-                             char *res1_p,
-                             char *res2_p,
-                             const std::vector<sycl::event> &depends = {})
-{
-    return ew_cmn_ns::unary_two_outputs_contig_impl<
-        argTy, ModfOutputType, ModfContigFunctor, modf_contig_kernel>(
-        exec_q, nelems, arg_p, res1_p, res2_p, depends);
-}
-
-template <typename fnT, typename T>
-struct ModfContigFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_same_v<typename ModfOutputType<T>::value_type1,
-                                     void> ||
-                      std::is_same_v<typename ModfOutputType<T>::value_type2,
-                                     void>)
-        {
-            fnT fn = nullptr;
-            return fn;
-        }
-        else {
-            fnT fn = modf_contig_impl<T>;
-            return fn;
-        }
-    }
-};
-
-template <typename T1, typename T2, typename T3, typename T4>
-class modf_strided_kernel;
-
-template <typename argTy>
-sycl::event
-    modf_strided_impl(sycl::queue &exec_q,
-                      size_t nelems,
-                      int nd,
-                      const ssize_t *shape_and_strides,
-                      const char *arg_p,
-                      ssize_t arg_offset,
-                      char *res1_p,
-                      ssize_t res1_offset,
-                      char *res2_p,
-                      ssize_t res2_offset,
-                      const std::vector<sycl::event> &depends,
-                      const std::vector<sycl::event> &additional_depends)
-{
-    return ew_cmn_ns::unary_two_outputs_strided_impl<
-        argTy, ModfOutputType, ModfStridedFunctor, modf_strided_kernel>(
-        exec_q, nelems, nd, shape_and_strides, arg_p, arg_offset, res1_p,
-        res1_offset, res2_p, res2_offset, depends, additional_depends);
-}
-
-template <typename fnT, typename T>
-struct ModfStridedFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_same_v<typename ModfOutputType<T>::value_type1,
-                                     void> ||
-                      std::is_same_v<typename ModfOutputType<T>::value_type2,
-                                     void>)
-        {
-            fnT fn = nullptr;
-            return fn;
-        }
-        else {
-            fnT fn = modf_strided_impl<T>;
-            return fn;
-        }
-    }
-};
-
-template <typename fnT, typename T>
-struct ModfTypeMapFactory
-{
-    /*! @brief get typeid for output type of sycl::modf(T x) */
-    std::enable_if_t<std::is_same<fnT, std::pair<int, int>>::value,
-                     std::pair<int, int>>
-        get()
-    {
-        using rT1 = typename ModfOutputType<T>::value_type1;
-        using rT2 = typename ModfOutputType<T>::value_type2;
-        return std::make_pair(td_ns::GetTypeid<rT1>{}.get(),
-                              td_ns::GetTypeid<rT2>{}.get());
-    }
-};
 
 using ew_cmn_ns::unary_two_outputs_contig_impl_fn_ptr_t;
 using ew_cmn_ns::unary_two_outputs_strided_impl_fn_ptr_t;
@@ -216,15 +113,7 @@ static std::pair<int, int> modf_output_typeid_vector[td_ns::num_types];
 static unary_two_outputs_strided_impl_fn_ptr_t
     modf_strided_dispatch_vector[td_ns::num_types];
 
-void populate_modf_dispatch_vectors(void)
-{
-    init_dispatch_vector<unary_two_outputs_contig_impl_fn_ptr_t,
-                         ModfContigFactory>(modf_contig_dispatch_vector);
-    init_dispatch_vector<unary_two_outputs_strided_impl_fn_ptr_t,
-                         ModfStridedFactory>(modf_strided_dispatch_vector);
-    init_dispatch_vector<std::pair<int, int>, ModfTypeMapFactory>(
-        modf_output_typeid_vector);
-};
+MACRO_POPULATE_DISPATCH_2OUTS_VECTORS(modf);
 } // namespace impl
 
 void init_modf(py::module_ m)
