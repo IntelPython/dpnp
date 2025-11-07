@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,32 +28,34 @@
 
 #pragma once
 
-#include "dpctl4pybind11.hpp"
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <type_traits>
 
-// dpctl tensor headers
 #include "utils/type_dispatch.hpp"
 
-namespace dpnp::extensions::py_internal::type_utils
+namespace dpnp::extensions::py_internal::type_dispatch
 {
-namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
-
-/*! @brief Produce dtype from a type number */
-extern py::dtype _dtype_from_typenum(td_ns::typenum_t);
-
-/*! @brief Lookup typeid of the result from typeid of
- *         argument and the mapping table */
-template <typename output_idT>
-output_idT _result_typeid(int arg_typeid, const output_idT *fn_output_id)
+/**
+ * Extends dpctl::tensor::type_dispatch::TypeMapResultEntry helper structure
+ * with support of the two result types.
+ */
+template <typename Ty,
+          typename ArgTy,
+          typename ResTy1 = ArgTy,
+          typename ResTy2 = ArgTy>
+struct TypeMapTwoResultsEntry : std::bool_constant<std::is_same_v<Ty, ArgTy>>
 {
-    if (arg_typeid < 0 || arg_typeid >= td_ns::num_types) {
-        throw py::value_error("Input typeid " + std::to_string(arg_typeid) +
-                              " is outside of expected bounds.");
-    }
+    using result_type1 = ResTy1;
+    using result_type2 = ResTy2;
+};
 
-    return fn_output_id[arg_typeid];
-}
-} // namespace dpnp::extensions::py_internal::type_utils
+/**
+ * Extends dpctl::tensor::type_dispatch::DefaultResultEntry helper structure
+ * with support of the two result types.
+ */
+template <typename Ty = void>
+struct DefaultTwoResultsEntry : std::true_type
+{
+    using result_type1 = Ty;
+    using result_type2 = Ty;
+};
+} // namespace dpnp::extensions::py_internal::type_dispatch

@@ -155,7 +155,7 @@ max-returns = 8
 
 [tool.pylint.format]
 max-line-length = 80
-max-module-lines = 5000
+max-module-lines = 8000
 
 [tool.pylint.imports]
 allow-wildcard-with-all = true

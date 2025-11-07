@@ -73,6 +73,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPRound,
     DPNPSinc,
     DPNPUnaryFunc,
+    DPNPUnaryTwoOutputsFunc,
     acceptance_fn_gcd_lcm,
     acceptance_fn_negative,
     acceptance_fn_positive,
@@ -112,6 +113,7 @@ __all__ = [
     "fmax",
     "fmin",
     "fmod",
+    "frexp",
     "gcd",
     "gradient",
     "heaviside",
@@ -2342,8 +2344,88 @@ fmod = DPNPBinaryFunc(
     mkl_impl_fn="_fmod",
 )
 
+
+_FREXP_DOCSTRING = """
+Decompose each element :math:`x_i` of the input array `x` into the mantissa and
+the twos exponent.
+
+For full documentation refer to :obj:`numpy.frexp`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Array of numbers to be decomposed, expected to have a real-valued
+    floating-point data type.
+out1 : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array for the mantissa to populate. Array must have the same shape
+    as `x` and the expected data type.
+
+    Default: ``None``.
+out2 : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array for the exponent to populate. Array must have the same shape
+    as `x` and the expected data type.
+
+    Default: ``None``.
+
+out : tuple of None, dpnp.ndarray, or usm_ndarray, optional
+    A location into which the result is stored. If provided, it must be a tuple
+    and have length equal to the number of outputs. Each provided array must
+    have the same shape as `x` and the expected data type.
+    It is prohibited to pass output arrays through `out` keyword when either
+    `out1` or `out2` is passed.
+
+    Default: ``(None, None)``.
+order : {None, "C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+
+    Default: ``"K"``.
+
+Returns
+-------
+mantissa : dpnp.ndarray
+    Floating values between -1 and 1.
+exponent : dpnp.ndarray
+    Integer exponents of 2.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.ldexp` : Compute :math:`y = x1 * 2^{x2}`, inverse to
+    :obj:`dpnp.frexp`.
+
+Notes
+-----
+Complex dtypes are not supported, they will raise a ``TypeError``.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.arange(9)
+>>> y1, y2 = np.frexp(x)
+>>> y1
+array([0.   , 0.5  , 0.5  , 0.75 , 0.5  , 0.625, 0.75 , 0.875, 0.5  ])
+>>> y2
+array([0, 1, 2, 2, 3, 3, 3, 3, 4], dtype=int32)
+>>> y1 * 2**y2
+array([0., 1., 2., 3., 4., 5., 6., 7., 8.])
+
+"""
+
+frexp = DPNPUnaryTwoOutputsFunc(
+    "_frexp",
+    ufi._frexp_result_type,
+    ufi._frexp,
+    _FREXP_DOCSTRING,
+)
+
+
 _GCD_DOCSTRING = r"""
-Returns the greatest common divisor of :math:`\abs{x1}` and :math:`\abs{x2}`.
+Returns the greatest common divisor of :math:`|x_1|` and :math:`|x_2|`.
 
 For full documentation refer to :obj:`numpy.gcd`.
 
@@ -2962,7 +3044,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
 
 _LCM_DOCSTRING = r"""
-Returns the lowest common multiple of :math:`\abs{x1}` and :math:`\abs{x2}`.
+Returns the lowest common multiple of :math:`|x_1|` and :math:`|x_2|`.
 
 For full documentation refer to :obj:`numpy.lcm`.
 

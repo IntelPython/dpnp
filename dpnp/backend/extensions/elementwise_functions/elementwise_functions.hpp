@@ -28,8 +28,11 @@
 
 #pragma once
 
+#include <cstddef>
 #include <exception>
 #include <stdexcept>
+#include <utility>
+#include <vector>
 
 #include <sycl/sycl.hpp>
 
@@ -43,23 +46,23 @@
 
 // dpctl tensor headers
 #include "kernels/alignment.hpp"
-// #include "kernels/dpctl_tensor_types.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
-
 static_assert(std::is_same_v<py::ssize_t, dpctl::tensor::ssize_t>);
 
 namespace dpnp::extensions::py_internal
 {
+namespace py = pybind11;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::kernels::alignment_utils::is_aligned;
 using dpctl::tensor::kernels::alignment_utils::required_alignment;
+
+using type_utils::_result_typeid;
 
 /*! @brief Template implementing Python API for unary elementwise functions */
 template <typename output_typesT,
@@ -108,10 +111,10 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool shapes_equal(true);
-    size_t src_nelems(1);
+    std::size_t src_nelems(1);
 
     for (int i = 0; i < src_nd; ++i) {
-        src_nelems *= static_cast<size_t>(src_shape[i]);
+        src_nelems *= static_cast<std::size_t>(src_shape[i]);
         shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
     }
     if (!shapes_equal) {
@@ -260,9 +263,7 @@ py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
         throw py::value_error(e.what());
     }
 
-    using type_utils::_result_typeid;
     int dst_typeid = _result_typeid(src_typeid, output_types);
-
     if (dst_typeid < 0) {
         auto res = py::none();
         return py::cast<py::object>(res);
@@ -274,6 +275,261 @@ py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
         auto dt = _dtype_from_typenum(dst_typenum_t);
 
         return py::cast<py::object>(dt);
+    }
+}
+
+/**
+ * @brief Template implementing Python API for a unary elementwise function
+ * with two output arrays.
+ */
+template <typename output_typesT,
+          typename contig_dispatchT,
+          typename strided_dispatchT>
+std::pair<sycl::event, sycl::event>
+    py_unary_two_outputs_ufunc(const dpctl::tensor::usm_ndarray &src,
+                               const dpctl::tensor::usm_ndarray &dst1,
+                               const dpctl::tensor::usm_ndarray &dst2,
+                               sycl::queue &q,
+                               const std::vector<sycl::event> &depends,
+                               //
+                               const output_typesT &output_type_vec,
+                               const contig_dispatchT &contig_dispatch_vector,
+                               const strided_dispatchT &strided_dispatch_vector)
+{
+    int src_typenum = src.get_typenum();
+    int dst1_typenum = dst1.get_typenum();
+    int dst2_typenum = dst2.get_typenum();
+
+    const auto &array_types = td_ns::usm_ndarray_types();
+    int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
+    int dst1_typeid = array_types.typenum_to_lookup_id(dst1_typenum);
+    int dst2_typeid = array_types.typenum_to_lookup_id(dst2_typenum);
+
+    std::pair<int, int> func_output_typeids = output_type_vec[src_typeid];
+
+    // check that types are supported
+    if (dst1_typeid != func_output_typeids.first ||
+        dst2_typeid != func_output_typeids.second)
+    {
+        throw py::value_error(
+            "One of destination arrays has unexpected elemental data type.");
+    }
+
+    // check that queues are compatible
+    if (!dpctl::utils::queues_are_compatible(q, {src, dst1, dst2})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst1);
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst2);
+
+    // check that dimensions are the same
+    int src_nd = src.get_ndim();
+    if (src_nd != dst1.get_ndim() || src_nd != dst2.get_ndim()) {
+        throw py::value_error("Array dimensions are not the same.");
+    }
+
+    // check that shapes are the same
+    const py::ssize_t *src_shape = src.get_shape_raw();
+    const py::ssize_t *dst1_shape = dst1.get_shape_raw();
+    const py::ssize_t *dst2_shape = dst2.get_shape_raw();
+    bool shapes_equal(true);
+    std::size_t src_nelems(1);
+
+    for (int i = 0; i < src_nd; ++i) {
+        src_nelems *= static_cast<std::size_t>(src_shape[i]);
+        shapes_equal = shapes_equal && (src_shape[i] == dst1_shape[i]) &&
+                       (src_shape[i] == dst2_shape[i]);
+    }
+    if (!shapes_equal) {
+        throw py::value_error("Array shapes are not the same.");
+    }
+
+    // if nelems is zero, return
+    if (src_nelems == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst1,
+                                                               src_nelems);
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst2,
+                                                               src_nelems);
+
+    // check memory overlap
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &same_logical_tensors =
+        dpctl::tensor::overlap::SameLogicalTensors();
+    if ((overlap(src, dst1) && !same_logical_tensors(src, dst1)) ||
+        (overlap(src, dst2) && !same_logical_tensors(src, dst2)) ||
+        (overlap(dst1, dst2) && !same_logical_tensors(dst1, dst2)))
+    {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+
+    const char *src_data = src.get_data();
+    char *dst1_data = dst1.get_data();
+    char *dst2_data = dst2.get_data();
+
+    // handle contiguous inputs
+    bool is_src_c_contig = src.is_c_contiguous();
+    bool is_src_f_contig = src.is_f_contiguous();
+
+    bool is_dst1_c_contig = dst1.is_c_contiguous();
+    bool is_dst1_f_contig = dst1.is_f_contiguous();
+
+    bool is_dst2_c_contig = dst2.is_c_contiguous();
+    bool is_dst2_f_contig = dst2.is_f_contiguous();
+
+    bool all_c_contig =
+        (is_src_c_contig && is_dst1_c_contig && is_dst2_c_contig);
+    bool all_f_contig =
+        (is_src_f_contig && is_dst1_f_contig && is_dst2_f_contig);
+
+    if (all_c_contig || all_f_contig) {
+        auto contig_fn = contig_dispatch_vector[src_typeid];
+
+        if (contig_fn == nullptr) {
+            throw std::runtime_error(
+                "Contiguous implementation is missing for src_typeid=" +
+                std::to_string(src_typeid));
+        }
+
+        auto comp_ev =
+            contig_fn(q, src_nelems, src_data, dst1_data, dst2_data, depends);
+        sycl::event ht_ev =
+            dpctl::utils::keep_args_alive(q, {src, dst1, dst2}, {comp_ev});
+
+        return std::make_pair(ht_ev, comp_ev);
+    }
+
+    // simplify iteration space
+    //     if 1d with strides 1 - input is contig
+    //     dispatch to strided
+
+    auto const &src_strides = src.get_strides_vector();
+    auto const &dst1_strides = dst1.get_strides_vector();
+    auto const &dst2_strides = dst2.get_strides_vector();
+
+    using shT = std::vector<py::ssize_t>;
+    shT simplified_shape;
+    shT simplified_src_strides;
+    shT simplified_dst1_strides;
+    shT simplified_dst2_strides;
+    py::ssize_t src_offset(0);
+    py::ssize_t dst1_offset(0);
+    py::ssize_t dst2_offset(0);
+
+    int nd = src_nd;
+    const py::ssize_t *shape = src_shape;
+
+    simplify_iteration_space_3(
+        nd, shape, src_strides, dst1_strides, dst2_strides,
+        // output
+        simplified_shape, simplified_src_strides, simplified_dst1_strides,
+        simplified_dst2_strides, src_offset, dst1_offset, dst2_offset);
+
+    if (nd == 1 && simplified_src_strides[0] == 1 &&
+        simplified_dst1_strides[0] == 1 && simplified_dst2_strides[0] == 1)
+    {
+        // Special case of contiguous data
+        auto contig_fn = contig_dispatch_vector[src_typeid];
+
+        if (contig_fn == nullptr) {
+            throw std::runtime_error(
+                "Contiguous implementation is missing for src_typeid=" +
+                std::to_string(src_typeid));
+        }
+
+        int src_elem_size = src.get_elemsize();
+        int dst1_elem_size = dst1.get_elemsize();
+        int dst2_elem_size = dst2.get_elemsize();
+        auto comp_ev =
+            contig_fn(q, src_nelems, src_data + src_elem_size * src_offset,
+                      dst1_data + dst1_elem_size * dst1_offset,
+                      dst2_data + dst2_elem_size * dst2_offset, depends);
+
+        sycl::event ht_ev =
+            dpctl::utils::keep_args_alive(q, {src, dst1, dst2}, {comp_ev});
+
+        return std::make_pair(ht_ev, comp_ev);
+    }
+
+    // Strided implementation
+    auto strided_fn = strided_dispatch_vector[src_typeid];
+
+    if (strided_fn == nullptr) {
+        throw std::runtime_error(
+            "Strided implementation is missing for src_typeid=" +
+            std::to_string(src_typeid));
+    }
+
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+
+    std::vector<sycl::event> host_tasks{};
+    host_tasks.reserve(2);
+
+    auto ptr_size_event_triple_ = device_allocate_and_pack<py::ssize_t>(
+        q, host_tasks, simplified_shape, simplified_src_strides,
+        simplified_dst1_strides, simplified_dst2_strides);
+    auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_triple_));
+    const auto &copy_shape_ev = std::get<2>(ptr_size_event_triple_);
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
+
+    sycl::event strided_fn_ev = strided_fn(
+        q, src_nelems, nd, shape_strides, src_data, src_offset, dst1_data,
+        dst1_offset, dst2_data, dst2_offset, depends, {copy_shape_ev});
+
+    // async free of shape_strides temporary
+    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        q, {strided_fn_ev}, shape_strides_owner);
+
+    host_tasks.push_back(tmp_cleanup_ev);
+
+    return std::make_pair(
+        dpctl::utils::keep_args_alive(q, {src, dst1, dst2}, host_tasks),
+        strided_fn_ev);
+}
+
+/**
+ * @brief Template implementing Python API for querying of type support by
+ * a unary elementwise function with two output arrays.
+ */
+template <typename output_typesT>
+std::pair<py::object, py::object>
+    py_unary_two_outputs_ufunc_result_type(const py::dtype &input_dtype,
+                                           const output_typesT &output_types)
+{
+    int tn = input_dtype.num(); // NumPy type numbers are the same as in dpctl
+    int src_typeid = -1;
+
+    auto array_types = td_ns::usm_ndarray_types();
+
+    try {
+        src_typeid = array_types.typenum_to_lookup_id(tn);
+    } catch (const std::exception &e) {
+        throw py::value_error(e.what());
+    }
+
+    std::pair<int, int> dst_typeids = _result_typeid(src_typeid, output_types);
+    int dst1_typeid = dst_typeids.first;
+    int dst2_typeid = dst_typeids.second;
+
+    if (dst1_typeid < 0 || dst2_typeid < 0) {
+        auto res = py::none();
+        auto py_res = py::cast<py::object>(res);
+        return std::make_pair(py_res, py_res);
+    }
+    else {
+        using type_utils::_dtype_from_typenum;
+
+        auto dst1_typenum_t = static_cast<td_ns::typenum_t>(dst1_typeid);
+        auto dst2_typenum_t = static_cast<td_ns::typenum_t>(dst2_typeid);
+        auto dt1 = _dtype_from_typenum(dst1_typenum_t);
+        auto dt2 = _dtype_from_typenum(dst2_typenum_t);
+
+        return std::make_pair(py::cast<py::object>(dt1),
+                              py::cast<py::object>(dt2));
     }
 }
 
@@ -347,10 +603,10 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const py::ssize_t *src2_shape = src2.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool shapes_equal(true);
-    size_t src_nelems(1);
+    std::size_t src_nelems(1);
 
     for (int i = 0; i < dst_nd; ++i) {
-        src_nelems *= static_cast<size_t>(src1_shape[i]);
+        src_nelems *= static_cast<std::size_t>(src1_shape[i]);
         shapes_equal = shapes_equal && (src1_shape[i] == dst_shape[i] &&
                                         src2_shape[i] == dst_shape[i]);
     }
@@ -456,7 +712,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                 std::initializer_list<py::ssize_t>{0, 1};
             static constexpr auto one_zero_strides =
                 std::initializer_list<py::ssize_t>{1, 0};
-            constexpr py::ssize_t one{1};
+            static constexpr py::ssize_t one{1};
             // special case of C-contiguous matrix and a row
             if (isEqual(simplified_src2_strides, zero_one_strides) &&
                 isEqual(simplified_src1_strides, {simplified_shape[1], one}) &&
@@ -477,8 +733,8 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                         is_aligned<required_alignment>(
                             dst_data + dst_offset * dst_itemsize))
                     {
-                        size_t n0 = simplified_shape[0];
-                        size_t n1 = simplified_shape[1];
+                        std::size_t n0 = simplified_shape[0];
+                        std::size_t n1 = simplified_shape[1];
                         sycl::event comp_ev = matrix_row_broadcast_fn(
                             exec_q, host_tasks, n0, n1, src1_data, src1_offset,
                             src2_data, src2_offset, dst_data, dst_offset,
@@ -511,8 +767,8 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                         is_aligned<required_alignment>(
                             dst_data + dst_offset * dst_itemsize))
                     {
-                        size_t n0 = simplified_shape[1];
-                        size_t n1 = simplified_shape[0];
+                        std::size_t n0 = simplified_shape[1];
+                        std::size_t n1 = simplified_shape[0];
                         sycl::event comp_ev = row_matrix_broadcast_fn(
                             exec_q, host_tasks, n0, n1, src1_data, src1_offset,
                             src2_data, src2_offset, dst_data, dst_offset,
@@ -655,10 +911,10 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *rhs_shape = rhs.get_shape_raw();
     const py::ssize_t *lhs_shape = lhs.get_shape_raw();
     bool shapes_equal(true);
-    size_t rhs_nelems(1);
+    std::size_t rhs_nelems(1);
 
     for (int i = 0; i < lhs_nd; ++i) {
-        rhs_nelems *= static_cast<size_t>(rhs_shape[i]);
+        rhs_nelems *= static_cast<std::size_t>(rhs_shape[i]);
         shapes_equal = shapes_equal && (rhs_shape[i] == lhs_shape[i]);
     }
     if (!shapes_equal) {
@@ -749,7 +1005,7 @@ std::pair<sycl::event, sycl::event>
         if (nd == 2) {
             static constexpr auto one_zero_strides =
                 std::initializer_list<py::ssize_t>{1, 0};
-            constexpr py::ssize_t one{1};
+            static constexpr py::ssize_t one{1};
             // special case of C-contiguous matrix and a row
             if (isEqual(simplified_rhs_strides, one_zero_strides) &&
                 isEqual(simplified_lhs_strides, {one, simplified_shape[0]}))
@@ -758,8 +1014,8 @@ std::pair<sycl::event, sycl::event>
                     contig_row_matrix_broadcast_dispatch_table[rhs_typeid]
                                                               [lhs_typeid];
                 if (row_matrix_broadcast_fn != nullptr) {
-                    size_t n0 = simplified_shape[1];
-                    size_t n1 = simplified_shape[0];
+                    std::size_t n0 = simplified_shape[1];
+                    std::size_t n1 = simplified_shape[0];
                     sycl::event comp_ev = row_matrix_broadcast_fn(
                         exec_q, host_tasks, n0, n1, rhs_data, rhs_offset,
                         lhs_data, lhs_offset, depends);
@@ -805,5 +1061,4 @@ std::pair<sycl::event, sycl::event>
         dpctl::utils::keep_args_alive(exec_q, {rhs, lhs}, host_tasks),
         strided_fn_ev);
 }
-
 } // namespace dpnp::extensions::py_internal

@@ -18,12 +18,15 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added implementation of `dpnp.scipy.special.erfcx` [#2596](https://github.com/IntelPython/dpnp/pull/2596)
 * Added implementation of `dpnp.scipy.special.erfinv` and `dpnp.scipy.special.erfcinv` [#2624](https://github.com/IntelPython/dpnp/pull/2624)
 * Enabled support of Python 3.14 [#2631](https://github.com/IntelPython/dpnp/pull/2631)
+* Added implementation of `dpnp.ndarray.tolist` method [#2652](https://github.com/IntelPython/dpnp/pull/2652)
+* Added implementation of `dpnp.frexp` [#2635](https://github.com/IntelPython/dpnp/pull/2635)
 
 ### Changed
 
 * Silenced `pybind11` CMake message due to using compatibility mode for Python [#2614](https://github.com/IntelPython/dpnp/pull/2614)
 * Changed the license from `BSD-2-Clause` to `BSD-3-Clause` [#2593](https://github.com/IntelPython/dpnp/pull/2593)
 * Defined explicit versions range of the Python interpreter which is needed during the build [#2634](https://github.com/IntelPython/dpnp/pull/2634)
+* Aligned documentation with NumPy and CuPy style by using short function names [#2633](https://github.com/IntelPython/dpnp/pull/2633)
 
 ### Deprecated
 

@@ -1,7 +1,9 @@
+.. currentmodule:: dpnp
+
 Mathematical functions
 ======================
 
-.. https://numpy.org/doc/stable/reference/routines.math.html
+.. hint:: `NumPy API Reference: Mathematical functions <https://numpy.org/doc/stable/reference/routines.math.html>`_
 
 Trigonometric functions
 -----------------------
@@ -10,24 +12,24 @@ Trigonometric functions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.sin
-   dpnp.cos
-   dpnp.tan
-   dpnp.arcsin
-   dpnp.asin
-   dpnp.arccos
-   dpnp.acos
-   dpnp.arctan
-   dpnp.atan
-   dpnp.hypot
-   dpnp.arctan2
-   dpnp.atan2
-   dpnp.degrees
-   dpnp.radians
-   dpnp.unwrap
-   dpnp.deg2rad
-   dpnp.rad2deg
-   dpnp.reduce_hypot
+   sin
+   cos
+   tan
+   arcsin
+   asin
+   arccos
+   acos
+   arctan
+   atan
+   hypot
+   arctan2
+   atan2
+   degrees
+   radians
+   unwrap
+   deg2rad
+   rad2deg
+   reduce_hypot
 
 
 Hyperbolic functions
@@ -37,15 +39,15 @@ Hyperbolic functions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.sinh
-   dpnp.cosh
-   dpnp.tanh
-   dpnp.arcsinh
-   dpnp.asinh
-   dpnp.arccosh
-   dpnp.acosh
-   dpnp.arctanh
-   dpnp.atanh
+   sinh
+   cosh
+   tanh
+   arcsinh
+   asinh
+   arccosh
+   acosh
+   arctanh
+   atanh
 
 
 Rounding
@@ -55,13 +57,13 @@ Rounding
    :toctree: generated/
    :nosignatures:
 
-   dpnp.round
-   dpnp.around
-   dpnp.rint
-   dpnp.fix
-   dpnp.floor
-   dpnp.ceil
-   dpnp.trunc
+   round
+   around
+   rint
+   fix
+   floor
+   ceil
+   trunc
 
 
 Sums, products, differences
@@ -71,21 +73,21 @@ Sums, products, differences
    :toctree: generated/
    :nosignatures:
 
-   dpnp.prod
-   dpnp.sum
-   dpnp.nanprod
-   dpnp.nansum
-   dpnp.cumulative_sum
-   dpnp.cumulative_prod
-   dpnp.cumprod
-   dpnp.cumsum
-   dpnp.nancumprod
-   dpnp.nancumsum
-   dpnp.diff
-   dpnp.ediff1d
-   dpnp.gradient
-   dpnp.cross
-   dpnp.trapezoid
+   prod
+   sum
+   nanprod
+   nansum
+   cumulative_sum
+   cumulative_prod
+   cumprod
+   cumsum
+   nancumprod
+   nancumsum
+   diff
+   ediff1d
+   gradient
+   cross
+   trapezoid
 
 
 Exponents and logarithms
@@ -95,17 +97,17 @@ Exponents and logarithms
    :toctree: generated/
    :nosignatures:
 
-   dpnp.exp
-   dpnp.expm1
-   dpnp.exp2
-   dpnp.log
-   dpnp.log10
-   dpnp.log2
-   dpnp.log1p
-   dpnp.logaddexp
-   dpnp.logaddexp2
-   dpnp.logsumexp
-   dpnp.cumlogsumexp
+   exp
+   expm1
+   exp2
+   log
+   log10
+   log2
+   log1p
+   logaddexp
+   logaddexp2
+   logsumexp
+   cumlogsumexp
 
 
 Other special functions
@@ -115,8 +117,8 @@ Other special functions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.i0
-   dpnp.sinc
+   i0
+   sinc
 
 
 Floating point routines
@@ -126,12 +128,12 @@ Floating point routines
    :toctree: generated/
    :nosignatures:
 
-   dpnp.signbit
-   dpnp.copysign
-   dpnp.frexp
-   dpnp.ldexp
-   dpnp.nextafter
-   dpnp.spacing
+   signbit
+   copysign
+   frexp
+   ldexp
+   nextafter
+   spacing
 
 
 Rational routines
@@ -141,8 +143,8 @@ Rational routines
    :toctree: generated/
    :nosignatures:
 
-   dpnp.lcm
-   dpnp.gcd
+   lcm
+   gcd
 
 
 Arithmetic operations
@@ -152,24 +154,24 @@ Arithmetic operations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.add
-   dpnp.reciprocal
-   dpnp.positive
-   dpnp.negative
-   dpnp.multiply
-   dpnp.divide
-   dpnp.power
-   dpnp.pow
-   dpnp.subtract
-   dpnp.true_divide
-   dpnp.floor_divide
-   dpnp.float_power
+   add
+   reciprocal
+   positive
+   negative
+   multiply
+   divide
+   power
+   pow
+   subtract
+   true_divide
+   floor_divide
+   float_power
 
-   dpnp.fmod
-   dpnp.mod
-   dpnp.modf
-   dpnp.remainder
-   dpnp.divmod
+   fmod
+   mod
+   modf
+   remainder
+   divmod
 
 
 Handling complex numbers
@@ -179,12 +181,12 @@ Handling complex numbers
    :toctree: generated/
    :nosignatures:
 
-   dpnp.angle
-   dpnp.real
-   dpnp.imag
-   dpnp.conj
-   dpnp.conjugate
-   dpnp.proj
+   angle
+   real
+   imag
+   conj
+   conjugate
+   proj
 
 
 Extrema finding
@@ -194,17 +196,17 @@ Extrema finding
    :toctree: generated/
    :nosignatures:
 
-   dpnp.maximum
-   dpnp.max
-   dpnp.amax
-   dpnp.fmax
-   dpnp.nanmax
+   maximum
+   max
+   amax
+   fmax
+   nanmax
 
-   dpnp.minimum
-   dpnp.min
-   dpnp.amin
-   dpnp.fmin
-   dpnp.nanmin
+   minimum
+   min
+   amin
+   fmin
+   nanmin
 
 
 Miscellaneous
@@ -214,21 +216,21 @@ Miscellaneous
    :toctree: generated/
    :nosignatures:
 
-   dpnp.convolve
-   dpnp.clip
+   convolve
+   clip
 
-   dpnp.sqrt
-   dpnp.cbrt
-   dpnp.square
-   dpnp.rsqrt
+   sqrt
+   cbrt
+   square
+   rsqrt
 
-   dpnp.abs
-   dpnp.absolute
-   dpnp.fabs
-   dpnp.sign
-   dpnp.heaviside
+   abs
+   absolute
+   fabs
+   sign
+   heaviside
 
-   dpnp.nan_to_num
-   dpnp.real_if_close
+   nan_to_num
+   real_if_close
 
-   dpnp.interp
+   interp

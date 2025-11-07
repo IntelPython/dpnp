@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import unittest
 
 import numpy
-import pytest
 
 import dpnp as cupy
 from dpnp.tests.helper import has_support_aspect64
@@ -38,7 +39,6 @@ class TestFloating(unittest.TestCase):
         b = xp.array([-3, -2, -1, 0, 1, 2, 3], dtype=itype)
         return xp.ldexp(a, b)
 
-    @pytest.mark.skip("frexp() is not implemented yet")
     @testing.for_float_dtypes()
     def test_frexp(self, dtype):
         numpy_a = numpy.array(

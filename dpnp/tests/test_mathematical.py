@@ -33,6 +33,7 @@ from .helper import (
     has_support_aspect16,
     has_support_aspect64,
     is_intel_numpy,
+    is_win_platform,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -708,6 +709,133 @@ class TestEdiff1d:
         # another `to_end` sycl queue
         to_end = dpnp.array([15, 20], sycl_queue=dpctl.SyclQueue())
         assert_raises(ExecutionPlacementError, dpnp.ediff1d, ia, to_end=to_end)
+
+
+class TestFrexp:
+    ALL_DTYPES = get_all_dtypes(no_none=True)
+    ALL_DTYPES_NO_COMPLEX = get_all_dtypes(
+        no_none=True, no_float16=False, no_complex=True
+    )
+    ALL_FLOAT_DTYPES = get_float_dtypes(no_float16=False)
+
+    @pytest.mark.parametrize("dt", ALL_DTYPES_NO_COMPLEX)
+    def test_basic(self, dt):
+        a = get_abs_array([-2, 5, 1, 4, 3], dtype=dt)
+        ia = dpnp.array(a)
+
+        res1, res2 = dpnp.frexp(ia)
+        exp1, exp2 = numpy.frexp(a)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+
+    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
+    def test_out(self, dt):
+        a = numpy.array(5.7, dtype=dt)
+        ia = dpnp.array(a)
+
+        out1 = numpy.empty((), dtype=dt)
+        out2 = numpy.empty((), dtype=numpy.int32)
+        iout1, iout2 = dpnp.array(out1), dpnp.array(out2)
+
+        res1, res2 = dpnp.frexp(ia, iout1)
+        exp1, exp2 = numpy.frexp(a, out1)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+        assert res1 is iout1
+
+        res1, res2 = dpnp.frexp(ia, None, iout2)
+        exp1, exp2 = numpy.frexp(a, None, out2)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+        assert res2 is iout2
+
+        res1, res2 = dpnp.frexp(ia, iout1, iout2)
+        exp1, exp2 = numpy.frexp(a, out1, out2)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+        assert res1 is iout1
+        assert res2 is iout2
+
+    @pytest.mark.parametrize("dt", ALL_DTYPES_NO_COMPLEX)
+    @pytest.mark.parametrize("out1_dt", ALL_DTYPES)
+    @pytest.mark.parametrize("out2_dt", ALL_DTYPES)
+    def test_out_all_dtypes(self, dt, out1_dt, out2_dt):
+        a = numpy.ones(9, dtype=dt)
+        ia = dpnp.array(a)
+
+        out1 = numpy.zeros(9, dtype=out1_dt)
+        out2 = numpy.zeros(9, dtype=out2_dt)
+        iout1, iout2 = dpnp.array(out1), dpnp.array(out2)
+
+        try:
+            res1, res2 = dpnp.frexp(ia, out=(iout1, iout2))
+        except TypeError:
+            # expect numpy to fail with the same reason
+            with pytest.raises(TypeError):
+                _ = numpy.frexp(a, out=(out1, out2))
+        else:
+            exp1, exp2 = numpy.frexp(a, out=(out1, out2))
+            assert_array_equal(res1, exp1)
+            assert_array_equal(res2, exp2)
+            assert res1 is iout1
+            assert res2 is iout2
+
+    @pytest.mark.skipif(
+        is_win_platform(),
+        reason="numpy.frexp gives different answers for NAN/INF on Windows and Linux",
+    )
+    @pytest.mark.parametrize("stride", [-4, -2, -1, 1, 2, 4])
+    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
+    def test_strides_out(self, stride, dt):
+        a = numpy.array(
+            [numpy.nan, numpy.nan, numpy.inf, -numpy.inf, 0.0, -0.0, 1.0, -1.0],
+            dtype=dt,
+        )
+        ia = dpnp.array(a)
+
+        out_mant = numpy.ones_like(a)
+        out_exp = 2 * numpy.ones_like(a, dtype="i")
+        iout_mant, iout_exp = dpnp.array(out_mant), dpnp.array(out_exp)
+
+        res1, res2 = dpnp.frexp(
+            ia[::stride], out=(iout_mant[::stride], iout_exp[::stride])
+        )
+        exp1, exp2 = numpy.frexp(
+            a[::stride], out=(out_mant[::stride], out_exp[::stride])
+        )
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+
+        assert_array_equal(iout_mant, out_mant)
+        assert_array_equal(iout_exp, out_exp)
+
+    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
+    def test_out1_overlap(self, dt):
+        size = 15
+        a = numpy.ones(2 * size, dtype=dt)
+        ia = dpnp.array(a)
+
+        # out1 overlaps memory of input array
+        _ = dpnp.frexp(ia[size::], ia[::2])
+        _ = numpy.frexp(a[size::], a[::2])
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
+    def test_empty(self, dt):
+        a = numpy.empty(0, dtype=dt)
+        ia = dpnp.array(a)
+
+        res1, res2 = dpnp.frexp(ia)
+        exp1, exp2 = numpy.frexp(a)
+        assert_array_equal(res1, exp1, strict=True)
+        assert_array_equal(res2, exp2, strict=True)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("dt", get_complex_dtypes())
+    def test_complex_dtype(self, xp, dt):
+        a = xp.array([-2, 5, 1, 4, 3], dtype=dt)
+        with pytest.raises((TypeError, ValueError)):
+            _ = xp.frexp(a)
 
 
 class TestGradient:
@@ -1925,6 +2053,177 @@ class TestTrapezoid:
         assert_dtype_allclose(result, expected)
 
 
+class TestUfunc:
+    @pytest.mark.parametrize(
+        "func, nin, nout",
+        [
+            pytest.param("abs", 1, 1, id="DPNPUnaryFunc"),
+            pytest.param("frexp", 1, 2, id="DPNPUnaryTwoOutputsFunc"),
+            pytest.param("add", 2, 1, id="DPNPBinaryFunc"),
+        ],
+    )
+    def test_nin_nout(self, func, nin, nout):
+        assert getattr(dpnp, func).nin == nin
+        assert getattr(dpnp, func).nout == nout
+
+    @pytest.mark.parametrize(
+        "func, kwargs",
+        [
+            pytest.param(
+                "abs",
+                {"unknown_kwarg": 1, "where": False, "subok": False},
+                id="DPNPUnaryFunc",
+            ),
+            pytest.param(
+                "frexp",
+                {
+                    "unknown_kwarg": 1,
+                    "where": False,
+                    "dtype": "?",
+                    "subok": False,
+                },
+                id="DPNPUnaryTwoOutputsFunc",
+            ),
+            pytest.param(
+                "add",
+                {"unknown_kwarg": 1, "where": False, "subok": False},
+                id="DPNPBinaryFunc",
+            ),
+        ],
+    )
+    def test_not_supported_kwargs(self, func, kwargs):
+        x = dpnp.array([1, 2, 3])
+
+        fn = getattr(dpnp, func)
+        args = [x] * fn.nin
+        for key, val in kwargs.items():
+            with pytest.raises(NotImplementedError):
+                fn(*args, **{key: val})
+
+    @pytest.mark.parametrize("func", ["abs", "frexp", "add"])
+    @pytest.mark.parametrize("x", [1, [1, 2], numpy.ones(5)])
+    def test_unary_wrong_input(self, func, x):
+        fn = getattr(dpnp, func)
+        args = [x] * fn.nin
+        with pytest.raises(TypeError):
+            fn(*args)
+
+    @pytest.mark.parametrize("func", ["add"])
+    def test_binary_wrong_input(self, func):
+        x = dpnp.array([1, 2, 3])
+        with pytest.raises(TypeError):
+            getattr(dpnp, func)(x, [1, 2])
+        with pytest.raises(TypeError):
+            getattr(dpnp, func)([1, 2], x)
+
+    @pytest.mark.parametrize("func", ["abs", "frexp", "add"])
+    def test_wrong_order(self, func):
+        x = dpnp.array([1, 2, 3])
+
+        fn = getattr(dpnp, func)
+        args = [x] * fn.nin
+        with pytest.raises(ValueError, match="order must be one of"):
+            fn(*args, order="H")
+
+    @pytest.mark.parametrize("func", ["abs", "add"])
+    def test_out_dtype(self, func):
+        x = dpnp.array([1, 2, 3])
+        out = dpnp.array([1, 2, 3])
+
+        fn = getattr(dpnp, func)
+        args = [x] * fn.nin
+        with pytest.raises(
+            TypeError, match="only takes `out` or `dtype` as an argument"
+        ):
+            fn(*args, out=out, dtype="f4")
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unary_two_outs_out_ndarray(self, xp):
+        x = xp.array(0.5)
+        with pytest.raises(TypeError, match="'out' must be a tuple of arrays"):
+            _ = xp.frexp(x, out=xp.empty(()))
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("out", [(), (1,), (1, 2, 3)])
+    def test_unary_two_outs_out_wrong_tuple_len(self, xp, out):
+        x = xp.array(0.5)
+        with pytest.raises(
+            ValueError,
+            match="'out' tuple must have exactly one entry per ufunc output",
+        ):
+            _ = xp.frexp(x, out=out)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unary_two_outs_out_mixed(self, xp):
+        x = xp.array(0.5)
+        with pytest.raises(
+            TypeError,
+            match="cannot specify 'out' as both a positional and keyword",
+        ):
+            _ = xp.frexp(x, xp.empty(()), out=(xp.empty(()), None))
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unary_two_outs_out_not_writable(self, xp):
+        x = xp.array(0.5)
+        out1 = xp.empty(())
+        out1.flags["W"] = False
+
+        with pytest.raises(ValueError, match="array is read-only"):
+            _ = xp.frexp(x, out1)
+
+        out2 = xp.empty((), dtype="i")
+        out2.flags["W"] = False
+        with pytest.raises(ValueError, match="array is read-only"):
+            _ = xp.frexp(x, out=(None, out2))
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unary_two_outs_out_wrong_shape(self, xp):
+        x = xp.full(6, fill_value=0.5)
+        out1 = xp.empty(12)
+        with pytest.raises(ValueError):
+            _ = xp.frexp(x, out1)
+
+        out2 = xp.empty((2, 3), dtype="i")
+        with pytest.raises(ValueError):
+            _ = xp.frexp(x, out=(None, out2))
+
+    def test_unary_two_outs_cfd_error(self):
+        x = dpnp.array(0.5, sycl_queue=dpctl.SyclQueue())
+        out1 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
+        out2 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
+        with pytest.raises(
+            ExecutionPlacementError,
+            match="Input and output allocation queues are not compatible",
+        ):
+            _ = dpnp.frexp(x, out1)
+
+        with pytest.raises(
+            ExecutionPlacementError,
+            match="Input and output allocation queues are not compatible",
+        ):
+            _ = dpnp.frexp(x, out=(None, out2))
+
+    @pytest.mark.parametrize("func", ["abs", "frexp", "add"])
+    @pytest.mark.parametrize("order", [None, "K", "A", "f", "c"])
+    def test_order(self, func, order):
+        a = numpy.array([1, 2, 3])
+        ia = dpnp.array(a)
+
+        fn = getattr(numpy, func)
+        ifn = getattr(dpnp, func)
+
+        args = [a] * fn.nin
+        iargs = [ia] * ifn.nin
+
+        result = ifn(*iargs, order=order)
+        expected = fn(*args, order=order)
+        if fn.nout == 1:
+            assert_dtype_allclose(result, expected)
+        else:
+            for i in range(fn.nout):
+                assert_dtype_allclose(result[i], expected[i])
+
+
 class TestUnwrap:
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_basic(self, dt):
@@ -2566,66 +2865,6 @@ def test_inplace_floor_divide(dtype):
     ia //= 4
 
     assert_allclose(ia, a)
-
-
-def test_elemenwise_nin_nout():
-    assert dpnp.abs.nin == 1
-    assert dpnp.add.nin == 2
-
-    assert dpnp.abs.nout == 1
-    assert dpnp.add.nout == 1
-
-
-def test_elemenwise_error():
-    x = dpnp.array([1, 2, 3])
-    out = dpnp.array([1, 2, 3])
-
-    with pytest.raises(NotImplementedError):
-        dpnp.abs(x, unknown_kwarg=1)
-    with pytest.raises(NotImplementedError):
-        dpnp.abs(x, where=False)
-    with pytest.raises(NotImplementedError):
-        dpnp.abs(x, subok=False)
-    with pytest.raises(TypeError):
-        dpnp.abs(1)
-    with pytest.raises(TypeError):
-        dpnp.abs([1, 2])
-    with pytest.raises(TypeError):
-        dpnp.abs(x, out=out, dtype="f4")
-    with pytest.raises(ValueError):
-        dpnp.abs(x, order="H")
-
-    with pytest.raises(NotImplementedError):
-        dpnp.add(x, x, unknown_kwarg=1)
-    with pytest.raises(NotImplementedError):
-        dpnp.add(x, x, where=False)
-    with pytest.raises(NotImplementedError):
-        dpnp.add(x, x, subok=False)
-    with pytest.raises(TypeError):
-        dpnp.add(1, 2)
-    with pytest.raises(TypeError):
-        dpnp.add([1, 2], [1, 2])
-    with pytest.raises(TypeError):
-        dpnp.add(x, [1, 2])
-    with pytest.raises(TypeError):
-        dpnp.add([1, 2], x)
-    with pytest.raises(TypeError):
-        dpnp.add(x, x, out=out, dtype="f4")
-    with pytest.raises(ValueError):
-        dpnp.add(x, x, order="H")
-
-
-def test_elemenwise_order_none():
-    x_np = numpy.array([1, 2, 3])
-    x = dpnp.array([1, 2, 3])
-
-    result = dpnp.abs(x, order=None)
-    expected = numpy.abs(x_np, order=None)
-    assert_dtype_allclose(result, expected)
-
-    result = dpnp.add(x, x, order=None)
-    expected = numpy.add(x_np, x_np, order=None)
-    assert_dtype_allclose(result, expected)
 
 
 def test_bitwise_1array_input():
