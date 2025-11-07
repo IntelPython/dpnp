@@ -32,6 +32,7 @@ class TestAsfarray:
         assert_array_equal(result, expected)
 
     # This is only for coverage with NumPy 2.0 and above
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     def test_asfarray_coverage(self):
         expected = dpnp.array([1.0, 2.0, 3.0])
         result = dpnp.asfarray([1, 2, 3])

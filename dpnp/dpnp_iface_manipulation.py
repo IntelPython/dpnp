@@ -894,6 +894,11 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     out : dpnp.ndarray
         The input `a` as a float ndarray.
 
+    Warning
+    -------
+    This function is deprecated in favor of :obj:dpnp.asarray and
+    will be removed in a future release.
+
     Examples
     --------
     >>> import dpnp as np
