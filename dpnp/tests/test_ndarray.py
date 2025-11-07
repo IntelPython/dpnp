@@ -108,6 +108,18 @@ class TestContains:
         assert xp.full_like(a, fill_value=6) not in a
 
 
+class TestToBytes:
+    @pytest.mark.parametrize("order", ["C", "F", "K", "A", None])
+    def test_roundtrip_binary_str(self, order):
+        x = generate_random_numpy_array((2, 4, 3), dtype=complex)
+        x[0, :, 1] = [numpy.nan, numpy.inf, -numpy.inf, numpy.nan]
+        a = dpnp.array(x)
+
+        s = a.tobytes(order=order)
+        b = dpnp.frombuffer(s, dtype=a.dtype)
+        assert_array_equal(b, a.asnumpy().flatten(order))
+
+
 class TestToFile:
     def _create_data(self):
         x = generate_random_numpy_array((2, 4, 3), dtype=complex)
