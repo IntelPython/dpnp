@@ -27,7 +27,7 @@ from .helper import (
 
 """
 The scope includes tests with only functions which are instances of
-`DPNPUnaryFunc` class.
+`DPNPBinaryFunc` class.
 
 """
 
