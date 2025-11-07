@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev0+31.gb7d1572b2b3 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev0+32.g03e09752002 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9a371350"></script>
+      <script src="../../_static/documentation_options.js?v=0cb249ce"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2220,7 +2220,42 @@
 
 
     <span class="c1"># &#39;tobytes&#39;,</span>
-    <span class="c1"># &#39;tofile&#39;,</span>
+
+<div class="viewcode-block" id="dpnp_array.tofile">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.tofile.html#dpnp.dpnp_array.dpnp_array.tofile">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tofile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the array to a file as text or binary (default).</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.tofile`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fid : {file. str, path}</span>
+<span class="sd">            An open file object, or a string containing a filename.</span>
+<span class="sd">        sep : str, optional</span>
+<span class="sd">            Separator between array items for text output. If ``&quot;&quot;`` (empty),</span>
+<span class="sd">            a binary file is written.</span>
+
+<span class="sd">            Default: ``&quot;&quot;``.</span>
+<span class="sd">        format : str, optional</span>
+<span class="sd">            Format string for text file output (when non-empty `sep` is passed).</span>
+<span class="sd">            Each entry in the array is formatted to text by first converting it</span>
+<span class="sd">            to the closest Python type, and then using ``format % item``. If</span>
+<span class="sd">            ``&quot;&quot;`` (empty), no formatting is used while converting to the</span>
+<span class="sd">            string.</span>
+
+<span class="sd">            Default: ``&quot;&quot;``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.fromfile` : Construct an array from data in a text or binary</span>
+<span class="sd">            file.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="dpnp_array.tolist">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.tolist.html#dpnp.dpnp_array.dpnp_array.tolist">[docs]</a>
