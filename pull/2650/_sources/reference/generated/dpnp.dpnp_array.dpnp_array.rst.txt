@@ -51,6 +51,7 @@
          dpnp_array.swapaxes
          dpnp_array.take
          dpnp_array.to_device
+         dpnp_array.tolist
          dpnp_array.trace
          dpnp_array.transpose
          dpnp_array.var

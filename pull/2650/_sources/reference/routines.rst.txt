@@ -18,6 +18,7 @@ These functions cover a subset of
    exceptions
    fft
    functional
+   io
    indexing
    linalg
    logic
