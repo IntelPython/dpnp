@@ -1,3 +1,5 @@
+import warnings
+
 import dpctl.tensor as dpt
 import numpy
 import pytest
@@ -31,15 +33,15 @@ class TestAsfarray:
         result = dpnp.asfarray(dpnp.array(data, dtype=data_dtype), dtype)
         assert_array_equal(result, expected)
 
-    # This is only for coverage with NumPy 2.0 and above
-    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-    def test_asfarray_coverage(self):
+    def test_asfarray_deprecated(self):
         expected = dpnp.array([1.0, 2.0, 3.0])
-        result = dpnp.asfarray([1, 2, 3])
+        with pytest.warns(DeprecationWarning, match="deprecated"):
+            result = dpnp.asfarray([1, 2, 3])
         assert_array_equal(result, expected)
 
         expected = dpnp.array([1.0, 2.0, 3.0], dtype=dpnp.float32)
-        result = dpnp.asfarray([1, 2, 3], dtype=dpnp.float32)
+        with pytest.warns(DeprecationWarning, match="deprecated"):
+            result = dpnp.asfarray([1, 2, 3], dtype=dpnp.float32)
         assert_array_equal(result, expected)
 
 
