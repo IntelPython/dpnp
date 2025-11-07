@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 import numpy
@@ -42,7 +44,6 @@ class TestNdarrayItemRaise(unittest.TestCase):
     {"shape": (2, 3), "order": "C"},
     {"shape": (2, 3), "order": "F"},
 )
-@pytest.mark.skip("tobytes() method is not supported yet")
 class TestNdarrayToBytes(unittest.TestCase):
 
     @testing.for_all_dtypes()
