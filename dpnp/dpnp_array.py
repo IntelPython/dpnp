@@ -2013,7 +2013,39 @@ class dpnp_array:
         return dpnp_array._create_from_usm_ndarray(usm_res)
 
     # 'tobytes',
-    # 'tofile',
+
+    def tofile(self, fid, sep="", format=""):
+        """
+        Writes the array to a file as text or binary (default).
+
+        For full documentation refer to :obj:`numpy.ndarray.tofile`.
+
+        Parameters
+        ----------
+        fid : {file. str, path}
+            An open file object, or a string containing a filename.
+        sep : str, optional
+            Separator between array items for text output. If ``""`` (empty),
+            a binary file is written.
+
+            Default: ``""``.
+        format : str, optional
+            Format string for text file output (when non-empty `sep` is passed).
+            Each entry in the array is formatted to text by first converting it
+            to the closest Python type, and then using ``format % item``. If
+            ``""`` (empty), no formatting is used while converting to the
+            string.
+
+            Default: ``""``.
+
+        See Also
+        --------
+        :obj:`dpnp.fromfile` : Construct an array from data in a text or binary
+            file.
+
+        """
+
+        self.asnumpy().tofile(fid, sep=sep, format=format)
 
     def tolist(self):
         """
