@@ -1705,6 +1705,8 @@ def frombuffer(
     :obj:`dpnp.fromfile` : Construct array from data in a text or binary file.
     :obj:`dpnp.fromiter` : Construct array from an iterable object.
     :obj:`dpnp.fromstring` : Construct array from the text data in a string.
+    :obj:`ndarray.tobytes` : Construct Python bytes from the raw data bytes
+        in the array.
 
     Examples
     --------

@@ -111,7 +111,7 @@ def binary_repr(num, width=None):
 
     Examples
     --------
-    >>> import numpy as np
+    >>> import dpnp as np
     >>> np.binary_repr(3)
     '11'
     >>> np.binary_repr(-3)
