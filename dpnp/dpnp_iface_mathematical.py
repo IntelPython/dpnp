@@ -3356,6 +3356,8 @@ and the integral parts.
 The fractional and integral parts are negative if the given :math:`x_i` is
 negative.
 
+For full documentation refer to :obj:`numpy.modf`.
+
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
