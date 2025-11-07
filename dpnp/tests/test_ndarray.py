@@ -11,6 +11,7 @@ from numpy.testing import (
 import dpnp
 
 from .helper import (
+    generate_random_numpy_array,
     get_abs_array,
     get_all_dtypes,
     get_complex_dtypes,
@@ -105,6 +106,64 @@ class TestContains:
         assert xp.full(a.shape[-1], fill_value=2) in a
         assert xp.full_like(a, fill_value=7) in a
         assert xp.full_like(a, fill_value=6) not in a
+
+
+class TestToFile:
+    def _create_data(self):
+        x = generate_random_numpy_array((2, 4, 3), dtype=complex)
+        x[0, :, 1] = [numpy.nan, numpy.inf, -numpy.inf, numpy.nan]
+        return dpnp.array(x)
+
+    @pytest.fixture(params=["string", "path_obj"])
+    def tmp_filename(self, tmp_path, request):
+        # This fixture covers two cases:
+        # one where the filename is a string and
+        # another where it is a pathlib object
+        filename = tmp_path / "file"
+        if request.param == "string":
+            filename = str(filename)
+        yield filename
+
+    def test_roundtrip_file(self, tmp_filename):
+        a = self._create_data()
+
+        with open(tmp_filename, "wb") as f:
+            a.tofile(f)
+
+        # reconstruct the array back from the file
+        with open(tmp_filename, "rb") as f:
+            b = dpnp.fromfile(f, dtype=a.dtype)
+        assert_array_equal(b, a.asnumpy().flat)
+
+    def test_roundtrip(self, tmp_filename):
+        a = self._create_data()
+
+        a.tofile(tmp_filename)
+        b = dpnp.fromfile(tmp_filename, dtype=a.dtype)
+        assert_array_equal(b, a.asnumpy().flat)
+
+    def test_sep(self, tmp_filename):
+        a = dpnp.array([1.51, 2, 3.51, 4])
+
+        with open(tmp_filename, "w") as f:
+            a.tofile(f, sep=",")
+
+        # reconstruct the array
+        with open(tmp_filename, "r") as f:
+            s = f.read()
+        b = dpnp.array([float(p) for p in s.split(",")], dtype=a.dtype)
+        assert_array_equal(a, b.asnumpy())
+
+    def test_format(self, tmp_filename):
+        a = dpnp.array([1.51, 2, 3.51, 4])
+
+        with open(tmp_filename, "w") as f:
+            a.tofile(f, sep=",", format="%.2f")
+
+        # reconstruct the array as a string
+        with open(tmp_filename, "r") as f:
+            s = f.read()
+        assert_equal(s, "1.51,2.00,3.51,4.00")
 
 
 class TestToList:
