@@ -72,10 +72,9 @@ struct OutputType
 {
     using table_type = std::disjunction< // disjunction is C++17
                                          // feature, supported by DPC++
-        td_int_ns::
-            TypeMapTwoResultsEntry<T, sycl::half, sycl::half, sycl::half>,
-        td_int_ns::TypeMapTwoResultsEntry<T, float, float, float>,
-        td_int_ns::TypeMapTwoResultsEntry<T, double, double, double>,
+        td_int_ns::TypeMapTwoResultsEntry<T, sycl::half>,
+        td_int_ns::TypeMapTwoResultsEntry<T, float>,
+        td_int_ns::TypeMapTwoResultsEntry<T, double>,
         td_int_ns::DefaultTwoResultsEntry<void>>;
     using value_type1 = typename table_type::result_type1;
     using value_type2 = typename table_type::result_type2;

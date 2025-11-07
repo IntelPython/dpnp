@@ -156,6 +156,115 @@ bool need_to_call_unary_ufunc(sycl::queue &exec_q,
 }
 
 template <typename output_typesT, typename contig_dispatchT>
+bool need_to_call_unary_two_outputs_ufunc(
+    sycl::queue &exec_q,
+    const dpctl::tensor::usm_ndarray &src,
+    const dpctl::tensor::usm_ndarray &dst1,
+    const dpctl::tensor::usm_ndarray &dst2,
+    const output_typesT &output_type_vec,
+    const contig_dispatchT &contig_dispatch_vector)
+{
+    // check type_nums
+    int src_typenum = src.get_typenum();
+    int dst1_typenum = dst1.get_typenum();
+    int dst2_typenum = dst2.get_typenum();
+
+    const auto &array_types = td_ns::usm_ndarray_types();
+    int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
+    int dst1_typeid = array_types.typenum_to_lookup_id(dst1_typenum);
+    int dst2_typeid = array_types.typenum_to_lookup_id(dst2_typenum);
+
+    std::pair<int, int> func_output_typeids = output_type_vec[src_typeid];
+
+    // check that types are supported
+    if (dst1_typeid != func_output_typeids.first ||
+        dst2_typeid != func_output_typeids.second)
+    {
+        return false;
+    }
+
+    // OneMKL VM functions perform a copy on host if no double type support
+    if (!exec_q.get_device().has(sycl::aspect::fp64)) {
+        return false;
+    }
+
+    // check that queues are compatible
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst1, dst2})) {
+        return false;
+    }
+
+    // dimensions must be the same
+    int src_nd = src.get_ndim();
+    int dst1_nd = dst1.get_ndim();
+    int dst2_nd = dst2.get_ndim();
+    if (src_nd != dst1_nd || src_nd != dst2_nd) {
+        return false;
+    }
+    else if (dst1_nd == 0 || dst2_nd == 0) {
+        // don't call OneMKL for 0d arrays
+        return false;
+    }
+
+    // shapes must be the same
+    const py::ssize_t *src_shape = src.get_shape_raw();
+    const py::ssize_t *dst1_shape = dst1.get_shape_raw();
+    const py::ssize_t *dst2_shape = dst2.get_shape_raw();
+    bool shapes_equal(true);
+    size_t src_nelems(1);
+
+    for (int i = 0; i < src_nd; ++i) {
+        src_nelems *= static_cast<std::size_t>(src_shape[i]);
+        shapes_equal = shapes_equal && (src_shape[i] == dst1_shape[i]) &&
+                       (src_shape[i] == dst2_shape[i]);
+    }
+    if (!shapes_equal) {
+        return false;
+    }
+
+    // if nelems is zero, return false
+    if (src_nelems == 0) {
+        return false;
+    }
+
+    // ensure that outputs are ample enough to accommodate all elements
+    auto dst1_offsets = dst1.get_minmax_offsets();
+    auto dst2_offsets = dst2.get_minmax_offsets();
+    // destinations must be ample enough to accommodate all elements
+    {
+        size_t range1 =
+            static_cast<size_t>(dst1_offsets.second - dst1_offsets.first);
+        size_t range2 =
+            static_cast<size_t>(dst2_offsets.second - dst2_offsets.first);
+        if ((range1 + 1 < src_nelems) || (range2 + 1 < src_nelems)) {
+            return false;
+        }
+    }
+
+    // check memory overlap
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst1) || overlap(src, dst2) || overlap(dst1, dst2)) {
+        return false;
+    }
+
+    // support only contiguous inputs
+    bool is_src_c_contig = src.is_c_contiguous();
+    bool is_dst1_c_contig = dst1.is_c_contiguous();
+    bool is_dst2_c_contig = dst2.is_c_contiguous();
+
+    bool all_c_contig =
+        (is_src_c_contig && is_dst1_c_contig && is_dst2_c_contig);
+    if (!all_c_contig) {
+        return false;
+    }
+
+    // MKL function is not defined for the type
+    if (contig_dispatch_vector[src_typeid] == nullptr) {
+        return false;
+    }
+    return true;
+}
+
+template <typename output_typesT, typename contig_dispatchT>
 bool need_to_call_binary_ufunc(sycl::queue &exec_q,
                                const dpctl::tensor::usm_ndarray &src1,
                                const dpctl::tensor::usm_ndarray &src2,
@@ -296,6 +405,54 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
         ext_ns::init_dispatch_vector<int, TypeMapFactory>(                     \
             output_typeid_vector);                                             \
         ext_ns::init_dispatch_vector<unary_contig_impl_fn_ptr_t,               \
+                                     ContigFactory>(contig_dispatch_vector);   \
+    };
+
+/**
+ * @brief A macro used to define factories and a populating unary functions
+ * with two output arrays to dispatch to a callback with proper OneMKL function
+ * within VM extension scope.
+ */
+#define MACRO_POPULATE_DISPATCH_2OUTS_VECTORS(__name__)                        \
+    template <typename fnT, typename T>                                        \
+    struct ContigFactory                                                       \
+    {                                                                          \
+        fnT get()                                                              \
+        {                                                                      \
+            if constexpr (std::is_same_v<typename OutputType<T>::value_type1,  \
+                                         void> ||                              \
+                          std::is_same_v<typename OutputType<T>::value_type2,  \
+                                         void>)                                \
+            {                                                                  \
+                fnT fn = nullptr;                                              \
+                return fn;                                                     \
+            }                                                                  \
+            else {                                                             \
+                fnT fn = __name__##_contig_impl<T>;                            \
+                return fn;                                                     \
+            }                                                                  \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    template <typename fnT, typename T>                                        \
+    struct TypeMapFactory                                                      \
+    {                                                                          \
+        std::enable_if_t<std::is_same<fnT, std::pair<int, int>>::value,        \
+                         std::pair<int, int>>                                  \
+            get()                                                              \
+        {                                                                      \
+            using rT1 = typename OutputType<T>::value_type1;                   \
+            using rT2 = typename OutputType<T>::value_type2;                   \
+            return std::make_pair(td_ns::GetTypeid<rT1>{}.get(),               \
+                                  td_ns::GetTypeid<rT2>{}.get());              \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    static void populate_dispatch_vectors(void)                                \
+    {                                                                          \
+        ext_ns::init_dispatch_vector<std::pair<int, int>, TypeMapFactory>(     \
+            output_typeid_vector);                                             \
+        ext_ns::init_dispatch_vector<unary_two_outputs_contig_impl_fn_ptr_t,   \
                                      ContigFactory>(contig_dispatch_vector);   \
     };
 
