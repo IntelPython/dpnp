@@ -896,7 +896,7 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
 
     Warning
     -------
-    This function is deprecated in favor of :obj:dpnp.asarray and
+    This function is deprecated in favor of :obj:`dpnp.asarray` and
     will be removed in a future release.
 
     Examples
