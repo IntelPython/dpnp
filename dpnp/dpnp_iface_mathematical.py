@@ -3422,6 +3422,8 @@ modf = DPNPUnaryTwoOutputsFunc(
     ufi._modf_result_type,
     ufi._modf,
     _MODF_DOCSTRING,
+    mkl_fn_to_call="_mkl_modf_to_call",
+    mkl_impl_fn="_modf",
 )
 
 

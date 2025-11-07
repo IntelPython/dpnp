@@ -91,12 +91,12 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
         corresponds to computational tasks associated with function evaluation.
     docs : {str}
         Documentation string for the unary function.
-    mkl_fn_to_call : {callable}
+    mkl_fn_to_call : {None, str}
         Check input arguments to answer if function from OneMKL VM library
         can be used.
-    mkl_impl_fn : {callable}
+    mkl_impl_fn : {None, str}
         Function from OneMKL VM library to call.
-    acceptance_fn : {callable}, optional
+    acceptance_fn : {None, callable}, optional
         Function to influence type promotion behavior of this unary
         function. The function takes 4 arguments:
             arg_dtype - Data type of the first argument
@@ -129,7 +129,9 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
             if depends is None:
                 depends = []
 
-            if vmi._is_available() and mkl_fn_to_call is not None:
+            if vmi._is_available() and not (
+                mkl_impl_fn is None or mkl_fn_to_call is None
+            ):
                 if getattr(vmi, mkl_fn_to_call)(sycl_queue, src, dst):
                     # call pybind11 extension for unary function from OneMKL VM
                     return getattr(vmi, mkl_impl_fn)(
@@ -232,6 +234,11 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
         corresponds to computational tasks associated with function evaluation.
     docs : {str}
         Documentation string for the unary function.
+    mkl_fn_to_call : {None, str}
+        Check input arguments to answer if function from OneMKL VM library
+        can be used.
+    mkl_impl_fn : {None, str}
+        Function from OneMKL VM library to call.
 
     """
 
@@ -241,11 +248,29 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
         result_type_resolver_fn,
         unary_dp_impl_fn,
         docs,
+        mkl_fn_to_call=None,
+        mkl_impl_fn=None,
     ):
+        def _call_func(src, dst1, dst2, sycl_queue, depends=None):
+            """A callback to register in UnaryElementwiseFunc class."""
+
+            if depends is None:
+                depends = []
+
+            if vmi._is_available() and not (
+                mkl_impl_fn is None or mkl_fn_to_call is None
+            ):
+                if getattr(vmi, mkl_fn_to_call)(sycl_queue, src, dst1, dst2):
+                    # call pybind11 extension for unary function from OneMKL VM
+                    return getattr(vmi, mkl_impl_fn)(
+                        sycl_queue, src, dst1, dst2, depends
+                    )
+            return unary_dp_impl_fn(src, dst1, dst2, sycl_queue, depends)
+
         super().__init__(
             name,
             result_type_resolver_fn,
-            unary_dp_impl_fn,
+            _call_func,
             docs,
         )
         self.__name__ = "DPNPUnaryTwoOutputsFunc"
@@ -459,12 +484,12 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         evaluation.
     docs : {str}
         Documentation string for the unary function.
-    mkl_fn_to_call : {callable}
+    mkl_fn_to_call : {None, str}
         Check input arguments to answer if function from OneMKL VM library
         can be used.
-    mkl_impl_fn : {callable}
+    mkl_impl_fn : {None, str}
         Function from OneMKL VM library to call.
-    binary_inplace_fn : {callable}, optional
+    binary_inplace_fn : {None, callable}, optional
         Data-parallel implementation function with signature
         `impl_fn(src: usm_ndarray, dst: usm_ndarray,
             sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])`
@@ -476,7 +501,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         including async lifetime management of Python arguments,
         while the second event corresponds to computational tasks
         associated with function evaluation.
-    acceptance_fn : {callable}, optional
+    acceptance_fn : {None, callable}, optional
         Function to influence type promotion behavior of this binary
         function. The function takes 6 arguments:
             arg1_dtype - Data type of the first argument
@@ -489,7 +514,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         The function is only called when both arguments of the binary
         function require casting, e.g. both arguments of
         `dpctl.tensor.logaddexp` are arrays with integral data type.
-    weak_type_resolver : {callable}, optional
+    weak_type_resolver : {None, callable}, optional
         Function to influence type promotion behavior for Python scalar types
         of this binary function. The function takes 3 arguments:
             o1_dtype - Data type or Python scalar type of the first argument
@@ -521,7 +546,9 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             if depends is None:
                 depends = []
 
-            if vmi._is_available() and mkl_fn_to_call is not None:
+            if vmi._is_available() and not (
+                mkl_impl_fn is None or mkl_fn_to_call is None
+            ):
                 if getattr(vmi, mkl_fn_to_call)(sycl_queue, src1, src2, dst):
                     # call pybind11 extension for binary function from OneMKL VM
                     return getattr(vmi, mkl_impl_fn)(
