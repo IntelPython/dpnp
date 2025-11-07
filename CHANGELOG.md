@@ -21,6 +21,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added implementation of `dpnp.ndarray.tolist` method [#2652](https://github.com/IntelPython/dpnp/pull/2652)
 * Added implementation of `dpnp.frexp` [#2635](https://github.com/IntelPython/dpnp/pull/2635)
 * Added implementation of `dpnp.ndarray.tofile` method [#2635](https://github.com/IntelPython/dpnp/pull/2635)
+* Added implementation of `dpnp.ndarray.tobytes` method [#2656](https://github.com/IntelPython/dpnp/pull/2656)
 
 ### Changed
 
