@@ -72,7 +72,6 @@ Changing kind of array
    dpnp.asarray
    dpnp.asanyarray
    dpnp.asnumpy
-   dpnp.asfarray
    dpnp.asfortranarray
    dpnp.ascontiguousarray
    dpnp.asarray_chkfinite
