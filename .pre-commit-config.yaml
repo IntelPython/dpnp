@@ -90,7 +90,7 @@ repos:
     -   id: clang-format
         args: ["-i"]
 -   repo: https://github.com/gitleaks/gitleaks
-    rev: v8.28.0
+    rev: v8.29.0
     hooks:
     -   id: gitleaks
 -   repo: https://github.com/jumanjihouse/pre-commit-hooks
