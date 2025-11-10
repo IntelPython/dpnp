@@ -173,7 +173,6 @@ class dpnp_array:
 
         return self._array_obj.__array_namespace__(api_version=api_version)
 
-    # '__array_prepare__',
     # '__array_priority__',
     # '__array_struct__',
 
