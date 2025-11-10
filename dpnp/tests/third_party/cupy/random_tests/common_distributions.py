@@ -122,9 +122,9 @@ class BaseGeneratorTestCase(unittest.TestCase):
         )
         if p_value < significance_level:
             message = """Rejected null hypothesis:
-p: %f
-D+ (cupy < numpy): %f
-D- (cupy > numpy): %f""" % (
+p: {:f}
+D+ (cupy < numpy): {:f}
+D- (cupy > numpy): {:f}""".format(
                 p_value,
                 d_plus,
                 d_minus,

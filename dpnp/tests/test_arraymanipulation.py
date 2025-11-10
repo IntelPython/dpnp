@@ -294,7 +294,7 @@ class TestBroadcastArray:
         assert dpnp.broadcast_arrays() == []
 
     def test_subok_error(self):
-        x = dpnp.ones((4))
+        x = dpnp.ones(4)
         with pytest.raises(NotImplementedError):
             dpnp.broadcast_arrays(x, subok=True)
 
@@ -327,7 +327,7 @@ class TestColumnStack:
 
     def test_generator(self):
         with pytest.raises(TypeError, match="arrays to stack must be"):
-            dpnp.column_stack((dpnp.arange(3) for _ in range(2)))
+            dpnp.column_stack(dpnp.arange(3) for _ in range(2))
         with pytest.raises(TypeError, match="arrays to stack must be"):
             dpnp.column_stack(map(lambda x: x, dpnp.ones((3, 2))))
 
@@ -680,7 +680,7 @@ class TestDstack:
 
     def test_generator(self):
         with pytest.raises(TypeError, match="arrays to stack must be"):
-            dpnp.dstack((dpnp.arange(3) for _ in range(2)))
+            dpnp.dstack(dpnp.arange(3) for _ in range(2))
         with pytest.raises(TypeError, match="arrays to stack must be"):
             dpnp.dstack(map(lambda x: x, dpnp.ones((3, 2))))
 
@@ -715,7 +715,7 @@ class TestHstack:
 
     def test_generator(self):
         with pytest.raises(TypeError, match="arrays to stack must be"):
-            dpnp.hstack((dpnp.arange(3) for _ in range(2)))
+            dpnp.hstack(dpnp.arange(3) for _ in range(2))
         with pytest.raises(TypeError, match="arrays to stack must be"):
             dpnp.hstack(map(lambda x: x, dpnp.ones((3, 2))))
 
@@ -979,7 +979,7 @@ class TestStack:
 
     def test_generator_input(self):
         with pytest.raises(TypeError):
-            dpnp.stack((x for x in range(3)))
+            dpnp.stack(x for x in range(3))
 
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("arr_dtype", get_all_dtypes())
@@ -1029,7 +1029,7 @@ class TestStack:
 
     def test_generator(self):
         with pytest.raises(TypeError, match="arrays to stack must be"):
-            dpnp.stack((dpnp.arange(3) for _ in range(2)))
+            dpnp.stack(dpnp.arange(3) for _ in range(2))
         with pytest.raises(TypeError, match="arrays to stack must be"):
             dpnp.stack(map(lambda x: x, dpnp.ones((3, 2))))
 
@@ -1150,7 +1150,7 @@ class TestVstack:
 
     def test_generator(self):
         with pytest.raises(TypeError, match="arrays to stack must be"):
-            dpnp.vstack((dpnp.arange(3) for _ in range(2)))
+            dpnp.vstack(dpnp.arange(3) for _ in range(2))
         with pytest.raises(TypeError, match="arrays to stack must be"):
             dpnp.vstack(map(lambda x: x, dpnp.ones((3, 2))))
 

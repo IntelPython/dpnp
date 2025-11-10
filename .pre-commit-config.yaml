@@ -52,6 +52,10 @@ repos:
     -   id: rst-directive-colons
     -   id: rst-inline-touching-normal
     -   id: text-unicode-replacement-char
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.1
+    hooks:
+    -   id: pyupgrade
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:

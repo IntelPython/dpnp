@@ -310,17 +310,15 @@ class TestNdarrayCudaInterface(unittest.TestCase):
         arr = cupy.zeros(shape=(2, 3), dtype=cupy.float64)
         iface = arr.__cuda_array_interface__
         assert iface["version"] == 3
-        assert set(iface.keys()) == set(
-            [
-                "shape",
-                "typestr",
-                "data",
-                "version",
-                "descr",
-                "stream",
-                "strides",
-            ]
-        )
+        assert set(iface.keys()) == {
+            "shape",
+            "typestr",
+            "data",
+            "version",
+            "descr",
+            "stream",
+            "strides",
+        }
         assert iface["shape"] == (2, 3)
         assert iface["typestr"] == "<f8"
         assert isinstance(iface["data"], tuple)
@@ -336,17 +334,15 @@ class TestNdarrayCudaInterface(unittest.TestCase):
         view = arr[::2, ::5]
         iface = view.__cuda_array_interface__
         assert iface["version"] == 3
-        assert set(iface.keys()) == set(
-            [
-                "shape",
-                "typestr",
-                "data",
-                "version",
-                "descr",
-                "stream",
-                "strides",
-            ]
-        )
+        assert set(iface.keys()) == {
+            "shape",
+            "typestr",
+            "data",
+            "version",
+            "descr",
+            "stream",
+            "strides",
+        }
         assert iface["shape"] == (5, 4)
         assert iface["typestr"] == "<f8"
         assert isinstance(iface["data"], tuple)
@@ -362,17 +358,15 @@ class TestNdarrayCudaInterface(unittest.TestCase):
         view = arr[0:3:-1]
         iface = view.__cuda_array_interface__
         assert iface["version"] == 3
-        assert set(iface.keys()) == set(
-            [
-                "shape",
-                "typestr",
-                "data",
-                "version",
-                "descr",
-                "stream",
-                "strides",
-            ]
-        )
+        assert set(iface.keys()) == {
+            "shape",
+            "typestr",
+            "data",
+            "version",
+            "descr",
+            "stream",
+            "strides",
+        }
         assert iface["shape"] == (0,)
         assert iface["typestr"] == "<f8"
         assert isinstance(iface["data"], tuple)

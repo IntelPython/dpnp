@@ -252,7 +252,7 @@ class TestDistributionsF(TestDistribution):
             2
             * (dfden**2)
             * (dfnum + dfden - 2)
-            / (dfnum * ((dfden - 2) ** 2) * ((dfden - 4)))
+            / (dfnum * ((dfden - 2) ** 2) * (dfden - 4))
         )
         self.check_moments(
             "f", expected_mean, expected_var, {"dfnum": dfnum, "dfden": dfden}
