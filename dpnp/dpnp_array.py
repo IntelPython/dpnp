@@ -544,8 +544,6 @@ class dpnp_array:
         r"""Return :math:`\text{value ^ self}`."""
         return dpnp.bitwise_xor(other, self)
 
-    # '__setattr__',
-
     def __setitem__(self, key, value, /):
         r"""Set :math:`\text{self[key]}` to a value."""
         key = _get_unwrapped_index_key(key)
