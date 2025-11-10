@@ -127,3 +127,9 @@ repos:
     rev: v1.7.8
     hooks:
     -   id: actionlint
+-   repo: https://github.com/BlankSpruce/gersemi
+    rev: 0.23.1
+    hooks:
+    -   id: gersemi
+        exclude: "dpnp/backend/cmake/Modules/"
+        args: ["-i", "-l", "88", "--no-warn-about-unknown-commands"]
