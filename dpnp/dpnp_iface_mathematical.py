@@ -47,6 +47,7 @@ it contains:
 
 import builtins
 import warnings
+from functools import wraps
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
@@ -3344,12 +3345,29 @@ array([nan, nan, nan])
 array(-inf)
 """
 
-minimum = DPNPBinaryFunc(
+_minimum_impl = DPNPBinaryFunc(
     "minimum",
     ti._minimum_result_type,
     ti._minimum,
     _MINIMUM_DOCSTRING,
 )
+
+
+@wraps(_minimum_impl)
+def minimum(*args, **kwargs):
+    """
+    Wrapper around `_minimum_impl` that emits a DeprecationWarning
+    when `out` is passed positionally.
+
+    """
+    if len(args) >= 3 and "out" not in kwargs:
+        warnings.warn(
+            "Positional `out` argument to `dpnp.minimum` is deprecated. "
+            "Please use the keyword form, e.g. `dpnp.minimum(a, b, out=c)`.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    return _minimum_impl(*args, **kwargs)
 
 
 def modf(x1, **kwargs):
