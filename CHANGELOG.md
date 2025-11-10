@@ -21,6 +21,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added implementation of `dpnp.ndarray.tolist` method [#2652](https://github.com/IntelPython/dpnp/pull/2652)
 * Added implementation of `dpnp.frexp` [#2635](https://github.com/IntelPython/dpnp/pull/2635)
 * Added implementation of `dpnp.ndarray.tofile` method [#2635](https://github.com/IntelPython/dpnp/pull/2635)
+* Extended `pre-commit` configuration with `pyupgrade`, `actionlint`, and `gersemi` hooks  [#2658](https://github.com/IntelPython/dpnp/pull/2658)
 
 ### Changed
 
@@ -30,6 +31,8 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Aligned documentation with NumPy and CuPy style by using short function names [#2633](https://github.com/IntelPython/dpnp/pull/2633)
 
 ### Deprecated
+
+* `dpnp.asfarray` is deprecated. Use `dpnp.asarray` with an appropriate dtype instead [#2650](https://github.com/IntelPython/dpnp/pull/2650)
 
 ### Removed
 
