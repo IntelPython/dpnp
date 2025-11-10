@@ -1,0 +1,10 @@
+﻿
+
+dpnp.linalg.cond
+================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: cond
