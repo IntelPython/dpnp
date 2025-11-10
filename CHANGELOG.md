@@ -33,7 +33,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 ### Deprecated
 
 * `dpnp.asfarray` is deprecated. Use `dpnp.asarray` with an appropriate dtype instead [#2650](https://github.com/IntelPython/dpnp/pull/2650)
-* Passing the output array ``out`` positionally to `dpnp.minimum` and `dpnp.maximum` is deprecated. Pass the output with the keyword form, e.g. ``dpnp.minimum(a, b, out=c)`` [#2657](https://github.com/IntelPython/dpnp/pull/2657)
+* Passing the output array ``out`` positionally to `dpnp.minimum` and `dpnp.maximum` is deprecated. Pass the output with the keyword form, e.g. ``dpnp.minimum(a, b, out=c)`` [#2659](https://github.com/IntelPython/dpnp/pull/2659)
 
 ### Removed
 
