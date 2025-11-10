@@ -3257,12 +3257,29 @@ array(inf)
 
 """
 
-maximum = DPNPBinaryFunc(
+_maximum_impl = DPNPBinaryFunc(
     "maximum",
     ti._maximum_result_type,
     ti._maximum,
     _MAXIMUM_DOCSTRING,
 )
+
+
+@wraps(_maximum_impl)
+def maximum(*args, **kwargs):
+    """
+    Wrapper around `_maximum_impl` that emits a DeprecationWarning
+    when `out` is passed positionally.
+
+    """
+    if len(args) >= 3 and "out" not in kwargs:
+        warnings.warn(
+            "Positional `out` argument to `dpnp.maximum` is deprecated. "
+            "Please use the keyword form, e.g. `dpnp.maximum(a, b, out=c)`.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    return _maximum_impl(*args, **kwargs)
 
 
 _MINIMUM_DOCSTRING = """
