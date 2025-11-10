@@ -3204,6 +3204,14 @@ order : {None, "C", "F", "A", "K"}, optional
 
     Default: ``"K"``.
 
+Warning
+-------
+Passing the output array ``out`` positionally is deprecated.
+For example, ``dpnp.maximum(a, b, c)`` will emit a ``DeprecationWarning``.
+
+Always pass the output with the keyword form, e.g.
+``dpnp.maximum(a, b, out=c)``.
+
 Returns
 -------
 out : dpnp.ndarray
@@ -3315,6 +3323,14 @@ Returns
 out : dpnp.ndarray
     An array containing the element-wise minima. The data type of
     the returned array is determined by the Type Promotion Rules.
+
+Warning
+-------
+Passing the output array ``out`` positionally is deprecated.
+For example, ``dpnp.minimum(a, b, c)`` will emit a ``DeprecationWarning``.
+
+Always pass the output with the keyword form, e.g.
+``dpnp.minimum(a, b, out=c)``.
 
 Limitations
 -----------
