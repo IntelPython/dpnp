@@ -380,7 +380,6 @@ class dpnp_array:
         """Convert a zero-dimensional array to a Python int object."""
         return self._array_obj.__index__()
 
-    # '__init__',
     # '__init_subclass__',
 
     def __int__(self, /):
