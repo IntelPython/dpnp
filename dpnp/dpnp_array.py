@@ -206,7 +206,6 @@ class dpnp_array:
         return self.copy(order="K")
 
     # '__deepcopy__',
-    # '__delattr__',
     # '__delitem__',
     # '__dir__',
     # '__divmod__',
