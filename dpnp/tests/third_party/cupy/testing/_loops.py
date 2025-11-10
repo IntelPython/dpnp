@@ -265,7 +265,7 @@ def _contains_signed_and_unsigned(kw):
         else:
             return False
 
-    vs = set(v for v in kw.values() if isdtype(v))
+    vs = {v for v in kw.values() if isdtype(v)}
     return any(d in vs for d in _unsigned_dtypes) and any(
         d in vs for d in _float_dtypes + _signed_dtypes
     )
@@ -914,8 +914,8 @@ def numpy_cupy_equal(name="xp", sp_name=None, scipy_name=None):
 
             if cupy_result != numpy_result:
                 message = """Results are not equal:
-cupy: %s
-numpy: %s""" % (
+cupy: {}
+numpy: {}""".format(
                     str(cupy_result),
                     str(numpy_result),
                 )

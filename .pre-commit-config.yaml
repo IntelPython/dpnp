@@ -52,6 +52,10 @@ repos:
     -   id: rst-directive-colons
     -   id: rst-inline-touching-normal
     -   id: text-unicode-replacement-char
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v3.21.1
+    hooks:
+    -   id: pyupgrade
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:
@@ -119,3 +123,13 @@ repos:
     hooks:
     -   id: pretty-format-toml
         args: [--autofix]
+-   repo: https://github.com/rhysd/actionlint
+    rev: v1.7.8
+    hooks:
+    -   id: actionlint
+-   repo: https://github.com/BlankSpruce/gersemi
+    rev: 0.23.1
+    hooks:
+    -   id: gersemi
+        exclude: "dpnp/backend/cmake/Modules/"
+        args: ["-i", "-l", "88", "--no-warn-about-unknown-commands"]
