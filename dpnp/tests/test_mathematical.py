@@ -2910,3 +2910,13 @@ def test_elemenwise_outer_scalar():
     expected = dpnp.add.outer(x, y)
     result = dpnp.add.outer(x, s)
     assert dpnp.allclose(result, expected)
+
+
+@pytest.mark.parametrize("func", ["minimum", "maximum"])
+def test_minimum_maximum_out_deprecated(func):
+    a = dpnp.array([1, 3, 2])
+    b = dpnp.array([2, 2, 2])
+    out = dpnp.empty_like(a)
+
+    with pytest.warns(DeprecationWarning, match="deprecated"):
+        _ = getattr(dpnp, func)(a, b, out)
