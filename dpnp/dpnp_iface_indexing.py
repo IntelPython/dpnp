@@ -395,7 +395,7 @@ def compress(condition, a, axis=None, out=None):
 
     Examples
     --------
-    >>> import numpy as np
+    >>> import dpnp as np
     >>> a = np.array([[1, 2], [3, 4], [5, 6]])
     >>> a
     array([[1, 2],

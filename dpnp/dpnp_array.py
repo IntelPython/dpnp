@@ -2011,7 +2011,42 @@ class dpnp_array:
         usm_res = self._array_obj.to_device(device, stream=stream)
         return dpnp_array._create_from_usm_ndarray(usm_res)
 
-    # 'tobytes',
+    def tobytes(self, order="C"):
+        r"""
+        Constructs Python bytes containing the raw data bytes in the array.
+
+        For full documentation refer to :obj:`numpy.ndarray.tobytes`.
+
+        Parameters
+        ----------
+        order : {None, "C", "F", "A", "K"}, optional
+            Controls the memory layout of the bytes object.
+
+            Default: ``"C"``.
+
+        Returns
+        -------
+        out : bytes
+            Python bytes exhibiting a copy of array's raw data.
+
+        See Also
+        --------
+        :obj:`dpnp.frombuffer` : Construct a 1D array from Python bytes.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[0, 1], [2, 3]], dtype='i2')
+        >>> x.tobytes()
+        b'\x00\x00\x01\x00\x02\x00\x03\x00'
+        >>> x.tobytes("C") == x.tobytes()
+        True
+        >>> x.tobytes("F")
+        b'\x00\x00\x02\x00\x01\x00\x03\x00'
+
+        """
+
+        return self.asnumpy().tobytes(order=order)
 
     def tofile(self, fid, sep="", format=""):
         """
