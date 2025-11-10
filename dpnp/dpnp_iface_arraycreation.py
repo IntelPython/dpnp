@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016, Intel Corporation
 # All rights reserved.
@@ -511,7 +510,6 @@ def asanyarray(
     --------
     :obj:`dpnp.asarray` : Similar function which always returns ndarrays.
     :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous array.
-    :obj:`dpnp.asfarray` : Convert input to a floating point ndarray.
     :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major
                                  memory order.
     :obj:`dpnp.asarray_chkfinite` : Similar function which checks input
@@ -624,8 +622,7 @@ def asarray(
     --------
     :obj:`dpnp.asanyarray` : Similar function which passes through subclasses.
     :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous array.
-    :obj:`dpnp.asfarray` : Convert input to a floating point ndarray.
-    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major
+    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-majors
                                  memory order.
     :obj:`dpnp.asarray_chkfinite` : Similar function which checks input
                                     for NaNs and Infs.

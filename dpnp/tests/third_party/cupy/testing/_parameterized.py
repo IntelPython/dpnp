@@ -52,7 +52,7 @@ def _parameterize_test_case(base, i, param):
 
     def __repr__(self):
         name = base.__repr__(self)
-        return "<%s  parameter: %s>" % (name, param)
+        return "<{}  parameter: {}>".format(name, param)
 
     mb = {"__repr__": __repr__}
     for k, v in sorted(param.items()):

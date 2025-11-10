@@ -74,7 +74,6 @@ Changing kind of array
    asarray
    asanyarray
    asnumpy
-   asfarray
    asfortranarray
    ascontiguousarray
    asarray_chkfinite

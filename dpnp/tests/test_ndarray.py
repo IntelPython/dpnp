@@ -161,7 +161,7 @@ class TestToFile:
             a.tofile(f, sep=",")
 
         # reconstruct the array
-        with open(tmp_filename, "r") as f:
+        with open(tmp_filename) as f:
             s = f.read()
         b = dpnp.array([float(p) for p in s.split(",")], dtype=a.dtype)
         assert_array_equal(a, b.asnumpy())
@@ -173,7 +173,7 @@ class TestToFile:
             a.tofile(f, sep=",", format="%.2f")
 
         # reconstruct the array as a string
-        with open(tmp_filename, "r") as f:
+        with open(tmp_filename) as f:
             s = f.read()
         assert_equal(s, "1.51,2.00,3.51,4.00")
 
