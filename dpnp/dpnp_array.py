@@ -566,8 +566,6 @@ class dpnp_array:
         r"""Return :math:`\text{self - value}`."""
         return dpnp.subtract(self, other)
 
-    # '__subclasshook__',
-
     @property
     def __sycl_usm_array_interface__(self):
         """
