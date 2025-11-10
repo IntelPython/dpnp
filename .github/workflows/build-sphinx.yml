@@ -66,7 +66,7 @@ jobs:
         if: env.oneapi-pkgs-env == ''
         run: |
           wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-          cat GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          < GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
           rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt update
@@ -177,10 +177,11 @@ jobs:
 
       - name: Set a project number to current release
         run: |
-          export PROJECT_NUMBER=$(git describe --tags --abbrev=0)
+          PROJECT_NUMBER=$(git describe --tags --abbrev=0)
+          export PROJECT_NUMBER
 
-          echo PROJECT_NUMBER=${PROJECT_NUMBER}
-          echo "PROJECT_NUMBER=$PROJECT_NUMBER" >> $GITHUB_ENV
+          echo "PROJECT_NUMBER=${PROJECT_NUMBER}"
+          echo "PROJECT_NUMBER=$PROJECT_NUMBER" >> "$GITHUB_ENV"
 
       - name: Build backend docs
         uses: mattnotmitt/doxygen-action@b84fe17600245bb5db3d6c247cc274ea98c15a3b # v1.12
@@ -259,8 +260,8 @@ jobs:
           git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpnp.git
           git fetch tokened_docs
           git checkout --track tokened_docs/gh-pages
-          echo `pwd`
-          [ -d pull/${PR_NUM} ] && git rm -rf pull/${PR_NUM}
+          pwd
+          [ -d pull/"${PR_NUM}" ] && git rm -rf pull/"${PR_NUM}"
           git config --global user.name ${{ env.GH_BOT_NAME }}
           git config --global user.email ${{ env.GH_BOT_EMAIL }}
           git commit -m "Removing docs for closed pull request ${PR_NUM}"
