@@ -289,8 +289,6 @@ class dpnp_array:
 
         return self._array_obj.__dlpack_device__()
 
-    # '__doc__',
-
     def __eq__(self, other, /):
         r"""Return :math:`\text{self == value}`."""
         return dpnp.equal(self, other)
