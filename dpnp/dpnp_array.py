@@ -307,8 +307,6 @@ class dpnp_array:
         r"""Return :math:`\text{self >= value}`."""
         return dpnp.greater_equal(self, other)
 
-    # '__getattribute__',
-
     def __getitem__(self, key, /):
         r"""Return :math:`\text{self[key]}`."""
         key = _get_unwrapped_index_key(key)
