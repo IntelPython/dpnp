@@ -173,7 +173,6 @@ class dpnp_array:
 
         return self._array_obj.__array_namespace__(api_version=api_version)
 
-    # '__array_prepare__',
     # '__array_priority__',
     # '__array_struct__',
 
@@ -207,8 +206,6 @@ class dpnp_array:
         return self.copy(order="K")
 
     # '__deepcopy__',
-    # '__delattr__',
-    # '__delitem__',
     # '__dir__',
     # '__divmod__',
 
@@ -292,8 +289,6 @@ class dpnp_array:
 
         return self._array_obj.__dlpack_device__()
 
-    # '__doc__',
-
     def __eq__(self, other, /):
         r"""Return :math:`\text{self == value}`."""
         return dpnp.equal(self, other)
@@ -311,8 +306,6 @@ class dpnp_array:
     def __ge__(self, other, /):
         r"""Return :math:`\text{self >= value}`."""
         return dpnp.greater_equal(self, other)
-
-    # '__getattribute__',
 
     def __getitem__(self, key, /):
         r"""Return :math:`\text{self[key]}`."""
@@ -387,7 +380,6 @@ class dpnp_array:
         """Convert a zero-dimensional array to a Python int object."""
         return self._array_obj.__index__()
 
-    # '__init__',
     # '__init_subclass__',
 
     def __int__(self, /):
@@ -552,8 +544,6 @@ class dpnp_array:
         r"""Return :math:`\text{value ^ self}`."""
         return dpnp.bitwise_xor(other, self)
 
-    # '__setattr__',
-
     def __setitem__(self, key, value, /):
         r"""Set :math:`\text{self[key]}` to a value."""
         key = _get_unwrapped_index_key(key)
@@ -575,8 +565,6 @@ class dpnp_array:
     def __sub__(self, other, /):
         r"""Return :math:`\text{self - value}`."""
         return dpnp.subtract(self, other)
-
-    # '__subclasshook__',
 
     @property
     def __sycl_usm_array_interface__(self):
