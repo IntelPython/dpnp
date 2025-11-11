@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev0+50.g69362d17aa6 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev0+53.gaa3b982065a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9b1d4b94"></script>
+      <script src="../../_static/documentation_options.js?v=6fceed2d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -260,7 +260,6 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__array_namespace__</span><span class="p">(</span><span class="n">api_version</span><span class="o">=</span><span class="n">api_version</span><span class="p">)</span>
 
-    <span class="c1"># &#39;__array_prepare__&#39;,</span>
     <span class="c1"># &#39;__array_priority__&#39;,</span>
     <span class="c1"># &#39;__array_struct__&#39;,</span>
 
@@ -294,8 +293,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">)</span>
 
     <span class="c1"># &#39;__deepcopy__&#39;,</span>
-    <span class="c1"># &#39;__delattr__&#39;,</span>
-    <span class="c1"># &#39;__delitem__&#39;,</span>
     <span class="c1"># &#39;__dir__&#39;,</span>
     <span class="c1"># &#39;__divmod__&#39;,</span>
 
@@ -379,8 +376,6 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__dlpack_device__</span><span class="p">()</span>
 
-    <span class="c1"># &#39;__doc__&#39;,</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return :math:`\text{self == value}`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
@@ -398,8 +393,6 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return :math:`\text{self &gt;= value}`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-
-    <span class="c1"># &#39;__getattribute__&#39;,</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return :math:`\text{self[key]}`.&quot;&quot;&quot;</span>
@@ -474,7 +467,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a zero-dimensional array to a Python int object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__index__</span><span class="p">()</span>
 
-    <span class="c1"># &#39;__init__&#39;,</span>
     <span class="c1"># &#39;__init_subclass__&#39;,</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__int__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
@@ -639,8 +631,6 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return :math:`\text{value ^ self}`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
-    <span class="c1"># &#39;__setattr__&#39;,</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Set :math:`\text{self[key]}` to a value.&quot;&quot;&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">_get_unwrapped_index_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -662,8 +652,6 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return :math:`\text{self - value}`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-
-    <span class="c1"># &#39;__subclasshook__&#39;,</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__sycl_usm_array_interface__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
