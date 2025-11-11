@@ -175,6 +175,7 @@ class TestBoundFuncs:
         with pytest.raises(ValueError):
             getattr(dpnp, func)(a, b, out=out)
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
