@@ -85,8 +85,8 @@ jobs:
       - name: Store conda paths as envs
         shell: bash -el {0}
         run: |
-          echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\\\" '/' >> $GITHUB_ENV
-          echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
+          echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\\\" '/' >> "$GITHUB_ENV"
+          echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> "$GITHUB_ENV"
 
       - name: Build conda package
         id: build_conda_pkg
@@ -188,10 +188,11 @@ jobs:
 
       - name: Get package version
         run: |
-          export PACKAGE_VERSION=$(python -c "${{ env.ver-script-part1 }} ${{ env.ver-script-part2 }}")
+          PACKAGE_VERSION=$(python -c "${{ env.ver-script-part1 }} ${{ env.ver-script-part2 }}")
+          export PACKAGE_VERSION
 
-          echo PACKAGE_VERSION=${PACKAGE_VERSION}
-          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> "$GITHUB_ENV"
 
       - name: Install dpnp
         id: install_dpnp
@@ -468,7 +469,7 @@ jobs:
       - name: Package version
         shell: bash -el {0}
         run: |
-          echo "PACKAGE_VERSION=$(basename ${{ env.package-name }}-*.conda | sed 's/^${{ env.package-name }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$(basename ${{ env.package-name }}-*.conda | sed 's/^${{ env.package-name }}-\([^-]*\).*/\1/')" >> "$GITHUB_ENV"
 
       - name: Upload
         run: |
@@ -561,10 +562,11 @@ jobs:
 
       - name: Get package version
         run: |
-          export PACKAGE_VERSION=$(python -c "${{ env.ver-script-part1 }} ${{ env.ver-script-part2 }}")
+          PACKAGE_VERSION=$(python -c "${{ env.ver-script-part1 }} ${{ env.ver-script-part2 }}")
+          export PACKAGE_VERSION
 
-          echo PACKAGE_VERSION=${PACKAGE_VERSION}
-          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> "$GITHUB_ENV"
 
       - name: Install dpnp
         id: install_dpnp
@@ -634,9 +636,11 @@ jobs:
             Passed: $PASSED_TESTS
             Failed: $FAILED_TESTS
             Skipped: $SKIPPED_TESTS"
-            echo "MESSAGE<<EOF" >> $GITHUB_ENV
-            echo "$MESSAGE" >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
+            {
+              echo "MESSAGE<<EOF"
+              echo "$MESSAGE"
+              echo "EOF"
+            } >> "$GITHUB_ENV"
           else
             echo "Array API standard conformance tests failed to run for dpnp=$PACKAGE_VERSION."
             exit 1

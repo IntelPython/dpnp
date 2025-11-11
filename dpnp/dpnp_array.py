@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016, Intel Corporation
 # All rights reserved.
@@ -2013,9 +2012,120 @@ class dpnp_array:
         usm_res = self._array_obj.to_device(device, stream=stream)
         return dpnp_array._create_from_usm_ndarray(usm_res)
 
-    # 'tobytes',
-    # 'tofile',
-    # 'tolist',
+    def tobytes(self, order="C"):
+        r"""
+        Constructs Python bytes containing the raw data bytes in the array.
+
+        For full documentation refer to :obj:`numpy.ndarray.tobytes`.
+
+        Parameters
+        ----------
+        order : {None, "C", "F", "A", "K"}, optional
+            Controls the memory layout of the bytes object.
+
+            Default: ``"C"``.
+
+        Returns
+        -------
+        out : bytes
+            Python bytes exhibiting a copy of array's raw data.
+
+        See Also
+        --------
+        :obj:`dpnp.frombuffer` : Construct a 1D array from Python bytes.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[0, 1], [2, 3]], dtype='i2')
+        >>> x.tobytes()
+        b'\x00\x00\x01\x00\x02\x00\x03\x00'
+        >>> x.tobytes("C") == x.tobytes()
+        True
+        >>> x.tobytes("F")
+        b'\x00\x00\x02\x00\x01\x00\x03\x00'
+
+        """
+
+        return self.asnumpy().tobytes(order=order)
+
+    def tofile(self, fid, sep="", format=""):
+        """
+        Writes the array to a file as text or binary (default).
+
+        For full documentation refer to :obj:`numpy.ndarray.tofile`.
+
+        Parameters
+        ----------
+        fid : {file. str, path}
+            An open file object, or a string containing a filename.
+        sep : str, optional
+            Separator between array items for text output. If ``""`` (empty),
+            a binary file is written.
+
+            Default: ``""``.
+        format : str, optional
+            Format string for text file output (when non-empty `sep` is passed).
+            Each entry in the array is formatted to text by first converting it
+            to the closest Python type, and then using ``format % item``. If
+            ``""`` (empty), no formatting is used while converting to the
+            string.
+
+            Default: ``""``.
+
+        See Also
+        --------
+        :obj:`dpnp.fromfile` : Construct an array from data in a text or binary
+            file.
+
+        """
+
+        self.asnumpy().tofile(fid, sep=sep, format=format)
+
+    def tolist(self):
+        """
+        Converts the array to a (possibly nested) Python list.
+
+        For full documentation refer to :obj:`numpy.ndarray.tolist`.
+
+        Returns
+        -------
+        out : list
+            The possibly nested Python list of array elements.
+
+        Examples
+        --------
+        For a 1D array, ``a.tolist()`` is almost the same as ``list(a)``,
+        except that ``tolist`` changes 0D arrays to Python scalars:
+
+        >>> import dpnp as np
+        >>> a = np.array([1, 2])
+        >>> list(a)
+        [array(1), array(2)]
+        >>> a.tolist()
+        [1, 2]
+
+        Additionally, for a 2D array, ``tolist`` applies recursively:
+
+        >>> a = np.array([[1, 2], [3, 4]])
+        >>> list(a)
+        [array([1, 2]), array([3, 4])]
+        >>> a.tolist()
+        [[1, 2], [3, 4]]
+
+        The base case for this recursion is a 0D array:
+
+        >>> a = np.array(1)
+        >>> list(a)
+        Traceback (most recent call last):
+        ...
+        TypeError: iteration over a 0-d array
+        >>> a.tolist()
+        1
+
+        """
+
+        return self.asnumpy().tolist()
 
     def trace(self, offset=0, axis1=0, axis2=1, dtype=None, *, out=None):
         """

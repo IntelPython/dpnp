@@ -51,11 +51,11 @@ namespace dpnp::extensions::ufunc
 {
 namespace py = pybind11;
 namespace py_int = dpnp::extensions::py_internal;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace impl
 {
 namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
-namespace td_ns = dpctl::tensor::type_dispatch;
 
 /**
  * @brief A factory to define pairs of supported types for which

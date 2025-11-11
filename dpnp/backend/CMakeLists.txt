@@ -38,15 +38,17 @@ set(DPNP_SRC
     src/queue_sycl.cpp
     src/verbose.cpp
     src/dpnp_random_state.cpp
-    )
+)
 
 set(_trgt "dpnp_backend_c")
 
 if(WIN32)
-    if (${CMAKE_VERSION} VERSION_LESS "3.27")
+    if(${CMAKE_VERSION} VERSION_LESS "3.27")
         # this is a work-around for target_link_options inserting option after -link option, cause
         # linker to ignore it.
-        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel")
+        set(CMAKE_CXX_LINK_FLAGS
+            "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel"
+        )
     endif()
 endif()
 
@@ -56,16 +58,13 @@ set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-if (WIN32)
-  target_compile_options(${_trgt} PRIVATE
-    /clang:-fno-approx-func
-    /clang:-fno-finite-math-only
+if(WIN32)
+    target_compile_options(
+        ${_trgt}
+        PRIVATE /clang:-fno-approx-func /clang:-fno-finite-math-only
     )
 else()
-  target_compile_options(${_trgt} PRIVATE
-    -fno-approx-func
-    -fno-finite-math-only
-    )
+    target_compile_options(${_trgt} PRIVATE -fno-approx-func -fno-finite-math-only)
 endif()
 
 # if (WIN32)
@@ -81,9 +80,9 @@ endif()
 target_link_libraries(${_trgt} PUBLIC MKL::MKL_SYCL)
 target_link_libraries(${_trgt} PUBLIC oneDPL)
 
-if (UNIX)
-  # needed for STL headers with GCC < 11
-  target_compile_definitions(${_trgt} PUBLIC _GLIBCXX_USE_TBB_PAR_BACKEND=0)
+if(UNIX)
+    # needed for STL headers with GCC < 11
+    target_compile_definitions(${_trgt} PUBLIC _GLIBCXX_USE_TBB_PAR_BACKEND=0)
 endif()
 
 target_compile_definitions(${_trgt} PUBLIC PSTL_USE_PARALLEL_POLICIES=0)
@@ -97,27 +96,30 @@ target_link_directories(${_trgt} PUBLIC "${Dpctl_INCLUDE_DIR}/..")
 target_link_libraries(${_trgt} PUBLIC DPCTLSyclInterface)
 
 add_library(dpnp_backend_library INTERFACE IMPORTED GLOBAL)
-target_include_directories(dpnp_backend_library BEFORE INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(
+    dpnp_backend_library
+    BEFORE
+    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 target_link_libraries(dpnp_backend_library INTERFACE ${_trgt})
 
-if (DPNP_WITH_REDIST)
-    set_target_properties(${python_module_name} PROPERTIES INSTALL_RPATH "$ORIGIN/../../../")
+if(DPNP_WITH_REDIST)
+    set_target_properties(
+        ${python_module_name}
+        PROPERTIES INSTALL_RPATH "$ORIGIN/../../../"
+    )
 endif()
 
-if (DPNP_BACKEND_TESTS)
-  add_subdirectory(tests)
+if(DPNP_BACKEND_TESTS)
+    add_subdirectory(tests)
 endif()
 
 set(_lib_destination dpnp)
 set(_include_destination dpnp/backend/include)
 install(
-  TARGETS ${_trgt}
-  LIBRARY
-    DESTINATION ${_lib_destination}
-  ARCHIVE
-    DESTINATION ${_lib_destination}
-  RUNTIME
-    DESTINATION ${_lib_destination}
-  PUBLIC_HEADER
-    DESTINATION ${_include_destination}
-  )
+    TARGETS ${_trgt}
+    LIBRARY DESTINATION ${_lib_destination}
+    ARCHIVE DESTINATION ${_lib_destination}
+    RUNTIME DESTINATION ${_lib_destination}
+    PUBLIC_HEADER DESTINATION ${_include_destination}
+)

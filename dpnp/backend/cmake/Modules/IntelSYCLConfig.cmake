@@ -1,5 +1,5 @@
 #
-# Modifications, Copyright (c) 2023-2025 Intel Corporation
+# Modifications, Copyright (C) 2024 Intel Corporation
 #
 # This software and the related documents are Intel copyrighted materials, and
 # your use of them is governed by the express license under which they were
@@ -28,9 +28,15 @@ This will define the following variables:
 
 ``IntelSYCL_FOUND``
   True if the system has the SYCL library.
+``SYCL_COMPILER``
+  The resolved SYCL compiler.
 ``SYCL_LANGUAGE_VERSION``
   The SYCL language spec version by Compiler.
+``SYCL_COMPILER_VERSION``
+  The SYCL version of the supported Compiler.
 ``SYCL_INCLUDE_DIR``
+  Include directories needed to use SYCL.
+``SYCL_INCLUDE_SYCL_DIR``
   Include directories needed to use SYCL.
 ``SYCL_IMPLEMENTATION_ID``
   The SYCL compiler variant.
@@ -50,6 +56,11 @@ The following cache variable may also be set:
 ``SYCL_LANGUAGE_VERSION``
   The SYCL language spec version by Compiler.
 
+``SYCL_COMPILER_VERSION``
+  The SYCL version of the supported Compiler.
+
+``SYCL_COMPILER``
+  The supported SYCL Compiler.
 
 .. Note::
 
@@ -73,6 +84,11 @@ The following cache variable may also be set:
 
 #]=======================================================================]
 
+if(__INTEL_SYCL_CONFIG)
+  return()
+endif()
+set(__INTEL_SYCL_CONFIG 1)
+
 include(${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake)
 
 find_package(PkgConfig QUIET)
@@ -88,9 +104,17 @@ endif()
 string(COMPARE EQUAL "${CMAKE_CXX_COMPILER}" "" nocmplr)
 if(nocmplr)
   set(IntelSYCL_FOUND False)
-  set(SYCL_REASON_FAILURE "SYCL: CMAKE_CXX_COMPILER not set!!")
+  set(SYCL_REASON_FAILURE "CMAKE_CXX_COMPILER not set!!")
   set(IntelSYCL_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
 endif()
+
+if(NOT "x${SYCL_HOST_COMPILER}" STREQUAL "x")
+  set(sycl_host_compiler "-fsycl-host-compiler=${SYCL_HOST_COMPILER}")
+else()
+  set(sycl_host_compiler "")
+endif()
+
+message(VERBOSE "SYCL_HOST_COMPILER = ${SYCL_HOST_COMPILER}")
 
 # Check if a Compiler ID is being set. project() should be set prior to find_package()
 
@@ -106,15 +130,68 @@ endif()
 if( NOT "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xClang" AND
     NOT "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xIntelLLVM")
    set(IntelSYCL_FOUND False)
-   set(SYCL_REASON_FAILURE "Unsupported compiler family ${CMAKE_CXX_COMPILER_ID} and compiler ${CMAKE_CXX_COMPILER}!!")
-   set(IntelSYCL_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
-   return()
+   set(SYCL_REASON_FAILURE "Unsupported compiler family ${CMAKE_CXX_COMPILER_ID} and compiler ${CMAKE_CXX_COMPILER}. Also default Intel SYCL compiler not found in the environment!!")
+
+   #find_program(INTEL_SYCL_COMPILER NAMES icpx icx icx-cc icx-cl)
+   if(WIN32 AND
+      (NOT CMAKE_CXX_COMPILER_FRONTEND_VARIANT MATCHES "GNU"))
+     find_program(INTEL_SYCL_COMPILER NAMES icx icx-cl)
+   else()
+     find_program(INTEL_SYCL_COMPILER icpx)
+   endif()
+
+   if(NOT INTEL_SYCL_COMPILER)
+     message(FATAL_ERROR "Intel SYCL Compiler not found.")
+     set(IntelSYCL_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
+     return()
+   else()
+     # Remove trailing semicolon if present
+     string(STRIP "${INTEL_SYCL_COMPILER};" INTEL_SYCL_COMPILER)
+     message(STATUS "Setting SYCL Compiler to default ${INTEL_SYCL_COMPILER}.")
+     set(SYCL_COMPILER ${INTEL_SYCL_COMPILER})
+     set(IntelSYCL_FOUND True)
+   endif()
+else()
+  # Assume that CXX Compiler supports SYCL and then test to verify.
+  set(SYCL_COMPILER ${CMAKE_CXX_COMPILER})
 endif()
 
-# Assume that CXX Compiler supports SYCL and then test to verify.
-set(SYCL_COMPILER ${CMAKE_CXX_COMPILER})
-
 # Function to write a test case to verify SYCL features.
+function(parse_compiler_version compiler_name version_number)
+    execute_process(
+        COMMAND ${compiler_name} --version
+        OUTPUT_VARIABLE COMPILER_VERSION_STRING
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    # Intel Compiler Regex
+    string(REGEX MATCH "Intel\\(R\\) (.*) Compiler ([0-9]+\\.[0-9]+\\.[0-9]+) (.*)"
+           INTEL_VERSION_STRING ${COMPILER_VERSION_STRING})
+
+    if(INTEL_VERSION_STRING)
+        # Parse Intel Compiler Version
+        string(REGEX REPLACE "Intel\\(R\\) (.*) Compiler ([0-9]+\\.[0-9]+\\.[0-9]+) (.*)" "\\2"
+               SYCL_VERSION_STRING_MATCH ${INTEL_VERSION_STRING})
+        string(REPLACE "." ";" SYCL_VERSION_LIST ${SYCL_VERSION_STRING_MATCH})
+        list(GET SYCL_VERSION_LIST 0 VERSION_MAJOR)
+        list(GET SYCL_VERSION_LIST 1 VERSION_MINOR)
+        list(GET SYCL_VERSION_LIST 2 VERSION_PATCH)
+        math(EXPR VERSION_NUMBER_MATCH "${VERSION_MAJOR} * 10000 + ${VERSION_MINOR} * 100 + ${VERSION_PATCH}")
+    endif()
+    set(${version_number} "${VERSION_NUMBER_MATCH}" PARENT_SCOPE)
+endfunction()
+
+parse_compiler_version(${SYCL_COMPILER} SYCL_COMPILER_VERSION)
+
+if(NOT SYCL_COMPILER_VERSION)
+  set(SYCL_FOUND False)
+  set(SYCL_REASON_FAILURE "Cannot parse sycl compiler version to get SYCL_COMPILER_VERSION!")
+  set(SYCL_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
+  return()
+endif()
+
+#set(SYCL_COMPILER_VERSION ${COMPILER_VERSION})
+message(STATUS "SYCL Compiler version: ${SYCL_COMPILER_VERSION}")
 
 function(SYCL_FEATURE_TEST_WRITE src)
 
@@ -143,7 +220,7 @@ function(SYCL_FEATURE_TEST_BUILD TEST_SRC_FILE TEST_EXE)
 
   # Convert CXX Flag string to list
   set(SYCL_CXX_FLAGS_LIST "${SYCL_CXX_FLAGS}")
-  separate_arguments(SYCL_CXX_FLAGS_LIST)
+  separate_arguments(SYCL_CXX_FLAGS_LIST NATIVE_COMMAND ${SYCL_CXX_FLAGS_LIST})
 
   # Spawn a process to build the test case.
   execute_process(
@@ -157,6 +234,7 @@ function(SYCL_FEATURE_TEST_BUILD TEST_SRC_FILE TEST_EXE)
     OUTPUT_FILE ${SYCL_TEST_DIR}/Compile.log
     RESULT_VARIABLE result
     TIMEOUT 60
+    #COMMAND_ECHO STDOUT
     )
 
   # Verify if test case build properly.
@@ -230,6 +308,17 @@ if(SYCL_COMPILER)
     NO_DEFAULT_PATH
       )
 
+  # Find include/sycl path from include path.
+  find_file(
+    SYCL_INCLUDE_SYCL_DIR
+    NAMES sycl
+    HINTS
+    ${SYCL_PACKAGE_DIR} $ENV{SYCL_INCLUDE_DIR_HINT}
+    PATH_SUFFIXES include
+    NO_DEFAULT_PATH
+    )
+  message(STATUS "SYCL_INCLUDE_DIR: ${SYCL_INCLUDE_DIR}")
+
   # Find Library directory
   find_file(SYCL_LIBRARY_DIR
     NAMES
@@ -238,7 +327,22 @@ if(SYCL_COMPILER)
       ${SYCL_PACKAGE_DIR} $ENV{SYCL_LIBRARY_DIR_HINT}
     NO_DEFAULT_PATH
       )
-
+  #TODO Make an input file to configure and update the lib current version
+  if(WIN32)
+    set(sycl_lib_suffix "8")
+  else()
+    set(sycl_lib_suffix "")
+  endif()
+  if(NOT "x${SYCL_LIB_SUFFIX}" STREQUAL "x")
+    set(sycl_lib_suffix "${SYCL_LIB_SUFFIX}")
+  endif()
+  find_library(
+    SYCL_LIBRARY
+    NAMES "sycl${sycl_lib_suffix}"
+    HINTS ${SYCL_LIBRARY_DIR}
+    NO_DEFAULT_PATH
+  )
+  message(STATUS "SYCL_LIBRARY=${SYCL_LIBRARY}")
 endif()
 
 
@@ -247,7 +351,7 @@ set(SYCL_LINK_FLAGS "")
 
 # Based on Compiler ID, add support for SYCL
 if( "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xClang" OR
-    "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xIntelLLVM")
+    "x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xIntelLLVM" OR IntelSYCL_FOUND)
   list(APPEND SYCL_FLAGS "-fsycl")
   list(APPEND SYCL_LINK_FLAGS "-fsycl")
 endif()
@@ -258,7 +362,9 @@ if(WIN32)
   list(APPEND SYCL_FLAGS "/EHsc")
 endif()
 
-set(SYCL_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SYCL_FLAGS}")
+list(JOIN SYCL_FLAGS " " SYCL_FLAGS_STRING)
+message(DEBUG "SYCL_FLAGS_STRING: ${SYCL_FLAGS_STRING}")
+set(SYCL_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SYCL_FLAGS_STRING}")
 
 # And now test the assumptions.
 
@@ -286,8 +392,13 @@ SYCL_FEATURE_TEST_EXTRACT(${test_output})
 string(COMPARE EQUAL "${SYCL_LANGUAGE_VERSION}" "" nosycllang)
 if(nosycllang)
   set(IntelSYCL_FOUND False)
-  set(SYCL_REASON_FAILURE "SYCL: It appears that the ${CMAKE_CXX_COMPILER} does not support SYCL")
+  set(SYCL_REASON_FAILURE "SYCL: It appears that the ${SYCL_COMPILER} does not support SYCL")
   set(IntelSYCL_NOT_FOUND_MESSAGE "${SYCL_REASON_FAILURE}")
+endif()
+
+if(NOT "x${sycl_host_compiler}" STREQUAL "x")
+  list(APPEND SYCL_FLAGS ${sycl_host_compiler})
+  list(APPEND SYCL_CXX_FLAGS ${sycl_host_compiler})
 endif()
 
 # Placeholder for identifying various implementations of SYCL compilers.
@@ -307,16 +418,24 @@ set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
   INTERFACE_INCLUDE_DIRECTORIES ${SYCL_INCLUDE_DIR})
 set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
   INTERFACE_LINK_DIRECTORIES ${SYCL_LIBRARY_DIR})
+set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
+  INTERFACE_LINK_LIBRARIES ${SYCL_LIBRARY})
 
 find_package_handle_standard_args(
   IntelSYCL
   FOUND_VAR IntelSYCL_FOUND
-  REQUIRED_VARS SYCL_INCLUDE_DIR SYCL_LIBRARY_DIR SYCL_FLAGS
+  REQUIRED_VARS SYCL_INCLUDE_DIR SYCL_LIBRARY_DIR SYCL_FLAGS SYCL_COMPILER_VERSION SYCL_COMPILER SYCL_LIBRARY
   VERSION_VAR SYCL_LANGUAGE_VERSION
   REASON_FAILURE_MESSAGE "${SYCL_REASON_FAILURE}")
 
 # Include in Cache
 set(SYCL_LANGUAGE_VERSION "${SYCL_LANGUAGE_VERSION}" CACHE STRING "SYCL Language version")
+set(SYCL_COMPILER_VERSION "${SYCL_COMPILER_VERSION}" CACHE STRING "SYCL Compiler version")
+set(SYCL_COMPILER "${SYCL_COMPILER}" CACHE STRING "SYCL Compiler")
+set(SYCL_INCLUDE_DIR "${SYCL_INCLUDE_DIR}" CACHE STRING "SYCL Include Dir ")
+set(SYCL_INCLUDE_SYCL_DIR "${SYCL_INCLUDE_SYCL_DIR}" CACHE STRING "SYCL Include SYCL Dir ")
+set(SYCL_LIBRARY_DIR "${SYCL_LIBRARY_DIR}" CACHE STRING "SYCL Library Dir")
+set(SYCL_LIBRARY "${SYCL_LIBRARY}" CACHE STRING "SYCL Library")
 
 function(add_sycl_to_target)
 
@@ -340,6 +459,10 @@ Adding sycl to all sources but that may effect compilation times")
       set(SYCL_TARGET ${ARGV})
     endif()
 
+    if(NOT SYCL_TARGET)
+      message(FATAL_ERROR "add_sycl_to_target() requires a TARGET argument, but none was passed.")
+    endif()
+
     if(NOT SYCL_SOURCES)
       message(WARNING "add_sycl_to_target() does not have sources specified.. Adding sycl to all sources but that may effect compilation times")
       target_compile_options(${SYCL_TARGET} PUBLIC ${__sycl_cxx_options})
@@ -353,7 +476,7 @@ Adding sycl to all sources but that may effect compilation times")
 
     get_target_property(__sycl_link_options
         IntelSYCL::SYCL_CXX INTERFACE_LINK_OPTIONS)
-    target_link_options(${SYCL_TARGET} PRIVATE "${__sycl_link_options}")
+    target_link_options(${SYCL_TARGET} PUBLIC "${__sycl_link_options}")
     get_target_property(__sycl_link_directories
         IntelSYCL::SYCL_CXX INTERFACE_LINK_DIRECTORIES)
     target_link_directories(${SYCL_TARGET} PUBLIC "${__sycl_link_directories}")

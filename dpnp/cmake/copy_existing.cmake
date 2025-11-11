@@ -26,6 +26,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-if (EXISTS ${SOURCE_FILE})
-   configure_file(${SOURCE_FILE} ${DEST} COPYONLY)
+if(EXISTS ${SOURCE_FILE})
+    configure_file(${SOURCE_FILE} ${DEST} COPYONLY)
 endif()

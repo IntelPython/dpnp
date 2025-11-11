@@ -27,7 +27,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-
 set(python_module_name _blas_impl)
 set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/blas_py.cpp
@@ -44,48 +43,57 @@ if(_dpnp_sycl_targets)
     # make fat binary
     target_compile_options(
         ${python_module_name}
-        PRIVATE
-        ${_dpnp_sycl_target_compile_options}
+        PRIVATE ${_dpnp_sycl_target_compile_options}
     )
-    target_link_options(
-        ${python_module_name}
-        PRIVATE
-        ${_dpnp_sycl_target_link_options}
-    )
+    target_link_options(${python_module_name} PRIVATE ${_dpnp_sycl_target_link_options})
 endif()
 
-if (WIN32)
-    if (${CMAKE_VERSION} VERSION_LESS "3.27")
+if(WIN32)
+    if(${CMAKE_VERSION} VERSION_LESS "3.27")
         # this is a work-around for target_link_options inserting option after -link option, cause
         # linker to ignore it.
-        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel")
+        set(CMAKE_CXX_LINK_FLAGS
+            "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel"
+        )
     endif()
 endif()
 
-set_target_properties(${python_module_name} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
+set_target_properties(
+    ${python_module_name}
+    PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON
+)
 
-target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../)
-target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../common)
+target_include_directories(
+    ${python_module_name}
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../
+)
+target_include_directories(
+    ${python_module_name}
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../common
+)
 
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
 
-if (WIN32)
-  target_compile_options(${python_module_name} PRIVATE
-    /clang:-fno-approx-func
-    /clang:-fno-finite-math-only
+if(WIN32)
+    target_compile_options(
+        ${python_module_name}
+        PRIVATE /clang:-fno-approx-func /clang:-fno-finite-math-only
     )
 else()
-  target_compile_options(${python_module_name} PRIVATE
-    -fno-approx-func
-    -fno-finite-math-only
+    target_compile_options(
+        ${python_module_name}
+        PRIVATE -fno-approx-func -fno-finite-math-only
     )
 endif()
 
 target_link_options(${python_module_name} PUBLIC -fsycl-device-code-split=per_kernel)
 
-if (DPNP_GENERATE_COVERAGE)
-    target_link_options(${python_module_name} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
+if(DPNP_GENERATE_COVERAGE)
+    target_link_options(
+        ${python_module_name}
+        PRIVATE -fprofile-instr-generate -fcoverage-mapping
+    )
 endif()
 
 if(_ues_onemath)
@@ -98,10 +106,11 @@ else()
     target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::BLAS)
 endif()
 
-if (DPNP_WITH_REDIST)
-    set_target_properties(${python_module_name} PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../../../")
+if(DPNP_WITH_REDIST)
+    set_target_properties(
+        ${python_module_name}
+        PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../../../"
+    )
 endif()
 
-install(TARGETS ${python_module_name}
-  DESTINATION "dpnp/backend/extensions/blas"
-)
+install(TARGETS ${python_module_name} DESTINATION "dpnp/backend/extensions/blas")
