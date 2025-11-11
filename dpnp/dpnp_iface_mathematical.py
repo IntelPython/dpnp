@@ -46,7 +46,6 @@ it contains:
 
 import builtins
 import warnings
-from functools import wraps
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
@@ -67,6 +66,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPI0,
     DPNPAngle,
     DPNPBinaryFunc,
+    DPNPBinaryFuncOutKw,
     DPNPFix,
     DPNPImag,
     DPNPReal,
@@ -3266,30 +3266,12 @@ array(inf)
 
 """
 
-_maximum_impl = DPNPBinaryFunc(
+maximum = DPNPBinaryFuncOutKw(
     "maximum",
     ti._maximum_result_type,
     ti._maximum,
     _MAXIMUM_DOCSTRING,
 )
-
-
-@wraps(_maximum_impl)
-def maximum(*args, **kwargs):
-    """
-    Wrapper around `_maximum_impl` that emits a DeprecationWarning
-    when `out` is passed positionally.
-
-    """
-    if len(args) >= 3 and "out" not in kwargs:
-        warnings.warn(
-            "Passing more than 2 positional arguments is deprecated. If you "
-            "meant to use the third argument as an output, use the `out` "
-            "keyword argument instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    return _maximum_impl(*args, **kwargs)
 
 
 _MINIMUM_DOCSTRING = """
@@ -3382,30 +3364,12 @@ array([nan, nan, nan])
 array(-inf)
 """
 
-_minimum_impl = DPNPBinaryFunc(
+minimum = DPNPBinaryFuncOutKw(
     "minimum",
     ti._minimum_result_type,
     ti._minimum,
     _MINIMUM_DOCSTRING,
 )
-
-
-@wraps(_minimum_impl)
-def minimum(*args, **kwargs):
-    """
-    Wrapper around `_minimum_impl` that emits a DeprecationWarning
-    when `out` is passed positionally.
-
-    """
-    if len(args) >= 3 and "out" not in kwargs:
-        warnings.warn(
-            "Passing more than 2 positional arguments is deprecated. If you "
-            "meant to use the third argument as an output, use the `out` "
-            "keyword argument instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    return _minimum_impl(*args, **kwargs)
 
 
 def modf(x1, **kwargs):
