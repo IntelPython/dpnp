@@ -60,8 +60,6 @@ from ..dpnp_utils.dpnp_utils_linearalgebra import (
     _standardize_strides_to_nonzero,
 )
 
-__all__ = ["dpnp_fft", "dpnp_fftn", "dpnp_fillfreq", "swap_direction"]
-
 
 def _check_norm(norm):
     if norm not in (None, "ortho", "forward", "backward"):
