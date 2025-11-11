@@ -286,7 +286,10 @@ def test_copy_operation(usm_type):
         "asarray_chkfinite",
         "asanyarray",
         "ascontiguousarray",
-        "asfarray",
+        pytest.param(
+            "asfarray",
+            marks=pytest.mark.filterwarnings("ignore::DeprecationWarning"),
+        ),
         "asfortranarray",
     ],
 )
