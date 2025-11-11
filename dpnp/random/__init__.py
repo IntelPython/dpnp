@@ -26,7 +26,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-from .dpnp_iface_random import __all__ as __all__random
 from .dpnp_iface_random import (
     beta,
     binomial,
@@ -78,7 +77,55 @@ from .dpnp_iface_random import (
     zipf,
 )
 from .dpnp_random_state import RandomState
-from .dpnp_random_state import __all__ as __all__random_state
 
-__all__ = __all__random
-__all__ += __all__random_state
+__all__ = [
+    "beta",
+    "binomial",
+    "bytes",
+    "chisquare",
+    "choice",
+    "dirichlet",
+    "exponential",
+    "f",
+    "gamma",
+    "geometric",
+    "gumbel",
+    "hypergeometric",
+    "laplace",
+    "logistic",
+    "lognormal",
+    "logseries",
+    "multinomial",
+    "multivariate_normal",
+    "negative_binomial",
+    "normal",
+    "noncentral_chisquare",
+    "noncentral_f",
+    "pareto",
+    "permutation",
+    "poisson",
+    "power",
+    "rand",
+    "randint",
+    "randn",
+    "random",
+    "random_integers",
+    "random_sample",
+    "ranf",
+    "rayleigh",
+    "sample",
+    "shuffle",
+    "seed",
+    "standard_cauchy",
+    "standard_exponential",
+    "standard_gamma",
+    "standard_normal",
+    "standard_t",
+    "triangular",
+    "uniform",
+    "vonmises",
+    "wald",
+    "weibull",
+    "zipf",
+    "RandomState",
+]
