@@ -31,7 +31,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Defined explicit versions range of the Python interpreter which is needed during the build [#2634](https://github.com/IntelPython/dpnp/pull/2634)
 * Aligned documentation with NumPy and CuPy style by using short function names [#2633](https://github.com/IntelPython/dpnp/pull/2633)
 * Added the missing positional-only and keyword-only parameter markers to bring the ufunc signatures into alignment with NumPy [#2660](https://github.com/IntelPython/dpnp/pull/2660)
-* Removed wildcard imports and registered `dpnp.fft` and `dpnp.random` as explicit submodules [#2649](https://github.com/IntelPython/dpnp/pull/2649)
+* Refactored `dpnp.fft` and `dpnp.random` submodules by removing wildcard imports and defining explicit public exports [#2649](https://github.com/IntelPython/dpnp/pull/2649)
 
 ### Deprecated
 
