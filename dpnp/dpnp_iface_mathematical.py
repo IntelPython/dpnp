@@ -3205,10 +3205,12 @@ order : {None, "C", "F", "A", "K"}, optional
 
 Warning
 -------
-Passing the output array ``out`` positionally is deprecated.
-For example, ``dpnp.maximum(a, b, c)`` will emit a ``DeprecationWarning``.
+Passing more than 2 positional arguments is deprecated.
+If you meant to use the third argument as an output,
+use the `out` keyword argument instead.
 
-Always pass the output with the keyword form, e.g.
+For example, ``dpnp.maximum(a, b, c)`` will emit a ``DeprecationWarning``.
+Always pass the output array as the keyword argument instead, that is
 ``dpnp.maximum(a, b, out=c)``.
 
 Returns
@@ -3325,10 +3327,12 @@ out : dpnp.ndarray
 
 Warning
 -------
-Passing the output array ``out`` positionally is deprecated.
-For example, ``dpnp.minimum(a, b, c)`` will emit a ``DeprecationWarning``.
+Passing more than 2 positional arguments is deprecated.
+If you meant to use the third argument as an output,
+use the `out` keyword argument instead.
 
-Always pass the output with the keyword form, e.g.
+For example, ``dpnp.minimum(a, b, c)`` will emit a ``DeprecationWarning``.
+Always pass the output array as the keyword argument instead, that is
 ``dpnp.minimum(a, b, out=c)``.
 
 Limitations
