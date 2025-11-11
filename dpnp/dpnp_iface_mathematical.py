@@ -3283,8 +3283,9 @@ def maximum(*args, **kwargs):
     """
     if len(args) >= 3 and "out" not in kwargs:
         warnings.warn(
-            "Positional `out` argument to `dpnp.maximum` is deprecated. "
-            "Please use the keyword form, e.g. `dpnp.maximum(a, b, out=c)`.",
+            "Passing more than 2 positional arguments is deprecated. If you "
+            "meant to use the third argument as an output, use the `out` "
+            "keyword argument instead.",
             DeprecationWarning,
             stacklevel=2,
         )
@@ -3398,8 +3399,9 @@ def minimum(*args, **kwargs):
     """
     if len(args) >= 3 and "out" not in kwargs:
         warnings.warn(
-            "Positional `out` argument to `dpnp.minimum` is deprecated. "
-            "Please use the keyword form, e.g. `dpnp.minimum(a, b, out=c)`.",
+            "Passing more than 2 positional arguments is deprecated. If you "
+            "meant to use the third argument as an output, use the `out` "
+            "keyword argument instead.",
             DeprecationWarning,
             stacklevel=2,
         )
