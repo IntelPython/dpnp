@@ -153,7 +153,9 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
     def __call__(
         self,
         x,
+        /,
         out=None,
+        *,
         where=True,
         order="K",
         dtype=None,
@@ -546,7 +548,9 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         self,
         x1,
         x2,
+        /,
         out=None,
+        *,
         where=True,
         order="K",
         dtype=None,
@@ -766,7 +770,7 @@ class DPNPAngle(DPNPUnaryFunc):
             mkl_impl_fn=mkl_impl_fn,
         )
 
-    def __call__(self, x, deg=False, out=None, order="K"):
+    def __call__(self, x, /, deg=False, *, out=None, order="K"):
         res = super().__call__(x, out=out, order=order)
         if deg is True:
             res *= 180 / dpnp.pi
@@ -790,7 +794,7 @@ class DPNPFix(DPNPUnaryFunc):
             docs,
         )
 
-    def __call__(self, x, out=None, order="K"):
+    def __call__(self, x, /, out=None, *, order="K"):
         if not dpnp.is_supported_array_type(x):
             pass  # pass to raise error in main implementation
         elif dpnp.issubdtype(x.dtype, dpnp.inexact):
@@ -836,7 +840,7 @@ class DPNPI0(DPNPUnaryFunc):
             mkl_impl_fn=mkl_impl_fn,
         )
 
-    def __call__(self, x, out=None, order="K"):
+    def __call__(self, x, /, *, out=None, order="K"):
         return super().__call__(x, out=out, order=order)
 
 
@@ -857,7 +861,7 @@ class DPNPImag(DPNPUnaryFunc):
             docs,
         )
 
-    def __call__(self, x, out=None, order="K"):
+    def __call__(self, x, /, *, out=None, order="K"):
         return super().__call__(x, out=out, order=order)
 
 
@@ -878,7 +882,7 @@ class DPNPReal(DPNPUnaryFunc):
             docs,
         )
 
-    def __call__(self, x, out=None, order="K"):
+    def __call__(self, x, /, *, out=None, order="K"):
         if numpy.iscomplexobj(x):
             return super().__call__(x, out=out, order=order)
         return x
@@ -905,7 +909,7 @@ class DPNPRound(DPNPUnaryFunc):
             mkl_impl_fn=mkl_impl_fn,
         )
 
-    def __call__(self, x, decimals=0, out=None, dtype=None):
+    def __call__(self, x, /, decimals=0, out=None, *, dtype=None):
         if decimals != 0:
             x_usm = dpnp.get_usm_ndarray(x)
             out_usm = None if out is None else dpnp.get_usm_ndarray(out)
@@ -948,7 +952,7 @@ class DPNPSinc(DPNPUnaryFunc):
             docs,
         )
 
-    def __call__(self, x, out=None, order="K"):
+    def __call__(self, x, /, *, out=None, order="K"):
         return super().__call__(x, out=out, order=order)
 
 
