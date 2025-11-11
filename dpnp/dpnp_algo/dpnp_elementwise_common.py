@@ -27,6 +27,7 @@
 # *****************************************************************************
 
 import warnings
+from functools import wraps
 
 import dpctl.tensor as dpt
 import dpctl.tensor._copy_utils as dtc
@@ -731,6 +732,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
 class DPNPBinaryFuncOutKw(DPNPBinaryFunc):
     """DPNPBinaryFunc that deprecates positional `out` argument."""
 
+    @wraps(DPNPBinaryFunc.__call__)
     def __call__(self, *args, **kwargs):
         if len(args) > self.nin:
             warnings.warn(
