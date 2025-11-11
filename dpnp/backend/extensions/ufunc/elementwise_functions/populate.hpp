@@ -28,6 +28,12 @@
 
 #pragma once
 
+#include <type_traits>
+#include <utility>
+#include <vector>
+
+#include <pybind11/pybind11.h>
+
 // utils extension header
 #include "ext/common.hpp"
 
