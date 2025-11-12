@@ -138,6 +138,9 @@ var annotated_dup =
         [ "logaddexp2", null, [
           [ "Logaddexp2Functor", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ]
         ] ],
+        [ "modf", null, [
+          [ "ModfFunctor", "structdpnp_1_1kernels_1_1modf_1_1_modf_functor.html", null ]
+        ] ],
         [ "nan_to_num", null, [
           [ "NanToNumContigFunctor", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html", null ],
           [ "NanToNumFunctor", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor.html", null ]

@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev0+49.gd9d55b62188 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev0+51.g55ce22c9873 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5f72b66a"></script>
+      <script src="../../_static/documentation_options.js?v=b869285c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -146,7 +146,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_modf</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DPNPI0</span><span class="p">,</span>
     <span class="n">DPNPAngle</span><span class="p">,</span>
@@ -166,7 +165,7 @@
     <span class="n">resolve_weak_types_2nd_arg_int</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_origin</span><span class="p">,</span> <span class="n">get_usm_allocations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_cross</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_reduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
 
@@ -2477,7 +2476,6 @@
 <span class="s2">    as `x` and the expected data type.</span>
 
 <span class="s2">    Default: ``None``.</span>
-
 <span class="s2">out : tuple of None, dpnp.ndarray, or usm_ndarray, optional</span>
 <span class="s2">    A location into which the result is stored. If provided, it must be a tuple</span>
 <span class="s2">    and have length equal to the number of outputs. Each provided array must</span>
@@ -3469,45 +3467,84 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="modf">
-<a class="viewcode-back" href="../../reference/generated/dpnp.modf.html#dpnp.modf">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">modf</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the fractional and integral parts of an array, element-wise.</span>
+<span class="n">_MODF_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Decompose each element :math:`x_i` of the input array `x` into the fractional</span>
+<span class="s2">and the integral parts.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.modf`.</span>
+<span class="s2">The fractional and integral parts are negative if the given :math:`x_i` is</span>
+<span class="s2">negative.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.modf`.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2])</span>
-<span class="sd">    &gt;&gt;&gt; result = np.modf(a)</span>
-<span class="sd">    &gt;&gt;&gt; [[x for x in y] for y in result ]</span>
-<span class="sd">    [[1.0, 2.0], [0.0, 0.0]]</span>
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Array of numbers to be decomposed, expected to have a real-valued</span>
+<span class="s2">    floating-point data type.</span>
+<span class="s2">out1 : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array for the fractional parts to populate. Array must have the same</span>
+<span class="s2">    shape as `x` and the expected data type.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">out2 : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array for the integral parts to populate. Array must have the same</span>
+<span class="s2">    shape as `x` and the expected data type.</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_cuda_backend</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_array</span><span class="p">()):</span>  <span class="c1"># pragma: no cover</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">&quot;Running on CUDA is currently not supported&quot;</span>
-            <span class="p">)</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">out : tuple of None, dpnp.ndarray, or usm_ndarray, optional</span>
+<span class="s2">    A location into which the result is stored. If provided, it must be a tuple</span>
+<span class="s2">    and have length equal to the number of outputs. Each provided array must</span>
+<span class="s2">    have the same shape as `x` and the expected data type.</span>
+<span class="s2">    It is prohibited to pass output arrays through `out` keyword when either</span>
+<span class="s2">    `out1` or `out2` is passed.</span>
 
-        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_modf</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
+<span class="s2">    Default: ``(None, None)``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">modf</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">y1 : dpnp.ndarray</span>
+<span class="s2">    Fractional part of `x`.</span>
+<span class="s2">y2 : dpnp.ndarray</span>
+<span class="s2">    Integral part of `x`.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.divmod` : ``divmod(x, 1)`` is an equivalent to ``modf(x)`` with the</span>
+<span class="s2">    return values switched, except it always has a positive remainder.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">For integer input the return values are floats.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([0, 3.5])</span>
+<span class="s2">&gt;&gt;&gt; np.modf(x)</span>
+<span class="s2">(array([0. , 0.5]), array([0., 3.]))</span>
+<span class="s2">&gt;&gt;&gt; np.modf(np.array(-0.5))</span>
+<span class="s2">(array(-0.5), array(-0.))</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">modf</span> <span class="o">=</span> <span class="n">DPNPUnaryTwoOutputsFunc</span><span class="p">(</span>
+    <span class="s2">&quot;_modf&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_modf_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_modf</span><span class="p">,</span>
+    <span class="n">_MODF_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_modf_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_modf&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="n">_MULTIPLY_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>

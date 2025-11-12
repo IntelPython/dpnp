@@ -19,6 +19,7 @@ var dir_4f4d020a650a668743abea55668e1676 =
     [ "lcm.hpp", "extensions_2ufunc_2elementwise__functions_2lcm_8hpp_source.html", null ],
     [ "ldexp.hpp", "extensions_2ufunc_2elementwise__functions_2ldexp_8hpp_source.html", null ],
     [ "logaddexp2.hpp", "extensions_2ufunc_2elementwise__functions_2logaddexp2_8hpp_source.html", null ],
+    [ "modf.hpp", "extensions_2ufunc_2elementwise__functions_2modf_8hpp_source.html", null ],
     [ "nan_to_num.hpp", "extensions_2ufunc_2elementwise__functions_2nan__to__num_8hpp_source.html", null ],
     [ "populate.hpp", "populate_8hpp_source.html", null ],
     [ "radians.hpp", "extensions_2ufunc_2elementwise__functions_2radians_8hpp_source.html", null ],

@@ -19,6 +19,7 @@ var dir_2dc4cca66e7325a4fed455b9bcd79a3e =
     [ "lcm.hpp", "kernels_2elementwise__functions_2lcm_8hpp_source.html", null ],
     [ "ldexp.hpp", "kernels_2elementwise__functions_2ldexp_8hpp_source.html", null ],
     [ "logaddexp2.hpp", "kernels_2elementwise__functions_2logaddexp2_8hpp_source.html", null ],
+    [ "modf.hpp", "kernels_2elementwise__functions_2modf_8hpp_source.html", null ],
     [ "nan_to_num.hpp", "kernels_2elementwise__functions_2nan__to__num_8hpp_source.html", null ],
     [ "radians.hpp", "kernels_2elementwise__functions_2radians_8hpp_source.html", null ],
     [ "sinc.hpp", "kernels_2elementwise__functions_2sinc_8hpp_source.html", null ],
