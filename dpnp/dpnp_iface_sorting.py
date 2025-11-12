@@ -57,8 +57,6 @@ from .dpnp_utils import (
     map_dtype_to_device,
 )
 
-__all__ = ["argsort", "partition", "sort", "sort_complex"]
-
 
 def _wrap_sort_argsort(
     a,
