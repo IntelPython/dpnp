@@ -378,6 +378,52 @@ from .dpnp_iface_nanfunctions import (
 
 from .dpnp_iface_statistics import convolve
 
+from .dpnp_iface_trigonometric import (
+    arccos,
+    arccosh,
+    arcsin,
+    arcsinh,
+    arctan,
+    arctan2,
+    arctanh,
+    asin,
+    asinh,
+    acos,
+    acosh,
+    atan,
+    atan2,
+    atanh,
+    cbrt,
+    cos,
+    cosh,
+    cumlogsumexp,
+    deg2rad,
+    degrees,
+    exp,
+    exp2,
+    expm1,
+    hypot,
+    log,
+    log10,
+    log1p,
+    log2,
+    logaddexp,
+    logaddexp2,
+    logsumexp,
+    rad2deg,
+    radians,
+    reciprocal,
+    reduce_hypot,
+    rsqrt,
+    sin,
+    sinh,
+    sqrt,
+    square,
+    tan,
+    tanh,
+    unwrap,
+)
+
 # -----------------------------------------------------------------------------
 # Sorting, searching, and counting
 # -----------------------------------------------------------------------------
