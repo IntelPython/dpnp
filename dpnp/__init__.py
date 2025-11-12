@@ -207,6 +207,39 @@ from .dpnp_iface_linearalgebra import (
 )
 
 # -----------------------------------------------------------------------------
+# Logic functions
+# -----------------------------------------------------------------------------
+from .dpnp_iface_logic import (
+    all,
+    allclose,
+    any,
+    array_equal,
+    array_equiv,
+    equal,
+    greater,
+    greater_equal,
+    isclose,
+    iscomplex,
+    iscomplexobj,
+    isfinite,
+    isfortran,
+    isinf,
+    isnan,
+    isneginf,
+    isposinf,
+    isreal,
+    isrealobj,
+    isscalar,
+    less,
+    less_equal,
+    logical_and,
+    logical_not,
+    logical_or,
+    logical_xor,
+    not_equal,
+)
+
+# -----------------------------------------------------------------------------
 # Sorting, searching, and counting
 # -----------------------------------------------------------------------------
 from .dpnp_iface_counting import count_nonzero
