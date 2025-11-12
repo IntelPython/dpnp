@@ -369,11 +369,18 @@ from .dpnp_iface_mathematical import (
     true_divide,
     trunc,
 )
+from .dpnp_iface_nanfunctions import (
+    nancumprod,
+    nancumsum,
+    nanprod,
+    nansum,
+)
 
 # -----------------------------------------------------------------------------
 # Sorting, searching, and counting
 # -----------------------------------------------------------------------------
 from .dpnp_iface_counting import count_nonzero
+from .dpnp_iface_nanfunctions import nanargmax, nanargmin
 
 # -----------------------------------------------------------------------------
 # Statistics
@@ -385,6 +392,15 @@ from .dpnp_iface_histograms import (
     histogram_bin_edges,
     histogram2d,
     histogramdd,
+)
+
+from .dpnp_iface_nanfunctions import (
+    nanmax,
+    nanmean,
+    nanmedian,
+    nanmin,
+    nanstd,
+    nanvar,
 )
 
 
