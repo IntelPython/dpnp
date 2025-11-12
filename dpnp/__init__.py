@@ -381,6 +381,13 @@ from .dpnp_iface_nanfunctions import (
 # -----------------------------------------------------------------------------
 from .dpnp_iface_counting import count_nonzero
 from .dpnp_iface_nanfunctions import nanargmax, nanargmin
+from .dpnp_iface_searching import (
+    argmax,
+    argmin,
+    argwhere,
+    searchsorted,
+    where,
+)
 
 # -----------------------------------------------------------------------------
 # Statistics

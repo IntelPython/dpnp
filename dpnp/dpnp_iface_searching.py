@@ -47,8 +47,6 @@ import dpnp
 from .dpnp_array import dpnp_array
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
-__all__ = ["argmax", "argmin", "argwhere", "searchsorted", "where"]
-
 
 def _get_search_res_dt(a, out):
     """Get a data type used by dpctl for result array in search function."""
