@@ -42,27 +42,6 @@ import dpnp
 
 from .dpnp_utils_fft import dpnp_fft, dpnp_fftn, dpnp_fillfreq, swap_direction
 
-__all__ = [
-    "fft",
-    "fft2",
-    "fftfreq",
-    "fftn",
-    "fftshift",
-    "hfft",
-    "ifft",
-    "ifft2",
-    "ifftn",
-    "ifftshift",
-    "ihfft",
-    "irfft",
-    "irfft2",
-    "irfftn",
-    "rfft",
-    "rfft2",
-    "rfftfreq",
-    "rfftn",
-]
-
 
 def fft(a, n=None, axis=-1, norm=None, out=None):
     """
