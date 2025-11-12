@@ -156,6 +156,39 @@ from .dpnp_iface_functional import (
 )
 
 # -----------------------------------------------------------------------------
+# Indexing routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_indexing import (
+    choose,
+    compress,
+    diag_indices,
+    diag_indices_from,
+    diagonal,
+    extract,
+    fill_diagonal,
+    flatnonzero,
+    indices,
+    iterable,
+    ix_,
+    mask_indices,
+    ndindex,
+    nonzero,
+    place,
+    put,
+    put_along_axis,
+    putmask,
+    ravel_multi_index,
+    select,
+    take,
+    take_along_axis,
+    tril_indices,
+    tril_indices_from,
+    triu_indices,
+    triu_indices_from,
+    unravel_index,
+)
+
+# -----------------------------------------------------------------------------
 # Sorting, searching, and counting
 # -----------------------------------------------------------------------------
 from .dpnp_iface_counting import count_nonzero
