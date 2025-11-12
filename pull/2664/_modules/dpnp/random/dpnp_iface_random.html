@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.random.dpnp_iface_random &mdash; Data Parallel Extension for NumPy 0.20.0dev0+48.g000c2f1790a documentation</title>
+  <title>dpnp.random.dpnp_iface_random &mdash; Data Parallel Extension for NumPy 0.20.0dev0+51.g62571b83e02 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=bd3ab75f"></script>
+      <script src="../../../_static/documentation_options.js?v=9d9e3786"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -131,57 +131,6 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo_random</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_random_state</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomState</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;beta&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;binomial&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bytes&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;chisquare&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;choice&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dirichlet&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;exponential&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;f&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gamma&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;geometric&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gumbel&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;hypergeometric&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;laplace&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;logistic&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;lognormal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;logseries&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;multinomial&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;multivariate_normal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;negative_binomial&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;normal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;noncentral_chisquare&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;noncentral_f&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;pareto&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;permutation&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;poisson&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;power&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rand&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;randint&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;randn&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;random&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;random_integers&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;random_sample&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ranf&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rayleigh&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sample&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;shuffle&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;seed&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;standard_cauchy&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;standard_exponential&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;standard_gamma&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;standard_normal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;standard_t&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;triangular&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;uniform&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;vonmises&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;wald&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;weibull&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;zipf&quot;</span><span class="p">,</span>
-<span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_random_state</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
