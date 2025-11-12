@@ -67,8 +67,6 @@ from .dpnp_array import dpnp_array as ndarray
 from .dpnp_array_api_info import __array_namespace_info__
 from .dpnp_flatiter import flatiter as flatiter
 from .dpnp_iface_types import *
-from .dpnp_iface import *
-from .dpnp_iface import __all__ as _iface__all__
 from .dpnp_iface_utils import *
 from .dpnp_iface_utils import __all__ as _ifaceutils__all__
 from ._version import get_versions
@@ -493,9 +491,30 @@ from .dpnp_iface_statistics import (
     var,
 )
 
+# -----------------------------------------------------------------------------
+# DPNP iface functions
+# -----------------------------------------------------------------------------
+from .dpnp_iface import (
+    are_same_logical_tensors,
+    asnumpy,
+    as_usm_ndarray,
+    check_limitations,
+    check_supported_arrays_type,
+    default_float_type,
+    get_dpnp_descriptor,
+    get_include,
+    get_normalized_queue_device,
+    get_result_array,
+    get_usm_ndarray,
+    get_usm_ndarray_or_scalar,
+    is_cuda_backend,
+    is_supported_array_or_scalar,
+    is_supported_array_type,
+    synchronize_array_data,
+)
 
-__all__ = _iface__all__
-__all__ += _ifaceutils__all__
+
+__all__ = _ifaceutils__all__
 
 # add submodules
 __all__ += ["exceptions", "fft", "linalg", "random", "scipy"]

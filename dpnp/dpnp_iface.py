@@ -53,25 +53,6 @@ from dpctl.tensor._device import normalize_queue_device
 import dpnp
 from dpnp.dpnp_array import dpnp_array
 
-__all__ = [
-    "are_same_logical_tensors",
-    "asnumpy",
-    "as_usm_ndarray",
-    "check_limitations",
-    "check_supported_arrays_type",
-    "default_float_type",
-    "get_dpnp_descriptor",
-    "get_include",
-    "get_normalized_queue_device",
-    "get_result_array",
-    "get_usm_ndarray",
-    "get_usm_ndarray_or_scalar",
-    "is_cuda_backend",
-    "is_supported_array_or_scalar",
-    "is_supported_array_type",
-    "synchronize_array_data",
-]
-
 # pylint: disable=no-name-in-module
 from .dpnp_utils import (
     dpnp_descriptor,
