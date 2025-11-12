@@ -199,18 +199,24 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
         if dtype is not None:
             x_usm = dpt.astype(x_usm, dtype, copy=False)
 
-        if isinstance(out, tuple):
-            if len(out) != self.nout:
-                raise ValueError(
-                    "'out' tuple must have exactly one entry per ufunc output"
-                )
-            out = out[0]
+        out = self._unpack_out_kw(out)
         out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
         res_usm = super().__call__(x_usm, out=out_usm, order=order)
         if out is not None and isinstance(out, dpnp_array):
             return out
         return dpnp_array._create_from_usm_ndarray(res_usm)
+
+    def _unpack_out_kw(self, out):
+        """Unpack `out` keyword if passed as a tuple."""
+
+        if isinstance(out, tuple):
+            if len(out) != self.nout:
+                raise ValueError(
+                    "'out' tuple must have exactly one entry per ufunc output"
+                )
+            return out[0]
+        return out
 
 
 class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
@@ -819,15 +825,22 @@ class DPNPFix(DPNPUnaryFunc):
             pass  # pass to raise error in main implementation
         elif dpnp.issubdtype(x.dtype, dpnp.inexact):
             pass  # for inexact types, pass to calculate in the backend
-        elif out is not None and not dpnp.is_supported_array_type(out):
+        elif not (
+            out is None
+            or isinstance(out, tuple)
+            or dpnp.is_supported_array_type(out)
+        ):
             pass  # pass to raise error in main implementation
-        elif out is not None and out.dtype != x.dtype:
+        elif not (
+            out is None or isinstance(out, tuple) or out.dtype == x.dtype
+        ):
             # passing will raise an error but with incorrect needed dtype
             raise ValueError(
                 f"Output array of type {x.dtype} is needed, got {out.dtype}"
             )
         else:
             # for exact types, return the input
+            out = self._unpack_out_kw(out)
             if out is None:
                 return dpnp.copy(x, order=order)
 
@@ -932,6 +945,7 @@ class DPNPRound(DPNPUnaryFunc):
     def __call__(self, x, /, decimals=0, out=None, *, dtype=None):
         if decimals != 0:
             x_usm = dpnp.get_usm_ndarray(x)
+            out = self._unpack_out_kw(out)
             out_usm = None if out is None else dpnp.get_usm_ndarray(out)
 
             if dpnp.issubdtype(x_usm.dtype, dpnp.integer):

@@ -2010,14 +2010,17 @@ class TestUfunc:
             fn(*args, out=out, dtype="f4")
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    @pytest.mark.parametrize("func", ["abs", "add", "frexp"])
+    @pytest.mark.parametrize("func", ["abs", "fix", "round", "add", "frexp"])
     def test_out_wrong_tuple_len(self, xp, func):
+        if func == "round" and xp is numpy:
+            pytest.skip("numpy.round(x, out=(...)) is not supported")
+
         x = xp.array([1, 2, 3])
 
         fn = getattr(xp, func)
-        args = [x] * fn.nin
+        args = [x] * getattr(fn, "nin", getattr(dpnp, func).nin)
 
-        nout = fn.nout
+        nout = getattr(fn, "nout", getattr(dpnp, func).nout)
         outs = [(), tuple(range(nout + 1))]
         if nout > 1:
             outs.append(tuple(range(nout - 1)))
