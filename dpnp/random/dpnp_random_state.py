@@ -48,8 +48,6 @@ from dpnp.dpnp_utils.dpnp_algo_utils import (
 )
 from dpnp.random.dpnp_algo_random import MCG59, MT19937
 
-__all__ = ["RandomState"]
-
 
 class RandomState:
     """
