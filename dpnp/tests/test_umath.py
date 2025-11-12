@@ -524,8 +524,8 @@ class TestRsqrtCbrt:
 
     @pytest.mark.parametrize(
         "out",
-        [4, (), [], (3, 7), [2, 4]],
-        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
+        [4, [], range(2), [2, 4]],
+        ids=["scalar", "empty_list", "range", "list"],
     )
     def test_invalid_out(self, func_params, out):
         func = func_params["func"]
@@ -625,8 +625,8 @@ class TestUmath:
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
-        [4, (), [], (3, 7), [2, 4]],
-        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
+        [4, [], range(2), [2, 4]],
+        ids=["scalar", "empty_list", "range", "list"],
     )
     def test_invalid_out(self, func_params, xp, out):
         func = func_params["func"]

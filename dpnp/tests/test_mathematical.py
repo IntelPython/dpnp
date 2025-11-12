@@ -2010,20 +2010,33 @@ class TestUfunc:
             fn(*args, out=out, dtype="f4")
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("func", ["abs", "fix", "round", "add", "frexp"])
+    def test_out_wrong_tuple_len(self, xp, func):
+        if func == "round" and xp is numpy:
+            pytest.skip("numpy.round(x, out=(...)) is not supported")
+
+        x = xp.array([1, 2, 3])
+
+        fn = getattr(xp, func)
+        args = [x] * getattr(fn, "nin", getattr(dpnp, func).nin)
+
+        nout = getattr(fn, "nout", getattr(dpnp, func).nout)
+        outs = [(), tuple(range(nout + 1))]
+        if nout > 1:
+            outs.append(tuple(range(nout - 1)))
+
+        for out in outs:
+            with pytest.raises(
+                ValueError,
+                match="'out' tuple must have exactly one entry per ufunc output",
+            ):
+                _ = fn(*args, out=out)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_unary_two_outs_out_ndarray(self, xp):
         x = xp.array(0.5)
         with pytest.raises(TypeError, match="'out' must be a tuple of arrays"):
             _ = xp.frexp(x, out=xp.empty(()))
-
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    @pytest.mark.parametrize("out", [(), (1,), (1, 2, 3)])
-    def test_unary_two_outs_out_wrong_tuple_len(self, xp, out):
-        x = xp.array(0.5)
-        with pytest.raises(
-            ValueError,
-            match="'out' tuple must have exactly one entry per ufunc output",
-        ):
-            _ = xp.frexp(x, out=out)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_unary_two_outs_out_mixed(self, xp):
@@ -2599,8 +2612,8 @@ class TestHypot:
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
-        [4, (), [], (3, 7), [2, 4]],
-        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
+        [4, [], range(2), [2, 4]],
+        ids=["scalar", "empty_list", "range", "list"],
     )
     def test_invalid_out(self, xp, out):
         a = xp.arange(10)
