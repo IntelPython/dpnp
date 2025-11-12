@@ -76,8 +76,6 @@ __all__ = [
     "synchronize_array_data",
 ]
 
-from dpnp.dpnp_iface_bitwise import *
-from dpnp.dpnp_iface_bitwise import __all__ as __all__bitwise
 from dpnp.dpnp_iface_counting import *
 from dpnp.dpnp_iface_counting import __all__ as __all__counting
 from dpnp.dpnp_iface_functional import *
@@ -114,7 +112,6 @@ from .dpnp_utils import (
     use_origin_backend,
 )
 
-__all__ += __all__bitwise
 __all__ += __all__counting
 __all__ += __all__functional
 __all__ += __all__histograms

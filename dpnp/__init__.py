@@ -87,7 +87,6 @@ from . import scipy as scipy
 # -----------------------------------------------------------------------------
 # Array creation routines
 # -----------------------------------------------------------------------------
-
 from .dpnp_iface_arraycreation import (
     arange,
     array,
@@ -127,6 +126,24 @@ from .dpnp_iface_arraycreation import (
     vander,
     zeros,
     zeros_like,
+)
+
+# -----------------------------------------------------------------------------
+# Binary operations
+# -----------------------------------------------------------------------------
+from .dpnp_iface_bitwise import (
+    binary_repr,
+    bitwise_and,
+    bitwise_count,
+    bitwise_invert,
+    bitwise_left_shift,
+    bitwise_not,
+    bitwise_or,
+    bitwise_right_shift,
+    bitwise_xor,
+    invert,
+    left_shift,
+    right_shift,
 )
 
 __all__ = _iface__all__

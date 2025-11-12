@@ -49,21 +49,6 @@ import numpy
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
-__all__ = [
-    "binary_repr",
-    "bitwise_and",
-    "bitwise_count",
-    "bitwise_invert",
-    "bitwise_left_shift",
-    "bitwise_not",
-    "bitwise_or",
-    "bitwise_right_shift",
-    "bitwise_xor",
-    "invert",
-    "left_shift",
-    "right_shift",
-]
-
 
 def binary_repr(num, width=None):
     """
