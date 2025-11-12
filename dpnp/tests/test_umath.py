@@ -117,11 +117,6 @@ def test_umaths(test_cases):
         pytest.skip("dpctl-2031")
     elif umath in ["divmod"]:
         pytest.skip("Not implemented umath")
-    elif umath == "modf":
-        if args[0].dtype == dpnp.float16:
-            pytest.skip("dpnp.modf is not supported with dpnp.float16")
-        elif is_cuda_device():
-            pytest.skip("dpnp.modf is not supported on CUDA device")
     elif umath in ["vecmat", "matvec"]:
         if is_win_platform() and not is_gpu_device():
             pytest.skip("SAT-8073")
@@ -529,8 +524,8 @@ class TestRsqrtCbrt:
 
     @pytest.mark.parametrize(
         "out",
-        [4, (), [], (3, 7), [2, 4]],
-        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
+        [4, [], range(2), [2, 4]],
+        ids=["scalar", "empty_list", "range", "list"],
     )
     def test_invalid_out(self, func_params, out):
         func = func_params["func"]
@@ -630,8 +625,8 @@ class TestUmath:
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
-        [4, (), [], (3, 7), [2, 4]],
-        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
+        [4, [], range(2), [2, 4]],
+        ids=["scalar", "empty_list", "range", "list"],
     )
     def test_invalid_out(self, func_params, xp, out):
         func = func_params["func"]

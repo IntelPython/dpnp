@@ -49,7 +49,6 @@ __all__ = [
 
 
 include "dpnp_algo_indexing.pxi"
-include "dpnp_algo_mathematical.pxi"
 include "dpnp_algo_sorting.pxi"
 
 

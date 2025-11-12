@@ -123,9 +123,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -205,9 +207,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -287,9 +291,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -373,9 +379,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -454,9 +462,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -543,9 +553,11 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have a real-valued floating-point data
     type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -628,9 +640,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -705,9 +719,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real-valued floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -763,9 +779,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -824,9 +842,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -976,9 +996,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real-valued floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1038,9 +1060,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real-valued floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1106,9 +1130,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1163,9 +1189,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1221,9 +1249,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1295,9 +1325,11 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have a real-valued floating-point data
     type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1369,9 +1401,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1443,9 +1477,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1521,9 +1557,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1603,9 +1641,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1687,9 +1727,11 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have a real-valued floating-point data
     type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1765,9 +1807,11 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have a real-valued floating-point data
     type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1929,9 +1973,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real-valued floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -1991,9 +2037,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real-valued floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -2060,9 +2108,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -2202,9 +2252,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real-valued floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional:
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -2259,9 +2311,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -2320,9 +2374,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -2378,9 +2434,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -2452,9 +2510,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, may have any data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -2509,9 +2569,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -2572,9 +2634,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a floating-point data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional

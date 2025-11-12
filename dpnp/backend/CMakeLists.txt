@@ -30,7 +30,6 @@
 set(DPNP_SRC
     kernels/dpnp_krnl_arraycreation.cpp
     kernels/dpnp_krnl_common.cpp
-    kernels/dpnp_krnl_mathematical.cpp
     kernels/dpnp_krnl_random.cpp
     kernels/dpnp_krnl_sorting.cpp
     src/dpnp_iface_fptr.cpp
