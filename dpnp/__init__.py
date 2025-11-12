@@ -189,6 +189,24 @@ from .dpnp_iface_indexing import (
 )
 
 # -----------------------------------------------------------------------------
+# Linear algebra
+# -----------------------------------------------------------------------------
+from .dpnp_iface_linearalgebra import (
+    dot,
+    einsum,
+    einsum_path,
+    inner,
+    kron,
+    matmul,
+    matvec,
+    outer,
+    tensordot,
+    vdot,
+    vecdot,
+    vecmat,
+)
+
+# -----------------------------------------------------------------------------
 # Sorting, searching, and counting
 # -----------------------------------------------------------------------------
 from .dpnp_iface_counting import count_nonzero

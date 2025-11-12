@@ -54,21 +54,6 @@ from .dpnp_utils.dpnp_utils_linearalgebra import (
     dpnp_vecdot,
 )
 
-__all__ = [
-    "dot",
-    "einsum",
-    "einsum_path",
-    "inner",
-    "kron",
-    "matmul",
-    "matvec",
-    "outer",
-    "tensordot",
-    "vdot",
-    "vecdot",
-    "vecmat",
-]
-
 
 # TODO: implement a specific scalar-array kernel
 def _call_multiply(a, b, out=None, outer_calc=False):

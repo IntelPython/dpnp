@@ -76,8 +76,6 @@ __all__ = [
     "synchronize_array_data",
 ]
 
-from dpnp.dpnp_iface_linearalgebra import *
-from dpnp.dpnp_iface_linearalgebra import __all__ as __all__linearalgebra
 from dpnp.dpnp_iface_logic import *
 from dpnp.dpnp_iface_logic import __all__ as __all__logic
 from dpnp.dpnp_iface_manipulation import *
@@ -104,7 +102,6 @@ from .dpnp_utils import (
     use_origin_backend,
 )
 
-__all__ += __all__linearalgebra
 __all__ += __all__logic
 __all__ += __all__manipulation
 __all__ += __all__mathematical
