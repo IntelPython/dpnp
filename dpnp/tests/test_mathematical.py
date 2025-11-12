@@ -2010,20 +2010,30 @@ class TestUfunc:
             fn(*args, out=out, dtype="f4")
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("func", ["abs", "add", "frexp"])
+    def test_out_wrong_tuple_len(self, xp, func):
+        x = xp.array([1, 2, 3])
+
+        fn = getattr(xp, func)
+        args = [x] * fn.nin
+
+        nout = fn.nout
+        outs = [(), tuple(range(nout + 1))]
+        if nout > 1:
+            outs.append(tuple(range(nout - 1)))
+
+        for out in outs:
+            with pytest.raises(
+                ValueError,
+                match="'out' tuple must have exactly one entry per ufunc output",
+            ):
+                _ = fn(*args, out=out)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_unary_two_outs_out_ndarray(self, xp):
         x = xp.array(0.5)
         with pytest.raises(TypeError, match="'out' must be a tuple of arrays"):
             _ = xp.frexp(x, out=xp.empty(()))
-
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    @pytest.mark.parametrize("out", [(), (1,), (1, 2, 3)])
-    def test_unary_two_outs_out_wrong_tuple_len(self, xp, out):
-        x = xp.array(0.5)
-        with pytest.raises(
-            ValueError,
-            match="'out' tuple must have exactly one entry per ufunc output",
-        ):
-            _ = xp.frexp(x, out=out)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_unary_two_outs_out_mixed(self, xp):
