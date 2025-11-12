@@ -175,7 +175,6 @@ class TestBoundFuncs:
         with pytest.raises(ValueError):
             getattr(dpnp, func)(a, b, out=out)
 
-    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
@@ -184,7 +183,7 @@ class TestBoundFuncs:
     )
     def test_invalid_out_type(self, func, xp, out):
         a = xp.arange(10)
-        assert_raises(TypeError, getattr(xp, func), a, 2, out)
+        assert_raises(TypeError, getattr(xp, func), a, 2, out=out)
 
 
 class TestDivide:
