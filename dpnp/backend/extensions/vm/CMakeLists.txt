@@ -61,6 +61,7 @@ if(NOT _use_onemath)
         ${CMAKE_CURRENT_SOURCE_DIR}/log10.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/log1p.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/log2.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/modf.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/mul.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/nextafter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/pow.cpp

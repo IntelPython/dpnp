@@ -653,6 +653,7 @@ def test_1in_1out(func, data, usm_type):
     "func, data",
     [
         pytest.param("frexp", numpy.arange(9)),
+        pytest.param("modf", [0, 3.5]),
     ],
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types)

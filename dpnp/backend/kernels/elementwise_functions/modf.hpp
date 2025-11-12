@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,63 +26,28 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "bitwise_count.hpp"
-#include "degrees.hpp"
-#include "erf_funcs.hpp"
-#include "fabs.hpp"
-#include "fix.hpp"
-#include "float_power.hpp"
-#include "fmax.hpp"
-#include "fmin.hpp"
-#include "fmod.hpp"
-#include "frexp.hpp"
-#include "gcd.hpp"
-#include "heaviside.hpp"
-#include "i0.hpp"
-#include "interpolate.hpp"
-#include "isclose.hpp"
-#include "lcm.hpp"
-#include "ldexp.hpp"
-#include "logaddexp2.hpp"
-#include "modf.hpp"
-#include "nan_to_num.hpp"
-#include "radians.hpp"
-#include "sinc.hpp"
-#include "spacing.hpp"
+#include <sycl/sycl.hpp>
 
-namespace py = pybind11;
-
-namespace dpnp::extensions::ufunc
+namespace dpnp::kernels::modf
 {
-/**
- * @brief Add elementwise functions to Python module
- */
-void init_elementwise_functions(py::module_ m)
+template <typename argT, typename fractT, typename intT>
+struct ModfFunctor
 {
-    init_bitwise_count(m);
-    init_degrees(m);
-    init_erf_funcs(m);
-    init_fabs(m);
-    init_fix(m);
-    init_float_power(m);
-    init_fmax(m);
-    init_fmin(m);
-    init_fmod(m);
-    init_frexp(m);
-    init_gcd(m);
-    init_heaviside(m);
-    init_i0(m);
-    init_interpolate(m);
-    init_isclose(m);
-    init_lcm(m);
-    init_ldexp(m);
-    init_logaddexp2(m);
-    init_modf(m);
-    init_nan_to_num(m);
-    init_radians(m);
-    init_sinc(m);
-    init_spacing(m);
-}
-} // namespace dpnp::extensions::ufunc
+    // is function constant for given argT
+    using is_constant = typename std::false_type;
+    // constant value, if constant
+    // constexpr resT1 constant_value1 = resT1{};
+    // constexpr resT2 constant_value2 = resT2{};
+    // is function defined for sycl::vec
+    using supports_vec = typename std::false_type;
+    // do both argT and fractT, intT support subgroup store/load operation
+    using supports_sg_loadstore = typename std::true_type;
+
+    fractT operator()(const argT &in, intT &integral) const
+    {
+        return sycl::modf(in, &integral);
+    }
+};
+} // namespace dpnp::kernels::modf

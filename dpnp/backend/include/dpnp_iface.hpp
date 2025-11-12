@@ -158,32 +158,6 @@ INP_DLLEXPORT void dpnp_initval_c(void *result1, void *value, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief modf function.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array1_in           Input array.
- * @param [out] result1_out         Output array 1.
- * @param [out] result2_out         Output array 2.
- * @param [in]  size                Number of elements in input arrays.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_modf_c(DPCTLSyclQueueRef q_ref,
-                void *array1_in,
-                void *result1_out,
-                void *result2_out,
-                size_t size,
-                const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void dpnp_modf_c(void *array1_in,
-                               void *result1_out,
-                               void *result2_out,
-                               size_t size);
-
-/**
- * @ingroup BACKEND_API
  * @brief Implementation of ones function
  *
  * @param [in]  q_ref               Reference to SYCL queue.

@@ -47,6 +47,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/lcm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/ldexp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/logaddexp2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/modf.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/nan_to_num.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/radians.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/sinc.cpp
