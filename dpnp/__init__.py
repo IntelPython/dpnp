@@ -160,6 +160,18 @@ from .dpnp_iface_functional import (
 # -----------------------------------------------------------------------------
 from .dpnp_iface_counting import count_nonzero
 
+# -----------------------------------------------------------------------------
+# Statistics
+# -----------------------------------------------------------------------------
+from .dpnp_iface_histograms import (
+    bincount,
+    digitize,
+    histogram,
+    histogram_bin_edges,
+    histogram2d,
+    histogramdd,
+)
+
 
 __all__ = _iface__all__
 __all__ += _ifaceutils__all__

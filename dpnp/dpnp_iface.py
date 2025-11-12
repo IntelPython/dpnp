@@ -76,8 +76,6 @@ __all__ = [
     "synchronize_array_data",
 ]
 
-from dpnp.dpnp_iface_histograms import *
-from dpnp.dpnp_iface_histograms import __all__ as __all__histograms
 from dpnp.dpnp_iface_indexing import *
 from dpnp.dpnp_iface_indexing import __all__ as __all__indexing
 from dpnp.dpnp_iface_linearalgebra import *
@@ -108,7 +106,6 @@ from .dpnp_utils import (
     use_origin_backend,
 )
 
-__all__ += __all__histograms
 __all__ += __all__indexing
 __all__ += __all__linearalgebra
 __all__ += __all__logic
