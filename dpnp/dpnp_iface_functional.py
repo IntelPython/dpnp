@@ -51,8 +51,6 @@ import dpnp
 # pylint: disable=no-name-in-module
 from dpnp.dpnp_utils import get_usm_allocations
 
-__all__ = ["apply_along_axis", "apply_over_axes", "piecewise"]
-
 
 def apply_along_axis(func1d, axis, arr, *args, **kwargs):
     """

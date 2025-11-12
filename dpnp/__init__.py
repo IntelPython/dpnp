@@ -147,6 +147,15 @@ from .dpnp_iface_bitwise import (
 )
 
 # -----------------------------------------------------------------------------
+# Functional routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_functional import (
+    apply_along_axis,
+    apply_over_axes,
+    piecewise,
+)
+
+# -----------------------------------------------------------------------------
 # Sorting, searching, and counting
 # -----------------------------------------------------------------------------
 from .dpnp_iface_counting import count_nonzero
