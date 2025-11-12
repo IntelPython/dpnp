@@ -76,17 +76,12 @@ __all__ = [
     "synchronize_array_data",
 ]
 
-from dpnp.dpnp_iface_window import *
-from dpnp.dpnp_iface_window import __all__ as __all__window
-
 # pylint: disable=no-name-in-module
 from .dpnp_utils import (
     dpnp_descriptor,
     map_dtype_to_device,
     use_origin_backend,
 )
-
-__all__ += __all__window
 
 
 def are_same_logical_tensors(ar1, ar2):

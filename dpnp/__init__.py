@@ -446,6 +446,14 @@ from .dpnp_iface_sorting import (
     sort_complex,
 )
 
+from .dpnp_iface_window import (
+    bartlett,
+    blackman,
+    hamming,
+    hanning,
+    kaiser,
+)
+
 # -----------------------------------------------------------------------------
 # Statistics
 # -----------------------------------------------------------------------------
