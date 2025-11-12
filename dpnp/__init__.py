@@ -146,6 +146,12 @@ from .dpnp_iface_bitwise import (
     right_shift,
 )
 
+# -----------------------------------------------------------------------------
+# Sorting, searching, and counting
+# -----------------------------------------------------------------------------
+from .dpnp_iface_counting import count_nonzero
+
+
 __all__ = _iface__all__
 __all__ += _ifaceutils__all__
 

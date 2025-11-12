@@ -43,8 +43,6 @@ import dpctl.tensor as dpt
 
 import dpnp
 
-__all__ = ["count_nonzero"]
-
 
 def count_nonzero(a, axis=None, *, keepdims=False, out=None):
     """
