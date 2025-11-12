@@ -76,8 +76,6 @@ __all__ = [
     "synchronize_array_data",
 ]
 
-from dpnp.dpnp_iface_mathematical import *
-from dpnp.dpnp_iface_mathematical import __all__ as __all__mathematical
 from dpnp.dpnp_iface_nanfunctions import *
 from dpnp.dpnp_iface_nanfunctions import __all__ as __all__nanfunctions
 from dpnp.dpnp_iface_searching import *
@@ -98,7 +96,6 @@ from .dpnp_utils import (
     use_origin_backend,
 )
 
-__all__ += __all__mathematical
 __all__ += __all__nanfunctions
 __all__ += __all__searching
 __all__ += __all__sorting
