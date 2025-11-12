@@ -32,6 +32,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Aligned documentation with NumPy and CuPy style by using short function names [#2633](https://github.com/IntelPython/dpnp/pull/2633)
 * Added the missing positional-only and keyword-only parameter markers to bring the ufunc signatures into alignment with NumPy [#2660](https://github.com/IntelPython/dpnp/pull/2660)
 * Redesigned `dpnp.modf` function to be a part of `ufunc` and `vm` pybind11 extensions [#2654](https://github.com/IntelPython/dpnp/pull/2654)
+* Unified public API definitions in `dpnp.linalg` and `dpnp.scipy` submodules [#2663](https://github.com/IntelPython/dpnp/pull/2663)
 
 ### Deprecated
 
