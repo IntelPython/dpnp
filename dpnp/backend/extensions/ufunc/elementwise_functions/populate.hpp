@@ -28,6 +28,12 @@
 
 #pragma once
 
+#include <type_traits>
+#include <utility>
+#include <vector>
+
+#include <pybind11/pybind11.h>
+
 // utils extension header
 #include "ext/common.hpp"
 
@@ -122,6 +128,109 @@ namespace ext_ns = ext::common;
                                      StridedFactory>(                          \
             __name__##_strided_dispatch_vector);                               \
         ext_ns::init_dispatch_vector<int, TypeMapFactory>(                     \
+            __name__##_output_typeid_vector);                                  \
+    };
+
+/**
+ * @brief A macro used to define factories and a populating unary universal
+ * functions with two output arrays.
+ */
+#define MACRO_POPULATE_DISPATCH_2OUTS_VECTORS(__name__)                        \
+    template <typename T1, typename T2, typename T3, unsigned int vec_sz,      \
+              unsigned int n_vecs>                                             \
+    class __name__##_contig_kernel;                                            \
+                                                                               \
+    template <typename argTy>                                                  \
+    sycl::event __name__##_contig_impl(                                        \
+        sycl::queue &exec_q, size_t nelems, const char *arg_p, char *res1_p,   \
+        char *res2_p, const std::vector<sycl::event> &depends = {})            \
+    {                                                                          \
+        return ew_cmn_ns::unary_two_outputs_contig_impl<                       \
+            argTy, OutputType, ContigFunctor, __name__##_contig_kernel>(       \
+            exec_q, nelems, arg_p, res1_p, res2_p, depends);                   \
+    }                                                                          \
+                                                                               \
+    template <typename fnT, typename T>                                        \
+    struct ContigFactory                                                       \
+    {                                                                          \
+        fnT get()                                                              \
+        {                                                                      \
+            if constexpr (std::is_same_v<typename OutputType<T>::value_type1,  \
+                                         void> ||                              \
+                          std::is_same_v<typename OutputType<T>::value_type2,  \
+                                         void>)                                \
+            {                                                                  \
+                fnT fn = nullptr;                                              \
+                return fn;                                                     \
+            }                                                                  \
+            else {                                                             \
+                fnT fn = __name__##_contig_impl<T>;                            \
+                return fn;                                                     \
+            }                                                                  \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    template <typename fnT, typename T>                                        \
+    struct TypeMapFactory                                                      \
+    {                                                                          \
+        std::enable_if_t<std::is_same<fnT, std::pair<int, int>>::value,        \
+                         std::pair<int, int>>                                  \
+            get()                                                              \
+        {                                                                      \
+            using rT1 = typename OutputType<T>::value_type1;                   \
+            using rT2 = typename OutputType<T>::value_type2;                   \
+            return std::make_pair(td_ns::GetTypeid<rT1>{}.get(),               \
+                                  td_ns::GetTypeid<rT2>{}.get());              \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    template <typename T1, typename T2, typename T3, typename T4>              \
+    class __name__##_strided_kernel;                                           \
+                                                                               \
+    template <typename argTy>                                                  \
+    sycl::event __name__##_strided_impl(                                       \
+        sycl::queue &exec_q, size_t nelems, int nd,                            \
+        const py::ssize_t *shape_and_strides, const char *arg_p,               \
+        py::ssize_t arg_offset, char *res1_p, py::ssize_t res1_offset,         \
+        char *res2_p, py::ssize_t res2_offset,                                 \
+        const std::vector<sycl::event> &depends,                               \
+        const std::vector<sycl::event> &additional_depends)                    \
+    {                                                                          \
+        return ew_cmn_ns::unary_two_outputs_strided_impl<                      \
+            argTy, OutputType, StridedFunctor, __name__##_strided_kernel>(     \
+            exec_q, nelems, nd, shape_and_strides, arg_p, arg_offset, res1_p,  \
+            res1_offset, res2_p, res2_offset, depends, additional_depends);    \
+    }                                                                          \
+                                                                               \
+    template <typename fnT, typename T>                                        \
+    struct StridedFactory                                                      \
+    {                                                                          \
+        fnT get()                                                              \
+        {                                                                      \
+            if constexpr (std::is_same_v<typename OutputType<T>::value_type1,  \
+                                         void> ||                              \
+                          std::is_same_v<typename OutputType<T>::value_type2,  \
+                                         void>)                                \
+            {                                                                  \
+                fnT fn = nullptr;                                              \
+                return fn;                                                     \
+            }                                                                  \
+            else {                                                             \
+                fnT fn = __name__##_strided_impl<T>;                           \
+                return fn;                                                     \
+            }                                                                  \
+        }                                                                      \
+    };                                                                         \
+                                                                               \
+    void populate_##__name__##_dispatch_vectors(void)                          \
+    {                                                                          \
+        ext_ns::init_dispatch_vector<unary_two_outputs_contig_impl_fn_ptr_t,   \
+                                     ContigFactory>(                           \
+            __name__##_contig_dispatch_vector);                                \
+        ext_ns::init_dispatch_vector<unary_two_outputs_strided_impl_fn_ptr_t,  \
+                                     StridedFactory>(                          \
+            __name__##_strided_dispatch_vector);                               \
+        ext_ns::init_dispatch_vector<std::pair<int, int>, TypeMapFactory>(     \
             __name__##_output_typeid_vector);                                  \
     };
 
