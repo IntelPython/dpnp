@@ -76,6 +76,59 @@ from . import exceptions as exceptions
 from . import linalg as linalg
 from . import scipy as scipy
 
+
+# =============================================================================
+# Routines
+#
+# The order of these declarations are borrowed from the NumPy document:
+# https://numpy.org/doc/stable/reference/routines.html
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Array creation routines
+# -----------------------------------------------------------------------------
+
+from .dpnp_iface_arraycreation import (
+    arange,
+    array,
+    asanyarray,
+    asarray,
+    ascontiguousarray,
+    asfortranarray,
+    astype,
+    copy,
+    diag,
+    diagflat,
+    empty,
+    empty_like,
+    eye,
+    frombuffer,
+    fromfile,
+    fromfunction,
+    fromiter,
+    fromstring,
+    from_dlpack,
+    full,
+    full_like,
+    geomspace,
+    identity,
+    linspace,
+    loadtxt,
+    logspace,
+    meshgrid,
+    mgrid,
+    ogrid,
+    ones,
+    ones_like,
+    trace,
+    tri,
+    tril,
+    triu,
+    vander,
+    zeros,
+    zeros_like,
+)
+
 __all__ = _iface__all__
 __all__ += _ifaceutils__all__
 

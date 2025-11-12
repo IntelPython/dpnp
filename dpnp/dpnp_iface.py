@@ -76,8 +76,6 @@ __all__ = [
     "synchronize_array_data",
 ]
 
-from dpnp.dpnp_iface_arraycreation import *
-from dpnp.dpnp_iface_arraycreation import __all__ as __all__arraycreation
 from dpnp.dpnp_iface_bitwise import *
 from dpnp.dpnp_iface_bitwise import __all__ as __all__bitwise
 from dpnp.dpnp_iface_counting import *
@@ -116,7 +114,6 @@ from .dpnp_utils import (
     use_origin_backend,
 )
 
-__all__ += __all__arraycreation
 __all__ += __all__bitwise
 __all__ += __all__counting
 __all__ += __all__functional
@@ -440,7 +437,7 @@ def get_dpnp_descriptor(
     # If input object is a scalar, it means it was allocated on host memory.
     # We need to copy it to USM memory according to compute follows data.
     if dpnp.isscalar(ext_obj):
-        ext_obj = array(
+        ext_obj = dpnp.array(
             ext_obj,
             dtype=alloc_dtype,
             usm_type=alloc_usm_type,
@@ -467,7 +464,7 @@ def get_dpnp_descriptor(
             ext_obj_offset = 0
 
         if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
-            ext_obj = array(ext_obj, order="C")
+            ext_obj = dpnp.array(ext_obj, order="C")
 
     # while dpnp functions are based on DPNP_QUEUE
     # we need to create a copy on device associated with DPNP_QUEUE
@@ -481,7 +478,7 @@ def get_dpnp_descriptor(
             dpctl.utils.get_execution_queue([queue, default_queue]) is not None
         )
         if not queue_is_default:
-            ext_obj = array(ext_obj, sycl_queue=default_queue)
+            ext_obj = dpnp.array(ext_obj, sycl_queue=default_queue)
 
     dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:  # pylint: disable=using-constant-test
