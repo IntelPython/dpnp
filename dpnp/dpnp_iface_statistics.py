@@ -60,23 +60,6 @@ from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 from .dpnp_utils.dpnp_utils_statistics import dpnp_cov, dpnp_median
 
-__all__ = [
-    "amax",
-    "amin",
-    "average",
-    "convolve",
-    "corrcoef",
-    "correlate",
-    "cov",
-    "max",
-    "mean",
-    "median",
-    "min",
-    "ptp",
-    "std",
-    "var",
-]
-
 
 def _count_reduce_items(arr, axis, where=True):
     """

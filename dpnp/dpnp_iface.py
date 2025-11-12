@@ -76,8 +76,6 @@ __all__ = [
     "synchronize_array_data",
 ]
 
-from dpnp.dpnp_iface_statistics import *
-from dpnp.dpnp_iface_statistics import __all__ as __all__statistics
 from dpnp.dpnp_iface_trigonometric import *
 from dpnp.dpnp_iface_trigonometric import __all__ as __all__trigonometric
 from dpnp.dpnp_iface_window import *
@@ -90,7 +88,6 @@ from .dpnp_utils import (
     use_origin_backend,
 )
 
-__all__ += __all__statistics
 __all__ += __all__trigonometric
 __all__ += __all__window
 

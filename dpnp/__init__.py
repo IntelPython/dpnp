@@ -376,6 +376,8 @@ from .dpnp_iface_nanfunctions import (
     nansum,
 )
 
+from .dpnp_iface_statistics import convolve
+
 # -----------------------------------------------------------------------------
 # Sorting, searching, and counting
 # -----------------------------------------------------------------------------
@@ -417,6 +419,22 @@ from .dpnp_iface_nanfunctions import (
     nanmin,
     nanstd,
     nanvar,
+)
+
+from .dpnp_iface_statistics import (
+    amax,
+    amin,
+    average,
+    corrcoef,
+    correlate,
+    cov,
+    max,
+    mean,
+    median,
+    min,
+    ptp,
+    std,
+    var,
 )
 
 
