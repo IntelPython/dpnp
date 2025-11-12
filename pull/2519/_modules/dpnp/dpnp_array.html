@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev0+35.gdd0d12a38e8 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev0+51.gb3e5ce99cda documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=463ba632"></script>
+      <script src="../../_static/documentation_options.js?v=b2bcb27c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -83,8 +83,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dpnp.dpnp_array</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="c1"># *****************************************************************************</span>
+<span></span><span class="c1"># *****************************************************************************</span>
 <span class="c1"># Copyright (c) 2016, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
@@ -126,7 +125,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisError</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.memory</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpm</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">memory</span> <span class="k">as</span> <span class="n">dpm</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_unwrapped_index_key</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
@@ -261,7 +261,6 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__array_namespace__</span><span class="p">(</span><span class="n">api_version</span><span class="o">=</span><span class="n">api_version</span><span class="p">)</span>
 
-    <span class="c1"># &#39;__array_prepare__&#39;,</span>
     <span class="c1"># &#39;__array_priority__&#39;,</span>
     <span class="c1"># &#39;__array_struct__&#39;,</span>
 
@@ -295,8 +294,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">)</span>
 
     <span class="c1"># &#39;__deepcopy__&#39;,</span>
-    <span class="c1"># &#39;__delattr__&#39;,</span>
-    <span class="c1"># &#39;__delitem__&#39;,</span>
     <span class="c1"># &#39;__dir__&#39;,</span>
     <span class="c1"># &#39;__divmod__&#39;,</span>
 
@@ -380,8 +377,6 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__dlpack_device__</span><span class="p">()</span>
 
-    <span class="c1"># &#39;__doc__&#39;,</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return :math:`\text{self == value}`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
@@ -399,8 +394,6 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return :math:`\text{self &gt;= value}`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-
-    <span class="c1"># &#39;__getattribute__&#39;,</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return :math:`\text{self[key]}`.&quot;&quot;&quot;</span>
@@ -475,7 +468,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a zero-dimensional array to a Python int object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="fm">__index__</span><span class="p">()</span>
 
-    <span class="c1"># &#39;__init__&#39;,</span>
     <span class="c1"># &#39;__init_subclass__&#39;,</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__int__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
@@ -640,8 +632,6 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return :math:`\text{value ^ self}`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
-    <span class="c1"># &#39;__setattr__&#39;,</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Set :math:`\text{self[key]}` to a value.&quot;&quot;&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">_get_unwrapped_index_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -663,8 +653,6 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return :math:`\text{self - value}`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-
-    <span class="c1"># &#39;__subclasshook__&#39;,</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">__sycl_usm_array_interface__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2219,9 +2207,129 @@
         <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
 
 
-    <span class="c1"># &#39;tobytes&#39;,</span>
-    <span class="c1"># &#39;tofile&#39;,</span>
-    <span class="c1"># &#39;tolist&#39;,</span>
+<div class="viewcode-block" id="dpnp_array.tobytes">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.tobytes.html#dpnp.dpnp_array.dpnp_array.tobytes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tobytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs Python bytes containing the raw data bytes in the array.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.tobytes`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="sd">            Controls the memory layout of the bytes object.</span>
+
+<span class="sd">            Default: ``&quot;C&quot;``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : bytes</span>
+<span class="sd">            Python bytes exhibiting a copy of array&#39;s raw data.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.frombuffer` : Construct a 1D array from Python bytes.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; x = np.array([[0, 1], [2, 3]], dtype=&#39;i2&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; x.tobytes()</span>
+<span class="sd">        b&#39;\x00\x00\x01\x00\x02\x00\x03\x00&#39;</span>
+<span class="sd">        &gt;&gt;&gt; x.tobytes(&quot;C&quot;) == x.tobytes()</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; x.tobytes(&quot;F&quot;)</span>
+<span class="sd">        b&#39;\x00\x00\x02\x00\x01\x00\x03\x00&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span><span class="o">.</span><span class="n">tobytes</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dpnp_array.tofile">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.tofile.html#dpnp.dpnp_array.dpnp_array.tofile">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tofile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the array to a file as text or binary (default).</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.tofile`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fid : {file. str, path}</span>
+<span class="sd">            An open file object, or a string containing a filename.</span>
+<span class="sd">        sep : str, optional</span>
+<span class="sd">            Separator between array items for text output. If ``&quot;&quot;`` (empty),</span>
+<span class="sd">            a binary file is written.</span>
+
+<span class="sd">            Default: ``&quot;&quot;``.</span>
+<span class="sd">        format : str, optional</span>
+<span class="sd">            Format string for text file output (when non-empty `sep` is passed).</span>
+<span class="sd">            Each entry in the array is formatted to text by first converting it</span>
+<span class="sd">            to the closest Python type, and then using ``format % item``. If</span>
+<span class="sd">            ``&quot;&quot;`` (empty), no formatting is used while converting to the</span>
+<span class="sd">            string.</span>
+
+<span class="sd">            Default: ``&quot;&quot;``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.fromfile` : Construct an array from data in a text or binary</span>
+<span class="sd">            file.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">fid</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dpnp_array.tolist">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.tolist.html#dpnp.dpnp_array.dpnp_array.tolist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts the array to a (possibly nested) Python list.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.tolist`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : list</span>
+<span class="sd">            The possibly nested Python list of array elements.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        For a 1D array, ``a.tolist()`` is almost the same as ``list(a)``,</span>
+<span class="sd">        except that ``tolist`` changes 0D arrays to Python scalars:</span>
+
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([1, 2])</span>
+<span class="sd">        &gt;&gt;&gt; list(a)</span>
+<span class="sd">        [array(1), array(2)]</span>
+<span class="sd">        &gt;&gt;&gt; a.tolist()</span>
+<span class="sd">        [1, 2]</span>
+
+<span class="sd">        Additionally, for a 2D array, ``tolist`` applies recursively:</span>
+
+<span class="sd">        &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">        &gt;&gt;&gt; list(a)</span>
+<span class="sd">        [array([1, 2]), array([3, 4])]</span>
+<span class="sd">        &gt;&gt;&gt; a.tolist()</span>
+<span class="sd">        [[1, 2], [3, 4]]</span>
+
+<span class="sd">        The base case for this recursion is a 0D array:</span>
+
+<span class="sd">        &gt;&gt;&gt; a = np.array(1)</span>
+<span class="sd">        &gt;&gt;&gt; list(a)</span>
+<span class="sd">        Traceback (most recent call last):</span>
+<span class="sd">        ...</span>
+<span class="sd">        TypeError: iteration over a 0-d array</span>
+<span class="sd">        &gt;&gt;&gt; a.tolist()</span>
+<span class="sd">        1</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
 
 <div class="viewcode-block" id="dpnp_array.trace">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.trace.html#dpnp.dpnp_array.dpnp_array.trace">[docs]</a>

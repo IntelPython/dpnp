@@ -1,7 +1,9 @@
+.. currentmodule:: dpnp
+
 Array manipulation routines
 ===========================
 
-.. https://numpy.org/doc/stable/reference/routines.array-manipulation.html
+.. hint:: `NumPy API Reference: Array manipulation routines <https://numpy.org/doc/stable/reference/routines.array-manipulation.html>`_
 
 Basic operations
 ----------------
@@ -10,10 +12,10 @@ Basic operations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.copyto
-   dpnp.ndim
-   dpnp.shape
-   dpnp.size
+   copyto
+   ndim
+   shape
+   size
 
 
 Changing array shape
@@ -23,10 +25,10 @@ Changing array shape
    :toctree: generated/
    :nosignatures:
 
-   dpnp.reshape
-   dpnp.ravel
-   dpnp.ndarray.flat
-   dpnp.ndarray.flatten
+   reshape
+   ravel
+   ndarray.flat
+   ndarray.flatten
 
 
 Transpose-like operations
@@ -36,13 +38,13 @@ Transpose-like operations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.moveaxis
-   dpnp.rollaxis
-   dpnp.swapaxes
-   dpnp.ndarray.T
-   dpnp.transpose
-   dpnp.permute_dims
-   dpnp.matrix_transpose (Array API compatible)
+   moveaxis
+   rollaxis
+   swapaxes
+   ndarray.T
+   transpose
+   permute_dims
+   matrix_transpose (Array API compatible)
 
 
 Changing number of dimensions
@@ -52,14 +54,14 @@ Changing number of dimensions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.atleast_1d
-   dpnp.atleast_2d
-   dpnp.atleast_3d
-   dpnp.broadcast
-   dpnp.broadcast_to
-   dpnp.broadcast_arrays
-   dpnp.expand_dims
-   dpnp.squeeze
+   atleast_1d
+   atleast_2d
+   atleast_3d
+   broadcast
+   broadcast_to
+   broadcast_arrays
+   expand_dims
+   squeeze
 
 
 Changing kind of array
@@ -69,14 +71,13 @@ Changing kind of array
    :toctree: generated/
    :nosignatures:
 
-   dpnp.asarray
-   dpnp.asanyarray
-   dpnp.asnumpy
-   dpnp.asfarray
-   dpnp.asfortranarray
-   dpnp.ascontiguousarray
-   dpnp.asarray_chkfinite
-   dpnp.require
+   asarray
+   asanyarray
+   asnumpy
+   asfortranarray
+   ascontiguousarray
+   asarray_chkfinite
+   require
 
 
 Joining arrays
@@ -86,15 +87,15 @@ Joining arrays
    :toctree: generated/
    :nosignatures:
 
-   dpnp.concatenate
-   dpnp.concat
-   dpnp.stack
-   dpnp.block
-   dpnp.vstack
-   dpnp.hstack
-   dpnp.dstack
-   dpnp.column_stack
-   dpnp.row_stack
+   concatenate
+   concat
+   stack
+   block
+   vstack
+   hstack
+   dstack
+   column_stack
+   row_stack
 
 
 Splitting arrays
@@ -104,12 +105,12 @@ Splitting arrays
    :toctree: generated/
    :nosignatures:
 
-   dpnp.split
-   dpnp.array_split
-   dpnp.dsplit
-   dpnp.hsplit
-   dpnp.vsplit
-   dpnp.unstack
+   split
+   array_split
+   dsplit
+   hsplit
+   vsplit
+   unstack
 
 
 Tiling arrays
@@ -119,8 +120,8 @@ Tiling arrays
    :toctree: generated/
    :nosignatures:
 
-   dpnp.tile
-   dpnp.repeat
+   tile
+   repeat
 
 
 Adding and removing elements
@@ -130,12 +131,12 @@ Adding and removing elements
    :toctree: generated/
    :nosignatures:
 
-   dpnp.delete
-   dpnp.insert
-   dpnp.append
-   dpnp.resize
-   dpnp.trim_zeros
-   dpnp.pad
+   delete
+   insert
+   append
+   resize
+   trim_zeros
+   pad
 
 
 Rearranging elements
@@ -145,8 +146,8 @@ Rearranging elements
    :toctree: generated/
    :nosignatures:
 
-   dpnp.flip
-   dpnp.fliplr
-   dpnp.flipud
-   dpnp.roll
-   dpnp.rot90
+   flip
+   fliplr
+   flipud
+   roll
+   rot90
