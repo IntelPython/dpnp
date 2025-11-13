@@ -144,9 +144,11 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have an integer or boolean data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have an integer or boolean data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -233,9 +235,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have an integer data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -290,9 +294,11 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have an integer or boolean data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have an integer or boolean data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -374,9 +380,11 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have an integer or boolean data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have an integer or boolean data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -460,9 +468,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have an integer or boolean data type.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -544,9 +554,11 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have an integer data type.
     Each element must be greater than or equal to ``0``.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
@@ -627,9 +639,11 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have an integer data type.
     Each element must be greater than or equal to ``0``.
-out : {None, dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional

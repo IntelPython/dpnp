@@ -67,7 +67,7 @@ class DPNPErf(DPNPUnaryFunc):
             mkl_impl_fn=mkl_impl_fn,
         )
 
-    def __call__(self, x, out=None):  # pylint: disable=signature-differs
+    def __call__(self, x, /, out=None):
         return super().__call__(x, out=out)
 
 
@@ -82,8 +82,12 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real-valued floating-point data type.
-out : {dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Optional output array for the function values.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
+
+    Default: ``None``.
 
 Returns
 -------
@@ -138,8 +142,12 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real-valued floating-point data type.
-out : {dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Optional output array for the function values.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
+
+    Default: ``None``.
 
 Returns
 -------
@@ -183,8 +191,12 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real-valued floating-point data type.
-out : {dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Optional output array for the function values.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
+
+    Default: ``None``..
 
 Returns
 -------
@@ -229,8 +241,12 @@ Parameters
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real-valued floating-point data type.
     Domain: [-1, 1].
-out : {dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Optional output array for the function values.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
+
+    Default: ``None``.
 
 Returns
 -------
@@ -282,8 +298,12 @@ Parameters
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real-valued floating-point data type.
     Domain: [0, 2].
-out : {dpnp.ndarray, usm_ndarray}, optional
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Optional output array for the function values.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
+
+    Default: ``None``.
 
 Returns
 -------
