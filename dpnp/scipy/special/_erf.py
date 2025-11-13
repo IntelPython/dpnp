@@ -38,6 +38,7 @@ it contains:
 
 """
 
+# pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi

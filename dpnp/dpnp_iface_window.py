@@ -39,6 +39,7 @@ it contains:
 
 """
 
+# pylint: disable=no-name-in-module
 # pylint: disable=invalid-name
 # pylint: disable=protected-access
 
