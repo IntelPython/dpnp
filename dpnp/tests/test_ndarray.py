@@ -108,6 +108,21 @@ class TestContains:
         assert xp.full_like(a, fill_value=6) not in a
 
 
+class TestFormat:
+    def test_basic(self):
+        a = numpy.array(3.14159)
+        ia = dpnp.array(a)
+
+        spec = ".3f"
+        assert_equal(format(ia, spec), format(a, spec))
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_1d(self, xp):
+        a = xp.array([3.14159])
+        with pytest.raises(TypeError, match="unsupported format string"):
+            _ = format(a, ".2f")
+
+
 class TestToBytes:
     @pytest.mark.parametrize("order", ["C", "F", "K", "A", None])
     def test_roundtrip_binary_str(self, order):
