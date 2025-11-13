@@ -65,6 +65,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPI0,
     DPNPAngle,
     DPNPBinaryFunc,
+    DPNPBinaryFuncOutKw,
     DPNPFix,
     DPNPImag,
     DPNPReal,
@@ -3244,6 +3245,16 @@ order : {None, "C", "F", "A", "K"}, optional
 
     Default: ``"K"``.
 
+Warning
+-------
+Passing more than 2 positional arguments is deprecated.
+If you meant to use the third argument as an output,
+use the `out` keyword argument instead.
+
+For example, ``dpnp.maximum(a, b, c)`` will emit a ``DeprecationWarning``.
+Always pass the output array as the keyword argument instead, that is
+``dpnp.maximum(a, b, out=c)``.
+
 Returns
 -------
 out : dpnp.ndarray
@@ -3297,7 +3308,7 @@ array(inf)
 
 """
 
-maximum = DPNPBinaryFunc(
+maximum = DPNPBinaryFuncOutKw(
     "maximum",
     ti._maximum_result_type,
     ti._maximum,
@@ -3340,6 +3351,16 @@ Returns
 out : dpnp.ndarray
     An array containing the element-wise minima. The data type of
     the returned array is determined by the Type Promotion Rules.
+
+Warning
+-------
+Passing more than 2 positional arguments is deprecated.
+If you meant to use the third argument as an output,
+use the `out` keyword argument instead.
+
+For example, ``dpnp.minimum(a, b, c)`` will emit a ``DeprecationWarning``.
+Always pass the output array as the keyword argument instead, that is
+``dpnp.minimum(a, b, out=c)``.
 
 Limitations
 -----------
@@ -3387,7 +3408,7 @@ array([nan, nan, nan])
 array(-inf)
 """
 
-minimum = DPNPBinaryFunc(
+minimum = DPNPBinaryFuncOutKw(
     "minimum",
     ti._minimum_result_type,
     ti._minimum,

@@ -183,7 +183,7 @@ class TestBoundFuncs:
     )
     def test_invalid_out_type(self, func, xp, out):
         a = xp.arange(10)
-        assert_raises(TypeError, getattr(xp, func), a, 2, out)
+        assert_raises(TypeError, getattr(xp, func), a, 2, out=out)
 
 
 class TestDivide:

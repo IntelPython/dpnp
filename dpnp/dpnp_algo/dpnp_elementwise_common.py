@@ -26,6 +26,9 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import warnings
+from functools import wraps
+
 import dpctl.tensor as dpt
 import dpctl.tensor._copy_utils as dtc
 import dpctl.tensor._tensor_impl as dti
@@ -48,6 +51,7 @@ __all__ = [
     "DPNPI0",
     "DPNPAngle",
     "DPNPBinaryFunc",
+    "DPNPBinaryFuncOutKw",
     "DPNPFix",
     "DPNPImag",
     "DPNPReal",
@@ -773,6 +777,22 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             subok=subok,
             **kwargs,
         )
+
+
+class DPNPBinaryFuncOutKw(DPNPBinaryFunc):
+    """DPNPBinaryFunc that deprecates positional `out` argument."""
+
+    @wraps(DPNPBinaryFunc.__call__)
+    def __call__(self, *args, **kwargs):
+        if len(args) > self.nin:
+            warnings.warn(
+                "Passing more than 2 positional arguments is deprecated. "
+                "If you meant to use the third argument as an output, "
+                "use the `out` keyword argument instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        return super().__call__(*args, **kwargs)
 
 
 class DPNPAngle(DPNPUnaryFunc):

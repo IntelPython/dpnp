@@ -12,6 +12,7 @@ from sphinx.ext.napoleon import NumpyDocstring, docstring
 
 from dpnp.dpnp_algo.dpnp_elementwise_common import (
     DPNPBinaryFunc,
+    DPNPBinaryFuncOutKw,
     DPNPUnaryFunc,
     DPNPUnaryTwoOutputsFunc,
 )
@@ -210,7 +211,13 @@ texinfo_documents = [
 # -- Options for todo extension ----------------------------------------------
 def _can_document_member(member, *args, **kwargs):
     if isinstance(
-        member, (DPNPBinaryFunc, DPNPUnaryFunc, DPNPUnaryTwoOutputsFunc)
+        member,
+        (
+            DPNPBinaryFunc,
+            DPNPBinaryFuncOutKw,
+            DPNPUnaryFunc,
+            DPNPUnaryTwoOutputsFunc,
+        ),
     ):
         return True
     return orig(member, *args, **kwargs)
