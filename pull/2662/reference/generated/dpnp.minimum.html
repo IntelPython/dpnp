@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.minimum &mdash; Data Parallel Extension for NumPy 0.20.0dev0+49.ge80936468df documentation</title>
+  <title>dpnp.minimum &mdash; Data Parallel Extension for NumPy 0.20.0dev0+51.gfedadb43f3f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e2213d98"></script>
+      <script src="../../_static/documentation_options.js?v=aae2de19"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -144,6 +144,15 @@ the returned array is determined by the Type Promotion Rules.</p>
 <dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Passing more than 2 positional arguments is deprecated.
+If you meant to use the third argument as an output,
+use the <cite>out</cite> keyword argument instead.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">dpnp.minimum(a,</span> <span class="pre">b,</span> <span class="pre">c)</span></code> will emit a <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code>.
+Always pass the output array as the keyword argument instead, that is
+<code class="docutils literal notranslate"><span class="pre">dpnp.minimum(a,</span> <span class="pre">b,</span> <span class="pre">out=c)</span></code>.</p>
+</div>
 <p class="rubric">Limitations</p>
 <p>Parameters <cite>where</cite> and <cite>subok</cite> are supported with their default values.
 Keyword argument <cite>kwargs</cite> is currently unsupported.
