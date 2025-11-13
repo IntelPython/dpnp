@@ -97,6 +97,7 @@ var hierarchy =
     [ "dpnp::kernels::ldexp::LdexpFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ],
     [ "ext::common::Less< T >", "structext_1_1common_1_1_less.html", null ],
     [ "dpnp::kernels::logaddexp2::Logaddexp2Functor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ],
+    [ "dpnp::kernels::modf::ModfFunctor< argT, fractT, intT >", "structdpnp_1_1kernels_1_1modf_1_1_modf_functor.html", null ],
     [ "dpnp::kernels::nan_to_num::NanToNumContigFunctor< T, scT, vec_sz, n_vecs, enable_sg_loadstore >", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html", null ],
     [ "dpnp::kernels::nan_to_num::NanToNumFunctor< T, scT, InOutIndexerT >", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor.html", null ],
     [ "statistics::histogram::NoWeights< T >", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
