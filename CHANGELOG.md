@@ -31,6 +31,10 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Changed the license from `BSD-2-Clause` to `BSD-3-Clause` [#2593](https://github.com/IntelPython/dpnp/pull/2593)
 * Defined explicit versions range of the Python interpreter which is needed during the build [#2634](https://github.com/IntelPython/dpnp/pull/2634)
 * Aligned documentation with NumPy and CuPy style by using short function names [#2633](https://github.com/IntelPython/dpnp/pull/2633)
+* Added the missing positional-only and keyword-only parameter markers to bring the ufunc signatures into alignment with NumPy [#2660](https://github.com/IntelPython/dpnp/pull/2660)
+* Redesigned `dpnp.modf` function to be a part of `ufunc` and `vm` pybind11 extensions [#2654](https://github.com/IntelPython/dpnp/pull/2654)
+* Refactored `dpnp.fft` and `dpnp.random` submodules by removing wildcard imports and defining explicit public exports [#2649](https://github.com/IntelPython/dpnp/pull/2649)
+* Added support for the `out` keyword to accept a tuple, bringing ufunc signatures into alignment with those in NumPy [#2664](https://github.com/IntelPython/dpnp/pull/2664)
 
 ### Deprecated
 

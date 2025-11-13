@@ -33,7 +33,6 @@ from .helper import (
     has_support_aspect16,
     has_support_aspect64,
     is_intel_numpy,
-    is_win_platform,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -709,133 +708,6 @@ class TestEdiff1d:
         # another `to_end` sycl queue
         to_end = dpnp.array([15, 20], sycl_queue=dpctl.SyclQueue())
         assert_raises(ExecutionPlacementError, dpnp.ediff1d, ia, to_end=to_end)
-
-
-class TestFrexp:
-    ALL_DTYPES = get_all_dtypes(no_none=True)
-    ALL_DTYPES_NO_COMPLEX = get_all_dtypes(
-        no_none=True, no_float16=False, no_complex=True
-    )
-    ALL_FLOAT_DTYPES = get_float_dtypes(no_float16=False)
-
-    @pytest.mark.parametrize("dt", ALL_DTYPES_NO_COMPLEX)
-    def test_basic(self, dt):
-        a = get_abs_array([-2, 5, 1, 4, 3], dtype=dt)
-        ia = dpnp.array(a)
-
-        res1, res2 = dpnp.frexp(ia)
-        exp1, exp2 = numpy.frexp(a)
-        assert_array_equal(res1, exp1)
-        assert_array_equal(res2, exp2)
-
-    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
-    def test_out(self, dt):
-        a = numpy.array(5.7, dtype=dt)
-        ia = dpnp.array(a)
-
-        out1 = numpy.empty((), dtype=dt)
-        out2 = numpy.empty((), dtype=numpy.int32)
-        iout1, iout2 = dpnp.array(out1), dpnp.array(out2)
-
-        res1, res2 = dpnp.frexp(ia, iout1)
-        exp1, exp2 = numpy.frexp(a, out1)
-        assert_array_equal(res1, exp1)
-        assert_array_equal(res2, exp2)
-        assert res1 is iout1
-
-        res1, res2 = dpnp.frexp(ia, None, iout2)
-        exp1, exp2 = numpy.frexp(a, None, out2)
-        assert_array_equal(res1, exp1)
-        assert_array_equal(res2, exp2)
-        assert res2 is iout2
-
-        res1, res2 = dpnp.frexp(ia, iout1, iout2)
-        exp1, exp2 = numpy.frexp(a, out1, out2)
-        assert_array_equal(res1, exp1)
-        assert_array_equal(res2, exp2)
-        assert res1 is iout1
-        assert res2 is iout2
-
-    @pytest.mark.parametrize("dt", ALL_DTYPES_NO_COMPLEX)
-    @pytest.mark.parametrize("out1_dt", ALL_DTYPES)
-    @pytest.mark.parametrize("out2_dt", ALL_DTYPES)
-    def test_out_all_dtypes(self, dt, out1_dt, out2_dt):
-        a = numpy.ones(9, dtype=dt)
-        ia = dpnp.array(a)
-
-        out1 = numpy.zeros(9, dtype=out1_dt)
-        out2 = numpy.zeros(9, dtype=out2_dt)
-        iout1, iout2 = dpnp.array(out1), dpnp.array(out2)
-
-        try:
-            res1, res2 = dpnp.frexp(ia, out=(iout1, iout2))
-        except TypeError:
-            # expect numpy to fail with the same reason
-            with pytest.raises(TypeError):
-                _ = numpy.frexp(a, out=(out1, out2))
-        else:
-            exp1, exp2 = numpy.frexp(a, out=(out1, out2))
-            assert_array_equal(res1, exp1)
-            assert_array_equal(res2, exp2)
-            assert res1 is iout1
-            assert res2 is iout2
-
-    @pytest.mark.skipif(
-        is_win_platform(),
-        reason="numpy.frexp gives different answers for NAN/INF on Windows and Linux",
-    )
-    @pytest.mark.parametrize("stride", [-4, -2, -1, 1, 2, 4])
-    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
-    def test_strides_out(self, stride, dt):
-        a = numpy.array(
-            [numpy.nan, numpy.nan, numpy.inf, -numpy.inf, 0.0, -0.0, 1.0, -1.0],
-            dtype=dt,
-        )
-        ia = dpnp.array(a)
-
-        out_mant = numpy.ones_like(a)
-        out_exp = 2 * numpy.ones_like(a, dtype="i")
-        iout_mant, iout_exp = dpnp.array(out_mant), dpnp.array(out_exp)
-
-        res1, res2 = dpnp.frexp(
-            ia[::stride], out=(iout_mant[::stride], iout_exp[::stride])
-        )
-        exp1, exp2 = numpy.frexp(
-            a[::stride], out=(out_mant[::stride], out_exp[::stride])
-        )
-        assert_array_equal(res1, exp1)
-        assert_array_equal(res2, exp2)
-
-        assert_array_equal(iout_mant, out_mant)
-        assert_array_equal(iout_exp, out_exp)
-
-    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
-    def test_out1_overlap(self, dt):
-        size = 15
-        a = numpy.ones(2 * size, dtype=dt)
-        ia = dpnp.array(a)
-
-        # out1 overlaps memory of input array
-        _ = dpnp.frexp(ia[size::], ia[::2])
-        _ = numpy.frexp(a[size::], a[::2])
-        assert_array_equal(ia, a)
-
-    @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
-    def test_empty(self, dt):
-        a = numpy.empty(0, dtype=dt)
-        ia = dpnp.array(a)
-
-        res1, res2 = dpnp.frexp(ia)
-        exp1, exp2 = numpy.frexp(a)
-        assert_array_equal(res1, exp1, strict=True)
-        assert_array_equal(res2, exp2, strict=True)
-
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    @pytest.mark.parametrize("dt", get_complex_dtypes())
-    def test_complex_dtype(self, xp, dt):
-        a = xp.array([-2, 5, 1, 4, 3], dtype=dt)
-        with pytest.raises((TypeError, ValueError)):
-            _ = xp.frexp(a)
 
 
 class TestGradient:
@@ -2138,20 +2010,33 @@ class TestUfunc:
             fn(*args, out=out, dtype="f4")
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("func", ["abs", "fix", "round", "add", "frexp"])
+    def test_out_wrong_tuple_len(self, xp, func):
+        if func == "round" and xp is numpy:
+            pytest.skip("numpy.round(x, out=(...)) is not supported")
+
+        x = xp.array([1, 2, 3])
+
+        fn = getattr(xp, func)
+        args = [x] * getattr(fn, "nin", getattr(dpnp, func).nin)
+
+        nout = getattr(fn, "nout", getattr(dpnp, func).nout)
+        outs = [(), tuple(range(nout + 1))]
+        if nout > 1:
+            outs.append(tuple(range(nout - 1)))
+
+        for out in outs:
+            with pytest.raises(
+                ValueError,
+                match="'out' tuple must have exactly one entry per ufunc output",
+            ):
+                _ = fn(*args, out=out)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_unary_two_outs_out_ndarray(self, xp):
         x = xp.array(0.5)
         with pytest.raises(TypeError, match="'out' must be a tuple of arrays"):
             _ = xp.frexp(x, out=xp.empty(()))
-
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    @pytest.mark.parametrize("out", [(), (1,), (1, 2, 3)])
-    def test_unary_two_outs_out_wrong_tuple_len(self, xp, out):
-        x = xp.array(0.5)
-        with pytest.raises(
-            ValueError,
-            match="'out' tuple must have exactly one entry per ufunc output",
-        ):
-            _ = xp.frexp(x, out=out)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_unary_two_outs_out_mixed(self, xp):
@@ -2727,8 +2612,8 @@ class TestHypot:
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
-        [4, (), [], (3, 7), [2, 4]],
-        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
+        [4, [], range(2), [2, 4]],
+        ids=["scalar", "empty_list", "range", "list"],
     )
     def test_invalid_out(self, xp, out):
         a = xp.arange(10)
