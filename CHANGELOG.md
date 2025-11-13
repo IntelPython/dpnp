@@ -23,6 +23,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added implementation of `dpnp.ndarray.tofile` method [#2635](https://github.com/IntelPython/dpnp/pull/2635)
 * Extended `pre-commit` configuration with `pyupgrade`, `actionlint`, and `gersemi` hooks [#2658](https://github.com/IntelPython/dpnp/pull/2658)
 * Added implementation of `dpnp.ndarray.tobytes` method [#2656](https://github.com/IntelPython/dpnp/pull/2656)
+* Added implementation of `dpnp.ndarray.__format__` method [#2662](https://github.com/IntelPython/dpnp/pull/2662)
 
 ### Changed
 

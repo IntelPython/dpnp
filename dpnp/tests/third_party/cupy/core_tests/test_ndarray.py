@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import unittest
 
@@ -649,21 +651,23 @@ class TestSize(unittest.TestCase):
                 xp.size(x, 0)
 
 
-@pytest.mark.skip("python interface is not supported")
 class TestPythonInterface(unittest.TestCase):
 
+    @pytest.mark.skip("__bytes__ is not supported")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_bytes_tobytes(self, xp, dtype):
         x = testing.shaped_arange((3, 4, 5), xp, dtype)
         return bytes(x)
 
+    @pytest.mark.skip("__bytes__ is not supported")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_bytes_tobytes_empty(self, xp, dtype):
         x = xp.empty((0,), dtype)
         return bytes(x)
 
+    @pytest.mark.skip("__bytes__ is not supported")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_bytes_tobytes_empty2(self, xp, dtype):
@@ -674,6 +678,7 @@ class TestPythonInterface(unittest.TestCase):
     # if scalar is of an integer dtype including bool_. It's spec is
     # bytes(int): bytes object of size given by the parameter initialized with
     # null bytes.
+    @pytest.mark.skip("__bytes__ is not supported")
     @testing.for_float_dtypes()
     @testing.numpy_cupy_equal()
     def test_bytes_tobytes_scalar_array(self, xp, dtype):
