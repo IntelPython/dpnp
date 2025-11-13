@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.maximum &mdash; Data Parallel Extension for NumPy 0.20.0dev0+46.ge92d9309432 documentation</title>
+  <title>dpnp.maximum &mdash; Data Parallel Extension for NumPy 0.20.0dev0+49.g901f98ccb30 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=58a1be1a"></script>
+      <script src="../../_static/documentation_options.js?v=c0fa40da"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -125,8 +125,10 @@ propagated.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array, may have any data type.</p></li>
 <li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array, also may have any data type.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array to populate.
-Array must have the correct shape and the expected data type.</p>
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array to populate.
+Array must have the correct shape and the expected data type.
+A tuple (possible only as a keyword argument) must have length equal to the
+number of outputs.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 <li><p><strong>order</strong> (<em>{None</em><em>, </em><em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- <p>Memory layout of the newly output array, if parameter <cite>out</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
@@ -134,12 +136,23 @@ Array must have the correct shape and the expected data type.</p>
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- An array containing the element-wise maxima. The data type of
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Passing more than 2 positional arguments is deprecated.
+If you meant to use the third argument as an output,
+use the <cite>out</cite> keyword argument instead.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">dpnp.maximum(a,</span> <span class="pre">b,</span> <span class="pre">c)</span></code> will emit a <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code>.
+Always pass the output array as the keyword argument instead, that is
+<code class="docutils literal notranslate"><span class="pre">dpnp.maximum(a,</span> <span class="pre">b,</span> <span class="pre">out=c)</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>out</strong> -- An array containing the element-wise maxima. The data type of
 the returned array is determined by the Type Promotion Rules.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dpnp.ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
