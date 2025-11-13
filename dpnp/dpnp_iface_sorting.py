@@ -39,8 +39,6 @@ it contains:
 
 """
 
-# pylint: disable=duplicate-code
-
 import dpctl.tensor as dpt
 import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_index

@@ -39,8 +39,6 @@ it contains:
 
 """
 
-# pylint: disable=duplicate-code
-
 import warnings
 
 import dpnp

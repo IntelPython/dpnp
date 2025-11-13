@@ -40,7 +40,6 @@ it contains:
 """
 
 # pylint: disable=protected-access
-# pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
 
 

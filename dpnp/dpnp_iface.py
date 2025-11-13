@@ -39,7 +39,6 @@ it contains:
 
 """
 # pylint: disable=protected-access
-# pylint: disable=redefined-outer-name
 
 import os
 
