@@ -37,8 +37,6 @@ This module is a face or public interface file for the library
 
 import dpnp
 
-__all__ = ["byte_bounds"]
-
 
 def byte_bounds(a):
     """

@@ -66,8 +66,6 @@ from dpctl.tensor import __array_api_version__, DLDeviceType
 from .dpnp_array import dpnp_array as ndarray
 from .dpnp_array_api_info import __array_namespace_info__
 from .dpnp_flatiter import flatiter as flatiter
-from .dpnp_iface_utils import *
-from .dpnp_iface_utils import __all__ as _ifaceutils__all__
 from ._version import get_versions
 from . import exceptions as exceptions
 from . import fft as fft
@@ -499,6 +497,11 @@ from .dpnp_iface_trigonometric import (
 )
 
 # -----------------------------------------------------------------------------
+# Miscellaneous routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_utils import byte_bounds
+
+# -----------------------------------------------------------------------------
 # Sorting, searching, and counting
 # -----------------------------------------------------------------------------
 from .dpnp_iface_counting import count_nonzero
@@ -588,10 +591,8 @@ from .dpnp_iface import (
 )
 
 
-__all__ = _ifaceutils__all__
-
 # add submodules
-__all__ += ["exceptions", "fft", "linalg", "random", "scipy"]
+__all__ = ["exceptions", "fft", "linalg", "random", "scipy"]
 
 
 __version__ = get_versions()["version"]
