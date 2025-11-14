@@ -54,27 +54,6 @@ import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
 
-__all__ = [
-    "assert_2d",
-    "assert_stacked_2d",
-    "assert_stacked_square",
-    "dpnp_cholesky",
-    "dpnp_cond",
-    "dpnp_det",
-    "dpnp_eigh",
-    "dpnp_inv",
-    "dpnp_lstsq",
-    "dpnp_matrix_power",
-    "dpnp_matrix_rank",
-    "dpnp_multi_dot",
-    "dpnp_norm",
-    "dpnp_pinv",
-    "dpnp_qr",
-    "dpnp_slogdet",
-    "dpnp_solve",
-    "dpnp_svd",
-]
-
 
 # pylint:disable=missing-class-docstring
 class EighResult(NamedTuple):

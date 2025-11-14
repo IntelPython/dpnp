@@ -51,11 +51,6 @@ from ._utils import (
     dpnp_lu_solve,
 )
 
-__all__ = [
-    "lu_factor",
-    "lu_solve",
-]
-
 
 def lu_factor(a, overwrite_a=False, check_finite=True):
     """

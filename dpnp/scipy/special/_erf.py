@@ -44,8 +44,6 @@ it contains:
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPUnaryFunc
 
-__all__ = ["erf", "erfc", "erfcinv", "erfcx", "erfinv"]
-
 
 # pylint: disable=too-few-public-methods
 class DPNPErf(DPNPUnaryFunc):
