@@ -66,7 +66,6 @@ from dpctl.tensor import __array_api_version__, DLDeviceType
 from .dpnp_array import dpnp_array as ndarray
 from .dpnp_array_api_info import __array_namespace_info__
 from .dpnp_flatiter import flatiter as flatiter
-from .dpnp_iface_types import *
 from .dpnp_iface_utils import *
 from .dpnp_iface_utils import __all__ as _ifaceutils__all__
 from ._version import get_versions
@@ -76,6 +75,81 @@ from . import linalg as linalg
 from . import random as random
 from . import scipy as scipy
 
+
+# =============================================================================
+# Data types, constants and type-related helpers
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Data types (borrowed from NumPy)
+#
+# The order of these declarations are borrowed from the NumPy document:
+# https://numpy.org/doc/stable/reference/arrays.scalars.html
+# -----------------------------------------------------------------------------
+from .dpnp_iface_types import (
+    bool,
+    bool_,
+    byte,
+    cdouble,
+    complex128,
+    complex64,
+    complexfloating,
+    csingle,
+    double,
+    dtype,
+    float16,
+    float32,
+    float64,
+    floating,
+    inexact,
+    int_,
+    int8,
+    int16,
+    int32,
+    int64,
+    integer,
+    intc,
+    intp,
+    longlong,
+    number,
+    short,
+    signedinteger,
+    single,
+    ubyte,
+    uint8,
+    uint16,
+    uint32,
+    uint64,
+    uintc,
+    uintp,
+    unsignedinteger,
+    ushort,
+    ulonglong,
+)
+
+# -----------------------------------------------------------------------------
+# Constants (borrowed from NumPy)
+# -----------------------------------------------------------------------------
+from .dpnp_iface_types import (
+    e,
+    euler_gamma,
+    inf,
+    nan,
+    newaxis,
+    pi,
+)
+
+# -----------------------------------------------------------------------------
+# Type-related helper functions
+# -----------------------------------------------------------------------------
+from .dpnp_iface_types import (
+    common_type,
+    finfo,
+    iinfo,
+    isdtype,
+    issubdtype,
+    is_type_supported,
+)
 
 # =============================================================================
 # Routines
