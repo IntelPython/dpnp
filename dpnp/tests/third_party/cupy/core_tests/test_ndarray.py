@@ -662,13 +662,13 @@ class TestPythonInterface(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_bytes_tobytes_empty(self, xp, dtype):
-        x = xp.empty((0,), dtype)
+        x = xp.empty((0,), dtype=dtype)
         return bytes(x)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_bytes_tobytes_empty2(self, xp, dtype):
-        x = xp.empty((3, 0, 4), dtype)
+        x = xp.empty((3, 0, 4), dtype=dtype)
         return bytes(x)
 
     # The result of bytes(numpy.array(scalar)) is the same as bytes(scalar)
