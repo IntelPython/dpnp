@@ -29,7 +29,7 @@ class TestCommon:
         expected = getattr(scipy.special, func)(a)
 
         # scipy >= 0.16.0 returns float64, but dpnp returns float32
-        to_float32 = dt in (dpnp.bool, dpnp.float16)
+        to_float32 = dpnp.result_type(dt, dpnp.float32) == dpnp.float32
         only_type_kind = installed("scipy>=0.16.0") and to_float32
         assert_dtype_allclose(
             result, expected, check_only_type_kind=only_type_kind
