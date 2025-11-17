@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev0+51.gb3e5ce99cda documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev0+49.g86131a5f7bc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b2bcb27c"></script>
+      <script src="../../_static/documentation_options.js?v=a1576f58"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -150,6 +150,7 @@
     <span class="n">DPNPI0</span><span class="p">,</span>
     <span class="n">DPNPAngle</span><span class="p">,</span>
     <span class="n">DPNPBinaryFunc</span><span class="p">,</span>
+    <span class="n">DPNPBinaryFuncOutKw</span><span class="p">,</span>
     <span class="n">DPNPFix</span><span class="p">,</span>
     <span class="n">DPNPImag</span><span class="p">,</span>
     <span class="n">DPNPReal</span><span class="p">,</span>
@@ -480,9 +481,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, may have any data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -552,9 +555,11 @@
 <span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also may have any data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -634,9 +639,11 @@
 <span class="s2">    Return angle in degrees if ``True``, radians if ``False``.</span>
 
 <span class="s2">    Default: ``False``.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -749,9 +756,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a boolean or real-valued data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -890,9 +899,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, may have any data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -947,9 +958,11 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have a real-valued floating-point data</span>
 <span class="s2">    type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -1654,9 +1667,11 @@
 <span class="s2">    First input array, expected to have a floating-point data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have a floating-point data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -1832,9 +1847,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    The array of numbers for which the absolute values are required.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -1891,9 +1908,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a boolean or real-valued data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -1961,9 +1980,11 @@
 <span class="s2">    First input array, expected to have a numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to a numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="s2">    Output array to populate. Array must have the correct shape and</span>
-<span class="s2">    the expected data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -2058,9 +2079,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a boolean or real-valued data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -2126,9 +2149,11 @@
 <span class="s2">    First input array, expected to have a real-valued data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have a real-valued data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -2208,9 +2233,11 @@
 <span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also may have any data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -2299,9 +2326,11 @@
 <span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also may have any data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -2388,9 +2417,11 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have a boolean or real-valued data</span>
 <span class="s2">    type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -2533,7 +2564,7 @@
 <span class="p">)</span>
 
 
-<span class="n">_GCD_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_GCD_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Returns the greatest common divisor of :math:`|x_1|` and :math:`|x_2|`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.gcd`.</span>
@@ -2544,9 +2575,11 @@
 <span class="s2">    First input array, expected to have an integer data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have an integer data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -2821,9 +2854,11 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    The value of the function when `x1` is ``0``, also expected to have a</span>
 <span class="s2">    real-valued floating-point data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -2880,9 +2915,11 @@
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Argument of the Bessel function, expected to have a real-valued</span>
 <span class="s2">    floating-point data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -2928,9 +2965,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, may have any data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -3158,7 +3197,7 @@
 
 
 
-<span class="n">_LCM_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LCM_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Returns the lowest common multiple of :math:`|x_1|` and :math:`|x_2|`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.lcm`.</span>
@@ -3169,9 +3208,11 @@
 <span class="s2">    First input array, expected to have an integer data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have an integer data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -3235,9 +3276,11 @@
 <span class="s2">    type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Array of exponents of two, expected to have an integer data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="s2">    Output array to populate. Array must have the correct shape and</span>
-<span class="s2">    the expected data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -3308,15 +3351,27 @@
 <span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also may have any data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Warning</span>
+<span class="s2">-------</span>
+<span class="s2">Passing more than 2 positional arguments is deprecated.</span>
+<span class="s2">If you meant to use the third argument as an output,</span>
+<span class="s2">use the `out` keyword argument instead.</span>
+
+<span class="s2">For example, ``dpnp.maximum(a, b, c)`` will emit a ``DeprecationWarning``.</span>
+<span class="s2">Always pass the output array as the keyword argument instead, that is</span>
+<span class="s2">``dpnp.maximum(a, b, out=c)``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3371,7 +3426,7 @@
 
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">maximum</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+<span class="n">maximum</span> <span class="o">=</span> <span class="n">DPNPBinaryFuncOutKw</span><span class="p">(</span>
     <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_maximum_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_maximum</span><span class="p">,</span>
@@ -3397,9 +3452,11 @@
 <span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also may have any data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -3412,6 +3469,16 @@
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the element-wise minima. The data type of</span>
 <span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Warning</span>
+<span class="s2">-------</span>
+<span class="s2">Passing more than 2 positional arguments is deprecated.</span>
+<span class="s2">If you meant to use the third argument as an output,</span>
+<span class="s2">use the `out` keyword argument instead.</span>
+
+<span class="s2">For example, ``dpnp.minimum(a, b, c)`` will emit a ``DeprecationWarning``.</span>
+<span class="s2">Always pass the output array as the keyword argument instead, that is</span>
+<span class="s2">``dpnp.minimum(a, b, out=c)``.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -3459,7 +3526,7 @@
 <span class="s2">array(-inf)</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">minimum</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+<span class="n">minimum</span> <span class="o">=</span> <span class="n">DPNPBinaryFuncOutKw</span><span class="p">(</span>
     <span class="s2">&quot;minimum&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_minimum_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_minimum</span><span class="p">,</span>
@@ -3559,9 +3626,11 @@
 <span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also may have any data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -3778,9 +3847,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -3841,9 +3912,11 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    The direction where to look for the next representable value of `x1`,</span>
 <span class="s2">    also expected to have a real-valued floating-point data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="s2">    Output array to populate. Array must have the correct shape and</span>
-<span class="s2">    the expected data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -3906,9 +3979,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -3975,9 +4050,11 @@
 <span class="s2">    First input array, expected to have a numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have a numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="s2">    Output array to populate. Array must have the correct shape and</span>
-<span class="s2">    the expected data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -4175,9 +4252,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a complex floating-point data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -4230,9 +4309,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, may have any data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -4362,9 +4443,11 @@
 <span class="s2">    First input array, expected to have a real-valued data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have a real-valued data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -4450,9 +4533,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -4515,9 +4600,11 @@
 <span class="s2">decimals : int, optional</span>
 <span class="s2">    Number of decimal places to round to (default: 0). If decimals is negative,</span>
 <span class="s2">    it specifies the number of positions to the left of the decimal point.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 
@@ -4583,9 +4670,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -4645,9 +4734,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -4703,9 +4794,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a floating-point data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -4766,9 +4859,11 @@
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    The array of values to find the spacing of, expected to have a real-valued</span>
 <span class="s2">    floating-point data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -4827,9 +4922,11 @@
 <span class="s2">    First input array, expected to have a numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have a numeric data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -5141,9 +5238,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have a boolean or real-valued data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
