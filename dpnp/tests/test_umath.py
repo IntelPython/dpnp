@@ -21,7 +21,6 @@ from .helper import (
     get_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
-    is_cuda_device,
     is_gpu_device,
 )
 
