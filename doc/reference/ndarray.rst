@@ -449,3 +449,4 @@ String representations:
 
    ndarray.__str__
    ndarray.__repr__
+   ndarray.__format__

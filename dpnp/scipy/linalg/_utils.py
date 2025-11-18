@@ -51,11 +51,6 @@ import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.linalg.dpnp_utils_linalg import _common_type
 
-__all__ = [
-    "dpnp_lu_factor",
-    "dpnp_lu_solve",
-]
-
 
 def _align_lu_solve_broadcast(lu, b):
     """Align LU and RHS batch dimensions with SciPy-like rules."""

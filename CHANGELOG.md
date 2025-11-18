@@ -23,6 +23,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added implementation of `dpnp.ndarray.tofile` method [#2635](https://github.com/IntelPython/dpnp/pull/2635)
 * Extended `pre-commit` configuration with `pyupgrade`, `actionlint`, and `gersemi` hooks [#2658](https://github.com/IntelPython/dpnp/pull/2658)
 * Added implementation of `dpnp.ndarray.tobytes` method [#2656](https://github.com/IntelPython/dpnp/pull/2656)
+* Added implementation of `dpnp.ndarray.__format__` method [#2662](https://github.com/IntelPython/dpnp/pull/2662)
 
 ### Changed
 
@@ -34,10 +35,12 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Redesigned `dpnp.modf` function to be a part of `ufunc` and `vm` pybind11 extensions [#2654](https://github.com/IntelPython/dpnp/pull/2654)
 * Refactored `dpnp.fft` and `dpnp.random` submodules by removing wildcard imports and defining explicit public exports [#2649](https://github.com/IntelPython/dpnp/pull/2649)
 * Added support for the `out` keyword to accept a tuple, bringing ufunc signatures into alignment with those in NumPy [#2664](https://github.com/IntelPython/dpnp/pull/2664)
+* Unified public API definitions in `dpnp.linalg` and `dpnp.scipy` submodules [#2663](https://github.com/IntelPython/dpnp/pull/2663)
 
 ### Deprecated
 
 * `dpnp.asfarray` is deprecated. Use `dpnp.asarray` with an appropriate dtype instead [#2650](https://github.com/IntelPython/dpnp/pull/2650)
+* Passing the output array ``out`` positionally to `dpnp.minimum` and `dpnp.maximum` is deprecated. Pass the output with the keyword form, e.g. ``dpnp.minimum(a, b, out=c)`` [#2659](https://github.com/IntelPython/dpnp/pull/2659)
 
 ### Removed
 

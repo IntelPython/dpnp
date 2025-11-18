@@ -302,7 +302,9 @@ class dpnp_array:
         r"""Return :math:`\text{self // value}`."""
         return dpnp.floor_divide(self, other)
 
-    # '__format__',
+    def __format__(self, format_spec):
+        r"""Return :math:`\text{format(self, format_spec)}`."""
+        return format(self.asnumpy(), format_spec)
 
     def __ge__(self, other, /):
         r"""Return :math:`\text{self >= value}`."""
