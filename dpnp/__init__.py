@@ -597,8 +597,66 @@ from .dpnp_iface import (
 # Public API
 # =============================================================================
 
-# Array creation routines
+# Data types, constants and type-related helpers
 __all__ = [
+    "bool",
+    "bool_",
+    "byte",
+    "cdouble",
+    "complex128",
+    "complex64",
+    "complexfloating",
+    "csingle",
+    "double",
+    "dtype",
+    "float16",
+    "float32",
+    "float64",
+    "floating",
+    "inexact",
+    "int_",
+    "int8",
+    "int16",
+    "int32",
+    "int64",
+    "integer",
+    "intc",
+    "intp",
+    "longlong",
+    "number",
+    "short",
+    "signedinteger",
+    "single",
+    "ubyte",
+    "uint8",
+    "uint16",
+    "uint32",
+    "uint64",
+    "uintc",
+    "uintp",
+    "unsignedinteger",
+    "ushort",
+    "ulonglong",
+]
+__all__ += [
+    "e",
+    "euler_gamma",
+    "inf",
+    "nan",
+    "newaxis",
+    "pi",
+]
+__all__ += [
+    "common_type",
+    "finfo",
+    "iinfo",
+    "isdtype",
+    "issubdtype",
+    "is_type_supported",
+]
+
+# Array creation routines
+__all__ += [
     "arange",
     "array",
     "asanyarray",
@@ -917,6 +975,7 @@ __all__ += [
 # Miscellaneous routines
 __all__ += [
     "broadcast_shapes",
+    "byte_bounds",
     "get_include",
 ]
 
@@ -1001,7 +1060,7 @@ __all__ += [
 ]
 
 # add submodules
-__all__ = ["exceptions", "fft", "linalg", "random", "scipy"]
+__all__ += ["exceptions", "fft", "linalg", "random", "scipy"]
 
 
 __version__ = get_versions()["version"]
