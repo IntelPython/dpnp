@@ -185,6 +185,10 @@ class dpnp_array:
         """``True`` if `self` else ``False``."""
         return self._array_obj.__bool__()
 
+    def __bytes__(self):
+        r"""Return :math:`\text{bytes(self)}`."""
+        return bytes(self.asnumpy())
+
     # '__class__',
     # `__class_getitem__`,
 
