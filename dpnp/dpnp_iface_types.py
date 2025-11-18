@@ -311,11 +311,3 @@ def issubdtype(arg1, arg2):
     """
 
     return numpy.issubdtype(arg1, arg2)
-
-
-def is_type_supported(obj_type):
-    """Return True if type is supported by DPNP python level."""
-
-    if obj_type in (float64, float32, int64, int32):
-        return True
-    return False

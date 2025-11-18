@@ -262,7 +262,6 @@ from .dpnp_iface_types import (
     iinfo,
     isdtype,
     issubdtype,
-    is_type_supported,
 )
 from .dpnp_iface_manipulation import can_cast, result_type
 from .dpnp_iface_types import dtype
@@ -760,7 +759,6 @@ __all__ += [
     "iinfo",
     "isdtype",
     "issubdtype",
-    "is_type_supported",
     "result_type",
 ]
 
