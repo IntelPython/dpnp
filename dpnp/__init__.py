@@ -140,7 +140,6 @@ from .dpnp_iface_manipulation import (
     atleast_2d,
     atleast_3d,
     broadcast_arrays,
-    broadcast_shapes,
     broadcast_to,
     can_cast,
     column_stack,
@@ -181,18 +180,13 @@ from .dpnp_iface_manipulation import (
     tile,
     transpose,
     trim_zeros,
-    unique,
-    unique_all,
-    unique_counts,
-    unique_inverse,
-    unique_values,
     unstack,
     vsplit,
     vstack,
 )
 
 # -----------------------------------------------------------------------------
-# Binary operations
+# Bit-wise operations
 # -----------------------------------------------------------------------------
 from .dpnp_iface_bitwise import (
     binary_repr,
@@ -210,7 +204,7 @@ from .dpnp_iface_bitwise import (
 )
 
 # -----------------------------------------------------------------------------
-# Functional routines
+# Functional programming
 # -----------------------------------------------------------------------------
 from .dpnp_iface_functional import (
     apply_along_axis,
@@ -375,9 +369,7 @@ from .dpnp_iface_nanfunctions import (
     nanprod,
     nansum,
 )
-
 from .dpnp_iface_statistics import convolve
-
 from .dpnp_iface_trigonometric import (
     arccos,
     arccosh,
@@ -425,12 +417,27 @@ from .dpnp_iface_trigonometric import (
 )
 
 # -----------------------------------------------------------------------------
+# Miscellaneous routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_manipulation import broadcast_shapes
+from .dpnp_iface import get_include
+
+# -----------------------------------------------------------------------------
+# Set routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_manipulation import (
+    unique,
+    unique_all,
+    unique_counts,
+    unique_inverse,
+    unique_values,
+)
+
+# -----------------------------------------------------------------------------
 # Sorting, searching, and counting
 # -----------------------------------------------------------------------------
 from .dpnp_iface_counting import count_nonzero
-
 from .dpnp_iface_nanfunctions import nanargmax, nanargmin
-
 from .dpnp_iface_searching import (
     argmax,
     argmin,
@@ -438,20 +445,11 @@ from .dpnp_iface_searching import (
     searchsorted,
     where,
 )
-
 from .dpnp_iface_sorting import (
     argsort,
     partition,
     sort,
     sort_complex,
-)
-
-from .dpnp_iface_window import (
-    bartlett,
-    blackman,
-    hamming,
-    hanning,
-    kaiser,
 )
 
 # -----------------------------------------------------------------------------
@@ -465,7 +463,6 @@ from .dpnp_iface_histograms import (
     histogram2d,
     histogramdd,
 )
-
 from .dpnp_iface_nanfunctions import (
     nanmax,
     nanmean,
@@ -474,7 +471,6 @@ from .dpnp_iface_nanfunctions import (
     nanstd,
     nanvar,
 )
-
 from .dpnp_iface_statistics import (
     amax,
     amin,
@@ -492,7 +488,20 @@ from .dpnp_iface_statistics import (
 )
 
 # -----------------------------------------------------------------------------
-# DPNP iface functions
+# Window functions
+# -----------------------------------------------------------------------------
+from .dpnp_iface_window import (
+    bartlett,
+    blackman,
+    hamming,
+    hanning,
+    kaiser,
+)
+
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Helper functions
 # -----------------------------------------------------------------------------
 from .dpnp_iface import (
     are_same_logical_tensors,
@@ -502,7 +511,6 @@ from .dpnp_iface import (
     check_supported_arrays_type,
     default_float_type,
     get_dpnp_descriptor,
-    get_include,
     get_normalized_queue_device,
     get_result_array,
     get_usm_ndarray,
