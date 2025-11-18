@@ -1016,7 +1016,10 @@ class TestToDevice:
         "asarray_chkfinite",
         "asanyarray",
         "ascontiguousarray",
-        "asfarray",
+        pytest.param(
+            "asfarray",
+            marks=pytest.mark.filterwarnings("ignore::DeprecationWarning"),
+        ),
         "asfortranarray",
     ],
 )

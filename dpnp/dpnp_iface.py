@@ -50,7 +50,8 @@ import numpy
 from dpctl.tensor._device import normalize_queue_device
 
 import dpnp
-from dpnp.dpnp_array import dpnp_array
+
+from .dpnp_array import dpnp_array
 
 # pylint: disable=no-name-in-module
 from .dpnp_utils import (

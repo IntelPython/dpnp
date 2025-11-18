@@ -71,41 +71,6 @@ from .dpnp_utils_linalg import (
     dpnp_svd,
 )
 
-__all__ = [
-    "LinAlgError",
-    "cholesky",
-    "cond",
-    "cross",
-    "det",
-    "diagonal",
-    "eig",
-    "eigh",
-    "eigvals",
-    "eigvalsh",
-    "inv",
-    "lstsq",
-    "matmul",
-    "matrix_norm",
-    "matrix_power",
-    "matrix_rank",
-    "matrix_transpose",
-    "multi_dot",
-    "norm",
-    "outer",
-    "pinv",
-    "qr",
-    "solve",
-    "svd",
-    "svdvals",
-    "slogdet",
-    "tensordot",
-    "tensorinv",
-    "tensorsolve",
-    "trace",
-    "vecdot",
-    "vector_norm",
-]
-
 # Need to set the module explicitly, because it's initially exposed by LAPACK
 # pybind11 extension and to add the docstrings
 LinAlgError.__module__ = "dpnp.linalg"
