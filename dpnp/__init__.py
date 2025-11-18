@@ -75,15 +75,8 @@ from . import scipy as scipy
 
 
 # =============================================================================
-# Data types, constants and type-related helpers
+# Data types
 # =============================================================================
-
-# -----------------------------------------------------------------------------
-# Data types (borrowed from NumPy)
-#
-# The order of these declarations are borrowed from the NumPy document:
-# https://numpy.org/doc/stable/reference/arrays.scalars.html
-# -----------------------------------------------------------------------------
 from .dpnp_iface_types import (
     bool,
     bool_,
@@ -94,7 +87,6 @@ from .dpnp_iface_types import (
     complexfloating,
     csingle,
     double,
-    dtype,
     float16,
     float32,
     float64,
@@ -125,8 +117,15 @@ from .dpnp_iface_types import (
     ulonglong,
 )
 
+# =============================================================================
+# Routines
+#
+# The order of these declarations are borrowed from the NumPy document:
+# https://numpy.org/doc/stable/reference/routines.html
+# =============================================================================
+
 # -----------------------------------------------------------------------------
-# Constants (borrowed from NumPy)
+# Constants
 # -----------------------------------------------------------------------------
 from .dpnp_iface_types import (
     e,
@@ -136,25 +135,6 @@ from .dpnp_iface_types import (
     newaxis,
     pi,
 )
-
-# -----------------------------------------------------------------------------
-# Type-related helper functions
-# -----------------------------------------------------------------------------
-from .dpnp_iface_types import (
-    common_type,
-    finfo,
-    iinfo,
-    isdtype,
-    issubdtype,
-    is_type_supported,
-)
-
-# =============================================================================
-# Routines
-#
-# The order of these declarations are borrowed from the NumPy document:
-# https://numpy.org/doc/stable/reference/routines.html
-# =============================================================================
 
 # -----------------------------------------------------------------------------
 # Array creation routines
@@ -213,7 +193,6 @@ from .dpnp_iface_manipulation import (
     atleast_3d,
     broadcast_arrays,
     broadcast_to,
-    can_cast,
     column_stack,
     concat,
     concatenate,
@@ -238,7 +217,6 @@ from .dpnp_iface_manipulation import (
     require,
     reshape,
     resize,
-    result_type,
     roll,
     rollaxis,
     rot90,
@@ -274,6 +252,20 @@ from .dpnp_iface_bitwise import (
     left_shift,
     right_shift,
 )
+
+# -----------------------------------------------------------------------------
+# Data type routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_types import (
+    common_type,
+    finfo,
+    iinfo,
+    isdtype,
+    issubdtype,
+    is_type_supported,
+)
+from .dpnp_iface_manipulation import can_cast, result_type
+from .dpnp_iface_types import dtype
 
 # -----------------------------------------------------------------------------
 # Functional programming
@@ -597,7 +589,7 @@ from .dpnp_iface import (
 # Public API
 # =============================================================================
 
-# Data types, constants and type-related helpers
+# Data types
 __all__ = [
     "bool",
     "bool_",
@@ -608,7 +600,6 @@ __all__ = [
     "complexfloating",
     "csingle",
     "double",
-    "dtype",
     "float16",
     "float32",
     "float64",
@@ -638,6 +629,8 @@ __all__ = [
     "ushort",
     "ulonglong",
 ]
+
+# Constants
 __all__ += [
     "e",
     "euler_gamma",
@@ -645,14 +638,6 @@ __all__ += [
     "nan",
     "newaxis",
     "pi",
-]
-__all__ += [
-    "common_type",
-    "finfo",
-    "iinfo",
-    "isdtype",
-    "issubdtype",
-    "is_type_supported",
 ]
 
 # Array creation routines
@@ -708,7 +693,6 @@ __all__ += [
     "atleast_3d",
     "broadcast_arrays",
     "broadcast_to",
-    "can_cast",
     "column_stack",
     "concat",
     "concatenate",
@@ -733,7 +717,6 @@ __all__ += [
     "require",
     "reshape",
     "resize",
-    "result_type",
     "roll",
     "rollaxis",
     "rot90",
@@ -766,6 +749,19 @@ __all__ += [
     "invert",
     "left_shift",
     "right_shift",
+]
+
+# Data type routines
+__all__ += [
+    "can_cast",
+    "common_type",
+    "dtype",
+    "finfo",
+    "iinfo",
+    "isdtype",
+    "issubdtype",
+    "is_type_supported",
+    "result_type",
 ]
 
 # Functional programming
