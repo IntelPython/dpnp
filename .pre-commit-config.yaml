@@ -112,7 +112,6 @@ repos:
             [
             "-rn", # Only display messages
             "-sn", # Don't display the score
-            "--disable=c-extension-no-member",
             "--disable=import-error",
             "--disable=redefined-builtin",
             "--disable=unused-wildcard-import"

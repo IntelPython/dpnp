@@ -66,9 +66,6 @@ from dpctl.tensor import __array_api_version__, DLDeviceType
 from .dpnp_array import dpnp_array as ndarray
 from .dpnp_array_api_info import __array_namespace_info__
 from .dpnp_flatiter import flatiter as flatiter
-from .dpnp_iface_types import *
-from .dpnp_iface_utils import *
-from .dpnp_iface_utils import __all__ as _ifaceutils__all__
 from ._version import get_versions
 from . import exceptions as exceptions
 from . import fft as fft
@@ -78,11 +75,66 @@ from . import scipy as scipy
 
 
 # =============================================================================
+# Data types
+# =============================================================================
+from .dpnp_iface_types import (
+    bool,
+    bool_,
+    byte,
+    cdouble,
+    complex128,
+    complex64,
+    complexfloating,
+    csingle,
+    double,
+    float16,
+    float32,
+    float64,
+    floating,
+    inexact,
+    int_,
+    int8,
+    int16,
+    int32,
+    int64,
+    integer,
+    intc,
+    intp,
+    longlong,
+    number,
+    short,
+    signedinteger,
+    single,
+    ubyte,
+    uint8,
+    uint16,
+    uint32,
+    uint64,
+    uintc,
+    uintp,
+    unsignedinteger,
+    ushort,
+    ulonglong,
+)
+
+# =============================================================================
 # Routines
 #
 # The order of these declarations are borrowed from the NumPy document:
 # https://numpy.org/doc/stable/reference/routines.html
 # =============================================================================
+
+# -----------------------------------------------------------------------------
+# Constants
+# -----------------------------------------------------------------------------
+from .dpnp_iface_types import (
+    e,
+    euler_gamma,
+    inf,
+    nan,
+    newaxis,
+    pi,
+)
 
 # -----------------------------------------------------------------------------
 # Array creation routines
@@ -141,7 +193,6 @@ from .dpnp_iface_manipulation import (
     atleast_3d,
     broadcast_arrays,
     broadcast_to,
-    can_cast,
     column_stack,
     concat,
     concatenate,
@@ -166,7 +217,6 @@ from .dpnp_iface_manipulation import (
     require,
     reshape,
     resize,
-    result_type,
     roll,
     rollaxis,
     rot90,
@@ -202,6 +252,19 @@ from .dpnp_iface_bitwise import (
     left_shift,
     right_shift,
 )
+
+# -----------------------------------------------------------------------------
+# Data type routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_types import (
+    common_type,
+    finfo,
+    iinfo,
+    isdtype,
+    issubdtype,
+)
+from .dpnp_iface_manipulation import can_cast, result_type
+from .dpnp_iface_types import dtype
 
 # -----------------------------------------------------------------------------
 # Functional programming
@@ -420,6 +483,7 @@ from .dpnp_iface_trigonometric import (
 # Miscellaneous routines
 # -----------------------------------------------------------------------------
 from .dpnp_iface_manipulation import broadcast_shapes
+from .dpnp_iface_utils import byte_bounds
 from .dpnp_iface import get_include
 
 # -----------------------------------------------------------------------------
@@ -524,8 +588,59 @@ from .dpnp_iface import (
 # Public API
 # =============================================================================
 
-# Array creation routines
+# Data types
 __all__ = [
+    "bool",
+    "bool_",
+    "byte",
+    "cdouble",
+    "complex128",
+    "complex64",
+    "complexfloating",
+    "csingle",
+    "double",
+    "float16",
+    "float32",
+    "float64",
+    "floating",
+    "inexact",
+    "int_",
+    "int8",
+    "int16",
+    "int32",
+    "int64",
+    "integer",
+    "intc",
+    "intp",
+    "longlong",
+    "number",
+    "short",
+    "signedinteger",
+    "single",
+    "ubyte",
+    "uint8",
+    "uint16",
+    "uint32",
+    "uint64",
+    "uintc",
+    "uintp",
+    "unsignedinteger",
+    "ushort",
+    "ulonglong",
+]
+
+# Constants
+__all__ += [
+    "e",
+    "euler_gamma",
+    "inf",
+    "nan",
+    "newaxis",
+    "pi",
+]
+
+# Array creation routines
+__all__ += [
     "arange",
     "array",
     "asanyarray",
@@ -577,7 +692,6 @@ __all__ += [
     "atleast_3d",
     "broadcast_arrays",
     "broadcast_to",
-    "can_cast",
     "column_stack",
     "concat",
     "concatenate",
@@ -602,7 +716,6 @@ __all__ += [
     "require",
     "reshape",
     "resize",
-    "result_type",
     "roll",
     "rollaxis",
     "rot90",
@@ -635,6 +748,18 @@ __all__ += [
     "invert",
     "left_shift",
     "right_shift",
+]
+
+# Data type routines
+__all__ += [
+    "can_cast",
+    "common_type",
+    "dtype",
+    "finfo",
+    "iinfo",
+    "isdtype",
+    "issubdtype",
+    "result_type",
 ]
 
 # Functional programming
@@ -844,6 +969,7 @@ __all__ += [
 # Miscellaneous routines
 __all__ += [
     "broadcast_shapes",
+    "byte_bounds",
     "get_include",
 ]
 
@@ -926,8 +1052,6 @@ __all__ += [
     "is_supported_array_type",
     "synchronize_array_data",
 ]
-
-__all__ += _ifaceutils__all__
 
 # add submodules
 __all__ += ["exceptions", "fft", "linalg", "random", "scipy"]

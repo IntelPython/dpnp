@@ -36,6 +36,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Refactored `dpnp.fft` and `dpnp.random` submodules by removing wildcard imports and defining explicit public exports [#2649](https://github.com/IntelPython/dpnp/pull/2649)
 * Added support for the `out` keyword to accept a tuple, bringing ufunc signatures into alignment with those in NumPy [#2664](https://github.com/IntelPython/dpnp/pull/2664)
 * Unified public API definitions in `dpnp.linalg` and `dpnp.scipy` submodules [#2663](https://github.com/IntelPython/dpnp/pull/2663)
+* Unified `dpnp` public API exports by consolidating function exports in `__init__.py` and removing wildcard imports [#2665](https://github.com/IntelPython/dpnp/pull/2665) [#2666](https://github.com/IntelPython/dpnp/pull/2666)
 
 ### Deprecated
 
