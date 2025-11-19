@@ -1,10 +1,10 @@
+from __future__ import annotations
+
 import numpy
 import pytest
 
 import dpnp as cupy
 from dpnp.tests.third_party.cupy import testing
-
-pytest.skip("UFunc interface is not supported", allow_module_level=True)
 
 
 class C(cupy.ndarray):
@@ -20,6 +20,7 @@ class C(cupy.ndarray):
         self.info = getattr(obj, "info", None)
 
 
+@pytest.mark.skip("UFunc interface is not supported")
 class TestArrayUfunc:
 
     @testing.for_all_dtypes()
@@ -200,8 +201,8 @@ class TestUfunc:
                     sig
                     for sig in types
                     # CuPy does not support the following dtypes:
-                    # (c)longdouble, datetime, timedelta, and object.
-                    if not any(t in sig for t in "GgMmO")
+                    # longlong, (c)longdouble, datetime, timedelta, and object.
+                    if not any(t in sig for t in "QqGgMmO")
                 )
             )
         return types
@@ -210,7 +211,7 @@ class TestUfunc:
     def test_unary_out_tuple(self, xp):
         dtype = xp.float64
         a = testing.shaped_arange((2, 3), xp, dtype)
-        out = xp.zeros((2, 3), dtype)
+        out = xp.zeros((2, 3), dtype=dtype)
         ret = xp.sin(a, out=(out,))
         assert ret is out
         return ret
@@ -225,8 +226,8 @@ class TestUfunc:
     def test_binary_out_tuple(self, xp):
         dtype = xp.float64
         a = testing.shaped_arange((2, 3), xp, dtype)
-        b = xp.ones((2, 3), dtype)
-        out = xp.zeros((2, 3), dtype)
+        b = xp.ones((2, 3), dtype=dtype)
+        out = xp.zeros((2, 3), dtype=dtype)
         ret = xp.add(a, b, out=(out,))
         assert ret is out
         return ret
@@ -235,7 +236,7 @@ class TestUfunc:
     def test_biary_out_positional_none(self, xp):
         dtype = xp.float64
         a = testing.shaped_arange((2, 3), xp, dtype)
-        b = xp.ones((2, 3), dtype)
+        b = xp.ones((2, 3), dtype=dtype)
         return xp.add(a, b, None)
 
     @testing.numpy_cupy_allclose()
@@ -243,8 +244,8 @@ class TestUfunc:
         dtype = xp.float64
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
-        out0 = xp.zeros((2, 3), dtype)
-        out1 = xp.zeros((2, 3), dtype)
+        out0 = xp.zeros((2, 3), dtype=dtype)
+        out1 = xp.zeros((2, 3), dtype=dtype)
         ret = xp.divmod(a, b, out=(out0, out1))
         assert ret[0] is out0
         assert ret[1] is out1
@@ -254,7 +255,7 @@ class TestUfunc:
     def test_divmod_out_positional_none(self, xp):
         dtype = xp.float64
         a = testing.shaped_arange((2, 3), xp, dtype)
-        b = xp.ones((2, 3), dtype)
+        b = xp.ones((2, 3), dtype=dtype)
         return xp.divmod(a, b, None, None)
 
     @testing.numpy_cupy_allclose()
@@ -262,7 +263,7 @@ class TestUfunc:
         dtype = xp.float64
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
-        out0 = xp.zeros((2, 3), dtype)
+        out0 = xp.zeros((2, 3), dtype=dtype)
         ret = xp.divmod(a, b, out0)  # out1 is None
         assert ret[0] is out0
         return ret
@@ -272,7 +273,7 @@ class TestUfunc:
         dtype = xp.float64
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
-        out1 = xp.zeros((2, 3), dtype)
+        out1 = xp.zeros((2, 3), dtype=dtype)
         ret = xp.divmod(a, b, out=(None, out1))
         assert ret[1] is out1
         return ret
