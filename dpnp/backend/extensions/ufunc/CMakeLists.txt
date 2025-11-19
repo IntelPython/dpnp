@@ -31,6 +31,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/bitwise_count.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/degrees.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/divmod.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/erf_funcs.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fabs.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fix.cpp
