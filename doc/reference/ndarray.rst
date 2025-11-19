@@ -436,6 +436,7 @@ and return the appropriate scalar.
    :toctree: generated/
    :nosignatures:
 
+   ndarray.__bytes__
    ndarray.__index__
    ndarray.__int__
    ndarray.__float__

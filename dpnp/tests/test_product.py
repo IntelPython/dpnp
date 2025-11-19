@@ -13,7 +13,6 @@ from .helper import (
     generate_random_numpy_array,
     get_all_dtypes,
     is_gpu_device,
-    is_ptl,
     is_win_platform,
     numpy_version,
 )
@@ -1154,7 +1153,6 @@ class TestMatmul:
         expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.skipif(is_ptl(), reason="MKLD-18712")
     @pytest.mark.parametrize("dt_out", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize(
         "shape1, shape2",
