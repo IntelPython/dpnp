@@ -859,6 +859,279 @@ py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
     }
 }
 
+/*! @brief Template implementing Python API for querying of type support by
+ *         binary elementwise functions */
+template <typename output_typesT,
+          typename contig_dispatchT,
+          typename strided_dispatchT>
+std::pair<sycl::event, sycl::event>
+    py_binary_two_outputs_ufunc(const dpctl::tensor::usm_ndarray &src1,
+                                const dpctl::tensor::usm_ndarray &src2,
+                                const dpctl::tensor::usm_ndarray &dst1,
+                                const dpctl::tensor::usm_ndarray &dst2,
+                                sycl::queue &exec_q,
+                                const std::vector<sycl::event> depends,
+                                //
+                                const output_typesT &output_types_table,
+                                const contig_dispatchT &contig_dispatch_table,
+                                const strided_dispatchT &strided_dispatch_table)
+{
+    // check type_nums
+    int src1_typenum = src1.get_typenum();
+    int src2_typenum = src2.get_typenum();
+    int dst1_typenum = dst1.get_typenum();
+    int dst2_typenum = dst2.get_typenum();
+
+    auto array_types = td_ns::usm_ndarray_types();
+    int src1_typeid = array_types.typenum_to_lookup_id(src1_typenum);
+    int src2_typeid = array_types.typenum_to_lookup_id(src2_typenum);
+    int dst1_typeid = array_types.typenum_to_lookup_id(dst1_typenum);
+    int dst2_typeid = array_types.typenum_to_lookup_id(dst2_typenum);
+
+    std::pair<int, int> output_typeids =
+        output_types_table[src1_typeid][src2_typeid];
+
+    if (dst1_typeid != output_typeids.first ||
+        dst2_typeid != output_typeids.second) {
+        throw py::value_error(
+            "One of destination arrays has unexpected elemental data type.");
+    }
+
+    // check that queues are compatible
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src1, src2, dst1, dst2}))
+    {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst1);
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst2);
+
+    // check shapes, broadcasting is assumed done by caller
+    // check that dimensions are the same
+    int src1_nd = src1.get_ndim();
+    int src2_nd = src2.get_ndim();
+    int dst1_nd = dst1.get_ndim();
+    int dst2_nd = dst2.get_ndim();
+
+    if (dst1_nd != src1_nd || dst1_nd != src2_nd || dst1_nd != dst2_nd) {
+        throw py::value_error("Array dimensions are not the same.");
+    }
+
+    // check that shapes are the same
+    const py::ssize_t *src1_shape = src1.get_shape_raw();
+    const py::ssize_t *src2_shape = src2.get_shape_raw();
+    const py::ssize_t *dst1_shape = dst1.get_shape_raw();
+    const py::ssize_t *dst2_shape = dst2.get_shape_raw();
+    bool shapes_equal(true);
+    std::size_t src_nelems(1);
+
+    for (int i = 0; i < dst1_nd; ++i) {
+        const auto &sh_i = dst1_shape[i];
+        src_nelems *= static_cast<std::size_t>(src1_shape[i]);
+        shapes_equal =
+            shapes_equal && (src1_shape[i] == sh_i && src2_shape[i] == sh_i &&
+                             dst2_shape[i] == sh_i);
+    }
+    if (!shapes_equal) {
+        throw py::value_error("Array shapes are not the same.");
+    }
+
+    // if nelems is zero, return
+    if (src_nelems == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst1,
+                                                               src_nelems);
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst2,
+                                                               src_nelems);
+
+    // check memory overlap
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &same_logical_tensors =
+        dpctl::tensor::overlap::SameLogicalTensors();
+    if ((overlap(src1, dst1) && !same_logical_tensors(src1, dst1)) ||
+        (overlap(src2, dst1) && !same_logical_tensors(src2, dst1)) ||
+        (overlap(dst1, dst2) && !same_logical_tensors(dst1, dst2)))
+    {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+
+    const char *src1_data = src1.get_data();
+    const char *src2_data = src2.get_data();
+    char *dst1_data = dst1.get_data();
+    char *dst2_data = dst2.get_data();
+
+    // handle contiguous inputs
+    bool is_src1_c_contig = src1.is_c_contiguous();
+    bool is_src1_f_contig = src1.is_f_contiguous();
+
+    bool is_src2_c_contig = src2.is_c_contiguous();
+    bool is_src2_f_contig = src2.is_f_contiguous();
+
+    bool is_dst1_c_contig = dst1.is_c_contiguous();
+    bool is_dst1_f_contig = dst1.is_f_contiguous();
+
+    bool is_dst2_c_contig = dst2.is_c_contiguous();
+    bool is_dst2_f_contig = dst2.is_f_contiguous();
+
+    bool all_c_contig = (is_src1_c_contig && is_src2_c_contig &&
+                         is_dst1_c_contig && is_dst2_c_contig);
+    bool all_f_contig = (is_src1_f_contig && is_src2_f_contig &&
+                         is_dst1_f_contig && is_dst2_f_contig);
+
+    // dispatch for contiguous inputs
+    if (all_c_contig || all_f_contig) {
+        auto contig_fn = contig_dispatch_table[src1_typeid][src2_typeid];
+
+        if (contig_fn != nullptr) {
+            auto comp_ev =
+                contig_fn(exec_q, src_nelems, src1_data, 0, src2_data, 0,
+                          dst1_data, 0, dst2_data, 0, depends);
+            sycl::event ht_ev = dpctl::utils::keep_args_alive(
+                exec_q, {src1, src2, dst1, dst2}, {comp_ev});
+
+            return std::make_pair(ht_ev, comp_ev);
+        }
+    }
+
+    // simplify strides
+    auto const &src1_strides = src1.get_strides_vector();
+    auto const &src2_strides = src2.get_strides_vector();
+    auto const &dst1_strides = dst1.get_strides_vector();
+    auto const &dst2_strides = dst2.get_strides_vector();
+
+    using shT = std::vector<py::ssize_t>;
+    shT simplified_shape;
+    shT simplified_src1_strides;
+    shT simplified_src2_strides;
+    shT simplified_dst1_strides;
+    shT simplified_dst2_strides;
+    py::ssize_t src1_offset(0);
+    py::ssize_t src2_offset(0);
+    py::ssize_t dst1_offset(0);
+    py::ssize_t dst2_offset(0);
+
+    int nd = dst1_nd;
+    const py::ssize_t *shape = src1_shape;
+
+    simplify_iteration_space_4(
+        nd, shape, src1_strides, src2_strides, dst1_strides, dst2_strides,
+        // outputs
+        simplified_shape, simplified_src1_strides, simplified_src2_strides,
+        simplified_dst1_strides, simplified_dst2_strides, src1_offset,
+        src2_offset, dst1_offset, dst2_offset);
+
+    std::vector<sycl::event> host_tasks{};
+    static constexpr auto unit_stride = std::initializer_list<py::ssize_t>{1};
+
+    if ((nd == 1) && isEqual(simplified_src1_strides, unit_stride) &&
+        isEqual(simplified_src2_strides, unit_stride) &&
+        isEqual(simplified_dst1_strides, unit_stride) &&
+        isEqual(simplified_dst2_strides, unit_stride))
+    {
+        auto contig_fn = contig_dispatch_table[src1_typeid][src2_typeid];
+
+        if (contig_fn != nullptr) {
+            auto comp_ev =
+                contig_fn(exec_q, src_nelems, src1_data, src1_offset, src2_data,
+                          src2_offset, dst1_data, dst1_offset, dst2_data,
+                          dst2_offset, depends);
+            sycl::event ht_ev = dpctl::utils::keep_args_alive(
+                exec_q, {src1, src2, dst1, dst2}, {comp_ev});
+
+            return std::make_pair(ht_ev, comp_ev);
+        }
+    }
+
+    // dispatch to strided code
+    auto strided_fn = strided_dispatch_table[src1_typeid][src2_typeid];
+
+    if (strided_fn == nullptr) {
+        throw std::runtime_error(
+            "Strided implementation is missing for src1_typeid=" +
+            std::to_string(src1_typeid) +
+            " and src2_typeid=" + std::to_string(src2_typeid));
+    }
+
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    auto ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
+        exec_q, host_tasks, simplified_shape, simplified_src1_strides,
+        simplified_src2_strides, simplified_dst1_strides,
+        simplified_dst2_strides);
+    auto shape_strides_owner = std::move(std::get<0>(ptr_sz_event_triple_));
+    auto &copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
+
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
+
+    sycl::event strided_fn_ev =
+        strided_fn(exec_q, src_nelems, nd, shape_strides, src1_data,
+                   src1_offset, src2_data, src2_offset, dst1_data, dst1_offset,
+                   dst2_data, dst2_offset, depends, {copy_shape_ev});
+
+    // async free of shape_strides temporary
+    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {strided_fn_ev}, shape_strides_owner);
+    host_tasks.push_back(tmp_cleanup_ev);
+
+    return std::make_pair(dpctl::utils::keep_args_alive(
+                              exec_q, {src1, src2, dst1, dst2}, host_tasks),
+                          strided_fn_ev);
+}
+
+/**
+ * @brief Template implementing Python API for querying of type support by
+ * a binary elementwise function with two output arrays.
+ */
+template <typename output_typesT>
+std::pair<py::object, py::object> py_binary_two_outputs_ufunc_result_type(
+    const py::dtype &input1_dtype,
+    const py::dtype &input2_dtype,
+    const output_typesT &output_types_table)
+{
+    int tn1 = input1_dtype.num(); // NumPy type numbers are the same as in dpctl
+    int tn2 = input2_dtype.num(); // NumPy type numbers are the same as in dpctl
+    int src1_typeid = -1;
+    int src2_typeid = -1;
+
+    auto array_types = td_ns::usm_ndarray_types();
+
+    try {
+        src1_typeid = array_types.typenum_to_lookup_id(tn1);
+        src2_typeid = array_types.typenum_to_lookup_id(tn2);
+    } catch (const std::exception &e) {
+        throw py::value_error(e.what());
+    }
+
+    if (src1_typeid < 0 || src1_typeid >= td_ns::num_types || src2_typeid < 0 ||
+        src2_typeid >= td_ns::num_types)
+    {
+        throw std::runtime_error("binary output type lookup failed");
+    }
+    std::pair<int, int> dst_typeids =
+        output_types_table[src1_typeid][src2_typeid];
+    int dst1_typeid = dst_typeids.first;
+    int dst2_typeid = dst_typeids.second;
+
+    if (dst1_typeid < 0 || dst2_typeid < 0) {
+        auto res = py::none();
+        auto py_res = py::cast<py::object>(res);
+        return std::make_pair(py_res, py_res);
+    }
+    else {
+        using type_utils::_dtype_from_typenum;
+
+        auto dst1_typenum_t = static_cast<td_ns::typenum_t>(dst1_typeid);
+        auto dst2_typenum_t = static_cast<td_ns::typenum_t>(dst2_typeid);
+        auto dt1 = _dtype_from_typenum(dst1_typenum_t);
+        auto dt2 = _dtype_from_typenum(dst2_typenum_t);
+
+        return std::make_pair(py::cast<py::object>(dt1),
+                              py::cast<py::object>(dt2));
+    }
+}
+
 // ==================== Inplace binary functions =======================
 
 template <typename output_typesT,

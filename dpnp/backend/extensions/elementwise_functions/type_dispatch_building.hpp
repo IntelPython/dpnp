@@ -49,6 +49,24 @@ struct TypeMapTwoResultsEntry : std::bool_constant<std::is_same_v<Ty, ArgTy>>
 };
 
 /**
+ * Extends dpctl::tensor::type_dispatch::BinaryTypeMapResultEntry helper
+ * structure with support of the two result types.
+ */
+template <typename Ty1,
+          typename ArgTy1,
+          typename Ty2,
+          typename ArgTy2,
+          typename ResTy1 = ArgTy1,
+          typename ResTy2 = ArgTy2>
+struct BinaryTypeMapTwoResultsEntry
+    : std::bool_constant<std::conjunction_v<std::is_same<Ty1, ArgTy1>,
+                                            std::is_same<Ty2, ArgTy2>>>
+{
+    using result_type1 = ResTy1;
+    using result_type2 = ResTy2;
+};
+
+/**
  * Extends dpctl::tensor::type_dispatch::DefaultResultEntry helper structure
  * with support of the two result types.
  */

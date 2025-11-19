@@ -204,4 +204,118 @@ void simplify_iteration_space_3(
         assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
     }
 }
+
+void simplify_iteration_space_4(
+    int &nd,
+    const py::ssize_t *const &shape,
+    // src1
+    std::vector<py::ssize_t> const &src1_strides,
+    // src2
+    std::vector<py::ssize_t> const &src2_strides,
+    // src3
+    std::vector<py::ssize_t> const &src3_strides,
+    // dst
+    std::vector<py::ssize_t> const &dst_strides,
+    // output
+    std::vector<py::ssize_t> &simplified_shape,
+    std::vector<py::ssize_t> &simplified_src1_strides,
+    std::vector<py::ssize_t> &simplified_src2_strides,
+    std::vector<py::ssize_t> &simplified_src3_strides,
+    std::vector<py::ssize_t> &simplified_dst_strides,
+    py::ssize_t &src1_offset,
+    py::ssize_t &src2_offset,
+    py::ssize_t &src3_offset,
+    py::ssize_t &dst_offset)
+{
+    using dpctl::tensor::strides::simplify_iteration_four_strides;
+    if (nd > 1) {
+        // Simplify iteration space to reduce dimensionality
+        // and improve access pattern
+        simplified_shape.reserve(nd);
+        simplified_shape.insert(std::end(simplified_shape), shape, shape + nd);
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
+
+        simplified_src1_strides.reserve(nd);
+        simplified_src1_strides.insert(std::end(simplified_src1_strides),
+                                       std::begin(src1_strides),
+                                       std::end(src1_strides));
+        assert(simplified_src1_strides.size() == static_cast<std::size_t>(nd));
+
+        simplified_src2_strides.reserve(nd);
+        simplified_src2_strides.insert(std::end(simplified_src2_strides),
+                                       std::begin(src2_strides),
+                                       std::end(src2_strides));
+        assert(simplified_src2_strides.size() == static_cast<std::size_t>(nd));
+
+        simplified_src3_strides.reserve(nd);
+        simplified_src3_strides.insert(std::end(simplified_src3_strides),
+                                       std::begin(src3_strides),
+                                       std::end(src3_strides));
+        assert(simplified_src3_strides.size() == static_cast<std::size_t>(nd));
+
+        simplified_dst_strides.reserve(nd);
+        simplified_dst_strides.insert(std::end(simplified_dst_strides),
+                                      std::begin(dst_strides),
+                                      std::end(dst_strides));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
+
+        int contracted_nd = simplify_iteration_four_strides(
+            nd, simplified_shape.data(), simplified_src1_strides.data(),
+            simplified_src2_strides.data(), simplified_src3_strides.data(),
+            simplified_dst_strides.data(),
+            src1_offset, // modified by reference
+            src2_offset, // modified by reference
+            src3_offset, // modified by reference
+            dst_offset   // modified by reference
+        );
+        simplified_shape.resize(contracted_nd);
+        simplified_src1_strides.resize(contracted_nd);
+        simplified_src2_strides.resize(contracted_nd);
+        simplified_src3_strides.resize(contracted_nd);
+        simplified_dst_strides.resize(contracted_nd);
+
+        nd = contracted_nd;
+    }
+    else if (nd == 1) {
+        src1_offset = 0;
+        src2_offset = 0;
+        src3_offset = 0;
+        dst_offset = 0;
+        // Populate vectors
+        simplified_shape.reserve(nd);
+        simplified_shape.push_back(shape[0]);
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
+
+        simplified_src1_strides.reserve(nd);
+        simplified_src2_strides.reserve(nd);
+        simplified_src3_strides.reserve(nd);
+        simplified_dst_strides.reserve(nd);
+
+        if ((src1_strides[0] < 0) && (src2_strides[0] < 0) &&
+            (src3_strides[0] < 0) && (dst_strides[0] < 0))
+        {
+            simplified_src1_strides.push_back(-src1_strides[0]);
+            simplified_src2_strides.push_back(-src2_strides[0]);
+            simplified_src3_strides.push_back(-src3_strides[0]);
+            simplified_dst_strides.push_back(-dst_strides[0]);
+            if (shape[0] > 1) {
+                src1_offset += src1_strides[0] * (shape[0] - 1);
+                src2_offset += src2_strides[0] * (shape[0] - 1);
+                src3_offset += src3_strides[0] * (shape[0] - 1);
+                dst_offset += dst_strides[0] * (shape[0] - 1);
+            }
+        }
+        else {
+            simplified_src1_strides.push_back(src1_strides[0]);
+            simplified_src2_strides.push_back(src2_strides[0]);
+            simplified_src3_strides.push_back(src3_strides[0]);
+            simplified_dst_strides.push_back(dst_strides[0]);
+        }
+
+        assert(simplified_src1_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_src2_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_src3_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
+    }
+}
 } // namespace dpnp::extensions::py_internal
