@@ -39,12 +39,19 @@ from dpctl.tensor._elementwise_common import (
     BinaryElementwiseFunc,
     UnaryElementwiseFunc,
 )
+from dpctl.tensor._scalar_utils import (
+    _get_dtype,
+    _get_shape,
+    _validate_dtype,
+)
 
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.dpnp_utils.dpnp_utils_common import (
     find_buf_dtype_3out,
+    find_buf_dtype_4out,
 )
 
 __all__ = [
@@ -52,6 +59,7 @@ __all__ = [
     "DPNPAngle",
     "DPNPBinaryFunc",
     "DPNPBinaryFuncOutKw",
+    "DPNPBinaryTwoOutputsFunc",
     "DPNPFix",
     "DPNPImag",
     "DPNPReal",
@@ -347,7 +355,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
 
         buf_dt, res1_dt, res2_dt = find_buf_dtype_3out(
             x.dtype,
-            self.result_type_resolver_fn_,
+            self.get_type_result_resolver_function(),
             x.sycl_device,
         )
         if res1_dt is None or res2_dt is None:
@@ -444,13 +452,12 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
                     out[i] = dpt.empty_like(x, dtype=res_dt, order=order)
 
         # Call the unary function with input and output arrays
-        dep_evs = _manager.submitted_events
         ht_unary_ev, unary_ev = self.get_implementation_function()(
             x,
             dpnp.get_usm_ndarray(out[0]),
             dpnp.get_usm_ndarray(out[1]),
             sycl_queue=exec_q,
-            depends=dep_evs,
+            depends=_manager.submitted_events,
         )
         _manager.add_event_pair(ht_unary_ev, unary_ev)
 
@@ -793,6 +800,306 @@ class DPNPBinaryFuncOutKw(DPNPBinaryFunc):
                 stacklevel=2,
             )
         return super().__call__(*args, **kwargs)
+
+
+class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
+    """
+    Class that implements unary element-wise functions with two output arrays.
+
+    Parameters
+    ----------
+    name : {str}
+        Name of the unary function
+    result_type_resolver_fn : {callable}
+        Function that takes dtype of the input and returns the dtype of
+        the result if the implementation functions supports it, or
+        returns `None` otherwise.
+    unary_dp_impl_fn : {callable}
+        Data-parallel implementation function with signature
+        `impl_fn(src: usm_ndarray, dst: usm_ndarray,
+            sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])`
+        where the `src` is the argument array, `dst` is the
+        array to be populated with function values, effectively
+        evaluating `dst = func(src)`.
+        The `impl_fn` is expected to return a 2-tuple of `SyclEvent`s.
+        The first event corresponds to data-management host tasks,
+        including lifetime management of argument Python objects to ensure
+        that their associated USM allocation is not freed before offloaded
+        computational tasks complete execution, while the second event
+        corresponds to computational tasks associated with function evaluation.
+    docs : {str}
+        Documentation string for the unary function.
+    mkl_fn_to_call : {None, str}
+        Check input arguments to answer if function from OneMKL VM library
+        can be used.
+    mkl_impl_fn : {None, str}
+        Function from OneMKL VM library to call.
+
+    """
+
+    def __init__(
+        self,
+        name,
+        result_type_resolver_fn,
+        binary_dp_impl_fn,
+        docs,
+    ):
+        super().__init__(
+            name,
+            result_type_resolver_fn,
+            binary_dp_impl_fn,
+            docs,
+        )
+        self.__name__ = "DPNPBinaryTwoOutputsFunc"
+
+    @property
+    def nout(self):
+        """Returns the number of arguments treated as outputs."""
+        return 2
+
+    def __call__(
+        self,
+        x1,
+        x2,
+        out1=None,
+        out2=None,
+        /,
+        *,
+        out=(None, None),
+        where=True,
+        order="K",
+        dtype=None,
+        subok=True,
+        **kwargs,
+    ):
+        if kwargs:
+            raise NotImplementedError(
+                f"Requested function={self.name_} with kwargs={kwargs} "
+                "isn't currently supported."
+            )
+        elif where is not True:
+            raise NotImplementedError(
+                f"Requested function={self.name_} with where={where} "
+                "isn't currently supported."
+            )
+        elif dtype is not None:
+            raise NotImplementedError(
+                f"Requested function={self.name_} with dtype={dtype} "
+                "isn't currently supported."
+            )
+        elif subok is not True:
+            raise NotImplementedError(
+                f"Requested function={self.name_} with subok={subok} "
+                "isn't currently supported."
+            )
+
+        dpnp.check_supported_arrays_type(x1, x2, scalar_type=True)
+
+        if order is None:
+            order = "K"
+        elif order in "afkcAFKC":
+            order = order.upper()
+        else:
+            raise ValueError(
+                "order must be one of 'C', 'F', 'A', or 'K' " f"(got '{order}')"
+            )
+
+        res_usm_type, exec_q = get_usm_allocations([x1, x2])
+        x1 = dpnp.get_usm_ndarray_or_scalar(x1)
+        x2 = dpnp.get_usm_ndarray_or_scalar(x2)
+
+        x1_sh = _get_shape(x1)
+        x2_sh = _get_shape(x2)
+        try:
+            res_shape = dpnp.broadcast_shapes(x1_sh, x2_sh)
+        except ValueError:
+            raise ValueError(
+                "operands could not be broadcast together with shapes "
+                f"{x1_sh} and {x2_sh}"
+            )
+
+        sycl_dev = exec_q.sycl_device
+        x1_dt = _get_dtype(x1, sycl_dev)
+        x2_dt = _get_dtype(x2, sycl_dev)
+        if not all(_validate_dtype(dt) for dt in [x1_dt, x2_dt]):
+            raise ValueError("Operands have unsupported data types")
+
+        x1_dt, x2_dt = self.get_array_dtype_scalar_type_resolver_function()(
+            x1_dt, x2_dt, sycl_dev
+        )
+
+        buf1_dt, buf2_dt, res1_dt, res2_dt = find_buf_dtype_4out(
+            x1_dt,
+            x2_dt,
+            self.get_type_result_resolver_function(),
+            sycl_dev,
+        )
+        if res1_dt is None or res2_dt is None:
+            raise ValueError(
+                f"function '{self.name_}' does not support input type "
+                f"({x1_dt}, {x2_dt}), "
+                "and the input could not be safely coerced to any "
+                "supported types according to the casting rule ''safe''."
+            )
+        buf_dts = [buf1_dt, buf2_dt]
+
+        if not isinstance(out, tuple):
+            raise TypeError("'out' must be a tuple of arrays")
+
+        if len(out) != self.nout:
+            raise ValueError(
+                "'out' tuple must have exactly one entry per ufunc output"
+            )
+
+        if not (out1 is None and out2 is None):
+            if all(res is None for res in out):
+                out = (out1, out2)
+            else:
+                raise TypeError(
+                    "cannot specify 'out' as both a positional and keyword argument"
+                )
+
+        orig_out, out = list(out), list(out)
+        res_dts = [res1_dt, res2_dt]
+
+        for i in range(self.nout):
+            if out[i] is None:
+                continue
+
+            res = dpnp.get_usm_ndarray(out[i])
+            if not res.flags.writable:
+                raise ValueError("output array is read-only")
+
+            if res.shape != res_shape:
+                raise ValueError(
+                    "The shape of input and output arrays are inconsistent. "
+                    f"Expected output shape is {res_shape}, got {res.shape}"
+                )
+
+            if dpu.get_execution_queue((exec_q, res.sycl_queue)) is None:
+                raise dpnp.exceptions.ExecutionPlacementError(
+                    "Input and output allocation queues are not compatible"
+                )
+
+            res_dt = res_dts[i]
+            if res_dt != res.dtype:
+                if not dpnp.can_cast(res_dt, res.dtype, casting="same_kind"):
+                    raise TypeError(
+                        f"Cannot cast ufunc '{self.name_}' output {i + 1} from "
+                        f"{res_dt} to {res.dtype} with casting rule 'same_kind'"
+                    )
+
+                # Allocate a temporary buffer with the required dtype
+                out[i] = dpt.empty_like(res, dtype=res_dt)
+            else:
+                for x, dt in zip([x1, x2], buf_dts):
+                    if dpnp.isscalar(x):
+                        pass
+                    elif dt is not None:
+                        pass
+                    elif not dti._array_overlap(x, res):
+                        pass
+                    elif dti._same_logical_tensors(x, res):
+                        pass
+
+                    # Allocate a temporary buffer to avoid memory overlapping.
+                    # Note if `dt` is not None, a temporary copy of `x` will be
+                    # created, so the array overlap check isn't needed.
+                    out[i] = dpt.empty_like(res)
+                    break
+
+        x1 = dpnp.as_usm_ndarray(x1, dtype=x1_dt, sycl_queue=exec_q)
+        x2 = dpnp.as_usm_ndarray(x2, dtype=x2_dt, sycl_queue=exec_q)
+
+        if order == "A":
+            if x1.flags.f_contiguous and x2.flags.f_contiguous:
+                order = "F"
+            else:
+                order = "C"
+
+        _manager = dpu.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+
+        # Cast input array to the supported type if needed
+        if any(dt is not None for dt in buf_dts):
+            if all(dt is not None for dt in buf_dts):
+                if x1.flags.c_contiguous and x2.flags.c_contiguous:
+                    order = "C"
+                elif x1.flags.f_contiguous and x2.flags.f_contiguous:
+                    order = "F"
+
+            arrs = [x1, x2]
+            buf_dts = [buf1_dt, buf2_dt]
+            for i in range(self.nout):
+                buf_dt = buf_dts[i]
+                if buf_dt is None:
+                    continue
+
+                x = arrs[i]
+                if order == "K":
+                    buf = dtc._empty_like_orderK(x, buf_dt)
+                else:
+                    buf = dpt.empty_like(x, dtype=buf_dt, order=order)
+
+                ht_copy_ev, copy_ev = dti._copy_usm_ndarray_into_usm_ndarray(
+                    src=x, dst=buf, sycl_queue=exec_q, depends=dep_evs
+                )
+                _manager.add_event_pair(ht_copy_ev, copy_ev)
+
+                arrs[i] = buf
+            x1, x2 = arrs
+
+        # Allocate a buffer for the output arrays if needed
+        for i in range(self.nout):
+            if out[i] is None:
+                res_dt = res_dts[i]
+                if order == "K":
+                    out[i] = dtc._empty_like_pair_orderK(
+                        x1, x2, res_dt, res_shape, res_usm_type, exec_q
+                    )
+                else:
+                    out[i] = dpt.empty(
+                        res_shape,
+                        dtype=res_dt,
+                        order=order,
+                        usm_type=res_usm_type,
+                        sycl_queue=exec_q,
+                    )
+
+        # Broadcast shapes of input arrays
+        if x1.shape != res_shape:
+            x1 = dpt.broadcast_to(x1, res_shape)
+        if x2.shape != res_shape:
+            x2 = dpt.broadcast_to(x2, res_shape)
+
+        # Call the binary function with input and output arrays
+        ht_binary_ev, binary_ev = self.get_implementation_function()(
+            x1,
+            x2,
+            dpnp.get_usm_ndarray(out[0]),
+            dpnp.get_usm_ndarray(out[1]),
+            sycl_queue=exec_q,
+            depends=_manager.submitted_events,
+        )
+        _manager.add_event_pair(ht_binary_ev, binary_ev)
+
+        for i in range(self.nout):
+            orig_res, res = orig_out[i], out[i]
+            if not (orig_res is None or orig_res is res):
+                # Copy the out data from temporary buffer to original memory
+                ht_copy_ev, copy_ev = dti._copy_usm_ndarray_into_usm_ndarray(
+                    src=res,
+                    dst=dpnp.get_usm_ndarray(orig_res),
+                    sycl_queue=exec_q,
+                    depends=[binary_ev],
+                )
+                _manager.add_event_pair(ht_copy_ev, copy_ev)
+                res = out[i] = orig_res
+
+            if not isinstance(res, dpnp_array):
+                # Always return dpnp.ndarray
+                out[i] = dpnp_array._create_from_usm_ndarray(res)
+        return tuple(out)
 
 
 class DPNPAngle(DPNPUnaryFunc):
