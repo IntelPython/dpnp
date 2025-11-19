@@ -214,7 +214,10 @@ class dpnp_array:
 
     # '__deepcopy__',
     # '__dir__',
-    # '__divmod__',
+
+    def __divmod__(self, other, /):
+        r"""Return :math:`\text{divmod(self, value)}`."""
+        return dpnp.divmod(self, other)
 
     def __dlpack__(
         self, /, *, stream=None, max_version=None, dl_device=None, copy=None
@@ -495,7 +498,10 @@ class dpnp_array:
         r"""Return :math:`\text{value & self}`."""
         return dpnp.bitwise_and(other, self)
 
-    # '__rdivmod__',
+    def __rdivmod__(self, other, /):
+        r"""Return :math:`\text{divmod(value, self)}`."""
+        return dpnp.divmod(other, self)
+
     # '__reduce__',
     # '__reduce_ex__',
 
@@ -505,7 +511,7 @@ class dpnp_array:
 
     def __rfloordiv__(self, other, /):
         r"""Return :math:`\text{value // self}`."""
-        return dpnp.floor_divide(self, other)
+        return dpnp.floor_divide(other, self)
 
     def __rlshift__(self, other, /):
         r"""Return :math:`\text{value << self}`."""
