@@ -524,8 +524,10 @@ from .dpnp_iface import (
 # Public API
 # =============================================================================
 
+__all__ = ["__array_namespace_info__", "ndarray"]
+
 # Array creation routines
-__all__ = [
+__all__ += [
     "arange",
     "array",
     "asanyarray",
@@ -653,6 +655,7 @@ __all__ += [
     "diagonal",
     "extract",
     "fill_diagonal",
+    "flatiter",
     "flatnonzero",
     "indices",
     "iterable",
