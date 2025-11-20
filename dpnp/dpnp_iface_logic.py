@@ -1183,7 +1183,9 @@ def isin(element, test_elements, assume_unique=False, invert=False):
         The values against which to test each value of `element`.
         This argument is flattened if it is an array.
     assume_unique : bool, optional
-        Ignored
+        Ignored, as no performance benefit is gained by assuming the
+        input arrays are unique. Included for compatibility with NumPy.
+        Default: ``False``.
     invert : bool, optional
         If ``True``, the values in the returned array are inverted, as if
         calculating `element not in test_elements`.
