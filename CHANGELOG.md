@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.1] - 2025-11-XX
+
+This release achieves `dpnp` compatibility with Python 3.14 and enables distributing `dpnp` packages with the latest Python version.
+
+### Added
+
+* Enabled support of Python 3.14 [#2631](https://github.com/IntelPython/dpnp/pull/2631)
+
+
 ## [0.19.0] - 2025-10-06
 
 This release introduces a set of new `dpnp.ndarray` methods and SciPy-compatible functions to improve CuPy compatibility.
