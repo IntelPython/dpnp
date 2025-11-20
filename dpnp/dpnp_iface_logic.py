@@ -1166,7 +1166,12 @@ def isfortran(a):
     return a.flags.fnc
 
 
-def isin(element, test_elements, assume_unique=False, invert=False):
+def isin(
+    element,
+    test_elements,
+    assume_unique=False,  # pylint: disable=unused-argument
+    invert=False,
+):
     """
     Calculates ``element in test_elements``, broadcasting over `element` only.
     Returns a boolean array of the same shape as `element` that is ``True``
