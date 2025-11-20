@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.19.0dev6+5.gf615e6b5848 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.20.0dev1+7.g64b458904ac documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5ed77ab6"></script>
+      <script src="../../_static/documentation_options.js?v=671d0251"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -83,9 +83,8 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dpnp.dpnp_iface_arraycreation</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2025, Intel Corporation</span>
+<span></span><span class="c1"># *****************************************************************************</span>
+<span class="c1"># Copyright (c) 2016, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -95,6 +94,9 @@
 <span class="c1"># - Redistributions in binary form must reproduce the above copyright notice,</span>
 <span class="c1">#   this list of conditions and the following disclaimer in the documentation</span>
 <span class="c1">#   and/or other materials provided with the distribution.</span>
+<span class="c1"># - Neither the name of the copyright holder nor the names of its contributors</span>
+<span class="c1">#   may be used to endorse or promote products derived from this software</span>
+<span class="c1">#   without specific prior written permission.</span>
 <span class="c1">#</span>
 <span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
 <span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
@@ -122,6 +124,8 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+
+<span class="c1"># pylint: disable=duplicate-code</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 
@@ -599,7 +603,6 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.asarray` : Similar function which always returns ndarrays.</span>
 <span class="sd">    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous array.</span>
-<span class="sd">    :obj:`dpnp.asfarray` : Convert input to a floating point ndarray.</span>
 <span class="sd">    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major</span>
 <span class="sd">                                 memory order.</span>
 <span class="sd">    :obj:`dpnp.asarray_chkfinite` : Similar function which checks input</span>
@@ -715,8 +718,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.asanyarray` : Similar function which passes through subclasses.</span>
 <span class="sd">    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous array.</span>
-<span class="sd">    :obj:`dpnp.asfarray` : Convert input to a floating point ndarray.</span>
-<span class="sd">    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major</span>
+<span class="sd">    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-majors</span>
 <span class="sd">                                 memory order.</span>
 <span class="sd">    :obj:`dpnp.asarray_chkfinite` : Similar function which checks input</span>
 <span class="sd">                                    for NaNs and Infs.</span>
@@ -1826,6 +1828,8 @@
 <span class="sd">    :obj:`dpnp.fromfile` : Construct array from data in a text or binary file.</span>
 <span class="sd">    :obj:`dpnp.fromiter` : Construct array from an iterable object.</span>
 <span class="sd">    :obj:`dpnp.fromstring` : Construct array from the text data in a string.</span>
+<span class="sd">    :obj:`ndarray.tobytes` : Construct Python bytes from the raw data bytes</span>
+<span class="sd">        in the array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2370,9 +2374,12 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    TypeError</span>
-<span class="sd">        if `obj` does not implement ``__dlpack__`` method</span>
+<span class="sd">        If `x` does not implement ``__dlpack__`` method.</span>
 <span class="sd">    ValueError</span>
-<span class="sd">        if data of the input object resides on an unsupported device</span>
+<span class="sd">        If data of the input object resides on an unsupported device.</span>
+<span class="sd">    DLPackCreationError</span>
+<span class="sd">        When `x` is allocated on a partitioned SYCL device, or with</span>
+<span class="sd">        a non-default context.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>

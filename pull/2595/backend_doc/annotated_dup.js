@@ -47,6 +47,7 @@ var annotated_dup =
             [ "GetrfBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html", null ],
             [ "GetrfTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html", null ],
             [ "GetriBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html", null ],
+            [ "GetrsBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_batch_type_pair_support_factory.html", null ],
             [ "GetrsTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html", null ],
             [ "HeevdTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
             [ "OrgqrBatchTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_batch_type_pair_support_factory.html", null ],
@@ -58,6 +59,16 @@ var annotated_dup =
             [ "UngqrTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ]
           ] ],
           [ "LinAlgError", "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html", null ]
+        ] ],
+        [ "py_internal", null, [
+          [ "elementwise_common", null, [
+            [ "UnaryTwoOutputsContigFunctor", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_unary_two_outputs_contig_functor.html", null ],
+            [ "UnaryTwoOutputsStridedFunctor", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_unary_two_outputs_strided_functor.html", null ]
+          ] ],
+          [ "type_dispatch", null, [
+            [ "DefaultTwoResultsEntry", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry.html", null ],
+            [ "TypeMapTwoResultsEntry", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_type_map_two_results_entry.html", null ]
+          ] ]
         ] ],
         [ "window", null, [
           [ "kernels", null, [
@@ -79,9 +90,12 @@ var annotated_dup =
         [ "degrees", null, [
           [ "DegreesFunctor", "structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html", null ]
         ] ],
-        [ "erfs", null, [
+        [ "erfs", "namespacedpnp_1_1kernels_1_1erfs.html", [
           [ "BaseFunctor", "structdpnp_1_1kernels_1_1erfs_1_1_base_functor.html", null ],
+          [ "ErfcinvOp", "structdpnp_1_1kernels_1_1erfs_1_1_erfcinv_op.html", null ],
           [ "ErfcOp", "structdpnp_1_1kernels_1_1erfs_1_1_erfc_op.html", null ],
+          [ "ErfcxOp", "structdpnp_1_1kernels_1_1erfs_1_1_erfcx_op.html", null ],
+          [ "ErfinvOp", "structdpnp_1_1kernels_1_1erfs_1_1_erfinv_op.html", null ],
           [ "ErfOp", "structdpnp_1_1kernels_1_1erfs_1_1_erf_op.html", null ]
         ] ],
         [ "fabs", null, [
@@ -98,6 +112,9 @@ var annotated_dup =
         ] ],
         [ "fmod", null, [
           [ "FmodFunctor", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ]
+        ] ],
+        [ "frexp", null, [
+          [ "FrexpFunctor", "structdpnp_1_1kernels_1_1frexp_1_1_frexp_functor.html", null ]
         ] ],
         [ "gcd", null, [
           [ "GcdFunctor", "structdpnp_1_1kernels_1_1gcd_1_1_gcd_functor.html", null ]
@@ -120,6 +137,9 @@ var annotated_dup =
         ] ],
         [ "logaddexp2", null, [
           [ "Logaddexp2Functor", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ]
+        ] ],
+        [ "modf", null, [
+          [ "ModfFunctor", "structdpnp_1_1kernels_1_1modf_1_1_modf_functor.html", null ]
         ] ],
         [ "nan_to_num", null, [
           [ "NanToNumContigFunctor", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html", null ],

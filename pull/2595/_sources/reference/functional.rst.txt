@@ -1,14 +1,16 @@
+.. currentmodule:: dpnp
+
 Functional programming
 ======================
 
-.. https://numpy.org/doc/stable/reference/routines.functional.html
+.. hint:: `NumPy API Reference: Functional programming <https://numpy.org/doc/stable/reference/routines.functional.html>`_
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
 
-   dpnp.apply_along_axis
-   dpnp.apply_over_axes
-   dpnp.vectorize
-   dpnp.frompyfunc
-   dpnp.piecewise
+   apply_along_axis
+   apply_over_axes
+   vectorize
+   frompyfunc
+   piecewise
