@@ -1171,6 +1171,8 @@ def isin(
     test_elements,
     assume_unique=False,  # pylint: disable=unused-argument
     invert=False,
+    *,
+    kind=None,  # pylint: disable=unused-argument
 ):
     """
     Calculates ``element in test_elements``, broadcasting over `element` only.
@@ -1190,21 +1192,26 @@ def isin(
     assume_unique : bool, optional
         Ignored, as no performance benefit is gained by assuming the
         input arrays are unique. Included for compatibility with NumPy.
+
         Default: ``False``.
     invert : bool, optional
         If ``True``, the values in the returned array are inverted, as if
-        calculating `element not in test_elements`.
+        calculating ``element not in test_elements``.
         ``dpnp.isin(a, b, invert=True)`` is equivalent to (but faster
         than) ``dpnp.invert(dpnp.isin(a, b))``.
-        Default: ``False``.
 
+        Default: ``False``.
+    kind : {None, "sort"}, optional
+        Ignored, as the only algorithm implemented is ``"sort"``. Included for
+        compatibility with NumPy.
+
+        Default: ``None``.
 
     Returns
     -------
     isin : dpnp.ndarray of bool dtype
         Has the same shape as `element`. The values `element[isin]`
         are in `test_elements`.
-
 
     Examples
     --------
@@ -1238,14 +1245,32 @@ def isin(
     """
 
     dpnp.check_supported_arrays_type(element, test_elements, scalar_type=True)
-    usm_element = dpnp.as_usm_ndarray(
-        element, usm_type=element.usm_type, sycl_queue=element.sycl_queue
-    )
-    usm_test = dpnp.as_usm_ndarray(
-        test_elements,
-        usm_type=test_elements.usm_type,
-        sycl_queue=test_elements.sycl_queue,
-    )
+    if dpnp.isscalar(element):
+        usm_element = dpnp.as_usm_ndarray(
+            element,
+            usm_type=test_elements.usm_type,
+            sycl_queue=test_elements.sycl_queue,
+        )
+        usm_test = dpnp.get_usm_ndarray(test_elements)
+    elif dpnp.isscalar(test_elements):
+        usm_test = dpnp.as_usm_ndarray(
+            test_elements,
+            usm_type=element.usm_type,
+            sycl_queue=element.sycl_queue,
+        )
+        usm_element = dpnp.get_usm_ndarray(element)
+    else:
+        if (
+            dpu.get_execution_queue(
+                (element.sycl_queue, test_elements.sycl_queue)
+            )
+            is None
+        ):
+            raise dpu.ExecutionPlacementError(
+                "Input arrays have incompatible allocation queues"
+            )
+        usm_element = dpnp.get_usm_ndarray(element)
+        usm_test = dpnp.get_usm_ndarray(test_elements)
     return dpnp.get_result_array(
         dpt.isin(
             usm_element,
