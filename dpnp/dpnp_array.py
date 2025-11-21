@@ -1951,7 +1951,7 @@ class dpnp_array:
             warnings.warn(
                 "`.T` is deprecated for non-2D dpnp.ndarray "
                 "and will raise an error in a future release. "
-                "Either `arr.transpose()` or `.mT` (which swaps "
+                "Either `self.transpose()` or `self.mT` (which swaps "
                 "the last two axes only) should be used instead.",
                 DeprecationWarning,
                 stacklevel=2,
