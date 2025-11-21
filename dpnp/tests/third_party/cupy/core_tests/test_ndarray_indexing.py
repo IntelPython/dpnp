@@ -252,12 +252,12 @@ class TestArrayIndex(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_T(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)
-        return a.T
+        return a.transpose()
 
     @testing.numpy_cupy_array_equal()
     def test_T_vector(self, xp):
         a = testing.shaped_arange((4,), xp)
-        return a.T
+        return a.transpose()
 
 
 class TestSetItemCompatBroadcast:

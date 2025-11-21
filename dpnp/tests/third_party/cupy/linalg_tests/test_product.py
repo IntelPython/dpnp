@@ -46,11 +46,11 @@ class TestDot(unittest.TestCase):
     def test_dot(self, xp, dtype_a, dtype_b):
         shape_a, shape_b = self.shape
         if self.trans_a:
-            a = testing.shaped_arange(shape_a[::-1], xp, dtype_a).T
+            a = testing.shaped_arange(shape_a[::-1], xp, dtype_a).transpose()
         else:
             a = testing.shaped_arange(shape_a, xp, dtype_a)
         if self.trans_b:
-            b = testing.shaped_arange(shape_b[::-1], xp, dtype_b).T
+            b = testing.shaped_arange(shape_b[::-1], xp, dtype_b).transpose()
         else:
             b = testing.shaped_arange(shape_b, xp, dtype_b)
         return xp.dot(a, b)
@@ -62,11 +62,11 @@ class TestDot(unittest.TestCase):
     def test_dot_with_out(self, xp, dtype_a, dtype_b, dtype_c):
         shape_a, shape_b = self.shape
         if self.trans_a:
-            a = testing.shaped_arange(shape_a[::-1], xp, dtype_a).T
+            a = testing.shaped_arange(shape_a[::-1], xp, dtype_a).transpose()
         else:
             a = testing.shaped_arange(shape_a, xp, dtype_a)
         if self.trans_b:
-            b = testing.shaped_arange(shape_b[::-1], xp, dtype_b).T
+            b = testing.shaped_arange(shape_b[::-1], xp, dtype_b).transpose()
         else:
             b = testing.shaped_arange(shape_b, xp, dtype_b)
         if a.ndim == 0 or b.ndim == 0:
@@ -206,11 +206,11 @@ class TestDotFor0Dim(unittest.TestCase):
     def test_dot(self, xp, dtype_a, dtype_b):
         shape_a, shape_b = self.shape
         if self.trans_a:
-            a = testing.shaped_arange(shape_a[::-1], xp, dtype_a).T
+            a = testing.shaped_arange(shape_a[::-1], xp, dtype_a).transpose()
         else:
             a = testing.shaped_arange(shape_a, xp, dtype_a)
         if self.trans_b:
-            b = testing.shaped_arange(shape_b[::-1], xp, dtype_b).T
+            b = testing.shaped_arange(shape_b[::-1], xp, dtype_b).transpose()
         else:
             b = testing.shaped_arange(shape_b, xp, dtype_b)
         return xp.dot(a, b)

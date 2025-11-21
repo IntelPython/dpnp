@@ -879,17 +879,25 @@ class TestEinsum:
                 b = numpy.arange(n, dtype=dtype)
                 a_dp = dpnp.array(a)
                 b_dp = dpnp.array(b)
-                expected = numpy.einsum("ji,j", a.T, b.T, optimize=do_opt)
-                result = dpnp.einsum("ji,j", a_dp.T, b_dp.T, optimize=do_opt)
+                expected = numpy.einsum(
+                    "ji,j", a.transpose(), b.transpose(), optimize=do_opt
+                )
+                result = dpnp.einsum(
+                    "ji,j", a_dp.transpose(), b_dp.transpose(), optimize=do_opt
+                )
                 assert_dtype_allclose(result, expected)
 
                 result = dpnp.einsum(
-                    a_dp.T, [1, 0], b_dp.T, [1], optimize=do_opt
+                    a_dp.transpose(),
+                    [1, 0],
+                    b_dp.transpose(),
+                    [1],
+                    optimize=do_opt,
                 )
                 assert_dtype_allclose(result, expected)
 
                 c = dpnp.arange(4, dtype=a_dp.dtype)
-                args = ["ji,j", a_dp.T, b_dp.T]
+                args = ["ji,j", a_dp.transpose(), b_dp.transpose()]
                 result = dpnp.einsum(
                     *args, out=c, dtype="f4", casting="unsafe", optimize=do_opt
                 )
@@ -897,7 +905,7 @@ class TestEinsum:
                 assert_dtype_allclose(result, expected)
 
                 c[...] = 0
-                args = [a_dp.T, [1, 0], b_dp.T, [1]]
+                args = [a_dp.transpose(), [1, 0], b_dp.transpose(), [1]]
                 result = dpnp.einsum(
                     *args, out=c, dtype="f4", casting="unsafe", optimize=do_opt
                 )
