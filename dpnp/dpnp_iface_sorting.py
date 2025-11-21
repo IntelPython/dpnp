@@ -39,8 +39,6 @@ it contains:
 
 """
 
-# pylint: disable=duplicate-code
-
 import dpctl.tensor as dpt
 import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_index
@@ -56,8 +54,6 @@ from .dpnp_utils import (
     call_origin,
     map_dtype_to_device,
 )
-
-__all__ = ["argsort", "partition", "sort", "sort_complex"]
 
 
 def _wrap_sort_argsort(

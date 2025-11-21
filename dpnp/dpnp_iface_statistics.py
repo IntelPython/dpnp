@@ -60,23 +60,6 @@ from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 from .dpnp_utils.dpnp_utils_statistics import dpnp_cov, dpnp_median
 
-__all__ = [
-    "amax",
-    "amin",
-    "average",
-    "convolve",
-    "corrcoef",
-    "correlate",
-    "cov",
-    "max",
-    "mean",
-    "median",
-    "min",
-    "ptp",
-    "std",
-    "var",
-]
-
 
 def _count_reduce_items(arr, axis, where=True):
     """
@@ -719,10 +702,10 @@ def _convolve_fft(a, v, l_pad, r_pad, rtype):
     padded_size = a.size + r_pad + 1
     fft_size = 2 ** int(math.ceil(math.log2(padded_size)))
 
-    af = dpnp.fft.fft(a, fft_size)  # pylint: disable=no-member
-    vf = dpnp.fft.fft(v, fft_size)  # pylint: disable=no-member
+    af = dpnp.fft.fft(a, fft_size)
+    vf = dpnp.fft.fft(v, fft_size)
 
-    r = dpnp.fft.ifft(af * vf)  # pylint: disable=no-member
+    r = dpnp.fft.ifft(af * vf)
     if dpnp.issubdtype(rtype, dpnp.floating):
         r = r.real
     elif dpnp.issubdtype(rtype, dpnp.integer) or rtype == dpnp.bool:

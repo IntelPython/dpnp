@@ -57,15 +57,6 @@ from dpnp.dpnp_utils.dpnp_utils_common import (
 # pylint: disable=no-name-in-module
 from .dpnp_utils import get_usm_allocations
 
-__all__ = [
-    "bincount",
-    "digitize",
-    "histogram",
-    "histogram_bin_edges",
-    "histogram2d",
-    "histogramdd",
-]
-
 # range is a keyword argument to many functions, so save the builtin so they can
 # use it.
 _range = range
