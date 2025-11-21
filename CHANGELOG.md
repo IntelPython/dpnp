@@ -12,6 +12,10 @@ This release achieves `dpnp` compatibility with Python 3.14 and enables distribu
 
 * Enabled support of Python 3.14 [#2631](https://github.com/IntelPython/dpnp/pull/2631)
 
+### Fixed
+
+* Updated tests for erf functions to pass with `scipy>=0.16.0` per each integer dtype [#2669](https://github.com/IntelPython/dpnp/pull/2669)
+
 
 ## [0.19.0] - 2025-10-06
 
