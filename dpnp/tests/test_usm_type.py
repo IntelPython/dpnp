@@ -355,6 +355,7 @@ def test_logic_op_1in(op, usm_type_x):
         "greater",
         "greater_equal",
         "isclose",
+        "isin",
         "less",
         "less_equal",
         "logical_and",
