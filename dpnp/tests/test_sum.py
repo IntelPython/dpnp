@@ -41,8 +41,8 @@ def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
     a = dpnp.asarray(a_np)
 
     if transpose:
-        a_np = a_np.T
-        a = a.T
+        a_np = a_np.transpose()
+        a = a.transpose()
 
     axes_range = list(numpy.arange(len(shape)))
     axes = [None]
