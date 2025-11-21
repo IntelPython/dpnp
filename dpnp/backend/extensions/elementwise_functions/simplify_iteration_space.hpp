@@ -61,4 +61,25 @@ void simplify_iteration_space_3(int &,
                                 py::ssize_t &,
                                 py::ssize_t &,
                                 py::ssize_t &);
+
+void simplify_iteration_space_4(int &,
+                                const py::ssize_t *const &,
+                                // src1
+                                std::vector<py::ssize_t> const &,
+                                // src2
+                                std::vector<py::ssize_t> const &,
+                                // src3
+                                std::vector<py::ssize_t> const &,
+                                // dst
+                                std::vector<py::ssize_t> const &,
+                                // output
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                std::vector<py::ssize_t> &,
+                                py::ssize_t &,
+                                py::ssize_t &,
+                                py::ssize_t &,
+                                py::ssize_t &);
 } // namespace dpnp::extensions::py_internal

@@ -36,6 +36,7 @@ from dpnp.dpnp_utils import map_dtype_to_device
 
 __all__ = [
     "find_buf_dtype_3out",
+    "find_buf_dtype_4out",
     "result_type_for_device",
     "to_supported_dtypes",
 ]
@@ -58,6 +59,30 @@ def find_buf_dtype_3out(arg_dtype, query_fn, sycl_dev):
                 return buf_dt, res1_dt, res2_dt
 
     return None, None, None
+
+
+def find_buf_dtype_4out(arg1_dtype, arg2_dtype, query_fn, sycl_dev):
+    """Works as dpu._find_buf_dtype2, but with two output arrays."""
+
+    res1_dt, res2_dt = query_fn(arg1_dtype, arg2_dtype)
+    if res1_dt and res2_dt:
+        return None, None, res1_dt, res2_dt
+
+    _fp16 = sycl_dev.has_aspect_fp16
+    _fp64 = sycl_dev.has_aspect_fp64
+    all_dts = dtu._all_data_types(_fp16, _fp64)
+    for buf1_dt in all_dts:
+        for buf2_dt in all_dts:
+            if dtu._can_cast(
+                arg1_dtype, buf1_dt, _fp16, _fp64
+            ) and dtu._can_cast(arg2_dtype, buf2_dt, _fp16, _fp64):
+                res1_dt, res2_dt = query_fn(buf1_dt, buf2_dt)
+                if res1_dt and res2_dt:
+                    ret_buf1_dt = None if buf1_dt == arg1_dtype else buf1_dt
+                    ret_buf2_dt = None if buf2_dt == arg2_dtype else buf2_dt
+                    return ret_buf1_dt, ret_buf2_dt, res1_dt, res2_dt
+
+    return None, None, None, None
 
 
 def result_type_for_device(dtypes, device):

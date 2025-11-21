@@ -13,6 +13,7 @@ from sphinx.ext.napoleon import NumpyDocstring, docstring
 from dpnp.dpnp_algo.dpnp_elementwise_common import (
     DPNPBinaryFunc,
     DPNPBinaryFuncOutKw,
+    DPNPBinaryTwoOutputsFunc,
     DPNPUnaryFunc,
     DPNPUnaryTwoOutputsFunc,
 )
@@ -215,6 +216,7 @@ def _can_document_member(member, *args, **kwargs):
         (
             DPNPBinaryFunc,
             DPNPBinaryFuncOutKw,
+            DPNPBinaryTwoOutputsFunc,
             DPNPUnaryFunc,
             DPNPUnaryTwoOutputsFunc,
         ),
