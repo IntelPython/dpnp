@@ -536,6 +536,7 @@ def test_logic_op_1in(op, device):
         "greater",
         "greater_equal",
         "isclose",
+        "isin",
         "less",
         "less_equal",
         "logical_and",
