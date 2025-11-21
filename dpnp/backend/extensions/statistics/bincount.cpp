@@ -201,7 +201,7 @@ std::tuple<sycl::event, sycl::event> Bincount::call(
             dpctl::utils::keep_args_alive(exec_q, {sample, histogram}, {ev});
     }
 
-    return {args_ev, ev};
+    return std::make_pair(args_ev, ev);
 }
 
 std::unique_ptr<Bincount> bincount;

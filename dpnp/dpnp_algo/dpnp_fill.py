@@ -57,10 +57,10 @@ def dpnp_fill(arr, val):
         a_val = dpt.broadcast_to(a_val, arr.shape)
         _manager = dpu.SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
-        h_ev, c_ev = _copy_usm_ndarray_into_usm_ndarray(
+        ht_ev, c_ev = _copy_usm_ndarray_into_usm_ndarray(
             src=a_val, dst=arr, sycl_queue=exec_q, depends=dep_evs
         )
-        _manager.add_event_pair(h_ev, c_ev)
+        _manager.add_event_pair(ht_ev, c_ev)
         return
     elif not isinstance(val, (Number, dpnp.bool)):
         raise TypeError(
@@ -73,8 +73,8 @@ def dpnp_fill(arr, val):
 
     # can leverage efficient memset when val is 0
     if arr.flags["FORC"] and val == 0:
-        h_ev, zeros_ev = _zeros_usm_ndarray(arr, exec_q, depends=dep_evs)
-        _manager.add_event_pair(h_ev, zeros_ev)
+        ht_ev, zeros_ev = _zeros_usm_ndarray(arr, exec_q, depends=dep_evs)
+        _manager.add_event_pair(ht_ev, zeros_ev)
     else:
-        h_ev, fill_ev = _full_usm_ndarray(val, arr, exec_q, depends=dep_evs)
-        _manager.add_event_pair(h_ev, fill_ev)
+        ht_ev, fill_ev = _full_usm_ndarray(val, arr, exec_q, depends=dep_evs)
+        _manager.add_event_pair(ht_ev, fill_ev)
