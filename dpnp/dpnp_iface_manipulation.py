@@ -2950,7 +2950,7 @@ def require(a, dtype=None, requirements=None, *, like=None):
     return arr
 
 
-def reshape(a, /, shape=None, order="C", *, copy=None):
+def reshape(a, /, shape, order="C", *, copy=None):
     """
     Gives a new shape to an array without changing its data.
 
@@ -2965,8 +2965,6 @@ def reshape(a, /, shape=None, order="C", *, copy=None):
         an integer, then the result will be a 1-D array of that length.
         One shape dimension can be -1. In this case, the value is
         inferred from the length of the array and remaining dimensions.
-
-        Default: ``None``.
     order : {None, "C", "F", "A"}, optional
         Read the elements of `a` using this index order, and place the
         elements into the reshaped array using this index order. ``"C"``
@@ -3049,11 +3047,6 @@ def reshape(a, /, shape=None, order="C", *, copy=None):
            [5, 6]])
 
     """
-
-    if shape is None:
-        raise TypeError(
-            "reshape() missing 1 required positional argument: 'shape'"
-        )
 
     if order is None:
         order = "C"
