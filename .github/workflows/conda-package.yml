@@ -366,9 +366,14 @@ jobs:
           } else {
             Write-Warning "File $script_path was NOT found!"
           }
+
           # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
           $cl_cfg="$env:CONDA_PREFIX\Library\bin\cl.cfg"
-          Get-Content -Tail 5 -Path $cl_cfg
+          if (Test-Path $cl_cfg) {
+            Get-Content -Tail 5 -Path $cl_cfg
+          } else {
+            Write-Warning "File $cl_cfg was NOT found!"
+          }
 
       - name: Smoke test
         run: |
