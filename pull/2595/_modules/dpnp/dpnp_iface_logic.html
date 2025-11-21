@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.20.0dev1+7.g2fe71a4c0f documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.20.0dev1+9.gca0222771ca documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3a5693bd"></script>
+      <script src="../../_static/documentation_options.js?v=bb13c332"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -1316,6 +1316,8 @@
     <span class="n">test_elements</span><span class="p">,</span>
     <span class="n">assume_unique</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
     <span class="n">invert</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates ``element in test_elements``, broadcasting over `element` only.</span>
@@ -1335,21 +1337,26 @@
 <span class="sd">    assume_unique : bool, optional</span>
 <span class="sd">        Ignored, as no performance benefit is gained by assuming the</span>
 <span class="sd">        input arrays are unique. Included for compatibility with NumPy.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    invert : bool, optional</span>
 <span class="sd">        If ``True``, the values in the returned array are inverted, as if</span>
-<span class="sd">        calculating `element not in test_elements`.</span>
+<span class="sd">        calculating ``element not in test_elements``.</span>
 <span class="sd">        ``dpnp.isin(a, b, invert=True)`` is equivalent to (but faster</span>
 <span class="sd">        than) ``dpnp.invert(dpnp.isin(a, b))``.</span>
-<span class="sd">        Default: ``False``.</span>
 
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    kind : {None, &quot;sort&quot;}, optional</span>
+<span class="sd">        Ignored, as the only algorithm implemented is ``&quot;sort&quot;``. Included for</span>
+<span class="sd">        compatibility with NumPy.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    isin : dpnp.ndarray of bool dtype</span>
 <span class="sd">        Has the same shape as `element`. The values `element[isin]`</span>
 <span class="sd">        are in `test_elements`.</span>
-
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1383,14 +1390,32 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">test_elements</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">usm_element</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
-        <span class="n">element</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">element</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">element</span><span class="o">.</span><span class="n">sycl_queue</span>
-    <span class="p">)</span>
-    <span class="n">usm_test</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
-        <span class="n">test_elements</span><span class="p">,</span>
-        <span class="n">usm_type</span><span class="o">=</span><span class="n">test_elements</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">test_elements</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+        <span class="n">usm_element</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
+            <span class="n">element</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">test_elements</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">test_elements</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">usm_test</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">test_elements</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">test_elements</span><span class="p">):</span>
+        <span class="n">usm_test</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
+            <span class="n">test_elements</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">element</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">element</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">usm_element</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">dpu</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">test_elements</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">dpu</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                <span class="s2">&quot;Input arrays have incompatible allocation queues&quot;</span>
+            <span class="p">)</span>
+        <span class="n">usm_element</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="n">usm_test</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">test_elements</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span>
         <span class="n">dpt</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span>
             <span class="n">usm_element</span><span class="p">,</span>

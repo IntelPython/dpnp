@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.isin &mdash; Data Parallel Extension for NumPy 0.20.0dev1+7.g2fe71a4c0f documentation</title>
+  <title>dpnp.isin &mdash; Data Parallel Extension for NumPy 0.20.0dev1+9.gca0222771ca documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3a5693bd"></script>
+      <script src="../../_static/documentation_options.js?v=bb13c332"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -126,7 +126,7 @@
 <h1>dpnp.isin<a class="headerlink" href="#dpnp-isin" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.isin">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">isin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_logic.html#isin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.isin" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">isin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_logic.html#isin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.isin" title="Link to this definition"></a></dt>
 <dd><p>Calculates <code class="docutils literal notranslate"><span class="pre">element</span> <span class="pre">in</span> <span class="pre">test_elements</span></code>, broadcasting over <cite>element</cite> only.
 Returns a boolean array of the same shape as <cite>element</cite> that is <code class="docutils literal notranslate"><span class="pre">True</span></code>
 where an element of <cite>element</cite> is in <cite>test_elements</cite> and <code class="docutils literal notranslate"><span class="pre">False</span></code>
@@ -138,14 +138,20 @@ otherwise.</p>
 <li><p><strong>element</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Input array.</p></li>
 <li><p><strong>test_elements</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- The values against which to test each value of <cite>element</cite>.
 This argument is flattened if it is an array.</p></li>
-<li><p><strong>assume_unique</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- Ignored, as no performance benefit is gained by assuming the
-input arrays are unique. Included for compatibility with NumPy.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
-<li><p><strong>invert</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the values in the returned array are inverted, as if
-calculating <cite>element not in test_elements</cite>.
+<li><p><strong>assume_unique</strong> (<em>bool</em><em>, </em><em>optional</em>) -- <p>Ignored, as no performance benefit is gained by assuming the
+input arrays are unique. Included for compatibility with NumPy.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
+<li><p><strong>invert</strong> (<em>bool</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the values in the returned array are inverted, as if
+calculating <code class="docutils literal notranslate"><span class="pre">element</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">test_elements</span></code>.
 <code class="docutils literal notranslate"><span class="pre">dpnp.isin(a,</span> <span class="pre">b,</span> <span class="pre">invert=True)</span></code> is equivalent to (but faster
-than) <code class="docutils literal notranslate"><span class="pre">dpnp.invert(dpnp.isin(a,</span> <span class="pre">b))</span></code>.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+than) <code class="docutils literal notranslate"><span class="pre">dpnp.invert(dpnp.isin(a,</span> <span class="pre">b))</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
+<li><p><strong>kind</strong> (<em>{None</em><em>, </em><em>&quot;sort&quot;}</em><em>, </em><em>optional</em>) -- <p>Ignored, as the only algorithm implemented is <code class="docutils literal notranslate"><span class="pre">&quot;sort&quot;</span></code>. Included for
+compatibility with NumPy.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

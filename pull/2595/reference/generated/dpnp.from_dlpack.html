@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.from_dlpack &mdash; Data Parallel Extension for NumPy 0.20.0dev1+7.g2fe71a4c0f documentation</title>
+  <title>dpnp.from_dlpack &mdash; Data Parallel Extension for NumPy 0.20.0dev1+9.gca0222771ca documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3a5693bd"></script>
+      <script src="../../_static/documentation_options.js?v=bb13c332"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -135,10 +135,10 @@ a Python object <cite>x</cite> that implements <code class="docutils literal not
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><em>object</em></a>) -- A Python object representing an array that implements the
+<li><p><strong>x</strong> (<em>object</em>) -- A Python object representing an array that implements the
 <a class="reference internal" href="dpnp.ndarray.__dlpack__.html#dpnp.ndarray.__dlpack__" title="dpnp.ndarray.__dlpack__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.__dlpack__()</span></code></a> and
 <a class="reference internal" href="dpnp.ndarray.__dlpack_device__.html#dpnp.ndarray.__dlpack_device__" title="dpnp.ndarray.__dlpack_device__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.__dlpack_device__()</span></code></a>.</p></li>
-<li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>device}</em><em>, </em><em>optional</em>) -- <p>Device where the output array is to be placed. <cite>device</cite> keyword values
+<li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>tuple</em><em>, </em><em>device}</em><em>, </em><em>optional</em>) -- <p>Device where the output array is to be placed. <cite>device</cite> keyword values
 can be:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> : The data remains on the same device.</p></li>
@@ -185,8 +185,8 @@ otherwise an exception is raised.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> -- If <cite>x</cite> does not implement <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> method.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> -- If data of the input object resides on an unsupported device.</p></li>
+<li><p><strong>TypeError</strong> -- If <cite>x</cite> does not implement <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> method.</p></li>
+<li><p><strong>ValueError</strong> -- If data of the input object resides on an unsupported device.</p></li>
 <li><p><a class="reference internal" href="../exceptions.html#dpnp.exceptions.DLPackCreationError" title="dpnp.exceptions.DLPackCreationError"><strong>DLPackCreationError</strong></a> -- When <cite>x</cite> is allocated on a partitioned SYCL device, or with
     a non-default context.</p></li>
 </ul>
