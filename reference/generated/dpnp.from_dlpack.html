@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.from_dlpack &mdash; Data Parallel Extension for NumPy 0.20.0dev0+51.g131c4903c60 documentation</title>
+  <title>dpnp.from_dlpack &mdash; Data Parallel Extension for NumPy 0.20.0dev1+1.gd99fa656451 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6d8a073b"></script>
+      <script src="../../_static/documentation_options.js?v=92163974"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -144,13 +144,13 @@ can be:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> : The data remains on the same device.</p></li>
 <li><p>oneAPI filter selector string : SYCL device selected by filter
 selector string.</p></li>
-<li><p><a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.22.0dev0+20.g60f8c05a86)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> : Explicit SYCL device that must correspond
+<li><p><a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.22.0dev0+46.g919ecdd0b5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> : Explicit SYCL device that must correspond
 to a non-partitioned SYCL device.</p></li>
-<li><p><a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.22.0dev0+20.g60f8c05a86)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> : Implies SYCL device targeted by the SYCL
+<li><p><a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.22.0dev0+46.g919ecdd0b5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> : Implies SYCL device targeted by the SYCL
 queue.</p></li>
-<li><p><a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+20.g60f8c05a86)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> : Implies SYCL device
+<li><p><a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+46.g919ecdd0b5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> : Implies SYCL device
 <code class="docutils literal notranslate"><span class="pre">device.sycl_queue</span></code>. The <cite>device</cite> object is obtained via
-<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/generated/dpctl.tensor.usm_ndarray.device.html#dpctl.tensor.usm_ndarray.device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+20.g60f8c05a86)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.</p></li>
+<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/generated/dpctl.tensor.usm_ndarray.device.html#dpctl.tensor.usm_ndarray.device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+46.g919ecdd0b5)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">(device_type,</span> <span class="pre">device_id)</span></code> : 2-tuple matching the format of the
 output of the <a class="reference internal" href="dpnp.ndarray.__dlpack_device__.html#dpnp.ndarray.__dlpack_device__" title="dpnp.ndarray.__dlpack_device__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.__dlpack_device__()</span></code></a>: an integer
 enumerator representing the device type followed by an integer
@@ -195,8 +195,8 @@ otherwise an exception is raised.</p>
 <p class="rubric">Notes</p>
 <p>If the return type is <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>, the associated SYCL queue is
 derived from the <cite>device</cite> keyword. When <cite>device</cite> keyword value has type
-<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.22.0dev0+20.g60f8c05a86)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, the explicit queue instance is used, when <cite>device</cite>
-keyword value has type <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+20.g60f8c05a86)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>, the
+<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.22.0dev0+46.g919ecdd0b5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, the explicit queue instance is used, when <cite>device</cite>
+keyword value has type <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+46.g919ecdd0b5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>, the
 <code class="docutils literal notranslate"><span class="pre">device.sycl_queue</span></code> is used. In all other cases, the cached SYCL queue
 corresponding to the implied SYCL device is used.</p>
 <p class="rubric">Examples</p>
