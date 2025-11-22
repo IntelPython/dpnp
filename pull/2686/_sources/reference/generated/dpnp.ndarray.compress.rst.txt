@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.ndarray.compress
+=====================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.compress
