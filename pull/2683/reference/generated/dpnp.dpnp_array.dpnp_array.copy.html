@@ -1,0 +1,192 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnp.dpnp_array.dpnp_array.copy &mdash; Data Parallel Extension for NumPy 0.20.0dev1+3.g031dda666d7 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2dbdb2b7"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">dpnp.dpnp_array.dpnp_array.copy</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/generated/dpnp.dpnp_array.dpnp_array.copy.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dpnp-dpnp-array-dpnp-array-copy">
+<h1>dpnp.dpnp_array.dpnp_array.copy<a class="headerlink" href="#dpnp-dpnp-array-dpnp-array-copy" title="Link to this heading"></a></h1>
+<p>method</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.copy">
+<span class="sig-prename descclassname"><span class="pre">dpnp_array.</span></span><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_array.html#dpnp_array.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.copy" title="Link to this definition"></a></dt>
+<dd><p>Return a copy of the array.</p>
+<p>Refer to <a class="reference internal" href="dpnp.copy.html#dpnp.copy" title="dpnp.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.copy</span></code></a> for full documentation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>order</strong> (<em>{None</em><em>, </em><em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- <p>Memory layout of the newly output array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p>
+</p></li>
+<li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue</em><em>, </em><em>Device}</em><em>, </em><em>optional</em>) -- <p>An array API concept of device where the output array is created.
+<cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector string,
+an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.22.0dev0+46.g919ecdd0b5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
+a non-partitioned SYCL device, an instance of
+<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.22.0dev0+46.g919ecdd0b5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+46.g919ecdd0b5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+returned by <a class="reference internal" href="dpnp.ndarray.device.html#dpnp.ndarray.device" title="dpnp.ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpnp.ndarray.device</span></code></a>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>usm_type</strong> (<em>{None</em><em>, </em><em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) -- <p>The type of SYCL USM allocation for the output array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) -- <p>A SYCL queue to use for output array allocation and copying. The
+<cite>sycl_queue</cite> can be passed as <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), which means
+to get the SYCL queue from <cite>device</cite> keyword if present or to use
+a default queue.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> -- A copy of the array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.copy.html#dpnp.copy" title="dpnp.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.copy</span></code></a></dt><dd><p>Similar function with different default behavior</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.copyto.html#dpnp.copyto" title="dpnp.copyto"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.copyto</span></code></a></dt><dd><p>Copies values from one array to another.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>This function is the preferred method for creating an array copy.
+The function <a class="reference internal" href="dpnp.copy.html#dpnp.copy" title="dpnp.copy"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpnp.copy()</span></code></a> is similar, but it defaults to using
+order <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]],</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[0, 0, 0],</span>
+<span class="go">       [0, 0, 0]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">array([[1, 2, 3],</span>
+<span class="go">       [4, 5, 6]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">]</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
