@@ -93,13 +93,13 @@ jobs:
         continue-on-error: true
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
         env:
-          MAX_BUILD_CMPL_MKL_VERSION: '2025.3a0'
+          MAX_BUILD_CMPL_MKL_VERSION: '2026.0a0'
 
       - name: ReBuild conda package
         if: steps.build_conda_pkg.outcome == 'failure'
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
         env:
-          MAX_BUILD_CMPL_MKL_VERSION: '2025.3a0'
+          MAX_BUILD_CMPL_MKL_VERSION: '2026.0a0'
 
       - name: Upload artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -139,6 +139,11 @@ jobs:
       ver-json-path: '${{ github.workspace }}/version.json'
 
     steps:
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0
+        with:
+          swap-size-gb: 8
+
       - name: Checkout DPNP repo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
