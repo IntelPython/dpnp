@@ -354,6 +354,9 @@ jobs:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
 
+      - name: Install OCL CPU RT from Intel channel
+        run: mamba install intel-opencl-rt=*=intel_* -c ${{ env.channels-list }}
+
       - name: List installed packages
         run: mamba list
 
