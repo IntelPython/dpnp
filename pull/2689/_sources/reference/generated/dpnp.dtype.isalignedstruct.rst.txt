@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.dtype.isalignedstruct
+==========================
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dtype.isalignedstruct
