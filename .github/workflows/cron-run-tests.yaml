@@ -93,7 +93,7 @@ jobs:
           mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} ${{ env.test-packages }} ${{ env.channels-list }}
 
       - name: Install OCL CPU RT from Intel channel
-        run: mamba install intel-opencl-rt=*=intel_* -c ${{ env.channels-list }}
+        run: mamba install intel-opencl-rt=*=intel_* ${{ env.channels-list }}
 
       - name: List installed packages
         run: mamba list
