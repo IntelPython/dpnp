@@ -4,5 +4,6 @@ channels:
 dependencies:
   - dpcpp_linux-64>=2025.3 # force to install the latest release
   - mkl-devel-dpcpp>=2025.3 # force to install the latest release
+  - mkl-devel>=2025.3 # w/a to intel_repack-feedstock#121
   - onedpl-devel
   - tbb-devel * intel_* # MKL hardly dependces on TBB from Intel channel
