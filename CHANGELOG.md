@@ -15,6 +15,7 @@ This release achieves `dpnp` compatibility with Python 3.14 and enables distribu
 ### Changed
 
 * Bumped oneMath version up to `v0.9` [#2655](https://github.com/IntelPython/dpnp/pull/2655)
+* Updated cmake config files for DPC++ compiler, oneMKL, oneDPL and TBB components with `2025.3` release changes [#2648](https://github.com/IntelPython/dpnp/pull/2648)
 
 ### Fixed
 
