@@ -182,8 +182,9 @@ if(_use_onemath)
     else()
         FetchContent_Declare(
             onemath_library
-                GIT_REPOSITORY https://github.com/uxlfoundation/oneMath.git
-                GIT_TAG 5c7e1e7a710556e51f70ecc8dd26dfd04e3abf41  # v0.8
+            GIT_REPOSITORY https://github.com/uxlfoundation/oneMath.git
+            GIT_TAG
+                6ff3a43e555dbb20357017d48f0f6c6263259895 # v0.9
         )
     endif()
 
