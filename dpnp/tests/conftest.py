@@ -43,7 +43,7 @@ else:
 
 import dpnp
 
-from .helper import get_dev_id
+from .helper import get_dev_id, get_dev_info
 
 skip_mark = pytest.mark.skip(reason="Skipping test.")
 
@@ -142,7 +142,9 @@ def pytest_collection_modifyitems(config, items):
     print(
         f"DPNP Test scope includes all integer dtypes: {bool(dtype_config.all_int_types)}"
     )
-    print(f"DPNP current device ID: 0x{get_dev_id(dev):04X}")
+    print(
+        f"DPNP current device ID: 0x{get_dev_id(dev):04X}, info: {get_dev_info(dev)}"
+    )
     print(f"DPNP current device is CPU: {is_cpu}")
     print(f"DPNP current device is GPU: {is_gpu}")
     print(f"DPNP current device supports fp64: {support_fp64}")
