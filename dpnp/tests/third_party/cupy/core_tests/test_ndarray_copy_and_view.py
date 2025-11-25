@@ -66,7 +66,7 @@ class TestView:
     def test_view_f_contiguous(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 2, 2), xp, dtype=numpy.float32)
-            a = a.T
+            a = a.transpose()
             with pytest.raises(ValueError):
                 a.view(dtype=dtype)
 

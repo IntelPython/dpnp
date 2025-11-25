@@ -316,8 +316,8 @@ def test_2args_in_out(func, dtype):
     b = numpy.full(sh, fill_value=0.7, dtype=dtype)
     ia, ib = dpnp.array(a), dpnp.array(b)
 
-    a, b = a[::2], b[::2].T
-    ia, ib = ia[::2], ib[::2].T
+    a, b = a[::2], b[::2].transpose()
+    ia, ib = ia[::2], ib[::2].transpose()
 
     expected = getattr(numpy, func)(a, b, out=out)
     result = getattr(dpnp, func)(ia, ib, out=iout)
