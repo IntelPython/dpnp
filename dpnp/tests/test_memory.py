@@ -31,3 +31,14 @@ class TestCreateData:
         a = dpnp.empty(5)
         b = dpnp.ndarray(a.shape, buffer=a.data)
         assert b.data.ptr == a.data.ptr
+
+    def test_view_non_zero_offset(self):
+        n, m = 2, 8
+        plane = n * m
+
+        a = dpnp.empty(4 * plane)
+        sl = a[plane:]  # non-zero offset view
+
+        pl = dpnp.ndarray((n, m), dtype=a.dtype, buffer=sl)
+        assert pl.data.ptr == sl.data.ptr
+        assert a.data.ptr != sl.data.ptr
