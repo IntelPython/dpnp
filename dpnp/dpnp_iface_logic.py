@@ -55,36 +55,6 @@ from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
 from .dpnp_utils import get_usm_allocations
 
-__all__ = [
-    "all",
-    "allclose",
-    "any",
-    "array_equal",
-    "array_equiv",
-    "equal",
-    "greater",
-    "greater_equal",
-    "isclose",
-    "iscomplex",
-    "iscomplexobj",
-    "isfinite",
-    "isfortran",
-    "isinf",
-    "isnan",
-    "isneginf",
-    "isposinf",
-    "isreal",
-    "isrealobj",
-    "isscalar",
-    "less",
-    "less_equal",
-    "logical_and",
-    "logical_not",
-    "logical_or",
-    "logical_xor",
-    "not_equal",
-]
-
 
 def _isclose_scalar_tol(a, b, rtol, atol, equal_nan):
     """

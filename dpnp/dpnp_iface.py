@@ -39,7 +39,6 @@ it contains:
 
 """
 # pylint: disable=protected-access
-# pylint: disable=redefined-outer-name
 
 import os
 
@@ -51,60 +50,8 @@ import numpy
 from dpctl.tensor._device import normalize_queue_device
 
 import dpnp
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_array import dpnp_array
 
-__all__ = [
-    "are_same_logical_tensors",
-    "asnumpy",
-    "as_usm_ndarray",
-    "check_limitations",
-    "check_supported_arrays_type",
-    "default_float_type",
-    "get_dpnp_descriptor",
-    "get_include",
-    "get_normalized_queue_device",
-    "get_result_array",
-    "get_usm_ndarray",
-    "get_usm_ndarray_or_scalar",
-    "is_cuda_backend",
-    "is_supported_array_or_scalar",
-    "is_supported_array_type",
-    "synchronize_array_data",
-]
-
-from dpnp.dpnp_iface_arraycreation import *
-from dpnp.dpnp_iface_arraycreation import __all__ as __all__arraycreation
-from dpnp.dpnp_iface_bitwise import *
-from dpnp.dpnp_iface_bitwise import __all__ as __all__bitwise
-from dpnp.dpnp_iface_counting import *
-from dpnp.dpnp_iface_counting import __all__ as __all__counting
-from dpnp.dpnp_iface_functional import *
-from dpnp.dpnp_iface_functional import __all__ as __all__functional
-from dpnp.dpnp_iface_histograms import *
-from dpnp.dpnp_iface_histograms import __all__ as __all__histograms
-from dpnp.dpnp_iface_indexing import *
-from dpnp.dpnp_iface_indexing import __all__ as __all__indexing
-from dpnp.dpnp_iface_linearalgebra import *
-from dpnp.dpnp_iface_linearalgebra import __all__ as __all__linearalgebra
-from dpnp.dpnp_iface_logic import *
-from dpnp.dpnp_iface_logic import __all__ as __all__logic
-from dpnp.dpnp_iface_manipulation import *
-from dpnp.dpnp_iface_manipulation import __all__ as __all__manipulation
-from dpnp.dpnp_iface_mathematical import *
-from dpnp.dpnp_iface_mathematical import __all__ as __all__mathematical
-from dpnp.dpnp_iface_nanfunctions import *
-from dpnp.dpnp_iface_nanfunctions import __all__ as __all__nanfunctions
-from dpnp.dpnp_iface_searching import *
-from dpnp.dpnp_iface_searching import __all__ as __all__searching
-from dpnp.dpnp_iface_sorting import *
-from dpnp.dpnp_iface_sorting import __all__ as __all__sorting
-from dpnp.dpnp_iface_statistics import *
-from dpnp.dpnp_iface_statistics import __all__ as __all__statistics
-from dpnp.dpnp_iface_trigonometric import *
-from dpnp.dpnp_iface_trigonometric import __all__ as __all__trigonometric
-from dpnp.dpnp_iface_window import *
-from dpnp.dpnp_iface_window import __all__ as __all__window
+from .dpnp_array import dpnp_array
 
 # pylint: disable=no-name-in-module
 from .dpnp_utils import (
@@ -112,23 +59,6 @@ from .dpnp_utils import (
     map_dtype_to_device,
     use_origin_backend,
 )
-
-__all__ += __all__arraycreation
-__all__ += __all__bitwise
-__all__ += __all__counting
-__all__ += __all__functional
-__all__ += __all__histograms
-__all__ += __all__indexing
-__all__ += __all__linearalgebra
-__all__ += __all__logic
-__all__ += __all__manipulation
-__all__ += __all__mathematical
-__all__ += __all__nanfunctions
-__all__ += __all__searching
-__all__ += __all__sorting
-__all__ += __all__statistics
-__all__ += __all__trigonometric
-__all__ += __all__window
 
 
 def are_same_logical_tensors(ar1, ar2):
@@ -437,7 +367,7 @@ def get_dpnp_descriptor(
     # If input object is a scalar, it means it was allocated on host memory.
     # We need to copy it to USM memory according to compute follows data.
     if dpnp.isscalar(ext_obj):
-        ext_obj = array(
+        ext_obj = dpnp.array(
             ext_obj,
             dtype=alloc_dtype,
             usm_type=alloc_usm_type,
@@ -464,7 +394,7 @@ def get_dpnp_descriptor(
             ext_obj_offset = 0
 
         if ext_obj.strides != shape_offsets or ext_obj_offset != 0:
-            ext_obj = array(ext_obj, order="C")
+            ext_obj = dpnp.array(ext_obj, order="C")
 
     # while dpnp functions are based on DPNP_QUEUE
     # we need to create a copy on device associated with DPNP_QUEUE
@@ -478,7 +408,7 @@ def get_dpnp_descriptor(
             dpctl.utils.get_execution_queue([queue, default_queue]) is not None
         )
         if not queue_is_default:
-            ext_obj = array(ext_obj, sycl_queue=default_queue)
+            ext_obj = dpnp.array(ext_obj, sycl_queue=default_queue)
 
     dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:  # pylint: disable=using-constant-test

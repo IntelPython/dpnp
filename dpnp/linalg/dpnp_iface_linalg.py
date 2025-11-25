@@ -40,7 +40,6 @@ it contains:
 """
 
 # pylint: disable=invalid-name
-# pylint: disable=no-member
 # pylint: disable=no-name-in-module
 
 from typing import NamedTuple
