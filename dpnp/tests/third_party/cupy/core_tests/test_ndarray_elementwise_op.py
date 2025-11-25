@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import functools
 import operator
 
 import numpy
@@ -6,13 +9,40 @@ import pytest
 import dpnp as cupy
 from dpnp.tests.third_party.cupy import testing
 
-pytest.skip("operator interface is not supported", allow_module_level=True)
+
+def cast_exception_type():
+    """
+    Decorator for parameterized tests to cast raising exception
+    ValueError(...does not support input types...) to TypeError(...) matching
+    NumPy behavior.
+
+    The exception raised when a pair of input dtypes is not supported and could
+    not be safely coerced to any supported one according to the casting rule.
+
+    """
+
+    def decorator(impl):
+        @functools.wraps(impl)
+        def test_func(self, *args, **kw):
+            xp = kw["xp"]
+
+            try:
+                return impl(self, *args, **kw)
+            except ValueError as e:
+                if xp is cupy and "does not support input types" in str(e):
+                    raise TypeError(e)
+                raise
+
+        return test_func
+
+    return decorator
 
 
 class TestArrayElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(rtol=1e-6, accept_error=TypeError)
+    @cast_exception_type()
     def check_array_scalar_op(
         self,
         op,
@@ -106,6 +136,7 @@ class TestArrayElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(atol=1.0, accept_error=TypeError)
+    @cast_exception_type()
     def check_ipow_scalar(self, xp, x_type, y_type):
         a = xp.array([[1, 2, 3], [4, 5, 6]], x_type)
         return operator.ipow(a, y_type(3))
@@ -157,6 +188,7 @@ class TestArrayElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @cast_exception_type()
     def check_array_array_op(
         self, op, xp, x_type, y_type, no_bool=False, no_complex=False
     ):
@@ -216,13 +248,14 @@ class TestArrayElementwiseOp:
     def test_pow_array(self):
         # There are some precision issues in HIP that prevent
         # checking with atol=0
-        if cupy.cuda.runtime.is_hip:
-            self.check_pow_array()
-        else:
-            self.check_array_array_op(operator.pow)
+        # if cupy.cuda.runtime.is_hip:
+        #     self.check_pow_array()
+        # else:
+        self.check_array_array_op(operator.pow)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(atol=1.0, accept_error=TypeError)
+    @cast_exception_type()
     def check_ipow_array(self, xp, x_type, y_type):
         a = xp.array([[1, 2, 3], [4, 5, 6]], x_type)
         b = xp.array([[6, 5, 4], [3, 2, 1]], y_type)
@@ -259,6 +292,7 @@ class TestArrayElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @cast_exception_type()
     def check_array_broadcasted_op(
         self, op, xp, x_type, y_type, no_bool=False, no_complex=False
     ):
@@ -320,13 +354,14 @@ class TestArrayElementwiseOp:
     def test_broadcasted_pow(self):
         # There are some precision issues in HIP that prevent
         # checking with atol=0
-        if cupy.cuda.runtime.is_hip:
-            self.check_broadcasted_pow()
-        else:
-            self.check_array_broadcasted_op(operator.pow)
+        # if cupy.cuda.runtime.is_hip:
+        #     self.check_broadcasted_pow()
+        # else:
+        self.check_array_broadcasted_op(operator.pow)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(atol=1.0, accept_error=TypeError)
+    @cast_exception_type()
     def check_broadcasted_ipow(self, xp, x_type, y_type):
         a = xp.array([[1, 2, 3], [4, 5, 6]], x_type)
         b = xp.array([[1], [2]], y_type)
@@ -480,6 +515,7 @@ class TestArrayElementwiseOp:
         a = op(val, (testing.shaped_arange((5,), xp, dtype) - 2))
         return a
 
+    @pytest.mark.skip("TODO")
     @pytest.mark.parametrize(
         "val",
         [
@@ -513,9 +549,11 @@ class TestArrayElementwiseOp:
         b = xp.array([[3, 1, 4], [-1, -5, -9]], numpy.int8).view(bool)
         return op(a, b)
 
+    @testing.with_requires("dpctl>=0.22.0dev0")
     def test_add_array_boolarray(self):
         self.check_array_boolarray_op(operator.add)
 
+    @testing.with_requires("dpctl>=0.22.0dev0")
     def test_iadd_array_boolarray(self):
         self.check_array_boolarray_op(operator.iadd)
 
@@ -524,6 +562,7 @@ class TestArrayIntElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @cast_exception_type()
     def check_array_scalar_op(self, op, xp, x_type, y_type, swap=False):
         a = xp.array([[0, 1, 2], [1, 0, 2]], dtype=x_type)
         if swap:
@@ -571,6 +610,7 @@ class TestArrayIntElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @cast_exception_type()
     def check_array_scalarzero_op(self, op, xp, x_type, y_type, swap=False):
         a = xp.array([[0, 1, 2], [1, 0, 2]], dtype=x_type)
         if swap:
@@ -618,6 +658,7 @@ class TestArrayIntElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @cast_exception_type()
     def check_array_array_op(self, op, xp, x_type, y_type):
         a = xp.array([[0, 1, 2], [1, 0, 2]], dtype=x_type)
         b = xp.array([[0, 0, 1], [0, 1, 2]], dtype=y_type)
@@ -663,6 +704,7 @@ class TestArrayIntElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @cast_exception_type()
     def check_array_broadcasted_op(self, op, xp, x_type, y_type):
         a = xp.array([[0, 1, 2], [1, 0, 2], [2, 1, 0]], dtype=x_type)
         b = xp.array([[0, 0, 1]], dtype=y_type)
@@ -708,6 +750,7 @@ class TestArrayIntElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @cast_exception_type()
     def check_array_doubly_broadcasted_op(self, op, xp, x_type, y_type):
         a = xp.array([[[0, 1, 2]], [[1, 0, 2]]], dtype=x_type)
         b = xp.array([[0], [0], [1]], dtype=y_type)
@@ -733,6 +776,7 @@ class TestArrayIntElementwiseOp:
             self.check_array_doubly_broadcasted_op(operator.mod)
 
 
+@pytest.mark.skip("objects as input are not supported")
 @pytest.mark.parametrize(
     "value",
     [
@@ -807,7 +851,7 @@ class TestArrayObjectComparisonDifficult:
         except TypeError:
             pytest.skip()
 
-        cupy.testing.assert_array_equal(res, expected)
+        testing.assert_array_equal(res, expected)
 
     def test_ne_object(self, dtype, value):
         expected = numpy.array([[1, 2, 3], [4, 5, 6]], dtype=dtype) != value
@@ -818,4 +862,4 @@ class TestArrayObjectComparisonDifficult:
         except TypeError:
             pytest.skip()
 
-        cupy.testing.assert_array_equal(res, expected)
+        testing.assert_array_equal(res, expected)
