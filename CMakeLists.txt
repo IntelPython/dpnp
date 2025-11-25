@@ -16,36 +16,32 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 
 
-find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
-find_package(TBB QUIET)
-if(TBB_FOUND)
-    find_package(TBB REQUIRED)
-else()
-    find_package(TBB REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
-endif()
+# find_package() search order in CONFIG mode:
+# 1. <PackageName>_ROOT variables (CMake variable / environment)
+# 2. CMake-specific cache variables (on the command line with -D<PackageName>_DIR=...)
+# 3. CMake-specific environment variables (<PackageName>_DIR, CMAKE_PREFIX_PATH, etc.)
+# 4. Paths specified by the HINTS option
+# 5. Standard system environment variables (PATH, etc.)
+# 6. Paths stored in the CMake User Package Registry
+# 7. CMake variables defined in the Platform files for the current system (like in /usr/local for Linux)
+# 8. Paths stored in the CMake System Package Registry
+# 9. Paths specified by the PATHS option (assumed hard-coded guesses)
+set(path_to_cmake_dir ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules)
+find_package(IntelSYCL REQUIRED PATHS ${path_to_cmake_dir})
+find_package(TBB REQUIRED PATHS ${path_to_cmake_dir})
 
 set(MKL_ARCH "intel64")
 set(MKL_LINK "dynamic")
 set(MKL_THREADING "tbb_thread")
 set(MKL_INTERFACE "ilp64")
-find_package(MKL QUIET)
-if(MKL_FOUND)
-    find_package(MKL REQUIRED)
-else()
-    find_package(MKL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
-endif()
+find_package(MKL REQUIRED
+    HINTS ${MKL_ROOT}/lib/cmake
+          ${MKL_ROOT}/lib/cmake/mkl
+          $ENV{MKLROOT}
+    PATHS ${path_to_cmake_dir})
 
 set(ONEDPL_PAR_BACKEND tbb)
-find_package(oneDPL QUIET)
-if(oneDPL_FOUND)
-    if(oneDPL_VERSION VERSION_GREATER_EQUAL "2022.3.0")
-        find_package(oneDPL REQUIRED)
-    else()
-        find_package(oneDPL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
-    endif()
-else()
-    find_package(oneDPL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
-endif()
+find_package(oneDPL REQUIRED PATHS ${path_to_cmake_dir})
 
 include(GNUInstallDirs)
 
