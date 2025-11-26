@@ -67,8 +67,8 @@ def run(
             "pyproject.toml",
             "--cov",
             "dpnp",
-            "--cov-report",
-            "term-missing",
+            "--cov-report=term-missing",
+            "--cov-report=lcov:coverage-python.lcov",
             "--pyargs",
             "dpnp",
             "-vv",
@@ -110,7 +110,7 @@ def run(
     )
 
     # export lcov
-    with open("dpnp_pytest.lcov", "w") as fh:
+    with open("coverage-cpp.lcov", "w") as fh:
         subprocess.check_call(
             [
                 os.path.join(bin_llvm, "llvm-cov"),
