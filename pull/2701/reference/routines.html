@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Routines (NumPy) &mdash; Data Parallel Extension for NumPy 0.20.0dev1+7.g20ac72055a1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=55a2401a"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Constants" href="constants.html" />
+    <link rel="prev" title="dpnp.trunc" href="generated/dpnp.trunc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal functions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Routines (NumPy)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="constants.html">Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bitwise.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions and Warnings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fft.html">Discrete Fourier Transform (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.fft</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.linalg</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="window.html">Window functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array_api.html">Array API standard compatibility</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Routines (NumPy)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/routines.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="routines-numpy">
+<h1>Routines (NumPy)<a class="headerlink" href="#routines-numpy" title="Link to this heading"></a></h1>
+<p>The following pages describe NumPy-compatible routines.
+These functions cover a subset of
+<a class="reference external" href="https://numpy.org/doc/stable/reference/routines.html">NumPy routines</a>.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">Constants</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="constants.html#dpnp.DLDeviceType"><code class="docutils literal notranslate"><span class="pre">DLDeviceType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants.html#dpnp.e"><code class="docutils literal notranslate"><span class="pre">e</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants.html#dpnp.euler_gamma"><code class="docutils literal notranslate"><span class="pre">euler_gamma</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants.html#dpnp.inf"><code class="docutils literal notranslate"><span class="pre">inf</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants.html#dpnp.nan"><code class="docutils literal notranslate"><span class="pre">nan</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants.html#dpnp.newaxis"><code class="docutils literal notranslate"><span class="pre">newaxis</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants.html#dpnp.pi"><code class="docutils literal notranslate"><span class="pre">pi</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="array-creation.html">Array creation routines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="array-creation.html#from-shape-or-value">From shape or value</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-creation.html#from-existing-data">From existing data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-creation.html#numerical-ranges">Numerical ranges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-creation.html#building-matrices">Building matrices</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="array-manipulation.html">Array manipulation routines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="array-manipulation.html#basic-operations">Basic operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-manipulation.html#changing-array-shape">Changing array shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-manipulation.html#transpose-like-operations">Transpose-like operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-manipulation.html#joining-arrays">Joining arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-manipulation.html#splitting-arrays">Splitting arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-manipulation.html#tiling-arrays">Tiling arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-manipulation.html#adding-and-removing-elements">Adding and removing elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-manipulation.html#rearranging-elements">Rearranging elements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bitwise.html">Bit-wise operations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bitwise.html#element-wise-bit-operations">Element-wise bit operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bitwise.html#bit-packing">Bit packing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bitwise.html#output-formatting">Output formatting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dtype.html">Data type routines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/dpnp.can_cast.html">dpnp.can_cast</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dpnp.result_type.html">dpnp.result_type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dpnp.common_type.html">dpnp.common_type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtype.html#creating-data-types">Creating data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtype.html#data-type-information">Data type information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtype.html#data-type-testing">Data type testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtype.html#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions and Warnings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fft.html">Discrete Fourier Transform (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.fft</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fft.html#standard-ffts">Standard FFTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fft.html#real-ffts">Real FFTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fft.html#hermitian-ffts">Hermitian FFTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fft.html#helper-routines">Helper routines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functional.html">Functional programming</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/dpnp.apply_along_axis.html">dpnp.apply_along_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dpnp.apply_over_axes.html">dpnp.apply_over_axes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/dpnp.piecewise.html">dpnp.piecewise</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">Input and output</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="io.html#text-files">Text files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="io.html#raw-binary-files">Raw binary files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="io.html#base-n-representations">Base-n representations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="indexing.html">Indexing routines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#generating-index-arrays">Generating index arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#indexing-like-operations">Indexing-like operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#inserting-data-into-arrays">Inserting data into arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#iterating-over-arrays">Iterating over arrays</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.linalg</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linalg.html#decompositions">Decompositions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linalg.html#norms-and-other-numbers">Norms and other numbers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linalg.html#solving-linear-equations">Solving linear equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linalg.html#other-matrix-operations">Other matrix operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linalg.html#exceptions">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linalg.html#linear-algebra-on-several-matrices-at-once">Linear algebra on several matrices at once</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="logic.html">Logic functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="logic.html#truth-value-testing">Truth value testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logic.html#array-contents">Array contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logic.html#array-type-testing">Array type testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logic.html#logical-operations">Logical operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logic.html#comparison">Comparison</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="math.html">Mathematical functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="math.html#trigonometric-functions">Trigonometric functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#hyperbolic-functions">Hyperbolic functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#rounding">Rounding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#sums-products-differences">Sums, products, differences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#exponents-and-logarithms">Exponents and logarithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#other-special-functions">Other special functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#floating-point-routines">Floating point routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#rational-routines">Rational routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#arithmetic-operations">Arithmetic operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#handling-complex-numbers">Handling complex numbers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#extrema-finding">Extrema finding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="math.html#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="other.html">Miscellaneous routines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="other.html#memory-ranges">Memory ranges</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html#utility">Utility</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="random.html#simple-random-data">Simple random data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="random.html#permutations">Permutations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="random.html#distributions">Distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="random.html#random-generator">Random generator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="set.html">Set routines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="set.html#making-proper-sets">Making proper sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="set.html#boolean-operations">Boolean operations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sort.html">Sorting, searching, and counting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sort.html#sorting">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sort.html#searching">Searching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sort.html#counting">Counting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="statistics.html">Statistics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#order-statistics">Order statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#averages-and-variances">Averages and variances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#correlations">Correlations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statistics.html#histograms">Histograms</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="window.html">Window functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="window.html#various-windows">Various windows</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="generated/dpnp.trunc.html" class="btn btn-neutral float-left" title="dpnp.trunc" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="constants.html" class="btn btn-neutral float-right" title="Constants" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
