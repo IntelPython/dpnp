@@ -1,0 +1,10 @@
+﻿
+
+dpnp.imag
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: imag
