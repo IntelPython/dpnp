@@ -66,11 +66,11 @@ This release is compatible with NumPy 2.3.5.
 ### Changed
 
 * Bumped oneMath version up to `v0.9` [#2655](https://github.com/IntelPython/dpnp/pull/2655)
-* Updated cmake config files for DPC++ compiler, oneMKL, oneDPL and TBB components with `2025.3` release changes [#2648](https://github.com/IntelPython/dpnp/pull/2648)
+* Updated CMake config files for DPC++ compiler, oneMKL, oneDPL and TBB components with `2025.3` release changes [#2648](https://github.com/IntelPython/dpnp/pull/2648)
 
 ### Fixed
 
-* Updated tests for erf functions to pass with `scipy>=0.16.0` per each integer dtype [#2669](https://github.com/IntelPython/dpnp/pull/2669)
+* Updated tests for erf functions to pass with `scipy>=0.16.0` for all integer dtypes [#2669](https://github.com/IntelPython/dpnp/pull/2669)
 
 
 ## [0.19.0] - 2025-10-06
