@@ -51,6 +51,8 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 
 ### Fixed
 
+* Suppressed a potential deprecation warning triggered during import of the `dpctl.tensor` module [#2709](https://github.com/IntelPython/dpnp/pull/2709)
+
 ### Security
 
 
