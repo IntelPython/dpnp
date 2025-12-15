@@ -3,4 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - python=3.13
-  - anaconda-client=1.13.0
+  - anaconda-client=1.13.1
