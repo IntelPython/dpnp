@@ -38,6 +38,25 @@ def cast_exception_type():
     return decorator
 
 
+def skip_inplace_numpy_uint64_casting_error(xp, x_type, y_type):
+    """
+    An inplace operator does not work with NumPy when an array has a signed
+    integer dtype and dtype of the other array is uint64. NumPy will raise
+    a casting error in that case:
+        numpy._core._exceptions._UFuncOutputCastingError: Cannot cast ufunc 'add'
+        output from dtype('float64') to dtype('int64') with casting rule
+        'same_kind'
+
+    This is considering as a bug in NumPy, because
+        numpy.can_cast(numpy.uint64, numpy.int16, casting="same_kind") is True
+
+    """
+    x_dt = xp.dtype(x_type)
+    y_dt = xp.dtype(y_type)
+    if xp.issubdtype(x_dt, xp.signedinteger) and y_dt == xp.uint64:
+        pytest.skip("numpy.uint64 casting error")
+
+
 class TestArrayElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
@@ -50,6 +69,7 @@ class TestArrayElementwiseOp:
         x_type,
         y_type,
         swap=False,
+        inplace=False,
         no_bool=False,
         no_complex=False,
     ):
@@ -63,6 +83,9 @@ class TestArrayElementwiseOp:
         if swap:
             return op(y_type(3), a)
         else:
+            if inplace:
+                skip_inplace_numpy_uint64_casting_error(xp, x_type, y_type)
+
             return op(a, y_type(3))
 
     @testing.with_requires("numpy>=1.25")
@@ -74,7 +97,7 @@ class TestArrayElementwiseOp:
         self.check_array_scalar_op(operator.add, swap=True)
 
     def test_iadd_scalar(self):
-        self.check_array_scalar_op(operator.iadd)
+        self.check_array_scalar_op(operator.iadd, inplace=True)
 
     @testing.with_requires("numpy>=1.25")
     def test_sub_scalar(self):
@@ -85,7 +108,7 @@ class TestArrayElementwiseOp:
         self.check_array_scalar_op(operator.sub, swap=True, no_bool=True)
 
     def test_isub_scalar(self):
-        self.check_array_scalar_op(operator.isub, no_bool=True)
+        self.check_array_scalar_op(operator.isub, no_bool=True, inplace=True)
 
     @testing.with_requires("numpy>=1.25")
     def test_mul_scalar(self):
@@ -96,7 +119,7 @@ class TestArrayElementwiseOp:
         self.check_array_scalar_op(operator.mul, swap=True)
 
     def test_imul_scalar(self):
-        self.check_array_scalar_op(operator.imul)
+        self.check_array_scalar_op(operator.imul, inplace=True)
 
     @testing.with_requires("numpy>=1.25")
     def test_truediv_scalar(self):
@@ -124,7 +147,9 @@ class TestArrayElementwiseOp:
 
     def test_ifloordiv_scalar(self):
         with numpy.errstate(divide="ignore"):
-            self.check_array_scalar_op(operator.ifloordiv, no_complex=True)
+            self.check_array_scalar_op(
+                operator.ifloordiv, inplace=True, no_complex=True
+            )
 
     @testing.with_requires("numpy>=1.25")
     def test_pow_scalar(self):
@@ -138,6 +163,8 @@ class TestArrayElementwiseOp:
     @testing.numpy_cupy_allclose(atol=1.0, accept_error=TypeError)
     @cast_exception_type()
     def check_ipow_scalar(self, xp, x_type, y_type):
+        skip_inplace_numpy_uint64_casting_error(xp, x_type, y_type)
+
         a = xp.array([[1, 2, 3], [4, 5, 6]], x_type)
         return operator.ipow(a, y_type(3))
 
@@ -190,8 +217,18 @@ class TestArrayElementwiseOp:
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     @cast_exception_type()
     def check_array_array_op(
-        self, op, xp, x_type, y_type, no_bool=False, no_complex=False
+        self,
+        op,
+        xp,
+        x_type,
+        y_type,
+        inplace=False,
+        no_bool=False,
+        no_complex=False,
     ):
+        if inplace:
+            skip_inplace_numpy_uint64_casting_error(xp, x_type, y_type)
+
         x_dtype = numpy.dtype(x_type)
         y_dtype = numpy.dtype(y_type)
         if no_bool and x_dtype == "?" and y_dtype == "?":
@@ -206,19 +243,19 @@ class TestArrayElementwiseOp:
         self.check_array_array_op(operator.add)
 
     def test_iadd_array(self):
-        self.check_array_array_op(operator.iadd)
+        self.check_array_array_op(operator.iadd, inplace=True)
 
     def test_sub_array(self):
         self.check_array_array_op(operator.sub, no_bool=True)
 
     def test_isub_array(self):
-        self.check_array_array_op(operator.isub, no_bool=True)
+        self.check_array_array_op(operator.isub, inplace=True, no_bool=True)
 
     def test_mul_array(self):
         self.check_array_array_op(operator.mul)
 
     def test_imul_array(self):
-        self.check_array_array_op(operator.imul)
+        self.check_array_array_op(operator.imul, inplace=True)
 
     def test_truediv_array(self):
         with numpy.errstate(divide="ignore"):
@@ -236,7 +273,9 @@ class TestArrayElementwiseOp:
         if "1.16.1" <= numpy.lib.NumpyVersion(numpy.__version__) < "1.18.0":
             self.skipTest("NumPy Issue #12927")
         with numpy.errstate(divide="ignore"):
-            self.check_array_array_op(operator.ifloordiv, no_complex=True)
+            self.check_array_array_op(
+                operator.ifloordiv, inplace=True, no_complex=True
+            )
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(atol=1e-5, rtol=1e-6, accept_error=TypeError)
@@ -257,6 +296,8 @@ class TestArrayElementwiseOp:
     @testing.numpy_cupy_allclose(atol=1.0, accept_error=TypeError)
     @cast_exception_type()
     def check_ipow_array(self, xp, x_type, y_type):
+        skip_inplace_numpy_uint64_casting_error(xp, x_type, y_type)
+
         a = xp.array([[1, 2, 3], [4, 5, 6]], x_type)
         b = xp.array([[6, 5, 4], [3, 2, 1]], y_type)
         return operator.ipow(a, b)
@@ -294,8 +335,18 @@ class TestArrayElementwiseOp:
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     @cast_exception_type()
     def check_array_broadcasted_op(
-        self, op, xp, x_type, y_type, no_bool=False, no_complex=False
+        self,
+        op,
+        xp,
+        x_type,
+        y_type,
+        inplace=False,
+        no_bool=False,
+        no_complex=False,
     ):
+        if inplace:
+            skip_inplace_numpy_uint64_casting_error(xp, x_type, y_type)
+
         x_dtype = numpy.dtype(x_type)
         y_dtype = numpy.dtype(y_type)
         if no_bool and x_dtype == "?" and y_dtype == "?":
@@ -310,7 +361,7 @@ class TestArrayElementwiseOp:
         self.check_array_broadcasted_op(operator.add)
 
     def test_broadcasted_iadd(self):
-        self.check_array_broadcasted_op(operator.iadd)
+        self.check_array_broadcasted_op(operator.iadd, inplace=True)
 
     def test_broadcasted_sub(self):
         # TODO(unno): sub for boolean array is deprecated in numpy>=1.13
@@ -318,13 +369,15 @@ class TestArrayElementwiseOp:
 
     def test_broadcasted_isub(self):
         # TODO(unno): sub for boolean array is deprecated in numpy>=1.13
-        self.check_array_broadcasted_op(operator.isub, no_bool=True)
+        self.check_array_broadcasted_op(
+            operator.isub, inplace=True, no_bool=True
+        )
 
     def test_broadcasted_mul(self):
         self.check_array_broadcasted_op(operator.mul)
 
     def test_broadcasted_imul(self):
-        self.check_array_broadcasted_op(operator.imul)
+        self.check_array_broadcasted_op(operator.imul, inplace=True)
 
     def test_broadcasted_truediv(self):
         with numpy.errstate(divide="ignore"):
@@ -342,7 +395,9 @@ class TestArrayElementwiseOp:
         if "1.16.1" <= numpy.lib.NumpyVersion(numpy.__version__) < "1.18.0":
             self.skipTest("NumPy Issue #12927")
         with numpy.errstate(divide="ignore"):
-            self.check_array_broadcasted_op(operator.ifloordiv, no_complex=True)
+            self.check_array_broadcasted_op(
+                operator.ifloordiv, inplace=True, no_complex=True
+            )
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(atol=1e-5, rtol=1e-6, accept_error=TypeError)
@@ -363,6 +418,8 @@ class TestArrayElementwiseOp:
     @testing.numpy_cupy_allclose(atol=1.0, accept_error=TypeError)
     @cast_exception_type()
     def check_broadcasted_ipow(self, xp, x_type, y_type):
+        skip_inplace_numpy_uint64_casting_error(xp, x_type, y_type)
+
         a = xp.array([[1, 2, 3], [4, 5, 6]], x_type)
         b = xp.array([[1], [2]], y_type)
         return operator.ipow(a, b)
@@ -659,7 +716,10 @@ class TestArrayIntElementwiseOp:
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     @cast_exception_type()
-    def check_array_array_op(self, op, xp, x_type, y_type):
+    def check_array_array_op(self, op, xp, x_type, y_type, inplace=False):
+        if inplace:
+            skip_inplace_numpy_uint64_casting_error(xp, x_type, y_type)
+
         a = xp.array([[0, 1, 2], [1, 0, 2]], dtype=x_type)
         b = xp.array([[0, 0, 1], [0, 1, 2]], dtype=y_type)
         return op(a, b)
@@ -668,31 +728,31 @@ class TestArrayIntElementwiseOp:
         self.check_array_array_op(operator.lshift)
 
     def test_ilshift_array(self):
-        self.check_array_array_op(operator.ilshift)
+        self.check_array_array_op(operator.ilshift, inplace=True)
 
     def test_rshift_array(self):
         self.check_array_array_op(operator.rshift)
 
     def test_irshift_array(self):
-        self.check_array_array_op(operator.irshift)
+        self.check_array_array_op(operator.irshift, inplace=True)
 
     def test_and_array(self):
         self.check_array_array_op(operator.and_)
 
     def test_iand_array(self):
-        self.check_array_array_op(operator.iand)
+        self.check_array_array_op(operator.iand, inplace=True)
 
     def test_or_array(self):
         self.check_array_array_op(operator.or_)
 
     def test_ior_array(self):
-        self.check_array_array_op(operator.ior)
+        self.check_array_array_op(operator.ior, inplace=True)
 
     def test_xor_array(self):
         self.check_array_array_op(operator.xor)
 
     def test_ixor_array(self):
-        self.check_array_array_op(operator.ixor)
+        self.check_array_array_op(operator.ixor, inplace=True)
 
     def test_mod_array(self):
         with numpy.errstate(divide="ignore", invalid="ignore"):
@@ -700,12 +760,15 @@ class TestArrayIntElementwiseOp:
 
     def test_imod_array(self):
         with numpy.errstate(divide="ignore", invalid="ignore"):
-            self.check_array_array_op(operator.imod)
+            self.check_array_array_op(operator.imod, inplace=True)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     @cast_exception_type()
-    def check_array_broadcasted_op(self, op, xp, x_type, y_type):
+    def check_array_broadcasted_op(self, op, xp, x_type, y_type, inplace=False):
+        if inplace:
+            skip_inplace_numpy_uint64_casting_error(xp, x_type, y_type)
+
         a = xp.array([[0, 1, 2], [1, 0, 2], [2, 1, 0]], dtype=x_type)
         b = xp.array([[0, 0, 1]], dtype=y_type)
         return op(a, b)
@@ -714,31 +777,31 @@ class TestArrayIntElementwiseOp:
         self.check_array_broadcasted_op(operator.lshift)
 
     def test_broadcasted_ilshift(self):
-        self.check_array_broadcasted_op(operator.ilshift)
+        self.check_array_broadcasted_op(operator.ilshift, inplace=True)
 
     def test_broadcasted_rshift(self):
         self.check_array_broadcasted_op(operator.rshift)
 
     def test_broadcasted_irshift(self):
-        self.check_array_broadcasted_op(operator.irshift)
+        self.check_array_broadcasted_op(operator.irshift, inplace=True)
 
     def test_broadcasted_and(self):
         self.check_array_broadcasted_op(operator.and_)
 
     def test_broadcasted_iand(self):
-        self.check_array_broadcasted_op(operator.iand)
+        self.check_array_broadcasted_op(operator.iand, inplace=True)
 
     def test_broadcasted_or(self):
         self.check_array_broadcasted_op(operator.or_)
 
     def test_broadcasted_ior(self):
-        self.check_array_broadcasted_op(operator.ior)
+        self.check_array_broadcasted_op(operator.ior, inplace=True)
 
     def test_broadcasted_xor(self):
         self.check_array_broadcasted_op(operator.xor)
 
     def test_broadcasted_ixor(self):
-        self.check_array_broadcasted_op(operator.ixor)
+        self.check_array_broadcasted_op(operator.ixor, inplace=True)
 
     def test_broadcasted_mod(self):
         with numpy.errstate(divide="ignore", invalid="ignore"):
@@ -746,7 +809,7 @@ class TestArrayIntElementwiseOp:
 
     def test_broadcasted_imod(self):
         with numpy.errstate(divide="ignore", invalid="ignore"):
-            self.check_array_broadcasted_op(operator.imod)
+            self.check_array_broadcasted_op(operator.imod, inplace=True)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
