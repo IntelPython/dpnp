@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.tests.helper import is_win_platform
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -193,6 +194,11 @@ class TestUfunc:
     )
     @testing.numpy_cupy_equal()
     def test_types(self, xp, ufunc):
+        # CuPy does not support the following dtypes:
+        # longlong, (c)longdouble, datetime, timedelta, and object.
+        excl_types = "GgMmO"
+        excl_types += "Ii" if is_win_platform() else "Qq"
+
         types = getattr(xp, ufunc).types
         if xp == numpy:
             assert isinstance(types, list)
@@ -200,9 +206,7 @@ class TestUfunc:
                 dict.fromkeys(  # remove dups: numpy/numpy#7897
                     sig
                     for sig in types
-                    # CuPy does not support the following dtypes:
-                    # longlong, (c)longdouble, datetime, timedelta, and object.
-                    if not any(t in sig for t in "QqGgMmO")
+                    if not any(t in sig for t in excl_types)
                 )
             )
         return types
