@@ -54,7 +54,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: 0
 
@@ -102,13 +102,13 @@ jobs:
           MAX_BUILD_CMPL_MKL_VERSION: '2026.0a0'
 
       - name: Upload artifact
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.package-name }}-*.conda
 
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.package-name }}-*.whl
@@ -145,13 +145,13 @@ jobs:
           swap-size-gb: 8
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
 
       - name: Download artifact
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -274,13 +274,13 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
 
       - name: Download artifact
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -434,17 +434,17 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: ${{ env.fetch-depth }}
 
       - name: Download artifact
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Download wheels artifact
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
@@ -522,13 +522,13 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
 
       - name: Download artifact
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-ver }}
           path: ${{ env.pkg-path-in-channel }}
@@ -595,7 +595,7 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Clone array API tests repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           repository: 'data-apis/array-api-tests'
           path: ${{ env.array-api-tests-path }}
@@ -678,7 +678,7 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: ${{ env.fetch-depth }}
 
@@ -704,7 +704,7 @@ jobs:
           activate-environment: ${{ env.cleanup-env-name }}
 
       - name: Checkout repo
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           repository: IntelPython/devops-tools
           fetch-depth: ${{ env.fetch-depth }}
