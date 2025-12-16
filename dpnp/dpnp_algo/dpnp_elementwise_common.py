@@ -829,11 +829,6 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
         corresponds to computational tasks associated with function evaluation.
     docs : {str}
         Documentation string for the unary function.
-    mkl_fn_to_call : {None, str}
-        Check input arguments to answer if function from OneMKL VM library
-        can be used.
-    mkl_impl_fn : {None, str}
-        Function from OneMKL VM library to call.
 
     """
 
