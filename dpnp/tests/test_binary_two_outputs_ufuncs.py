@@ -249,6 +249,7 @@ class TestDivmod:
         assert_array_equal(res1, exp1)
         assert_array_equal(res2, exp2)
 
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     @pytest.mark.parametrize("dt", get_integer_dtypes(no_unsigned=True))
     def test_min_int(self, dt):
         a = numpy.array(numpy.iinfo(dt).min, dtype=dt)
