@@ -113,7 +113,7 @@ class TestJoin:
     @testing.numpy_cupy_array_equal()
     def test_concatenate_f_contiguous(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        b = testing.shaped_arange((2, 3, 2), xp, dtype).T
+        b = testing.shaped_arange((2, 3, 2), xp, dtype).transpose()
         c = testing.shaped_arange((2, 3, 3), xp, dtype)
         return xp.concatenate((a, b, c), axis=-1)
 
@@ -121,9 +121,9 @@ class TestJoin:
     @testing.numpy_cupy_array_equal()
     def test_concatenate_large_f_contiguous(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        b = testing.shaped_arange((2, 3, 2), xp, dtype).T
+        b = testing.shaped_arange((2, 3, 2), xp, dtype).transpose()
         c = testing.shaped_arange((2, 3, 3), xp, dtype)
-        d = testing.shaped_arange((2, 3, 2), xp, dtype).T
+        d = testing.shaped_arange((2, 3, 2), xp, dtype).transpose()
         e = testing.shaped_arange((2, 3, 2), xp, dtype)
         return xp.concatenate((a, b, c, d, e) * 2, axis=-1)
 

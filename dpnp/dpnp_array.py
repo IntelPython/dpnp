@@ -35,6 +35,8 @@ elements stored in a USM allocation on a SYCL device.
 # pylint: disable=invalid-name
 # pylint: disable=protected-access
 
+import warnings
+
 import dpctl.tensor as dpt
 import dpctl.tensor._type_utils as dtu
 from dpctl.tensor._numpy_helper import AxisError
@@ -1936,7 +1938,8 @@ class dpnp_array:
         """
         View of the transposed array.
 
-        Same as ``self.transpose()``.
+        Same as ``self.transpose()`` except that it requires
+        the array to be 2-dimensional.
 
         See Also
         --------
@@ -1953,14 +1956,17 @@ class dpnp_array:
         array([[1, 3],
             [2, 4]])
 
-        >>> a = np.array([1, 2, 3, 4])
-        >>> a
-        array([1, 2, 3, 4])
-        >>> a.T
-        array([1, 2, 3, 4])
-
         """
 
+        if self.ndim != 2:
+            warnings.warn(
+                "`.T` is deprecated for non-2D dpnp.ndarray "
+                "and will raise an error in a future release. "
+                "Either `self.transpose()` or `self.mT` (which swaps "
+                "the last two axes only) should be used instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         return self.transpose()
 
     def take(self, indices, axis=None, *, out=None, mode="wrap"):

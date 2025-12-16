@@ -17,7 +17,6 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added `dpnp.exceptions` submodule to aggregate the generic exceptions used by dpnp [#2616](https://github.com/IntelPython/dpnp/pull/2616)
 * Added implementation of `dpnp.scipy.special.erfcx` [#2596](https://github.com/IntelPython/dpnp/pull/2596)
 * Added implementation of `dpnp.scipy.special.erfinv` and `dpnp.scipy.special.erfcinv` [#2624](https://github.com/IntelPython/dpnp/pull/2624)
-* Enabled support of Python 3.14 [#2631](https://github.com/IntelPython/dpnp/pull/2631)
 * Added implementation of `dpnp.ndarray.tolist` method [#2652](https://github.com/IntelPython/dpnp/pull/2652)
 * Added implementation of `dpnp.frexp` [#2635](https://github.com/IntelPython/dpnp/pull/2635)
 * Added implementation of `dpnp.ndarray.tofile` method [#2635](https://github.com/IntelPython/dpnp/pull/2635)
@@ -44,6 +43,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 
 * `dpnp.asfarray` is deprecated. Use `dpnp.asarray` with an appropriate dtype instead [#2650](https://github.com/IntelPython/dpnp/pull/2650)
 * Passing the output array ``out`` positionally to `dpnp.minimum` and `dpnp.maximum` is deprecated. Pass the output with the keyword form, e.g. ``dpnp.minimum(a, b, out=c)`` [#2659](https://github.com/IntelPython/dpnp/pull/2659)
+* `dpnp.ndarray.T` property is deprecated for not two-dimensional array to be compatible with the Python array API standard. To achieve a similar behavior when ``a.ndim != 2``, either ``a.transpose()``, or ``a.mT`` (swaps the last two axes only), or ``dpnp.permute_dims(a, range(a.ndim)[::-1])`` can be used [#2681](https://github.com/IntelPython/dpnp/pull/2681)
 
 ### Removed
 
@@ -53,7 +53,28 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 
 ### Fixed
 
+* Suppressed a potential deprecation warning triggered during import of the `dpctl.tensor` module [#2709](https://github.com/IntelPython/dpnp/pull/2709)
+
 ### Security
+
+
+## [0.19.1] - 2025-11-27
+
+This release achieves `dpnp` compatibility with Python 3.14 and enables distributing `dpnp` packages with the latest Python version.
+This release is compatible with NumPy 2.3.5.
+
+### Added
+
+* Enabled support of Python 3.14 [#2631](https://github.com/IntelPython/dpnp/pull/2631)
+
+### Changed
+
+* Bumped oneMath version up to `v0.9` [#2655](https://github.com/IntelPython/dpnp/pull/2655)
+* Updated CMake config files for DPC++ compiler, oneMKL, oneDPL and TBB components with `2025.3` release changes [#2648](https://github.com/IntelPython/dpnp/pull/2648)
+
+### Fixed
+
+* Updated tests for erf functions to pass with `scipy>=0.16.0` for all integer dtypes [#2669](https://github.com/IntelPython/dpnp/pull/2669)
 
 
 ## [0.19.0] - 2025-10-06
