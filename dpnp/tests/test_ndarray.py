@@ -533,8 +533,8 @@ def test_print_dpnp_zero_shape():
 
 
 @pytest.mark.parametrize("xp", [dpnp, numpy])
+@pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
 class TestPythonScalarConversion:
-    @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
     )
@@ -542,7 +542,6 @@ class TestPythonScalarConversion:
         a = xp.full(shape, 5, dtype=dtype)
         assert bool(a) == True
 
-    @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
     )
@@ -552,7 +551,6 @@ class TestPythonScalarConversion:
 
     @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("func", [float, int, complex])
-    @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
     )
@@ -563,12 +561,11 @@ class TestPythonScalarConversion:
             assert_raises(TypeError, func, a)
         else:
             # 0D arrays are allowed to convert
-            expected = 1 if xp.issubdtype(dtype, xp.bool) else 5
+            expected = 1 if dtype == xp.bool else 5
             assert func(a) == func(expected)
 
     @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("method", ["__float__", "__int__", "__complex__"])
-    @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
     )
@@ -577,7 +574,7 @@ class TestPythonScalarConversion:
         if len(shape) > 0:
             assert_raises(TypeError, getattr(a, method))
         else:
-            expected = 1 if xp.issubdtype(dtype, xp.bool) else 5
+            expected = 1 if dtype == xp.bool else 5
             func = {"__float__": float, "__int__": int, "__complex__": complex}[
                 method
             ]
