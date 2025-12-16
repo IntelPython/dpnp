@@ -209,7 +209,7 @@ class TestUfunc:
 
     @testing.numpy_cupy_allclose()
     def test_unary_out_tuple(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         out = xp.zeros((2, 3), dtype=dtype)
         ret = xp.sin(a, out=(out,))
@@ -218,13 +218,13 @@ class TestUfunc:
 
     @testing.numpy_cupy_allclose()
     def test_unary_out_positional_none(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         return xp.sin(a, None)
 
     @testing.numpy_cupy_allclose()
     def test_binary_out_tuple(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = xp.ones((2, 3), dtype=dtype)
         out = xp.zeros((2, 3), dtype=dtype)
@@ -234,14 +234,14 @@ class TestUfunc:
 
     @testing.numpy_cupy_allclose()
     def test_biary_out_positional_none(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = xp.ones((2, 3), dtype=dtype)
         return xp.add(a, b, None)
 
     @testing.numpy_cupy_allclose()
     def test_divmod_out_tuple(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
         out0 = xp.zeros((2, 3), dtype=dtype)
@@ -253,14 +253,14 @@ class TestUfunc:
 
     @testing.numpy_cupy_allclose()
     def test_divmod_out_positional_none(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = xp.ones((2, 3), dtype=dtype)
         return xp.divmod(a, b, None, None)
 
     @testing.numpy_cupy_allclose()
     def test_divmod_out_partial(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
         out0 = xp.zeros((2, 3), dtype=dtype)
@@ -270,7 +270,7 @@ class TestUfunc:
 
     @testing.numpy_cupy_allclose()
     def test_divmod_out_partial_tuple(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
         out1 = xp.zeros((2, 3), dtype=dtype)

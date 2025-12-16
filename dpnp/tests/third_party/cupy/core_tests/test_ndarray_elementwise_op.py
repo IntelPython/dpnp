@@ -7,6 +7,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -60,7 +61,9 @@ def skip_inplace_numpy_uint64_casting_error(xp, x_type, y_type):
 class TestArrayElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose(rtol=1e-6, accept_error=TypeError)
+    @testing.numpy_cupy_allclose(
+        rtol=1e-6, accept_error=TypeError, type_check=has_support_aspect64()
+    )
     @cast_exception_type()
     def check_array_scalar_op(
         self,
@@ -214,7 +217,9 @@ class TestArrayElementwiseOp:
         self.check_array_scalar_op(operator.ne)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @testing.numpy_cupy_allclose(
+        accept_error=TypeError, type_check=has_support_aspect64()
+    )
     @cast_exception_type()
     def check_array_array_op(
         self,
@@ -278,7 +283,12 @@ class TestArrayElementwiseOp:
             )
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose(atol=1e-5, rtol=1e-6, accept_error=TypeError)
+    @testing.numpy_cupy_allclose(
+        atol=1e-5,
+        rtol=1e-6,
+        accept_error=TypeError,
+        type_check=has_support_aspect64(),
+    )
     def check_pow_array(self, xp, x_type, y_type):
         a = xp.array([[1, 2, 3], [4, 5, 6]], x_type)
         b = xp.array([[6, 5, 4], [3, 2, 1]], y_type)
@@ -332,7 +342,9 @@ class TestArrayElementwiseOp:
         self.check_array_array_op(operator.ne)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @testing.numpy_cupy_allclose(
+        accept_error=TypeError, type_check=has_support_aspect64()
+    )
     @cast_exception_type()
     def check_array_broadcasted_op(
         self,
@@ -400,7 +412,12 @@ class TestArrayElementwiseOp:
             )
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose(atol=1e-5, rtol=1e-6, accept_error=TypeError)
+    @testing.numpy_cupy_allclose(
+        atol=1e-5,
+        rtol=1e-6,
+        accept_error=TypeError,
+        type_check=has_support_aspect64(),
+    )
     def check_broadcasted_pow(self, xp, x_type, y_type):
         a = xp.array([[1, 2, 3], [4, 5, 6]], x_type)
         b = xp.array([[1], [2]], y_type)
@@ -458,7 +475,7 @@ class TestArrayElementwiseOp:
         self.check_array_broadcasted_op(operator.ne)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose(rtol=1e-6)
+    @testing.numpy_cupy_allclose(rtol=1e-6, type_check=has_support_aspect64())
     def check_array_doubly_broadcasted_op(
         self, op, xp, x_type, y_type, no_bool=False, no_complex=False
     ):
@@ -525,7 +542,7 @@ class TestArrayElementwiseOp:
         self.check_array_doubly_broadcasted_op(operator.ne)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def check_array_reversed_op(self, op, xp, x_type, y_type, no_bool=False):
         if no_bool and x_type == numpy.bool_ and y_type == numpy.bool_:
             return xp.array(True)
@@ -567,7 +584,9 @@ class TestArrayElementwiseOp:
         ],
     )
     @testing.for_all_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose(accept_error=OverflowError)
+    @testing.numpy_cupy_allclose(
+        accept_error=OverflowError, type_check=has_support_aspect64()
+    )
     def test_typecast_(self, xp, op, dtype, val):
         a = op(val, (testing.shaped_arange((5,), xp, dtype) - 2))
         return a
@@ -618,7 +637,9 @@ class TestArrayElementwiseOp:
 class TestArrayIntElementwiseOp:
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @testing.numpy_cupy_allclose(
+        accept_error=TypeError, type_check=has_support_aspect64()
+    )
     @cast_exception_type()
     def check_array_scalar_op(self, op, xp, x_type, y_type, swap=False):
         a = xp.array([[0, 1, 2], [1, 0, 2]], dtype=x_type)
@@ -666,7 +687,9 @@ class TestArrayIntElementwiseOp:
             self.check_array_scalar_op(operator.mod, swap=True)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @testing.numpy_cupy_allclose(
+        accept_error=TypeError, type_check=has_support_aspect64()
+    )
     @cast_exception_type()
     def check_array_scalarzero_op(self, op, xp, x_type, y_type, swap=False):
         a = xp.array([[0, 1, 2], [1, 0, 2]], dtype=x_type)
@@ -714,7 +737,9 @@ class TestArrayIntElementwiseOp:
             self.check_array_scalarzero_op(operator.mod, swap=True)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @testing.numpy_cupy_allclose(
+        accept_error=TypeError, type_check=has_support_aspect64()
+    )
     @cast_exception_type()
     def check_array_array_op(self, op, xp, x_type, y_type, inplace=False):
         if inplace:
@@ -763,7 +788,9 @@ class TestArrayIntElementwiseOp:
             self.check_array_array_op(operator.imod, inplace=True)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @testing.numpy_cupy_allclose(
+        accept_error=TypeError, type_check=has_support_aspect64()
+    )
     @cast_exception_type()
     def check_array_broadcasted_op(self, op, xp, x_type, y_type, inplace=False):
         if inplace:
@@ -812,7 +839,9 @@ class TestArrayIntElementwiseOp:
             self.check_array_broadcasted_op(operator.imod, inplace=True)
 
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
-    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @testing.numpy_cupy_allclose(
+        accept_error=TypeError, type_check=has_support_aspect64()
+    )
     @cast_exception_type()
     def check_array_doubly_broadcasted_op(self, op, xp, x_type, y_type):
         a = xp.array([[[0, 1, 2]], [[1, 0, 2]]], dtype=x_type)
@@ -890,7 +919,7 @@ class CustomInt(int):
     pass
 
 
-@pytest.mark.parametrize("dtype", ["int32", "float64"])
+@pytest.mark.parametrize("dtype", ["int32", cupy.default_float_type()])
 @pytest.mark.parametrize(
     "value",
     [
