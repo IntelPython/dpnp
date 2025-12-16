@@ -503,8 +503,12 @@ class TestConcatenate:
             dp_res = dpnp.concatenate((dp_a0, dp_a1, dp_a2), axis=axis)
             assert_array_equal(dp_res, np_res)
 
-        np_res = numpy.concatenate((np_a0.T, np_a1.T, np_a2.T), axis=0)
-        dp_res = dpnp.concatenate((dp_a0.T, dp_a1.T, dp_a2.T), axis=0)
+        np_res = numpy.concatenate(
+            (np_a0.transpose(), np_a1.transpose(), np_a2.transpose()), axis=0
+        )
+        dp_res = dpnp.concatenate(
+            (dp_a0.transpose(), dp_a1.transpose(), dp_a2.transpose()), axis=0
+        )
         assert_array_equal(dp_res, np_res)
 
     @pytest.mark.parametrize(
@@ -1164,3 +1168,13 @@ def test_can_cast():
     assert dpnp.can_cast(X, "float32") == numpy.can_cast(X_np, "float32")
     assert dpnp.can_cast(X, dpnp.int32) == numpy.can_cast(X_np, numpy.int32)
     assert dpnp.can_cast(X, dpnp.int64) == numpy.can_cast(X_np, numpy.int64)
+
+
+def test_depr_T_non_2d():
+    x = dpnp.arange(8)
+    with pytest.warns(DeprecationWarning, match="deprecated"):
+        _ = x.T
+
+    x_3d = x.reshape(2, 2, 2)
+    with pytest.warns(DeprecationWarning, match="deprecated"):
+        _ = x_3d.T
