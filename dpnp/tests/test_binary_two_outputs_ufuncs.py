@@ -335,3 +335,25 @@ class TestDivmod:
         exp1, exp2 = numpy.divmod(a, b)
         assert_array_equal(res1, exp1)
         assert_array_equal(res2, exp2)
+
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_float_zero(self, dt):
+        a = numpy.array([1, 0, -2], dtype=dt)
+        ia = dpnp.array(a)
+
+        res1, res2 = dpnp.divmod(ia, 0)
+        exp1, exp2 = numpy.divmod(a, 0)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_float_diff_signs(self, dt):
+        a = numpy.arange(-3, 7, dtype=dt).reshape((10, 1))
+        b = numpy.array([[2, -2, 3, -3]])
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        res1, res2 = dpnp.divmod(ia, ib)
+        exp1, exp2 = numpy.divmod(a, b)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
