@@ -591,7 +591,7 @@ class TestArrayElementwiseOp:
         a = op(val, (testing.shaped_arange((5,), xp, dtype) - 2))
         return a
 
-    @pytest.mark.skip("TODO")
+    @pytest.mark.skip("Cause OverflowError error for integer dtypes")
     @pytest.mark.parametrize(
         "val",
         [
