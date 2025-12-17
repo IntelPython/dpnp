@@ -2208,14 +2208,14 @@ def dpnp_lstsq(a, b, rcond=None):
 
     # Solve the least-squares solution
     # x = vh.T.conj() @ diag(s1) @ u.T.conj() @ b
-    z = (dpnp.dot(b.T, u.conj()) * s1).T
-    x = dpnp.dot(vh.T.conj(), z)
+    z = (dpnp.dot(b.transpose(), u.conj()) * s1).transpose()
+    x = dpnp.dot(vh.transpose().conj(), z)
     # Calculate squared Euclidean 2-norm for each column in b - a*x
     if m <= n or rank != n:
         resids = dpnp.empty_like(s, shape=(0,))
     else:
         e = b - a.dot(x)
-        resids = dpnp.atleast_1d(_nrm2_last_axis(e.T))
+        resids = dpnp.atleast_1d(_nrm2_last_axis(e.transpose()))
 
     return x, resids, rank, s
 

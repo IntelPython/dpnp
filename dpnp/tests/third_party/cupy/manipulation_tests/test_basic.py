@@ -26,7 +26,7 @@ class TestBasic:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_copyto_different_contiguity(self, xp, dtype):
-        a = testing.shaped_arange((2, 3, 2), xp, dtype).T
+        a = testing.shaped_arange((2, 3, 2), xp, dtype).transpose()
         b = xp.empty((2, 3, 2), dtype=dtype)
         xp.copyto(b, a)
         return b

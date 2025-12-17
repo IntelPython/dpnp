@@ -28,6 +28,7 @@
 
 import os
 import sys
+import warnings
 
 mypath = os.path.dirname(os.path.realpath(__file__))
 
@@ -61,7 +62,9 @@ if sys.platform == "win32":  # pragma: no cover
             )
 
 # Borrowed from DPCTL
-from dpctl.tensor import __array_api_version__, DLDeviceType
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", DeprecationWarning)
+    from dpctl.tensor import __array_api_version__, DLDeviceType
 
 from .dpnp_array import dpnp_array as ndarray
 from .dpnp_array_api_info import __array_namespace_info__
@@ -72,7 +75,6 @@ from . import fft as fft
 from . import linalg as linalg
 from . import random as random
 from . import scipy as scipy
-
 
 # =============================================================================
 # Data types
@@ -286,7 +288,6 @@ from .dpnp_iface_indexing import (
     diagonal,
     extract,
     fill_diagonal,
-    flatnonzero,
     indices,
     iterable,
     ix_,
@@ -501,6 +502,7 @@ from .dpnp_iface_manipulation import (
 # Sorting, searching, and counting
 # -----------------------------------------------------------------------------
 from .dpnp_iface_counting import count_nonzero
+from .dpnp_iface_indexing import flatnonzero
 from .dpnp_iface_nanfunctions import nanargmax, nanargmin
 from .dpnp_iface_searching import (
     argmax,
@@ -587,6 +589,8 @@ from .dpnp_iface import (
 # =============================================================================
 # Public API
 # =============================================================================
+
+__all__ = ["__array_namespace_info__", "ndarray"]
 
 # Data types
 __all__ = [
@@ -778,7 +782,7 @@ __all__ += [
     "diagonal",
     "extract",
     "fill_diagonal",
-    "flatnonzero",
+    "flatiter",
     "indices",
     "iterable",
     "ix_",
@@ -989,6 +993,7 @@ __all__ += [
     "argwhere",
     "argsort",
     "count_nonzero",
+    "flatnonzero",
     "partition",
     "searchsorted",
     "sort",

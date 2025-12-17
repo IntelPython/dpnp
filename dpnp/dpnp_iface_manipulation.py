@@ -2950,7 +2950,7 @@ def require(a, dtype=None, requirements=None, *, like=None):
     return arr
 
 
-def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
+def reshape(a, /, shape, order="C", *, copy=None):
     """
     Gives a new shape to an array without changing its data.
 
@@ -2965,8 +2965,6 @@ def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
         an integer, then the result will be a 1-D array of that length.
         One shape dimension can be -1. In this case, the value is
         inferred from the length of the array and remaining dimensions.
-
-        Default: ``None``.
     order : {None, "C", "F", "A"}, optional
         Read the elements of `a` using this index order, and place the
         elements into the reshaped array using this index order. ``"C"``
@@ -2982,10 +2980,6 @@ def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
         Fortran *contiguous* in memory, C-like order otherwise.
 
         Default: ``"C"``.
-    newshape : int or tuple of ints
-        Replaced by `shape` argument. Retained for backward compatibility.
-
-        Default: ``None``.
     copy : {None, bool}, optional
         If ``True``, then the array data is copied. If ``None``, a copy will
         only be made if it's required by ``order``. For ``False`` it raises
@@ -3053,27 +3047,6 @@ def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
            [5, 6]])
 
     """
-
-    if newshape is None and shape is None:
-        raise TypeError(
-            "reshape() missing 1 required positional argument: 'shape'"
-        )
-
-    if newshape is not None:
-        if shape is not None:
-            raise TypeError(
-                "You cannot specify 'newshape' and 'shape' arguments "
-                "at the same time."
-            )
-        # Deprecated in dpnp 0.17.0
-        warnings.warn(
-            "`newshape` keyword argument is deprecated, "
-            "use `shape=...` or pass shape positionally instead. "
-            "(deprecated in dpnp 0.17.0)",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        shape = newshape
 
     if order is None:
         order = "C"

@@ -1124,21 +1124,6 @@ class TestRequire:
 
 
 class TestReshape:
-    def test_error(self):
-        ia = dpnp.arange(10)
-        assert_raises(TypeError, dpnp.reshape, ia)
-        assert_raises(
-            TypeError, dpnp.reshape, ia, shape=(2, 5), newshape=(2, 5)
-        )
-
-    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-    def test_newshape(self):
-        a = numpy.arange(10)
-        ia = dpnp.array(a)
-        expected = numpy.reshape(a, (2, 5))
-        result = dpnp.reshape(ia, newshape=(2, 5))
-        assert_array_equal(result, expected)
-
     @pytest.mark.parametrize("order", [None, "C", "F", "A"])
     def test_order(self, order):
         a = numpy.arange(10)
