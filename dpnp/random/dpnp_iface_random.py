@@ -69,6 +69,14 @@ def _get_random_state(device=None, sycl_queue=None):
     return _dpnp_random_states[sycl_queue]
 
 
+def _is_type_supported(obj_type):
+    """Return True if type is supported by dpnp.random"""
+
+    if obj_type in (dpnp.float64, dpnp.float32, dpnp.int64, dpnp.int32):
+        return True
+    return False
+
+
 def beta(a, b, size=None):
     """
     Draw samples from a Beta distribution.
@@ -1587,7 +1595,7 @@ def shuffle(x1):
                 "Running on CUDA is currently not supported"
             )
 
-        if not dpnp.is_type_supported(x1_desc.dtype):
+        if not _is_type_supported(x1_desc.dtype):
             pass
         else:
             dpnp_rng_shuffle(x1_desc).get_pyobj()
