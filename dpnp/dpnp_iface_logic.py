@@ -53,6 +53,7 @@ import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
+from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 
 
@@ -1271,7 +1272,7 @@ def isin(
             )
         usm_element = dpnp.get_usm_ndarray(element)
         usm_test = dpnp.get_usm_ndarray(test_elements)
-    return dpnp.get_result_array(
+    return dpnp_array._create_from_usm_ndarray(
         dpt.isin(
             usm_element,
             usm_test,

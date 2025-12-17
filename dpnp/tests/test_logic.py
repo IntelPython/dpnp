@@ -1,5 +1,7 @@
+import dpctl
 import numpy
 import pytest
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
@@ -880,12 +882,18 @@ class TestIsin:
         assert_equal(result, expected)
 
     def test_isin_errors(self):
-        a = dpnp.arange(5)
-        b = dpnp.arange(3)
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+
+        a = dpnp.arange(5, sycl_queue=q1)
+        b = dpnp.arange(3, sycl_queue=q2)
 
         # unsupported type for elements or test_elements
         with pytest.raises(TypeError):
-            dpnp.isin(dict(), b)
+            dpnp.isin(dict(), a)
 
         with pytest.raises(TypeError):
             dpnp.isin(a, dict())
+
+        with pytest.raises(ExecutionPlacementError):
+            dpnp.isin(a, b)
