@@ -39,27 +39,10 @@ it contains:
 
 """
 
-# pylint: disable=duplicate-code
-
 import warnings
 
 import dpnp
 from dpnp.dpnp_utils.dpnp_utils_statistics import dpnp_median
-
-__all__ = [
-    "nanargmax",
-    "nanargmin",
-    "nancumprod",
-    "nancumsum",
-    "nanmax",
-    "nanmean",
-    "nanmedian",
-    "nanmin",
-    "nanprod",
-    "nanstd",
-    "nansum",
-    "nanvar",
-]
 
 
 def _replace_nan_no_mask(a, val):

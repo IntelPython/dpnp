@@ -70,8 +70,6 @@ from .dpnp_array import dpnp_array as ndarray
 from .dpnp_array_api_info import __array_namespace_info__
 from .dpnp_flatiter import flatiter as flatiter
 from .dpnp_iface_types import *
-from .dpnp_iface import *
-from .dpnp_iface import __all__ as _iface__all__
 from .dpnp_iface_utils import *
 from .dpnp_iface_utils import __all__ as _ifaceutils__all__
 from ._version import get_versions
@@ -81,7 +79,860 @@ from . import linalg as linalg
 from . import random as random
 from . import scipy as scipy
 
-__all__ = _iface__all__
+
+# =============================================================================
+# Routines
+#
+# The order of these declarations are borrowed from the NumPy document:
+# https://numpy.org/doc/stable/reference/routines.html
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Array creation routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_arraycreation import (
+    arange,
+    array,
+    asanyarray,
+    asarray,
+    ascontiguousarray,
+    asfortranarray,
+    astype,
+    copy,
+    diag,
+    diagflat,
+    empty,
+    empty_like,
+    eye,
+    frombuffer,
+    fromfile,
+    fromfunction,
+    fromiter,
+    fromstring,
+    from_dlpack,
+    full,
+    full_like,
+    geomspace,
+    identity,
+    linspace,
+    loadtxt,
+    logspace,
+    meshgrid,
+    mgrid,
+    ogrid,
+    ones,
+    ones_like,
+    trace,
+    tri,
+    tril,
+    triu,
+    vander,
+    zeros,
+    zeros_like,
+)
+
+# -----------------------------------------------------------------------------
+# Array manipulation routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_manipulation import (
+    append,
+    array_split,
+    asarray_chkfinite,
+    asfarray,
+    atleast_1d,
+    atleast_2d,
+    atleast_3d,
+    broadcast_arrays,
+    broadcast_to,
+    can_cast,
+    column_stack,
+    concat,
+    concatenate,
+    copyto,
+    delete,
+    dsplit,
+    dstack,
+    expand_dims,
+    flip,
+    fliplr,
+    flipud,
+    hsplit,
+    hstack,
+    insert,
+    matrix_transpose,
+    moveaxis,
+    ndim,
+    pad,
+    permute_dims,
+    ravel,
+    repeat,
+    require,
+    reshape,
+    resize,
+    result_type,
+    roll,
+    rollaxis,
+    rot90,
+    row_stack,
+    shape,
+    size,
+    split,
+    squeeze,
+    stack,
+    swapaxes,
+    tile,
+    transpose,
+    trim_zeros,
+    unstack,
+    vsplit,
+    vstack,
+)
+
+# -----------------------------------------------------------------------------
+# Bit-wise operations
+# -----------------------------------------------------------------------------
+from .dpnp_iface_bitwise import (
+    binary_repr,
+    bitwise_and,
+    bitwise_count,
+    bitwise_invert,
+    bitwise_left_shift,
+    bitwise_not,
+    bitwise_or,
+    bitwise_right_shift,
+    bitwise_xor,
+    invert,
+    left_shift,
+    right_shift,
+)
+
+# -----------------------------------------------------------------------------
+# Functional programming
+# -----------------------------------------------------------------------------
+from .dpnp_iface_functional import (
+    apply_along_axis,
+    apply_over_axes,
+    piecewise,
+)
+
+# -----------------------------------------------------------------------------
+# Indexing routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_indexing import (
+    choose,
+    compress,
+    diag_indices,
+    diag_indices_from,
+    diagonal,
+    extract,
+    fill_diagonal,
+    flatnonzero,
+    indices,
+    iterable,
+    ix_,
+    mask_indices,
+    ndindex,
+    nonzero,
+    place,
+    put,
+    put_along_axis,
+    putmask,
+    ravel_multi_index,
+    select,
+    take,
+    take_along_axis,
+    tril_indices,
+    tril_indices_from,
+    triu_indices,
+    triu_indices_from,
+    unravel_index,
+)
+
+# -----------------------------------------------------------------------------
+# Linear algebra
+# -----------------------------------------------------------------------------
+from .dpnp_iface_linearalgebra import (
+    dot,
+    einsum,
+    einsum_path,
+    inner,
+    kron,
+    matmul,
+    matvec,
+    outer,
+    tensordot,
+    vdot,
+    vecdot,
+    vecmat,
+)
+
+# -----------------------------------------------------------------------------
+# Logic functions
+# -----------------------------------------------------------------------------
+from .dpnp_iface_logic import (
+    all,
+    allclose,
+    any,
+    array_equal,
+    array_equiv,
+    equal,
+    greater,
+    greater_equal,
+    isclose,
+    iscomplex,
+    iscomplexobj,
+    isfinite,
+    isfortran,
+    isinf,
+    isnan,
+    isneginf,
+    isposinf,
+    isreal,
+    isrealobj,
+    isscalar,
+    less,
+    less_equal,
+    logical_and,
+    logical_not,
+    logical_or,
+    logical_xor,
+    not_equal,
+)
+
+# -----------------------------------------------------------------------------
+# Mathematical functions
+# -----------------------------------------------------------------------------
+from .dpnp_iface_mathematical import (
+    abs,
+    absolute,
+    add,
+    angle,
+    around,
+    ceil,
+    clip,
+    conj,
+    conjugate,
+    copysign,
+    cross,
+    cumprod,
+    cumsum,
+    cumulative_prod,
+    cumulative_sum,
+    diff,
+    divide,
+    ediff1d,
+    fabs,
+    fix,
+    float_power,
+    floor,
+    floor_divide,
+    fmax,
+    fmin,
+    fmod,
+    frexp,
+    gcd,
+    gradient,
+    heaviside,
+    i0,
+    imag,
+    interp,
+    lcm,
+    ldexp,
+    maximum,
+    minimum,
+    mod,
+    modf,
+    multiply,
+    nan_to_num,
+    negative,
+    nextafter,
+    positive,
+    pow,
+    power,
+    prod,
+    proj,
+    real,
+    real_if_close,
+    remainder,
+    rint,
+    round,
+    sign,
+    signbit,
+    sinc,
+    spacing,
+    subtract,
+    sum,
+    trapezoid,
+    true_divide,
+    trunc,
+)
+from .dpnp_iface_nanfunctions import (
+    nancumprod,
+    nancumsum,
+    nanprod,
+    nansum,
+)
+from .dpnp_iface_statistics import convolve
+from .dpnp_iface_trigonometric import (
+    arccos,
+    arccosh,
+    arcsin,
+    arcsinh,
+    arctan,
+    arctan2,
+    arctanh,
+    asin,
+    asinh,
+    acos,
+    acosh,
+    atan,
+    atan2,
+    atanh,
+    cbrt,
+    cos,
+    cosh,
+    cumlogsumexp,
+    deg2rad,
+    degrees,
+    exp,
+    exp2,
+    expm1,
+    hypot,
+    log,
+    log10,
+    log1p,
+    log2,
+    logaddexp,
+    logaddexp2,
+    logsumexp,
+    rad2deg,
+    radians,
+    reciprocal,
+    reduce_hypot,
+    rsqrt,
+    sin,
+    sinh,
+    sqrt,
+    square,
+    tan,
+    tanh,
+    unwrap,
+)
+
+# -----------------------------------------------------------------------------
+# Miscellaneous routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_manipulation import broadcast_shapes
+from .dpnp_iface import get_include
+
+# -----------------------------------------------------------------------------
+# Set routines
+# -----------------------------------------------------------------------------
+from .dpnp_iface_manipulation import (
+    unique,
+    unique_all,
+    unique_counts,
+    unique_inverse,
+    unique_values,
+)
+
+# -----------------------------------------------------------------------------
+# Sorting, searching, and counting
+# -----------------------------------------------------------------------------
+from .dpnp_iface_counting import count_nonzero
+from .dpnp_iface_nanfunctions import nanargmax, nanargmin
+from .dpnp_iface_searching import (
+    argmax,
+    argmin,
+    argwhere,
+    searchsorted,
+    where,
+)
+from .dpnp_iface_sorting import (
+    argsort,
+    partition,
+    sort,
+    sort_complex,
+)
+
+# -----------------------------------------------------------------------------
+# Statistics
+# -----------------------------------------------------------------------------
+from .dpnp_iface_histograms import (
+    bincount,
+    digitize,
+    histogram,
+    histogram_bin_edges,
+    histogram2d,
+    histogramdd,
+)
+from .dpnp_iface_nanfunctions import (
+    nanmax,
+    nanmean,
+    nanmedian,
+    nanmin,
+    nanstd,
+    nanvar,
+)
+from .dpnp_iface_statistics import (
+    amax,
+    amin,
+    average,
+    corrcoef,
+    correlate,
+    cov,
+    max,
+    mean,
+    median,
+    min,
+    ptp,
+    std,
+    var,
+)
+
+# -----------------------------------------------------------------------------
+# Window functions
+# -----------------------------------------------------------------------------
+from .dpnp_iface_window import (
+    bartlett,
+    blackman,
+    hamming,
+    hanning,
+    kaiser,
+)
+
+
+# =============================================================================
+# Helper functions
+# =============================================================================
+from .dpnp_iface import (
+    are_same_logical_tensors,
+    asnumpy,
+    as_usm_ndarray,
+    check_limitations,
+    check_supported_arrays_type,
+    default_float_type,
+    get_dpnp_descriptor,
+    get_normalized_queue_device,
+    get_result_array,
+    get_usm_ndarray,
+    get_usm_ndarray_or_scalar,
+    is_cuda_backend,
+    is_supported_array_or_scalar,
+    is_supported_array_type,
+    synchronize_array_data,
+)
+
+# =============================================================================
+# Public API
+# =============================================================================
+
+__all__ = ["__array_namespace_info__", "ndarray"]
+
+# Array creation routines
+__all__ += [
+    "arange",
+    "array",
+    "asanyarray",
+    "asarray",
+    "ascontiguousarray",
+    "asfortranarray",
+    "astype",
+    "copy",
+    "diag",
+    "diagflat",
+    "empty",
+    "empty_like",
+    "eye",
+    "frombuffer",
+    "fromfile",
+    "fromfunction",
+    "fromiter",
+    "fromstring",
+    "from_dlpack",
+    "full",
+    "full_like",
+    "geomspace",
+    "identity",
+    "linspace",
+    "loadtxt",
+    "logspace",
+    "meshgrid",
+    "mgrid",
+    "ogrid",
+    "ones",
+    "ones_like",
+    "trace",
+    "tri",
+    "tril",
+    "triu",
+    "vander",
+    "zeros",
+    "zeros_like",
+]
+
+# Array manipulation routines
+__all__ += [
+    "append",
+    "array_split",
+    "asarray_chkfinite",
+    "asfarray",
+    "atleast_1d",
+    "atleast_2d",
+    "atleast_3d",
+    "broadcast_arrays",
+    "broadcast_to",
+    "can_cast",
+    "column_stack",
+    "concat",
+    "concatenate",
+    "copyto",
+    "delete",
+    "dsplit",
+    "dstack",
+    "expand_dims",
+    "flip",
+    "fliplr",
+    "flipud",
+    "hsplit",
+    "hstack",
+    "insert",
+    "matrix_transpose",
+    "moveaxis",
+    "ndim",
+    "pad",
+    "permute_dims",
+    "ravel",
+    "repeat",
+    "require",
+    "reshape",
+    "resize",
+    "result_type",
+    "roll",
+    "rollaxis",
+    "rot90",
+    "row_stack",
+    "shape",
+    "size",
+    "split",
+    "squeeze",
+    "stack",
+    "swapaxes",
+    "tile",
+    "transpose",
+    "trim_zeros",
+    "unstack",
+    "vsplit",
+    "vstack",
+]
+
+# Bitwise operations
+__all__ += [
+    "binary_repr",
+    "bitwise_and",
+    "bitwise_count",
+    "bitwise_invert",
+    "bitwise_left_shift",
+    "bitwise_not",
+    "bitwise_or",
+    "bitwise_right_shift",
+    "bitwise_xor",
+    "invert",
+    "left_shift",
+    "right_shift",
+]
+
+# Functional programming
+__all__ += [
+    "apply_along_axis",
+    "apply_over_axes",
+    "piecewise",
+]
+
+# Indexing routines
+__all__ += [
+    "choose",
+    "compress",
+    "diag_indices",
+    "diag_indices_from",
+    "diagonal",
+    "extract",
+    "fill_diagonal",
+    "flatiter",
+    "flatnonzero",
+    "indices",
+    "iterable",
+    "ix_",
+    "mask_indices",
+    "ndindex",
+    "nonzero",
+    "place",
+    "put",
+    "put_along_axis",
+    "putmask",
+    "ravel_multi_index",
+    "select",
+    "take",
+    "take_along_axis",
+    "tril_indices",
+    "tril_indices_from",
+    "triu_indices",
+    "triu_indices_from",
+    "unravel_index",
+]
+
+# Linear algebra
+__all__ += [
+    "dot",
+    "einsum",
+    "einsum_path",
+    "inner",
+    "kron",
+    "matmul",
+    "matvec",
+    "outer",
+    "tensordot",
+    "vdot",
+    "vecdot",
+    "vecmat",
+]
+
+# Logic functions
+__all__ += [
+    "all",
+    "allclose",
+    "any",
+    "array_equal",
+    "array_equiv",
+    "equal",
+    "greater",
+    "greater_equal",
+    "isclose",
+    "iscomplex",
+    "iscomplexobj",
+    "isfinite",
+    "isfortran",
+    "isinf",
+    "isnan",
+    "isneginf",
+    "isposinf",
+    "isreal",
+    "isrealobj",
+    "isscalar",
+    "less",
+    "less_equal",
+    "logical_and",
+    "logical_not",
+    "logical_or",
+    "logical_xor",
+    "not_equal",
+]
+
+# Mathematical functions
+__all__ += [
+    "abs",
+    "absolute",
+    "acos",
+    "acosh",
+    "add",
+    "angle",
+    "arccos",
+    "arccosh",
+    "arcsin",
+    "arcsinh",
+    "arctan",
+    "arctan2",
+    "arctanh",
+    "around",
+    "asin",
+    "asinh",
+    "atan",
+    "atan2",
+    "atanh",
+    "cbrt",
+    "ceil",
+    "clip",
+    "conj",
+    "conjugate",
+    "convolve",
+    "copysign",
+    "cos",
+    "cosh",
+    "cross",
+    "cumlogsumexp",
+    "cumprod",
+    "cumsum",
+    "cumulative_prod",
+    "cumulative_sum",
+    "deg2rad",
+    "degrees",
+    "diff",
+    "divide",
+    "ediff1d",
+    "exp",
+    "exp2",
+    "expm1",
+    "fabs",
+    "fix",
+    "fmax",
+    "fmin",
+    "float_power",
+    "floor",
+    "floor_divide",
+    "fmod",
+    "frexp",
+    "gcd",
+    "gradient",
+    "heaviside",
+    "hypot",
+    "i0",
+    "imag",
+    "interp",
+    "lcm",
+    "ldexp",
+    "log",
+    "log10",
+    "log1p",
+    "log2",
+    "logaddexp",
+    "logaddexp2",
+    "logsumexp",
+    "maximum",
+    "mean",
+    "median",
+    "min",
+    "minimum",
+    "mod",
+    "modf",
+    "multiply",
+    "nan_to_num",
+    "nanargmax",
+    "nanargmin",
+    "nancumprod",
+    "nancumsum",
+    "nanprod",
+    "nansum",
+    "negative",
+    "nextafter",
+    "pow",
+    "positive",
+    "power",
+    "prod",
+    "proj",
+    "rad2deg",
+    "radians",
+    "real",
+    "real_if_close",
+    "remainder",
+    "reciprocal",
+    "reduce_hypot",
+    "rint",
+    "round",
+    "rsqrt",
+    "sign",
+    "signbit",
+    "sin",
+    "sinc",
+    "sinh",
+    "sqrt",
+    "square",
+    "spacing",
+    "subtract",
+    "sum",
+    "tan",
+    "tanh",
+    "trapezoid",
+    "true_divide",
+    "trunc",
+    "unwrap",
+]
+
+# Miscellaneous routines
+__all__ += [
+    "broadcast_shapes",
+    "get_include",
+]
+
+# Set routines
+__all__ += [
+    "unique",
+    "unique_all",
+    "unique_counts",
+    "unique_inverse",
+    "unique_values",
+]
+
+# Sorting, searching, and counting
+__all__ += [
+    "argmax",
+    "argmin",
+    "argwhere",
+    "argsort",
+    "count_nonzero",
+    "partition",
+    "searchsorted",
+    "sort",
+    "sort_complex",
+    "where",
+]
+
+# Statistics
+__all__ += [
+    "amax",
+    "amin",
+    "average",
+    "bincount",
+    "corrcoef",
+    "correlate",
+    "cov",
+    "digitize",
+    "histogram",
+    "histogram2d",
+    "histogram_bin_edges",
+    "histogramdd",
+    "max",
+    "mean",
+    "median",
+    "min",
+    "nanmax",
+    "nanmean",
+    "nanmedian",
+    "nanmin",
+    "nanstd",
+    "nanvar",
+    "ptp",
+    "std",
+    "var",
+]
+
+# Window functions
+__all__ += [
+    "bartlett",
+    "blackman",
+    "hamming",
+    "hanning",
+    "kaiser",
+]
+
+# Helper functions
+__all__ += [
+    "are_same_logical_tensors",
+    "asnumpy",
+    "as_usm_ndarray",
+    "check_limitations",
+    "check_supported_arrays_type",
+    "default_float_type",
+    "get_dpnp_descriptor",
+    "get_normalized_queue_device",
+    "get_result_array",
+    "get_usm_ndarray",
+    "get_usm_ndarray_or_scalar",
+    "is_cuda_backend",
+    "is_supported_array_or_scalar",
+    "is_supported_array_type",
+    "synchronize_array_data",
+]
+
 __all__ += _ifaceutils__all__
 
 # add submodules

@@ -48,8 +48,6 @@ import dpctl.utils as dpu
 import dpnp
 import dpnp.backend.extensions.window._window_impl as wi
 
-__all__ = ["bartlett", "blackman", "hamming", "hanning", "kaiser"]
-
 
 def _call_window_kernel(
     M, _window_kernel, device=None, usm_type=None, sycl_queue=None, beta=None

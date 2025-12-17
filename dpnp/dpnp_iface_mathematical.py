@@ -40,7 +40,6 @@ it contains:
 """
 
 # pylint: disable=protected-access
-# pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
 
 
@@ -84,71 +83,6 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
-
-__all__ = [
-    "abs",
-    "absolute",
-    "add",
-    "angle",
-    "around",
-    "ceil",
-    "clip",
-    "conj",
-    "conjugate",
-    "copysign",
-    "cross",
-    "cumprod",
-    "cumsum",
-    "cumulative_prod",
-    "cumulative_sum",
-    "diff",
-    "divide",
-    "ediff1d",
-    "fabs",
-    "fix",
-    "float_power",
-    "floor",
-    "floor_divide",
-    "fmax",
-    "fmin",
-    "fmod",
-    "frexp",
-    "gcd",
-    "gradient",
-    "heaviside",
-    "i0",
-    "imag",
-    "interp",
-    "lcm",
-    "ldexp",
-    "maximum",
-    "minimum",
-    "mod",
-    "modf",
-    "multiply",
-    "nan_to_num",
-    "negative",
-    "nextafter",
-    "positive",
-    "pow",
-    "power",
-    "prod",
-    "proj",
-    "real",
-    "real_if_close",
-    "remainder",
-    "rint",
-    "round",
-    "sign",
-    "signbit",
-    "sinc",
-    "spacing",
-    "subtract",
-    "sum",
-    "trapezoid",
-    "true_divide",
-    "trunc",
-]
 
 
 def _get_max_min(dtype):

@@ -40,8 +40,6 @@ it contains:
 """
 
 
-# pylint: disable=duplicate-code
-
 import math
 import operator
 import warnings
@@ -95,67 +93,6 @@ class UniqueCountsResult(NamedTuple):
 class UniqueInverseResult(NamedTuple):
     values: dpnp.ndarray
     inverse_indices: dpnp.ndarray
-
-
-__all__ = [
-    "append",
-    "array_split",
-    "asarray_chkfinite",
-    "asfarray",
-    "atleast_1d",
-    "atleast_2d",
-    "atleast_3d",
-    "broadcast_arrays",
-    "broadcast_shapes",
-    "broadcast_to",
-    "can_cast",
-    "column_stack",
-    "concat",
-    "concatenate",
-    "copyto",
-    "delete",
-    "dsplit",
-    "dstack",
-    "expand_dims",
-    "flip",
-    "fliplr",
-    "flipud",
-    "hsplit",
-    "hstack",
-    "insert",
-    "matrix_transpose",
-    "moveaxis",
-    "ndim",
-    "pad",
-    "permute_dims",
-    "ravel",
-    "repeat",
-    "require",
-    "reshape",
-    "resize",
-    "result_type",
-    "roll",
-    "rollaxis",
-    "rot90",
-    "row_stack",
-    "shape",
-    "size",
-    "split",
-    "squeeze",
-    "stack",
-    "swapaxes",
-    "tile",
-    "transpose",
-    "trim_zeros",
-    "unique",
-    "unique_all",
-    "unique_counts",
-    "unique_inverse",
-    "unique_values",
-    "unstack",
-    "vsplit",
-    "vstack",
-]
 
 
 def _check_stack_arrays(arrays):
