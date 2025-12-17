@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.divmod &mdash; Data Parallel Extension for NumPy 0.20.0dev1+45.g4d61556a480 documentation</title>
+  <title>dpnp.divmod &mdash; Data Parallel Extension for NumPy 0.20.0dev1+46.gb94f4f2c50f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2e3f1f4a"></script>
+      <script src="../../_static/documentation_options.js?v=265b4c1e"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -161,7 +161,7 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 (which becomes the shape of the output).</p>
 <p>Equivalent to <span class="math notranslate nohighlight">\((x1 // x2, x1 \% x2)\)</span>, but faster because it avoids
 redundant work. It is used to implement the Python built-in function
-<a class="reference external" href="https://docs.python.org/3/library/functions.html#divmod" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">divmod()</span></code></a> on <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.</p>
+<a class="reference internal" href="#dpnp.divmod" title="dpnp.divmod"><code class="xref py py-func docutils literal notranslate"><span class="pre">divmod()</span></code></a> on <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.</p>
 <p>Complex dtypes are not supported, they will raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -180,7 +180,7 @@ redundant work. It is used to implement the Python built-in function
 <span class="go">(array([0, 0, 0, 1, 1]), array([0, 1, 2, 0, 1]))</span>
 </pre></div>
 </div>
-<p>The Python built-in function <a class="reference external" href="https://docs.python.org/3/library/functions.html#divmod" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">divmod()</span></code></a> can be used as a shorthand
+<p>The Python built-in function <a class="reference internal" href="#dpnp.divmod" title="dpnp.divmod"><code class="xref py py-func docutils literal notranslate"><span class="pre">divmod()</span></code></a> can be used as a shorthand
 for <code class="docutils literal notranslate"><span class="pre">np.divmod</span></code> on <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">divmod</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
