@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev1+30.g34fb571f1b0 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev1+32.g0d192725713 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=d0eeab3b"></script>
+      <script src="../../_static/documentation_options.js?v=92c1006b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -125,7 +125,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># pylint: disable=protected-access</span>
-<span class="c1"># pylint: disable=duplicate-code</span>
 <span class="c1"># pylint: disable=no-name-in-module</span>
 
 
@@ -169,71 +168,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_cross</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_reduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;absolute&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;add&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;angle&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;around&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ceil&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;clip&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;conj&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;conjugate&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;copysign&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cross&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cumprod&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cumsum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cumulative_prod&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cumulative_sum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;diff&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;divide&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ediff1d&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fabs&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fix&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;float_power&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;floor&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;floor_divide&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fmax&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fmin&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fmod&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;frexp&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gcd&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gradient&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;heaviside&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;i0&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;imag&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;interp&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;lcm&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ldexp&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;minimum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;mod&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;modf&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;multiply&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;nan_to_num&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;negative&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;nextafter&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;positive&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;pow&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;power&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;proj&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;real&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;real_if_close&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;remainder&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rint&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;round&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sign&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;signbit&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sinc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;spacing&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;subtract&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trapezoid&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;true_divide&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trunc&quot;</span><span class="p">,</span>
-<span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_max_min</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
