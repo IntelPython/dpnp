@@ -12,8 +12,6 @@ from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
-    is_gpu_device,
-    is_win_platform,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -1497,9 +1495,6 @@ class TestMatmulInvalidCases:
 
 @testing.with_requires("numpy>=2.2")
 class TestMatvec:
-    @pytest.mark.skipif(
-        is_win_platform() and not is_gpu_device(), reason="SAT-8073"
-    )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shape1, shape2",
@@ -2211,9 +2206,6 @@ class TestVecdot:
 
 @testing.with_requires("numpy>=2.2")
 class TestVecmat:
-    @pytest.mark.skipif(
-        is_win_platform() and not is_gpu_device(), reason="SAT-8073"
-    )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shape1, shape2",
