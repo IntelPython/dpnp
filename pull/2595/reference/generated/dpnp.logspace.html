@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.logspace &mdash; Data Parallel Extension for NumPy 0.20.0dev1+9.gc7efcbec152 documentation</title>
+  <title>dpnp.logspace &mdash; Data Parallel Extension for NumPy 0.20.0dev1+30.g34fb571f1b0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bb2968da"></script>
+      <script src="../../_static/documentation_options.js?v=d0eeab3b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -144,13 +144,13 @@ tuples of lists, and ndarrays. <cite>base</cite> ** <cite>stop</cite> is the fin
 the sequence, unless <cite>endpoint</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>. In that case, <code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">+</span> <span class="pre">1</span></code>
 values are spaced over the interval in log-space, of which all but
 the last (a sequence of length <cite>num</cite>) are returned.</p></li>
-<li><p><strong>num</strong> (<em>int</em><em>, </em><em>optional</em>) -- Number of samples to generate.
+<li><p><strong>num</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- Number of samples to generate.
 Default: <code class="docutils literal notranslate"><span class="pre">50</span></code>.</p></li>
 <li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue</em><em>, </em><em>Device}</em><em>, </em><em>optional</em>) -- <p>An array API concept of device where the output array is created.
 <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector string, an instance
-of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.22.0dev0+22.g70920d3e3e)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a non-partitioned SYCL
-device, an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.22.0dev0+22.g70920d3e3e)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a
-<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+22.g70920d3e3e)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object returned by
+of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.22.0dev0+88.gb8d0890d59)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a non-partitioned SYCL
+device, an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.22.0dev0+88.gb8d0890d59)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a
+<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+88.gb8d0890d59)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object returned by
 <a class="reference internal" href="dpnp.ndarray.device.html#dpnp.ndarray.device" title="dpnp.ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpnp.ndarray.device</span></code></a>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
@@ -167,10 +167,10 @@ of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.
 The <cite>step</cite> size between the elements in <code class="docutils literal notranslate"><span class="pre">ln(samples)</span> <span class="pre">/</span> <span class="pre">ln(base)</span></code>
 (or log_base(samples)) is uniform.
 Default: <code class="docutils literal notranslate"><span class="pre">10.0</span></code>.</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><em>str</em><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- The desired dtype for the array. If not given, a default dtype will be
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- The desired dtype for the array. If not given, a default dtype will be
 used that can represent the values (by considering Promotion Type Rule
 and device capabilities when necessary).</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) -- The axis in the result to store the samples. Relevant only if start,
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) -- The axis in the result to store the samples. Relevant only if start,
 stop, or base are array-like. By default (0), the samples will be along
 a new axis inserted at the beginning. Use -1 to get an axis at the end.</p></li>
 </ul>

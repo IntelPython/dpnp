@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.reduce_hypot &mdash; Data Parallel Extension for NumPy 0.20.0dev1+9.gc7efcbec152 documentation</title>
+  <title>dpnp.reduce_hypot &mdash; Data Parallel Extension for NumPy 0.20.0dev1+30.g34fb571f1b0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bb2968da"></script>
+      <script src="../../_static/documentation_options.js?v=d0eeab3b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -145,12 +145,12 @@ the input array.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array, expected to have a boolean or real-valued floating-point
 data type.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int</em><em> or </em><em>tuple</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Axis or axes along which values must be computed. If a tuple of unique
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Axis or axes along which values must be computed. If a tuple of unique
 integers, values are computed over multiple axes. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the
 result is computed over the entire array.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><em>str</em><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Data type of the returned array. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default data type is
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Data type of the returned array. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default data type is
 inferred from the &quot;kind&quot; of the input array data type.</p>
 <ul>
 <li><p>If <cite>x</cite> has a real-valued floating-point data type, the returned array

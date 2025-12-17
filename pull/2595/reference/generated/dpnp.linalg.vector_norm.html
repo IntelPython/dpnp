@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.vector_norm &mdash; Data Parallel Extension for NumPy 0.20.0dev1+9.gc7efcbec152 documentation</title>
+  <title>dpnp.linalg.vector_norm &mdash; Data Parallel Extension for NumPy 0.20.0dev1+30.g34fb571f1b0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bb2968da"></script>
+      <script src="../../_static/documentation_options.js?v=d0eeab3b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -140,7 +140,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int</em><em>, </em><em>n-tuple</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>If an integer, <cite>axis</cite> specifies the axis (dimension) along which
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>n-tuple</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>If an integer, <cite>axis</cite> specifies the axis (dimension) along which
 to compute vector norms. If an n-tuple, <cite>axis</cite> specifies the axes
 (dimensions) along which to compute batched vector norms. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 the vector norm must be computed over all array values (i.e.,
@@ -152,7 +152,7 @@ the result as dimensions with size one. With this option the result
 will broadcast correctly against the original <cite>x</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>
-<li><p><strong>ord</strong> (<em>{int</em><em>, </em><em>float</em><em>, </em><em>inf</em><em>, </em><em>-inf</em><em>, </em><em>'fro'</em><em>, </em><em>'nuc'}</em><em>, </em><em>optional</em>) -- <p>The order of the norm. For details see the table under <code class="docutils literal notranslate"><span class="pre">Notes</span></code>
+<li><p><strong>ord</strong> (<em>{int</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>inf</em><em>, </em><em>-inf</em><em>, </em><em>'fro'</em><em>, </em><em>'nuc'}</em><em>, </em><em>optional</em>) -- <p>The order of the norm. For details see the table under <code class="docutils literal notranslate"><span class="pre">Notes</span></code>
 section in <a class="reference internal" href="dpnp.linalg.norm.html#dpnp.linalg.norm" title="dpnp.linalg.norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.norm</span></code></a>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
 </p></li>

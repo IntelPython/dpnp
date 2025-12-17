@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.select &mdash; Data Parallel Extension for NumPy 0.20.0dev1+9.gc7efcbec152 documentation</title>
+  <title>dpnp.select &mdash; Data Parallel Extension for NumPy 0.20.0dev1+30.g34fb571f1b0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bb2968da"></script>
+      <script src="../../_static/documentation_options.js?v=d0eeab3b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -135,10 +135,10 @@ conditions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>condlist</strong> (<em>list</em><em> of </em><em>bool dpnp.ndarray</em><em> or </em><em>usm_ndarray</em>) -- The list of conditions which determine from which array in <cite>choicelist</cite>
+<li><p><strong>condlist</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>bool dpnp.ndarray</em><em> or </em><em>usm_ndarray</em>) -- The list of conditions which determine from which array in <cite>choicelist</cite>
 the output elements are taken. When multiple conditions are satisfied,
 the first one encountered in <cite>condlist</cite> is used.</p></li>
-<li><p><strong>choicelist</strong> (<em>list</em><em> of </em><em>dpnp.ndarray</em><em> or </em><em>usm_ndarray</em>) -- The list of arrays from which the output elements are taken. It has
+<li><p><strong>choicelist</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>dpnp.ndarray</em><em> or </em><em>usm_ndarray</em>) -- The list of arrays from which the output elements are taken. It has
 to be of the same length as <cite>condlist</cite>.</p></li>
 <li><p><strong>default</strong> (<em>{scalar</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>The element inserted in <cite>output</cite> when all conditions evaluate to
 <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>

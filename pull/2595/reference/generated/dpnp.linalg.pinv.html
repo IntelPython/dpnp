@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.pinv &mdash; Data Parallel Extension for NumPy 0.20.0dev1+9.gc7efcbec152 documentation</title>
+  <title>dpnp.linalg.pinv &mdash; Data Parallel Extension for NumPy 0.20.0dev1+30.g34fb571f1b0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bb2968da"></script>
+      <script src="../../_static/documentation_options.js?v=d0eeab3b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -141,18 +141,18 @@ singular-value decomposition (SVD) and including all large singular values.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>N</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Matrix or stack of matrices to be pseudo-inverted.</p></li>
-<li><p><strong>rcond</strong> (<em>(</em><em>...</em><em>) </em><em>{None</em><em>, </em><em>float</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Cutoff for small singular values.
+<li><p><strong>rcond</strong> (<em>(</em><em>...</em><em>) </em><em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Cutoff for small singular values.
 Singular values less than or equal to <code class="docutils literal notranslate"><span class="pre">rcond</span> <span class="pre">*</span> <span class="pre">largest_singular_value</span></code>
 are set to zero. Broadcasts against the stack of matrices.
 Only <cite>rcond</cite> or <cite>rtol</cite> can be set at a time. If none of them are
 provided, defaults to <code class="docutils literal notranslate"><span class="pre">max(M,</span> <span class="pre">N)</span> <span class="pre">*</span> <span class="pre">dpnp.finfo(a.dtype).eps</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>hermitian</strong> (<em>bool</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, a is assumed to be Hermitian (symmetric if real-valued),
+<li><p><strong>hermitian</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, a is assumed to be Hermitian (symmetric if real-valued),
 enabling a more efficient method for finding singular values.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>
-<li><p><strong>rtol</strong> (<em>(</em><em>...</em><em>) </em><em>{None</em><em>, </em><em>float</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Same as <cite>rcond</cite>, but it's an Array API compatible parameter name.
+<li><p><strong>rtol</strong> (<em>(</em><em>...</em><em>) </em><em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Same as <cite>rcond</cite>, but it's an Array API compatible parameter name.
 Only <cite>rcond</cite> or <cite>rtol</cite> can be set at a time. If none of them are
 provided, defaults to <code class="docutils literal notranslate"><span class="pre">max(M,</span> <span class="pre">N)</span> <span class="pre">*</span> <span class="pre">dpnp.finfo(a.dtype).eps</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>

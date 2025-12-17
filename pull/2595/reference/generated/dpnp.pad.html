@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.pad &mdash; Data Parallel Extension for NumPy 0.20.0dev1+9.gc7efcbec152 documentation</title>
+  <title>dpnp.pad &mdash; Data Parallel Extension for NumPy 0.20.0dev1+30.g34fb571f1b0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bb2968da"></script>
+      <script src="../../_static/documentation_options.js?v=d0eeab3b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -141,7 +141,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- The array of rank <code class="docutils literal notranslate"><span class="pre">N</span></code> to pad.</p></li>
-<li><p><strong>pad_width</strong> (<em>{sequence</em><em>, </em><em>array_like</em><em>, </em><em>int</em><em>, </em><em>dict}</em>) -- Number of values padded to the edges of each axis.
+<li><p><strong>pad_width</strong> (<em>{sequence</em><em>, </em><em>array_like</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>dict}</em>) -- Number of values padded to the edges of each axis.
 <code class="docutils literal notranslate"><span class="pre">((before_1,</span> <span class="pre">after_1),</span> <span class="pre">...</span> <span class="pre">(before_N,</span> <span class="pre">after_N))</span></code> unique pad widths
 for each axis.
 <code class="docutils literal notranslate"><span class="pre">(before,</span> <span class="pre">after)</span></code> or <code class="docutils literal notranslate"><span class="pre">((before,</span> <span class="pre">after),)</span></code> yields same before
@@ -190,7 +190,7 @@ end values are used to pad the beginning.</p>
 </dl>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;constant&quot;</span></code>.</p>
 </p></li>
-<li><p><strong>stat_length</strong> (<em>{None</em><em>, </em><em>int</em><em>, </em><em>sequence</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Used in <code class="docutils literal notranslate"><span class="pre">&quot;maximum&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;median&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;minimum&quot;</span></code>.
+<li><p><strong>stat_length</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>sequence</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Used in <code class="docutils literal notranslate"><span class="pre">&quot;maximum&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;median&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;minimum&quot;</span></code>.
 Number of values at edge of each axis used to calculate the statistic
 value. <code class="docutils literal notranslate"><span class="pre">((before_1,</span> <span class="pre">after_1),</span> <span class="pre">...</span> <span class="pre">(before_N,</span> <span class="pre">after_N))</span></code> unique
 statistic lengths for each axis.
