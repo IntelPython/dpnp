@@ -68,7 +68,6 @@ with warnings.catch_warnings():
 
 from .dpnp_array import dpnp_array as ndarray
 from .dpnp_array_api_info import __array_namespace_info__
-from .dpnp_flatiter import flatiter as flatiter
 from ._version import get_versions
 from . import exceptions as exceptions
 from . import fft as fft
@@ -308,6 +307,7 @@ from .dpnp_iface_indexing import (
     triu_indices_from,
     unravel_index,
 )
+from .dpnp_flatiter import flatiter
 
 # -----------------------------------------------------------------------------
 # Linear algebra
