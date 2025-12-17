@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The N-dimensional array (ndarray) &mdash; Data Parallel Extension for NumPy 0.20.0dev0+85.gfcf3410225a documentation</title>
+  <title>The N-dimensional array (ndarray) &mdash; Data Parallel Extension for NumPy 0.20.0dev1+60.gf5e25480fea documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=fd30a384"></script>
+      <script src="../_static/documentation_options.js?v=e9c975db"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -220,6 +220,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__getitem__.html">dpnp.ndarray.__getitem__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__setitem__.html">dpnp.ndarray.__setitem__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__contains__.html">dpnp.ndarray.__contains__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__bytes__.html">dpnp.ndarray.__bytes__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__index__.html">dpnp.ndarray.__index__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__int__.html">dpnp.ndarray.__int__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__float__.html">dpnp.ndarray.__float__</a></li>
@@ -272,7 +273,7 @@
              
   <section id="the-n-dimensional-array-ndarray">
 <h1>The N-dimensional array (<a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>)<a class="headerlink" href="#the-n-dimensional-array-ndarray" title="Link to this heading"></a></h1>
-<p><a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> is the DPNP counterpart of NumPy <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>.</p>
+<p><a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> is the DPNP counterpart of NumPy <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p>
 <p>For the basic concept of <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>s, please refer to the <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.ndarray.html">NumPy documentation</a>.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -346,16 +347,16 @@ of the array:</p>
 <td><p>Total bytes consumed by the elements of the array.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.device.html#dpnp.ndarray.device" title="dpnp.ndarray.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.device</span></code></a></p></td>
-<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+20.g60f8c05a86)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object representing residence of the array data.</p></td>
+<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+90.g019b203ed1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object representing residence of the array data.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.sycl_context.html#dpnp.ndarray.sycl_context" title="dpnp.ndarray.sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.sycl_context</span></code></a></p></td>
-<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclContext.html#dpctl.SyclContext" title="(in Data Parallel Control (dpctl) v0.22.0dev0+20.g60f8c05a86)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object to which USM data is bound.</p></td>
+<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclContext.html#dpctl.SyclContext" title="(in Data Parallel Control (dpctl) v0.22.0dev0+90.g019b203ed1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> object to which USM data is bound.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.sycl_device.html#dpnp.ndarray.sycl_device" title="dpnp.ndarray.sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.sycl_device</span></code></a></p></td>
-<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.22.0dev0+20.g60f8c05a86)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> object on which USM data was allocated.</p></td>
+<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.22.0dev0+90.g019b203ed1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> object on which USM data was allocated.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.sycl_queue.html#dpnp.ndarray.sycl_queue" title="dpnp.ndarray.sycl_queue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.sycl_queue</span></code></a></p></td>
-<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.22.0dev0+20.g60f8c05a86)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object associated with USM data.</p></td>
+<td><p>Return <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.22.0dev0+90.g019b203ed1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> object associated with USM data.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.usm_type.html#dpnp.ndarray.usm_type" title="dpnp.ndarray.usm_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.usm_type</span></code></a></p></td>
 <td><p>USM type of underlying memory.</p></td>
@@ -467,7 +468,7 @@ more complete description.)</p>
 <td><p>Fill the array with a scalar value.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.get_array.html#dpnp.ndarray.get_array" title="dpnp.ndarray.get_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.get_array</span></code></a></p></td>
-<td><p>Get <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="(in Data Parallel Control (dpctl) v0.22.0dev0+20.g60f8c05a86)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> object.</p></td>
+<td><p>Get <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="(in Data Parallel Control (dpctl) v0.22.0dev0+90.g019b203ed1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> object.</p></td>
 </tr>
 </tbody>
 </table>
@@ -629,8 +630,8 @@ are defined as element-wise operations, and generally yield
 <p>Each of the arithmetic operations (<code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code>, <code class="docutils literal notranslate"><span class="pre">//</span></code>, <code class="docutils literal notranslate"><span class="pre">%</span></code>,
 <code class="docutils literal notranslate"><span class="pre">divmod()</span></code>, <code class="docutils literal notranslate"><span class="pre">**</span></code> or <code class="docutils literal notranslate"><span class="pre">pow()</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>, <code class="docutils literal notranslate"><span class="pre">^</span></code>, <code class="docutils literal notranslate"><span class="pre">|</span></code>, <code class="docutils literal notranslate"><span class="pre">~</span></code>)
 and the comparisons (<code class="docutils literal notranslate"><span class="pre">==</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">!=</span></code>) is
-equivalent to the corresponding universal function (or <span class="xref std std-term">ufunc</span> for short)
-in DPNP. For more information, see the section on <span class="xref std std-ref">Universal Functions</span>.</p>
+equivalent to the corresponding universal function (or <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-ufunc" title="(in NumPy v2.3)"><span class="xref std std-term">ufunc</span></a> for short)
+in DPNP. For more information, see the section on <a class="reference external" href="https://numpy.org/doc/stable/reference/ufuncs.html#ufuncs" title="(in NumPy v2.3)"><span class="xref std std-ref">Universal Functions</span></a>.</p>
 <p>Comparison operators:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -883,16 +884,19 @@ They work only on arrays that have one element in them
 and return the appropriate scalar.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__index__.html#dpnp.ndarray.__index__" title="dpnp.ndarray.__index__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.__index__</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__bytes__.html#dpnp.ndarray.__bytes__" title="dpnp.ndarray.__bytes__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.__bytes__</span></code></a></p></td>
+<td><p>Return <span class="math notranslate nohighlight">\(\text{bytes(self)}\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__index__.html#dpnp.ndarray.__index__" title="dpnp.ndarray.__index__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.__index__</span></code></a></p></td>
 <td><p>Convert a zero-dimensional array to a Python int object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__int__.html#dpnp.ndarray.__int__" title="dpnp.ndarray.__int__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.__int__</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__int__.html#dpnp.ndarray.__int__" title="dpnp.ndarray.__int__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.__int__</span></code></a></p></td>
 <td><p>Convert a zero-dimensional array to a Python int object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__float__.html#dpnp.ndarray.__float__" title="dpnp.ndarray.__float__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.__float__</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__float__.html#dpnp.ndarray.__float__" title="dpnp.ndarray.__float__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.__float__</span></code></a></p></td>
 <td><p>Convert a zero-dimensional array to a Python float object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__complex__.html#dpnp.ndarray.__complex__" title="dpnp.ndarray.__complex__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.__complex__</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__complex__.html#dpnp.ndarray.__complex__" title="dpnp.ndarray.__complex__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.__complex__</span></code></a></p></td>
 <td><p>Convert a zero-dimensional array to a Python complex object.</p></td>
 </tr>
 </tbody>
