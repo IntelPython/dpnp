@@ -357,3 +357,17 @@ class TestDivmod:
         exp1, exp2 = numpy.divmod(a, b)
         assert_array_equal(res1, exp1)
         assert_array_equal(res2, exp2)
+
+    def test_divmod_op(self):
+        a = numpy.arange(1, 6)
+        ia = dpnp.array(a)
+
+        res1, res2 = divmod(ia, 3)
+        exp1, exp2 = divmod(a, 3)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+
+        res1, res2 = divmod(2, ia)
+        exp1, exp2 = divmod(2, a)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
