@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.20.0dev1+20.g21718ad6b85 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.20.0dev1+21.g167c3e6dac6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=82fce378"></script>
+      <script src="../../_static/documentation_options.js?v=cb75ae26"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -139,36 +139,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;all&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;allclose&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;any&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;array_equal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;array_equiv&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;equal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;greater&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;greater_equal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isclose&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;iscomplex&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;iscomplexobj&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isfinite&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isfortran&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isinf&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isnan&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isneginf&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isposinf&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isreal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isrealobj&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isscalar&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;less&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;less_equal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;logical_and&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;logical_not&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;logical_or&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;logical_xor&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;not_equal&quot;</span><span class="p">,</span>
-<span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_isclose_scalar_tol</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">):</span>
