@@ -5,6 +5,7 @@ from numpy.testing import (
     assert_allclose,
     assert_array_equal,
     assert_equal,
+    assert_raises,
     assert_raises_regex,
 )
 
@@ -17,6 +18,7 @@ from .helper import (
     get_complex_dtypes,
     get_float_dtypes,
     has_support_aspect64,
+    numpy_version,
 )
 from .third_party.cupy import testing
 
@@ -530,34 +532,53 @@ def test_print_dpnp_zero_shape():
     assert result == expected
 
 
-# Numpy will raise an error when converting a.ndim > 0 to a scalar
-# TODO: Discuss dpnp behavior according to these future changes
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
-@pytest.mark.parametrize("func", [bool, float, int, complex])
+@pytest.mark.parametrize("xp", [dpnp, numpy])
 @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_float16=False, no_complex=True)
-)
-def test_scalar_type_casting(func, shape, dtype):
-    a = numpy.full(shape, 5, dtype=dtype)
-    ia = dpnp.full(shape, 5, dtype=dtype)
-    assert func(a) == func(ia)
+class TestPythonScalarConversion:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    )
+    def test_bool_conversion(self, xp, shape, dtype):
+        a = xp.full(shape, 5, dtype=dtype)
+        assert bool(a) == True
 
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    )
+    def test_bool_method_conversion(self, xp, shape, dtype):
+        a = xp.full(shape, 5, dtype=dtype)
+        assert a.__bool__() == True
 
-# Numpy will raise an error when converting a.ndim > 0 to a scalar
-# TODO: Discuss dpnp behavior according to these future changes
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
-@pytest.mark.parametrize(
-    "method", ["__bool__", "__float__", "__int__", "__complex__"]
-)
-@pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_float16=False, no_complex=True)
-)
-def test_scalar_type_casting_by_method(method, shape, dtype):
-    a = numpy.full(shape, 4.7, dtype=dtype)
-    ia = dpnp.full(shape, 4.7, dtype=dtype)
-    assert_allclose(getattr(a, method)(), getattr(ia, method)(), rtol=1e-06)
+    @testing.with_requires("numpy>=2.4")
+    @pytest.mark.parametrize("func", [float, int, complex])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    )
+    def test_non_bool_conversion(self, xp, func, shape, dtype):
+        a = xp.full(shape, 5, dtype=dtype)
+        if len(shape) > 0:
+            # Non-0D arrays must not be convertible to Python numeric scalars
+            assert_raises(TypeError, func, a)
+        else:
+            # 0D arrays are allowed to convert
+            expected = 1 if dtype == xp.bool else 5
+            assert func(a) == func(expected)
+
+    @testing.with_requires("numpy>=2.4")
+    @pytest.mark.parametrize("method", ["__float__", "__int__", "__complex__"])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    )
+    def test_non_bool_method_conversion(self, xp, method, shape, dtype):
+        a = xp.full(shape, 5, dtype=dtype)
+        if len(shape) > 0:
+            assert_raises(TypeError, getattr(a, method))
+        else:
+            expected = 1 if dtype == xp.bool else 5
+            func = {"__float__": float, "__int__": int, "__complex__": complex}[
+                method
+            ]
+            assert getattr(a, method)() == func(expected)
 
 
 @pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
