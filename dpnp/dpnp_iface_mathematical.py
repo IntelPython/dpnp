@@ -1624,8 +1624,8 @@ If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
 (which becomes the shape of the output).
 
 Equivalent to :math:`(x1 // x2, x1 \% x2)`, but faster because it avoids
-redundant work. It is used to implement the Python built-in function ``divmod``
-on :class:`dpnp.ndarray`.
+redundant work. It is used to implement the Python built-in function
+:func:`python:divmod` on :class:`dpnp.ndarray`.
 
 Complex dtypes are not supported, they will raise a ``TypeError``.
 
@@ -1642,8 +1642,8 @@ Examples
 >>> np.divmod(np.arange(5), 3)
 (array([0, 0, 0, 1, 1]), array([0, 1, 2, 0, 1]))
 
-The Python built-in function ``divmod`` function can be used as a shorthand for
-``np.divmod`` on :class:`dpnp.ndarray`.
+The Python built-in function :func:`python:divmod` can be used as a shorthand
+for ``np.divmod`` on :class:`dpnp.ndarray`.
 
 >>> x = np.arange(5)
 >>> divmod(x, 3)
