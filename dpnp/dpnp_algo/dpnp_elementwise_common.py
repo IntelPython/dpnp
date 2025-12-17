@@ -304,6 +304,30 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
         """Returns the number of arguments treated as outputs."""
         return 2
 
+    @property
+    def types(self):
+        """
+        Returns information about types supported by implementation function,
+        using NumPy's character encoding for data type.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> np.frexp.types
+        ['e->ei', 'f->fi', 'd->di']
+
+        """
+
+        types = self.types_
+        if not types:
+            types = []
+            for dt1 in dtu._all_data_types(True, True):
+                dt2 = self.result_type_resolver_fn_(dt1)
+                if all(dt for dt in dt2):
+                    types.append(f"{dt1.char}->{dt2[0].char}{dt2[1].char}")
+            self.types_ = types
+        return types
+
     def __call__(
         self,
         x,
@@ -852,6 +876,35 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
         """Returns the number of arguments treated as outputs."""
         return 2
 
+    @property
+    def types(self):
+        """
+        Returns information about types supported by implementation function,
+        using NumPy's character encoding for data types, e.g.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> np.divmod.types
+        ['bb->bb', 'BB->BB', 'hh->hh', 'HH->HH', 'ii->ii', 'II->II',
+         'll->ll', 'LL->LL', 'ee->ee', 'ff->ff', 'dd->dd']
+
+        """
+
+        types = self.types_
+        if not types:
+            types = []
+            _all_dtypes = dtu._all_data_types(True, True)
+            for dt1 in _all_dtypes:
+                for dt2 in _all_dtypes:
+                    dt3 = self.result_type_resolver_fn_(dt1, dt2)
+                    if all(dt for dt in dt3):
+                        types.append(
+                            f"{dt1.char}{dt2.char}->{dt3[0].char}{dt3[1].char}"
+                        )
+            self.types_ = types
+        return types
+
     def __call__(
         self,
         x1,
@@ -916,7 +969,9 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
         sycl_dev = exec_q.sycl_device
         x1_dt = _get_dtype(x1, sycl_dev)
         x2_dt = _get_dtype(x2, sycl_dev)
-        if not all(_validate_dtype(dt) for dt in [x1_dt, x2_dt]):
+        if not all(
+            _validate_dtype(dt) for dt in [x1_dt, x2_dt]
+        ):  # pragma: no cover
             raise ValueError("Operands have unsupported data types")
 
         x1_dt, x2_dt = self.get_array_dtype_scalar_type_resolver_function()(
@@ -1001,7 +1056,6 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                     # Note if `dt` is not None, a temporary copy of `x` will be
                     # created, so the array overlap check isn't needed.
                     out[i] = dpt.empty_like(res)
-                    break
 
         x1 = dpnp.as_usm_ndarray(x1, dtype=x1_dt, sycl_queue=exec_q)
         x2 = dpnp.as_usm_ndarray(x2, dtype=x2_dt, sycl_queue=exec_q)

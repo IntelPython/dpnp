@@ -217,6 +217,42 @@ class TestBinaryTwoOutputs:
         _ = getattr(numpy, func)(a[size::], 1, a[::2])
         assert_array_equal(ia, a)
 
+    def test_out_scalar_input(self, func):
+        a = generate_random_numpy_array((3, 7), low=1, dtype=int)
+        out = numpy.zeros_like(a)
+        ia, iout = dpnp.array(a), dpnp.array(out)
+
+        res1, res2 = getattr(dpnp, func)(ia, 3, out=(None, iout))
+        exp1, exp2 = getattr(numpy, func)(a, 3, out=(None, out))
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+        assert res2 is iout
+
+        res1, res2 = getattr(dpnp, func)(7, ia, iout)
+        exp1, exp2 = getattr(numpy, func)(7, a, out)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+        assert res1 is iout
+
+    def test_out_same_logical_tensor(self, func):
+        a = generate_random_numpy_array(8, low=1, dtype=int)
+        ia = dpnp.array(a)
+
+        res1, res2 = getattr(dpnp, func)(ia, 3, out=(None, ia))
+        exp1, exp2 = getattr(numpy, func)(a, 3, out=(None, a))
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+        assert res2 is ia
+
+        a = generate_random_numpy_array(8, low=1, dtype=int)
+        ia = dpnp.array(a)
+
+        res1, res2 = getattr(dpnp, func)(7, ia, ia)
+        exp1, exp2 = getattr(numpy, func)(7, a, a)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+        assert res1 is ia
+
     @pytest.mark.parametrize("dt", ALL_FLOAT_DTYPES)
     def test_empty(self, func, dt):
         a = numpy.empty(0, dtype=dt)
@@ -235,6 +271,35 @@ class TestBinaryTwoOutputs:
         )
         with pytest.raises((TypeError, ValueError)):
             _ = getattr(xp, func)(a, 7)
+
+    def test_f_contiguous_input(self, func):
+        a = generate_random_numpy_array((3, 7), low=1, dtype="i2", order="F")
+        b = generate_random_numpy_array((3, 7), low=1, dtype="u2", order="F")
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        res1, res2 = getattr(dpnp, func)(ia, ib)
+        exp1, exp2 = getattr(numpy, func)(a, b)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+
+        out = numpy.zeros_like(a)
+        iout = dpnp.array(out)
+
+        res1, res2 = getattr(dpnp, func)(ia, ib, iout)
+        exp1, exp2 = getattr(numpy, func)(a, b, out)
+        assert_array_equal(res1, exp1)
+        assert_array_equal(res2, exp2)
+        assert res1 is iout
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_broadcast_error(self, func, xp):
+        a = xp.arange(10).reshape((2, 5))
+        b = xp.ones(2)
+        with pytest.raises(
+            ValueError,
+            match="operands could not be broadcast together with shapes",
+        ):
+            _ = getattr(xp, func)(a, b)
 
 
 class TestDivmod:

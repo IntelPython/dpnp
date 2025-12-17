@@ -2127,8 +2127,9 @@ class TestUfunc:
 
     @pytest.mark.parametrize("func", ["abs", "frexp", "add", "divmod"])
     @pytest.mark.parametrize("order", [None, "K", "A", "f", "c"])
-    def test_order(self, func, order):
-        a = numpy.array([1, 2, 3])
+    @pytest.mark.parametrize("in_order", ["C", "F"])
+    def test_order(self, func, order, in_order):
+        a = numpy.arange(1, 7).reshape((2, 3), order=in_order)
         ia = dpnp.array(a)
 
         fn = getattr(numpy, func)
@@ -2140,10 +2141,23 @@ class TestUfunc:
         result = ifn(*iargs, order=order)
         expected = fn(*args, order=order)
         if fn.nout == 1:
-            assert_dtype_allclose(result, expected)
-        else:
-            for i in range(fn.nout):
-                assert_dtype_allclose(result[i], expected[i])
+            result = (result,)
+            expected = (expected,)
+
+        for i in range(fn.nout):
+            assert_dtype_allclose(result[i], expected[i])
+            assert (
+                result[i].flags.c_contiguous == expected[i].flags.c_contiguous
+            )
+            assert (
+                result[i].flags.f_contiguous == expected[i].flags.f_contiguous
+            )
+
+    @pytest.mark.parametrize("func", ["abs", "frexp", "add", "divmod"])
+    def test_types(self, func):
+        types = getattr(dpnp, func).types
+        assert isinstance(types, list)
+        assert len(types) > 0
 
 
 class TestUnwrap:
