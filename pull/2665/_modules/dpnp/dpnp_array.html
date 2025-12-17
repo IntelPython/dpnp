@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev1+31.g5b13bfa1b88 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev1+51.g3c27e23918c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=7ce97333"></script>
+      <script src="../../_static/documentation_options.js?v=7251b744"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -119,6 +119,8 @@
 
 <span class="c1"># pylint: disable=invalid-name</span>
 <span class="c1"># pylint: disable=protected-access</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._type_utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dtu</span>
@@ -2126,7 +2128,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        View of the transposed array.</span>
 
-<span class="sd">        Same as ``self.transpose()``.</span>
+<span class="sd">        Same as ``self.transpose()`` except that it requires</span>
+<span class="sd">        the array to be 2-dimensional.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -2143,14 +2146,17 @@
 <span class="sd">        array([[1, 3],</span>
 <span class="sd">            [2, 4]])</span>
 
-<span class="sd">        &gt;&gt;&gt; a = np.array([1, 2, 3, 4])</span>
-<span class="sd">        &gt;&gt;&gt; a</span>
-<span class="sd">        array([1, 2, 3, 4])</span>
-<span class="sd">        &gt;&gt;&gt; a.T</span>
-<span class="sd">        array([1, 2, 3, 4])</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;`.T` is deprecated for non-2D dpnp.ndarray &quot;</span>
+                <span class="s2">&quot;and will raise an error in a future release. &quot;</span>
+                <span class="s2">&quot;Either `self.transpose()` or `self.mT` (which swaps &quot;</span>
+                <span class="s2">&quot;the last two axes only) should be used instead.&quot;</span><span class="p">,</span>
+                <span class="ne">DeprecationWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
 
 <div class="viewcode-block" id="dpnp_array.take">
