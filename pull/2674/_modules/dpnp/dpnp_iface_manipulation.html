@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.20.0dev1+38.g6951e14f897 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.20.0dev1+45.g4d61556a480 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=99df6828"></script>
+      <script src="../../_static/documentation_options.js?v=2e3f1f4a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -125,8 +125,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="c1"># pylint: disable=duplicate-code</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -180,67 +178,6 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UniqueInverseResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="n">inverse_indices</span><span class="p">:</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span>
-
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;append&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;array_split&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;asarray_chkfinite&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;asfarray&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;atleast_1d&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;atleast_2d&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;atleast_3d&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;broadcast_arrays&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;broadcast_shapes&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;broadcast_to&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;can_cast&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;column_stack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;concat&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;concatenate&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;copyto&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;delete&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dsplit&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dstack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;expand_dims&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;flip&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fliplr&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;flipud&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;hsplit&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;hstack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;insert&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;matrix_transpose&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;moveaxis&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ndim&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;pad&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;permute_dims&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ravel&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;repeat&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;require&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;reshape&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;resize&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;result_type&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;roll&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rollaxis&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rot90&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;row_stack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;shape&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;size&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;split&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;squeeze&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;stack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;swapaxes&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;tile&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;transpose&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trim_zeros&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_all&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_counts&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_inverse&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_values&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unstack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;vsplit&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;vstack&quot;</span><span class="p">,</span>
-<span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_stack_arrays</span><span class="p">(</span><span class="n">arrays</span><span class="p">):</span>
