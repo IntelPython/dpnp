@@ -65,6 +65,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
     DPNPBinaryFunc,
     DPNPBinaryFuncOutKw,
+    DPNPBinaryTwoOutputsFunc,
     DPNPFix,
     DPNPImag,
     DPNPReal,
@@ -1564,6 +1565,100 @@ divide = DPNPBinaryFunc(
 )
 
 
+_DIVMOD_DOCSTRING = r"""
+Calculates the quotient and the remainder for each element :math:`x1_i` of the
+input array `x1` with the respective element :math:`x2_i` of the input array
+`x2`.
+
+For full documentation refer to :obj:`numpy.divmod`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray}
+    Dividend input array, expected to have a real-valued floating-point data
+    type.
+x2 : {dpnp.ndarray, usm_ndarray}
+    Divisor input array, expected to have a real-valued floating-point data
+    type.
+out1 : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array for the quotient to populate. Array must have a shape that
+    the inputs broadcast to and the expected data type.
+
+    Default: ``None``.
+out2 : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array for the remainder to populate. Array must have a shape that
+    the inputs broadcast to and the expected data type.
+
+    Default: ``None``.
+out : tuple of None, dpnp.ndarray, or usm_ndarray, optional
+    A location into which the result is stored. If provided, it must be a tuple
+    and have length equal to the number of outputs. Each provided array must
+    have a shape that the inputs broadcast to and the expected data type.
+    It is prohibited to pass output arrays through `out` keyword when either
+    `out1` or `out2` is passed.
+
+    Default: ``(None, None)``.
+order : {None, "C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+
+    Default: ``"K"``.
+
+Returns
+-------
+quotient : dpnp.ndarray
+    Element-wise quotient resulting from floor division.
+remainder : dpnp.ndarray
+    Element-wise remainder from floor division.
+
+Limitations
+-----------
+Parameters `where`, `dtype` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
+Equivalent to :math:`(x1 // x2, x1 \% x2)`, but faster because it avoids
+redundant work. It is used to implement the Python built-in function
+:func:`python:divmod` on :class:`dpnp.ndarray`.
+
+Complex dtypes are not supported, they will raise a ``TypeError``.
+
+See Also
+--------
+:obj:`dpnp.floor_divide` : Equivalent to Python's :math:`//` operator.
+:obj:`dpnp.remainder` : Equivalent to Python's :math:`\%` operator.
+:obj:`dpnp.modf` : Equivalent to ``divmod(x, 1)`` for positive `x` with the
+    return values switched.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.divmod(np.arange(5), 3)
+(array([0, 0, 0, 1, 1]), array([0, 1, 2, 0, 1]))
+
+The Python built-in function :func:`python:divmod` can be used as a shorthand
+for ``np.divmod`` on :class:`dpnp.ndarray`.
+
+>>> x = np.arange(5)
+>>> divmod(x, 3)
+(array([0, 0, 0, 1, 1]), array([0, 1, 2, 0, 1]))
+
+"""
+
+divmod = DPNPBinaryTwoOutputsFunc(
+    "divmod",
+    ufi._divmod_result_type,
+    ufi._divmod,
+    _DIVMOD_DOCSTRING,
+)
+
+
 def ediff1d(ary, to_end=None, to_begin=None):
     """
     The differences between consecutive elements of an array.
@@ -1999,6 +2094,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.remainder` : Remainder complementary to floor_divide.
+:obj:`dpnp.divmod` : Simultaneous floor division and remainder.
 :obj:`dpnp.divide` : Standard division.
 :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
 :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
@@ -2379,7 +2475,7 @@ array([0., 1., 2., 3., 4., 5., 6., 7., 8.])
 """
 
 frexp = DPNPUnaryTwoOutputsFunc(
-    "_frexp",
+    "frexp",
     ufi._frexp_result_type,
     ufi._frexp,
     _FREXP_DOCSTRING,
@@ -3141,7 +3237,7 @@ array([ 5., 10., 20., 40.])
 """
 
 ldexp = DPNPBinaryFunc(
-    "_ldexp",
+    "ldexp",
     ufi._ldexp_result_type,
     ufi._ldexp,
     _LDEXP_DOCSTRING,
@@ -3421,7 +3517,7 @@ Examples
 """
 
 modf = DPNPUnaryTwoOutputsFunc(
-    "_modf",
+    "modf",
     ufi._modf_result_type,
     ufi._modf,
     _MODF_DOCSTRING,
@@ -4278,6 +4374,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+:obj:`dpnp.divmod` : Simultaneous floor division and remainder.
 :obj:`dpnp.divide` : Standard division.
 :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
 :obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the

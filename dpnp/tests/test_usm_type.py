@@ -667,7 +667,7 @@ def test_1in_2out(func, data, usm_type):
 
 
 @pytest.mark.parametrize(
-    "func,data1,data2",
+    "func, data1, data2",
     [
         pytest.param(
             "allclose",
@@ -740,6 +740,28 @@ def test_2in_1out(func, data1, data2, usm_type_x, usm_type_y):
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize(
+    "func, data1, data2",
+    [
+        pytest.param("divmod", numpy.arange(5), numpy.array(3)),
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types)
+def test_2in_2out(func, data1, data2, usm_type_x, usm_type_y):
+    x = dpnp.array(data1, usm_type=usm_type_x)
+    y = dpnp.array(data2, usm_type=usm_type_y)
+    z1, z2 = getattr(dpnp, func)(x, y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert (
+        z1.usm_type
+        == z2.usm_type
+        == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    )
 
 
 @pytest.mark.parametrize(

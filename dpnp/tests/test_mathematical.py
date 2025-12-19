@@ -1961,6 +1961,16 @@ class TestUfunc:
                 {"unknown_kwarg": 1, "where": False, "subok": False},
                 id="DPNPBinaryFunc",
             ),
+            pytest.param(
+                "divmod",
+                {
+                    "unknown_kwarg": 1,
+                    "where": False,
+                    "dtype": "?",
+                    "subok": False,
+                },
+                id="DPNPBinaryTwoOutputsFunc",
+            ),
         ],
     )
     def test_not_supported_kwargs(self, func, kwargs):
@@ -1972,7 +1982,7 @@ class TestUfunc:
             with pytest.raises(NotImplementedError):
                 fn(*args, **{key: val})
 
-    @pytest.mark.parametrize("func", ["abs", "frexp", "add"])
+    @pytest.mark.parametrize("func", ["abs", "frexp", "add", "divmod"])
     @pytest.mark.parametrize("x", [1, [1, 2], numpy.ones(5)])
     def test_unary_wrong_input(self, func, x):
         fn = getattr(dpnp, func)
@@ -1980,7 +1990,7 @@ class TestUfunc:
         with pytest.raises(TypeError):
             fn(*args)
 
-    @pytest.mark.parametrize("func", ["add"])
+    @pytest.mark.parametrize("func", ["add", "divmod"])
     def test_binary_wrong_input(self, func):
         x = dpnp.array([1, 2, 3])
         with pytest.raises(TypeError):
@@ -1988,7 +1998,7 @@ class TestUfunc:
         with pytest.raises(TypeError):
             getattr(dpnp, func)([1, 2], x)
 
-    @pytest.mark.parametrize("func", ["abs", "frexp", "add"])
+    @pytest.mark.parametrize("func", ["abs", "frexp", "add", "divmod"])
     def test_wrong_order(self, func):
         x = dpnp.array([1, 2, 3])
 
@@ -2010,7 +2020,9 @@ class TestUfunc:
             fn(*args, out=out, dtype="f4")
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    @pytest.mark.parametrize("func", ["abs", "fix", "round", "add", "frexp"])
+    @pytest.mark.parametrize(
+        "func", ["abs", "fix", "round", "add", "frexp", "divmod"]
+    )
     def test_out_wrong_tuple_len(self, xp, func):
         if func == "round" and xp is numpy:
             pytest.skip("numpy.round(x, out=(...)) is not supported")
@@ -2033,65 +2045,91 @@ class TestUfunc:
                 _ = fn(*args, out=out)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_unary_two_outs_out_ndarray(self, xp):
+    @pytest.mark.parametrize("func", ["frexp", "divmod"])
+    def test_two_outs_out_ndarray(self, xp, func):
         x = xp.array(0.5)
+
+        fn = getattr(xp, func)
+        args = [x] * getattr(fn, "nin", getattr(dpnp, func).nin)
+
         with pytest.raises(TypeError, match="'out' must be a tuple of arrays"):
-            _ = xp.frexp(x, out=xp.empty(()))
+            _ = fn(*args, out=xp.empty(()))
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_unary_two_outs_out_mixed(self, xp):
+    @pytest.mark.parametrize("func", ["frexp", "divmod"])
+    def test_two_outs_out_mixed(self, xp, func):
         x = xp.array(0.5)
+
+        fn = getattr(xp, func)
+        args = [x] * getattr(fn, "nin", getattr(dpnp, func).nin)
+
         with pytest.raises(
             TypeError,
             match="cannot specify 'out' as both a positional and keyword",
         ):
-            _ = xp.frexp(x, xp.empty(()), out=(xp.empty(()), None))
+            _ = fn(*args, xp.empty(()), out=(xp.empty(()), None))
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_unary_two_outs_out_not_writable(self, xp):
+    @pytest.mark.parametrize("func", ["frexp", "divmod"])
+    def test_two_outs_out_not_writable(self, xp, func):
         x = xp.array(0.5)
+
+        fn = getattr(xp, func)
+        args = [x] * getattr(fn, "nin", getattr(dpnp, func).nin)
+
         out1 = xp.empty(())
         out1.flags["W"] = False
 
         with pytest.raises(ValueError, match="array is read-only"):
-            _ = xp.frexp(x, out1)
+            _ = fn(*args, out1)
 
-        out2 = xp.empty((), dtype="i")
+        out2 = xp.empty(())
         out2.flags["W"] = False
         with pytest.raises(ValueError, match="array is read-only"):
-            _ = xp.frexp(x, out=(None, out2))
+            _ = fn(*args, out=(None, out2))
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_unary_two_outs_out_wrong_shape(self, xp):
+    @pytest.mark.parametrize("func", ["frexp", "divmod"])
+    def test_two_outs_out_wrong_shape(self, xp, func):
         x = xp.full(6, fill_value=0.5)
+
+        fn = getattr(xp, func)
+        args = [x] * getattr(fn, "nin", getattr(dpnp, func).nin)
+
         out1 = xp.empty(12)
         with pytest.raises(ValueError):
-            _ = xp.frexp(x, out1)
+            _ = fn(*args, out1)
 
-        out2 = xp.empty((2, 3), dtype="i")
+        out2 = xp.empty((2, 3))
         with pytest.raises(ValueError):
-            _ = xp.frexp(x, out=(None, out2))
+            _ = fn(*args, out=(None, out2))
 
-    def test_unary_two_outs_cfd_error(self):
+    @pytest.mark.parametrize("func", ["frexp", "divmod"])
+    def test_unary_two_outs_cfd_error(self, func):
         x = dpnp.array(0.5, sycl_queue=dpctl.SyclQueue())
+
+        fn = getattr(dpnp, func)
+        args = [x] * getattr(fn, "nin", getattr(dpnp, func).nin)
+
         out1 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
         out2 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
         with pytest.raises(
             ExecutionPlacementError,
             match="Input and output allocation queues are not compatible",
         ):
-            _ = dpnp.frexp(x, out1)
+            _ = fn(*args, out1)
 
         with pytest.raises(
             ExecutionPlacementError,
             match="Input and output allocation queues are not compatible",
         ):
-            _ = dpnp.frexp(x, out=(None, out2))
+            _ = fn(*args, out=(None, out2))
 
-    @pytest.mark.parametrize("func", ["abs", "frexp", "add"])
+    @pytest.mark.parametrize("func", ["abs", "frexp", "add", "divmod"])
     @pytest.mark.parametrize("order", [None, "K", "A", "f", "c"])
-    def test_order(self, func, order):
-        a = numpy.array([1, 2, 3])
+    @pytest.mark.parametrize("in_order", ["C", "F"])
+    def test_order(self, func, order, in_order):
+        a = numpy.arange(1, 7).reshape((2, 3), order=in_order)
         ia = dpnp.array(a)
 
         fn = getattr(numpy, func)
@@ -2103,10 +2141,23 @@ class TestUfunc:
         result = ifn(*iargs, order=order)
         expected = fn(*args, order=order)
         if fn.nout == 1:
-            assert_dtype_allclose(result, expected)
-        else:
-            for i in range(fn.nout):
-                assert_dtype_allclose(result[i], expected[i])
+            result = (result,)
+            expected = (expected,)
+
+        for i in range(fn.nout):
+            assert_dtype_allclose(result[i], expected[i])
+            assert (
+                result[i].flags.c_contiguous == expected[i].flags.c_contiguous
+            )
+            assert (
+                result[i].flags.f_contiguous == expected[i].flags.f_contiguous
+            )
+
+    @pytest.mark.parametrize("func", ["abs", "frexp", "add", "divmod"])
+    def test_types(self, func):
+        types = getattr(dpnp, func).types
+        assert isinstance(types, list)
+        assert len(types) > 0
 
 
 class TestUnwrap:

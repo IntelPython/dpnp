@@ -1,6 +1,5 @@
 import functools
 import math
-import sys
 import unittest
 
 import numpy
