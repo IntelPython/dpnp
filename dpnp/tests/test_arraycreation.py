@@ -102,7 +102,7 @@ class TestLinspace:
         if retstep:
             res, res_step = res
             exp, exp_step = exp
-            assert_allclose(res_step, exp_step)
+            assert_dtype_allclose(res_step, exp_step)
 
         if numpy.issubdtype(dt, dpnp.integer):
             assert_allclose(res, exp, rtol=1)
@@ -136,7 +136,7 @@ class TestLinspace:
         if retstep:
             res, res_step = res
             exp, exp_step = exp
-            assert_allclose(res_step, exp_step)
+            assert_dtype_allclose(res_step, exp_step)
         assert_dtype_allclose(res, exp)
 
     @pytest.mark.parametrize(
