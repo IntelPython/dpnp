@@ -1221,7 +1221,7 @@ def isin(
     >>> element
     array([[0, 2],
            [4, 6]])
-    >>> test_elements = [1, 2, 4, 8]
+    >>> test_elements = np.array([1, 2, 4, 8])
     >>> mask = np.isin(element, test_elements)
     >>> mask
     array([[False,  True],
