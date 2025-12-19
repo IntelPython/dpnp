@@ -56,6 +56,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 ### Fixed
 
 * Suppressed a potential deprecation warning triggered during import of the `dpctl.tensor` module [#2709](https://github.com/IntelPython/dpnp/pull/2709)
+* Resolved an issue causing `dpnp.linspace` to return an incorrect output shape when inputs were passed as arrays [#2712](https://github.com/IntelPython/dpnp/pull/2712)
 
 ### Security
 
