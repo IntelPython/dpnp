@@ -62,10 +62,13 @@ var annotated_dup =
         ] ],
         [ "py_internal", null, [
           [ "elementwise_common", null, [
+            [ "BinaryTwoOutputsContigFunctor", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_binary_two_outputs_contig_functor.html", null ],
+            [ "BinaryTwoOutputsStridedFunctor", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_binary_two_outputs_strided_functor.html", null ],
             [ "UnaryTwoOutputsContigFunctor", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_unary_two_outputs_contig_functor.html", null ],
             [ "UnaryTwoOutputsStridedFunctor", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_unary_two_outputs_strided_functor.html", null ]
           ] ],
           [ "type_dispatch", null, [
+            [ "BinaryTypeMapTwoResultsEntry", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_binary_type_map_two_results_entry.html", null ],
             [ "DefaultTwoResultsEntry", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry.html", null ],
             [ "TypeMapTwoResultsEntry", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_type_map_two_results_entry.html", null ]
           ] ]
@@ -89,6 +92,9 @@ var annotated_dup =
         ] ],
         [ "degrees", null, [
           [ "DegreesFunctor", "structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html", null ]
+        ] ],
+        [ "divmod", null, [
+          [ "DivmodFunctor", "structdpnp_1_1kernels_1_1divmod_1_1_divmod_functor.html", null ]
         ] ],
         [ "erfs", "namespacedpnp_1_1kernels_1_1erfs.html", [
           [ "BaseFunctor", "structdpnp_1_1kernels_1_1erfs_1_1_base_functor.html", null ],
