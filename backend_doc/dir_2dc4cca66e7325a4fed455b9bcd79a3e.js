@@ -2,6 +2,7 @@ var dir_2dc4cca66e7325a4fed455b9bcd79a3e =
 [
     [ "bitwise_count.hpp", "kernels_2elementwise__functions_2bitwise__count_8hpp_source.html", null ],
     [ "degrees.hpp", "kernels_2elementwise__functions_2degrees_8hpp_source.html", null ],
+    [ "divmod.hpp", "kernels_2elementwise__functions_2divmod_8hpp_source.html", null ],
     [ "erf.hpp", "erf_8hpp_source.html", null ],
     [ "erfcx.hpp", "erfcx_8hpp_source.html", null ],
     [ "erfinv.hpp", "erfinv_8hpp_source.html", null ],

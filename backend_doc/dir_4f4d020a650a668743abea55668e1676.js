@@ -3,6 +3,7 @@ var dir_4f4d020a650a668743abea55668e1676 =
     [ "bitwise_count.hpp", "extensions_2ufunc_2elementwise__functions_2bitwise__count_8hpp_source.html", null ],
     [ "common.hpp", "ufunc_2elementwise__functions_2common_8hpp_source.html", null ],
     [ "degrees.hpp", "extensions_2ufunc_2elementwise__functions_2degrees_8hpp_source.html", null ],
+    [ "divmod.hpp", "extensions_2ufunc_2elementwise__functions_2divmod_8hpp_source.html", null ],
     [ "erf_funcs.hpp", "ufunc_2elementwise__functions_2erf__funcs_8hpp_source.html", null ],
     [ "fabs.hpp", "extensions_2ufunc_2elementwise__functions_2fabs_8hpp_source.html", null ],
     [ "fix.hpp", "extensions_2ufunc_2elementwise__functions_2fix_8hpp_source.html", null ],
