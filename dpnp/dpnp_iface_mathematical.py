@@ -1581,19 +1581,19 @@ x2 : {dpnp.ndarray, usm_ndarray}
     Divisor input array, expected to have a real-valued floating-point data
     type.
 out1 : {None, dpnp.ndarray, usm_ndarray}, optional
-    Output array for the quotient to populate. Array must have the same shape
-    as `x` and the expected data type.
+    Output array for the quotient to populate. Array must have a shape that
+    the inputs broadcast to and the expected data type.
 
     Default: ``None``.
 out2 : {None, dpnp.ndarray, usm_ndarray}, optional
-    Output array for the remainder to populate. Array must have the same shape
-    as `x` and the expected data type.
+    Output array for the remainder to populate. Array must have a shape that
+    the inputs broadcast to and the expected data type.
 
     Default: ``None``.
 out : tuple of None, dpnp.ndarray, or usm_ndarray, optional
     A location into which the result is stored. If provided, it must be a tuple
     and have length equal to the number of outputs. Each provided array must
-    have the same shape as `x` and the expected data type.
+    have a shape that the inputs broadcast to and the expected data type.
     It is prohibited to pass output arrays through `out` keyword when either
     `out1` or `out2` is passed.
 

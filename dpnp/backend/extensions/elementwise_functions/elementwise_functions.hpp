@@ -556,7 +556,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const dpctl::tensor::usm_ndarray &src2,
     const dpctl::tensor::usm_ndarray &dst, // dst = op(src1, src2), elementwise
     sycl::queue &exec_q,
-    const std::vector<sycl::event> depends,
+    const std::vector<sycl::event> &depends,
     //
     const output_typesT &output_type_table,
     const contig_dispatchT &contig_dispatch_table,
@@ -870,7 +870,7 @@ std::pair<sycl::event, sycl::event>
                                 const dpctl::tensor::usm_ndarray &dst1,
                                 const dpctl::tensor::usm_ndarray &dst2,
                                 sycl::queue &exec_q,
-                                const std::vector<sycl::event> depends,
+                                const std::vector<sycl::event> &depends,
                                 //
                                 const output_typesT &output_types_table,
                                 const contig_dispatchT &contig_dispatch_table,
@@ -952,8 +952,10 @@ std::pair<sycl::event, sycl::event>
     auto const &same_logical_tensors =
         dpctl::tensor::overlap::SameLogicalTensors();
     if ((overlap(src1, dst1) && !same_logical_tensors(src1, dst1)) ||
+        (overlap(src1, dst2) && !same_logical_tensors(src1, dst2)) ||
         (overlap(src2, dst1) && !same_logical_tensors(src2, dst1)) ||
-        (overlap(dst1, dst2) && !same_logical_tensors(dst1, dst2)))
+        (overlap(src2, dst2) && !same_logical_tensors(src2, dst2)) ||
+        (overlap(dst1, dst2)))
     {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
@@ -1142,7 +1144,7 @@ std::pair<sycl::event, sycl::event>
     py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
                             const dpctl::tensor::usm_ndarray &rhs,
                             sycl::queue &exec_q,
-                            const std::vector<sycl::event> depends,
+                            const std::vector<sycl::event> &depends,
                             //
                             const output_typesT &output_type_table,
                             const contig_dispatchT &contig_dispatch_table,

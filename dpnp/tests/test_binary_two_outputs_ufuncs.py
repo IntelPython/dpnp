@@ -217,6 +217,16 @@ class TestBinaryTwoOutputs:
         _ = getattr(numpy, func)(a[size::], 1, a[::2])
         assert_array_equal(ia, a)
 
+    def test_out_arrays_overlap(self, func):
+        a = dpnp.arange(7)
+        out = dpnp.zeros_like(a)
+
+        with pytest.raises(
+            ValueError,
+            match="Output arrays cannot overlap",
+        ):
+            _ = getattr(dpnp, func)(a, 2, out=(out, out))
+
     def test_out_scalar_input(self, func):
         a = generate_random_numpy_array((3, 7), low=1, dtype=int)
         out = numpy.zeros_like(a)

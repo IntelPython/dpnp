@@ -510,7 +510,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
 
     Args:
     name : {str}
-        Name of the unary function
+        Name of the binary function
     result_type_resovle_fn : {callable}
         Function that takes dtype of the input and returns the dtype of
         the result if the implementation functions supports it, or
@@ -530,7 +530,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         corresponds to computational tasks associated with function
         evaluation.
     docs : {str}
-        Documentation string for the unary function.
+        Documentation string for the binary function.
     mkl_fn_to_call : {None, str}
         Check input arguments to answer if function from OneMKL VM library
         can be used.
@@ -828,17 +828,17 @@ class DPNPBinaryFuncOutKw(DPNPBinaryFunc):
 
 class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
     """
-    Class that implements unary element-wise functions with two output arrays.
+    Class that implements binary element-wise functions with two output arrays.
 
     Parameters
     ----------
     name : {str}
-        Name of the unary function
+        Name of the binary function
     result_type_resolver_fn : {callable}
         Function that takes dtype of the input and returns the dtype of
         the result if the implementation functions supports it, or
         returns `None` otherwise.
-    unary_dp_impl_fn : {callable}
+    binary_dp_impl_fn : {callable}
         Data-parallel implementation function with signature
         `impl_fn(src: usm_ndarray, dst: usm_ndarray,
             sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])`
@@ -852,7 +852,7 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
         computational tasks complete execution, while the second event
         corresponds to computational tasks associated with function evaluation.
     docs : {str}
-        Documentation string for the unary function.
+        Documentation string for the binary function.
 
     """
 
@@ -1020,6 +1020,14 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
             if not res.flags.writable:
                 raise ValueError("output array is read-only")
 
+            for other_out in out[:i]:
+                if other_out is None:
+                    continue
+
+                other_out = dpnp.get_usm_ndarray(other_out)
+                if dti._array_overlap(res, other_out):
+                    raise ValueError("Output arrays cannot overlap")
+
             if res.shape != res_shape:
                 raise ValueError(
                     "The shape of input and output arrays are inconsistent. "
@@ -1042,19 +1050,20 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                 # Allocate a temporary buffer with the required dtype
                 out[i] = dpt.empty_like(res, dtype=res_dt)
             else:
-                for x, dt in zip([x1, x2], buf_dts):
-                    if dpnp.isscalar(x):
-                        pass
-                    elif dt is not None:
-                        pass
-                    elif not dti._array_overlap(x, res):
-                        pass
-                    elif dti._same_logical_tensors(x, res):
-                        pass
+                # If `dt` is not None, a temporary copy of `x` will be created,
+                # so the array overlap check isn't needed.
+                x_to_check = [
+                    x
+                    for x, dt in zip([x1, x2], buf_dts)
+                    if not dpnp.isscalar(x) and dt is None
+                ]
 
-                    # Allocate a temporary buffer to avoid memory overlapping.
-                    # Note if `dt` is not None, a temporary copy of `x` will be
-                    # created, so the array overlap check isn't needed.
+                if any(
+                    dti._array_overlap(x, res)
+                    and not dti._same_logical_tensors(x, res)
+                    for x in x_to_check
+                ):
+                    # allocate a temporary buffer to avoid memory overlapping
                     out[i] = dpt.empty_like(res)
 
         x1 = dpnp.as_usm_ndarray(x1, dtype=x1_dt, sycl_queue=exec_q)

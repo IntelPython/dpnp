@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include <sycl/sycl.hpp>
 
 namespace dpnp::kernels::divmod
