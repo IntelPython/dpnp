@@ -172,13 +172,8 @@ def dpnp_linspace(
 
     num = operator.index(num)
     if num < 0:
-        raise ValueError("Number of points must be non-negative")
+        raise ValueError(f"Number of samples={num} must be non-negative.")
     step_num = (num - 1) if endpoint else num
-
-    step_nan = False
-    if step_num == 0:
-        step_nan = True
-        step = dpnp.nan
 
     if dpnp.isscalar(start) and dpnp.isscalar(stop):
         # Call linspace() function for scalars.
@@ -191,8 +186,13 @@ def dpnp_linspace(
             sycl_queue=sycl_queue_normalized,
             endpoint=endpoint,
         )
-        if retstep is True and step_nan is False:
-            step = (stop - start) / step_num
+
+        # calculate the used step to return
+        if retstep is True:
+            if step_num > 0:
+                step = (stop - start) / step_num
+            else:
+                step = dpnp.nan
     else:
         usm_start = dpt.asarray(
             start,
@@ -204,6 +204,8 @@ def dpnp_linspace(
             stop, dtype=dt, usm_type=_usm_type, sycl_queue=sycl_queue_normalized
         )
 
+        delta = usm_stop - usm_start
+
         usm_res = dpt.arange(
             0,
             stop=num,
@@ -212,20 +214,30 @@ def dpnp_linspace(
             usm_type=_usm_type,
             sycl_queue=sycl_queue_normalized,
         )
+        usm_res = dpt.reshape(usm_res, (-1,) + (1,) * delta.ndim, copy=False)
 
-        if step_nan is False:
-            step = (usm_stop - usm_start) / step_num
-            usm_res = dpt.reshape(usm_res, (-1,) + (1,) * step.ndim, copy=False)
-            usm_res = usm_res * step
-            usm_res += usm_start
+        if step_num > 0:
+            step = delta / step_num
+
+            # Needed a special handling for denormal numbers (when step == 0),
+            # see numpy#5437 for more details.
+            # Note, dpt.where() is used to avoid a synchronization branch.
+            usm_res = dpt.where(
+                step == 0, (usm_res / step_num) * delta, usm_res * step
+            )
+        else:
+            step = dpnp.nan
+            usm_res = usm_res * delta
+
+        usm_res += usm_start
 
         if endpoint and num > 1:
-            usm_res[-1] = dpt.full(step.shape, usm_stop)
+            usm_res[-1, ...] = usm_stop
 
     if axis != 0:
         usm_res = dpt.moveaxis(usm_res, 0, axis)
 
-    if numpy.issubdtype(dtype, dpnp.integer):
+    if dpnp.issubdtype(dtype, dpnp.integer):
         dpt.floor(usm_res, out=usm_res)
 
     res = dpt.astype(usm_res, dtype, copy=False)
@@ -233,10 +245,10 @@ def dpnp_linspace(
 
     if retstep is True:
         if dpnp.isscalar(step):
-            step = dpt.asarray(
+            step = dpnp.asarray(
                 step, usm_type=res.usm_type, sycl_queue=res.sycl_queue
             )
-        return res, dpnp_array._create_from_usm_ndarray(step)
+        return res, step
     return res
 
 
