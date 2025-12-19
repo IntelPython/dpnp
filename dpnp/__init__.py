@@ -498,6 +498,7 @@ from .dpnp_iface_manipulation import (
     unique_inverse,
     unique_values,
 )
+from .dpnp_iface_logic import isin
 
 # -----------------------------------------------------------------------------
 # Sorting, searching, and counting
@@ -981,6 +982,7 @@ __all__ += [
 
 # Set routines
 __all__ += [
+    "isin",
     "unique",
     "unique_all",
     "unique_counts",
