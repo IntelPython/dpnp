@@ -20,6 +20,7 @@ from .helper import (
     get_all_dtypes,
     get_array,
     get_float_dtypes,
+    has_support_aspect64,
     is_lts_driver,
     is_tgllp_iris_xe,
     is_win_platform,
@@ -93,6 +94,15 @@ class TestLinspace:
     )
     @pytest.mark.parametrize("retstep", [True, False])
     def test_basic(self, start, stop, num, dt, retstep):
+        if (
+            not has_support_aspect64()
+            and numpy.issubdtype(dt, numpy.integer)
+            and start == -5
+            and stop == 10
+            and num == 10
+        ):
+            pytest.skip("due to dpctl-1056")
+
         if numpy.issubdtype(dt, numpy.unsignedinteger):
             start = abs(start)
             stop = abs(stop)
@@ -104,7 +114,7 @@ class TestLinspace:
             exp, exp_step = exp
             assert_dtype_allclose(res_step, exp_step)
 
-        if numpy.issubdtype(dt, dpnp.integer):
+        if numpy.issubdtype(dt, numpy.integer):
             assert_allclose(res, exp, rtol=1)
         else:
             assert_dtype_allclose(res, exp)
@@ -156,6 +166,7 @@ class TestLinspace:
         expected = numpy.linspace(0, stop, num=10, endpoint=False, dtype=dt)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.skipif(not has_support_aspect64(), reason="due to dpctl-1056")
     def test_equivalent_to_arange(self):
         result = dpnp.linspace(0, 35, num=36, dtype=int)
         expected = numpy.linspace(0, 35, num=36, dtype=int)
