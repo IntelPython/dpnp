@@ -681,7 +681,7 @@ def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad, rdtype):
 
     _manager = dpu.SequentialOrderManager[queue]
 
-    mem_ev, corr_ev = statistics_ext.sliding_dot_product1d(
+    ht_ev, corr_ev = statistics_ext.sliding_dot_product1d(
         a_usm,
         v_usm,
         out_usm,
@@ -689,7 +689,7 @@ def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad, rdtype):
         r_pad,
         depends=_manager.submitted_events,
     )
-    _manager.add_event_pair(mem_ev, corr_ev)
+    _manager.add_event_pair(ht_ev, corr_ev)
 
     return out
 
