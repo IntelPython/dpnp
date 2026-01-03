@@ -123,11 +123,11 @@ repos:
     -   id: pretty-format-toml
         args: [--autofix]
 -   repo: https://github.com/rhysd/actionlint
-    rev: v1.7.9
+    rev: v1.7.10
     hooks:
     -   id: actionlint
 -   repo: https://github.com/BlankSpruce/gersemi
-    rev: 0.24.0
+    rev: 0.25.0
     hooks:
     -   id: gersemi
         exclude: "dpnp/backend/cmake/Modules/"
