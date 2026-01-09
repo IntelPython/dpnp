@@ -30,6 +30,30 @@ import os
 import shutil
 import subprocess
 import sys
+import warnings
+
+
+def get_dpctl_cmake_dir():
+    """
+    If dpctl is locally built using `script/build_locally.py`, it is needed
+    to pass the -DDpctl_ROOT=$(python -m dpctl --cmakedir) during the build.
+    If dpctl is conda installed, it is optional to pass this parameter.
+
+    """
+
+    process = subprocess.Popen(
+        ["python", "-m", "dpctl", "--cmakedir"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    output, error = process.communicate()
+    if process.returncode == 0:
+        return output.decode("utf-8").strip()
+
+    raise RuntimeError(
+        "Failed to retrieve dpctl cmake directory: "
+        + error.decode("utf-8").strip()
+    )
 
 
 def resolve_compilers(
@@ -74,6 +98,41 @@ def resolve_compilers(
     return c_compiler, cxx_compiler
 
 
+def resolve_onemath(
+    onemath: bool,
+    onemath_dir: str,
+    target_cuda: str = None,
+    target_hip: str = None,
+    onemkl_interfaces: bool = False,
+    onemkl_interfaces_dir: str = None,
+):
+    # always enable build with oneMath i/f when oneMath path is passed
+    if onemath_dir:
+        onemath = True
+
+    # always enable build with oneMath i/f for CUDA or HIP target
+    if target_cuda or target_hip:
+        onemath = True
+
+    # TODO: onemkl_interfaces and onemkl_interfaces_dir are deprecated in
+    # dpnp-0.19.0 and should be removed in dpnp-0.20.0.
+    if onemkl_interfaces:
+        warnings.warn(
+            "Using 'onemkl_interfaces' is deprecated. Please use 'onemath' instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        onemath = True
+    if onemkl_interfaces_dir is not None:
+        warnings.warn(
+            "Using 'onemkl_interfaces_dir' is deprecated. Please use 'onemath_dir' instead.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+        onemath_dir = onemkl_interfaces_dir
+    return onemath, onemath_dir
+
+
 def run(cmd: list[str], env: dict[str, str] = None, cwd: str = None):
     print("+", " ".join(cmd))
     subprocess.check_call(
@@ -101,17 +160,22 @@ def log_cmake_args(cmake_args: list[str], script: str):
 def make_cmake_args(
     c_compiler: str = None,
     cxx_compiler: str = None,
-    level_zero: bool = True,
-    glog: bool = False,
+    dpctl_cmake_dir: str = None,
+    onemath: bool = False,
+    onemath_dir: str = None,
     verbose: bool = False,
     other_opts: str = None,
 ):
     args = [
         f"-DCMAKE_C_COMPILER:PATH={c_compiler}" if c_compiler else "",
         f"-DCMAKE_CXX_COMPILER:PATH={cxx_compiler}" if cxx_compiler else "",
-        f"-DDPCTL_ENABLE_L0_PROGRAM_CREATION={'ON' if level_zero else 'OFF'}",
-        f"-DDPCTL_ENABLE_GLOG:BOOL={'ON' if glog else 'OFF'}",
+        f"-DDpctl_ROOT={dpctl_cmake_dir}" if dpctl_cmake_dir else "",
     ]
+
+    if onemath:
+        args.append("-DDPNP_USE_ONEMATH=ON")
+        if onemath_dir:
+            args.append(f"-DDPNP_ONEMATH_DIR={onemath_dir}")
 
     if verbose:
         args.append("-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON")

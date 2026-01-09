@@ -107,7 +107,7 @@ set(DPNP_TARGET_CUDA
 Set to a truthy value (e.g., ON, TRUE) to use default architecture (sm_50), \
 or to a specific architecture like sm_80."
 )
-set(HIP_TARGETS "" CACHE STRING "HIP architecture for target")
+set(DPNP_TARGET_HIP "" CACHE STRING "HIP architecture for target")
 
 set(_dpnp_sycl_targets)
 set(_use_onemath OFF)
@@ -135,18 +135,22 @@ if("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
         set(_use_onemath_cuda ON)
     endif()
 
-    if(HIP_TARGETS)
-        if(HIP_TARGETS MATCHES "^gfx")
+    if(DPNP_TARGET_HIP)
+        if(DPNP_TARGET_HIP MATCHES "^gfx")
             if("x${_dpnp_sycl_targets}" STREQUAL "x")
-                set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},spir64-unknown-unknown")
+                set(_dpnp_sycl_targets
+                    "amd_gpu_${DPNP_TARGET_HIP},spir64-unknown-unknown"
+                )
             else()
-                set(_dpnp_sycl_targets "amd_gpu_${HIP_TARGETS},${_dpnp_sycl_targets}")
+                set(_dpnp_sycl_targets
+                    "amd_gpu_${DPNP_TARGET_HIP},${_dpnp_sycl_targets}"
+                )
             endif()
             set(_use_onemath_hip ON)
         else()
             message(
                 FATAL_ERROR
-                "Invalid value for HIP_TARGETS: \"${HIP_TARGETS}\". "
+                "Invalid value for DPNP_TARGET_HIP: \"${DPNP_TARGET_HIP}\". "
                 "Expected an architecture name starting with 'gfx', e.g. 'gfx1030'."
             )
         endif()
@@ -161,8 +165,11 @@ else()
     if("${DPNP_SYCL_TARGETS}" MATCHES "amd_gpu_")
         set(_use_onemath_hip ON)
 
-        if("x${HIP_TARGETS}" STREQUAL "x")
-            message(FATAL_ERROR "HIP_TARGETS must be specified when using HIP backend")
+        if("x${DPNP_TARGET_HIP}" STREQUAL "x")
+            message(
+                FATAL_ERROR
+                "DPNP_TARGET_HIP must be specified when using HIP backend"
+            )
         endif()
     endif()
 
