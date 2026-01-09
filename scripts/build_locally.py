@@ -173,6 +173,7 @@ def main():
     )
 
     dpctl_cmake_dir = get_dpctl_cmake_dir()
+    print(f"[build_locally] Found DPCTL CMake dir: {dpctl_cmake_dir}")
 
     onemath, onemath_dir = resolve_onemath(
         args.onemath,
