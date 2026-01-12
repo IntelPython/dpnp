@@ -532,6 +532,7 @@ def test_print_dpnp_zero_shape():
 
 # Numpy will raise an error when converting a.ndim > 0 to a scalar
 # TODO: Discuss dpnp behavior according to these future changes
+@pytest.mark.skip("until dpctl-2223")
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize("func", [bool, float, int, complex])
 @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
@@ -547,6 +548,7 @@ def test_scalar_type_casting(func, shape, dtype):
 # Numpy will raise an error when converting a.ndim > 0 to a scalar
 # TODO: Discuss dpnp behavior according to these future changes
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
+@pytest.mark.skip("until dpctl-2223")
 @pytest.mark.parametrize(
     "method", ["__bool__", "__float__", "__int__", "__complex__"]
 )
