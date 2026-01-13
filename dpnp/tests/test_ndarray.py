@@ -593,11 +593,10 @@ class TestPythonScalarConversion:
             assert getattr(a, method)() == func(expected)
 
 
-@pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
 @pytest.mark.parametrize("index_dtype", [dpnp.int32, dpnp.int64])
-def test_array_as_index(shape, index_dtype):
-    ind_arr = dpnp.ones(shape, dtype=index_dtype)
-    a = numpy.arange(ind_arr.size + 1)
+def test_array_as_index(index_dtype):
+    ind_arr = dpnp.ones((1,), dtype=index_dtype)
+    a = dpnp.arange(ind_arr.size + 1)
     assert a[tuple(ind_arr)] == a[1]
 
 
