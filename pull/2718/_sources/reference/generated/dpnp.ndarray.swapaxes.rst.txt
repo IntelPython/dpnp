@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.ndarray.swapaxes
+=====================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.swapaxes
