@@ -9,8 +9,11 @@ var searchData=
   ['bartlettfunctor_6',['BartlettFunctor',['../classdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_functor.html',1,'dpnp::extensions::window::kernels']]],
   ['basefunctor_7',['BaseFunctor',['../structdpnp_1_1kernels_1_1erfs_1_1_base_functor.html',1,'dpnp::kernels::erfs']]],
   ['bessel_5fik_5f0_8',['bessel_ik_0',['../namespacedpnp_1_1kernels_1_1i0_1_1impl.html#af983672857d109bc8bbe77a8dbcf0358',1,'dpnp::kernels::i0::impl']]],
-  ['bincount_9',['Bincount',['../structstatistics_1_1histogram_1_1_bincount.html',1,'statistics::histogram']]],
-  ['bitwisecountfunctor_10',['BitwiseCountFunctor',['../structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html',1,'dpnp::kernels::bitwise_count']]],
-  ['blackmanfactory_11',['BlackmanFactory',['../structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html',1,'dpnp::extensions::window::kernels']]],
-  ['blackmanfunctor_12',['BlackmanFunctor',['../classdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_functor.html',1,'dpnp::extensions::window::kernels']]]
+  ['binarytwooutputscontigfunctor_9',['BinaryTwoOutputsContigFunctor',['../structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_binary_two_outputs_contig_functor.html',1,'dpnp::extensions::py_internal::elementwise_common']]],
+  ['binarytwooutputsstridedfunctor_10',['BinaryTwoOutputsStridedFunctor',['../structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_binary_two_outputs_strided_functor.html',1,'dpnp::extensions::py_internal::elementwise_common']]],
+  ['binarytypemaptworesultsentry_11',['BinaryTypeMapTwoResultsEntry',['../structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_binary_type_map_two_results_entry.html',1,'dpnp::extensions::py_internal::type_dispatch']]],
+  ['bincount_12',['Bincount',['../structstatistics_1_1histogram_1_1_bincount.html',1,'statistics::histogram']]],
+  ['bitwisecountfunctor_13',['BitwiseCountFunctor',['../structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html',1,'dpnp::kernels::bitwise_count']]],
+  ['blackmanfactory_14',['BlackmanFactory',['../structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html',1,'dpnp::extensions::window::kernels']]],
+  ['blackmanfunctor_15',['BlackmanFunctor',['../classdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_functor.html',1,'dpnp::extensions::window::kernels']]]
 ];

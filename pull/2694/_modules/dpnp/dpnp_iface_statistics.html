@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.20.0dev1+27.ged2a8d46842 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.20.0dev1+51.gcb2c05c62a5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1623c62b"></script>
+      <script src="../../_static/documentation_options.js?v=2905085d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -144,23 +144,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_reduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_cov</span><span class="p">,</span> <span class="n">dpnp_median</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;amax&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;amin&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;average&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;convolve&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;corrcoef&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;correlate&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cov&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;max&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;median&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;min&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ptp&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;std&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;var&quot;</span><span class="p">,</span>
-<span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_count_reduce_items</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -819,10 +802,10 @@
     <span class="n">padded_size</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">r_pad</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="n">fft_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">padded_size</span><span class="p">)))</span>
 
-    <span class="n">af</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">fft_size</span><span class="p">)</span>  <span class="c1"># pylint: disable=no-member</span>
-    <span class="n">vf</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">fft_size</span><span class="p">)</span>  <span class="c1"># pylint: disable=no-member</span>
+    <span class="n">af</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">fft_size</span><span class="p">)</span>
+    <span class="n">vf</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">fft_size</span><span class="p">)</span>
 
-    <span class="n">r</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">af</span> <span class="o">*</span> <span class="n">vf</span><span class="p">)</span>  <span class="c1"># pylint: disable=no-member</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">af</span> <span class="o">*</span> <span class="n">vf</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">rtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">real</span>
     <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">rtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span> <span class="ow">or</span> <span class="n">rtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
@@ -2034,7 +2017,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

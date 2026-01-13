@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev1+27.ged2a8d46842 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev1+51.gcb2c05c62a5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1623c62b"></script>
+      <script src="../../_static/documentation_options.js?v=2905085d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -125,7 +125,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># pylint: disable=protected-access</span>
-<span class="c1"># pylint: disable=duplicate-code</span>
 <span class="c1"># pylint: disable=no-name-in-module</span>
 
 
@@ -151,6 +150,7 @@
     <span class="n">DPNPAngle</span><span class="p">,</span>
     <span class="n">DPNPBinaryFunc</span><span class="p">,</span>
     <span class="n">DPNPBinaryFuncOutKw</span><span class="p">,</span>
+    <span class="n">DPNPBinaryTwoOutputsFunc</span><span class="p">,</span>
     <span class="n">DPNPFix</span><span class="p">,</span>
     <span class="n">DPNPImag</span><span class="p">,</span>
     <span class="n">DPNPReal</span><span class="p">,</span>
@@ -169,71 +169,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_cross</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_reduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;absolute&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;add&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;angle&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;around&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ceil&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;clip&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;conj&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;conjugate&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;copysign&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cross&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cumprod&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cumsum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cumulative_prod&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cumulative_sum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;diff&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;divide&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ediff1d&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fabs&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fix&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;float_power&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;floor&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;floor_divide&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fmax&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fmin&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fmod&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;frexp&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gcd&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gradient&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;heaviside&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;i0&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;imag&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;interp&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;lcm&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ldexp&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;minimum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;mod&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;modf&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;multiply&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;nan_to_num&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;negative&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;nextafter&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;positive&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;pow&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;power&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;proj&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;real&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;real_if_close&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;remainder&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rint&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;round&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sign&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;signbit&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sinc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;spacing&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;subtract&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trapezoid&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;true_divide&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trunc&quot;</span><span class="p">,</span>
-<span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_max_min</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
@@ -1739,6 +1674,100 @@
 <span class="p">)</span>
 
 
+<span class="n">_DIVMOD_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the quotient and the remainder for each element :math:`x1_i` of the</span>
+<span class="s2">input array `x1` with the respective element :math:`x2_i` of the input array</span>
+<span class="s2">`x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.divmod`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Dividend input array, expected to have a real-valued floating-point data</span>
+<span class="s2">    type.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Divisor input array, expected to have a real-valued floating-point data</span>
+<span class="s2">    type.</span>
+<span class="s2">out1 : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array for the quotient to populate. Array must have a shape that</span>
+<span class="s2">    the inputs broadcast to and the expected data type.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">out2 : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array for the remainder to populate. Array must have a shape that</span>
+<span class="s2">    the inputs broadcast to and the expected data type.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">out : tuple of None, dpnp.ndarray, or usm_ndarray, optional</span>
+<span class="s2">    A location into which the result is stored. If provided, it must be a tuple</span>
+<span class="s2">    and have length equal to the number of outputs. Each provided array must</span>
+<span class="s2">    have a shape that the inputs broadcast to and the expected data type.</span>
+<span class="s2">    It is prohibited to pass output arrays through `out` keyword when either</span>
+<span class="s2">    `out1` or `out2` is passed.</span>
+
+<span class="s2">    Default: ``(None, None)``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">quotient : dpnp.ndarray</span>
+<span class="s2">    Element-wise quotient resulting from floor division.</span>
+<span class="s2">remainder : dpnp.ndarray</span>
+<span class="s2">    Element-wise remainder from floor division.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
+<span class="s2">Equivalent to :math:`(x1 // x2, x1 \</span><span class="si">% x</span><span class="s2">2)`, but faster because it avoids</span>
+<span class="s2">redundant work. It is used to implement the Python built-in function</span>
+<span class="s2">:func:`python:divmod` on :class:`dpnp.ndarray`.</span>
+
+<span class="s2">Complex dtypes are not supported, they will raise a ``TypeError``.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.floor_divide` : Equivalent to Python&#39;s :math:`//` operator.</span>
+<span class="s2">:obj:`dpnp.remainder` : Equivalent to Python&#39;s :math:`\%` operator.</span>
+<span class="s2">:obj:`dpnp.modf` : Equivalent to ``divmod(x, 1)`` for positive `x` with the</span>
+<span class="s2">    return values switched.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; np.divmod(np.arange(5), 3)</span>
+<span class="s2">(array([0, 0, 0, 1, 1]), array([0, 1, 2, 0, 1]))</span>
+
+<span class="s2">The Python built-in function :func:`python:divmod` can be used as a shorthand</span>
+<span class="s2">for ``np.divmod`` on :class:`dpnp.ndarray`.</span>
+
+<span class="s2">&gt;&gt;&gt; x = np.arange(5)</span>
+<span class="s2">&gt;&gt;&gt; divmod(x, 3)</span>
+<span class="s2">(array([0, 0, 0, 1, 1]), array([0, 1, 2, 0, 1]))</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="nb">divmod</span> <span class="o">=</span> <span class="n">DPNPBinaryTwoOutputsFunc</span><span class="p">(</span>
+    <span class="s2">&quot;divmod&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_divmod_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_divmod</span><span class="p">,</span>
+    <span class="n">_DIVMOD_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
 <div class="viewcode-block" id="ediff1d">
 <a class="viewcode-back" href="../../reference/generated/dpnp.ediff1d.html#dpnp.ediff1d">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ediff1d</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">to_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_begin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -2177,6 +2206,7 @@
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.remainder` : Remainder complementary to floor_divide.</span>
+<span class="s2">:obj:`dpnp.divmod` : Simultaneous floor division and remainder.</span>
 <span class="s2">:obj:`dpnp.divide` : Standard division.</span>
 <span class="s2">:obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.</span>
 <span class="s2">:obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.</span>
@@ -2557,7 +2587,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">frexp</span> <span class="o">=</span> <span class="n">DPNPUnaryTwoOutputsFunc</span><span class="p">(</span>
-    <span class="s2">&quot;_frexp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;frexp&quot;</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_frexp_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_frexp</span><span class="p">,</span>
     <span class="n">_FREXP_DOCSTRING</span><span class="p">,</span>
@@ -3325,7 +3355,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">ldexp</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;_ldexp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ldexp&quot;</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_ldexp_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_ldexp</span><span class="p">,</span>
     <span class="n">_LDEXP_DOCSTRING</span><span class="p">,</span>
@@ -3605,7 +3635,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">modf</span> <span class="o">=</span> <span class="n">DPNPUnaryTwoOutputsFunc</span><span class="p">(</span>
-    <span class="s2">&quot;_modf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;modf&quot;</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_modf_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_modf</span><span class="p">,</span>
     <span class="n">_MODF_DOCSTRING</span><span class="p">,</span>
@@ -4471,6 +4501,7 @@
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.fmod` : Calculate the element-wise remainder of division.</span>
+<span class="s2">:obj:`dpnp.divmod` : Simultaneous floor division and remainder.</span>
 <span class="s2">:obj:`dpnp.divide` : Standard division.</span>
 <span class="s2">:obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.</span>
 <span class="s2">:obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the</span>
@@ -5295,7 +5326,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
