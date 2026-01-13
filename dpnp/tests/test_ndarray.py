@@ -532,6 +532,7 @@ def test_print_dpnp_zero_shape():
     assert result == expected
 
 
+@testing.with_requires("numpy>=2.4")
 @pytest.mark.parametrize("xp", [dpnp, numpy])
 @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
 class TestPythonScalarConversion:
@@ -540,16 +541,26 @@ class TestPythonScalarConversion:
     )
     def test_bool_conversion(self, xp, shape, dtype):
         a = xp.full(shape, 5, dtype=dtype)
-        assert bool(a) == True
+        if xp == dpnp and len(shape) > 0:
+            # dpnp behavior differs from NumPy:
+            # non-0D singe-element arrays are not convertible to
+            # Python bool
+            assert_raises(TypeError, bool, a)
+        else:
+            # NumPy allows conversion to Python bool for
+            # non-0D singe-element arrays
+            assert bool(a) is True
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
     )
     def test_bool_method_conversion(self, xp, shape, dtype):
         a = xp.full(shape, 5, dtype=dtype)
-        assert a.__bool__() == True
+        if xp == dpnp and len(shape) > 0:
+            assert_raises(TypeError, getattr(a, "__bool__"))
+        else:
+            assert a.__bool__() is True
 
-    @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("func", [float, int, complex])
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
@@ -557,14 +568,15 @@ class TestPythonScalarConversion:
     def test_non_bool_conversion(self, xp, func, shape, dtype):
         a = xp.full(shape, 5, dtype=dtype)
         if len(shape) > 0:
-            # Non-0D arrays must not be convertible to Python numeric scalars
+            # Non-0D arrays are not allowed to be converted to
+            # Python numeric scalars
             assert_raises(TypeError, func, a)
         else:
-            # 0D arrays are allowed to convert
+            # 0D arrays are allowed to be converted to
+            # Python numeric scalars
             expected = 1 if dtype == xp.bool else 5
             assert func(a) == func(expected)
 
-    @testing.with_requires("numpy>=2.4")
     @pytest.mark.parametrize("method", ["__float__", "__int__", "__complex__"])
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
