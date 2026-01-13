@@ -196,7 +196,6 @@ class dpnp_array:
 
     def __complex__(self, /):
         """Convert a zero-dimensional array to a Python complex object."""
-        self._check_scalar_convertible()
         return self._array_obj.__complex__()
 
     def __contains__(self, value, /):
@@ -303,7 +302,6 @@ class dpnp_array:
 
     def __float__(self, /):
         """Convert a zero-dimensional array to a Python float object."""
-        self._check_scalar_convertible()
         return self._array_obj.__float__()
 
     def __floordiv__(self, other, /):
@@ -395,7 +393,6 @@ class dpnp_array:
 
     def __int__(self, /):
         """Convert a zero-dimensional array to a Python int object."""
-        self._check_scalar_convertible()
         return self._array_obj.__int__()
 
     def __invert__(self, /):
@@ -612,14 +609,6 @@ class dpnp_array:
     def __xor__(self, other, /):
         r"""Return :math:`\text{self ^ value}`."""
         return dpnp.bitwise_xor(self, other)
-
-    def _check_scalar_convertible(self):
-        """Raise if array cannot be converted to a Python scalar."""
-        if self.ndim != 0:
-            raise TypeError(
-                "Only 0-dimensional dpnp.ndarray can be converted "
-                "to a Python scalar"
-            )
 
     @staticmethod
     def _create_from_usm_ndarray(usm_ary: dpt.usm_ndarray):
