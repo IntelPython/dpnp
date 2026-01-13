@@ -2671,7 +2671,7 @@ def triu_indices_from(arr, k=0):
     inds : tuple of dpnp.ndarray
         The indices for the triangle. The returned tuple contains two arrays,
         each with the indices along one dimension of the array. Can be used
-        to slice a ndarray of shape(`n`, `n`).
+        to slice an ndarray of shape(`n`, `n`).
 
     See Also
     --------
