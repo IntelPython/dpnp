@@ -64,36 +64,6 @@ from .dpnp_algo import (
 from .dpnp_array import dpnp_array
 from .dpnp_utils import call_origin, get_usm_allocations
 
-__all__ = [
-    "choose",
-    "compress",
-    "diag_indices",
-    "diag_indices_from",
-    "diagonal",
-    "extract",
-    "fill_diagonal",
-    "flatnonzero",
-    "indices",
-    "iterable",
-    "ix_",
-    "mask_indices",
-    "ndindex",
-    "nonzero",
-    "place",
-    "put",
-    "put_along_axis",
-    "putmask",
-    "ravel_multi_index",
-    "select",
-    "take",
-    "take_along_axis",
-    "tril_indices",
-    "tril_indices_from",
-    "triu_indices",
-    "triu_indices_from",
-    "unravel_index",
-]
-
 
 def _ravel_multi_index_checks(multi_index, dims, order):
     dpnp.check_supported_arrays_type(*multi_index)

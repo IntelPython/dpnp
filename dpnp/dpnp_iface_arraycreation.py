@@ -61,47 +61,6 @@ from .dpnp_array import dpnp_array
 # pylint: disable=no-name-in-module
 from .dpnp_utils import get_usm_allocations, map_dtype_to_device
 
-__all__ = [
-    "arange",
-    "array",
-    "asanyarray",
-    "asarray",
-    "ascontiguousarray",
-    "asfortranarray",
-    "astype",
-    "copy",
-    "diag",
-    "diagflat",
-    "empty",
-    "empty_like",
-    "eye",
-    "frombuffer",
-    "fromfile",
-    "fromfunction",
-    "fromiter",
-    "fromstring",
-    "from_dlpack",
-    "full",
-    "full_like",
-    "geomspace",
-    "identity",
-    "linspace",
-    "loadtxt",
-    "logspace",
-    "meshgrid",
-    "mgrid",
-    "ogrid",
-    "ones",
-    "ones_like",
-    "trace",
-    "tri",
-    "tril",
-    "triu",
-    "vander",
-    "zeros",
-    "zeros_like",
-]
-
 
 def _get_empty_array(
     a,

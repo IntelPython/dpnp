@@ -47,60 +47,6 @@ from .dpnp_array import dpnp_array
 # pylint: disable=no-name-in-module
 from .dpnp_utils import get_usm_allocations
 
-__all__ = [
-    "bool",
-    "bool_",
-    "byte",
-    "cdouble",
-    "common_type",
-    "complex128",
-    "complex64",
-    "complexfloating",
-    "csingle",
-    "double",
-    "dtype",
-    "e",
-    "euler_gamma",
-    "finfo",
-    "float16",
-    "float32",
-    "float64",
-    "floating",
-    "iinfo",
-    "inexact",
-    "inf",
-    "int_",
-    "int8",
-    "int16",
-    "int32",
-    "int64",
-    "integer",
-    "intc",
-    "intp",
-    "isdtype",
-    "issubdtype",
-    "is_type_supported",
-    "longlong",
-    "nan",
-    "newaxis",
-    "number",
-    "pi",
-    "short",
-    "signedinteger",
-    "single",
-    "ubyte",
-    "uint8",
-    "uint16",
-    "uint32",
-    "uint64",
-    "uintc",
-    "uintp",
-    "unsignedinteger",
-    "ushort",
-    "ulonglong",
-]
-
-
 # pylint: disable=invalid-name
 # =============================================================================
 # Data types (borrowed from NumPy)
@@ -365,11 +311,3 @@ def issubdtype(arg1, arg2):
     """
 
     return numpy.issubdtype(arg1, arg2)
-
-
-def is_type_supported(obj_type):
-    """Return True if type is supported by DPNP python level."""
-
-    if obj_type in (float64, float32, int64, int32):
-        return True
-    return False

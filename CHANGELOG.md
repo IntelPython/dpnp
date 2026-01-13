@@ -24,6 +24,8 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added implementation of `dpnp.ndarray.tobytes` method [#2656](https://github.com/IntelPython/dpnp/pull/2656)
 * Added implementation of `dpnp.ndarray.__format__` method [#2662](https://github.com/IntelPython/dpnp/pull/2662)
 * Added implementation of `dpnp.ndarray.__bytes__` method [#2671](https://github.com/IntelPython/dpnp/pull/2671)
+* Added implementation of `dpnp.divmod` [#2674](https://github.com/IntelPython/dpnp/pull/2674)
+* Added implementation of `dpnp.isin` function [#2595](https://github.com/IntelPython/dpnp/pull/2595)
 
 ### Changed
 
@@ -37,7 +39,9 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added support for the `out` keyword to accept a tuple, bringing ufunc signatures into alignment with those in NumPy [#2664](https://github.com/IntelPython/dpnp/pull/2664)
 * Unified public API definitions in `dpnp.linalg` and `dpnp.scipy` submodules [#2663](https://github.com/IntelPython/dpnp/pull/2663)
 * Aligned the signature of `dpnp.reshape` function with Python array API by making `shape` a required argument [#2673](https://github.com/IntelPython/dpnp/pull/2673)
+* Unified `dpnp` public API exports by consolidating function exports in `__init__.py` and removing wildcard imports [#2665](https://github.com/IntelPython/dpnp/pull/2665) [#2666](https://github.com/IntelPython/dpnp/pull/2666)
 * Updated tests to reflect the new scalar conversion rules for non-0D `usm_ndarray` [#2694](https://github.com/IntelPython/dpnp/pull/2694)
+
 ### Deprecated
 
 * `dpnp.asfarray` is deprecated. Use `dpnp.asarray` with an appropriate dtype instead [#2650](https://github.com/IntelPython/dpnp/pull/2650)

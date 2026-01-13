@@ -317,6 +317,210 @@ public:
 };
 
 /**
+ * @brief Functor for evaluation of a binary function with two output arrays on
+ * contiguous arrays.
+ *
+ * @note It extends BinaryContigFunctor from
+ * dpctl::tensor::kernels::elementwise_common namespace.
+ */
+template <typename argT1,
+          typename argT2,
+          typename resT1,
+          typename resT2,
+          typename BinaryOperatorT,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
+          bool enable_sg_loadstore = true>
+struct BinaryTwoOutputsContigFunctor
+{
+private:
+    const argT1 *in1 = nullptr;
+    const argT2 *in2 = nullptr;
+    resT1 *out1 = nullptr;
+    resT2 *out2 = nullptr;
+    std::size_t nelems_;
+
+public:
+    BinaryTwoOutputsContigFunctor(const argT1 *inp1,
+                                  const argT2 *inp2,
+                                  resT1 *res1,
+                                  resT2 *res2,
+                                  std::size_t n_elems)
+        : in1(inp1), in2(inp2), out1(res1), out2(res2), nelems_(n_elems)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> ndit) const
+    {
+        static constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
+        BinaryOperatorT op{};
+        /* Each work-item processes vec_sz elements, contiguous in memory */
+        /* NOTE: work-group size must be divisible by sub-group size */
+
+        if constexpr (enable_sg_loadstore &&
+                      BinaryOperatorT::supports_sg_loadstore::value &&
+                      BinaryOperatorT::supports_vec::value && (vec_sz > 1))
+        {
+            auto sg = ndit.get_sub_group();
+            std::uint16_t sgSize = sg.get_max_local_range()[0];
+
+            const std::size_t base =
+                elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
+                                sg.get_group_id()[0] * sgSize);
+
+            if (base + elems_per_wi * sgSize < nelems_) {
+                sycl::vec<resT1, vec_sz> res1_vec;
+                sycl::vec<resT2, vec_sz> res2_vec;
+
+#pragma unroll
+                for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
+                    std::size_t offset = base + it * sgSize;
+                    auto in1_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&in1[offset]);
+                    auto in2_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&in2[offset]);
+                    auto out1_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&out1[offset]);
+                    auto out2_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&out2[offset]);
+
+                    const sycl::vec<argT1, vec_sz> arg1_vec =
+                        sub_group_load<vec_sz>(sg, in1_multi_ptr);
+                    const sycl::vec<argT2, vec_sz> arg2_vec =
+                        sub_group_load<vec_sz>(sg, in2_multi_ptr);
+                    res1_vec = op(arg1_vec, arg2_vec, res2_vec);
+                    sub_group_store<vec_sz>(sg, res1_vec, out1_multi_ptr);
+                    sub_group_store<vec_sz>(sg, res2_vec, out2_multi_ptr);
+                }
+            }
+            else {
+                const std::size_t lane_id = sg.get_local_id()[0];
+                for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
+                    out1[k] = op(in1[k], in2[k], out2[k]);
+                }
+            }
+        }
+        else if constexpr (enable_sg_loadstore &&
+                           BinaryOperatorT::supports_sg_loadstore::value)
+        {
+            auto sg = ndit.get_sub_group();
+            const std::uint16_t sgSize = sg.get_max_local_range()[0];
+
+            const std::size_t base =
+                elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
+                                sg.get_group_id()[0] * sgSize);
+
+            if (base + elems_per_wi * sgSize < nelems_) {
+#pragma unroll
+                for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
+                    const std::size_t offset = base + it * sgSize;
+                    auto in1_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&in1[offset]);
+                    auto in2_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&in2[offset]);
+                    auto out1_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&out1[offset]);
+                    auto out2_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&out2[offset]);
+
+                    const sycl::vec<argT1, vec_sz> arg1_vec =
+                        sub_group_load<vec_sz>(sg, in1_multi_ptr);
+                    const sycl::vec<argT2, vec_sz> arg2_vec =
+                        sub_group_load<vec_sz>(sg, in2_multi_ptr);
+
+                    sycl::vec<resT1, vec_sz> res1_vec;
+                    sycl::vec<resT2, vec_sz> res2_vec;
+#pragma unroll
+                    for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
+                        res1_vec[vec_id] =
+                            op(arg1_vec[vec_id], arg2_vec[vec_id],
+                               res2_vec[vec_id]);
+                    }
+                    sub_group_store<vec_sz>(sg, res1_vec, out1_multi_ptr);
+                    sub_group_store<vec_sz>(sg, res2_vec, out2_multi_ptr);
+                }
+            }
+            else {
+                const std::size_t lane_id = sg.get_local_id()[0];
+                for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
+                    out1[k] = op(in1[k], in2[k], out2[k]);
+                }
+            }
+        }
+        else {
+            const std::size_t sgSize =
+                ndit.get_sub_group().get_local_range()[0];
+            const std::size_t gid = ndit.get_global_linear_id();
+            const std::size_t elems_per_sg = sgSize * elems_per_wi;
+
+            const std::size_t start =
+                (gid / sgSize) * (elems_per_sg - sgSize) + gid;
+            const std::size_t end = std::min(nelems_, start + elems_per_sg);
+            for (std::size_t offset = start; offset < end; offset += sgSize) {
+                out1[offset] = op(in1[offset], in2[offset], out2[offset]);
+            }
+        }
+    }
+};
+
+/**
+ * @brief Functor for evaluation of a binary function with two output arrays on
+ * strided data.
+ *
+ * @note It extends BinaryStridedFunctor from
+ * dpctl::tensor::kernels::elementwise_common namespace.
+ */
+template <typename argT1,
+          typename argT2,
+          typename resT1,
+          typename resT2,
+          typename FourOffsets_IndexerT,
+          typename BinaryOperatorT>
+struct BinaryTwoOutputsStridedFunctor
+{
+private:
+    const argT1 *in1 = nullptr;
+    const argT2 *in2 = nullptr;
+    resT1 *out1 = nullptr;
+    resT2 *out2 = nullptr;
+    FourOffsets_IndexerT four_offsets_indexer_;
+
+public:
+    BinaryTwoOutputsStridedFunctor(const argT1 *inp1_tp,
+                                   const argT2 *inp2_tp,
+                                   resT1 *res1_tp,
+                                   resT2 *res2_tp,
+                                   const FourOffsets_IndexerT &inps_res_indexer)
+        : in1(inp1_tp), in2(inp2_tp), out1(res1_tp), out2(res2_tp),
+          four_offsets_indexer_(inps_res_indexer)
+    {
+    }
+
+    void operator()(sycl::id<1> wid) const
+    {
+        const auto &four_offsets_ =
+            four_offsets_indexer_(static_cast<ssize_t>(wid.get(0)));
+
+        const auto &inp1_offset = four_offsets_.get_first_offset();
+        const auto &inp2_offset = four_offsets_.get_second_offset();
+        const auto &out1_offset = four_offsets_.get_third_offset();
+        const auto &out2_offset = four_offsets_.get_fourth_offset();
+
+        BinaryOperatorT op{};
+        out1[out1_offset] =
+            op(in1[inp1_offset], in2[inp2_offset], out2[out2_offset]);
+    }
+};
+
+/**
  * @brief Function to submit a kernel for unary functor with two output arrays
  * on contiguous arrays.
  *
@@ -454,6 +658,163 @@ sycl::event unary_two_outputs_strided_impl(
     return comp_ev;
 }
 
+/**
+ * @brief Function to submit a kernel for binary functor with two output arrays
+ * on contiguous arrays.
+ *
+ * @note It extends binary_contig_impl from
+ * dpctl::tensor::kernels::elementwise_common namespace.
+ */
+template <typename argTy1,
+          typename argTy2,
+          template <typename T1, typename T2>
+          class BinaryTwoOutputsType,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    std::uint8_t vs,
+                    std::uint8_t nv,
+                    bool enable_sg_loadstore>
+          class BinaryTwoOutputsContigFunctorT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    std::uint8_t vs,
+                    std::uint8_t nv>
+          class kernel_name,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u>
+sycl::event
+    binary_two_outputs_contig_impl(sycl::queue &exec_q,
+                                   std::size_t nelems,
+                                   const char *arg1_p,
+                                   ssize_t arg1_offset,
+                                   const char *arg2_p,
+                                   ssize_t arg2_offset,
+                                   char *res1_p,
+                                   ssize_t res1_offset,
+                                   char *res2_p,
+                                   ssize_t res2_offset,
+                                   const std::vector<sycl::event> &depends = {})
+{
+    const std::size_t n_work_items_needed = nelems / (n_vecs * vec_sz);
+    const std::size_t lws =
+        select_lws(exec_q.get_device(), n_work_items_needed);
+
+    const std::size_t n_groups =
+        ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
+    const auto gws_range = sycl::range<1>(n_groups * lws);
+    const auto lws_range = sycl::range<1>(lws);
+
+    using resTy1 = typename BinaryTwoOutputsType<argTy1, argTy2>::value_type1;
+    using resTy2 = typename BinaryTwoOutputsType<argTy1, argTy2>::value_type2;
+    using BaseKernelName =
+        kernel_name<argTy1, argTy2, resTy1, resTy2, vec_sz, n_vecs>;
+
+    const argTy1 *arg1_tp =
+        reinterpret_cast<const argTy1 *>(arg1_p) + arg1_offset;
+    const argTy2 *arg2_tp =
+        reinterpret_cast<const argTy2 *>(arg2_p) + arg2_offset;
+    resTy1 *res1_tp = reinterpret_cast<resTy1 *>(res1_p) + res1_offset;
+    resTy2 *res2_tp = reinterpret_cast<resTy2 *>(res2_p) + res2_offset;
+
+    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        if (is_aligned<required_alignment>(arg1_tp) &&
+            is_aligned<required_alignment>(arg2_tp) &&
+            is_aligned<required_alignment>(res1_tp) &&
+            is_aligned<required_alignment>(res2_tp))
+        {
+            static constexpr bool enable_sg_loadstore = true;
+            using KernelName = BaseKernelName;
+            using Impl = BinaryTwoOutputsContigFunctorT<argTy1, argTy2, resTy1,
+                                                        resTy2, vec_sz, n_vecs,
+                                                        enable_sg_loadstore>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                Impl(arg1_tp, arg2_tp, res1_tp, res2_tp, nelems));
+        }
+        else {
+            static constexpr bool disable_sg_loadstore = false;
+            using KernelName =
+                disabled_sg_loadstore_wrapper_krn<BaseKernelName>;
+            using Impl = BinaryTwoOutputsContigFunctorT<argTy1, argTy2, resTy1,
+                                                        resTy2, vec_sz, n_vecs,
+                                                        disable_sg_loadstore>;
+
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                Impl(arg1_tp, arg2_tp, res1_tp, res2_tp, nelems));
+        }
+    });
+    return comp_ev;
+}
+
+/**
+ * @brief Function to submit a kernel for binary functor with two output arrays
+ * on strided data.
+ *
+ * @note It extends binary_strided_impl from
+ * dpctl::tensor::kernels::elementwise_common namespace.
+ */
+template <
+    typename argTy1,
+    typename argTy2,
+    template <typename T1, typename T2>
+    class BinaryTwoOutputsType,
+    template <typename T1, typename T2, typename T3, typename T4, typename IndT>
+    class BinaryTwoOutputsStridedFunctorT,
+    template <typename T1, typename T2, typename T3, typename T4, typename IndT>
+    class kernel_name>
+sycl::event binary_two_outputs_strided_impl(
+    sycl::queue &exec_q,
+    std::size_t nelems,
+    int nd,
+    const ssize_t *shape_and_strides,
+    const char *arg1_p,
+    ssize_t arg1_offset,
+    const char *arg2_p,
+    ssize_t arg2_offset,
+    char *res1_p,
+    ssize_t res1_offset,
+    char *res2_p,
+    ssize_t res2_offset,
+    const std::vector<sycl::event> &depends,
+    const std::vector<sycl::event> &additional_depends)
+{
+    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.depends_on(additional_depends);
+
+        using resTy1 =
+            typename BinaryTwoOutputsType<argTy1, argTy2>::value_type1;
+        using resTy2 =
+            typename BinaryTwoOutputsType<argTy1, argTy2>::value_type2;
+
+        using IndexerT =
+            typename dpctl::tensor::offset_utils::FourOffsets_StridedIndexer;
+
+        const IndexerT indexer{nd,          arg1_offset, arg2_offset,
+                               res1_offset, res2_offset, shape_and_strides};
+
+        const argTy1 *arg1_tp = reinterpret_cast<const argTy1 *>(arg1_p);
+        const argTy2 *arg2_tp = reinterpret_cast<const argTy2 *>(arg2_p);
+        resTy1 *res1_tp = reinterpret_cast<resTy1 *>(res1_p);
+        resTy2 *res2_tp = reinterpret_cast<resTy2 *>(res2_p);
+
+        using Impl = BinaryTwoOutputsStridedFunctorT<argTy1, argTy2, resTy1,
+                                                     resTy2, IndexerT>;
+
+        cgh.parallel_for<kernel_name<argTy1, argTy2, resTy1, resTy2, IndexerT>>(
+            {nelems}, Impl(arg1_tp, arg2_tp, res1_tp, res2_tp, indexer));
+    });
+    return comp_ev;
+}
+
 // Typedefs for function pointers
 
 typedef sycl::event (*unary_two_outputs_contig_impl_fn_ptr_t)(
@@ -469,6 +830,35 @@ typedef sycl::event (*unary_two_outputs_strided_impl_fn_ptr_t)(
     std::size_t,
     int,
     const ssize_t *,
+    const char *,
+    ssize_t,
+    char *,
+    ssize_t,
+    char *,
+    ssize_t,
+    const std::vector<sycl::event> &,
+    const std::vector<sycl::event> &);
+
+typedef sycl::event (*binary_two_outputs_contig_impl_fn_ptr_t)(
+    sycl::queue &,
+    std::size_t,
+    const char *,
+    ssize_t,
+    const char *,
+    ssize_t,
+    char *,
+    ssize_t,
+    char *,
+    ssize_t,
+    const std::vector<sycl::event> &);
+
+typedef sycl::event (*binary_two_outputs_strided_impl_fn_ptr_t)(
+    sycl::queue &,
+    std::size_t,
+    int,
+    const ssize_t *,
+    const char *,
+    ssize_t,
     const char *,
     ssize_t,
     char *,

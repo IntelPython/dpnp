@@ -38,9 +38,9 @@ it contains:
 
 """
 
+# pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
-# pylint: disable=no-name-in-module
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPUnaryFunc
 

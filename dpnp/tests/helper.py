@@ -188,7 +188,7 @@ def generate_random_numpy_array(
     numpy.random.seed(seed_value)
 
     if numpy.issubdtype(dtype, numpy.unsignedinteger):
-        low = 0
+        low = max(low, 0)
 
     # dtype=int is needed for 0d arrays
     size = numpy.prod(shape, dtype=int)

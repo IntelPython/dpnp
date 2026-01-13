@@ -53,52 +53,6 @@ import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
-__all__ = [
-    "arccos",
-    "arccosh",
-    "arcsin",
-    "arcsinh",
-    "arctan",
-    "arctan2",
-    "arctanh",
-    "asin",
-    "asinh",
-    "acos",
-    "acosh",
-    "atan",
-    "atan2",
-    "atanh",
-    "cbrt",
-    "cos",
-    "cosh",
-    "cumlogsumexp",
-    "deg2rad",
-    "degrees",
-    "exp",
-    "exp2",
-    "expm1",
-    "hypot",
-    "log",
-    "log10",
-    "log1p",
-    "log2",
-    "logaddexp",
-    "logaddexp2",
-    "logsumexp",
-    "rad2deg",
-    "radians",
-    "reciprocal",
-    "reduce_hypot",
-    "rsqrt",
-    "sin",
-    "sinh",
-    "sqrt",
-    "square",
-    "tan",
-    "tanh",
-    "unwrap",
-]
-
 
 def _get_accumulation_res_dt(a, dtype):
     """Get a dtype used by dpctl for result array in accumulation function."""

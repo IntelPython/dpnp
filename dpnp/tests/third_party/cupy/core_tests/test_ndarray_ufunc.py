@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.tests.helper import is_win_platform
 from dpnp.tests.third_party.cupy import testing
-
-pytest.skip("UFunc interface is not supported", allow_module_level=True)
 
 
 class C(cupy.ndarray):
@@ -20,6 +21,7 @@ class C(cupy.ndarray):
         self.info = getattr(obj, "info", None)
 
 
+@pytest.mark.skip("UFunc interface is not supported")
 class TestArrayUfunc:
 
     @testing.for_all_dtypes()
@@ -192,6 +194,11 @@ class TestUfunc:
     )
     @testing.numpy_cupy_equal()
     def test_types(self, xp, ufunc):
+        # CuPy does not support the following dtypes:
+        # longlong, (c)longdouble, datetime, timedelta, and object.
+        excl_types = "GgMmO"
+        excl_types += "Ii" if is_win_platform() else "Qq"
+
         types = getattr(xp, ufunc).types
         if xp == numpy:
             assert isinstance(types, list)
@@ -199,52 +206,50 @@ class TestUfunc:
                 dict.fromkeys(  # remove dups: numpy/numpy#7897
                     sig
                     for sig in types
-                    # CuPy does not support the following dtypes:
-                    # (c)longdouble, datetime, timedelta, and object.
-                    if not any(t in sig for t in "GgMmO")
+                    if not any(t in sig for t in excl_types)
                 )
             )
         return types
 
     @testing.numpy_cupy_allclose()
     def test_unary_out_tuple(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
-        out = xp.zeros((2, 3), dtype)
+        out = xp.zeros((2, 3), dtype=dtype)
         ret = xp.sin(a, out=(out,))
         assert ret is out
         return ret
 
     @testing.numpy_cupy_allclose()
     def test_unary_out_positional_none(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         return xp.sin(a, None)
 
     @testing.numpy_cupy_allclose()
     def test_binary_out_tuple(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
-        b = xp.ones((2, 3), dtype)
-        out = xp.zeros((2, 3), dtype)
+        b = xp.ones((2, 3), dtype=dtype)
+        out = xp.zeros((2, 3), dtype=dtype)
         ret = xp.add(a, b, out=(out,))
         assert ret is out
         return ret
 
     @testing.numpy_cupy_allclose()
     def test_biary_out_positional_none(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
-        b = xp.ones((2, 3), dtype)
+        b = xp.ones((2, 3), dtype=dtype)
         return xp.add(a, b, None)
 
     @testing.numpy_cupy_allclose()
     def test_divmod_out_tuple(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
-        out0 = xp.zeros((2, 3), dtype)
-        out1 = xp.zeros((2, 3), dtype)
+        out0 = xp.zeros((2, 3), dtype=dtype)
+        out1 = xp.zeros((2, 3), dtype=dtype)
         ret = xp.divmod(a, b, out=(out0, out1))
         assert ret[0] is out0
         assert ret[1] is out1
@@ -252,27 +257,27 @@ class TestUfunc:
 
     @testing.numpy_cupy_allclose()
     def test_divmod_out_positional_none(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
-        b = xp.ones((2, 3), dtype)
+        b = xp.ones((2, 3), dtype=dtype)
         return xp.divmod(a, b, None, None)
 
     @testing.numpy_cupy_allclose()
     def test_divmod_out_partial(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
-        out0 = xp.zeros((2, 3), dtype)
+        out0 = xp.zeros((2, 3), dtype=dtype)
         ret = xp.divmod(a, b, out0)  # out1 is None
         assert ret[0] is out0
         return ret
 
     @testing.numpy_cupy_allclose()
     def test_divmod_out_partial_tuple(self, xp):
-        dtype = xp.float64
+        dtype = cupy.default_float_type()
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
-        out1 = xp.zeros((2, 3), dtype)
+        out1 = xp.zeros((2, 3), dtype=dtype)
         ret = xp.divmod(a, b, out=(None, out1))
         assert ret[1] is out1
         return ret

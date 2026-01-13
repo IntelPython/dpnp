@@ -28,52 +28,11 @@
 
 #pragma once
 
-#include <type_traits>
+#include <pybind11/pybind11.h>
 
-#include "utils/type_dispatch.hpp"
+namespace py = pybind11;
 
-namespace dpnp::extensions::py_internal::type_dispatch
+namespace dpnp::extensions::ufunc
 {
-/**
- * Extends dpctl::tensor::type_dispatch::TypeMapResultEntry helper structure
- * with support of the two result types.
- */
-template <typename Ty,
-          typename ArgTy,
-          typename ResTy1 = ArgTy,
-          typename ResTy2 = ArgTy>
-struct TypeMapTwoResultsEntry : std::bool_constant<std::is_same_v<Ty, ArgTy>>
-{
-    using result_type1 = ResTy1;
-    using result_type2 = ResTy2;
-};
-
-/**
- * Extends dpctl::tensor::type_dispatch::BinaryTypeMapResultEntry helper
- * structure with support of the two result types.
- */
-template <typename Ty1,
-          typename ArgTy1,
-          typename Ty2,
-          typename ArgTy2,
-          typename ResTy1 = ArgTy1,
-          typename ResTy2 = ArgTy2>
-struct BinaryTypeMapTwoResultsEntry
-    : std::bool_constant<std::conjunction_v<std::is_same<Ty1, ArgTy1>,
-                                            std::is_same<Ty2, ArgTy2>>>
-{
-    using result_type1 = ResTy1;
-    using result_type2 = ResTy2;
-};
-
-/**
- * Extends dpctl::tensor::type_dispatch::DefaultResultEntry helper structure
- * with support of the two result types.
- */
-template <typename Ty = void>
-struct DefaultTwoResultsEntry : std::true_type
-{
-    using result_type1 = Ty;
-    using result_type2 = Ty;
-};
-} // namespace dpnp::extensions::py_internal::type_dispatch
+void init_divmod(py::module_ m);
+} // namespace dpnp::extensions::ufunc

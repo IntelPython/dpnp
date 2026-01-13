@@ -38,8 +38,6 @@ more details.
 
 import dpctl.tensor as dpt
 
-__all__ = ["__array_namespace_info__"]
-
 
 def __array_namespace_info__():
     """

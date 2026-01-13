@@ -349,6 +349,7 @@ Arithmetic, reflected:
    ndarray.__rtruediv__
    ndarray.__rfloordiv__
    ndarray.__rmod__
+   ndarray.__rdivmod__
    ndarray.__rpow__
    ndarray.__rlshift__
    ndarray.__rrshift__
