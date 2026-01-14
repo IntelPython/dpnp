@@ -18,7 +18,6 @@ from .helper import (
     get_complex_dtypes,
     get_float_dtypes,
     has_support_aspect64,
-    numpy_version,
 )
 from .third_party.cupy import testing
 
