@@ -80,10 +80,10 @@ class TestSpecial(unittest.TestCase, _TestBase):
 
         a[:] = 1.0 + 1e-6
         a = cupy.scipy.special.erfinv(a)
-        assert cupy.isnan(a)
+        assert cupy.isnan(a).item()
         a[:] = -1.0 - 1e-6
         a = cupy.scipy.special.erfinv(a)
-        assert cupy.isnan(a)
+        assert cupy.isnan(a).item()
         a[:] = 1.0
         a = cupy.scipy.special.erfinv(a)
         assert numpy.isposinf(cupy.asnumpy(a))
@@ -98,10 +98,10 @@ class TestSpecial(unittest.TestCase, _TestBase):
 
         a[:] = 2.0 + 1e-6
         a = cupy.scipy.special.erfcinv(a)
-        assert cupy.isnan(a)
+        assert cupy.isnan(a).item()
         a[:] = 0.0 - 1e-6
         a = cupy.scipy.special.erfcinv(a)
-        assert cupy.isnan(a)
+        assert cupy.isnan(a).item()
         a[:] = 0.0
         a = cupy.scipy.special.erfcinv(a)
         assert numpy.isposinf(cupy.asnumpy(a))

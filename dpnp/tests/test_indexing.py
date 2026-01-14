@@ -766,11 +766,17 @@ class TestTake:
         a = numpy.array([[[1]]])
         ia = dpnp.array(a)
 
-        result = ia.take([0], axis=ia)
-        expected = a.take(
-            [0], axis=1
-        )  # numpy raises an error for axis as array
+        # axis is a 0-D integer array
+        axis_0d = numpy.array(1)
+        iaxis_0d = dpnp.array(1)
+
+        result = ia.take([0], axis=iaxis_0d)
+        expected = a.take([0], axis=axis_0d)
         assert_array_equal(result, expected)
+
+        # axis is not a 0-D integer array
+        assert_raises(TypeError, ia.take, [0], axis=ia)
+        assert_raises(TypeError, a.take, [0], axis=a)
 
     def test_mode_raise(self):
         a = dpnp.array([[1, 2], [3, 4]])
