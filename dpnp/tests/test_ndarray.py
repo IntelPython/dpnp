@@ -5,6 +5,7 @@ from numpy.testing import (
     assert_allclose,
     assert_array_equal,
     assert_equal,
+    assert_raises,
     assert_raises_regex,
 )
 
@@ -530,43 +531,71 @@ def test_print_dpnp_zero_shape():
     assert result == expected
 
 
-# Numpy will raise an error when converting a.ndim > 0 to a scalar
-# TODO: Discuss dpnp behavior according to these future changes
-@pytest.mark.skip("until dpctl-2223")
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
-@pytest.mark.parametrize("func", [bool, float, int, complex])
+@testing.with_requires("numpy>=2.4")
+@pytest.mark.parametrize("xp", [dpnp, numpy])
 @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_float16=False, no_complex=True)
-)
-def test_scalar_type_casting(func, shape, dtype):
-    a = numpy.full(shape, 5, dtype=dtype)
-    ia = dpnp.full(shape, 5, dtype=dtype)
-    assert func(a) == func(ia)
+class TestPythonScalarConversion:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    )
+    def test_bool_conversion(self, xp, shape, dtype):
+        a = xp.full(shape, 5, dtype=dtype)
+        if xp == dpnp and len(shape) > 0:
+            # dpnp behavior differs from NumPy:
+            # non-0D singe-element arrays are not convertible to
+            # Python bool
+            assert_raises(TypeError, bool, a)
+        else:
+            # NumPy allows conversion to Python bool for
+            # non-0D singe-element arrays
+            assert bool(a) is True
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    )
+    def test_bool_method_conversion(self, xp, shape, dtype):
+        a = xp.full(shape, 5, dtype=dtype)
+        if xp == dpnp and len(shape) > 0:
+            assert_raises(TypeError, getattr(a, "__bool__"))
+        else:
+            assert a.__bool__() is True
+
+    @pytest.mark.parametrize("func", [float, int, complex])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    )
+    def test_non_bool_conversion(self, xp, func, shape, dtype):
+        a = xp.full(shape, 5, dtype=dtype)
+        if len(shape) > 0:
+            # Non-0D arrays are not allowed to be converted to
+            # Python numeric scalars
+            assert_raises(TypeError, func, a)
+        else:
+            # 0D arrays are allowed to be converted to
+            # Python numeric scalars
+            expected = 1 if dtype == xp.bool else 5
+            assert func(a) == func(expected)
+
+    @pytest.mark.parametrize("method", ["__float__", "__int__", "__complex__"])
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    )
+    def test_non_bool_method_conversion(self, xp, method, shape, dtype):
+        a = xp.full(shape, 5, dtype=dtype)
+        if len(shape) > 0:
+            assert_raises(TypeError, getattr(a, method))
+        else:
+            expected = 1 if dtype == xp.bool else 5
+            func = {"__float__": float, "__int__": int, "__complex__": complex}[
+                method
+            ]
+            assert getattr(a, method)() == func(expected)
 
 
-# Numpy will raise an error when converting a.ndim > 0 to a scalar
-# TODO: Discuss dpnp behavior according to these future changes
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
-@pytest.mark.skip("until dpctl-2223")
-@pytest.mark.parametrize(
-    "method", ["__bool__", "__float__", "__int__", "__complex__"]
-)
-@pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_float16=False, no_complex=True)
-)
-def test_scalar_type_casting_by_method(method, shape, dtype):
-    a = numpy.full(shape, 4.7, dtype=dtype)
-    ia = dpnp.full(shape, 4.7, dtype=dtype)
-    assert_allclose(getattr(a, method)(), getattr(ia, method)(), rtol=1e-06)
-
-
-@pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
 @pytest.mark.parametrize("index_dtype", [dpnp.int32, dpnp.int64])
-def test_array_as_index(shape, index_dtype):
-    ind_arr = dpnp.ones(shape, dtype=index_dtype)
-    a = numpy.arange(ind_arr.size + 1)
+def test_array_as_index(index_dtype):
+    ind_arr = dpnp.ones((1,), dtype=index_dtype)
+    a = dpnp.arange(ind_arr.size + 1)
     assert a[tuple(ind_arr)] == a[1]
 
 
