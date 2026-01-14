@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import operator
 import os
 import shutil
@@ -73,6 +75,7 @@ class TestAvailable(unittest.TestCase):
         assert available
 
 
+# @pytest.mark.thread_unsafe(reason="modifies environment variables")
 @pytest.mark.skip("dpnp.is_available() is not implemented")
 class TestNotAvailable(unittest.TestCase):
 
@@ -145,18 +148,17 @@ class TestAliases(unittest.TestCase):
             assert xp.bitwise_not is xp.invert
 
 
-@pytest.mark.skip("dpnp.exceptions is not implemented")
 @testing.with_requires("numpy>=2.0")
 @pytest.mark.parametrize(
     "name",
     [
         "exceptions.AxisError",
-        "exceptions.ComplexWarning",
-        "exceptions.ModuleDeprecationWarning",
-        "exceptions.RankWarning",
-        "exceptions.TooHardError",
-        "exceptions.VisibleDeprecationWarning",
-        "linalg.LinAlgError",
+        # "exceptions.ComplexWarning",
+        # "exceptions.ModuleDeprecationWarning",
+        # "exceptions.RankWarning",
+        # "exceptions.TooHardError",
+        # "exceptions.VisibleDeprecationWarning",
+        # "linalg.LinAlgError",
     ],
 )
 def test_error_classes(name):
