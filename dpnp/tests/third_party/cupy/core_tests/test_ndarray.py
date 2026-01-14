@@ -246,6 +246,11 @@ class TestNdarrayCopy:
     # See cupy/cupy#5004
     @pytest.mark.skip("RawKernel() is not supported")
     @testing.multi_gpu(2)
+    # @pytest.mark.xfail(
+    #     runtime.is_hip,
+    #     reason='ROCm may work differently in async D2D copy with streams')
+    # @pytest.mark.thread_unsafe(
+    #     reason="order is unclear multithread. Also, hard crash in threaded!")
     def test_copy_multi_device_with_stream(self):
         # Kernel that takes long enough then finally writes values.
         src = _test_copy_multi_device_with_stream_src
@@ -428,21 +433,6 @@ class TestNdarrayCudaInterfaceStream(unittest.TestCase):
                 assert iface["stream"] == ptr
             else:
                 assert iface["stream"] == stream.ptr
-
-
-@pytest.mark.skip("CUDA interface is not supported")
-class TestNdarrayCudaInterfaceNoneCUDA(unittest.TestCase):
-
-    def setUp(self):
-        self.arr = cupy.zeros(shape=(2, 3), dtype=cupy.float64)
-
-    def test_cuda_array_interface_hasattr(self):
-        assert not hasattr(self.arr, "__cuda_array_interface__")
-
-    def test_cuda_array_interface_getattr(self):
-        with pytest.raises(AttributeError) as e:
-            getattr(self.arr, "__cuda_array_interface__")
-        assert "HIP" in str(e.value)
 
 
 @testing.parameterize(
