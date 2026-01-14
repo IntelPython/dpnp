@@ -25,13 +25,17 @@ class TestArrayBoolOp(unittest.TestCase):
         assert not bool(cupy.array(0, dtype=dtype))
 
     def test_bool_one_element_bool(self):
-        assert bool(cupy.array([True], dtype=numpy.bool_))
-        assert not bool(cupy.array([False], dtype=numpy.bool_))
+        # Different behavior from CuPy:
+        # CuPy as NumPy allows conversion to Python bool for
+        # non-0D singe-element arrays
+        with self.assertRaises(TypeError):
+            bool(cupy.array([True], dtype=numpy.bool_))
 
     @testing.for_all_dtypes()
     def test_bool_one_element(self, dtype):
-        assert bool(cupy.array([1], dtype=dtype))
-        assert not bool(cupy.array([0], dtype=dtype))
+        # Different behavior from CuPy
+        with self.assertRaises(TypeError):
+            bool(cupy.array([1], dtype=dtype))
 
     @testing.for_all_dtypes()
     def test_bool_two_elements(self, dtype):
