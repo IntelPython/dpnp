@@ -721,23 +721,21 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
     a_straides = a.strides
     n, m = a_shape[-2:]
     st_n, st_m = a_straides[-2:]
-    # pylint: disable=W0212
-    a_element_offset = a.get_array()._element_offset
 
     # Compute shape, strides and offset of the resulting diagonal array
     # based on the input offset
     if offset == 0:
         out_shape = a_shape[:-2] + (min(n, m),)
         out_strides = a_straides[:-2] + (st_n + st_m,)
-        out_offset = a_element_offset
+        out_offset = 0
     elif 0 < offset < m:
         out_shape = a_shape[:-2] + (min(n, m - offset),)
         out_strides = a_straides[:-2] + (st_n + st_m,)
-        out_offset = a_element_offset + st_m * offset
+        out_offset = st_m * offset
     else:
         out_shape = a_shape[:-2] + (0,)
         out_strides = a_straides[:-2] + (1,)
-        out_offset = a_element_offset
+        out_offset = 0
 
     return dpnp_array(
         out_shape, buffer=a, strides=out_strides, offset=out_offset

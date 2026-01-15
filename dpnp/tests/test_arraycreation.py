@@ -141,6 +141,16 @@ class TestTrace:
         expected = numpy.linalg.trace(a, offset=offset, dtype=dtype)
         assert_equal(result, expected)
 
+    @pytest.mark.parametrize("offset", [-1, 0, 1])
+    def test_ndarray_offset(self, offset):
+        ia = dpnp.arange(8, dtype=dpnp.uint8).reshape((2, 2, 2))
+        ia = dpnp.ndarray((2, 2), buffer=ia, offset=1)
+        a = ia.asnumpy()
+
+        result = dpnp.linalg.trace(ia, offset=offset)
+        expected = numpy.linalg.trace(a, offset=offset)
+        assert_equal(result, expected)
+
 
 @pytest.mark.parametrize(
     "func, args",
