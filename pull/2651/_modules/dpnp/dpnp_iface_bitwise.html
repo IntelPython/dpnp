@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.20.0dev0+29.g9ab14a880a3 documentation</title>
+  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.20.0dev1+46.g2be7e2529e2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ffe00f2b"></script>
+      <script src="../../_static/documentation_options.js?v=f4be9c62"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -83,8 +83,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dpnp.dpnp_iface_bitwise</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="c1"># *****************************************************************************</span>
+<span></span><span class="c1"># *****************************************************************************</span>
 <span class="c1"># Copyright (c) 2016, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
@@ -135,21 +134,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;binary_repr&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bitwise_and&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bitwise_count&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bitwise_invert&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bitwise_left_shift&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bitwise_not&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bitwise_or&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bitwise_right_shift&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bitwise_xor&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;invert&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;left_shift&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;right_shift&quot;</span><span class="p">,</span>
-<span class="p">]</span>
-
 
 <div class="viewcode-block" id="binary_repr">
 <a class="viewcode-back" href="../../reference/generated/dpnp.binary_repr.html#dpnp.binary_repr">[docs]</a>
@@ -198,7 +182,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; np.binary_repr(3)</span>
 <span class="sd">    &#39;11&#39;</span>
 <span class="sd">    &gt;&gt;&gt; np.binary_repr(-3)</span>
@@ -233,9 +217,11 @@
 <span class="s2">    First input array, expected to have an integer or boolean data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have an integer or boolean data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -322,9 +308,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have an integer data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -379,9 +367,11 @@
 <span class="s2">    First input array, expected to have an integer or boolean data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have an integer or boolean data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -463,9 +453,11 @@
 <span class="s2">    First input array, expected to have an integer or boolean data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have an integer or boolean data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -549,9 +541,11 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    Input array, expected to have an integer or boolean data type.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -633,9 +627,11 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have an integer data type.</span>
 <span class="s2">    Each element must be greater than or equal to ``0``.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -716,9 +712,11 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have an integer data type.</span>
 <span class="s2">    Each element must be greater than or equal to ``0``.</span>
-<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
@@ -793,7 +791,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

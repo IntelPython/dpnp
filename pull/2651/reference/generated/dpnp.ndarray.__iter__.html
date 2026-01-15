@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.__iter__ &mdash; Data Parallel Extension for NumPy 0.20.0dev0+29.g9ab14a880a3 documentation</title>
+  <title>dpnp.ndarray.__iter__ &mdash; Data Parallel Extension for NumPy 0.20.0dev1+46.g2be7e2529e2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ffe00f2b"></script>
+      <script src="../../_static/documentation_options.js?v=f4be9c62"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -56,7 +56,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="dpnp.ndarray.html">dpnp.ndarray</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpnp.dpnp_array.dpnp_array.html">dpnp.dpnp_array.dpnp_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#constructing-arrays">Constructing arrays</a></li>
@@ -84,17 +84,19 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.__getitem__.html">dpnp.ndarray.__getitem__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.__setitem__.html">dpnp.ndarray.__setitem__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.__contains__.html">dpnp.ndarray.__contains__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.__bytes__.html">dpnp.ndarray.__bytes__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.__index__.html">dpnp.ndarray.__index__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.__int__.html">dpnp.ndarray.__int__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.__float__.html">dpnp.ndarray.__float__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.__complex__.html">dpnp.ndarray.__complex__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.__str__.html">dpnp.ndarray.__str__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.__repr__.html">dpnp.ndarray.__repr__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.__format__.html">dpnp.ndarray.__format__</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../routines.html">Routines (NumPy)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
@@ -123,7 +125,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
+          <li class="breadcrumb-item"><a href="../ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a></li>
       <li class="breadcrumb-item active">dpnp.ndarray.__iter__</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.ndarray.__iter__.rst.txt" rel="nofollow"> View page source</a>
@@ -156,7 +158,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.random.dpnp_iface_random &mdash; Data Parallel Extension for NumPy 0.20.0dev0+29.g9ab14a880a3 documentation</title>
+  <title>dpnp.random.dpnp_iface_random &mdash; Data Parallel Extension for NumPy 0.20.0dev1+46.g2be7e2529e2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=ffe00f2b"></script>
+      <script src="../../../_static/documentation_options.js?v=f4be9c62"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -84,7 +84,6 @@
              
   <h1>Source code for dpnp.random.dpnp_iface_random</h1><div class="highlight"><pre>
 <span></span><span class="c1"># cython: language_level=3</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
 <span class="c1"># Copyright (c) 2016, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
@@ -133,57 +132,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo_random</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_random_state</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomState</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;beta&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;binomial&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;bytes&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;chisquare&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;choice&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dirichlet&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;exponential&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;f&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gamma&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;geometric&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gumbel&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;hypergeometric&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;laplace&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;logistic&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;lognormal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;logseries&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;multinomial&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;multivariate_normal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;negative_binomial&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;normal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;noncentral_chisquare&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;noncentral_f&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;pareto&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;permutation&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;poisson&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;power&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rand&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;randint&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;randn&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;random&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;random_integers&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;random_sample&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ranf&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rayleigh&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;sample&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;shuffle&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;seed&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;standard_cauchy&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;standard_exponential&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;standard_gamma&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;standard_normal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;standard_t&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;triangular&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;uniform&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;vonmises&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;wald&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;weibull&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;zipf&quot;</span><span class="p">,</span>
-<span class="p">]</span>
-
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_random_state</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">_dpnp_random_states</span>
@@ -204,6 +152,14 @@
                 <span class="p">)</span>
             <span class="p">)</span>
     <span class="k">return</span> <span class="n">_dpnp_random_states</span><span class="p">[</span><span class="n">sycl_queue</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_type_supported</span><span class="p">(</span><span class="n">obj_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if type is supported by dpnp.random&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">obj_type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
 
 
 <div class="viewcode-block" id="beta">
@@ -1831,7 +1787,7 @@
                 <span class="s2">&quot;Running on CUDA is currently not supported&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_type_supported</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_type_supported</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dpnp_rng_shuffle</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
@@ -2409,7 +2365,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

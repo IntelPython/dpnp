@@ -1,7 +1,9 @@
+.. currentmodule:: dpnp
+
 Polynomials
 ===========
 
-.. https://numpy.org/doc/stable/reference/routines.polynomials.html
+.. hint:: `NumPy API Reference: Polynomials <https://numpy.org/doc/stable/reference/routines.polynomials.html>`_
 
 Polynomial Package
 ------------------
@@ -14,8 +16,8 @@ Polynomial Module
    :nosignatures:
 
    .. polynomial module is not implemented yet
-   .. dpnp.polynomial.polynomial.polyvander
-   .. dpnp.polynomial.polynomial.polycompanion
+   .. polynomial.polynomial.polyvander
+   .. polynomial.polynomial.polycompanion
 
 
 Polyutils
@@ -26,9 +28,9 @@ Polyutils
    :nosignatures:
 
    .. polyutils module is not implemented yet
-   .. dpnp.polynomial.polyutils.as_series
-   .. dpnp.polynomial.polyutils.trimseq
-   .. dpnp.polynomial.polyutils.trimcoef
+   .. polynomial.polyutils.as_series
+   .. polynomial.polyutils.trimseq
+   .. polynomial.polyutils.trimcoef
 
 
 Poly1d
@@ -41,9 +43,9 @@ Basics
    :toctree: generated/
    :nosignatures:
 
-    dpnp.poly1d
-    dpnp.polyval
-    dpnp.roots
+    poly1d
+    polyval
+    roots
 
 
 Arithmetic
@@ -53,6 +55,6 @@ Arithmetic
    :toctree: generated/
    :nosignatures:
 
-    dpnp.polyadd
-    dpnp.polysub
-    dpnp.polymul
+    polyadd
+    polysub
+    polymul

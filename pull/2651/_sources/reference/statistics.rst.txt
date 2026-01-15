@@ -1,7 +1,9 @@
+.. currentmodule:: dpnp
+
 Statistics
 ==========
 
-.. https://numpy.org/doc/stable/reference/routines.statistics.html
+.. hint:: `NumPy API Reference: Statistics <https://numpy.org/doc/stable/reference/routines.statistics.html>`_
 
 Order statistics
 ----------------
@@ -10,11 +12,11 @@ Order statistics
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ptp
-   dpnp.percentile
-   dpnp.nanpercentile
-   dpnp.quantile
-   dpnp.nanquantile
+   ptp
+   percentile
+   nanpercentile
+   quantile
+   nanquantile
 
 
 Averages and variances
@@ -24,15 +26,15 @@ Averages and variances
    :toctree: generated/
    :nosignatures:
 
-   dpnp.median
-   dpnp.average
-   dpnp.mean
-   dpnp.std
-   dpnp.var
-   dpnp.nanmedian
-   dpnp.nanmean
-   dpnp.nanstd
-   dpnp.nanvar
+   median
+   average
+   mean
+   std
+   var
+   nanmedian
+   nanmean
+   nanstd
+   nanvar
 
 
 Correlations
@@ -42,9 +44,9 @@ Correlations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.corrcoef
-   dpnp.correlate
-   dpnp.cov
+   corrcoef
+   correlate
+   cov
 
 
 Histograms
@@ -54,9 +56,9 @@ Histograms
    :toctree: generated/
    :nosignatures:
 
-   dpnp.histogram
-   dpnp.histogram2d
-   dpnp.histogramdd
-   dpnp.bincount
-   dpnp.histogram_bin_edges
-   dpnp.digitize
+   histogram
+   histogram2d
+   histogramdd
+   bincount
+   histogram_bin_edges
+   digitize

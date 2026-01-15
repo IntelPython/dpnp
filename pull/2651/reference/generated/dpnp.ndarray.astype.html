@@ -15,21 +15,21 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.astype &mdash; Data Parallel Extension for NumPy 0.20.0dev0+29.g9ab14a880a3 documentation</title>
+  <title>dpnp.ndarray.astype &mdash; Data Parallel Extension for NumPy 0.20.0dev1+46.g2be7e2529e2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ffe00f2b"></script>
+      <script src="../../_static/documentation_options.js?v=f4be9c62"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpnp.ndarray.copy" href="dpnp.ndarray.copy.html" />
-    <link rel="prev" title="dpnp.ndarray.item" href="dpnp.ndarray.item.html" /> 
+    <link rel="prev" title="dpnp.ndarray.tofile" href="dpnp.ndarray.tofile.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -55,7 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="dpnp.ndarray.html">dpnp.ndarray</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpnp.dpnp_array.dpnp_array.html">dpnp.dpnp_array.dpnp_array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#constructing-arrays">Constructing arrays</a></li>
@@ -68,6 +68,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#array-methods">Array methods</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../ndarray.html#array-conversion">Array conversion</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.item.html">dpnp.ndarray.item</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.tolist.html">dpnp.ndarray.tolist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.tobytes.html">dpnp.ndarray.tobytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.tofile.html">dpnp.ndarray.tofile</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.ndarray.astype</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.copy.html">dpnp.ndarray.copy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.ndarray.view.html">dpnp.ndarray.view</a></li>
@@ -82,7 +85,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../ndarray.html#special-methods">Special methods</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../routines.html">Routines (NumPy)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
@@ -111,7 +114,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
+          <li class="breadcrumb-item"><a href="../ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a></li>
       <li class="breadcrumb-item active">dpnp.ndarray.astype</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.ndarray.astype.rst.txt" rel="nofollow"> View page source</a>
@@ -163,9 +166,9 @@ returned; otherwise, a newly allocated array must be returned.</p>
 </p></li>
 <li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue</em><em>, </em><em>Device}</em><em>, </em><em>optional</em>) -- <p>An array API concept of device where the output array is created.
 <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector string,
-an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.22.0dev0+16.g091beaa021)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
+an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.22.0dev0+117.g7960513f68)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
 a non-partitioned SYCL device, an instance of
-<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.22.0dev0+16.g091beaa021)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+16.g091beaa021)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
+<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.22.0dev0+117.g7960513f68)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.22.0dev0+117.g7960513f68)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
 returned by <a class="reference internal" href="dpnp.ndarray.device.html#dpnp.ndarray.device" title="dpnp.ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpnp.ndarray.device</span></code></a>.
 If the value is <code class="docutils literal notranslate"><span class="pre">None</span></code>, returned array is created on the same
 device as that array.</p>
@@ -201,14 +204,14 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.ndarray.item.html" class="btn btn-neutral float-left" title="dpnp.ndarray.item" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.ndarray.tofile.html" class="btn btn-neutral float-left" title="dpnp.ndarray.tofile" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="dpnp.ndarray.copy.html" class="btn btn-neutral float-right" title="dpnp.ndarray.copy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

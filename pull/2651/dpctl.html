@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Interplay with the Data Parallel Control Library &mdash; Data Parallel Extension for NumPy 0.20.0dev0+29.g9ab14a880a3 documentation</title>
+  <title>Interplay with the Data Parallel Control Library &mdash; Data Parallel Extension for NumPy 0.20.0dev1+46.g2be7e2529e2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=ffe00f2b"></script>
+      <script src="_static/documentation_options.js?v=f4be9c62"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -108,68 +108,67 @@ easily combined with the device management interface provided by dpctl package.<
 documentation.</p>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>
-<span class="linenos"> 2</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="s2">import time</span>
-<span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="s2">import numpy</span>
-<span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="s2">import dpnp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="s2">import time</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="s2">import numpy</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="s2">import dpnp</span>
+<span class="linenos"> 8</span>
 <span class="linenos"> 9</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="s2">def run(executor, size, test_type, repetition):</span>
-<span class="linenos">12</span><span class="s2">    x = executor.reshape(</span>
-<span class="linenos">13</span><span class="s2">        executor.arange(size * size, dtype=test_type), (size, size)</span>
-<span class="linenos">14</span><span class="s2">    )</span>
-<span class="linenos">15</span>
-<span class="linenos">16</span><span class="s2">    times = []</span>
-<span class="linenos">17</span><span class="s2">    for _ in range(repetition):</span>
-<span class="linenos">18</span><span class="s2">        start_time = time.perf_counter()</span>
-<span class="linenos">19</span><span class="s2">        result = executor.sum(x)</span>
-<span class="linenos">20</span><span class="s2">        end_time = time.perf_counter()</span>
-<span class="linenos">21</span><span class="s2">        times.append(end_time - start_time)</span>
-<span class="linenos">22</span>
-<span class="linenos">23</span><span class="s2">    return numpy.median(times), result</span>
+<span class="linenos">10</span><span class="s2">def run(executor, size, test_type, repetition):</span>
+<span class="linenos">11</span><span class="s2">    x = executor.reshape(</span>
+<span class="linenos">12</span><span class="s2">        executor.arange(size * size, dtype=test_type), (size, size)</span>
+<span class="linenos">13</span><span class="s2">    )</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="s2">    times = []</span>
+<span class="linenos">16</span><span class="s2">    for _ in range(repetition):</span>
+<span class="linenos">17</span><span class="s2">        start_time = time.perf_counter()</span>
+<span class="linenos">18</span><span class="s2">        result = executor.sum(x)</span>
+<span class="linenos">19</span><span class="s2">        end_time = time.perf_counter()</span>
+<span class="linenos">20</span><span class="s2">        times.append(end_time - start_time)</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span><span class="s2">    return numpy.median(times), result</span>
+<span class="linenos">23</span>
 <span class="linenos">24</span>
-<span class="linenos">25</span>
-<span class="linenos">26</span><span class="s2">def get_dtypes():</span>
-<span class="linenos">27</span><span class="s2">    _dtypes_list = [numpy.int32, numpy.int64, numpy.float32]</span>
-<span class="linenos">28</span><span class="s2">    device = dpctl.select_default_device()</span>
-<span class="linenos">29</span><span class="s2">    if device.has_aspect_fp64:</span>
-<span class="linenos">30</span><span class="s2">        _dtypes_list.append(numpy.float64)</span>
-<span class="linenos">31</span><span class="s2">    return _dtypes_list</span>
+<span class="linenos">25</span><span class="s2">def get_dtypes():</span>
+<span class="linenos">26</span><span class="s2">    _dtypes_list = [numpy.int32, numpy.int64, numpy.float32]</span>
+<span class="linenos">27</span><span class="s2">    device = dpctl.select_default_device()</span>
+<span class="linenos">28</span><span class="s2">    if device.has_aspect_fp64:</span>
+<span class="linenos">29</span><span class="s2">        _dtypes_list.append(numpy.float64)</span>
+<span class="linenos">30</span><span class="s2">    return _dtypes_list</span>
+<span class="linenos">31</span>
 <span class="linenos">32</span>
-<span class="linenos">33</span>
-<span class="linenos">34</span><span class="s2">def example():</span>
-<span class="linenos">35</span><span class="s2">    test_repetition = 5</span>
-<span class="linenos">36</span><span class="s2">    for test_type in get_dtypes():</span>
-<span class="linenos">37</span><span class="s2">        type_name = numpy.dtype(test_type).name</span>
-<span class="linenos">38</span><span class="s2">        print(</span>
-<span class="linenos">39</span><span class="s2">            f&quot;...Test data type is </span><span class="si">{type_name}</span><span class="s2">, each test repetitions </span><span class="si">{test_repetition}</span><span class="s2">&quot;</span>
-<span class="linenos">40</span><span class="s2">        )</span>
-<span class="linenos">41</span>
-<span class="linenos">42</span><span class="s2">        for size in [64, 128, 256, 512, 1024, 2048, 4096]:</span>
-<span class="linenos">43</span><span class="s2">            time_numpy, result_numpy = run(</span>
-<span class="linenos">44</span><span class="s2">                numpy, size, test_type, test_repetition</span>
-<span class="linenos">45</span><span class="s2">            )</span>
-<span class="linenos">46</span><span class="s2">            time_dpnp, result_dpnp = run(dpnp, size, test_type, test_repetition)</span>
-<span class="linenos">47</span>
-<span class="linenos">48</span><span class="s2">            if result_dpnp == result_numpy:</span>
-<span class="linenos">49</span><span class="s2">                verification = True</span>
-<span class="linenos">50</span><span class="s2">            else:</span>
-<span class="linenos">51</span><span class="s2">                verification = f&quot;(</span><span class="si">{result_dpnp}</span><span class="s2"> != </span><span class="si">{result_numpy}</span><span class="s2">)&quot;</span>
-<span class="linenos">52</span>
-<span class="linenos">53</span><span class="s2">            msg = f&quot;type:</span><span class="si">{type_name}</span><span class="s2">:N:</span><span class="si">{size:4}</span><span class="s2">:NumPy:</span><span class="si">{time_numpy:.3e}</span><span class="s2">:DPNP:</span><span class="si">{time_dpnp:.3e}</span><span class="s2">&quot;</span>
-<span class="linenos">54</span><span class="s2">            msg += f&quot;:ratio:{time_numpy/time_dpnp:6.2f}:verification:</span><span class="si">{verification}</span><span class="s2">&quot;</span>
-<span class="linenos">55</span><span class="s2">            print(msg)</span>
+<span class="linenos">33</span><span class="s2">def example():</span>
+<span class="linenos">34</span><span class="s2">    test_repetition = 5</span>
+<span class="linenos">35</span><span class="s2">    for test_type in get_dtypes():</span>
+<span class="linenos">36</span><span class="s2">        type_name = numpy.dtype(test_type).name</span>
+<span class="linenos">37</span><span class="s2">        print(</span>
+<span class="linenos">38</span><span class="s2">            f&quot;...Test data type is </span><span class="si">{type_name}</span><span class="s2">, each test repetitions </span><span class="si">{test_repetition}</span><span class="s2">&quot;</span>
+<span class="linenos">39</span><span class="s2">        )</span>
+<span class="linenos">40</span>
+<span class="linenos">41</span><span class="s2">        for size in [64, 128, 256, 512, 1024, 2048, 4096]:</span>
+<span class="linenos">42</span><span class="s2">            time_numpy, result_numpy = run(</span>
+<span class="linenos">43</span><span class="s2">                numpy, size, test_type, test_repetition</span>
+<span class="linenos">44</span><span class="s2">            )</span>
+<span class="linenos">45</span><span class="s2">            time_dpnp, result_dpnp = run(dpnp, size, test_type, test_repetition)</span>
+<span class="linenos">46</span>
+<span class="linenos">47</span><span class="s2">            if result_dpnp == result_numpy:</span>
+<span class="linenos">48</span><span class="s2">                verification = True</span>
+<span class="linenos">49</span><span class="s2">            else:</span>
+<span class="linenos">50</span><span class="s2">                verification = f&quot;(</span><span class="si">{result_dpnp}</span><span class="s2"> != </span><span class="si">{result_numpy}</span><span class="s2">)&quot;</span>
+<span class="linenos">51</span>
+<span class="linenos">52</span><span class="s2">            msg = f&quot;type:</span><span class="si">{type_name}</span><span class="s2">:N:</span><span class="si">{size:4}</span><span class="s2">:NumPy:</span><span class="si">{time_numpy:.3e}</span><span class="s2">:DPNP:</span><span class="si">{time_dpnp:.3e}</span><span class="s2">&quot;</span>
+<span class="linenos">53</span><span class="s2">            msg += f&quot;:ratio:{time_numpy/time_dpnp:6.2f}:verification:</span><span class="si">{verification}</span><span class="s2">&quot;</span>
+<span class="linenos">54</span><span class="s2">            print(msg)</span>
+<span class="linenos">55</span>
 <span class="linenos">56</span>
-<span class="linenos">57</span>
-<span class="linenos">58</span><span class="s2">if __name__ == &quot;__main__&quot;:</span>
-<span class="linenos">59</span><span class="s2">    import dpctl</span>
-<span class="linenos">60</span>
-<span class="linenos">61</span><span class="s2">    dpctl.select_default_device().print_device_info()</span>
-<span class="linenos">62</span><span class="s2">    example()</span>
+<span class="linenos">57</span><span class="s2">if __name__ == &quot;__main__&quot;:</span>
+<span class="linenos">58</span><span class="s2">    import dpctl</span>
+<span class="linenos">59</span>
+<span class="linenos">60</span><span class="s2">    dpctl.select_default_device().print_device_info()</span>
+<span class="linenos">61</span><span class="s2">    example()</span>
 </pre></div>
 </div>
 </section>
@@ -183,7 +182,7 @@ documentation.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

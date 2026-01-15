@@ -51,6 +51,9 @@
          ndarray.swapaxes
          ndarray.take
          ndarray.to_device
+         ndarray.tobytes
+         ndarray.tofile
+         ndarray.tolist
          ndarray.trace
          ndarray.transpose
          ndarray.var

@@ -1,10 +1,12 @@
 .. _array-api-standard-compatibility:
 
-.. https://numpy.org/doc/stable/reference/array_api.html
+.. currentmodule:: dpnp
 
 ********************************
 Array API standard compatibility
 ********************************
+
+.. hint:: `NumPy API Reference: Array API standard compatibility <https://numpy.org/doc/stable/reference/array_api.html>`_
 
 DPNP's main namespace as well as the :mod:`dpnp.fft` and :mod:`dpnp.linalg`
 namespaces are compatible with the
@@ -23,4 +25,4 @@ function, which returns a namespace containing the inspection utilities.
    :toctree: generated/
    :nosignatures:
 
-   dpnp.__array_namespace_info__
+   __array_namespace_info__

@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.20.0dev0</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.20.0dev1</span>
    </div>
    <div id="projectbrief">Data Parallel Extension for NumPy*</div>
   </td>
@@ -119,10 +119,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga2c1f63f22354673088112c4f248c98a2"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ga2c1f63f22354673088112c4f248c98a2">dpnp_initval_c</a> (DPCTLSyclQueueRef q_ref, void *result1, void *value, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:ga2c1f63f22354673088112c4f248c98a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">implementation of creating filled with value array function  <br /></td></tr>
 <tr class="separator:ga2c1f63f22354673088112c4f248c98a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab66364798efa3d954afdc1659383ee54" id="r_gab66364798efa3d954afdc1659383ee54"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input , typename _DataType_output &gt; </td></tr>
-<tr class="memitem:gab66364798efa3d954afdc1659383ee54"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#gab66364798efa3d954afdc1659383ee54">dpnp_modf_c</a> (DPCTLSyclQueueRef q_ref, void *array1_in, void *result1_out, void *result2_out, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
-<tr class="memdesc:gab66364798efa3d954afdc1659383ee54"><td class="mdescLeft">&#160;</td><td class="mdescRight">modf function.  <br /></td></tr>
-<tr class="separator:gab66364798efa3d954afdc1659383ee54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga709d9a7ac1174112ecc6d807e0c0a1e4" id="r_ga709d9a7ac1174112ecc6d807e0c0a1e4"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga709d9a7ac1174112ecc6d807e0c0a1e4"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ga709d9a7ac1174112ecc6d807e0c0a1e4">dpnp_ones_c</a> (DPCTLSyclQueueRef q_ref, void *result, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:ga709d9a7ac1174112ecc6d807e0c0a1e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of ones function.  <br /></td></tr>
@@ -243,62 +239,6 @@ template&lt;typename _DataType &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A pointer to newly created memory on SYCL device. </dd></dl>
-
-</div>
-</div>
-<a id="gab66364798efa3d954afdc1659383ee54" name="gab66364798efa3d954afdc1659383ee54"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab66364798efa3d954afdc1659383ee54">&#9670;&#160;</a></span>dpnp_modf_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">DPCTLSyclEventRef dpnp_modf_c </td>
-          <td>(</td>
-          <td class="paramtype">DPCTLSyclQueueRef</td>          <td class="paramname"><span class="paramname"><em>q_ref</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>array1_in</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>result1_out</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>result2_out</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DPCTLEventVectorRef</td>          <td class="paramname"><span class="paramname"><em>dep_event_vec_ref</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>modf function. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>Input array. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result1_out</td><td>Output array 1. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result2_out</td><td>Output array 2. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in input arrays. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>

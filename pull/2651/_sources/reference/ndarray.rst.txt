@@ -1,17 +1,19 @@
-Multi-Dimensional Array (ndarray)
-=================================
+.. currentmodule:: dpnp
 
-:class:`dpnp.ndarray` is the DPNP counterpart of NumPy :class:`numpy.ndarray`.
+The N-dimensional array (:class:`ndarray <ndarray>`)
+=========================================================
 
-For the basic concept of ``ndarray``\s, please refer to the `NumPy documentation <https://docs.scipy.org/doc/numpy/reference/arrays.ndarray.html>`_.
+:class:`ndarray` is the DPNP counterpart of NumPy :class:`numpy.ndarray`.
+
+For the basic concept of ``ndarray``\s, please refer to the `NumPy documentation <https://numpy.org/doc/stable/reference/arrays.ndarray.html>`_.
 
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray
-   dpnp.dpnp_array.dpnp_array
+   ndarray
+   dpnp_array.dpnp_array
 
 
 Constructing arrays
@@ -19,13 +21,13 @@ Constructing arrays
 
 New arrays can be constructed using the routines detailed in
 :ref:`Array Creation Routines <routines.array-creation>`, and also by using the low-level
-:class:`dpnp.ndarray` constructor:
+:class:`ndarray` constructor:
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray
+   ndarray
 
 
 Indexing arrays
@@ -58,19 +60,19 @@ of the array:
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.flags
-   dpnp.ndarray.shape
-   dpnp.ndarray.strides
-   dpnp.ndarray.ndim
-   dpnp.ndarray.data
-   dpnp.ndarray.size
-   dpnp.ndarray.itemsize
-   dpnp.ndarray.nbytes
-   dpnp.ndarray.device
-   dpnp.ndarray.sycl_context
-   dpnp.ndarray.sycl_device
-   dpnp.ndarray.sycl_queue
-   dpnp.ndarray.usm_type
+   ndarray.flags
+   ndarray.shape
+   ndarray.strides
+   ndarray.ndim
+   ndarray.data
+   ndarray.size
+   ndarray.itemsize
+   ndarray.nbytes
+   ndarray.device
+   ndarray.sycl_context
+   ndarray.sycl_device
+   ndarray.sycl_queue
+   ndarray.usm_type
 
 
 Data type
@@ -79,13 +81,13 @@ Data type
 .. seealso:: :ref:`Available array data types <Data types>`
 
 The data type object associated with the array can be found in the
-:attr:`dtype <dpnp.ndarray.dtype>` attribute:
+:attr:`dtype <ndarray.dtype>` attribute:
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.dtype
+   ndarray.dtype
 
 
 Other attributes
@@ -95,11 +97,11 @@ Other attributes
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.T
-   dpnp.ndarray.mT
-   dpnp.ndarray.real
-   dpnp.ndarray.imag
-   dpnp.ndarray.flat
+   ndarray.T
+   ndarray.mT
+   ndarray.real
+   ndarray.imag
+   ndarray.flat
 
 
 Special attributes
@@ -109,35 +111,35 @@ Special attributes
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__sycl_usm_array_interface__
-   dpnp.ndarray.__usm_ndarray__
+   ndarray.__sycl_usm_array_interface__
+   ndarray.__usm_ndarray__
 
 
 Array methods
 -------------
 
-An :class:`dpnp.ndarray` object has many methods which operate on or with
+An :class:`ndarray` object has many methods which operate on or with
 the array in some fashion, typically returning an array result. These
 methods are briefly explained below. (Each method's docstring has a
 more complete description.)
 
 For the following methods there are also corresponding functions in
-:mod:`dpnp`: :func:`all <dpnp.all>`, :func:`any <dpnp.any>`,
-:func:`argmax <dpnp.argmax>`, :func:`argmin <dpnp.argmin>`,
-:func:`argpartition <dpnp.argpartition>`, :func:`argsort <dpnp.argsort>`,
-:func:`choose <dpnp.choose>`, :func:`clip <dpnp.clip>`,
-:func:`compress <dpnp.compress>`, :func:`copy <dpnp.copy>`,
-:func:`cumprod <dpnp.cumprod>`, :func:`cumsum <dpnp.cumsum>`,
-:func:`diagonal <dpnp.diagonal>`, :func:`imag <dpnp.imag>`,
-:func:`max <dpnp.max>`, :func:`mean <dpnp.mean>`, :func:`min <dpnp.min>`,
-:func:`nonzero <dpnp.nonzero>`, :func:`partition <dpnp.partition>`,
-:func:`prod <dpnp.prod>`, :func:`put <dpnp.put>`,
-:func:`ravel <dpnp.ravel>`, :func:`real <dpnp.real>`, :func:`repeat <dpnp.repeat>`,
-:func:`reshape <dpnp.reshape>`, :func:`round <dpnp.around>`,
-:func:`searchsorted <dpnp.searchsorted>`, :func:`sort <dpnp.sort>`,
-:func:`squeeze <dpnp.squeeze>`, :func:`std <dpnp.std>`, :func:`sum <dpnp.sum>`,
-:func:`swapaxes <dpnp.swapaxes>`, :func:`take <dpnp.take>`, :func:`trace <dpnp.trace>`,
-:func:`transpose <dpnp.transpose>`, :func:`var <dpnp.var>`.
+:mod:`dpnp`: :func:`all <all>`, :func:`any <any>`,
+:func:`argmax <argmax>`, :func:`argmin <argmin>`,
+:func:`argpartition <argpartition>`, :func:`argsort <argsort>`,
+:func:`choose <choose>`, :func:`clip <clip>`,
+:func:`compress <compress>`, :func:`copy <copy>`,
+:func:`cumprod <cumprod>`, :func:`cumsum <cumsum>`,
+:func:`diagonal <diagonal>`, :func:`imag <imag>`,
+:func:`max <max>`, :func:`mean <mean>`, :func:`min <min>`,
+:func:`nonzero <nonzero>`, :func:`partition <partition>`,
+:func:`prod <prod>`, :func:`put <put>`,
+:func:`ravel <ravel>`, :func:`real <real>`, :func:`repeat <repeat>`,
+:func:`reshape <reshape>`, :func:`round <around>`,
+:func:`searchsorted <searchsorted>`, :func:`sort <sort>`,
+:func:`squeeze <squeeze>`, :func:`std <std>`, :func:`sum <sum>`,
+:func:`swapaxes <swapaxes>`, :func:`take <take>`, :func:`trace <trace>`,
+:func:`transpose <transpose>`, :func:`var <var>`.
 
 
 Array conversion
@@ -147,20 +149,20 @@ Array conversion
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.item
-   dpnp.ndarray.tolist
-   dpnp.ndarray.tobytes
-   dpnp.ndarray.tofile
-   dpnp.ndarray.dump
-   dpnp.ndarray.dumps
-   dpnp.ndarray.astype
-   dpnp.ndarray.byteswap
-   dpnp.ndarray.copy
-   dpnp.ndarray.view
-   dpnp.ndarray.getfield
-   dpnp.ndarray.setflags
-   dpnp.ndarray.fill
-   dpnp.ndarray.get_array
+   ndarray.item
+   ndarray.tolist
+   ndarray.tobytes
+   ndarray.tofile
+   ndarray.dump
+   ndarray.dumps
+   ndarray.astype
+   ndarray.byteswap
+   ndarray.copy
+   ndarray.view
+   ndarray.getfield
+   ndarray.setflags
+   ndarray.fill
+   ndarray.get_array
 
 
 Shape manipulation
@@ -173,13 +175,13 @@ replaced with ``n`` integers which will be interpreted as an n-tuple.
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.reshape
-   dpnp.ndarray.resize
-   dpnp.ndarray.transpose
-   dpnp.ndarray.swapaxes
-   dpnp.ndarray.flatten
-   dpnp.ndarray.ravel
-   dpnp.ndarray.squeeze
+   ndarray.reshape
+   ndarray.resize
+   ndarray.transpose
+   ndarray.swapaxes
+   ndarray.flatten
+   ndarray.ravel
+   ndarray.squeeze
 
 
 Item selection and manipulation
@@ -194,18 +196,18 @@ the operation should proceed.
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.take
-   dpnp.ndarray.put
-   dpnp.ndarray.repeat
-   dpnp.ndarray.choose
-   dpnp.ndarray.sort
-   dpnp.ndarray.argsort
-   dpnp.ndarray.partition
-   dpnp.ndarray.argpartition
-   dpnp.ndarray.searchsorted
-   dpnp.ndarray.nonzero
-   dpnp.ndarray.compress
-   dpnp.ndarray.diagonal
+   ndarray.take
+   ndarray.put
+   ndarray.repeat
+   ndarray.choose
+   ndarray.sort
+   ndarray.argsort
+   ndarray.partition
+   ndarray.argpartition
+   ndarray.searchsorted
+   ndarray.nonzero
+   ndarray.compress
+   ndarray.diagonal
 
 
 Calculation
@@ -227,7 +229,7 @@ reduction using a larger data type.
 
 For several methods, an optional *out* argument can also be provided and the
 result will be placed into the output array given. The *out* argument must be
-an :class:`dpnp.ndarray` and have the same number of elements as the result
+an :class:`ndarray` and have the same number of elements as the result
 array. It can have a different data type in which case casting will be
 performed.
 
@@ -235,32 +237,32 @@ performed.
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.max
-   dpnp.ndarray.argmax
-   dpnp.ndarray.min
-   dpnp.ndarray.argmin
-   dpnp.ndarray.clip
-   dpnp.ndarray.conj
-   dpnp.ndarray.conjugate
-   dpnp.ndarray.round
-   dpnp.ndarray.trace
-   dpnp.ndarray.sum
-   dpnp.ndarray.cumsum
-   dpnp.ndarray.mean
-   dpnp.ndarray.var
-   dpnp.ndarray.std
-   dpnp.ndarray.prod
-   dpnp.ndarray.cumprod
-   dpnp.ndarray.all
-   dpnp.ndarray.any
+   ndarray.max
+   ndarray.argmax
+   ndarray.min
+   ndarray.argmin
+   ndarray.clip
+   ndarray.conj
+   ndarray.conjugate
+   ndarray.round
+   ndarray.trace
+   ndarray.sum
+   ndarray.cumsum
+   ndarray.mean
+   ndarray.var
+   ndarray.std
+   ndarray.prod
+   ndarray.cumprod
+   ndarray.all
+   ndarray.any
 
 
 Arithmetic, matrix multiplication, and comparison operations
 ------------------------------------------------------------
 
-Arithmetic and comparison operations on :class:`dpnp.ndarrays <dpnp.ndarray>`
+Arithmetic and comparison operations on :class:`ndarrays <ndarray>`
 are defined as element-wise operations, and generally yield
-:class:`dpnp.ndarray` objects as results.
+:class:`ndarray` objects as results.
 
 Each of the arithmetic operations (``+``, ``-``, ``*``, ``/``, ``//``, ``%``,
 ``divmod()``, ``**`` or ``pow()``, ``<<``, ``>>``, ``&``, ``^``, ``|``, ``~``)
@@ -276,12 +278,12 @@ Comparison operators:
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__lt__
-   dpnp.ndarray.__le__
-   dpnp.ndarray.__gt__
-   dpnp.ndarray.__ge__
-   dpnp.ndarray.__eq__
-   dpnp.ndarray.__ne__
+   ndarray.__lt__
+   ndarray.__le__
+   ndarray.__gt__
+   ndarray.__ge__
+   ndarray.__eq__
+   ndarray.__ne__
 
 Truth value of an array (:class:`bool() <bool>`):
 
@@ -289,15 +291,15 @@ Truth value of an array (:class:`bool() <bool>`):
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__bool__
+   ndarray.__bool__
 
 .. note::
 
    Truth-value testing of an array invokes
-   :meth:`dpnp.ndarray.__bool__`, which raises an error if the number of
+   :meth:`ndarray.__bool__`, which raises an error if the number of
    elements in the array is not 1, because the truth value
-   of such arrays is ambiguous. Use :meth:`.any() <dpnp.ndarray.any>` and
-   :meth:`.all() <dpnp.ndarray.all>` instead to be clear about what is meant
+   of such arrays is ambiguous. Use :meth:`.any() <ndarray.any>` and
+   :meth:`.all() <ndarray.all>` instead to be clear about what is meant
    in such cases. (If you wish to check for whether an array is empty,
    use for example ``.size > 0``.)
 
@@ -308,10 +310,10 @@ Unary operations:
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__neg__
-   dpnp.ndarray.__pos__
-   dpnp.ndarray.__abs__
-   dpnp.ndarray.__invert__
+   ndarray.__neg__
+   ndarray.__pos__
+   ndarray.__abs__
+   ndarray.__invert__
 
 
 Arithmetic:
@@ -320,19 +322,19 @@ Arithmetic:
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__add__
-   dpnp.ndarray.__sub__
-   dpnp.ndarray.__mul__
-   dpnp.ndarray.__truediv__
-   dpnp.ndarray.__floordiv__
-   dpnp.ndarray.__mod__
-   dpnp.ndarray.__divmod__
-   dpnp.ndarray.__pow__
-   dpnp.ndarray.__lshift__
-   dpnp.ndarray.__rshift__
-   dpnp.ndarray.__and__
-   dpnp.ndarray.__or__
-   dpnp.ndarray.__xor__
+   ndarray.__add__
+   ndarray.__sub__
+   ndarray.__mul__
+   ndarray.__truediv__
+   ndarray.__floordiv__
+   ndarray.__mod__
+   ndarray.__divmod__
+   ndarray.__pow__
+   ndarray.__lshift__
+   ndarray.__rshift__
+   ndarray.__and__
+   ndarray.__or__
+   ndarray.__xor__
 
 
 Arithmetic, reflected:
@@ -341,18 +343,19 @@ Arithmetic, reflected:
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__radd__
-   dpnp.ndarray.__rsub__
-   dpnp.ndarray.__rmul__
-   dpnp.ndarray.__rtruediv__
-   dpnp.ndarray.__rfloordiv__
-   dpnp.ndarray.__rmod__
-   dpnp.ndarray.__rpow__
-   dpnp.ndarray.__rlshift__
-   dpnp.ndarray.__rrshift__
-   dpnp.ndarray.__rand__
-   dpnp.ndarray.__ror__
-   dpnp.ndarray.__rxor__
+   ndarray.__radd__
+   ndarray.__rsub__
+   ndarray.__rmul__
+   ndarray.__rtruediv__
+   ndarray.__rfloordiv__
+   ndarray.__rmod__
+   ndarray.__rdivmod__
+   ndarray.__rpow__
+   ndarray.__rlshift__
+   ndarray.__rrshift__
+   ndarray.__rand__
+   ndarray.__ror__
+   ndarray.__rxor__
 
 
 Arithmetic, in-place:
@@ -361,18 +364,18 @@ Arithmetic, in-place:
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__iadd__
-   dpnp.ndarray.__isub__
-   dpnp.ndarray.__imul__
-   dpnp.ndarray.__itruediv__
-   dpnp.ndarray.__ifloordiv__
-   dpnp.ndarray.__imod__
-   dpnp.ndarray.__ipow__
-   dpnp.ndarray.__ilshift__
-   dpnp.ndarray.__irshift__
-   dpnp.ndarray.__iand__
-   dpnp.ndarray.__ior__
-   dpnp.ndarray.__ixor__
+   ndarray.__iadd__
+   ndarray.__isub__
+   ndarray.__imul__
+   ndarray.__itruediv__
+   ndarray.__ifloordiv__
+   ndarray.__imod__
+   ndarray.__ipow__
+   ndarray.__ilshift__
+   ndarray.__irshift__
+   ndarray.__iand__
+   ndarray.__ior__
+   ndarray.__ixor__
 
 
 Matrix Multiplication:
@@ -381,9 +384,9 @@ Matrix Multiplication:
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__matmul__
-   dpnp.ndarray.__rmatmul__
-   dpnp.ndarray.__imatmul__
+   ndarray.__matmul__
+   ndarray.__rmatmul__
+   ndarray.__imatmul__
 
 
 Special methods
@@ -395,10 +398,10 @@ For standard library functions:
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__copy__
-   dpnp.ndarray.__deepcopy__
-   .. dpnp.ndarray.__reduce__
-   dpnp.ndarray.__setstate__
+   ndarray.__copy__
+   ndarray.__deepcopy__
+   .. ndarray.__reduce__
+   ndarray.__setstate__
 
 Basic customization:
 
@@ -406,12 +409,12 @@ Basic customization:
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__new__
-   dpnp.ndarray.__array__
-   dpnp.ndarray.__array_namespace__
-   dpnp.ndarray.__array_wrap__
-   dpnp.ndarray.__dlpack__
-   dpnp.ndarray.__dlpack_device__
+   ndarray.__new__
+   ndarray.__array__
+   ndarray.__array_namespace__
+   ndarray.__array_wrap__
+   ndarray.__dlpack__
+   ndarray.__dlpack_device__
 
 Container customization: (see :ref:`Indexing <routines.indexing>`)
 
@@ -419,11 +422,11 @@ Container customization: (see :ref:`Indexing <routines.indexing>`)
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__len__
-   dpnp.ndarray.__iter__
-   dpnp.ndarray.__getitem__
-   dpnp.ndarray.__setitem__
-   dpnp.ndarray.__contains__
+   ndarray.__len__
+   ndarray.__iter__
+   ndarray.__getitem__
+   ndarray.__setitem__
+   ndarray.__contains__
 
 Conversion; the operations :class:`int() <int>`, :class:`float() <float>`,
 :class:`complex() <complex>` and :func:`operator.index() <operator.index>`.
@@ -434,10 +437,11 @@ and return the appropriate scalar.
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__index__
-   dpnp.ndarray.__int__
-   dpnp.ndarray.__float__
-   dpnp.ndarray.__complex__
+   ndarray.__bytes__
+   ndarray.__index__
+   ndarray.__int__
+   ndarray.__float__
+   ndarray.__complex__
 
 String representations:
 
@@ -445,5 +449,6 @@ String representations:
    :toctree: generated/
    :nosignatures:
 
-   dpnp.ndarray.__str__
-   dpnp.ndarray.__repr__
+   ndarray.__str__
+   ndarray.__repr__
+   ndarray.__format__

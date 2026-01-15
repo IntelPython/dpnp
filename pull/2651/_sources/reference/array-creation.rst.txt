@@ -1,9 +1,11 @@
 .. _routines.array-creation:
 
+.. currentmodule:: dpnp
+
 Array creation routines
 =======================
 
-.. https://numpy.org/doc/stable/reference/routines.array-creation.html
+.. hint:: `NumPy API Reference: Array creation routines <https://numpy.org/doc/stable/reference/routines.array-creation.html>`_
 
 From shape or value
 -----------------------
@@ -12,16 +14,16 @@ From shape or value
    :toctree: generated/
    :nosignatures:
 
-   dpnp.empty
-   dpnp.empty_like
-   dpnp.eye
-   dpnp.identity
-   dpnp.ones
-   dpnp.ones_like
-   dpnp.zeros
-   dpnp.zeros_like
-   dpnp.full
-   dpnp.full_like
+   empty
+   empty_like
+   eye
+   identity
+   ones
+   ones_like
+   zeros
+   zeros_like
+   full
+   full_like
 
 
 From existing data
@@ -31,19 +33,19 @@ From existing data
    :toctree: generated/
    :nosignatures:
 
-   dpnp.array
-   dpnp.asarray
-   dpnp.asanyarray
-   dpnp.ascontiguousarray
-   dpnp.astype
-   dpnp.copy
-   dpnp.frombuffer
-   dpnp.from_dlpack
-   dpnp.fromfile
-   dpnp.fromfunction
-   dpnp.fromiter
-   dpnp.fromstring
-   dpnp.loadtxt
+   array
+   asarray
+   asanyarray
+   ascontiguousarray
+   astype
+   copy
+   frombuffer
+   from_dlpack
+   fromfile
+   fromfunction
+   fromiter
+   fromstring
+   loadtxt
 
 
 Numerical ranges
@@ -53,13 +55,13 @@ Numerical ranges
    :toctree: generated/
    :nosignatures:
 
-   dpnp.arange
-   dpnp.linspace
-   dpnp.logspace
-   dpnp.geomspace
-   dpnp.meshgrid
-   dpnp.mgrid
-   dpnp.ogrid
+   arange
+   linspace
+   logspace
+   geomspace
+   meshgrid
+   mgrid
+   ogrid
 
 
 Building matrices
@@ -69,18 +71,9 @@ Building matrices
    :toctree: generated/
    :nosignatures:
 
-   dpnp.diag
-   dpnp.diagflat
-   dpnp.tri
-   dpnp.tril
-   dpnp.triu
-   dpnp.vander
-
-
-The Matrix class
-----------------
-.. autosummary::
-   :toctree: generated/
-   :nosignatures:
-
-   dpnp.bmat
+   diag
+   diagflat
+   tri
+   tril
+   triu
+   vander

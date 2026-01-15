@@ -1,7 +1,19 @@
+.. currentmodule:: dpnp
+
 Miscellaneous routines
 ======================
 
-.. https://numpy.org/doc/stable/reference/routines.other.html
+.. hint:: `NumPy API Reference: Miscellaneous routines <https://numpy.org/doc/stable/reference/routines.other.html>`_
+
+Memory ranges
+-------------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   byte_bounds
+
 
 Utility
 -------
@@ -10,8 +22,7 @@ Utility
    :toctree: generated/
    :nosignatures:
 
-   dpnp.byte_bounds
-   dpnp.get_include
-   dpnp.show_config
-   dpnp.show_runtime
-   dpnp.broadcast_shapes
+   get_include
+   show_config
+   show_runtime
+   broadcast_shapes

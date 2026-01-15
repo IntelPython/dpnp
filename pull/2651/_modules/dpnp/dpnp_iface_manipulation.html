@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.20.0dev0+29.g9ab14a880a3 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.20.0dev1+46.g2be7e2529e2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ffe00f2b"></script>
+      <script src="../../_static/documentation_options.js?v=f4be9c62"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -83,8 +83,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dpnp.dpnp_iface_manipulation</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="c1"># *****************************************************************************</span>
+<span></span><span class="c1"># *****************************************************************************</span>
 <span class="c1"># Copyright (c) 2016, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
@@ -125,8 +124,6 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-
-<span class="c1"># pylint: disable=duplicate-code</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
@@ -181,67 +178,6 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UniqueInverseResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="n">inverse_indices</span><span class="p">:</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span>
-
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;append&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;array_split&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;asarray_chkfinite&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;asfarray&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;atleast_1d&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;atleast_2d&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;atleast_3d&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;broadcast_arrays&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;broadcast_shapes&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;broadcast_to&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;can_cast&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;column_stack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;concat&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;concatenate&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;copyto&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;delete&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dsplit&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;dstack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;expand_dims&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;flip&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fliplr&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;flipud&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;hsplit&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;hstack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;insert&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;matrix_transpose&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;moveaxis&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ndim&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;pad&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;permute_dims&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ravel&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;repeat&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;require&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;reshape&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;resize&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;result_type&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;roll&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rollaxis&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rot90&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;row_stack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;shape&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;size&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;split&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;squeeze&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;stack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;swapaxes&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;tile&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;transpose&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trim_zeros&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_all&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_counts&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_inverse&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unique_values&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;unstack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;vsplit&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;vstack&quot;</span><span class="p">,</span>
-<span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_stack_arrays</span><span class="p">(</span><span class="n">arrays</span><span class="p">):</span>
@@ -990,6 +926,11 @@
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        The input `a` as a float ndarray.</span>
 
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This function is deprecated in favor of :obj:`dpnp.asarray` and</span>
+<span class="sd">    will be removed in a future release.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
@@ -1001,6 +942,14 @@
 <span class="sd">    array([2.,  3.])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;`dpnp.asfarray` is deprecated, &quot;</span>
+        <span class="s2">&quot;and will be removed in a future release. &quot;</span>
+        <span class="s2">&quot;Please use `dpnp.asarray` with an appropriate dtype instead.&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
@@ -3181,7 +3130,7 @@
 
 <div class="viewcode-block" id="reshape">
 <a class="viewcode-back" href="../../reference/generated/dpnp.reshape.html#dpnp.reshape">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">reshape</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">reshape</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gives a new shape to an array without changing its data.</span>
 
@@ -3196,8 +3145,6 @@
 <span class="sd">        an integer, then the result will be a 1-D array of that length.</span>
 <span class="sd">        One shape dimension can be -1. In this case, the value is</span>
 <span class="sd">        inferred from the length of the array and remaining dimensions.</span>
-
-<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;}, optional</span>
 <span class="sd">        Read the elements of `a` using this index order, and place the</span>
 <span class="sd">        elements into the reshaped array using this index order. ``&quot;C&quot;``</span>
@@ -3213,10 +3160,6 @@
 <span class="sd">        Fortran *contiguous* in memory, C-like order otherwise.</span>
 
 <span class="sd">        Default: ``&quot;C&quot;``.</span>
-<span class="sd">    newshape : int or tuple of ints</span>
-<span class="sd">        Replaced by `shape` argument. Retained for backward compatibility.</span>
-
-<span class="sd">        Default: ``None``.</span>
 <span class="sd">    copy : {None, bool}, optional</span>
 <span class="sd">        If ``True``, then the array data is copied. If ``None``, a copy will</span>
 <span class="sd">        only be made if it&#39;s required by ``order``. For ``False`` it raises</span>
@@ -3284,27 +3227,6 @@
 <span class="sd">           [5, 6]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">newshape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;reshape() missing 1 required positional argument: &#39;shape&#39;&quot;</span>
-        <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">newshape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;You cannot specify &#39;newshape&#39; and &#39;shape&#39; arguments &quot;</span>
-                <span class="s2">&quot;at the same time.&quot;</span>
-            <span class="p">)</span>
-        <span class="c1"># Deprecated in dpnp 0.17.0</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;`newshape` keyword argument is deprecated, &quot;</span>
-            <span class="s2">&quot;use `shape=...` or pass shape positionally instead. &quot;</span>
-            <span class="s2">&quot;(deprecated in dpnp 0.17.0)&quot;</span><span class="p">,</span>
-            <span class="ne">DeprecationWarning</span><span class="p">,</span>
-            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="n">newshape</span>
 
     <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
@@ -5003,7 +4925,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

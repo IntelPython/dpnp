@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.20.0dev0+29.g9ab14a880a3 documentation</title>
+  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.20.0dev1+46.g2be7e2529e2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=ffe00f2b"></script>
+      <script src="_static/documentation_options.js?v=f4be9c62"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -275,42 +275,40 @@ by the source, you will need to run a command as below:</p>
 <p>The examples below demonstrates a simple usage of the Data Parallel Extension for NumPy*</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">How to create an array and to sum the elements</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>
-<span class="linenos"> 2</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="s2">import dpnp as np</span>
-<span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="s2">x = np.asarray([1, 2, 3])</span>
-<span class="linenos"> 7</span><span class="s2">print(&quot;Array x allocated on the device:&quot;, x.device)</span>
-<span class="linenos"> 8</span>
-<span class="linenos"> 9</span><span class="s2">y = np.sum(x)</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="s2">print(&quot;Result y is located on the device:&quot;, y.device)  # The same device as x</span>
-<span class="linenos">12</span><span class="s2">print(&quot;Shape of y is:&quot;, y.shape)  # 0-dimensional array</span>
-<span class="linenos">13</span><span class="s2">print(&quot;y =&quot;, y)  # Expect 6</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="s2">import dpnp as np</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="s2">x = np.asarray([1, 2, 3])</span>
+<span class="linenos"> 6</span><span class="s2">print(&quot;Array x allocated on the device:&quot;, x.device)</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="s2">y = np.sum(x)</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="s2">print(&quot;Result y is located on the device:&quot;, y.device)  # The same device as x</span>
+<span class="linenos">11</span><span class="s2">print(&quot;Shape of y is:&quot;, y.shape)  # 0-dimensional array</span>
+<span class="linenos">12</span><span class="s2">print(&quot;y =&quot;, y)  # Expect 6</span>
 </pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">How to create an array on the specific device type and how the next computations follow it</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>
-<span class="linenos"> 2</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="s2">import dpnp as np</span>
-<span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="s2">x = np.empty(3)</span>
-<span class="linenos"> 7</span><span class="s2">try:</span>
-<span class="linenos"> 8</span><span class="s2">    x = np.asarray([1, 2, 3], device=&quot;gpu&quot;)</span>
-<span class="linenos"> 9</span><span class="s2">except Exception:</span>
-<span class="linenos">10</span><span class="s2">    print(&quot;GPU device is not available&quot;)</span>
-<span class="linenos">11</span>
-<span class="linenos">12</span><span class="s2">print(&quot;Array x allocated on the device:&quot;, x.device)</span>
-<span class="linenos">13</span>
-<span class="linenos">14</span><span class="s2">y = np.sum(x)</span>
-<span class="linenos">15</span>
-<span class="linenos">16</span><span class="s2">print(&quot;Result y is located on the device:&quot;, y.device)  # The same device as x</span>
-<span class="linenos">17</span><span class="s2">print(&quot;Shape of y is:&quot;, y.shape)  # 0-dimensional array</span>
-<span class="linenos">18</span><span class="s2">print(&quot;y=&quot;, y)  # Expect 6</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="s2">import dpnp as np</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="s2">x = np.empty(3)</span>
+<span class="linenos"> 6</span><span class="s2">try:</span>
+<span class="linenos"> 7</span><span class="s2">    x = np.asarray([1, 2, 3], device=&quot;gpu&quot;)</span>
+<span class="linenos"> 8</span><span class="s2">except Exception:</span>
+<span class="linenos"> 9</span><span class="s2">    print(&quot;GPU device is not available&quot;)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="s2">print(&quot;Array x allocated on the device:&quot;, x.device)</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="s2">y = np.sum(x)</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="s2">print(&quot;Result y is located on the device:&quot;, y.device)  # The same device as x</span>
+<span class="linenos">16</span><span class="s2">print(&quot;Shape of y is:&quot;, y.shape)  # 0-dimensional array</span>
+<span class="linenos">17</span><span class="s2">print(&quot;y=&quot;, y)  # Expect 6</span>
 </pre></div>
 </div>
 </div>
@@ -329,7 +327,7 @@ by the source, you will need to run a command as below:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

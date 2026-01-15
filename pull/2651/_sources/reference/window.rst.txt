@@ -1,7 +1,9 @@
+.. currentmodule:: dpnp
+
 Window functions
 ================
 
-.. https://numpy.org/doc/stable/reference/routines.window.html
+.. hint:: `NumPy API Reference: Window functions <https://numpy.org/doc/stable/reference/routines.window.html>`_
 
 Various windows
 ---------------
@@ -10,8 +12,8 @@ Various windows
    :toctree: generated/
    :nosignatures:
 
-   dpnp.bartlett
-   dpnp.blackman
-   dpnp.hamming
-   dpnp.hanning
-   dpnp.kaiser
+   bartlett
+   blackman
+   hamming
+   hanning
+   kaiser

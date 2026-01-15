@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.20.0dev0+29.g9ab14a880a3 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.20.0dev1+46.g2be7e2529e2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ffe00f2b"></script>
+      <script src="../../_static/documentation_options.js?v=f4be9c62"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -83,8 +83,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dpnp.dpnp_iface_arraycreation</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="c1"># *****************************************************************************</span>
+<span></span><span class="c1"># *****************************************************************************</span>
 <span class="c1"># Copyright (c) 2016, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
@@ -146,47 +145,6 @@
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span><span class="p">,</span> <span class="n">map_dtype_to_device</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;arange&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;array&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;asanyarray&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;asarray&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ascontiguousarray&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;asfortranarray&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;astype&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;copy&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;diag&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;diagflat&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;empty&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;empty_like&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;eye&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;frombuffer&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fromfile&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fromfunction&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fromiter&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fromstring&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;from_dlpack&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;full&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;full_like&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;geomspace&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;identity&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;linspace&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;loadtxt&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;logspace&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;meshgrid&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;mgrid&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ogrid&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ones&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ones_like&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trace&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;tri&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;tril&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;triu&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;vander&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;zeros_like&quot;</span><span class="p">,</span>
-<span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_empty_array</span><span class="p">(</span>
@@ -604,7 +562,6 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.asarray` : Similar function which always returns ndarrays.</span>
 <span class="sd">    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous array.</span>
-<span class="sd">    :obj:`dpnp.asfarray` : Convert input to a floating point ndarray.</span>
 <span class="sd">    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major</span>
 <span class="sd">                                 memory order.</span>
 <span class="sd">    :obj:`dpnp.asarray_chkfinite` : Similar function which checks input</span>
@@ -720,8 +677,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.asanyarray` : Similar function which passes through subclasses.</span>
 <span class="sd">    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous array.</span>
-<span class="sd">    :obj:`dpnp.asfarray` : Convert input to a floating point ndarray.</span>
-<span class="sd">    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major</span>
+<span class="sd">    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-majors</span>
 <span class="sd">                                 memory order.</span>
 <span class="sd">    :obj:`dpnp.asarray_chkfinite` : Similar function which checks input</span>
 <span class="sd">                                    for NaNs and Infs.</span>
@@ -1831,6 +1787,8 @@
 <span class="sd">    :obj:`dpnp.fromfile` : Construct array from data in a text or binary file.</span>
 <span class="sd">    :obj:`dpnp.fromiter` : Construct array from an iterable object.</span>
 <span class="sd">    :obj:`dpnp.fromstring` : Construct array from the text data in a string.</span>
+<span class="sd">    :obj:`ndarray.tobytes` : Construct Python bytes from the raw data bytes</span>
+<span class="sd">        in the array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4397,7 +4355,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

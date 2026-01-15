@@ -1,9 +1,11 @@
 .. _ufunc:
 
-Universal Functions (ufunc)
-===========================
+.. currentmodule:: dpnp
 
-.. https://numpy.org/doc/stable/reference/ufuncs.html
+Universal functions
+===================
+
+.. hint:: `NumPy API Reference: Universal functions (numpy.ufunc) <https://numpy.org/doc/stable/reference/ufuncs.html>`_
 
 DPNP provides universal functions (a.k.a. ufuncs) to support various element-wise operations.
 
@@ -17,46 +19,46 @@ Math operations
    :toctree: generated/
    :nosignatures:
 
-   dpnp.add
-   dpnp.subtract
-   dpnp.multiply
-   dpnp.matmul
-   dpnp.divide
-   dpnp.logaddexp
-   dpnp.logaddexp2
-   dpnp.true_divide
-   dpnp.floor_divide
-   dpnp.negative
-   dpnp.positive
-   dpnp.power
-   dpnp.pow
-   dpnp.float_power
-   dpnp.remainder
-   dpnp.mod
-   dpnp.fmod
-   dpnp.divmod
-   dpnp.absolute
-   dpnp.fabs
-   dpnp.rint
-   dpnp.sign
-   dpnp.heaviside
-   dpnp.conj
-   dpnp.conjugate
-   dpnp.exp
-   dpnp.exp2
-   dpnp.log
-   dpnp.log2
-   dpnp.log10
-   dpnp.expm1
-   dpnp.log1p
-   dpnp.proj
-   dpnp.sqrt
-   dpnp.square
-   dpnp.cbrt
-   dpnp.reciprocal
-   dpnp.rsqrt
-   dpnp.gcd
-   dpnp.lcm
+   add
+   subtract
+   multiply
+   matmul
+   divide
+   logaddexp
+   logaddexp2
+   true_divide
+   floor_divide
+   negative
+   positive
+   power
+   pow
+   float_power
+   remainder
+   mod
+   fmod
+   divmod
+   absolute
+   fabs
+   rint
+   sign
+   heaviside
+   conj
+   conjugate
+   exp
+   exp2
+   log
+   log2
+   log10
+   expm1
+   log1p
+   proj
+   sqrt
+   square
+   cbrt
+   reciprocal
+   rsqrt
+   gcd
+   lcm
 
 .. tip::
 
@@ -79,31 +81,31 @@ The ratio of degrees to radians is :math:`180^{\circ}/\pi.`
    :toctree: generated/
    :nosignatures:
 
-   dpnp.sin
-   dpnp.cos
-   dpnp.tan
-   dpnp.arcsin
-   dpnp.asin
-   dpnp.arccos
-   dpnp.acos
-   dpnp.arctan
-   dpnp.atan
-   dpnp.arctan2
-   dpnp.atan2
-   dpnp.hypot
-   dpnp.sinh
-   dpnp.cosh
-   dpnp.tanh
-   dpnp.arcsinh
-   dpnp.asinh
-   dpnp.arccosh
-   dpnp.acosh
-   dpnp.arctanh
-   dpnp.atanh
-   dpnp.degrees
-   dpnp.radians
-   dpnp.deg2rad
-   dpnp.rad2deg
+   sin
+   cos
+   tan
+   arcsin
+   asin
+   arccos
+   acos
+   arctan
+   atan
+   arctan2
+   atan2
+   hypot
+   sinh
+   cosh
+   tanh
+   arcsinh
+   asinh
+   arccosh
+   acosh
+   arctanh
+   atanh
+   degrees
+   radians
+   deg2rad
+   rad2deg
 
 
 Bit-twiddling functions
@@ -113,17 +115,17 @@ Bit-twiddling functions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.bitwise_and
-   dpnp.bitwise_not
-   dpnp.bitwise_or
-   dpnp.bitwise_xor
-   dpnp.invert
-   dpnp.bitwise_invert
-   dpnp.left_shift
-   dpnp.bitwise_left_shift
-   dpnp.right_shift
-   dpnp.bitwise_right_shift
-   dpnp.bitwise_count
+   bitwise_and
+   bitwise_not
+   bitwise_or
+   bitwise_xor
+   invert
+   bitwise_invert
+   left_shift
+   bitwise_left_shift
+   right_shift
+   bitwise_right_shift
+   bitwise_count
 
 
 Comparison functions
@@ -133,22 +135,22 @@ Comparison functions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.greater
-   dpnp.greater_equal
-   dpnp.less
-   dpnp.less_equal
-   dpnp.not_equal
-   dpnp.equal
+   greater
+   greater_equal
+   less
+   less_equal
+   not_equal
+   equal
 
-   dpnp.logical_and
-   dpnp.logical_or
-   dpnp.logical_xor
-   dpnp.logical_not
+   logical_and
+   logical_or
+   logical_xor
+   logical_not
 
-   dpnp.maximum
-   dpnp.minimum
-   dpnp.fmax
-   dpnp.fmin
+   maximum
+   minimum
+   fmax
+   fmin
 
 
 Floating functions
@@ -158,18 +160,18 @@ Floating functions
    :toctree: generated/
    :nosignatures:
 
-   dpnp.isfinite
-   dpnp.isinf
-   dpnp.isnan
-   dpnp.fabs
-   dpnp.signbit
-   dpnp.copysign
-   dpnp.nextafter
-   dpnp.spacing
-   dpnp.modf
-   dpnp.ldexp
-   dpnp.frexp
-   dpnp.fmod
-   dpnp.floor
-   dpnp.ceil
-   dpnp.trunc
+   isfinite
+   isinf
+   isnan
+   fabs
+   signbit
+   copysign
+   nextafter
+   spacing
+   modf
+   ldexp
+   frexp
+   fmod
+   floor
+   ceil
+   trunc

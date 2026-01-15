@@ -5,6 +5,8 @@
 Exceptions and Warnings
 =======================
 
+.. hint:: `NumPy API Reference: Exceptions and Warnings <https://numpy.org/doc/stable/reference/routines.exceptions.html>`_
+
 General exceptions used by DPNP. Note that some exceptions may be module
 specific, such as linear algebra errors.
 

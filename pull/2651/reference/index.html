@@ -15,20 +15,20 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; Data Parallel Extension for NumPy 0.20.0dev0+29.g9ab14a880a3 documentation</title>
+  <title>API Reference &mdash; Data Parallel Extension for NumPy 0.20.0dev1+46.g2be7e2529e2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=ffe00f2b"></script>
+      <script src="../_static/documentation_options.js?v=f4be9c62"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Multi-Dimensional Array (ndarray)" href="ndarray.html" />
+    <link rel="next" title="The N-dimensional array (ndarray)" href="ndarray.html" />
     <link rel="prev" title="Quick Start Guide" href="../quick_start_guide.html" /> 
 </head>
 
@@ -55,8 +55,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start_guide.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="routines.html">Routines (NumPy)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
@@ -100,7 +100,7 @@
 <hr class="docutils" />
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="ndarray.html">Multi-Dimensional Array (ndarray)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/dpnp.ndarray.html">dpnp.ndarray</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/dpnp.dpnp_array.dpnp_array.html">dpnp.dpnp_array.dpnp_array</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ndarray.html#constructing-arrays">Constructing arrays</a></li>
@@ -119,7 +119,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ndarray.html#special-methods">Special methods</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="ufunc.html">Universal functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="ufunc.html#available-ufuncs">Available ufuncs</a></li>
 </ul>
 </li>
@@ -130,14 +130,15 @@
 <li class="toctree-l2"><a class="reference internal" href="bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dtype.html">Data type routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions and Warnings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fft.html">Discrete Fourier Transform (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.fft</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="functional.html">Functional programming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="linalg.html">Linear algebra</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.linalg</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logic.html">Logic functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html">Mathematical functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="other.html">Miscellaneous routines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="set.html">Set routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="statistics.html">Statistics</a></li>
@@ -172,13 +173,13 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../quick_start_guide.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ndarray.html" class="btn btn-neutral float-right" title="Multi-Dimensional Array (ndarray)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ndarray.html" class="btn btn-neutral float-right" title="The N-dimensional array (ndarray)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

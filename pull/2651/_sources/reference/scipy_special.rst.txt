@@ -3,7 +3,7 @@
 Special functions (:mod:`dpnp.scipy.special`)
 =======================================
 
-.. Hint:: `SciPy API Reference: Special functions (scipy.special) <https://docs.scipy.org/doc/scipy/reference/special.html>`_
+.. hint:: `SciPy API Reference: Special functions (scipy.special) <https://docs.scipy.org/doc/scipy/reference/special.html>`_
 
 Error function and Fresnel integrals
 ------------------------------------
