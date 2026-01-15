@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 import unittest
 from itertools import combinations
@@ -19,7 +21,6 @@ pytest.skip("CUB reduction is not supported", allow_module_level=True)
 # This test class and its children below only test if CUB backend can be used
 # or not; they don't verify its correctness as it's already extensively covered
 # by existing tests
-@unittest.skipIf(_environment.get_cub_path() is None, "CUB not found")
 class CubReductionTestBase(unittest.TestCase):
     """
     Note: call self.can_use() when arrays are already allocated, otherwise
@@ -27,9 +28,11 @@ class CubReductionTestBase(unittest.TestCase):
     """
 
     def setUp(self):
+        if _environment.get_cub_path() is None:
+            pytest.skip("CUB not found")
         if cupy.cuda.runtime.is_hip:
             if _environment.get_hipcc_path() is None:
-                self.skipTest("hipcc is not found")
+                pytest.skip("hipcc is not found")
 
         self.can_use = cupy._core._cub_reduction._can_use_cub_block_reduction
 
