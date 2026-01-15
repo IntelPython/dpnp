@@ -2704,6 +2704,8 @@ def linspace(
         of tuples, tuples of lists, and ndarrays. If `endpoint` is set to
         ``False`` the sequence consists of all but the last of ``num + 1``
         evenly spaced samples, so that `stop` is excluded.
+    num : int
+        Number of samples. Must have a nonnegative value.
     dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
