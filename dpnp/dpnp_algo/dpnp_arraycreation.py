@@ -245,7 +245,7 @@ def dpnp_linspace(
 
     if retstep is True:
         if dpnp.isscalar(step):
-            step = dpnp.asarray(
+            step = dpt.asarray(
                 step, usm_type=res.usm_type, sycl_queue=res.sycl_queue
             )
         return res, dpnp_array._create_from_usm_ndarray(step)
