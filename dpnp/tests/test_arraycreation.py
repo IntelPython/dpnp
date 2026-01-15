@@ -185,7 +185,6 @@ class TestLinspace:
         expected = numpy.linspace(start, stop, num=3)
         assert_array_equal(result, expected)
 
-    # gh-2084:
     @pytest.mark.parametrize("endpoint", [True, False])
     def test_num_zero(self, endpoint):
         start, stop = 0, [0, 1, 2, 3, 4]
