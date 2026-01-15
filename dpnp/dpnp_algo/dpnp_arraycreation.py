@@ -248,7 +248,7 @@ def dpnp_linspace(
             step = dpnp.asarray(
                 step, usm_type=res.usm_type, sycl_queue=res.sycl_queue
             )
-        return res, step
+        return res, dpnp_array._create_from_usm_ndarray(step)
     return res
 
 
