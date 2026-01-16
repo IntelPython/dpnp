@@ -59,6 +59,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 
 * Suppressed a potential deprecation warning triggered during import of the `dpctl.tensor` module [#2709](https://github.com/IntelPython/dpnp/pull/2709)
 * Corrected a phonetic spelling issue due to incorrect using of `a nd` in docstrings [#2719](https://github.com/IntelPython/dpnp/pull/2719)
+* Resolved an issue causing `dpnp.linspace` to return an incorrect output shape when inputs were passed as arrays [#2712](https://github.com/IntelPython/dpnp/pull/2712)
 * Resolved an issue where `dpnp` always returns the base allocation pointer, when the view start is expected [#2651](https://github.com/IntelPython/dpnp/pull/2651)
 
 ### Security
