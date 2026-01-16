@@ -73,11 +73,8 @@ class TestPad:
         else:
             assert_array_equal(result, expected)
 
-    # TODO: include "linear_ramp" when dpnp issue gh-2084 is resolved
     @pytest.mark.parametrize("pad_width", [0, (0, 0), ((0, 0), (0, 0))])
-    @pytest.mark.parametrize(
-        "mode", [m for m in _modes if m not in {"linear_ramp"}]
-    )
+    @pytest.mark.parametrize("mode", _modes)
     def test_zero_pad_width(self, pad_width, mode):
         arr = dpnp.arange(30).reshape(6, 5)
         assert_array_equal(arr, dpnp.pad(arr, pad_width, mode=mode))
