@@ -69,6 +69,9 @@ def assert_dtype_allclose(
         x.dtype, dpnp.inexact
     )
 
+    if not hasattr(numpy_arr, "dtype"):
+        numpy_arr = numpy.array(numpy_arr)
+
     if is_inexact(dpnp_arr) or is_inexact(numpy_arr):
         tol_dpnp = (
             dpnp.finfo(dpnp_arr).resolution
