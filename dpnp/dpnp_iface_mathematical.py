@@ -1812,57 +1812,69 @@ fabs = DPNPUnaryFunc(
 )
 
 
-def fix(x, out=None):
-    """
-    Round to nearest integer towards zero.
+_FIX_DOCSTRING = """
+Round to nearest integer towards zero.
 
-    Round an array of floats element-wise to nearest integer towards zero.
-    The rounded values have the same data-type as the input.
+Round an array of floats element-wise to nearest integer towards zero.
+The rounded values have the same data-type as the input.
 
-    For full documentation refer to :obj:`numpy.fix`.
+For full documentation refer to :obj:`numpy.fix`.
 
-    Parameters
-    ----------
-    x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a boolean or real-valued data type.
-    out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
-        Output array to populate.
-        Array must have the correct shape and the expected data type.
-        A tuple (possible only as a keyword argument) must have length equal to
-        the number of outputs.
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have a boolean or real-valued data type.
+out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    A tuple (possible only as a keyword argument) must have length equal to the
+    number of outputs.
 
-        Default: ``None``.
+    Default: ``None``.
+order : {None, "C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
 
-    Returns
-    -------
-    out : dpnp.ndarray
-        An array with the same dimensions and data-type as the input.
-        If `out` is ``None`` then a new array is returned
-        with the rounded values.
-        Otherwise the result is stored there and the return value `out` is
-        a reference to that array.
+    Default: ``"K"``.
 
-    See Also
-    --------
-    :obj:`dpnp.round` : Round to given number of decimals.
-    :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
-    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
-    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
-    :obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.
+Returns
+-------
+out : dpnp.ndarray
+    An array with the same dimensions and data-type as the input.
+    If `out` is ``None`` then a new array is returned
+    with the rounded values.
+    Otherwise the result is stored there and the return value `out` is
+    a reference to that array.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.fix(np.array(3.14))
-    array(3.)
-    >>> np.fix(np.array(3))
-    array(3.)
-    >>> a = np.array([2.1, 2.9, -2.1, -2.9])
-    >>> np.fix(a)
-    array([ 2.,  2., -2., -2.])
-    """
+See Also
+--------
+:obj:`dpnp.round` : Round to given number of decimals.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.floor` : Return the floor of the input, element-wise.
+:obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.
 
-    return trunc(x, out=out)
+Examples
+--------
+>>> import dpnp as np
+>>> np.fix(np.array(3.14))
+array(3.)
+>>> np.fix(np.array(3))
+array(3.)
+>>> a = np.array([2.1, 2.9, -2.1, -2.9])
+>>> np.fix(a)
+array([ 2.,  2., -2., -2.])
+
+"""
+
+# reuse trunc backend implementation for fix
+fix = DPNPUnaryFunc(
+    "fix",
+    ti._trunc_result_type,
+    ti._trunc,
+    _FIX_DOCSTRING,
+    mkl_fn_to_call="_mkl_trunc_to_call",
+    mkl_impl_fn="_trunc",
+)
 
 
 _FLOAT_POWER_DOCSTRING = """
