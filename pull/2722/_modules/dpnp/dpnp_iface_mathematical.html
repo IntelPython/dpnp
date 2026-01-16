@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev1+48.g627adbdab2c documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev1+50.ga79717f713c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b06f7f6a"></script>
+      <script src="../../_static/documentation_options.js?v=b0e73112"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -1924,60 +1924,69 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="fix">
-<a class="viewcode-back" href="../../reference/generated/dpnp.fix.html#dpnp.fix">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">fix</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Round to nearest integer towards zero.</span>
+<span class="n">_FIX_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Round to nearest integer towards zero.</span>
 
-<span class="sd">    Round an array of floats element-wise to nearest integer towards zero.</span>
-<span class="sd">    The rounded values have the same data-type as the input.</span>
+<span class="s2">Round an array of floats element-wise to nearest integer towards zero.</span>
+<span class="s2">The rounded values have the same data-type as the input.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.fix`.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.fix`.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array, expected to have a boolean or real-valued data type.</span>
-<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
-<span class="sd">        Output array to populate.</span>
-<span class="sd">        Array must have the correct shape and the expected data type.</span>
-<span class="sd">        A tuple (possible only as a keyword argument) must have length equal to</span>
-<span class="sd">        the number of outputs.</span>
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a boolean or real-valued data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
 
-<span class="sd">        Default: ``None``.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array with the same dimensions and data-type as the input.</span>
-<span class="sd">        If `out` is ``None`` then a new array is returned</span>
-<span class="sd">        with the rounded values.</span>
-<span class="sd">        Otherwise the result is stored there and the return value `out` is</span>
-<span class="sd">        a reference to that array.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.round` : Round to given number of decimals.</span>
-<span class="sd">    :obj:`dpnp.rint` : Round elements of the array to the nearest integer.</span>
-<span class="sd">    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.</span>
-<span class="sd">    :obj:`dpnp.floor` : Return the floor of the input, element-wise.</span>
-<span class="sd">    :obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.</span>
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array with the same dimensions and data-type as the input.</span>
+<span class="s2">    If `out` is ``None`` then a new array is returned</span>
+<span class="s2">    with the rounded values.</span>
+<span class="s2">    Otherwise the result is stored there and the return value `out` is</span>
+<span class="s2">    a reference to that array.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.fix(np.array(3.14))</span>
-<span class="sd">    array(3.)</span>
-<span class="sd">    &gt;&gt;&gt; np.fix(np.array(3))</span>
-<span class="sd">    array(3.)</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([2.1, 2.9, -2.1, -2.9])</span>
-<span class="sd">    &gt;&gt;&gt; np.fix(a)</span>
-<span class="sd">    array([ 2.,  2., -2., -2.])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.round` : Round to given number of decimals.</span>
+<span class="s2">:obj:`dpnp.rint` : Round elements of the array to the nearest integer.</span>
+<span class="s2">:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.</span>
+<span class="s2">:obj:`dpnp.floor` : Return the floor of the input, element-wise.</span>
+<span class="s2">:obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.</span>
 
-    <span class="k">return</span> <span class="n">trunc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; np.fix(np.array(3.14))</span>
+<span class="s2">array(3.)</span>
+<span class="s2">&gt;&gt;&gt; np.fix(np.array(3))</span>
+<span class="s2">array(3.)</span>
+<span class="s2">&gt;&gt;&gt; a = np.array([2.1, 2.9, -2.1, -2.9])</span>
+<span class="s2">&gt;&gt;&gt; np.fix(a)</span>
+<span class="s2">array([ 2.,  2., -2., -2.])</span>
 
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># reuse trunc backend implementation for fix</span>
+<span class="n">fix</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;fix&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_trunc_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_trunc</span><span class="p">,</span>
+    <span class="n">_FIX_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_trunc_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_trunc&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="n">_FLOAT_POWER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
