@@ -2020,7 +2020,9 @@ class TestUfunc:
             fn(*args, out=out, dtype="f4")
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    @pytest.mark.parametrize("func", ["abs", "round", "add", "frexp", "divmod"])
+    @pytest.mark.parametrize(
+        "func", ["abs", "fix", "round", "add", "frexp", "divmod"]
+    )
     def test_out_wrong_tuple_len(self, xp, func):
         if func == "round" and xp is numpy:
             pytest.skip("numpy.round(x, out=(...)) is not supported")
@@ -2604,15 +2606,6 @@ class TestRoundingFuncs:
         result = getattr(dpnp, func)(ia, out=usm_out)
         assert result.get_array() is usm_out
         assert_array_equal(result, expected)
-
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_out_wrong_tuple_len(self, xp, func):
-        a = xp.array([1.1, -2.9, 3.5])
-
-        out1 = xp.empty_like(a)
-        out2 = xp.empty_like(a)
-
-        assert_raises(ValueError, getattr(xp, func), a, out=(out1, out2))
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
