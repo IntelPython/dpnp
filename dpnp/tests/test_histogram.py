@@ -23,6 +23,7 @@ from .helper import (
     has_support_aspect64,
     numpy_version,
 )
+from .third_party.cupy import testing
 
 
 class TestDigitize:
@@ -610,21 +611,8 @@ class TestBincount:
         result = dpnp.bincount(ia, minlength=minlength)
         assert_allclose(result, expected)
 
-    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-    @pytest.mark.parametrize(
-        "xp",
-        [
-            dpnp,
-            pytest.param(
-                numpy,
-                marks=pytest.mark.xfail(
-                    numpy_version() < "2.3.0",
-                    reason="numpy deprecates but accepts that",
-                    strict=True,
-                ),
-            ),
-        ],
-    )
+    @testing.with_requires("numpy>=2.3.0")
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
     def test_minlength_none(self, xp):
         a = xp.array([1, 2, 3])
         assert_raises_regex(
