@@ -21,9 +21,6 @@ from .helper import (
     get_array,
     get_float_dtypes,
     has_support_aspect64,
-    is_lts_driver,
-    is_tgllp_iris_xe,
-    is_win_platform,
 )
 from .third_party.cupy import testing
 
@@ -83,6 +80,61 @@ class TestAsType:
             "f4",
             None,
         )
+
+
+class TestGeomspace:
+    @pytest.mark.parametrize("sign", [-1, 1])
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("num", [2, 4, 8, 3, 9, 27])
+    @pytest.mark.parametrize("endpoint", [True, False])
+    def test_basic(self, sign, dtype, num, endpoint):
+        start = 2 * sign
+        stop = 127 * sign
+
+        func = lambda xp: xp.geomspace(
+            start, stop, num, endpoint=endpoint, dtype=dtype
+        )
+
+        np_res = func(numpy)
+        dpnp_res = func(dpnp)
+
+        assert_allclose(dpnp_res, np_res, rtol=1e-06)
+
+    @pytest.mark.parametrize("start", [1j, 1 + 1j])
+    @pytest.mark.parametrize("stop", [10j, 10 + 10j])
+    def test_complex(self, start, stop):
+        func = lambda xp: xp.geomspace(start, stop, num=10)
+        np_res = func(numpy)
+        dpnp_res = func(dpnp)
+        assert_allclose(dpnp_res, np_res, rtol=1e-06)
+
+    @pytest.mark.parametrize("axis", [0, 1])
+    def test_axis(self, axis):
+        func = lambda xp: xp.geomspace([2, 3], [20, 15], num=10, axis=axis)
+        np_res = func(numpy)
+        dpnp_res = func(dpnp)
+        assert_allclose(dpnp_res, np_res, rtol=1e-06)
+
+    def test_num_zero(self):
+        func = lambda xp: xp.geomspace(1, 10, num=0, endpoint=False)
+        np_res = func(numpy)
+        dpnp_res = func(dpnp)
+        assert_allclose(dpnp_res, np_res)
+
+    @pytest.mark.parametrize(
+        "start, stop, num",
+        [
+            (0, 5, 3),
+            (2, 0, 3),
+            (0, 0, 3),
+            (dpnp.array([0]), 7, 10),
+            (-2, numpy.array([[0]]), 7),
+            ([2, 4, 0], 3, 5),
+        ],
+    )
+    def test_zero_error(self, start, stop, num):
+        with pytest.raises(ValueError):
+            dpnp.geomspace(start, stop, num)
 
 
 class TestLinspace:
@@ -208,6 +260,61 @@ class TestLinspace:
             TypeError, match="cannot be interpreted as an integer"
         ):
             _ = xp.linspace(0, 1, num=2.5)
+
+
+class TestLogspace:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("num", [2, 4, 8, 3, 9, 27])
+    @pytest.mark.parametrize("endpoint", [True, False])
+    def test_basic(self, dtype, num, endpoint):
+        start = 2
+        stop = 5
+        base = 2
+
+        func = lambda xp: xp.logspace(
+            start, stop, num, endpoint=endpoint, dtype=dtype, base=base
+        )
+
+        np_res = func(numpy)
+        dpnp_res = func(dpnp)
+        assert_allclose(dpnp_res, np_res, rtol=1e-06)
+
+    @testing.with_requires("numpy>=1.25.0")
+    @pytest.mark.parametrize("axis", [0, 1])
+    def test_axis(self, axis):
+        func = lambda xp: xp.logspace(
+            [2, 3], [20, 15], num=2, base=[[1, 3], [5, 7]], axis=axis
+        )
+        assert_dtype_allclose(func(dpnp), func(numpy))
+
+    def test_list_input(self):
+        expected = numpy.logspace([0], [2], base=[5])
+        result = dpnp.logspace([0], [2], base=[5])
+        assert_dtype_allclose(result, expected)
+
+
+class TestSpaceLike:
+    @pytest.mark.parametrize("func", ["geomspace", "linspace", "logspace"])
+    @pytest.mark.parametrize(
+        "start_dtype", [numpy.float64, numpy.float32, numpy.int64, numpy.int32]
+    )
+    @pytest.mark.parametrize(
+        "stop_dtype", [numpy.float64, numpy.float32, numpy.int64, numpy.int32]
+    )
+    def test_numpy_dtype(self, func, start_dtype, stop_dtype):
+        start = numpy.array([1, 2, 3], dtype=start_dtype)
+        stop = numpy.array([11, 7, -2], dtype=stop_dtype)
+        getattr(dpnp, func)(start, stop, 10)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("func", ["geomspace", "logspace"])
+    @pytest.mark.parametrize(
+        "start, stop, num",
+        [(2, 5, -3), ([2, 3], 5, -3)],
+    )
+    def test_space_num_error(self, xp, func, start, stop, num):
+        with pytest.raises(ValueError):
+            getattr(xp, func)(start, stop, num)
 
 
 class TestTrace:
@@ -871,19 +978,6 @@ def test_dpctl_tensor_input(func, args):
         assert_array_equal(X, Y)
 
 
-@pytest.mark.parametrize("func", ["geomspace", "linspace", "logspace"])
-@pytest.mark.parametrize(
-    "start_dtype", [numpy.float64, numpy.float32, numpy.int64, numpy.int32]
-)
-@pytest.mark.parametrize(
-    "stop_dtype", [numpy.float64, numpy.float32, numpy.int64, numpy.int32]
-)
-def test_space_numpy_dtype(func, start_dtype, stop_dtype):
-    start = numpy.array([1, 2, 3], dtype=start_dtype)
-    stop = numpy.array([11, 7, -2], dtype=stop_dtype)
-    getattr(dpnp, func)(start, stop, 10)
-
-
 @pytest.mark.parametrize(
     "arrays",
     [[], [[1]], [[1, 2, 3], [4, 5, 6]], [[1, 2], [3, 4], [5, 6]]],
@@ -906,116 +1000,6 @@ def test_set_shape(shape):
     da.shape = shape
 
     assert_array_equal(na, da)
-
-
-@pytest.mark.parametrize(
-    "start, stop, num",
-    [
-        (0, 5, 3),
-        (2, 0, 3),
-        (0, 0, 3),
-        (dpnp.array([0]), 7, 10),
-        (-2, numpy.array([[0]]), 7),
-        ([2, 4, 0], 3, 5),
-    ],
-)
-def test_geomspace_zero_error(start, stop, num):
-    with pytest.raises(ValueError):
-        dpnp.geomspace(start, stop, num)
-
-
-@pytest.mark.parametrize("xp", [dpnp, numpy])
-@pytest.mark.parametrize("func", ["geomspace", "logspace"])
-@pytest.mark.parametrize(
-    "start, stop, num",
-    [(2, 5, -3), ([2, 3], 5, -3)],
-)
-def test_space_num_error(xp, func, start, stop, num):
-    with pytest.raises(ValueError):
-        getattr(xp, func)(start, stop, num)
-
-
-@pytest.mark.parametrize("sign", [-1, 1])
-@pytest.mark.parametrize("dtype", get_all_dtypes())
-@pytest.mark.parametrize("num", [2, 4, 8, 3, 9, 27])
-@pytest.mark.parametrize("endpoint", [True, False])
-def test_geomspace(sign, dtype, num, endpoint):
-    start = 2 * sign
-    stop = 127 * sign
-
-    func = lambda xp: xp.geomspace(
-        start, stop, num, endpoint=endpoint, dtype=dtype
-    )
-
-    np_res = func(numpy)
-    dpnp_res = func(dpnp)
-
-    assert_allclose(dpnp_res, np_res, rtol=1e-06)
-
-
-@pytest.mark.parametrize("start", [1j, 1 + 1j])
-@pytest.mark.parametrize("stop", [10j, 10 + 10j])
-def test_geomspace_complex(start, stop):
-    func = lambda xp: xp.geomspace(start, stop, num=10)
-    np_res = func(numpy)
-    dpnp_res = func(dpnp)
-    assert_allclose(dpnp_res, np_res, rtol=1e-06)
-
-
-@pytest.mark.parametrize("axis", [0, 1])
-def test_geomspace_axis(axis):
-    func = lambda xp: xp.geomspace([2, 3], [20, 15], num=10, axis=axis)
-    np_res = func(numpy)
-    dpnp_res = func(dpnp)
-    assert_allclose(dpnp_res, np_res, rtol=1e-06)
-
-
-def test_geomspace_num0():
-    func = lambda xp: xp.geomspace(1, 10, num=0, endpoint=False)
-    np_res = func(numpy)
-    dpnp_res = func(dpnp)
-    assert_allclose(dpnp_res, np_res)
-
-
-@pytest.mark.parametrize("dtype", get_all_dtypes())
-@pytest.mark.parametrize("num", [2, 4, 8, 3, 9, 27])
-@pytest.mark.parametrize("endpoint", [True, False])
-def test_logspace(dtype, num, endpoint):
-    if not is_win_platform() and is_tgllp_iris_xe() and is_lts_driver():
-        if (
-            dpnp.issubdtype(dtype, dpnp.integer)
-            and num in [8, 27]
-            and endpoint is True
-        ):
-            pytest.skip("SAT-7978")
-
-    start = 2
-    stop = 5
-    base = 2
-
-    func = lambda xp: xp.logspace(
-        start, stop, num, endpoint=endpoint, dtype=dtype, base=base
-    )
-
-    np_res = func(numpy)
-    dpnp_res = func(dpnp)
-
-    assert_allclose(dpnp_res, np_res, rtol=1e-06)
-
-
-@testing.with_requires("numpy>=1.25.0")
-@pytest.mark.parametrize("axis", [0, 1])
-def test_logspace_axis(axis):
-    func = lambda xp: xp.logspace(
-        [2, 3], [20, 15], num=2, base=[[1, 3], [5, 7]], axis=axis
-    )
-    assert_dtype_allclose(func(dpnp), func(numpy))
-
-
-def test_logspace_list_input():
-    expected = numpy.logspace([0], [2], base=[5])
-    result = dpnp.logspace([0], [2], base=[5])
-    assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize(
