@@ -98,6 +98,7 @@ class dpnp_array:
             # or as USM memory allocation
             if isinstance(buffer, dpnp_array):
                 buffer = buffer.get_array()
+                offset += buffer._element_offset
 
             if dtype is None and hasattr(buffer, "dtype"):
                 dtype = buffer.dtype
