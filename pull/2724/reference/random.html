@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Random sampling (dpnp.random) &mdash; Data Parallel Extension for NumPy 0.20.0dev1+48.g2a0902f65ba documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=68914f8e"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dpnp.random.rand" href="generated/dpnp.random.rand.html" />
+    <link rel="prev" title="dpnp.broadcast_shapes" href="generated/dpnp.broadcast_shapes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines (NumPy)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="constants.html">Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bitwise.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions and Warnings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fft.html">Discrete Fourier Transform (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.fft</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.linalg</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#simple-random-data">Simple random data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#permutations">Permutations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#distributions">Distributions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#random-generator">Random generator</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="window.html">Window functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array_api.html">Array API standard compatibility</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="routines.html">Routines (NumPy)</a></li>
+      <li class="breadcrumb-item active">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/random.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="random-sampling-dpnp-random">
+<h1>Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)<a class="headerlink" href="#random-sampling-dpnp-random" title="Link to this heading"></a></h1>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html">NumPy API Reference: Legacy random generation</a></p>
+</div>
+<section id="simple-random-data">
+<h2>Simple random data<a class="headerlink" href="#simple-random-data" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.rand.html#dpnp.random.rand" title="dpnp.random.rand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rand</span></code></a></p></td>
+<td><p>Random values in a given shape.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.randn.html#dpnp.random.randn" title="dpnp.random.randn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randn</span></code></a></p></td>
+<td><p>Return a sample (or samples) from the &quot;standard normal&quot; distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.randint.html#dpnp.random.randint" title="dpnp.random.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></a></p></td>
+<td><p>Return random integers from <cite>low</cite> (inclusive) to <cite>high</cite> (exclusive).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.random_integers.html#dpnp.random.random_integers" title="dpnp.random.random_integers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_integers</span></code></a></p></td>
+<td><p>Random integers between <cite>low</cite> and <cite>high</cite>, inclusive.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.random_sample.html#dpnp.random.random_sample" title="dpnp.random.random_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_sample</span></code></a></p></td>
+<td><p>Return random floats in the half-open interval [0.0, 1.0).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.random.html#dpnp.random.random" title="dpnp.random.random"><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></a></p></td>
+<td><p>Return random floats in the half-open interval [0.0, 1.0).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.ranf.html#dpnp.random.ranf" title="dpnp.random.ranf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ranf</span></code></a></p></td>
+<td><p>Return random floats in the half-open interval [0.0, 1.0).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.sample.html#dpnp.random.sample" title="dpnp.random.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a></p></td>
+<td><p>Return random floats in the half-open interval [0.0, 1.0).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.choice.html#dpnp.random.choice" title="dpnp.random.choice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">choice</span></code></a></p></td>
+<td><p>Generates a random sample from a given 1-D array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.bytes.html#dpnp.random.bytes" title="dpnp.random.bytes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bytes</span></code></a></p></td>
+<td><p>Return random bytes.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="permutations">
+<h2>Permutations<a class="headerlink" href="#permutations" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.shuffle.html#dpnp.random.shuffle" title="dpnp.random.shuffle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shuffle</span></code></a></p></td>
+<td><p>Modify a sequence in-place by shuffling its contents.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.permutation.html#dpnp.random.permutation" title="dpnp.random.permutation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">permutation</span></code></a></p></td>
+<td><p>Randomly permute a sequence, or return a permuted range.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="distributions">
+<h2>Distributions<a class="headerlink" href="#distributions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.beta.html#dpnp.random.beta" title="dpnp.random.beta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">beta</span></code></a></p></td>
+<td><p>Draw samples from a Beta distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.binomial.html#dpnp.random.binomial" title="dpnp.random.binomial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">binomial</span></code></a></p></td>
+<td><p>Draw samples from a binomial distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.chisquare.html#dpnp.random.chisquare" title="dpnp.random.chisquare"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chisquare</span></code></a></p></td>
+<td><p>Draw samples from a chi-square distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.dirichlet.html#dpnp.random.dirichlet" title="dpnp.random.dirichlet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dirichlet</span></code></a></p></td>
+<td><p>Draw samples from the Dirichlet distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.exponential.html#dpnp.random.exponential" title="dpnp.random.exponential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exponential</span></code></a></p></td>
+<td><p>Draw samples from an exponential distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.f.html#dpnp.random.f" title="dpnp.random.f"><code class="xref py py-obj docutils literal notranslate"><span class="pre">f</span></code></a></p></td>
+<td><p>Draw samples from an F distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.gamma.html#dpnp.random.gamma" title="dpnp.random.gamma"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gamma</span></code></a></p></td>
+<td><p>Draw samples from a Gamma distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.geometric.html#dpnp.random.geometric" title="dpnp.random.geometric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geometric</span></code></a></p></td>
+<td><p>Draw samples from the geometric distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.gumbel.html#dpnp.random.gumbel" title="dpnp.random.gumbel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gumbel</span></code></a></p></td>
+<td><p>Draw samples from a Gumbel distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.hypergeometric.html#dpnp.random.hypergeometric" title="dpnp.random.hypergeometric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hypergeometric</span></code></a></p></td>
+<td><p>Draw samples from a Hypergeometric distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.laplace.html#dpnp.random.laplace" title="dpnp.random.laplace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">laplace</span></code></a></p></td>
+<td><p>Draw samples from the Laplace or double exponential distribution with specified location (or mean) and scale (decay).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.logistic.html#dpnp.random.logistic" title="dpnp.random.logistic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logistic</span></code></a></p></td>
+<td><p>Draw samples from a logistic distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.lognormal.html#dpnp.random.lognormal" title="dpnp.random.lognormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lognormal</span></code></a></p></td>
+<td><p>Draw samples from a log-normal distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.logseries.html#dpnp.random.logseries" title="dpnp.random.logseries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logseries</span></code></a></p></td>
+<td><p>Draw samples from a logarithmic series distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.multinomial.html#dpnp.random.multinomial" title="dpnp.random.multinomial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multinomial</span></code></a></p></td>
+<td><p>Draw samples from a multinomial distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.multivariate_normal.html#dpnp.random.multivariate_normal" title="dpnp.random.multivariate_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multivariate_normal</span></code></a></p></td>
+<td><p>Draw random samples from a multivariate normal distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.negative_binomial.html#dpnp.random.negative_binomial" title="dpnp.random.negative_binomial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">negative_binomial</span></code></a></p></td>
+<td><p>Draw samples from a negative binomial distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.noncentral_chisquare.html#dpnp.random.noncentral_chisquare" title="dpnp.random.noncentral_chisquare"><code class="xref py py-obj docutils literal notranslate"><span class="pre">noncentral_chisquare</span></code></a></p></td>
+<td><p>Draw samples from a non-central chi-square distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.noncentral_f.html#dpnp.random.noncentral_f" title="dpnp.random.noncentral_f"><code class="xref py py-obj docutils literal notranslate"><span class="pre">noncentral_f</span></code></a></p></td>
+<td><p>Draw samples from the non-central F distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.normal.html#dpnp.random.normal" title="dpnp.random.normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></a></p></td>
+<td><p>Draw random samples from a normal (Gaussian) distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.pareto.html#dpnp.random.pareto" title="dpnp.random.pareto"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pareto</span></code></a></p></td>
+<td><p>Draw samples from a Pareto II or Lomax distribution with specified shape.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.poisson.html#dpnp.random.poisson" title="dpnp.random.poisson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">poisson</span></code></a></p></td>
+<td><p>Draw samples from a Poisson distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.power.html#dpnp.random.power" title="dpnp.random.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a></p></td>
+<td><p>Draws samples in [0, 1] from a power distribution with positive exponent a - 1.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.rayleigh.html#dpnp.random.rayleigh" title="dpnp.random.rayleigh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rayleigh</span></code></a></p></td>
+<td><p>Draw samples from a Rayleigh distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.standard_cauchy.html#dpnp.random.standard_cauchy" title="dpnp.random.standard_cauchy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_cauchy</span></code></a></p></td>
+<td><p>Draw samples from a standard Cauchy distribution with mode = 0.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.standard_exponential.html#dpnp.random.standard_exponential" title="dpnp.random.standard_exponential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_exponential</span></code></a></p></td>
+<td><p>Draw samples from the standard exponential distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.standard_gamma.html#dpnp.random.standard_gamma" title="dpnp.random.standard_gamma"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_gamma</span></code></a></p></td>
+<td><p>Draw samples from a standard Gamma distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.standard_normal.html#dpnp.random.standard_normal" title="dpnp.random.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a></p></td>
+<td><p>Draw samples from a standard Normal distribution <code class="docutils literal notranslate"><span class="pre">(mean=0,</span> <span class="pre">stdev=1)</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.standard_t.html#dpnp.random.standard_t" title="dpnp.random.standard_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_t</span></code></a></p></td>
+<td><p>Draw samples from a standard Student’s t distribution with <cite>df</cite> degrees of freedom.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.triangular.html#dpnp.random.triangular" title="dpnp.random.triangular"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triangular</span></code></a></p></td>
+<td><p>Draw samples from the triangular distribution over the interval [left, right].</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.uniform.html#dpnp.random.uniform" title="dpnp.random.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a></p></td>
+<td><p>Draw samples from a uniform distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.vonmises.html#dpnp.random.vonmises" title="dpnp.random.vonmises"><code class="xref py py-obj docutils literal notranslate"><span class="pre">vonmises</span></code></a></p></td>
+<td><p>Draw samples from a von Mises distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.wald.html#dpnp.random.wald" title="dpnp.random.wald"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wald</span></code></a></p></td>
+<td><p>Draw samples from a Wald, or inverse Gaussian, distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.weibull.html#dpnp.random.weibull" title="dpnp.random.weibull"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weibull</span></code></a></p></td>
+<td><p>Draw samples from a Weibull distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.zipf.html#dpnp.random.zipf" title="dpnp.random.zipf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zipf</span></code></a></p></td>
+<td><p>Returns an array of samples drawn from the Zipf distribution.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="random-generator">
+<h2>Random generator<a class="headerlink" href="#random-generator" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.RandomState.html#dpnp.random.RandomState" title="dpnp.random.RandomState"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomState</span></code></a></p></td>
+<td><p>A container for the Mersenne Twister pseudo-random number generator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.seed.html#dpnp.random.seed" title="dpnp.random.seed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seed</span></code></a></p></td>
+<td><p>Reseed a legacy MT19937 random number generator engine.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="generated/dpnp.broadcast_shapes.html" class="btn btn-neutral float-left" title="dpnp.broadcast_shapes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/dpnp.random.rand.html" class="btn btn-neutral float-right" title="dpnp.random.rand" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

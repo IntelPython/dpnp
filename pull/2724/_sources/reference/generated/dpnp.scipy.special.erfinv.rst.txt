@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.special.erfinv
+=========================
+
+.. currentmodule:: dpnp.scipy.special
+
+
+
+.. autofunction:: erfinv
