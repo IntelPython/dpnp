@@ -908,19 +908,31 @@ def test_set_shape(shape):
     assert_array_equal(na, da)
 
 
-def test_geomspace_zero_error():
+@pytest.mark.parametrize(
+    "start, stop, num",
+    [
+        (0, 5, 3),
+        (2, 0, 3),
+        (0, 0, 3),
+        (dpnp.array([0]), 7, 10),
+        (-2, numpy.array([[0]]), 7),
+        ([2, 4, 0], 3, 5),
+    ],
+)
+def test_geomspace_zero_error(start, stop, num):
     with pytest.raises(ValueError):
-        dpnp.geomspace(0, 5, 3)
-        dpnp.geomspace(2, 0, 3)
-        dpnp.geomspace(0, 0, 3)
+        dpnp.geomspace(start, stop, num)
 
 
-def test_space_num_error():
+@pytest.mark.parametrize("xp", [dpnp, numpy])
+@pytest.mark.parametrize("func", ["geomspace", "logspace"])
+@pytest.mark.parametrize(
+    "start, stop, num",
+    [(2, 5, -3), ([2, 3], 5, -3)],
+)
+def test_space_num_error(xp, func, start, stop, num):
     with pytest.raises(ValueError):
-        dpnp.geomspace(2, 5, -3)
-        dpnp.logspace(2, 5, -3)
-        dpnp.geomspace([2, 3], 5, -3)
-        dpnp.logspace([2, 3], 5, -3)
+        getattr(xp, func)(start, stop, num)
 
 
 @pytest.mark.parametrize("sign", [-1, 1])
