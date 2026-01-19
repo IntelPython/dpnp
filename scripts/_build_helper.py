@@ -126,14 +126,14 @@ def resolve_onemath(
         warnings.warn(
             "Using 'onemkl_interfaces' is deprecated. Please use 'onemath' instead.",
             DeprecationWarning,
-            stacklevel=1,
+            stacklevel=2,
         )
         onemath = True
     if onemkl_interfaces_dir is not None:
         warnings.warn(
             "Using 'onemkl_interfaces_dir' is deprecated. Please use 'onemath_dir' instead.",
             DeprecationWarning,
-            stacklevel=1,
+            stacklevel=2,
         )
         onemath_dir = onemkl_interfaces_dir
     return onemath, onemath_dir
