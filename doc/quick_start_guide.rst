@@ -112,13 +112,15 @@ To build and install the package on Linux OS, run:
 
 .. code-block:: bash
 
-    python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
+    python setup.py build_ext --inplace -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
+    python -m pip install -e .
 
 To build and install the package on Windows OS, run:
 
 .. code-block:: bash
 
-    python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
+    python setup.py build_ext --inplace -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
+    python -m pip install -e .
 
 Alternatively, to develop on Linux OS, you can use the driver script:
 
