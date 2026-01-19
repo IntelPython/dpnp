@@ -34,7 +34,6 @@ from .helper import (
     has_support_aspect64,
     is_intel_numpy,
     is_ptl,
-    is_win_platform,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -219,7 +218,7 @@ class TestCumLogSumExp:
     @pytest.mark.parametrize("axis", [None, 2, -1])
     @pytest.mark.parametrize("include_initial", [True, False])
     def test_basic(self, dtype, axis, include_initial):
-        if axis is None and is_ptl() and not is_win_platform():
+        if axis is None and is_ptl():
             pytest.skip("due to SAT-8336")
 
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
@@ -239,7 +238,7 @@ class TestCumLogSumExp:
     @pytest.mark.parametrize("axis", [None, 2, -1])
     @pytest.mark.parametrize("include_initial", [True, False])
     def test_include_initial(self, dtype, axis, include_initial):
-        if axis is None and is_ptl() and not is_win_platform():
+        if axis is None and is_ptl():
             pytest.skip("due to SAT-8336")
 
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
