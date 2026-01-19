@@ -146,7 +146,13 @@ if("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
                     "amd_gpu_${DPNP_TARGET_HIP},${_dpnp_sycl_targets}"
                 )
             endif()
+
             set(_use_onemath_hip ON)
+            set(HIP_TARGETS
+                ${DPNP_TARGET_HIP}
+                CACHE STRING
+                "HIP GPU targets for oneMath"
+            )
         else()
             message(
                 FATAL_ERROR
@@ -163,14 +169,15 @@ else()
     endif()
 
     if("${DPNP_SYCL_TARGETS}" MATCHES "amd_gpu_")
-        set(_use_onemath_hip ON)
-
         if("x${DPNP_TARGET_HIP}" STREQUAL "x")
             message(
                 FATAL_ERROR
                 "DPNP_TARGET_HIP must be specified when using HIP backend"
             )
         endif()
+
+        set(_use_onemath_hip ON)
+        set(HIP_TARGETS ${DPNP_TARGET_HIP} CACHE STRING "HIP GPU targets for oneMath")
     endif()
 
     if("${DPNP_SYCL_TARGETS}" MATCHES "amdgcn-amd-amdhsa")
