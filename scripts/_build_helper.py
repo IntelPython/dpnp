@@ -85,6 +85,7 @@ def resolve_compilers(
     if cxx_compiler is None:
         cxx_compiler = "icpx" if is_linux else "icx"
 
+    compiler_paths = []
     for name, opt_name in (
         (c_compiler, "--c-compiler"),
         (cxx_compiler, "--cxx-compiler"),
@@ -93,9 +94,14 @@ def resolve_compilers(
             path = name
         else:
             path = os.path.join(compiler_root, name)
+
         if not os.path.exists(path):
-            raise RuntimeError(f"{opt_name} value {name} not found")
-    return c_compiler, cxx_compiler
+            raise RuntimeError(
+                f"{opt_name} value {name} not found and {path} not exist"
+            )
+
+        compiler_paths.append(path)
+    return tuple(compiler_paths)
 
 
 def resolve_onemath(
