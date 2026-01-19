@@ -70,6 +70,7 @@ def parse_args():
     p.add_argument(
         "--bin-llvm",
         type=str,
+        default=None,
         help="Path to folder where llvm-cov/llvm-profdata can be found",
     )
 
@@ -174,7 +175,14 @@ def main():
 
     env = os.environ.copy()
 
-    bin_llvm = find_bin_llvm(c_compiler)
+    if args.bin_llvm:
+        bin_llvm = args.bin_llvm
+    else:
+        bin_llvm = find_bin_llvm(c_compiler)
+    print(
+        f"[gen_coverage] Path to folder with llvm-cov/llvm-profdata: {bin_llvm}"
+    )
+
     if bin_llvm:
         env["PATH"] = ":".join((env.get("PATH", ""), bin_llvm))
         env["LLVM_TOOLS_HOME"] = bin_llvm
