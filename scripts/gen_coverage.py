@@ -140,7 +140,10 @@ def find_bin_llvm(compiler):
         bin_llvm = os.path.join(bin_dir, "bin-llvm")
 
     if not os.path.exists(bin_llvm):
-        raise RuntimeError(f"--bin-llvm value {bin_llvm} not found")
+        raise RuntimeError(
+            f"Path to folder with llvm-cov/llvm-profdata={bin_llvm} "
+            "seems to not exist"
+        )
     return bin_llvm
 
 
