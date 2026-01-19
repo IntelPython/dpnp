@@ -42,7 +42,7 @@ def get_dpctl_cmake_dir():
     """
 
     process = subprocess.Popen(
-        ["python", "-m", "dpctl", "--cmakedir"],
+        [sys.executable, "-m", "dpctl", "--cmakedir"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
