@@ -42,7 +42,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Unified `dpnp` public API exports by consolidating function exports in `__init__.py` and removing wildcard imports [#2665](https://github.com/IntelPython/dpnp/pull/2665) [#2666](https://github.com/IntelPython/dpnp/pull/2666)
 * Updated tests to reflect the new scalar conversion rules for non-0D `usm_ndarray` [#2694](https://github.com/IntelPython/dpnp/pull/2694)
 * Compile indexing extension with `-fno-sycl-id-queries-fit-in-int` to support huge arrays [#2721](https://github.com/IntelPython/dpnp/pull/2721)
-* Changed the build scripts and documentation due to `python setup.py develop` deprecation notice [#2172](https://github.com/IntelPython/dpnp/pull/2172)
+* Changed the build scripts and documentation due to `python setup.py develop` deprecation notice [#2716](https://github.com/IntelPython/dpnp/pull/2716)
 
 ### Deprecated
 
