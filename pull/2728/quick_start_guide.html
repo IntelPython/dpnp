@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.20.0dev1+50.ga5a977f0f16 documentation</title>
+  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.20.0dev1+53.g68c1460257 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=7688e6f3"></script>
+      <script src="_static/documentation_options.js?v=49656c52"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -186,11 +186,13 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
 <p>To build and install the package on Linux OS, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icpx
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
 <p>To build and install the package on Windows OS, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icx
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace<span class="w"> </span>--<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>icx<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>icx
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
 <p>Alternatively, to develop on Linux OS, you can use the driver script:</p>
