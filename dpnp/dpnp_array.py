@@ -1866,6 +1866,16 @@ class dpnp_array:
 
         return self._array_obj.strides
 
+    @strides.setter
+    def strides(self, _value):
+        warnings.warn(
+            "Setting the strides attribute is deprecated. "
+            "As an alternative, you can create a new view (no copy) via "
+            "the dpnp.ndarray constructor (``buffer`` is the original array).",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
     def sum(
         self,
         /,
