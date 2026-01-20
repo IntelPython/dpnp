@@ -75,6 +75,11 @@ class TestAttributes:
         assert_equal(self.two.nbytes, 20 * num)
         assert_equal(self.two.itemsize, self.two.dtype.itemsize)
 
+    def test_set_strides_deprecated(self):
+        x = dpnp.eye(2)
+        with pytest.warns(DeprecationWarning, match="Setting the strides"):
+            setattr(x, "strides", x.strides)
+
 
 @testing.parameterize(*testing.product({"xp": [dpnp, numpy]}))
 class TestContains:
