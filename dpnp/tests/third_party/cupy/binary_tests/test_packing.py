@@ -1,4 +1,4 @@
-import unittest
+from __future__ import annotations
 
 import numpy
 import pytest
@@ -11,7 +11,7 @@ pytest.skip(
 )
 
 
-class TestPacking(unittest.TestCase):
+class TestPacking:
 
     @testing.for_int_dtypes()
     @testing.numpy_cupy_array_equal()

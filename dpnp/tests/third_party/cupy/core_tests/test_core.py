@@ -1,20 +1,23 @@
 from __future__ import annotations
 
 import sys
-import unittest
 
 import numpy
 import pytest
 
 import dpnp as cupy
+
+# from cupy._core import core
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing._protocol_helpers import (
     DummyObjectWithCudaArrayInterface,
     DummyObjectWithCuPyGetNDArray,
 )
 
+# from cupy_tests.core_tests import test_raw
 
-class TestSize(unittest.TestCase):
+
+class TestSize:
 
     # def tearDown(self):
     #     # Free huge memory for slow test
@@ -58,7 +61,7 @@ _orders = {
 
 
 @pytest.mark.skip("no cupy._core submodule")
-class TestOrder(unittest.TestCase):
+class TestOrder:
 
     @testing.for_orders(_orders.keys())
     def test_ndarray(self, order):
