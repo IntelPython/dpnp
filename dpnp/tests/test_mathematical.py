@@ -2021,7 +2021,18 @@ class TestUfunc:
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
-        "func", ["abs", "fix", "round", "add", "frexp", "divmod"]
+        "func",
+        [
+            "abs",
+            pytest.param(
+                "fix",
+                marks=pytest.mark.filterwarnings("ignore::DeprecationWarning"),
+            ),
+            "round",
+            "add",
+            "frexp",
+            "divmod",
+        ],
     )
     def test_out_wrong_tuple_len(self, xp, func):
         if func == "round" and xp is numpy:
@@ -2536,7 +2547,18 @@ class TestProjection:
         assert dpnp.allclose(result, expected)
 
 
-@pytest.mark.parametrize("func", ["ceil", "floor", "trunc", "fix"])
+@pytest.mark.parametrize(
+    "func",
+    [
+        "ceil",
+        "floor",
+        "trunc",
+        pytest.param(
+            "fix",
+            marks=pytest.mark.filterwarnings("ignore::DeprecationWarning"),
+        ),
+    ],
+)
 class TestRoundingFuncs:
     @testing.with_requires("numpy>=2.1.0")
     @pytest.mark.parametrize(
