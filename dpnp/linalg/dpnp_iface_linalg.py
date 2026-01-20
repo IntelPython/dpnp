@@ -1699,7 +1699,6 @@ def solve(a, b):
     b_shape = b.shape
     b_ndim = b.ndim
 
-    # compatible with numpy>=2.0
     if b_ndim == 0:
         raise ValueError("b must have at least one dimension")
     if b_ndim == 1:
