@@ -60,6 +60,7 @@ __all__ = [
     "DPNPBinaryFunc",
     "DPNPBinaryFuncOutKw",
     "DPNPBinaryTwoOutputsFunc",
+    "DPNPDeprecatedUnaryFunc",
     "DPNPImag",
     "DPNPReal",
     "DPNPRound",
@@ -228,6 +229,29 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
                 )
             return out[0]
         return out
+
+
+class DPNPDeprecatedUnaryFunc(DPNPUnaryFunc):
+    """
+    Class that implements a deprecated unary element-wise function.
+
+    Parameters
+    ----------
+    deprecated_msg : {str, None}
+        Warning message to emit. If None, no warning is issued.
+
+    """
+
+    def __init__(self, *args, deprecated_msg=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._deprecated_msg = deprecated_msg
+
+    def __call__(self, *args, **kwargs):
+        if self._deprecated_msg:
+            warnings.warn(
+                self._deprecated_msg, DeprecationWarning, stacklevel=2
+            )
+        return super().__call__(*args, **kwargs)
 
 
 class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
