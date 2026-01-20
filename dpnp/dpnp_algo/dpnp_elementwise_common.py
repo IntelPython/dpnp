@@ -237,8 +237,10 @@ class DPNPDeprecatedUnaryFunc(DPNPUnaryFunc):
 
     Parameters
     ----------
-    deprecated_msg : {str, None}
+    deprecated_msg : {str, None}, optional
         Warning message to emit. If None, no warning is issued.
+
+        Default: ``None``.
 
     """
 

@@ -1881,7 +1881,7 @@ fix = DPNPDeprecatedUnaryFunc(
     _FIX_DOCSTRING,
     mkl_fn_to_call="_mkl_trunc_to_call",
     mkl_impl_fn="_trunc",
-    deprecated_msg=("dpnp.fix is deprecated in favor of dpnp.trunc"),
+    deprecated_msg="dpnp.fix is deprecated in favor of dpnp.trunc",
 )
 
 

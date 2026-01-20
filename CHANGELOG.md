@@ -50,7 +50,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * `dpnp.asfarray` is deprecated. Use `dpnp.asarray` with an appropriate dtype instead [#2650](https://github.com/IntelPython/dpnp/pull/2650)
 * Passing the output array ``out`` positionally to `dpnp.minimum` and `dpnp.maximum` is deprecated. Pass the output with the keyword form, e.g. ``dpnp.minimum(a, b, out=c)`` [#2659](https://github.com/IntelPython/dpnp/pull/2659)
 * `dpnp.ndarray.T` property is deprecated for not two-dimensional array to be compatible with the Python array API standard. To achieve a similar behavior when ``a.ndim != 2``, either ``a.transpose()``, or ``a.mT`` (swaps the last two axes only), or ``dpnp.permute_dims(a, range(a.ndim)[::-1])`` can be used [#2681](https://github.com/IntelPython/dpnp/pull/2681)
-* `dpnp.fix` is deprecated. Use `dpnp.trunc` instead [#2730](https://github.com/IntelPython/dpnp/pull/2730)
+* `dpnp.fix` is deprecated. Use `dpnp.trunc` instead, which provides identical functionality [#2730](https://github.com/IntelPython/dpnp/pull/2730)
 
 ### Removed
 
