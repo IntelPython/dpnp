@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.20.0dev1+25.gb6efa0cb1e8 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.20.0dev1+54.gc796b46f3ae documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9560e18e"></script>
+      <script src="../../_static/documentation_options.js?v=27eb3a79"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -138,6 +138,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
 
 
@@ -1278,6 +1279,123 @@
 
 
 
+<div class="viewcode-block" id="isin">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isin.html#dpnp.isin">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">isin</span><span class="p">(</span>
+    <span class="n">element</span><span class="p">,</span>
+    <span class="n">test_elements</span><span class="p">,</span>
+    <span class="n">assume_unique</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
+    <span class="n">invert</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates ``element in test_elements``, broadcasting over `element` only.</span>
+<span class="sd">    Returns a boolean array of the same shape as `element` that is ``True``</span>
+<span class="sd">    where an element of `element` is in `test_elements` and ``False``</span>
+<span class="sd">    otherwise.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.isin`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    element : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    test_elements : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="sd">        The values against which to test each value of `element`.</span>
+<span class="sd">        This argument is flattened if it is an array.</span>
+<span class="sd">    assume_unique : bool, optional</span>
+<span class="sd">        Ignored, as no performance benefit is gained by assuming the</span>
+<span class="sd">        input arrays are unique. Included for compatibility with NumPy.</span>
+
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    invert : bool, optional</span>
+<span class="sd">        If ``True``, the values in the returned array are inverted, as if</span>
+<span class="sd">        calculating ``element not in test_elements``.</span>
+<span class="sd">        ``dpnp.isin(a, b, invert=True)`` is equivalent to (but faster</span>
+<span class="sd">        than) ``dpnp.invert(dpnp.isin(a, b))``.</span>
+
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    kind : {None, &quot;sort&quot;}, optional</span>
+<span class="sd">        Ignored, as the only algorithm implemented is ``&quot;sort&quot;``. Included for</span>
+<span class="sd">        compatibility with NumPy.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    isin : dpnp.ndarray of bool dtype</span>
+<span class="sd">        Has the same shape as `element`. The values `element[isin]`</span>
+<span class="sd">        are in `test_elements`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; element = 2*np.arange(4).reshape((2, 2))</span>
+<span class="sd">    &gt;&gt;&gt; element</span>
+<span class="sd">    array([[0, 2],</span>
+<span class="sd">           [4, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; test_elements = np.array([1, 2, 4, 8])</span>
+<span class="sd">    &gt;&gt;&gt; mask = np.isin(element, test_elements)</span>
+<span class="sd">    &gt;&gt;&gt; mask</span>
+<span class="sd">    array([[False,  True],</span>
+<span class="sd">           [ True, False]])</span>
+<span class="sd">    &gt;&gt;&gt; element[mask]</span>
+<span class="sd">    array([2, 4])</span>
+
+<span class="sd">    The indices of the matched values can be obtained with `nonzero`:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.nonzero(mask)</span>
+<span class="sd">    (array([0, 1]), array([1, 0]))</span>
+
+<span class="sd">    The test can also be inverted:</span>
+
+<span class="sd">    &gt;&gt;&gt; mask = np.isin(element, test_elements, invert=True)</span>
+<span class="sd">    &gt;&gt;&gt; mask</span>
+<span class="sd">    array([[ True, False],</span>
+<span class="sd">           [False,  True]])</span>
+<span class="sd">    &gt;&gt;&gt; element[mask]</span>
+<span class="sd">    array([0, 6])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">test_elements</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+        <span class="n">usm_element</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
+            <span class="n">element</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">test_elements</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">test_elements</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">usm_test</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">test_elements</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">test_elements</span><span class="p">):</span>
+        <span class="n">usm_test</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
+            <span class="n">test_elements</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">element</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">element</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">usm_element</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">dpu</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">test_elements</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">dpu</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                <span class="s2">&quot;Input arrays have incompatible allocation queues&quot;</span>
+            <span class="p">)</span>
+        <span class="n">usm_element</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="n">usm_test</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">test_elements</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span>
+            <span class="n">usm_element</span><span class="p">,</span>
+            <span class="n">usm_test</span><span class="p">,</span>
+            <span class="n">invert</span><span class="o">=</span><span class="n">invert</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
 <span class="n">_ISINF_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Tests each element :math:`x_i` of the input array `x` to determine if equal to</span>
 <span class="s2">positive or negative infinity.</span>
@@ -2220,7 +2338,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

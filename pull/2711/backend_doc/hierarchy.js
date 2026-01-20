@@ -13,11 +13,14 @@ var hierarchy =
     [ "dpnp::extensions::window::kernels::BartlettFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_factory.html", null ],
     [ "dpnp::extensions::window::kernels::BartlettFunctor< T >", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_functor.html", null ],
     [ "dpnp::kernels::erfs::BaseFunctor< OpT, ArgT, ResT >", "structdpnp_1_1kernels_1_1erfs_1_1_base_functor.html", null ],
+    [ "dpnp::extensions::py_internal::elementwise_common::BinaryTwoOutputsContigFunctor< argT1, argT2, resT1, resT2, BinaryOperatorT, vec_sz, n_vecs, enable_sg_loadstore >", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_binary_two_outputs_contig_functor.html", null ],
+    [ "dpnp::extensions::py_internal::elementwise_common::BinaryTwoOutputsStridedFunctor< argT1, argT2, resT1, resT2, FourOffsets_IndexerT, BinaryOperatorT >", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_binary_two_outputs_strided_functor.html", null ],
     [ "statistics::histogram::Bincount", "structstatistics_1_1histogram_1_1_bincount.html", null ],
     [ "dpnp::kernels::bitwise_count::BitwiseCountFunctor< argT, resT >", "structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html", null ],
     [ "dpnp::extensions::window::kernels::BlackmanFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html", null ],
     [ "dpnp::extensions::window::kernels::BlackmanFunctor< T >", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_functor.html", null ],
     [ "std::bool_constant", null, [
+      [ "dpnp::extensions::py_internal::type_dispatch::BinaryTypeMapTwoResultsEntry< Ty1, ArgTy1, Ty2, ArgTy2, ResTy1, ResTy2 >", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_binary_type_map_two_results_entry.html", null ],
       [ "dpnp::extensions::py_internal::type_dispatch::TypeMapTwoResultsEntry< Ty, ArgTy, ResTy1, ResTy2 >", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_type_map_two_results_entry.html", null ]
     ] ],
     [ "statistics::histogram::CachedData< T, Dims >", "structstatistics_1_1histogram_1_1_cached_data.html", null ],
@@ -32,6 +35,7 @@ var hierarchy =
     ] ],
     [ "ext::common::DispatchTable< FnT >", "classext_1_1common_1_1_dispatch_table.html", null ],
     [ "ext::common::DispatchTable2< FnT >", "classext_1_1common_1_1_dispatch_table2.html", null ],
+    [ "dpnp::kernels::divmod::DivmodFunctor< argT1, argT2, divT, modT >", "structdpnp_1_1kernels_1_1divmod_1_1_divmod_functor.html", null ],
     [ "dpnp::extensions::blas::DotcContigFactory< fnT, varT >", "structdpnp_1_1extensions_1_1blas_1_1_dotc_contig_factory.html", null ],
     [ "dpnp::extensions::blas::DotContigFactory< fnT, varT >", "structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html", null ],
     [ "dpnp::extensions::blas::types::DotcTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html", null ],
@@ -54,7 +58,6 @@ var hierarchy =
       [ "dpnp::extensions::lapack::LinAlgError", "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html", null ]
     ] ],
     [ "dpnp::kernels::fabs::FabsFunctor< argT, resT >", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ],
-    [ "dpnp::kernels::fix::FixFunctor< argT, resT >", "structdpnp_1_1kernels_1_1fix_1_1_fix_functor.html", null ],
     [ "dpnp::kernels::fmax::FmaxFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmax_1_1_fmax_functor.html", null ],
     [ "dpnp::kernels::fmin::FminFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmin_1_1_fmin_functor.html", null ],
     [ "dpnp::kernels::fmod::FmodFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ],

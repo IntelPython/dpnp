@@ -148,16 +148,33 @@ $(function(){initNavTree('type__dispatch__building_8hpp_source.html',''); initRe
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>};</div>
 </div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Ty = <span class="keywordtype">void</span>&gt;</div>
-<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry.html">   56</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry.html">DefaultTwoResultsEntry</a> : std::true_type</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>{</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">using </span>result_type1 = Ty;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">using </span>result_type2 = Ty;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Ty1,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>          <span class="keyword">typename</span> ArgTy1,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>          <span class="keyword">typename</span> Ty2,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>          <span class="keyword">typename</span> ArgTy2,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>          <span class="keyword">typename</span> ResTy1 = ArgTy1,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>          <span class="keyword">typename</span> ResTy2 = ArgTy2&gt;</div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="};">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_binary_type_map_two_results_entry.html">   61</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_binary_type_map_two_results_entry.html">BinaryTypeMapTwoResultsEntry</a></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    : std::bool_constant&lt;std::conjunction_v&lt;std::is_same&lt;Ty1, ArgTy1&gt;,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                            std::is_same&lt;Ty2, ArgTy2&gt;&gt;&gt;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>{</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">using </span>result_type1 = ResTy1;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">using </span>result_type2 = ResTy2;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
 </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>} <span class="comment">// namespace dpnp::extensions::py_internal::type_dispatch</span></div>
-<div class="ttc" id="astructdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry_html"><div class="ttname"><a href="structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry.html">dpnp::extensions::py_internal::type_dispatch::DefaultTwoResultsEntry</a></div><div class="ttdef"><b>Definition</b> <a href="#l00056">type_dispatch_building.hpp:57</a></div></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Ty = <span class="keywordtype">void</span>&gt;</div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="};">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry.html">   74</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry.html">DefaultTwoResultsEntry</a> : std::true_type</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>{</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">using </span>result_type1 = Ty;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">using </span>result_type2 = Ty;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>};</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>} <span class="comment">// namespace dpnp::extensions::py_internal::type_dispatch</span></div>
+<div class="ttc" id="astructdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_binary_type_map_two_results_entry_html"><div class="ttname"><a href="structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_binary_type_map_two_results_entry.html">dpnp::extensions::py_internal::type_dispatch::BinaryTypeMapTwoResultsEntry</a></div><div class="ttdef"><b>Definition</b> <a href="#l00061">type_dispatch_building.hpp:64</a></div></div>
+<div class="ttc" id="astructdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry_html"><div class="ttname"><a href="structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry.html">dpnp::extensions::py_internal::type_dispatch::DefaultTwoResultsEntry</a></div><div class="ttdef"><b>Definition</b> <a href="#l00074">type_dispatch_building.hpp:75</a></div></div>
 <div class="ttc" id="astructdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_type_map_two_results_entry_html"><div class="ttname"><a href="structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_type_map_two_results_entry.html">dpnp::extensions::py_internal::type_dispatch::TypeMapTwoResultsEntry</a></div><div class="ttdef"><b>Definition</b> <a href="#l00045">type_dispatch_building.hpp:46</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
