@@ -1,2 +1,2 @@
 --index-url https://pypi.anaconda.org/dppy/label/dev/simple
-dpctl>=0.21.0dev0
+dpctl>=0.22.0dev0
