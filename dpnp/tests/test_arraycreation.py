@@ -19,6 +19,8 @@ from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
     get_array,
+    get_float_dtypes,
+    has_support_aspect64,
     is_lts_driver,
     is_tgllp_iris_xe,
     is_win_platform,
@@ -83,6 +85,131 @@ class TestAsType:
         )
 
 
+class TestLinspace:
+    @pytest.mark.parametrize("start", [0, -5, 10, -2.5, 9.7])
+    @pytest.mark.parametrize("stop", [0, 10, -2, 20.5, 120])
+    @pytest.mark.parametrize("num", [0, 1, 5, numpy.array(10)])
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_bool=True, no_float16=False)
+    )
+    @pytest.mark.parametrize("retstep", [True, False])
+    def test_basic(self, start, stop, num, dt, retstep):
+        if (
+            not has_support_aspect64()
+            and numpy.issubdtype(dt, numpy.integer)
+            and start == -5
+            and stop == 10
+            and num == 10
+        ):
+            pytest.skip("due to dpctl-1056")
+
+        if numpy.issubdtype(dt, numpy.unsignedinteger):
+            start = abs(start)
+            stop = abs(stop)
+
+        res = dpnp.linspace(start, stop, num, dtype=dt, retstep=retstep)
+        exp = numpy.linspace(start, stop, num, dtype=dt, retstep=retstep)
+        if retstep:
+            res, res_step = res
+            exp, exp_step = exp
+            assert_dtype_allclose(res_step, exp_step)
+
+        if numpy.issubdtype(dt, numpy.integer):
+            assert_allclose(res, exp, rtol=1)
+        else:
+            assert_dtype_allclose(res, exp)
+
+    @pytest.mark.parametrize(
+        "start, stop",
+        [
+            (dpnp.array(1), dpnp.array([-4])),
+            (dpnp.array([2.6]), dpnp.array([[2.6], [-4]])),
+            (numpy.array([[-6.7, 3]]), numpy.array(2)),
+            ([1, -4], [[-4.6]]),
+            ((3, 5), (3,)),
+        ],
+    )
+    @pytest.mark.parametrize("num", [0, 1, 5])
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_bool=True, no_float16=False)
+    )
+    @pytest.mark.parametrize("retstep", [True, False])
+    def test_start_stop_arrays(self, start, stop, num, dt, retstep):
+        res = dpnp.linspace(start, stop, num, dtype=dt, retstep=retstep)
+        exp = numpy.linspace(
+            get_array(numpy, start),
+            get_array(numpy, stop),
+            num,
+            dtype=dt,
+            retstep=retstep,
+        )
+        if retstep:
+            res, res_step = res
+            exp, exp_step = exp
+            assert_dtype_allclose(res_step, exp_step)
+        assert_dtype_allclose(res, exp)
+
+    @pytest.mark.parametrize(
+        "start, stop",
+        [(1 + 2j, 3 + 4j), (1j, 10), ([0, 1], 3 + 2j)],
+    )
+    def test_start_stop_complex(self, start, stop):
+        result = dpnp.linspace(start, stop, num=5)
+        expected = numpy.linspace(start, stop, num=5)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_denormal_numbers(self, dt):
+        stop = numpy.nextafter(dt(0), dt(1)) * 5  # denormal number
+
+        result = dpnp.linspace(0, stop, num=10, endpoint=False, dtype=dt)
+        expected = numpy.linspace(0, stop, num=10, endpoint=False, dtype=dt)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.skipif(not has_support_aspect64(), reason="due to dpctl-1056")
+    def test_equivalent_to_arange(self):
+        result = dpnp.linspace(0, 35, num=36, dtype=int)
+        expected = numpy.linspace(0, 35, num=36, dtype=int)
+        assert_equal(result, expected)
+
+    def test_round_negative(self):
+        result = dpnp.linspace(-1, 3, num=8, dtype=int)
+        expected = numpy.linspace(-1, 3, num=8, dtype=int)
+        assert_array_equal(result, expected)
+
+    def test_step_zero(self):
+        start = numpy.array([0.0, 1.0])
+        stop = numpy.array([2.0, 1.0])
+
+        result = dpnp.linspace(start, stop, num=3)
+        expected = numpy.linspace(start, stop, num=3)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("endpoint", [True, False])
+    def test_num_zero(self, endpoint):
+        start, stop = 0, [0, 1, 2, 3, 4]
+        result = dpnp.linspace(start, stop, num=0, endpoint=endpoint)
+        expected = numpy.linspace(start, stop, num=0, endpoint=endpoint)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [0, 1])
+    def test_axis(self, axis):
+        func = lambda xp: xp.linspace([2, 3], [20, 15], num=10, axis=axis)
+        assert_allclose(func(dpnp), func(numpy))
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_negative_num(self, xp):
+        with pytest.raises(ValueError, match="must be non-negative"):
+            _ = xp.linspace(0, 10, num=-1)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_float_num(self, xp):
+        with pytest.raises(
+            TypeError, match="cannot be interpreted as an integer"
+        ):
+            _ = xp.linspace(0, 1, num=2.5)
+
+
 class TestTrace:
     @pytest.mark.parametrize("a_sh", [(3, 4), (2, 2, 2)])
     @pytest.mark.parametrize(
@@ -139,6 +266,16 @@ class TestTrace:
         ia = dpnp.array(a)
         result = dpnp.linalg.trace(ia, offset=offset, dtype=dtype)
         expected = numpy.linalg.trace(a, offset=offset, dtype=dtype)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("offset", [-1, 0, 1])
+    def test_ndarray_offset(self, offset):
+        ia = dpnp.arange(8, dtype=dpnp.uint8).reshape((2, 2, 2))
+        ia = dpnp.ndarray((2, 2), buffer=ia, offset=1)
+        a = ia.asnumpy()
+
+        result = dpnp.linalg.trace(ia, offset=offset)
+        expected = numpy.linalg.trace(a, offset=offset)
         assert_equal(result, expected)
 
 
@@ -734,37 +871,6 @@ def test_dpctl_tensor_input(func, args):
         assert_array_equal(X, Y)
 
 
-@pytest.mark.parametrize("start", [0, -5, 10, -2.5, 9.7])
-@pytest.mark.parametrize("stop", [0, 10, -2, 20.5, 120])
-@pytest.mark.parametrize(
-    "num",
-    [1, 5, numpy.array(10), dpnp.array(17), dpt.asarray(100)],
-    ids=["1", "5", "numpy.array(10)", "dpnp.array(17)", "dpt.asarray(100)"],
-)
-@pytest.mark.parametrize(
-    "dtype",
-    get_all_dtypes(no_bool=True, no_float16=False),
-)
-@pytest.mark.parametrize("retstep", [True, False])
-def test_linspace(start, stop, num, dtype, retstep):
-    if numpy.issubdtype(dtype, numpy.unsignedinteger):
-        start = abs(start)
-        stop = abs(stop)
-
-    res_np = numpy.linspace(start, stop, num, dtype=dtype, retstep=retstep)
-    res_dp = dpnp.linspace(start, stop, num, dtype=dtype, retstep=retstep)
-
-    if retstep:
-        [res_np, step_np] = res_np
-        [res_dp, step_dp] = res_dp
-        assert_allclose(step_np, step_dp)
-
-    if numpy.issubdtype(dtype, dpnp.integer):
-        assert_allclose(res_np, res_dp, rtol=1)
-    else:
-        assert_dtype_allclose(res_dp, res_np)
-
-
 @pytest.mark.parametrize("func", ["geomspace", "linspace", "logspace"])
 @pytest.mark.parametrize(
     "start_dtype", [numpy.float64, numpy.float32, numpy.int64, numpy.int32]
@@ -776,57 +882,6 @@ def test_space_numpy_dtype(func, start_dtype, stop_dtype):
     start = numpy.array([1, 2, 3], dtype=start_dtype)
     stop = numpy.array([11, 7, -2], dtype=stop_dtype)
     getattr(dpnp, func)(start, stop, 10)
-
-
-@pytest.mark.parametrize(
-    "start",
-    [
-        dpnp.array(1),
-        dpnp.array([2.6]),
-        numpy.array([[-6.7, 3]]),
-        [1, -4],
-        (3, 5),
-    ],
-)
-@pytest.mark.parametrize(
-    "stop",
-    [
-        dpnp.array([-4]),
-        dpnp.array([[2.6], [-4]]),
-        numpy.array(2),
-        [[-4.6]],
-        (3,),
-    ],
-)
-def test_linspace_arrays(start, stop):
-    func = lambda xp: xp.linspace(get_array(xp, start), get_array(xp, stop), 10)
-    assert func(numpy).shape == func(dpnp).shape
-
-
-def test_linspace_complex():
-    func = lambda xp: xp.linspace(0, 3 + 2j, num=1000)
-    assert_allclose(func(dpnp), func(numpy))
-
-
-@pytest.mark.parametrize("axis", [0, 1])
-def test_linspace_axis(axis):
-    func = lambda xp: xp.linspace([2, 3], [20, 15], num=10, axis=axis)
-    assert_allclose(func(dpnp), func(numpy))
-
-
-def test_linspace_step_nan():
-    func = lambda xp: xp.linspace(1, 2, num=0, endpoint=False)
-    assert_allclose(func(dpnp), func(numpy))
-
-
-@pytest.mark.parametrize("start", [1, [1, 1]])
-@pytest.mark.parametrize("stop", [10, [10 + 10]])
-def test_linspace_retstep(start, stop):
-    func = lambda xp: xp.linspace(start, stop, num=10, retstep=True)
-    np_res = func(numpy)
-    dpnp_res = func(dpnp)
-    assert_allclose(dpnp_res[0], np_res[0])
-    assert_allclose(dpnp_res[1], np_res[1])
 
 
 @pytest.mark.parametrize(
@@ -862,10 +917,8 @@ def test_geomspace_zero_error():
 
 def test_space_num_error():
     with pytest.raises(ValueError):
-        dpnp.linspace(2, 5, -3)
         dpnp.geomspace(2, 5, -3)
         dpnp.logspace(2, 5, -3)
-        dpnp.linspace([2, 3], 5, -3)
         dpnp.geomspace([2, 3], 5, -3)
         dpnp.logspace([2, 3], 5, -3)
 

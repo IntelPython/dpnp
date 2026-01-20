@@ -69,6 +69,9 @@ def assert_dtype_allclose(
         x.dtype, dpnp.inexact
     )
 
+    if not hasattr(numpy_arr, "dtype"):
+        numpy_arr = numpy.array(numpy_arr)
+
     if is_inexact(dpnp_arr) or is_inexact(numpy_arr):
         tol_dpnp = (
             dpnp.finfo(dpnp_arr).resolution
@@ -188,7 +191,7 @@ def generate_random_numpy_array(
     numpy.random.seed(seed_value)
 
     if numpy.issubdtype(dtype, numpy.unsignedinteger):
-        low = 0
+        low = max(low, 0)
 
     # dtype=int is needed for 0d arrays
     size = numpy.prod(shape, dtype=int)

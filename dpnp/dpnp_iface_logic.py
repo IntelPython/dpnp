@@ -53,6 +53,7 @@ import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
+from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 
 
@@ -1164,6 +1165,120 @@ def isfortran(a):
 
     dpnp.check_supported_arrays_type(a)
     return a.flags.fnc
+
+
+def isin(
+    element,
+    test_elements,
+    assume_unique=False,  # pylint: disable=unused-argument
+    invert=False,
+    *,
+    kind=None,  # pylint: disable=unused-argument
+):
+    """
+    Calculates ``element in test_elements``, broadcasting over `element` only.
+    Returns a boolean array of the same shape as `element` that is ``True``
+    where an element of `element` is in `test_elements` and ``False``
+    otherwise.
+
+    For full documentation refer to :obj:`numpy.isin`.
+
+    Parameters
+    ----------
+    element : {dpnp.ndarray, usm_ndarray, scalar}
+        Input array.
+    test_elements : {dpnp.ndarray, usm_ndarray, scalar}
+        The values against which to test each value of `element`.
+        This argument is flattened if it is an array.
+    assume_unique : bool, optional
+        Ignored, as no performance benefit is gained by assuming the
+        input arrays are unique. Included for compatibility with NumPy.
+
+        Default: ``False``.
+    invert : bool, optional
+        If ``True``, the values in the returned array are inverted, as if
+        calculating ``element not in test_elements``.
+        ``dpnp.isin(a, b, invert=True)`` is equivalent to (but faster
+        than) ``dpnp.invert(dpnp.isin(a, b))``.
+
+        Default: ``False``.
+    kind : {None, "sort"}, optional
+        Ignored, as the only algorithm implemented is ``"sort"``. Included for
+        compatibility with NumPy.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    isin : dpnp.ndarray of bool dtype
+        Has the same shape as `element`. The values `element[isin]`
+        are in `test_elements`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> element = 2*np.arange(4).reshape((2, 2))
+    >>> element
+    array([[0, 2],
+           [4, 6]])
+    >>> test_elements = np.array([1, 2, 4, 8])
+    >>> mask = np.isin(element, test_elements)
+    >>> mask
+    array([[False,  True],
+           [ True, False]])
+    >>> element[mask]
+    array([2, 4])
+
+    The indices of the matched values can be obtained with `nonzero`:
+
+    >>> np.nonzero(mask)
+    (array([0, 1]), array([1, 0]))
+
+    The test can also be inverted:
+
+    >>> mask = np.isin(element, test_elements, invert=True)
+    >>> mask
+    array([[ True, False],
+           [False,  True]])
+    >>> element[mask]
+    array([0, 6])
+
+    """
+
+    dpnp.check_supported_arrays_type(element, test_elements, scalar_type=True)
+    if dpnp.isscalar(element):
+        usm_element = dpnp.as_usm_ndarray(
+            element,
+            usm_type=test_elements.usm_type,
+            sycl_queue=test_elements.sycl_queue,
+        )
+        usm_test = dpnp.get_usm_ndarray(test_elements)
+    elif dpnp.isscalar(test_elements):
+        usm_test = dpnp.as_usm_ndarray(
+            test_elements,
+            usm_type=element.usm_type,
+            sycl_queue=element.sycl_queue,
+        )
+        usm_element = dpnp.get_usm_ndarray(element)
+    else:
+        if (
+            dpu.get_execution_queue(
+                (element.sycl_queue, test_elements.sycl_queue)
+            )
+            is None
+        ):
+            raise dpu.ExecutionPlacementError(
+                "Input arrays have incompatible allocation queues"
+            )
+        usm_element = dpnp.get_usm_ndarray(element)
+        usm_test = dpnp.get_usm_ndarray(test_elements)
+    return dpnp_array._create_from_usm_ndarray(
+        dpt.isin(
+            usm_element,
+            usm_test,
+            invert=invert,
+        )
+    )
 
 
 _ISINF_DOCSTRING = """

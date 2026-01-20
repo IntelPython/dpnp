@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import functools
 import math
-import sys
 import unittest
 
 import numpy
@@ -227,8 +228,8 @@ class TestRanges(unittest.TestCase):
         # TODO (ev-br): np 2.0: had to bump the default rtol on Windows
         #               and numpy 1.26+weak promotion from 0 to 5e-6
         if xp.dtype(dtype_range).kind == "u":
-            # to avoid overflow, limit `val` to be smaller
-            # than xp.iinfo(dtype).max
+            # to avoid overflow, limit `val` to be smaller than
+            # xp.iinfo(dtype).max (TODO: check if dpctl-2230 resolves that)
             if dtype_range in [xp.uint8, xp.uint16] or dtype_out in [
                 xp.int8,
                 xp.uint8,

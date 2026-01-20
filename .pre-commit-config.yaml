@@ -118,16 +118,16 @@ repos:
             ]
         files: '^dpnp/(dpnp_iface.*|fft|linalg|scipy|dpnp_array)'
 -   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.15.0
+    rev: v2.16.0
     hooks:
     -   id: pretty-format-toml
         args: [--autofix]
 -   repo: https://github.com/rhysd/actionlint
-    rev: v1.7.9
+    rev: v1.7.10
     hooks:
     -   id: actionlint
 -   repo: https://github.com/BlankSpruce/gersemi
-    rev: 0.24.0
+    rev: 0.25.1
     hooks:
     -   id: gersemi
         exclude: "dpnp/backend/cmake/Modules/"

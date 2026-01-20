@@ -115,8 +115,6 @@ def test_umaths(test_cases):
         and not (vmi._is_available() and has_support_aspect64())
     ):
         pytest.skip("dpctl-2031")
-    elif umath in ["divmod"]:
-        pytest.skip("Not implemented umath")
     elif umath in ["vecmat", "matvec"]:
         if is_win_platform() and not is_gpu_device():
             pytest.skip("SAT-8073")

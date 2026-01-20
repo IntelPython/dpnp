@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dpctl
 import dpctl.tensor._dlpack as dlp
 import numpy
@@ -60,6 +62,8 @@ class TestNewDLPackConversion:
     def pool(self, request):
         self.memory = request.param
         if self.memory == "managed":
+            # if cuda.runtime.is_hip:
+            #     pytest.skip("HIP does not support managed memory")
             old_pool = cupy.get_default_memory_pool()
             new_pool = cuda.MemoryPool(cuda.malloc_managed)
             cuda.set_allocator(new_pool.malloc)
@@ -197,6 +201,8 @@ class TestNewDLPackConversion:
 
     def test_stream(self):
         allowed_streams = ["null", True]
+        # if not cuda.runtime.is_hip:
+        #     allowed_streams.append("ptds")
 
         # stream order is automatically established via DLPack protocol
         for src_s in [self._get_stream(s) for s in allowed_streams]:
@@ -222,18 +228,18 @@ class TestDLTensorMemory:
 
     @pytest.fixture
     def pool(self):
+        # old_pool = cupy.get_default_memory_pool()
+        # pool = cupy.cuda.MemoryPool()
+        # cupy.cuda.set_allocator(pool.malloc)
+
+        # yield pool
+
+        # pool.free_all_blocks()
+        # cupy.cuda.set_allocator(old_pool.malloc)
         pass
 
-    #     old_pool = cupy.get_default_memory_pool()
-    #     pool = cupy.cuda.MemoryPool()
-    #     cupy.cuda.set_allocator(pool.malloc)
-
-    # yield pool
-
-    #     pool.free_all_blocks()
-    #     cupy.cuda.set_allocator(old_pool.malloc)
-
     @pytest.mark.parametrize("max_version", [None, (1, 0)])
+    # @pytest.mark.thread_unsafe(reason="modifies pool and tracks allocations")
     def test_deleter(self, pool, max_version):
         # memory is freed when tensor is deleted, as it's not consumed
         array = cupy.empty(10)
@@ -248,6 +254,7 @@ class TestDLTensorMemory:
         # assert pool.n_free_blocks() == 1
 
     @pytest.mark.parametrize("max_version", [None, (1, 0)])
+    # @pytest.mark.thread_unsafe(reason="modifies pool and tracks allocations")
     def test_deleter2(self, pool, max_version):
         # memory is freed when array2 is deleted, as tensor is consumed
         array = cupy.empty(10)

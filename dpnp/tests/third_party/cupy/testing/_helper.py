@@ -1,21 +1,20 @@
+from __future__ import annotations
+
 import contextlib
 import importlib.metadata
 import inspect
 import unittest
 import warnings
+from collections.abc import Callable
 from importlib.metadata import PackageNotFoundError
-from typing import Callable
 from unittest import mock
 
 import numpy
 
 import dpnp as cupy
-from dpnp.tests.third_party.cupy.testing._pytest_impl import is_available
 
 # from cupy._core import internal
-# import cupyx
-# import cupyx.scipy.sparse
-
+from dpnp.tests.third_party.cupy.testing._pytest_impl import is_available
 
 if is_available():
     import pytest
@@ -25,7 +24,7 @@ else:
     _skipif = unittest.skipIf
 
 
-def with_requires(*requirements):
+def with_requires(*requirements: str) -> Callable[[Callable], Callable]:
     """Run a test case only when given requirements are satisfied.
 
     .. admonition:: Example
@@ -49,7 +48,7 @@ def with_requires(*requirements):
     return _skipif(not installed(*requirements), reason=msg)
 
 
-def installed(*specifiers):
+def installed(*specifiers: str) -> bool:
     """Returns True if the current environment satisfies the specified
     package requirement.
 
@@ -72,13 +71,13 @@ def installed(*specifiers):
     return True
 
 
-def numpy_satisfies(version_range):
+def numpy_satisfies(version_range: str) -> bool:
     """Returns True if numpy version satisfies the specified criteria.
 
     Args:
         version_range: A version specifier (e.g., `>=1.13.0`).
     """
-    return installed("numpy{}".format(version_range))
+    return installed(f"numpy{version_range}")
 
 
 def shaped_arange(shape, xp=cupy, dtype=numpy.float32, order="C", device=None):
@@ -162,45 +161,72 @@ def shaped_random(
     from uniform distribution over :math:`[0, scale)`
     with specified dtype.
     """
-    numpy.random.seed(seed)
+    rng = numpy.random.RandomState(seed)
     dtype = numpy.dtype(dtype)
     if dtype == "?":
-        a = numpy.random.randint(2, size=shape)
+        a = rng.randint(2, size=shape)
     elif dtype.kind == "c":
-        a = numpy.random.rand(*shape) + 1j * numpy.random.rand(*shape)
+        a = rng.rand(*shape) + 1j * rng.rand(*shape)
         a *= scale
     else:
-        a = numpy.random.rand(*shape) * scale
+        a = rng.rand(*shape) * scale
     return xp.asarray(a, dtype=dtype, order=order)
 
 
-# def shaped_sparse_random(
-#         shape, sp=cupyx.scipy.sparse, dtype=numpy.float32,
-#         density=0.01, format='coo', seed=0):
-#     """Returns an array filled with random values.
+def shaped_sparse_random(
+    shape, sp=None, dtype=numpy.float32, density=0.01, format="", seed=0
+):
+    """Returns an array filled with random values.
 
-#     Args:
-#         shape (tuple): Shape of returned sparse matrix.
-#         sp (scipy.sparse or cupyx.scipy.sparse): Sparse matrix module to use.
-#         dtype (dtype): Dtype of returned sparse matrix.
-#         density (float): Density of returned sparse matrix.
-#         format (str): Format of returned sparse matrix.
-#         seed (int): Random seed.
+    Args:
+        shape (tuple): Shape of returned sparse matrix.
+        sp (scipy.sparse or cupyx.scipy.sparse): Sparse matrix module to use.
+        dtype (dtype): Dtype of returned sparse matrix.
+        density (float): Density of returned sparse matrix.
+        format (str): Format of returned sparse matrix.
+        seed (int): Random seed.
 
-#     Returns:
-#         The sparse matrix with given shape, array module,
-#     """
-#     import scipy.sparse
-#     n_rows, n_cols = shape
-#     numpy.random.seed(seed)
-#     a = scipy.sparse.random(n_rows, n_cols, density).astype(dtype)
+    Returns:
+        The sparse matrix with given shape, array module,
+    """
+    import cupyx.scipy.sparse
+    import scipy.sparse
 
-#     if sp is cupyx.scipy.sparse:
-#         a = cupyx.scipy.sparse.coo_matrix(a)
-#     elif sp is not scipy.sparse:
-#         raise ValueError('Unknown module: {}'.format(sp))
+    if sp is None:
+        sp = cupyx.scipy.sparse
+    n_rows, n_cols = shape
+    a = scipy.sparse.random(n_rows, n_cols, density, random_state=seed).astype(
+        dtype
+    )
 
-#     return a.asformat(format)
+    try:
+        return sp.coo_matrix(a).asformat(format)
+    except AttributeError:
+        raise ValueError(f"Module {sp} does not have the expected sparse APIs")
+
+
+def shaped_linspace(start, stop, shape, xp=cupy, dtype=numpy.float32):
+    """Returns an array with given shape, array module, and dtype.
+
+    Args:
+        start (int): The starting value.
+        stop (int): The end value.
+        shape (tuple of int): Shape of returned ndarray.
+        xp (numpy or cupy): Array module to use.
+        dtype (dtype): Dtype of returned ndarray.
+
+    Returns:
+        numpy.ndarray or cupy.ndarray:
+    """
+    dtype = numpy.dtype(dtype)
+    size = numpy.prod(shape)
+    if dtype == "?":
+        start = max(start, 0)
+        stop = min(stop, 1)
+    elif dtype.kind == "u":
+        start = max(start, 0)
+    a = numpy.linspace(start, stop, size)
+    return xp.array(a.astype(dtype).reshape(shape))
 
 
 def generate_matrix(
@@ -276,6 +302,7 @@ def assert_warns(expected):
 
 
 class NumpyAliasTestBase(unittest.TestCase):
+
     @property
     def func(self):
         raise NotImplementedError()
@@ -290,6 +317,7 @@ class NumpyAliasTestBase(unittest.TestCase):
 
 
 class NumpyAliasBasicTestBase(NumpyAliasTestBase):
+
     def test_argspec(self):
         f = inspect.signature
         assert f(self.cupy_func) == f(self.numpy_func)
@@ -304,6 +332,7 @@ class NumpyAliasBasicTestBase(NumpyAliasTestBase):
 
 
 class NumpyAliasValuesTestBase(NumpyAliasTestBase):
+
     def test_values(self):
         assert self.cupy_func(*self.args) == self.numpy_func(*self.args)
 

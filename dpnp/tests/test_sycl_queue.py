@@ -506,6 +506,34 @@ def test_2in_1out(func, data1, data2, device):
 
 
 @pytest.mark.parametrize(
+    "func, data1, data2",
+    [
+        pytest.param("divmod", numpy.arange(5), numpy.array(3)),
+    ],
+)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_2in_2out(func, data1, data2, device):
+    x1 = dpnp.array(data1, device=device)
+    x2 = dpnp.array(data2, device=device)
+    res1, res2 = getattr(dpnp, func)(x1, x2)
+
+    assert_sycl_queue_equal(res1.sycl_queue, res2.sycl_queue)
+    assert_sycl_queue_equal(res1.sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(res1.sycl_queue, x2.sycl_queue)
+
+    out1 = dpnp.empty_like(res1)
+    out2 = dpnp.empty_like(res2)
+    try:
+        # some functions do not support out kwarg
+        getattr(dpnp, func)(x1, x2, out=(out1, out2))
+        assert_sycl_queue_equal(out1.sycl_queue, out2.sycl_queue)
+        assert_sycl_queue_equal(out1.sycl_queue, x1.sycl_queue)
+        assert_sycl_queue_equal(out1.sycl_queue, x2.sycl_queue)
+    except TypeError:
+        pass
+
+
+@pytest.mark.parametrize(
     "op",
     [
         "all",
@@ -536,6 +564,7 @@ def test_logic_op_1in(op, device):
         "greater",
         "greater_equal",
         "isclose",
+        "isin",
         "less",
         "less_equal",
         "logical_and",

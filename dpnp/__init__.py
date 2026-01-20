@@ -380,6 +380,7 @@ from .dpnp_iface_mathematical import (
     cumulative_prod,
     cumulative_sum,
     diff,
+    divmod,
     divide,
     ediff1d,
     fabs,
@@ -497,6 +498,7 @@ from .dpnp_iface_manipulation import (
     unique_inverse,
     unique_values,
 )
+from .dpnp_iface_logic import isin
 
 # -----------------------------------------------------------------------------
 # Sorting, searching, and counting
@@ -890,6 +892,7 @@ __all__ += [
     "deg2rad",
     "degrees",
     "diff",
+    "divmod",
     "divide",
     "ediff1d",
     "exp",
@@ -979,6 +982,7 @@ __all__ += [
 
 # Set routines
 __all__ += [
+    "isin",
     "unique",
     "unique_all",
     "unique_counts",

@@ -1,5 +1,7 @@
+import dpctl
 import numpy
 import pytest
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
@@ -795,3 +797,103 @@ def test_array_equal_nan(a):
     result = dpnp.array_equal(dpnp.array(a), dpnp.array(b), equal_nan=True)
     expected = numpy.array_equal(a, b, equal_nan=True)
     assert_equal(result, expected)
+
+
+class TestIsin:
+    @pytest.mark.parametrize(
+        "a",
+        [
+            numpy.array([1, 2, 3, 4]),
+            numpy.array([[1, 2], [3, 4]]),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "b",
+        [
+            numpy.array([2, 4, 6]),
+            numpy.array([[1, 3], [5, 7]]),
+        ],
+    )
+    def test_isin_basic(self, a, b):
+        dp_a = dpnp.array(a)
+        dp_b = dpnp.array(b)
+
+        expected = numpy.isin(a, b)
+        result = dpnp.isin(dp_a, dp_b)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_isin_dtype(self, dtype):
+        a = numpy.array([1, 2, 3, 4], dtype=dtype)
+        b = numpy.array([2, 4], dtype=dtype)
+
+        dp_a = dpnp.array(a, dtype=dtype)
+        dp_b = dpnp.array(b, dtype=dtype)
+
+        expected = numpy.isin(a, b)
+        result = dpnp.isin(dp_a, dp_b)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "sh_a, sh_b", [((3, 1), (1, 4)), ((2, 3, 1), (1, 1))]
+    )
+    def test_isin_broadcast(self, sh_a, sh_b):
+        a = numpy.arange(numpy.prod(sh_a)).reshape(sh_a)
+        b = numpy.arange(numpy.prod(sh_b)).reshape(sh_b)
+
+        dp_a = dpnp.array(a)
+        dp_b = dpnp.array(b)
+
+        expected = numpy.isin(a, b)
+        result = dpnp.isin(dp_a, dp_b)
+        assert_equal(result, expected)
+
+    def test_isin_scalar_elements(self):
+        a = numpy.array([1, 2, 3])
+        b = 2
+
+        dp_a = dpnp.array(a)
+        dp_b = dpnp.array(b)
+
+        expected = numpy.isin(a, b)
+        result = dpnp.isin(dp_a, dp_b)
+        assert_equal(result, expected)
+
+    def test_isin_scalar_test_elements(self):
+        a = 2
+        b = numpy.array([1, 2, 3])
+
+        dp_a = dpnp.array(a)
+        dp_b = dpnp.array(b)
+
+        expected = numpy.isin(a, b)
+        result = dpnp.isin(dp_a, dp_b)
+        assert_equal(result, expected)
+
+    def test_isin_empty(self):
+        a = numpy.array([], dtype=int)
+        b = numpy.array([1, 2, 3])
+
+        dp_a = dpnp.array(a)
+        dp_b = dpnp.array(b)
+
+        expected = numpy.isin(a, b)
+        result = dpnp.isin(dp_a, dp_b)
+        assert_equal(result, expected)
+
+    def test_isin_errors(self):
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+
+        a = dpnp.arange(5, sycl_queue=q1)
+        b = dpnp.arange(3, sycl_queue=q2)
+
+        # unsupported type for elements or test_elements
+        with pytest.raises(TypeError):
+            dpnp.isin(dict(), a)
+
+        with pytest.raises(TypeError):
+            dpnp.isin(a, dict())
+
+        with pytest.raises(ExecutionPlacementError):
+            dpnp.isin(a, b)
