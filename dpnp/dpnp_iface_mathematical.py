@@ -66,7 +66,6 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPBinaryFunc,
     DPNPBinaryFuncOutKw,
     DPNPBinaryTwoOutputsFunc,
-    DPNPFix,
     DPNPImag,
     DPNPReal,
     DPNPRound,
@@ -1867,11 +1866,14 @@ array([ 2.,  2., -2., -2.])
 
 """
 
-fix = DPNPFix(
+# reuse trunc backend implementation for fix
+fix = DPNPUnaryFunc(
     "fix",
-    ufi._fix_result_type,
-    ufi._fix,
+    ti._trunc_result_type,
+    ti._trunc,
     _FIX_DOCSTRING,
+    mkl_fn_to_call="_mkl_trunc_to_call",
+    mkl_impl_fn="_trunc",
 )
 
 

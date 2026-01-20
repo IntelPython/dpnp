@@ -42,6 +42,8 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Unified `dpnp` public API exports by consolidating function exports in `__init__.py` and removing wildcard imports [#2665](https://github.com/IntelPython/dpnp/pull/2665) [#2666](https://github.com/IntelPython/dpnp/pull/2666)
 * Updated tests to reflect the new scalar conversion rules for non-0D `usm_ndarray` [#2694](https://github.com/IntelPython/dpnp/pull/2694)
 * Compile indexing extension with `-fno-sycl-id-queries-fit-in-int` to support huge arrays [#2721](https://github.com/IntelPython/dpnp/pull/2721)
+* Updated `dpnp.fix` to reuse `dpnp.trunc` internally [#2722](https://github.com/IntelPython/dpnp/pull/2722)
+* Changed the build scripts and documentation due to `python setup.py develop` deprecation notice [#2716](https://github.com/IntelPython/dpnp/pull/2716)
 
 ### Deprecated
 
@@ -54,6 +56,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Dropped support for Python 3.9 [#2626](https://github.com/IntelPython/dpnp/pull/2626)
 * Removed the obsolete interface from DPNP to Numba JIT [#2647](https://github.com/IntelPython/dpnp/pull/2647)
 * Removed the `newshape` parameter from `dpnp.reshape`, which has been deprecated since dpnp 0.17.0. Pass it positionally or use `shape=` on newer versions [#2670](https://github.com/IntelPython/dpnp/pull/2670)
+* Removed unused `pytest` configuration from `pyproject.toml` [#2729](https://github.com/IntelPython/dpnp/pull/2729)
 
 ### Fixed
 

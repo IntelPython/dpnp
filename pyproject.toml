@@ -163,26 +163,6 @@ allow-wildcard-with-all = true
 [tool.pylint.miscellaneous]
 notes = ["FIXME", "XXX"]
 
-[tool.pytest.ini.options]
-addopts = [
-  "--junitxml=junit.xml",
-  "--ignore setup.py",
-  "--ignore run_test.py",
-  "--cov-report term-missing",
-  "--tb native",
-  "--strict",
-  "--durations=20",
-  "-q -ra"
-]
-minversion = "6.0"
-norecursedirs = [
-  ".*",
-  "*.egg*",
-  "build",
-  "dist",
-  "conda-recipe"
-]
-
 [tool.versioneer]
 VCS = "git"
 parentdir_prefix = "dpnp-"
