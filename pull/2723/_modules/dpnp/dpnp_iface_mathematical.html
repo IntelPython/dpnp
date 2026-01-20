@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev1+54.g293f32a0914 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev1+58.g6f0656e32d9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=7ab51520"></script>
+      <script src="../../_static/documentation_options.js?v=87122a32"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -151,7 +151,6 @@
     <span class="n">DPNPBinaryFunc</span><span class="p">,</span>
     <span class="n">DPNPBinaryFuncOutKw</span><span class="p">,</span>
     <span class="n">DPNPBinaryTwoOutputsFunc</span><span class="p">,</span>
-    <span class="n">DPNPFix</span><span class="p">,</span>
     <span class="n">DPNPImag</span><span class="p">,</span>
     <span class="n">DPNPReal</span><span class="p">,</span>
     <span class="n">DPNPRound</span><span class="p">,</span>
@@ -1979,11 +1978,14 @@
 
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">fix</span> <span class="o">=</span> <span class="n">DPNPFix</span><span class="p">(</span>
+<span class="c1"># reuse trunc backend implementation for fix</span>
+<span class="n">fix</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;fix&quot;</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_fix_result_type</span><span class="p">,</span>
-    <span class="n">ufi</span><span class="o">.</span><span class="n">_fix</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_trunc_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_trunc</span><span class="p">,</span>
     <span class="n">_FIX_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_trunc_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_trunc&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
