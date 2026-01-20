@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.ndarray.sycl\_device
+=========================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: ndarray.sycl_device

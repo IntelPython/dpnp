@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Constants &mdash; Data Parallel Extension for NumPy 0.20.0dev1+57.g7286c14e1ea documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=9a01e116"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Array creation routines" href="array-creation.html" />
+    <link rel="prev" title="Routines (NumPy)" href="routines.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines (NumPy)</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Constants</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dpnp.DLDeviceType"><code class="docutils literal notranslate"><span class="pre">DLDeviceType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dpnp.e"><code class="docutils literal notranslate"><span class="pre">e</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dpnp.euler_gamma"><code class="docutils literal notranslate"><span class="pre">euler_gamma</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dpnp.inf"><code class="docutils literal notranslate"><span class="pre">inf</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dpnp.nan"><code class="docutils literal notranslate"><span class="pre">nan</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dpnp.newaxis"><code class="docutils literal notranslate"><span class="pre">newaxis</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dpnp.pi"><code class="docutils literal notranslate"><span class="pre">pi</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bitwise.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions and Warnings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fft.html">Discrete Fourier Transform (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.fft</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.linalg</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="window.html">Window functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array_api.html">Array API standard compatibility</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="routines.html">Routines (NumPy)</a></li>
+      <li class="breadcrumb-item active">Constants</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/constants.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="constants">
+<h1>Constants<a class="headerlink" href="#constants" title="Link to this heading"></a></h1>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/constants.html">NumPy API Reference: Constants</a></p>
+</div>
+<p>DPNP includes several constants:</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="dpnp.DLDeviceType">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">DLDeviceType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;enum</span> <span class="pre">'DLDeviceType'&gt;</span></em><a class="headerlink" href="#dpnp.DLDeviceType" title="Link to this definition"></a></dt>
+<dd><p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></a> for the types of DLDevices supported by the DLPack
+protocol.</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCPU</span></code>:</dt><dd><p>CPU (host) device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDA</span></code>:</dt><dd><p>CUDA GPU device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDAHost</span></code>:</dt><dd><p>Pinned CUDA CPU memory by cudaMallocHost</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLOpenCL</span></code>:</dt><dd><p>OpenCL device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLVulkan</span></code>:</dt><dd><p>Vulkan buffer</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLMetal</span></code>:</dt><dd><p>Metal for Apple GPU</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLVPI</span></code>:</dt><dd><p>Verilog simulator buffer</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLROCM</span></code>:</dt><dd><p>ROCm GPU device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLROCMHost</span></code>:</dt><dd><p>Pinned ROCm CPU memory allocated by hipMallocHost</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLExtDev</span></code>:</dt><dd><p>Reserved extension device type used to test new devices</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDAManaged</span></code>:</dt><dd><p>CUDA managed/unified memory allocated by cudaMallocManaged</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLOneAPI</span></code>:</dt><dd><p>Unified shared memory allocated on a oneAPI non-partitioned device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLWebGPU</span></code>:</dt><dd><p>Device support for WebGPU standard</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLHexagon</span></code>:</dt><dd><p>Qualcomm Hexagon DSP</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLMAIA</span></code>:</dt><dd><p>Microsoft MAIA device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLTrn</span></code>:</dt><dd><p>AWS Trainium device</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpnp.e">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">e</span></span><a class="headerlink" href="#dpnp.e" title="Link to this definition"></a></dt>
+<dd><p>Euler's constant, base of natural logarithms, Napier's constant.</p>
+<p><code class="docutils literal notranslate"><span class="pre">e</span> <span class="pre">=</span> <span class="pre">2.71828182845904523536028747135266249775724709369995...</span></code></p>
+<p class="rubric">See Also</p>
+<p><a class="reference internal" href="generated/dpnp.exp.html#dpnp.exp" title="dpnp.exp"><code class="xref py py-func docutils literal notranslate"><span class="pre">exp()</span></code></a> : Exponential function</p>
+<p><a class="reference internal" href="generated/dpnp.log.html#dpnp.log" title="dpnp.log"><code class="xref py py-func docutils literal notranslate"><span class="pre">log()</span></code></a> : Natural logarithm</p>
+<p class="rubric">References</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/E_%28mathematical_constant%29">https://en.wikipedia.org/wiki/E_%28mathematical_constant%29</a></p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpnp.euler_gamma">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">euler_gamma</span></span><a class="headerlink" href="#dpnp.euler_gamma" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">γ</span> <span class="pre">=</span> <span class="pre">0.5772156649015328606065120900824024310421...</span></code></p>
+<p class="rubric">References</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Euler%27s_constant">https://en.wikipedia.org/wiki/Euler%27s_constant</a></p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpnp.inf">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">inf</span></span><a class="headerlink" href="#dpnp.inf" title="Link to this definition"></a></dt>
+<dd><p>IEEE 754 floating point representation of (positive) infinity.</p>
+<p class="rubric">Returns</p>
+<dl class="simple">
+<dt>y<span class="classifier">float</span></dt><dd><p>A floating point representation of positive infinity.</p>
+</dd>
+</dl>
+<p class="rubric">See Also</p>
+<p><a class="reference internal" href="generated/dpnp.isinf.html#dpnp.isinf" title="dpnp.isinf"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinf()</span></code></a> : Shows which elements are positive or negative infinity</p>
+<p><a class="reference internal" href="generated/dpnp.isposinf.html#dpnp.isposinf" title="dpnp.isposinf"><code class="xref py py-func docutils literal notranslate"><span class="pre">isposinf()</span></code></a> : Shows which elements are positive infinity</p>
+<p><a class="reference internal" href="generated/dpnp.isneginf.html#dpnp.isneginf" title="dpnp.isneginf"><code class="xref py py-func docutils literal notranslate"><span class="pre">isneginf()</span></code></a> : Shows which elements are negative infinity</p>
+<p><a class="reference internal" href="generated/dpnp.isnan.html#dpnp.isnan" title="dpnp.isnan"><code class="xref py py-func docutils literal notranslate"><span class="pre">isnan()</span></code></a> : Shows which elements are Not a Number</p>
+<p><a class="reference internal" href="generated/dpnp.isfinite.html#dpnp.isfinite" title="dpnp.isfinite"><code class="xref py py-func docutils literal notranslate"><span class="pre">isfinite()</span></code></a> : Shows which elements are finite (not one of Not a Number,
+positive infinity and negative infinity)</p>
+<p class="rubric">Notes</p>
+<p>DPNP uses the IEEE Standard for Binary Floating-Point for Arithmetic
+(IEEE 754). This means that Not a Number is not equivalent to infinity.
+Also that positive infinity is not equivalent to negative infinity. But
+infinity is equivalent to positive infinity.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+<span class="go">inf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">0.0</span>
+<span class="go">array([inf])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpnp.nan">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">nan</span></span><a class="headerlink" href="#dpnp.nan" title="Link to this definition"></a></dt>
+<dd><p>IEEE 754 floating point representation of Not a Number (NaN).</p>
+<p class="rubric">Returns</p>
+<p>y : A floating point representation of Not a Number.</p>
+<p class="rubric">See Also</p>
+<p><a class="reference internal" href="generated/dpnp.isnan.html#dpnp.isnan" title="dpnp.isnan"><code class="xref py py-func docutils literal notranslate"><span class="pre">isnan()</span></code></a> : Shows which elements are Not a Number</p>
+<p><a class="reference internal" href="generated/dpnp.isfinite.html#dpnp.isfinite" title="dpnp.isfinite"><code class="xref py py-func docutils literal notranslate"><span class="pre">isfinite()</span></code></a> : Shows which elements are finite (not one of Not a Number,
+positive infinity and negative infinity)</p>
+<p class="rubric">Notes</p>
+<p>DPNP uses the IEEE Standard for Binary Floating-Point for Arithmetic
+(IEEE 754). This means that Not a Number is not equivalent to infinity.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="go">nan</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="go">array(nan)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="go">array([       nan, 0.        , 0.69314718])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpnp.newaxis">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">newaxis</span></span><a class="headerlink" href="#dpnp.newaxis" title="Link to this definition"></a></dt>
+<dd><p>A convenient alias for <em>None</em>, useful for indexing arrays.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([0, 1, 2])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+<span class="go">array([[0],</span>
+<span class="go">       [1],</span>
+<span class="go">       [2]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+<span class="go">array([[[0]],</span>
+<span class="go">       [[1]],</span>
+<span class="go">       [[2]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span>
+<span class="go">array([[0, 0, 0],</span>
+<span class="go">       [0, 1, 2],</span>
+<span class="go">       [0, 2, 4]])</span>
+
+<span class="go">Outer product, same as ``outer(x, y)``:</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span>
+<span class="go">array([[ 0,  0,  0],</span>
+<span class="go">    [ 3,  4,  5],</span>
+<span class="go">    [ 6,  8, 10]])</span>
+
+<span class="go">``x[np.newaxis, :]`` is equivalent to ``x[np.newaxis]`` and ``x[None]``:</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(3, 1)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpnp.pi">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">pi</span></span><a class="headerlink" href="#dpnp.pi" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">pi</span> <span class="pre">=</span> <span class="pre">3.1415926535897932384626433...</span></code></p>
+<p class="rubric">References</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Pi">https://en.wikipedia.org/wiki/Pi</a></p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="routines.html" class="btn btn-neutral float-left" title="Routines (NumPy)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="array-creation.html" class="btn btn-neutral float-right" title="Array creation routines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
