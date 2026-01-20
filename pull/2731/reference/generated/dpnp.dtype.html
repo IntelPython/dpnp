@@ -1,0 +1,250 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnp.dtype &mdash; Data Parallel Extension for NumPy 0.20.0dev1+53.gabc13d72e99 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=347af1f1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpnp.finfo" href="dpnp.finfo.html" />
+    <link rel="prev" title="dpnp.common_type" href="dpnp.common_type.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines (NumPy)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../constants.html">Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../dtype.html">Data type routines</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dpnp.can_cast.html">dpnp.can_cast</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.result_type.html">dpnp.result_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.common_type.html">dpnp.common_type</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../dtype.html#creating-data-types">Creating data types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dtype.html#data-type-information">Data type information</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dtype.html#data-type-testing">Data type testing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dtype.html#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions.html">Exceptions and Warnings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.fft</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.linalg</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../routines.html">Routines (NumPy)</a></li>
+          <li class="breadcrumb-item"><a href="../dtype.html">Data type routines</a></li>
+      <li class="breadcrumb-item active">dpnp.dtype</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/generated/dpnp.dtype.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dpnp-dtype">
+<h1>dpnp.dtype<a class="headerlink" href="#dpnp-dtype" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnp.dtype">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dtype" title="Link to this definition"></a></dt>
+<dd><p>--</p>
+<p>dtype(dtype, align=False, copy=False, [metadata])</p>
+<p>Create a data type object.</p>
+<p>A numpy array is homogeneous, and contains elements described by a
+dtype object. A dtype object can be constructed from different
+combinations of fundamental numeric types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dtype</strong> -- Object to be converted to a data type object.</p></li>
+<li><p><strong>align</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- Add padding to the fields to match what a C compiler would output
+for a similar C-struct. Can be <code class="docutils literal notranslate"><span class="pre">True</span></code> only if <cite>obj</cite> is a dictionary
+or a comma-separated string. If a struct dtype is being created,
+this also sets a sticky alignment flag <code class="docutils literal notranslate"><span class="pre">isalignedstruct</span></code>.</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- Make a new copy of the data-type object. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the result
+may just be a reference to a built-in data-type object.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>, </em><em>optional</em>) -- An optional dictionary with dtype metadata.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="dpnp.result_type.html#dpnp.result_type" title="dpnp.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_type</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<p>Using array-scalar type:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+<span class="go">dtype(&#39;int16&#39;)</span>
+</pre></div>
+</div>
+<p>Structured type, one field name 'f1', containing int16:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)])</span>
+<span class="go">dtype([(&#39;f1&#39;, &#39;&lt;i2&#39;)])</span>
+</pre></div>
+</div>
+<p>Structured type, one field named 'f1', in itself containing a structured
+type with one field:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)])])</span>
+<span class="go">dtype([(&#39;f1&#39;, [(&#39;f1&#39;, &#39;&lt;i2&#39;)])])</span>
+</pre></div>
+</div>
+<p>Structured type, two fields: the first field contains an unsigned int, the
+second an int32:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;f2&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)])</span>
+<span class="go">dtype([(&#39;f1&#39;, &#39;&lt;u8&#39;), (&#39;f2&#39;, &#39;&lt;i4&#39;)])</span>
+</pre></div>
+</div>
+<p>Using array-protocol type strings:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;f8&#39;</span><span class="p">),(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;S10&#39;</span><span class="p">)])</span>
+<span class="go">dtype([(&#39;a&#39;, &#39;&lt;f8&#39;), (&#39;b&#39;, &#39;S10&#39;)])</span>
+</pre></div>
+</div>
+<p>Using comma-separated field formats.  The shape is (2,3):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;i4, (2,3)f8&quot;</span><span class="p">)</span>
+<span class="go">dtype([(&#39;f0&#39;, &#39;&lt;i4&#39;), (&#39;f1&#39;, &#39;&lt;f8&#39;, (2, 3))])</span>
+</pre></div>
+</div>
+<p>Using tuples.  <code class="docutils literal notranslate"><span class="pre">int</span></code> is a fixed type, 3 the field's shape.  <code class="docutils literal notranslate"><span class="pre">void</span></code>
+is a flexible type, here of size 10:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;hello&#39;</span><span class="p">,(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span><span class="mi">3</span><span class="p">)),(</span><span class="s1">&#39;world&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">void</span><span class="p">,</span><span class="mi">10</span><span class="p">)])</span>
+<span class="go">dtype([(&#39;hello&#39;, &#39;&lt;i8&#39;, (3,)), (&#39;world&#39;, &#39;V10&#39;)])</span>
+</pre></div>
+</div>
+<p>Subdivide <code class="docutils literal notranslate"><span class="pre">int16</span></code> into 2 <code class="docutils literal notranslate"><span class="pre">int8</span></code>'s, called x and y.  0 and 1 are
+the offsets in bytes:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;y&#39;</span><span class="p">:(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span><span class="mi">1</span><span class="p">)}))</span>
+<span class="go">dtype((numpy.int16, [(&#39;x&#39;, &#39;i1&#39;), (&#39;y&#39;, &#39;i1&#39;)]))</span>
+</pre></div>
+</div>
+<p>Using dictionaries.  Two fields named 'gender' and 'age':</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">({</span><span class="s1">&#39;names&#39;</span><span class="p">:[</span><span class="s1">&#39;gender&#39;</span><span class="p">,</span><span class="s1">&#39;age&#39;</span><span class="p">],</span> <span class="s1">&#39;formats&#39;</span><span class="p">:[</span><span class="s1">&#39;S1&#39;</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">]})</span>
+<span class="go">dtype([(&#39;gender&#39;, &#39;S1&#39;), (&#39;age&#39;, &#39;u1&#39;)])</span>
+</pre></div>
+</div>
+<p>Offsets in bytes, here 0 and 25:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">({</span><span class="s1">&#39;surname&#39;</span><span class="p">:(</span><span class="s1">&#39;S25&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="s1">&#39;age&#39;</span><span class="p">:(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span><span class="mi">25</span><span class="p">)})</span>
+<span class="go">dtype([(&#39;surname&#39;, &#39;S25&#39;), (&#39;age&#39;, &#39;u1&#39;)])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dpnp.common_type.html" class="btn btn-neutral float-left" title="dpnp.common_type" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.finfo.html" class="btn btn-neutral float-right" title="dpnp.finfo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
