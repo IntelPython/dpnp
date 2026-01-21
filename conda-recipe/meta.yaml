@@ -1,6 +1,6 @@
 {% set max_compiler_and_mkl_version = environ.get("MAX_BUILD_CMPL_MKL_VERSION", "2026.0a0") %}
 {% set required_compiler_and_mkl_version = "2025.0" %}
-{% set required_dpctl_version = "0.21.0" %}
+{% set required_dpctl_version = "0.22.0*" %}
 
 {% set pyproject = load_file_data('pyproject.toml') %}
 {% set py_build_deps = pyproject.get('build-system', {}).get('requires', []) %}
