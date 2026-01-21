@@ -248,6 +248,7 @@ class DPNPDeprecatedUnaryFunc(DPNPUnaryFunc):
         super().__init__(*args, **kwargs)
         self._deprecated_msg = deprecated_msg
 
+    @wraps(DPNPUnaryFunc.__call__)
     def __call__(self, *args, **kwargs):
         if self._deprecated_msg:
             warnings.warn(
