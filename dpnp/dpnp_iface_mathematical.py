@@ -1857,7 +1857,7 @@ See Also
 Warning
 -------
 This function is deprecated. It is recommended to use
-:obj:`dpnp.trunc` instead, as it provides the same functionality of
+:func:`dpnp.trunc` instead, as it provides the same functionality of
 truncating decimal values to their integer parts.
 
 Examples
