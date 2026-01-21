@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools
 import warnings
 
@@ -6,6 +8,14 @@ import pytest
 
 import dpnp as cupy
 from dpnp.tests.helper import has_support_aspect64
+
+# from cupy.fft import config
+# from cupy.fft._fft import (
+#     _default_fft_func,
+#     _fft,
+#     _fftn,
+#     _size_last_transform_axis,
+# )
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing._loops import _wraps_partial
 
@@ -36,12 +46,16 @@ def nd_planning_states(states=[True, False], name="enable_nd"):
         @_wraps_partial(impl, name)
         def test_func(self, *args, **kw):
             # get original global planning state
-            # planning_state = config.enable_nd_planning
+            # with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+            #     planning_state = config.enable_nd_planning
             try:
                 for nd_planning in states:
                     try:
                         # enable or disable nd planning
-                        # config.enable_nd_planning = nd_planning
+                        # with pytest.warns(
+                        #     DeprecationWarning, match="enable_nd_planning"
+                        # ):
+                        #     config.enable_nd_planning = nd_planning
 
                         kw[name] = nd_planning
                         impl(self, *args, **kw)
@@ -50,7 +64,10 @@ def nd_planning_states(states=[True, False], name="enable_nd"):
                         raise
             finally:
                 # restore original global planning state
-                # config.enable_nd_planning = planning_state
+                # with pytest.warns(
+                #     DeprecationWarning, match="enable_nd_planning"
+                # ):
+                #     config.enable_nd_planning = planning_state
                 pass
 
         return test_func
@@ -71,8 +88,8 @@ def multi_gpu_config(gpu_configs=None):
     def decorator(impl):
         @functools.wraps(impl)
         def test_func(self, *args, **kw):
-            use_multi_gpus = config.use_multi_gpus
-            _devices = config._devices
+            use_multi_gpus = config._use_multi_gpus.get()
+            _devices = config._devices.get()
 
             try:
                 for gpus in gpu_configs:
@@ -81,23 +98,21 @@ def multi_gpu_config(gpu_configs=None):
                         assert nGPUs >= 2, "Must use at least two gpus"
                         config.use_multi_gpus = True
                         config.set_cufft_gpus(gpus)
-                        self.gpus = gpus
 
                         impl(self, *args, **kw)
                     except Exception:
                         print("GPU config is:", gpus)
                         raise
             finally:
-                config.use_multi_gpus = use_multi_gpus
-                config._devices = _devices
-                del self.gpus
+                config._use_multi_gpus.set(use_multi_gpus)
+                config._devices.set(_devices)
 
         return test_func
 
     return decorator
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
     *testing.product(
@@ -138,7 +153,7 @@ class TestFft:
         return xp.fft.ifft(a, n=self.n, norm=self.norm)
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @testing.parameterize(
     *testing.product(
         {
@@ -179,19 +194,6 @@ class TestFftOrder:
         return xp.fft.ifft(a, axis=self.axis)
 
 
-# See #3757 and NVIDIA internal ticket 3093094
-def _skip_multi_gpu_bug(shape, gpus):
-    # avoid CUDA 11.0 (will be fixed by CUDA 11.2) bug triggered by
-    # - batch = 1
-    # - gpus = [1, 0]
-    if (
-        11000 <= cupy.cuda.runtime.runtimeGetVersion() < 11020
-        and len(shape) == 1
-        and gpus == [1, 0]
-    ):
-        pytest.skip("avoid CUDA 11 bug")
-
-
 # Almost identical to the TestFft class, except that
 # 1. multi-GPU cuFFT is used
 # 2. the tested parameter combinations are adjusted to meet the requirements
@@ -208,6 +210,9 @@ def _skip_multi_gpu_bug(shape, gpus):
 )
 @pytest.mark.skip("multi GPU is not supported")
 @testing.multi_gpu(2)
+# @pytest.mark.skipif(
+#     cupy.cuda.runtime.is_hip, reason="hipFFT does not support multi-GPU FFT"
+# )
 class TestMultiGpuFft:
 
     @multi_gpu_config(gpu_configs=[[0, 1], [1, 0]])
@@ -216,8 +221,6 @@ class TestMultiGpuFft:
         rtol=1e-3, atol=1e-7, accept_error=ValueError, contiguous_check=False
     )
     def test_fft(self, xp, dtype):
-        _skip_multi_gpu_bug(self.shape, self.gpus)
-
         a = testing.shaped_random(self.shape, xp, dtype)
         return xp.fft.fft(a, n=self.n, norm=self.norm)
 
@@ -230,8 +233,6 @@ class TestMultiGpuFft:
     @testing.with_requires("numpy!=1.17.0")
     @testing.with_requires("numpy!=1.17.1")
     def test_ifft(self, xp, dtype):
-        _skip_multi_gpu_bug(self.shape, self.gpus)
-
         a = testing.shaped_random(self.shape, xp, dtype)
         return xp.fft.ifft(a, n=self.n, norm=self.norm)
 
@@ -251,6 +252,9 @@ class TestMultiGpuFft:
 )
 @pytest.mark.skip("multi GPU is not supported")
 @testing.multi_gpu(2)
+# @pytest.mark.skipif(
+#     cupy.cuda.runtime.is_hip, reason="hipFFT does not support multi-GPU FFT"
+# )
 class TestMultiGpuFftOrder:
     @multi_gpu_config(gpu_configs=[[0, 1], [1, 0]])
     @testing.for_complex_dtypes()
@@ -258,8 +262,6 @@ class TestMultiGpuFftOrder:
         rtol=1e-3, atol=1e-7, accept_error=ValueError, contiguous_check=False
     )
     def test_fft(self, xp, dtype):
-        _skip_multi_gpu_bug(self.shape, self.gpus)
-
         a = testing.shaped_random(self.shape, xp, dtype)
         if self.data_order == "F":
             a = xp.asfortranarray(a)
@@ -271,8 +273,6 @@ class TestMultiGpuFftOrder:
         rtol=1e-3, atol=1e-7, accept_error=ValueError, contiguous_check=False
     )
     def test_ifft(self, xp, dtype):
-        _skip_multi_gpu_bug(self.shape, self.gpus)
-
         a = testing.shaped_random(self.shape, xp, dtype)
         if self.data_order == "F":
             a = xp.asfortranarray(a)
@@ -348,9 +348,13 @@ class TestDefaultPlanType:
 
 @pytest.mark.skip("memory management is not supported")
 @testing.with_requires("numpy>=2.0")
+# @pytest.mark.skipif(
+#     10010 <= cupy.cuda.runtime.runtimeGetVersion() <= 11010,
+#     reason="avoid a cuFFT bug (cupy/cupy#3777)",
+# )
 @testing.slow
 class TestFftAllocate:
-
+    # @pytest.mark.thread_unsafe(reason="does large allocations")
     def test_fft_allocate(self):
         # Check CuFFTError is not raised when the GPU memory is enough.
         # See https://github.com/cupy/cupy/issues/1063
@@ -368,7 +372,7 @@ class TestFftAllocate:
         cupy.fft.config.clear_plan_cache()
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
     *(
@@ -413,7 +417,8 @@ class TestFft2:
         type_check=has_support_aspect64(),
     )
     def test_fft2(self, xp, dtype, order, enable_nd):
-        # assert config.enable_nd_planning == enable_nd
+        # with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+        #     assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -440,7 +445,8 @@ class TestFft2:
         type_check=has_support_aspect64(),
     )
     def test_ifft2(self, xp, dtype, order, enable_nd):
-        # assert config.enable_nd_planning == enable_nd
+        # with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+        #     assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -457,7 +463,7 @@ class TestFft2:
         return out
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
     *(
@@ -503,7 +509,8 @@ class TestFftn:
         type_check=has_support_aspect64(),
     )
     def test_fftn(self, xp, dtype, order, enable_nd):
-        # assert config.enable_nd_planning == enable_nd
+        # with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+        #     assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -530,7 +537,8 @@ class TestFftn:
         type_check=has_support_aspect64(),
     )
     def test_ifftn(self, xp, dtype, order, enable_nd):
-        # assert config.enable_nd_planning == enable_nd
+        # with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+        #     assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -595,7 +603,8 @@ class TestPlanCtxManagerFftn:
         rtol=1e-3, atol=1e-7, accept_error=ValueError, contiguous_check=False
     )
     def test_fftn(self, xp, dtype, enable_nd):
-        assert config.enable_nd_planning == enable_nd
+        with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+            assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
 
         if xp is np:
@@ -613,7 +622,8 @@ class TestPlanCtxManagerFftn:
         rtol=1e-3, atol=1e-7, accept_error=ValueError, contiguous_check=False
     )
     def test_ifftn(self, xp, dtype, enable_nd):
-        assert config.enable_nd_planning == enable_nd
+        with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+            assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
 
         if xp is np:
@@ -635,7 +645,8 @@ class TestPlanCtxManagerFftn:
         from cupy.fft import fftn
         from cupyx.scipy.fftpack import get_fft_plan
 
-        assert config.enable_nd_planning == enable_nd
+        with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+            assert config.enable_nd_planning == enable_nd
 
         # can't get a plan, so skip
         if self.axes is not None:
@@ -747,6 +758,9 @@ class TestPlanCtxManagerFft:
 )
 @pytest.mark.skip("get_fft_plan() is not supported")
 @testing.multi_gpu(2)
+# @pytest.mark.skipif(
+#     cupy.cuda.runtime.is_hip, reason="hipFFT does not support multi-GPU FFT"
+# )
 class TestMultiGpuPlanCtxManagerFft:
 
     @multi_gpu_config(gpu_configs=[[0, 1], [1, 0]])
@@ -755,8 +769,6 @@ class TestMultiGpuPlanCtxManagerFft:
         rtol=1e-3, atol=1e-7, accept_error=ValueError, contiguous_check=False
     )
     def test_fft(self, xp, dtype):
-        _skip_multi_gpu_bug(self.shape, self.gpus)
-
         a = testing.shaped_random(self.shape, xp, dtype)
 
         if xp is np:
@@ -776,8 +788,6 @@ class TestMultiGpuPlanCtxManagerFft:
         rtol=1e-3, atol=1e-7, accept_error=ValueError, contiguous_check=False
     )
     def test_ifft(self, xp, dtype):
-        _skip_multi_gpu_bug(self.shape, self.gpus)
-
         a = testing.shaped_random(self.shape, xp, dtype)
 
         if xp is np:
@@ -1029,7 +1039,8 @@ class TestRfft2:
         type_check=has_support_aspect64(),
     )
     def test_rfft2(self, xp, dtype, order, enable_nd):
-        # assert config.enable_nd_planning == enable_nd
+        # with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+        #     assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -1046,14 +1057,21 @@ class TestRfft2:
         type_check=has_support_aspect64(),
     )
     def test_irfft2(self, xp, dtype, order, enable_nd):
-        # assert config.enable_nd_planning == enable_nd
+        # with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+        #     assert config.enable_nd_planning == enable_nd
+        # if (
+        #     10020 >= cupy.cuda.runtime.runtimeGetVersion() >= 10010
+        #     and int(cupy.cuda.device.get_compute_capability()) < 70
+        #     and _size_last_transform_axis(self.shape, self.s, self.axes) == 2
+        # ):
+        #     pytest.skip("work-around for cuFFT issue")
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
         return xp.fft.irfft2(a, s=self.s, axes=self.axes, norm=self.norm)
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @testing.parameterize(
     {"shape": (3, 4), "s": None, "axes": (), "norm": None},
     {"shape": (2, 3, 4), "s": None, "axes": (), "norm": None},
@@ -1115,7 +1133,8 @@ class TestRfftn:
         type_check=has_support_aspect64(),
     )
     def test_rfftn(self, xp, dtype, order, enable_nd):
-        # assert config.enable_nd_planning == enable_nd
+        # with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+        #     assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -1132,7 +1151,14 @@ class TestRfftn:
         type_check=has_support_aspect64(),
     )
     def test_irfftn(self, xp, dtype, order, enable_nd):
-        # assert config.enable_nd_planning == enable_nd
+        # with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+        #     assert config.enable_nd_planning == enable_nd
+        # if (
+        #     10020 >= cupy.cuda.runtime.runtimeGetVersion() >= 10010
+        #     and int(cupy.cuda.device.get_compute_capability()) < 70
+        #     and _size_last_transform_axis(self.shape, self.s, self.axes) == 2
+        # ):
+        #     pytest.skip("work-around for cuFFT issue")
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -1182,7 +1208,8 @@ class TestPlanCtxManagerRfftn:
         rtol=1e-3, atol=1e-7, accept_error=ValueError, contiguous_check=False
     )
     def test_rfftn(self, xp, dtype, enable_nd):
-        assert config.enable_nd_planning == enable_nd
+        with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+            assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
 
         if xp is np:
@@ -1194,13 +1221,17 @@ class TestPlanCtxManagerRfftn:
         with plan:
             return xp.fft.rfftn(a, s=self.s, axes=self.axes, norm=self.norm)
 
+    # @pytest.mark.skipif(
+    #     cupy.cuda.runtime.is_hip, reason="hipFFT's PlanNd for C2R is buggy"
+    # )
     @nd_planning_states()
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-3, atol=1e-7, accept_error=ValueError, contiguous_check=False
     )
     def test_irfftn(self, xp, dtype, enable_nd):
-        assert config.enable_nd_planning == enable_nd
+        with pytest.warns(DeprecationWarning, match="enable_nd_planning"):
+            assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if xp is np:
             return xp.fft.irfftn(a, s=self.s, axes=self.axes, norm=self.norm)
@@ -1282,7 +1313,7 @@ class TestRfftnContiguity:
                 pass
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @testing.parameterize(
     {"shape": (3, 4), "s": None, "axes": (), "norm": None},
     {"shape": (2, 3, 4), "s": None, "axes": (), "norm": None},
@@ -1343,7 +1374,7 @@ class TestHfft:
         return xp.fft.ihfft(a, n=self.n, norm=self.norm)
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @testing.parameterize(
     {"n": 1, "d": 1},
     {"n": 10, "d": 0.5},
@@ -1372,7 +1403,7 @@ class TestFftfreq:
         return xp.fft.rfftfreq(self.n, self.d)
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @testing.parameterize(
     {"shape": (5,), "axes": None},
     {"shape": (5,), "axes": 0},

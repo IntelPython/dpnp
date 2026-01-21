@@ -2,4 +2,4 @@ name: Install dpctl package
 channels:
   - dppy/label/dev
 dependencies:
-  - dpctl>=0.21.0dev0
+  - dpctl>=0.22.0dev0
