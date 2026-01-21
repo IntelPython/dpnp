@@ -130,6 +130,7 @@ class TestGeomspace:
             (dpnp.array([0]), 7, 10),
             (-2, numpy.array([[0]]), 7),
             ([2, 4, 0], 3, 5),
+            (10, [[1, 0], [2, 3]], 3),
         ],
     )
     def test_zero_error(self, start, stop, num):

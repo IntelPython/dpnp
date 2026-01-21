@@ -62,7 +62,7 @@ def _check_has_zero_val(a):
     elif hasattr(a, "any"):
         if (a == 0).any():
             return True
-    elif any(val == 0 for val in a):
+    elif (numpy.array(a) == 0).any():
         return True
     return False
 
