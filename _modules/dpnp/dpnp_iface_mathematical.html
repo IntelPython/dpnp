@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev1+56.g626bd3badf3 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev1+57.g865b53e2584 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=d2debb0a"></script>
+      <script src="../../_static/documentation_options.js?v=a3a27dfb"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -151,6 +151,7 @@
     <span class="n">DPNPBinaryFunc</span><span class="p">,</span>
     <span class="n">DPNPBinaryFuncOutKw</span><span class="p">,</span>
     <span class="n">DPNPBinaryTwoOutputsFunc</span><span class="p">,</span>
+    <span class="n">DPNPDeprecatedUnaryFunc</span><span class="p">,</span>
     <span class="n">DPNPImag</span><span class="p">,</span>
     <span class="n">DPNPReal</span><span class="p">,</span>
     <span class="n">DPNPRound</span><span class="p">,</span>
@@ -1965,6 +1966,12 @@
 <span class="s2">:obj:`dpnp.floor` : Return the floor of the input, element-wise.</span>
 <span class="s2">:obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.</span>
 
+<span class="s2">Warning</span>
+<span class="s2">-------</span>
+<span class="s2">This function is deprecated. It is recommended to use</span>
+<span class="s2">:func:`dpnp.trunc` instead, as it provides the same functionality of</span>
+<span class="s2">truncating decimal values to their integer parts.</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -1979,13 +1986,14 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="c1"># reuse trunc backend implementation for fix</span>
-<span class="n">fix</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+<span class="n">fix</span> <span class="o">=</span> <span class="n">DPNPDeprecatedUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;fix&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_trunc_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_trunc</span><span class="p">,</span>
     <span class="n">_FIX_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_trunc_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_trunc&quot;</span><span class="p">,</span>
+    <span class="n">deprecated_msg</span><span class="o">=</span><span class="s2">&quot;dpnp.fix is deprecated in favor of dpnp.trunc&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
