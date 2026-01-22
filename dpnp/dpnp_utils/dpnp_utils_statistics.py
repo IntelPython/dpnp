@@ -30,11 +30,14 @@ import warnings
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.utils as dpu
 from dpctl.tensor._numpy_helper import normalize_axis_tuple
 from dpctl.utils import ExecutionPlacementError
 
 import dpnp
+import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils.dpnp_utils_common import to_supported_dtypes
 
 __all__ = ["dpnp_cov", "dpnp_median"]
 
@@ -194,6 +197,77 @@ def dpnp_cov(
     return c.squeeze()
 
 
+def native_median(a, ignore_nan):
+    a = dpnp.reshape(a, a.size)
+    device = a.sycl_device
+
+    result_dtype = dpnp.default_float_type()
+    if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        result_dtype = a.dtype
+
+    if a.size == 0:
+        return dpnp.array(dpnp.nan, ndmin=1, dtype=result_dtype)
+    elif a.size == 1:
+        return dpnp.array(a[0], ndmin=1, dtype=result_dtype)
+
+    supported_types = statistics_ext.kth_element_dtypes()
+    supported_dtype = to_supported_dtypes(a.dtype, supported_types, device)
+
+    if supported_dtype is None:  # pragma: no cover
+        raise ValueError(
+            f"function does not support input type "
+            f"{a.dtype.name}, "
+            "and the input could not be coerced to any "
+            f"supported type. List of supported types: "
+            f"{[st.name for st in supported_types]}"
+        )
+
+    a_casted = dpnp.asarray(a, dtype=supported_dtype, order="C")
+
+    partitioned = dpnp.empty_like(a_casted)
+
+    a_usm = dpnp.get_usm_ndarray(a_casted)
+    partitioned_usm = dpnp.get_usm_ndarray(partitioned)
+
+    _manager = dpu.SequentialOrderManager[a.sycl_queue]
+
+    result = dpnp.empty_like(a, dtype=result_dtype, shape=1)
+
+    nans = 0
+    if ignore_nan:
+        nans = dpnp.isnan(a_usm).sum()
+    k = (a.shape[0] - 1 - nans) // 2
+
+    found, buff_offset, elems_offset, num_elems, nan_count = (
+        statistics_ext.kth_element(
+            a_usm,
+            partitioned_usm,
+            k,
+            depends=_manager.submitted_events,
+        )
+    )
+
+    if not ignore_nan and nan_count > 0:
+        return dpnp.array(dpnp.nan, ndmin=1, dtype=result_dtype)
+
+    if found:
+        if a.shape[0] % 2 == 0:
+            # even number of elements
+            result[0] = (partitioned[0] + partitioned[1]) / 2
+        else:
+            result[0] = partitioned[0]
+    else:
+        partitioned[buff_offset : buff_offset + num_elems].sort()
+        kth_idx = buff_offset + k - elems_offset
+        if a.shape[0] % 2 == 0:
+            # even number of elements
+            result[0] = (partitioned[kth_idx] + partitioned[kth_idx + 1]) / 2
+        else:
+            result[0] = partitioned[kth_idx]
+
+    return result
+
+
 def dpnp_median(
     a,
     axis=None,
@@ -203,6 +277,13 @@ def dpnp_median(
     ignore_nan=False,
 ):
     """Compute the median of an array along a specified axis."""
+
+    if axis is None or a.ndim == 1:
+        result = native_median(a, ignore_nan)
+        if not keepdims:
+            return result[0]
+
+        return result.reshape((1,) * a.ndim)
 
     a_ndim = a.ndim
     a_shape = a.shape

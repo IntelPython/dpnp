@@ -77,20 +77,6 @@ struct AtomicOp
 };
 
 template <typename T>
-struct Less
-{
-    bool operator()(const T &lhs, const T &rhs) const
-    {
-        if constexpr (type_utils::is_complex_v<T>) {
-            return dpctl::tensor::math_utils::less_complex(lhs, rhs);
-        }
-        else {
-            return std::less{}(lhs, rhs);
-        }
-    }
-};
-
-template <typename T>
 struct IsNan
 {
     static bool isnan(const T &v)
@@ -109,6 +95,21 @@ struct IsNan
         }
 
         return false;
+    }
+};
+
+template <typename T>
+struct Less
+{
+    bool operator()(const T &lhs, const T &rhs) const
+    {
+        if constexpr (type_utils::is_complex_v<T>) {
+            return IsNan<T>::isnan(rhs) ||
+                   dpctl::tensor::math_utils::less_complex(lhs, rhs);
+        }
+        else {
+            return IsNan<T>::isnan(rhs) || std::less{}(lhs, rhs);
+        }
     }
 };
 

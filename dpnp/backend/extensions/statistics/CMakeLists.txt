@@ -33,6 +33,8 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/histogram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/histogramdd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/histogram_common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/kth_element1d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/partitioning.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sliding_dot_product1d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sliding_window1d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics_py.cpp
