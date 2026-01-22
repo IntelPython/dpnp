@@ -133,10 +133,8 @@ def test_array_creation_from_array(func, args, device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
     # cross device
-    # TODO: include geomspace when issue dpnp#2352 is resolved
-    if func != "geomspace":
-        y = getattr(dpnp, func)(*args, device=device_y)
-        assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    y = getattr(dpnp, func)(*args, device=device_y)
+    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
 @pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
@@ -148,10 +146,9 @@ def test_array_creation_logspace_base(device_x, device_y):
     y = dpnp.logspace(0, 8, 4, base=x[1:3])
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
-    # TODO: include geomspace when issue dpnp#2353 is resolved
     # cross device
-    # y = dpnp.logspace(0, 8, 4, base=x[1:3], device=device_y)
-    # assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    y = dpnp.logspace(0, 8, 4, base=x[1:3], device=device_y)
+    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
 @pytest.mark.parametrize("device", valid_dev + [None], ids=dev_ids + [None])
