@@ -66,6 +66,7 @@ class TestRounding(unittest.TestCase):
         self.check_unary("trunc")
         self.check_unary_complex_unsupported("trunc")
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @testing.with_requires("numpy>=2.1")
     def test_fix(self):
         self.check_unary("fix")

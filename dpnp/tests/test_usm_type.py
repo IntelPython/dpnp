@@ -572,7 +572,11 @@ def test_meshgrid(usm_type_x, usm_type_y):
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
-        pytest.param("fix", [2.1, 2.9, -2.1, -2.9]),
+        pytest.param(
+            "fix",
+            [2.1, 2.9, -2.1, -2.9],
+            marks=pytest.mark.filterwarnings("ignore::DeprecationWarning"),
+        ),
         pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1, 2, 4, 7, 11, 16]),

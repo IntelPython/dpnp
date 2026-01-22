@@ -66,6 +66,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPBinaryFunc,
     DPNPBinaryFuncOutKw,
     DPNPBinaryTwoOutputsFunc,
+    DPNPDeprecatedUnaryFunc,
     DPNPImag,
     DPNPReal,
     DPNPRound,
@@ -1853,6 +1854,12 @@ See Also
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.
 
+Warning
+-------
+This function is deprecated. It is recommended to use
+:func:`dpnp.trunc` instead, as it provides the same functionality of
+truncating decimal values to their integer parts.
+
 Examples
 --------
 >>> import dpnp as np
@@ -1867,13 +1874,14 @@ array([ 2.,  2., -2., -2.])
 """
 
 # reuse trunc backend implementation for fix
-fix = DPNPUnaryFunc(
+fix = DPNPDeprecatedUnaryFunc(
     "fix",
     ti._trunc_result_type,
     ti._trunc,
     _FIX_DOCSTRING,
     mkl_fn_to_call="_mkl_trunc_to_call",
     mkl_impl_fn="_trunc",
+    deprecated_msg="dpnp.fix is deprecated in favor of dpnp.trunc",
 )
 
 
