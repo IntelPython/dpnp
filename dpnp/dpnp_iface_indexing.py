@@ -1870,8 +1870,17 @@ def putmask(a, /, mask, values):
         if a.dtype != values.dtype:
             values = dpnp.astype(values, a.dtype, casting="safe", copy=False)
 
-        _, exec_q = get_usm_allocations([a, mask, values])
-
+        exec_q = a.sycl_queue
+        if (
+            dpu.get_execution_queue(
+                [exec_q, mask.sycl_queue, values.sycl_queue]
+            )
+            is None
+        ):
+            raise ValueError(
+                "`mask` and `values` must be allocated on "
+                "the same SYCL queue as `a`"
+            )
         _manager = dpu.SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
 

@@ -1117,6 +1117,15 @@ class TestPutmask:
         # values as list
         assert_raises(TypeError, dpnp.putmask, a, mask, [1, 2, 3])
 
+        # values has a different SYCL queue
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+        a = dpnp.arange(10, sycl_queue=q1)
+        mask = a > 3
+        val = dpnp.arange(5, sycl_queue=q2)
+        if q1 != q2:
+            assert_raises(ValueError, dpnp.putmask, a, mask, val)
+
 
 @pytest.mark.parametrize("m", [None, 0, 1, 2, 3, 4])
 @pytest.mark.parametrize("k", [-3, -2, -1, 0, 1, 2, 3])
