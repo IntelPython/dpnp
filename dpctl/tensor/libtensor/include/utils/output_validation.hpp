@@ -37,7 +37,11 @@
 
 #include <pybind11/pybind11.h>
 
+#if __has_include(<dpnp4pybind11.hpp>)
+#include "dpnp4pybind11.hpp"
+#else
 #include "dpctl4pybind11.hpp"
+#endif
 
 namespace dpctl::tensor::validation
 {

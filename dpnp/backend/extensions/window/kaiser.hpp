@@ -28,8 +28,9 @@
 
 #pragma once
 
-#include <dpctl4pybind11.hpp>
 #include <sycl/sycl.hpp>
+
+#include "dpnp4pybind11.hpp"
 
 namespace dpnp::extensions::window
 {
@@ -40,5 +41,4 @@ extern std::pair<sycl::event, sycl::event>
               const std::vector<sycl::event> &depends);
 
 extern void init_kaiser_dispatch_vectors(void);
-
 } // namespace dpnp::extensions::window
