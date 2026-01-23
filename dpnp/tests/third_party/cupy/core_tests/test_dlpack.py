@@ -82,7 +82,6 @@ class TestNewDLPackConversion:
             return dpctl.SyclQueue()
         return dpctl.SyclQueue()
 
-    @pytest.mark.skip("due to dpctl-2213")
     @testing.for_all_dtypes(no_bool=False)
     def test_conversion(self, dtype):
         orig_array = _gen_array(dtype)
@@ -102,7 +101,6 @@ class TestNewDLPackConversion:
             # for host copies.
             cupy.from_dlpack(orig_array, copy=True)
 
-    @pytest.mark.skip("due to dpctl-2213")
     @pytest.mark.parametrize(
         "kwargs, versioned",
         [
@@ -130,7 +128,6 @@ class TestNewDLPackConversion:
         testing.assert_array_equal(orig_array, out_array)
         testing.assert_array_equal(orig_array.data.ptr, out_array.data.ptr)
 
-    @pytest.mark.skip("due to dpctl-2213")
     def test_conversion_device(self):
         orig_array = _gen_array("float32")
 
@@ -202,7 +199,6 @@ class TestNewDLPackConversion:
             )
             assert numpy.may_share_memory(arr_nocopy, arr1)
 
-    @pytest.mark.skip("due to dpctl-2213")
     def test_stream(self):
         allowed_streams = ["null", True]
         # if not cuda.runtime.is_hip:

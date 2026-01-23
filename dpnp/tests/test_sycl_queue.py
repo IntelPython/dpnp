@@ -1082,7 +1082,6 @@ def test_array_creation_from_dpctl(copy, device):
     assert isinstance(result, dpnp_array)
 
 
-@pytest.mark.skip("due to dpctl-2213")
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
