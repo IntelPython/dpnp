@@ -67,14 +67,6 @@ set_target_properties(
 
 target_include_directories(
     ${python_module_name}
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include
-)
-target_include_directories(
-    ${python_module_name}
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../src
-)
-target_include_directories(
-    ${python_module_name}
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../common
 )
 target_include_directories(
