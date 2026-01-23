@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.20.0dev1+54.gc796b46f3ae documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.20.0dev1+62.gcb9027eeb6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=27eb3a79"></script>
+      <script src="../../_static/documentation_options.js?v=64542d76"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -1232,7 +1232,7 @@
 
 <div class="viewcode-block" id="tensordot">
 <a class="viewcode-back" href="../../reference/generated/dpnp.tensordot.html#dpnp.tensordot">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute tensor dot product along specified axes.</span>
 
@@ -1259,7 +1259,10 @@
 <span class="sd">          axes must match.</span>
 <span class="sd">        * (2,) array_like: A list of axes to be summed over, first sequence</span>
 <span class="sd">          applying to `a`, second to `b`. Both elements array_like must be of</span>
-<span class="sd">          the same length.</span>
+<span class="sd">          the same length. Each axis may appear at most once; repeated axes are</span>
+<span class="sd">          not allowed.</span>
+
+<span class="sd">        Default: ``2``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1288,6 +1291,13 @@
 <span class="sd">    (first) axes of `a` (`b`) - the argument `axes` should consist of</span>
 <span class="sd">    two sequences of the same length, with the first axis to sum over given</span>
 <span class="sd">    first in both sequences, the second axis second, and so forth.</span>
+
+<span class="sd">    For example, if ``a.shape == (2, 3, 4)`` and ``b.shape == (3, 4, 5)``, then</span>
+<span class="sd">    ``axes=([1, 2], [0, 1])`` sums over the ``(3, 4)`` dimensions of both</span>
+<span class="sd">    arrays and produces an output of shape ``(2, 5)``.</span>
+
+<span class="sd">    Each summation axis corresponds to a distinct contraction index; repeating</span>
+<span class="sd">    an axis (for example ``axes=([1, 1], [0, 0])``) is invalid.</span>
 
 <span class="sd">    The shape of the result consists of the non-contracted axes of the</span>
 <span class="sd">    first tensor, followed by the non-contracted axes of the second.</span>
