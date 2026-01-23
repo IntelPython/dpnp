@@ -59,10 +59,11 @@ set_target_properties(
 
 target_include_directories(
     ${python_module_name}
-    PRIVATE ${CMAKE_SOURCE_DIR}/dpctl/tensor/libtensor/include
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/dpnp/backend/include
+        ${CMAKE_SOURCE_DIR}/dpctl/tensor/libtensor/include
 )
-
-target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
+target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIR})
 
 if(WIN32)
     target_compile_options(
