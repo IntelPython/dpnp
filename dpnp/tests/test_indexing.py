@@ -17,6 +17,12 @@ from numpy.testing import (
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
+from dpnp.tests.helper import (
+    assert_array_equal,
+    assert_dtype_allclose,
+    generate_random_numpy_array,
+    get_all_dtypes,
+)
 
 from .helper import (
     get_abs_array,
@@ -954,126 +960,162 @@ def test_indices(dimension, dtype, sparse):
         assert_array_equal(Xnp, X)
 
 
-@pytest.mark.parametrize(
-    "mask",
-    [
-        [[True, False], [False, True]],
-        [[False, True], [True, False]],
-        [[False, False], [True, True]],
-    ],
-    ids=[
-        "[[True, False], [False, True]]",
-        "[[False, True], [True, False]]",
-        "[[False, False], [True, True]]",
-    ],
-)
-@pytest.mark.parametrize(
-    "arr",
-    [[[0, 0], [0, 0]], [[1, 2], [1, 2]], [[1, 2], [3, 4]]],
-    ids=["[[0, 0], [0, 0]]", "[[1, 2], [1, 2]]", "[[1, 2], [3, 4]]"],
-)
-def test_putmask1(arr, mask):
-    a = numpy.array(arr)
-    ia = dpnp.array(a)
-    m = numpy.array(mask)
-    im = dpnp.array(m)
-    v = numpy.array([100, 200])
-    iv = dpnp.array(v)
-    numpy.putmask(a, m, v)
-    dpnp.putmask(ia, im, iv)
-    assert_array_equal(a, ia)
-
-
-@pytest.mark.parametrize(
-    "vals",
-    [
-        [100, 200],
-        [100, 200, 300, 400, 500, 600],
-        [100, 200, 300, 400, 500, 600, 800, 900],
-    ],
-    ids=[
-        "[100, 200]",
-        "[100, 200, 300, 400, 500, 600]",
-        "[100, 200, 300, 400, 500, 600, 800, 900]",
-    ],
-)
-@pytest.mark.parametrize(
-    "mask",
-    [
+class TestPutmask:
+    @pytest.mark.parametrize(
+        "shape",
         [
-            [[True, False], [False, True]],
-            [[False, True], [True, False]],
-            [[False, False], [True, True]],
-        ]
-    ],
-    ids=[
-        "[[[True, False], [False, True]], [[False, True], [True, False]], [[False, False], [True, True]]]"
-    ],
-)
-@pytest.mark.parametrize(
-    "arr",
-    [[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]],
-    ids=["[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]"],
-)
-def test_putmask2(arr, mask, vals):
-    a = numpy.array(arr)
-    ia = dpnp.array(a)
-    m = numpy.array(mask)
-    im = dpnp.array(m)
-    v = numpy.array(vals)
-    iv = dpnp.array(v)
-    numpy.putmask(a, m, v)
-    dpnp.putmask(ia, im, iv)
-    assert_array_equal(a, ia)
+            (1,),
+            (5,),
+            (4, 3),
+            (3, 3),
+            (5, 3),
+            (3, 4, 5),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_bool=True, no_float16=False)
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_putmask_scalar_values(self, shape, dt, order):
+        a_np = generate_random_numpy_array(shape, order=order, dtype=dt)
+        mask_np = a_np > 0
+        val = numpy.array(7, dtype=dt).item()
 
+        a_dp = dpnp.array(a_np)
+        mask_dp = dpnp.array(mask_np)
 
-@pytest.mark.parametrize(
-    "vals",
-    [
-        [100, 200],
-        [100, 200, 300, 400, 500, 600],
-        [100, 200, 300, 400, 500, 600, 800, 900],
-    ],
-    ids=[
-        "[100, 200]",
-        "[100, 200, 300, 400, 500, 600]",
-        "[100, 200, 300, 400, 500, 600, 800, 900]",
-    ],
-)
-@pytest.mark.parametrize(
-    "mask",
-    [
+        dpnp.putmask(a_dp, mask_dp, val)
+        numpy.putmask(a_np, mask_np, val)
+
+        assert_dtype_allclose(a_dp, a_np)
+
+    @pytest.mark.parametrize(
+        "shape",
         [
-            [[[False, False], [True, True]], [[True, True], [True, True]]],
-            [[[False, False], [True, True]], [[False, False], [False, False]]],
-        ]
-    ],
-    ids=[
-        "[[[[False, False], [True, True]], [[True, True], [True, True]]], [[[False, False], [True, True]], [[False, False], [False, False]]]]"
-    ],
-)
-@pytest.mark.parametrize(
-    "arr",
-    [
+            (1,),
+            (5,),
+            (4, 3),
+            (3, 3),
+            (5, 3),
+            (3, 4, 5),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_bool=True, no_float16=False)
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_putmask_same_shape(self, shape, dt, order):
+        a_np = generate_random_numpy_array(shape, dtype=dt, order=order)
+        mask_np = a_np > 0
+        val_np = generate_random_numpy_array(shape, dtype=dt, order=order)
+
+        a_dp = dpnp.array(a_np, order=order)
+        mask_dp = dpnp.array(mask_np, order=order)
+        val_dp = dpnp.array(val_np, order=order)
+
+        dpnp.putmask(a_dp, mask_dp, val_dp)
+        numpy.putmask(a_np, mask_np, val_np)
+
+        assert_dtype_allclose(a_dp, a_np)
+
+    @pytest.mark.parametrize(
+        "a_shape,val_shape",
         [
-            [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
-            [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
-        ]
-    ],
-    ids=[
-        "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]"
-    ],
-)
-def test_putmask3(arr, mask, vals):
-    a = numpy.array(arr)
-    ia = dpnp.array(a)
-    m = numpy.array(mask)
-    im = dpnp.array(m)
-    v = numpy.array(vals)
-    iv = dpnp.array(v)
-    numpy.putmask(a, m, v)
-    dpnp.putmask(ia, im, iv)
-    assert_array_equal(a, ia)
+            ((6,), (3,)),
+            ((6,), (7,)),
+            ((2, 3), (5,)),
+            ((6, 3), (5, 4)),
+            ((4, 3, 5), (8,)),
+            ((2, 4, 3), (5, 5, 2)),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_bool=True, no_float16=False)
+    )
+    @pytest.mark.parametrize("order", ["C"])  # need to add "F"
+    def test_putmask_kernel(self, a_shape, val_shape, dt, order):
+        a_np = generate_random_numpy_array(a_shape, dtype=dt, order=order)
+        mask_np = a_np > 0
+        val_np = generate_random_numpy_array(val_shape, dtype=dt, order=order)
+
+        a_dp = dpnp.array(a_np, order=order)
+        mask_dp = dpnp.array(mask_np, order=order)
+        val_dp = dpnp.array(val_np, order=order)
+
+        dpnp.putmask(a_dp, mask_dp, val_dp)
+        numpy.putmask(a_np, mask_np, val_np)
+
+        assert_dtype_allclose(a_dp, a_np)
+
+    # test_putmask_strided
+
+    def test_putmask_mask_cast_to_bool(self):
+        a_np = generate_random_numpy_array((5, 5), dtype="f4")
+        mask_np = generate_random_numpy_array((5, 5), dtype="int64")
+        val_np = generate_random_numpy_array((7,), dtype="f4")
+
+        a_dp = dpnp.array(a_np)
+        mask_dp = dpnp.array(mask_np)
+        val_dp = dpnp.array(val_np)
+
+        dpnp.putmask(a_dp, mask_dp, val_dp)
+        numpy.putmask(a_np, mask_np, val_np)
+
+        assert_dtype_allclose(a_dp, a_np)
+
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_bool=True, no_float16=False)
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (0,),
+            (0, 3),
+            (2, 0),
+            (0, 2, 3),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "values_case", ["scalar", "same_shape", "diff_shape"]
+    )
+    def test_putmask_empty(self, dt, order, shape, values_case):
+        a_np = numpy.empty(shape, dtype=dt, order=order)
+        mask_np = numpy.empty(shape, dtype=numpy.bool_, order=order)
+
+        if values_case == "scalar":
+            val_np = numpy.asarray(1, dtype=dt).item()
+            val_dp = val_np
+        elif values_case == "same_shape":
+            val_np = numpy.empty(shape, dtype=dt, order=order)
+            val_dp = dpnp.array(val_np, order=order)
+        else:
+            # different shape
+            val_np = numpy.array([1, 2], dtype=dt)
+            val_dp = dpnp.array(val_np)
+
+        a_dp = dpnp.array(a_np, order=order)
+        mask_dp = dpnp.array(mask_np, order=order)
+
+        dpnp.putmask(a_dp, mask_dp, val_dp)
+        numpy.putmask(a_np, mask_np, val_np)
+
+        assert_dtype_allclose(a_dp, a_np)
+
+    def test_putmask_errors(self):
+        # shape mask mismatch
+        a = dpnp.arange(6).reshape(2, 3)
+        mask_bad = dpnp.ones((3, 2), dtype=dpnp.bool)
+        assert_raises(ValueError, dpnp.putmask, a, mask_bad, 1)
+
+        # safe-cast error
+        a = dpnp.arange(10, dtype=dpnp.int32)
+        mask = a > 3
+        val_f = dpnp.array([1.5, 2.5], dtype="f4")
+        assert_raises(TypeError, dpnp.putmask, a, mask, val_f)
+
+        # values as list
+        assert_raises(TypeError, dpnp.putmask, a, mask, [1, 2, 3])
 
 
 @pytest.mark.parametrize("m", [None, 0, 1, 2, 3, 4])
