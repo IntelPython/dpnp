@@ -97,7 +97,6 @@ find_package(Cython REQUIRED)
 
 find_package(Dpctl REQUIRED)
 message(STATUS "Dpctl_INCLUDE_DIR=" ${Dpctl_INCLUDE_DIR})
-message(STATUS "Dpctl_TENSOR_INCLUDE_DIR=" ${Dpctl_TENSOR_INCLUDE_DIR})
 
 option(DPNP_USE_ONEMATH "Build DPNP with oneMath" OFF)
 set(DPNP_TARGET_CUDA

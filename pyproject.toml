@@ -108,7 +108,7 @@ target-version = ['py310', 'py311', 'py312', 'py313', 'py314']
 [tool.codespell]
 builtin = "clear,rare,informal,names"
 check-filenames = true
-ignore-words-list = "amin,arange,elemt,fro,hist,ith,mone,nd,nin,sinc,vart"
+ignore-words-list = "amin,arange,elemt,fro,hist,ith,mone,nd,nin,sinc,vart,GroupT"
 quiet-level = 3
 
 [tool.coverage.report]
