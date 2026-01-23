@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.special.erfcx
+========================
+
+.. currentmodule:: dpnp.scipy.special
+
+
+
+.. autofunction:: erfcx
