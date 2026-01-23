@@ -50,7 +50,7 @@ dependencies = [
   # "dpcpp-cpp-rt>=0.59.0",
   # "intel-cmplr-lib-rt>=0.59.0"
   # WARNING: use the latest dpctl dev version, otherwise stable w/f will fail
-  "dpctl>=0.21.0dev0",
+  "dpctl>=0.22.0dev0",
   "numpy>=1.26.0"
 ]
 description = "Data Parallel Extension for NumPy"
@@ -162,26 +162,6 @@ allow-wildcard-with-all = true
 
 [tool.pylint.miscellaneous]
 notes = ["FIXME", "XXX"]
-
-[tool.pytest.ini.options]
-addopts = [
-  "--junitxml=junit.xml",
-  "--ignore setup.py",
-  "--ignore run_test.py",
-  "--cov-report term-missing",
-  "--tb native",
-  "--strict",
-  "--durations=20",
-  "-q -ra"
-]
-minversion = "6.0"
-norecursedirs = [
-  ".*",
-  "*.egg*",
-  "build",
-  "dist",
-  "conda-recipe"
-]
 
 [tool.versioneer]
 VCS = "git"

@@ -1842,6 +1842,13 @@ class TestTensordot:
         with pytest.raises(ValueError):
             dpnp.tensordot(dpnp.arange(4), dpnp.array(5), axes=-1)
 
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_repeated_axes(self, xp):
+        a = xp.ones((2, 3, 3))
+        b = xp.ones((3, 3, 4))
+        with pytest.raises(ValueError):
+            xp.tensordot(a, b, axes=([1, 1], [0, 0]))
+
 
 class TestVdot:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))

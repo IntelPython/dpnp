@@ -1,4 +1,5 @@
 import importlib.util
+from enum import Enum
 from sys import platform
 
 import dpctl
@@ -9,6 +10,11 @@ from numpy.testing import assert_allclose, assert_array_equal
 import dpnp
 
 from . import config
+
+
+class LTS_VERSION(Enum):
+    V1_3 = "1.3"
+    V1_6 = "1.6"
 
 
 def _assert_dtype(a_dt, b_dt, check_only_type_kind=False):
@@ -475,13 +481,13 @@ def is_lnl(device=None):
     return _get_dev_mask(device) == 0x6400
 
 
-def is_lts_driver(device=None):
+def is_lts_driver(version=LTS_VERSION.V1_3, device=None):
     """
     Return True if a test is running on a GPU device with LTS driver version,
     False otherwise.
     """
     dev = dpctl.select_default_device() if device is None else device
-    return dev.has_aspect_gpu and "1.3" in dev.driver_version
+    return dev.has_aspect_gpu and version.value in dev.driver_version
 
 
 def is_ptl(device=None):

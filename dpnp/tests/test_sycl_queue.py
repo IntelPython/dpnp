@@ -133,10 +133,8 @@ def test_array_creation_from_array(func, args, device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
     # cross device
-    # TODO: include geomspace when issue dpnp#2352 is resolved
-    if func != "geomspace":
-        y = getattr(dpnp, func)(*args, device=device_y)
-        assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    y = getattr(dpnp, func)(*args, device=device_y)
+    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
 @pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
@@ -148,10 +146,9 @@ def test_array_creation_logspace_base(device_x, device_y):
     y = dpnp.logspace(0, 8, 4, base=x[1:3])
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
-    # TODO: include geomspace when issue dpnp#2353 is resolved
     # cross device
-    # y = dpnp.logspace(0, 8, 4, base=x[1:3], device=device_y)
-    # assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    y = dpnp.logspace(0, 8, 4, base=x[1:3], device=device_y)
+    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
 @pytest.mark.parametrize("device", valid_dev + [None], ids=dev_ids + [None])
@@ -264,7 +261,11 @@ def test_meshgrid(device):
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
-        pytest.param("fix", [2.1, 2.9, -2.1, -2.9]),
+        pytest.param(
+            "fix",
+            [2.1, 2.9, -2.1, -2.9],
+            marks=pytest.mark.filterwarnings("ignore::DeprecationWarning"),
+        ),
         pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),

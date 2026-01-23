@@ -44,18 +44,21 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Compile indexing extension with `-fno-sycl-id-queries-fit-in-int` to support huge arrays [#2721](https://github.com/IntelPython/dpnp/pull/2721)
 * Updated `dpnp.fix` to reuse `dpnp.trunc` internally [#2722](https://github.com/IntelPython/dpnp/pull/2722)
 * Changed the build scripts and documentation due to `python setup.py develop` deprecation notice [#2716](https://github.com/IntelPython/dpnp/pull/2716)
+* Clarified behavior on repeated `axes` in `dpnp.tensordot` and `dpnp.linalg.tensordot` functions [#2733](https://github.com/IntelPython/dpnp/pull/2733)
 
 ### Deprecated
 
 * `dpnp.asfarray` is deprecated. Use `dpnp.asarray` with an appropriate dtype instead [#2650](https://github.com/IntelPython/dpnp/pull/2650)
 * Passing the output array ``out`` positionally to `dpnp.minimum` and `dpnp.maximum` is deprecated. Pass the output with the keyword form, e.g. ``dpnp.minimum(a, b, out=c)`` [#2659](https://github.com/IntelPython/dpnp/pull/2659)
 * `dpnp.ndarray.T` property is deprecated for not two-dimensional array to be compatible with the Python array API standard. To achieve a similar behavior when ``a.ndim != 2``, either ``a.transpose()``, or ``a.mT`` (swaps the last two axes only), or ``dpnp.permute_dims(a, range(a.ndim)[::-1])`` can be used [#2681](https://github.com/IntelPython/dpnp/pull/2681)
+* `dpnp.fix` is deprecated. Use `dpnp.trunc` instead, which provides identical functionality [#2730](https://github.com/IntelPython/dpnp/pull/2730)
 
 ### Removed
 
 * Dropped support for Python 3.9 [#2626](https://github.com/IntelPython/dpnp/pull/2626)
 * Removed the obsolete interface from DPNP to Numba JIT [#2647](https://github.com/IntelPython/dpnp/pull/2647)
 * Removed the `newshape` parameter from `dpnp.reshape`, which has been deprecated since dpnp 0.17.0. Pass it positionally or use `shape=` on newer versions [#2670](https://github.com/IntelPython/dpnp/pull/2670)
+* Removed unused `pytest` configuration from `pyproject.toml` [#2729](https://github.com/IntelPython/dpnp/pull/2729)
 
 ### Fixed
 
@@ -63,6 +66,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Corrected a phonetic spelling issue due to incorrect using of `a nd` in docstrings [#2719](https://github.com/IntelPython/dpnp/pull/2719)
 * Resolved an issue causing `dpnp.linspace` to return an incorrect output shape when inputs were passed as arrays [#2712](https://github.com/IntelPython/dpnp/pull/2712)
 * Resolved an issue where `dpnp` always returns the base allocation pointer, when the view start is expected [#2651](https://github.com/IntelPython/dpnp/pull/2651)
+* Fixed an issue causing an exception in `dpnp.geomspace` and `dpnp.logspace` when called with explicit `device` keyword but any input array is allocated on another device [#2723](https://github.com/IntelPython/dpnp/pull/2723)
 
 ### Security
 
