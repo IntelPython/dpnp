@@ -32,7 +32,7 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
 
 #include "bitwise_count.hpp"
 #include "kernels/elementwise_functions/bitwise_count.hpp"

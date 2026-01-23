@@ -30,7 +30,7 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
 
 #include "fmax.hpp"
 #include "kernels/elementwise_functions/fmax.hpp"

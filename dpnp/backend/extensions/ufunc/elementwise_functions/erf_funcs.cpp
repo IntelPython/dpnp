@@ -31,7 +31,7 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
 
 #include "erf_funcs.hpp"
 #include "kernels/elementwise_functions/erf.hpp"
