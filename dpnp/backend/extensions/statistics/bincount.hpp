@@ -31,7 +31,8 @@
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
+
 #include "ext/dispatch_table.hpp"
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;

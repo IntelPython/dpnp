@@ -33,10 +33,10 @@
 #include <vector>
 
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+
+#include "dpnp4pybind11.hpp"
 
 // dpctl tensor headers
-#include "dpctl4pybind11.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "histogram.hpp"
@@ -50,7 +50,6 @@ using namespace ext::common;
 
 namespace
 {
-
 template <typename T, typename DataStorage>
 struct HistogramEdges
 {

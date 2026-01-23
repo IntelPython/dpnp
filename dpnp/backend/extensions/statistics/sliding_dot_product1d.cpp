@@ -33,11 +33,14 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "dpnp4pybind11.hpp"
+
+// utils extension header
+#include "ext/common.hpp"
+
 // dpctl tensor headers
-#include "dpctl4pybind11.hpp"
 #include "utils/type_dispatch.hpp"
 
-#include "ext/common.hpp"
 #include "sliding_dot_product1d.hpp"
 #include "sliding_window1d.hpp"
 
@@ -51,7 +54,6 @@ using namespace ext::common;
 
 namespace
 {
-
 template <typename T>
 struct SlidingDotProductF
 {
