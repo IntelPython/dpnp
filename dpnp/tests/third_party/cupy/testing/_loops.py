@@ -307,7 +307,7 @@ def _make_decorator(
         @_wraps_partial_xp(impl, name, sp_name, scipy_name)
         def test_func(*args, **kw):
             # Run cupy and numpy
-            (cupy_result, cupy_error, numpy_result, numpy_error) = (
+            cupy_result, cupy_error, numpy_result, numpy_error = (
                 _call_func_numpy_cupy(impl, args, kw, name, sp_name, scipy_name)
             )
             assert cupy_result is not None or cupy_error is not None
@@ -344,9 +344,7 @@ def _make_decorator(
                         raise AssertionError(
                             """ndarrays of different dtypes are returned.
 cupy: {}
-numpy: {}""".format(
-                                cupy_r.dtype, numpy_r.dtype
-                            )
+numpy: {}""".format(cupy_r.dtype, numpy_r.dtype)
                         )
 
             # Check contiguous
@@ -902,7 +900,7 @@ def numpy_cupy_equal(name="xp", sp_name=None, scipy_name=None):
         @_wraps_partial_xp(impl, name, sp_name, scipy_name)
         def test_func(*args, **kw):
             # Run cupy and numpy
-            (cupy_result, cupy_error, numpy_result, numpy_error) = (
+            cupy_result, cupy_error, numpy_result, numpy_error = (
                 _call_func_numpy_cupy(impl, args, kw, name, sp_name, scipy_name)
             )
 
@@ -958,7 +956,7 @@ def numpy_cupy_raises(
         @_wraps_partial_xp(impl, name, sp_name, scipy_name)
         def test_func(*args, **kw):
             # Run cupy and numpy
-            (cupy_result, cupy_error, numpy_result, numpy_error) = (
+            cupy_result, cupy_error, numpy_result, numpy_error = (
                 _call_func_numpy_cupy(impl, args, kw, name, sp_name, scipy_name)
             )
 

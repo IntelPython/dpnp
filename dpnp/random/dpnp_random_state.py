@@ -36,7 +36,6 @@ Set of functions to implement NumPy random module API
 
 """
 
-
 import dpctl.utils as dpu
 import numpy
 

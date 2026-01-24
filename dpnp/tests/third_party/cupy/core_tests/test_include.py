@@ -18,25 +18,19 @@ _code_base = """
 #include <cupy/hip_workaround.cuh>
 """
 
-_code_nvcc = (
-    _code_base
-    + """
+_code_nvcc = _code_base + """
 #include <cupy/type_dispatcher.cuh>
 
 int main() {
     return 0;
 }
 """
-)
 
-_code_nvrtc = (
-    _code_base
-    + """
+_code_nvrtc = _code_base + """
 
 __device__ void kernel() {
 }
 """
-)
 
 
 @pytest.mark.skipif(cupy.cuda.runtime.is_hip, reason="for CUDA")

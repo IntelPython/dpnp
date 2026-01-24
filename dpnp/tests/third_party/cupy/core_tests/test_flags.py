@@ -29,9 +29,7 @@ class TestFlags(unittest.TestCase):
     def test_repr(self):
         assert """  C_CONTIGUOUS : 1
   F_CONTIGUOUS : 2
-  OWNDATA : 3""" == repr(
-            self.flags
-        )
+  OWNDATA : 3""" == repr(self.flags)
 
 
 @testing.parameterize(

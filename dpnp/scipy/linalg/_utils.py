@@ -37,7 +37,6 @@ available as a pybind11 extension.
 
 """
 
-
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
