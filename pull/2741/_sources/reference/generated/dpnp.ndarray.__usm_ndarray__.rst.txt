@@ -1,0 +1,14 @@
+﻿
+:orphan:
+
+
+dpnp.ndarray.\_\_usm\_ndarray\_\_
+=================================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: ndarray.__usm_ndarray__
