@@ -1,0 +1,10 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_eq\_\_
+=======================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.__eq__
