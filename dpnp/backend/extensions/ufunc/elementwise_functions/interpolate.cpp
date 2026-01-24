@@ -35,11 +35,12 @@
 #include <utility>
 #include <vector>
 
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 // dpctl tensor headers
 #include "utils/type_dispatch.hpp"
