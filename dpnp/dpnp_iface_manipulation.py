@@ -39,7 +39,6 @@ it contains:
 
 """
 
-
 import math
 import operator
 import warnings
@@ -3418,7 +3417,7 @@ def rot90(m, k=1, axes=(0, 1)):
         return dpnp.flip(dpnp.flip(m, axes[0]), axes[1])
 
     axes_list = list(range(0, m_ndim))
-    (axes_list[axes[0]], axes_list[axes[1]]) = (
+    axes_list[axes[0]], axes_list[axes[1]] = (
         axes_list[axes[1]],
         axes_list[axes[0]],
     )

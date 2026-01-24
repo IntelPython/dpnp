@@ -38,6 +38,7 @@ it contains:
  - The functions parameters check
 
 """
+
 # pylint: disable=protected-access
 
 import os

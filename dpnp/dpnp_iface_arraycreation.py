@@ -39,7 +39,6 @@ it contains:
 
 """
 
-
 # pylint: disable=duplicate-code
 
 import operator

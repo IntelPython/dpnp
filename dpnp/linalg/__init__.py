@@ -35,7 +35,6 @@ low level implementations of standard linear algebra algorithms.
 
 """
 
-
 from .dpnp_iface_linalg import (
     LinAlgError,
     cholesky,
