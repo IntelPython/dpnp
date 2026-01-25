@@ -58,7 +58,7 @@ jobs:
                            intel-oneapi-compiler-dpcpp-cpp
 
       - name: Checkout repo
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
 
@@ -78,7 +78,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -88,7 +88,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
