@@ -1,4 +1,4 @@
-import unittest
+from __future__ import annotations
 
 import pytest
 
@@ -9,8 +9,7 @@ import dpnp as cupy
 pytest.skip("get() method is not supported", allow_module_level=True)
 
 
-class TestSyncDetect(unittest.TestCase):
-
+class TestSyncDetect:
     def test_disallowed(self):
         a = cupy.array([2, 3])
         with cupyx.allow_synchronize(False):
