@@ -143,6 +143,11 @@ split_on_trailing_comma = true
 use_parentheses = true
 
 [tool.pylint.basic]
+disable = [
+  "wrong-import-order",
+  "ungrouped-imports",
+  "wrong-import-position"
+]
 include-naming-hint = true
 
 [tool.pylint.classes]
