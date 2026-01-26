@@ -59,7 +59,6 @@ var hierarchy =
       [ "dpnp::extensions::lapack::LinAlgError", "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html", null ]
     ] ],
     [ "dpnp::kernels::fabs::FabsFunctor< argT, resT >", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ],
-    [ "dpnp::kernels::fix::FixFunctor< argT, resT >", "structdpnp_1_1kernels_1_1fix_1_1_fix_functor.html", null ],
     [ "dpnp::kernels::fmax::FmaxFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmax_1_1_fmax_functor.html", null ],
     [ "dpnp::kernels::fmin::FminFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmin_1_1_fmin_functor.html", null ],
     [ "dpnp::kernels::fmod::FmodFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ],

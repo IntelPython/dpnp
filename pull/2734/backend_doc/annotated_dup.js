@@ -123,9 +123,6 @@ var annotated_dup =
         [ "fabs", null, [
           [ "FabsFunctor", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ]
         ] ],
-        [ "fix", null, [
-          [ "FixFunctor", "structdpnp_1_1kernels_1_1fix_1_1_fix_functor.html", null ]
-        ] ],
         [ "fmax", null, [
           [ "FmaxFunctor", "structdpnp_1_1kernels_1_1fmax_1_1_fmax_functor.html", null ]
         ] ],

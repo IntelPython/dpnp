@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.tensordot &mdash; Data Parallel Extension for NumPy 0.20.0dev1+59.g3796b900202 documentation</title>
+  <title>dpnp.tensordot &mdash; Data Parallel Extension for NumPy 0.20.0dev2+22.g4dc9754f4e4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2d11aebe"></script>
+      <script src="../../_static/documentation_options.js?v=206a526a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -133,7 +133,7 @@
 <h1>dpnp.tensordot<a class="headerlink" href="#dpnp-tensordot" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.tensordot">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">tensordot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_linearalgebra.html#tensordot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.tensordot" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">tensordot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_linearalgebra.html#tensordot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.tensordot" title="Link to this definition"></a></dt>
 <dd><p>Compute tensor dot product along specified axes.</p>
 <p>Given two tensors, <cite>a</cite> and <cite>b</cite>, and an array_like object containing
 two array_like objects, <code class="docutils literal notranslate"><span class="pre">(a_axes,</span> <span class="pre">b_axes)</span></code>, sum the products of
@@ -155,8 +155,10 @@ the first <cite>N</cite> axes of <cite>b</cite> in order. The sizes of the corre
 axes must match.</p></li>
 <li><p>(2,) array_like: A list of axes to be summed over, first sequence
 applying to <cite>a</cite>, second to <cite>b</cite>. Both elements array_like must be of
-the same length.</p></li>
+the same length. Each axis may appear at most once; repeated axes are
+not allowed.</p></li>
 </ul>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
 </p></li>
 </ul>
 </dd>
@@ -194,6 +196,11 @@ Nth axis in <cite>b</cite> last.</p>
 (first) axes of <cite>a</cite> (<cite>b</cite>) - the argument <cite>axes</cite> should consist of
 two sequences of the same length, with the first axis to sum over given
 first in both sequences, the second axis second, and so forth.</p>
+<p>For example, if <code class="docutils literal notranslate"><span class="pre">a.shape</span> <span class="pre">==</span> <span class="pre">(2,</span> <span class="pre">3,</span> <span class="pre">4)</span></code> and <code class="docutils literal notranslate"><span class="pre">b.shape</span> <span class="pre">==</span> <span class="pre">(3,</span> <span class="pre">4,</span> <span class="pre">5)</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">axes=([1,</span> <span class="pre">2],</span> <span class="pre">[0,</span> <span class="pre">1])</span></code> sums over the <code class="docutils literal notranslate"><span class="pre">(3,</span> <span class="pre">4)</span></code> dimensions of both
+arrays and produces an output of shape <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">5)</span></code>.</p>
+<p>Each summation axis corresponds to a distinct contraction index; repeating
+an axis (for example <code class="docutils literal notranslate"><span class="pre">axes=([1,</span> <span class="pre">1],</span> <span class="pre">[0,</span> <span class="pre">0])</span></code>) is invalid.</p>
 <p>The shape of the result consists of the non-contracted axes of the
 first tensor, followed by the non-contracted axes of the second.</p>
 <p class="rubric">Examples</p>

@@ -6,7 +6,6 @@ var dir_4f4d020a650a668743abea55668e1676 =
     [ "divmod.hpp", "extensions_2ufunc_2elementwise__functions_2divmod_8hpp_source.html", null ],
     [ "erf_funcs.hpp", "ufunc_2elementwise__functions_2erf__funcs_8hpp_source.html", null ],
     [ "fabs.hpp", "extensions_2ufunc_2elementwise__functions_2fabs_8hpp_source.html", null ],
-    [ "fix.hpp", "extensions_2ufunc_2elementwise__functions_2fix_8hpp_source.html", null ],
     [ "float_power.hpp", "float__power_8hpp_source.html", null ],
     [ "fmax.hpp", "extensions_2ufunc_2elementwise__functions_2fmax_8hpp_source.html", null ],
     [ "fmin.hpp", "extensions_2ufunc_2elementwise__functions_2fmin_8hpp_source.html", null ],
