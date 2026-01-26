@@ -1,0 +1,2889 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.20.0dev2+9.gcc488e66931 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=0d3fdf68"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dpnp.dpnp_iface_trigonometric</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dpnp.dpnp_iface_trigonometric</h1><div class="highlight"><pre>
+<span></span><span class="c1"># *****************************************************************************</span>
+<span class="c1"># Copyright (c) 2016, Intel Corporation</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Redistribution and use in source and binary forms, with or without</span>
+<span class="c1"># modification, are permitted provided that the following conditions are met:</span>
+<span class="c1"># - Redistributions of source code must retain the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer.</span>
+<span class="c1"># - Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer in the documentation</span>
+<span class="c1">#   and/or other materials provided with the distribution.</span>
+<span class="c1"># - Neither the name of the copyright holder nor the names of its contributors</span>
+<span class="c1">#   may be used to endorse or promote products derived from this software</span>
+<span class="c1">#   without specific prior written permission.</span>
+<span class="c1">#</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+<span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
+<span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
+<span class="c1"># LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span>
+<span class="c1"># CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</span>
+<span class="c1"># SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span>
+<span class="c1"># INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN</span>
+<span class="c1"># CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span>
+<span class="c1"># ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF</span>
+<span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c1"># *****************************************************************************</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Interface of the Trigonometric part of the DPNP</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is a face or public interface file for the library</span>
+<span class="sd">it contains:</span>
+<span class="sd"> - Interface functions</span>
+<span class="sd"> - documentation for the functions</span>
+<span class="sd"> - The functions parameters check</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># pylint: disable=protected-access</span>
+<span class="c1"># pylint: disable=no-name-in-module</span>
+
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._type_utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dtu</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_reduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_accumulation_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a dtype used by dpctl for result array in accumulation function.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dtu</span><span class="o">.</span><span class="n">_default_accumulation_dtype_fp_types</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dtu</span><span class="o">.</span><span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+
+
+<span class="n">_ACOS_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes inverse cosine for each element :math:`x_i` for input array `x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.cos` so that, if :math:`y = cos(x)`, then</span>
+<span class="s2">:math:`x = acos(y)`. Note that :obj:`dpnp.arccos` is an alias of</span>
+<span class="s2">:obj:`dpnp.acos`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.acos`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise inverse cosine, in radians and in the</span>
+<span class="s2">    closed interval :math:`[0, \pi]`. The data type of the returned array is</span>
+<span class="s2">    determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.cos` : Trigonometric cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.acosh` : Hyperbolic inverse cosine, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.acos` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`cos(z) = x`. The convention is to return the</span>
+<span class="s2">angle `z` whose the real part lies in the interval :math:`[0, \pi]`.</span>
+
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.acos` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or infinity, it yields ``NaN``.</span>
+
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.acos` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts</span>
+<span class="s2">:math:`(-\infty, -1)` and :math:`(1, \infty)` and is continuous from above on</span>
+<span class="s2">the former and from below on the latter.</span>
+
+<span class="s2">The inverse cosine is also known as :math:`cos^{-1}`.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([1, -1])</span>
+<span class="s2">&gt;&gt;&gt; np.acos(x)</span>
+<span class="s2">array([0.0,  3.14159265])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">acos</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;acos&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_acos_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_acos</span><span class="p">,</span>
+    <span class="n">_ACOS_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_acos_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_acos&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">arccos</span> <span class="o">=</span> <span class="n">acos</span>  <span class="c1"># arccos is an alias for acos</span>
+
+
+<span class="n">_ACOSH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes inverse hyperbolic cosine for each element :math:`x_i` for input array</span>
+<span class="s2">`x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.cosh` so that, if :math:`y = cosh(x)`, then</span>
+<span class="s2">:math:`x = acosh(y)`. Note that :obj:`dpnp.arccosh` is an alias of</span>
+<span class="s2">:obj:`dpnp.acosh`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.acosh`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise inverse hyperbolic cosine, in radians</span>
+<span class="s2">    and in the half-closed interval :math:`[0, \infty)`. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.atanh` : Hyperbolic inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.acosh` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`cosh(z) = x`. The convention is to return the</span>
+<span class="s2">angle `z` whose the real part lies in the interval :math:`[0, \infty)` and the</span>
+<span class="s2">imaginary part in the interval :math:`[-\pi, \pi]`.</span>
+
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.acosh` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or infinity, it yields ``NaN``.</span>
+
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.acosh` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts :math:`(-\infty, 1)`</span>
+<span class="s2">and is continuous from above on it.</span>
+
+<span class="s2">The inverse hyperbolic cosine is also known as :math:`cosh^{-1}`.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([1.0, np.e, 10.0])</span>
+<span class="s2">&gt;&gt;&gt; np.acosh(x)</span>
+<span class="s2">array([0.0, 1.65745445, 2.99322285])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">acosh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;acosh&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_acosh_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_acosh</span><span class="p">,</span>
+    <span class="n">_ACOSH_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_acosh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_acosh&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">arccosh</span> <span class="o">=</span> <span class="n">acosh</span>  <span class="c1"># arccosh is an alias for acosh</span>
+
+
+<span class="n">_ASIN_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes inverse sine for each element :math:`x_i` for input array `x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.sin`, so that if :math:`y = sin(x)` then</span>
+<span class="s2">:math:`x = asin(y)`. Note that :obj:`dpnp.arcsin` is an alias of :obj:`dpnp.asin`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.asin`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise inverse sine, in radians and in the</span>
+<span class="s2">    closed interval :math:`[-\pi/2, \pi/2]`. The data type of the returned</span>
+<span class="s2">    array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.sin` : Trigonometric sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.cos` : Trigonometric cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac</span><span class="si">{x1}{x2}</span><span class="s2">`</span>
+<span class="s2">    choosing the quadrant correctly.</span>
+<span class="s2">:obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.asin` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`sin(z) = x`. The convention is to return the</span>
+<span class="s2">angle `z` whose the real part lies in the interval :math:`[-\pi/2, \pi/2]`.</span>
+
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.asin` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or infinity, it yields ``NaN``.</span>
+
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.asin` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts</span>
+<span class="s2">:math:`(-\infty, -1)` and :math:`(1, \infty)` and is continuous from above on</span>
+<span class="s2">the former and from below on the latter.</span>
+
+<span class="s2">The inverse sine is also known as :math:`sin^{-1}`.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([0, 1, -1])</span>
+<span class="s2">&gt;&gt;&gt; np.asin(x)</span>
+<span class="s2">array([0.0, 1.5707963267948966, -1.5707963267948966])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">asin</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;asin&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_asin_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_asin</span><span class="p">,</span>
+    <span class="n">_ASIN_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_asin_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_asin&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">arcsin</span> <span class="o">=</span> <span class="n">asin</span>  <span class="c1"># arcsin is an alias for asin</span>
+
+
+<span class="n">_ASINH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes inverse hyperbolic sine for each element :math:`x_i` for input array</span>
+<span class="s2">`x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.sinh`, so that if :math:`y = sinh(x)` then</span>
+<span class="s2">:math:`x = asinh(y)`. Note that :obj:`dpnp.arcsinh` is an alias of</span>
+<span class="s2">:obj:`dpnp.asinh`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.asinh`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise inverse hyperbolic sine, in radians.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion</span>
+<span class="s2">    Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.atanh` : Hyperbolic inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.acosh` : Hyperbolic inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.asinh` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`sin(z) = x`. The convention is to return the</span>
+<span class="s2">angle `z` whose the imaginary part lies in the interval :math:`[-\pi/2, \pi/2]`.</span>
+
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.asinh` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or infinity, it yields ``NaN``.</span>
+
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.asinh` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts</span>
+<span class="s2">:math:`(-\infty j, -j)` and :math:`(j, \infty j)` and is continuous from the left</span>
+<span class="s2">on the former and from the right on the latter.</span>
+
+<span class="s2">The inverse hyperbolic sine is also known as :math:`sinh^{-1}`.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([np.e, 10.0])</span>
+<span class="s2">&gt;&gt;&gt; np.asinh(x)</span>
+<span class="s2">array([1.72538256, 2.99822295])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">asinh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;asinh&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_asinh_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_asinh</span><span class="p">,</span>
+    <span class="n">_ASINH_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_asinh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_asinh&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">arcsinh</span> <span class="o">=</span> <span class="n">asinh</span>  <span class="c1"># arcsinh is an alias for asinh</span>
+
+
+<span class="n">_ATAN_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes inverse tangent for each element :math:`x_i` for input array `x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.tan`, so that if :math:`y = tan(x)` then</span>
+<span class="s2">:math:`x = atan(y)`. Note that :obj:`dpnp.arctan` is an alias of</span>
+<span class="s2">:obj:`dpnp.atan`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.atan`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise inverse tangent, in radians and in the</span>
+<span class="s2">    closed interval :math:`[-\pi/2, \pi/2]`. The data type of the returned</span>
+<span class="s2">    array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac</span><span class="si">{x1}{x2}</span><span class="s2">`</span>
+<span class="s2">    choosing the quadrant correctly.</span>
+<span class="s2">:obj:`dpnp.angle` : Argument of complex values.</span>
+<span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.atanh` : Inverse hyperbolic tangent, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.atan` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`tan(z) = x`. The convention is to return the</span>
+<span class="s2">angle `z` whose the real part lies in the interval :math:`[-\pi/2, \pi/2]`.</span>
+
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.atan` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or infinity, it yields ``NaN``.</span>
+
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.atan` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts</span>
+<span class="s2">:math:`(-\infty j, -j)` and :math:`(j, \infty j)` and is continuous from the right</span>
+<span class="s2">on the former and from the left on the latter.</span>
+
+<span class="s2">The inverse tangent is also known as :math:`tan^{-1}`.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([0, 1])</span>
+<span class="s2">&gt;&gt;&gt; np.atan(x)</span>
+<span class="s2">array([0.0, 0.78539816])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">atan</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;atan&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_atan_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_atan</span><span class="p">,</span>
+    <span class="n">_ATAN_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_atan_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atan&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">arctan</span> <span class="o">=</span> <span class="n">atan</span>  <span class="c1"># arctan is an alias for atan</span>
+
+
+<span class="n">_ATAN2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the inverse tangent of the quotient :math:`\frac</span><span class="si">{x1_i}{x2_i}</span><span class="s2">` for</span>
+<span class="s2">each element :math:`x1_i` of the input array `x1` with the respective element</span>
+<span class="s2">:math:`x2_i` of the input array `x2`.</span>
+
+<span class="s2">Note that :obj:`dpnp.arctan2` is an alias of :obj:`dpnp.atan2`.</span>
+<span class="s2">This function is not defined for complex-valued arguments; for the so-called</span>
+<span class="s2">argument of complex values, use :obj:`dpnp.angle`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.atan2`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have a real-valued floating-point data type.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to have a real-valued floating-point data</span>
+<span class="s2">    type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the inverse tangent of the quotient</span>
+<span class="s2">    :math:`\frac</span><span class="si">{x1}{x2}</span><span class="s2">`, in radians. The returned array must have a</span>
+<span class="s2">    real-valued floating-point data type determined by Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.tan` : Compute tangent element-wise.</span>
+<span class="s2">:obj:`dpnp.angle` : Return the angle of the complex argument.</span>
+<span class="s2">:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.atanh` : Inverse hyperbolic tangent, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([1., -1.])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([0., 0.])</span>
+<span class="s2">&gt;&gt;&gt; np.atan2(x1, x2)</span>
+<span class="s2">array([1.57079633, -1.57079633])</span>
+
+<span class="s2">&gt;&gt;&gt; x1 = np.array([0., 0., np.inf])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([+0., -0., np.inf])</span>
+<span class="s2">&gt;&gt;&gt; np.atan2(x1, x2)</span>
+<span class="s2">array([0.0 , 3.14159265, 0.78539816])</span>
+
+<span class="s2">&gt;&gt;&gt; x1 = np.array([-1, +1, +1, -1])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([-1, -1, +1, +1])</span>
+<span class="s2">&gt;&gt;&gt; np.atan2(x1, x2) * 180 / np.pi</span>
+<span class="s2">array([-135.,  -45.,   45.,  135.])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">atan2</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;atan2&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_atan2_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_atan2</span><span class="p">,</span>
+    <span class="n">_ATAN2_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_atan2_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atan2&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">arctan2</span> <span class="o">=</span> <span class="n">atan2</span>  <span class="c1"># arctan2 is an alias for atan2</span>
+
+
+<span class="n">_ATANH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes hyperbolic inverse tangent for each element :math:`x_i` for input</span>
+<span class="s2">array `x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.tanh`, so that if :math:`y = tanh(x)` then</span>
+<span class="s2">:math:`x = atanh(y)`. Note that :obj:`dpnp.arctanh` is an alias of</span>
+<span class="s2">:obj:`dpnp.atanh`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.atanh`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise inverse hyperbolic tangent, in</span>
+<span class="s2">    radians. The data type of the returned array is determined by the Type</span>
+<span class="s2">    Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.acosh` : Hyperbolic inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.atanh` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`tanh(z) = x`. The convention is to return the</span>
+<span class="s2">angle `z` whose the imaginary part lies in the interval :math:`[-\pi/2, \pi/2]`.</span>
+
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.atanh` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or infinity, it yields ``NaN``.</span>
+
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.atanh` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts</span>
+<span class="s2">:math:`(-\infty, -1]` and :math:`[1, \infty)` and is continuous from above on</span>
+<span class="s2">the former and from below on the latter.</span>
+
+<span class="s2">The inverse hyperbolic tangent is also known as :math:`tanh^{-1}`.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([0, -0.5])</span>
+<span class="s2">&gt;&gt;&gt; np.atanh(x)</span>
+<span class="s2">array([0.0, -0.54930614])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">atanh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;atanh&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_atanh_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_atanh</span><span class="p">,</span>
+    <span class="n">_ATANH_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_atanh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atanh&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">arctanh</span> <span class="o">=</span> <span class="n">atanh</span>  <span class="c1"># arctanh is an alias for atanh</span>
+
+
+<span class="n">_CBRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the cube-root for each element :math:`x_i` for input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.cbrt`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise cube-root. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.sqrt` : Calculate :math:`\sqrt</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">This function is equivalent to :math:`\sqrt[3]</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([1, 8, 27])</span>
+<span class="s2">&gt;&gt;&gt; np.cbrt(x)</span>
+<span class="s2">array([1., 2., 3.])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">cbrt</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;cbrt&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_cbrt_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_cbrt</span><span class="p">,</span>
+    <span class="n">_CBRT_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_cbrt_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_cbrt&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_COS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the cosine for each element :math:`x_i` for input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.cos`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise cosine, in radians. The data type of</span>
+<span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.sin` : Trigonometric sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([0, np.pi/2, np.pi])</span>
+<span class="s2">&gt;&gt;&gt; np.cos(x)</span>
+<span class="s2">array([ 1.000000e+00, -4.371139e-08, -1.000000e+00])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">cos</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;cos&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_cos_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_cos</span><span class="p">,</span>
+    <span class="n">_COS_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_cos_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_cos&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_COSH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the hyperbolic cosine for each element :math:`x_i` for input array `x`.</span>
+
+<span class="s2">The mathematical definition of the hyperbolic cosine is</span>
+
+<span class="s2">.. math:: \operatorname</span><span class="si">{cosh}</span><span class="s2">(x) = \frac{e^x + e^{-x}}</span><span class="si">{2}</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.cosh`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise hyperbolic cosine. The data type of</span>
+<span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.acosh` : Hyperbolic inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.cos` : Trigonometric cosine, element-wise.</span>
+
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([0, np.pi/2, np.pi])</span>
+<span class="s2">&gt;&gt;&gt; np.cosh(x)</span>
+<span class="s2">array([1.0, 2.5091786, 11.591953])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">cosh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;cosh&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_cosh_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_cosh</span><span class="p">,</span>
+    <span class="n">_COSH_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_cosh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_cosh&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="cumlogsumexp">
+<a class="viewcode-back" href="../../reference/generated/dpnp.cumlogsumexp.html#dpnp.cumlogsumexp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">cumlogsumexp</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the cumulative logarithm of the sum of elements in the input</span>
+<span class="sd">    array `x`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array, expected to have a boolean or real-valued floating-point</span>
+<span class="sd">        data type.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        Axis or axes along which values must be computed. If a tuple of unique</span>
+<span class="sd">        integers, values are computed over multiple axes. If ``None``, the</span>
+<span class="sd">        result is computed over the entire array.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
+<span class="sd">        Data type of the returned array. If ``None``, the default data type is</span>
+<span class="sd">        inferred from the &quot;kind&quot; of the input array data type.</span>
+
+<span class="sd">        - If `x` has a real-valued floating-point data type, the returned array</span>
+<span class="sd">          will have the same data type as `x`.</span>
+<span class="sd">        - If `x` has a boolean or integral data type, the returned array will</span>
+<span class="sd">          have the default floating point data type for the device where input</span>
+<span class="sd">          array `x` is allocated.</span>
+<span class="sd">        - If `x` has a complex-valued floating-point data type, an error is</span>
+<span class="sd">          raised.</span>
+
+<span class="sd">        If the data type (either specified or resolved) differs from the data</span>
+<span class="sd">        type of `x`, the input array elements are cast to the specified data</span>
+<span class="sd">        type before computing the result.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    include_initial : {None, bool}, optional</span>
+<span class="sd">        A boolean indicating whether to include the initial value (negative</span>
+<span class="sd">        infinity) as the first value along the provided axis in the output.</span>
+<span class="sd">        With ``include_initial=True`` the shape of the output is different than</span>
+<span class="sd">        the shape of the input.</span>
+
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        The array into which the result is written. The data type of `out` must</span>
+<span class="sd">        match the expected shape and the expected data type of the result or</span>
+<span class="sd">        (if provided) `dtype`. If ``None`` then a new array is returned.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array containing the results. If the result was computed over the</span>
+<span class="sd">        entire array, a zero-dimensional array is returned. The returned array</span>
+<span class="sd">        has the data type as described in the `dtype` parameter description</span>
+<span class="sd">        above.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.logsumexp` : Logarithm of the sum of elements of the inputs,</span>
+<span class="sd">                            element-wise.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    This function is equivalent of `numpy.logaddexp.accumulate`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.ones(10)</span>
+<span class="sd">    &gt;&gt;&gt; np.cumlogsumexp(a)</span>
+<span class="sd">    array([1.        , 1.69314718, 2.09861229, 2.38629436, 2.60943791,</span>
+<span class="sd">           2.79175947, 2.94591015, 3.07944154, 3.19722458, 3.30258509])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">usm_x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
+        <span class="n">usm_x</span><span class="p">,</span>
+        <span class="n">out</span><span class="p">,</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">cumulative_logsumexp</span><span class="p">,</span>
+        <span class="n">_get_accumulation_res_dt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="p">),</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">include_initial</span><span class="o">=</span><span class="n">include_initial</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="n">_DEG2RAD_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Convert angles from degrees to radians for each element :math:`x_i` for input</span>
+<span class="s2">array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.deg2rad`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise angle in radians.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion</span>
+<span class="s2">    Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.rad2deg` : Convert angles from radians to degrees.</span>
+<span class="s2">:obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.</span>
+<span class="s2">:obj:`dpnp.radians` : Equivalent function.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">The mathematical definition is</span>
+
+<span class="s2">.. math:: \operatorname</span><span class="si">{deg2rad}</span><span class="s2">(x) = \frac{x * \pi}</span><span class="si">{180}</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array(180)</span>
+<span class="s2">&gt;&gt;&gt; np.deg2rad(x)</span>
+<span class="s2">array(3.14159265)</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">deg2rad</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;deg2rad&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
+    <span class="n">_DEG2RAD_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_DEGREES_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Convert angles from radian to degrees for each element :math:`x_i` for input</span>
+<span class="s2">array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.degrees`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise angle in degrees.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion</span>
+<span class="s2">    Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.rad2deg` : Equivalent function.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">The mathematical definition is</span>
+
+<span class="s2">.. math:: \operatorname</span><span class="si">{degrees}</span><span class="s2">(x) = \frac{180 * x}{\pi}</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; rad = np.arange(12.) * np.pi/6</span>
+
+<span class="s2">Convert a radian array to degrees:</span>
+
+<span class="s2">&gt;&gt;&gt; np.degrees(rad)</span>
+<span class="s2">array([  0.,  30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300.,</span>
+<span class="s2">       330.])</span>
+
+<span class="s2">&gt;&gt;&gt; out = np.zeros_like(rad)</span>
+<span class="s2">&gt;&gt;&gt; r = np.degrees(rad, out)</span>
+<span class="s2">&gt;&gt;&gt; np.all(r == out)</span>
+<span class="s2">array(True)</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">degrees</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;degrees&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
+    <span class="n">_DEGREES_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_EXP_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the exponential for each element :math:`x_i` of input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.exp`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise exponential of `x`.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion</span>
+<span class="s2">    Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.expm1` : Calculate :math:`e^x - 1`, element-wise.</span>
+<span class="s2">:obj:`dpnp.exp2` : Calculate :math:`2^x`, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.arange(3.)</span>
+<span class="s2">&gt;&gt;&gt; np.exp(x)</span>
+<span class="s2">array([1.0, 2.718281828, 7.389056099])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">exp</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;exp&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_exp_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_exp</span><span class="p">,</span>
+    <span class="n">_EXP_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_exp_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_exp&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_EXP2_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the base-2 exponential for each element :math:`x_i` for input array</span>
+<span class="s2">`x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.exp2`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise base-2 exponentials.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion</span>
+<span class="s2">    Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.</span>
+<span class="s2">:obj:`dpnp.expm1` : Calculate :math:`e^x - 1`, element-wise.</span>
+<span class="s2">:obj:`dpnp.power` : Calculate :math:`</span><span class="si">{x1}</span><span class="s2">^</span><span class="si">{x2}</span><span class="s2">`, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.arange(3.)</span>
+<span class="s2">&gt;&gt;&gt; np.exp2(x)</span>
+<span class="s2">array([1., 2., 4.])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">exp2</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;exp2&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_exp2_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_exp2</span><span class="p">,</span>
+    <span class="n">_EXP2_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_exp2_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_exp2&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_EXPM1_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the exponential minus ``1`` for each element :math:`x_i` of input</span>
+<span class="s2">array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.expm1`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing containing the evaluated result for each element in `x`.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion</span>
+<span class="s2">    Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.</span>
+<span class="s2">:obj:`dpnp.exp2` : Calculate :math:`2^x`, element-wise.</span>
+<span class="s2">:obj:`dpnp.log1p` : Calculate :math:`\log(1 + x)`, element-wise,</span>
+<span class="s2">    the inverse of :obj:`dpnp.expm1`.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">This function provides greater precision than :math:`e^x - 1` for small values</span>
+<span class="s2">of `x`.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.arange(3.)</span>
+<span class="s2">&gt;&gt;&gt; np.expm1(x)</span>
+<span class="s2">array([0.0, 1.718281828, 6.389056099])</span>
+
+<span class="s2">&gt;&gt;&gt; np.expm1(np.array(1e-10))</span>
+<span class="s2">array(1.00000000005e-10)</span>
+
+<span class="s2">&gt;&gt;&gt; np.exp(np.array(1e-10)) - 1</span>
+<span class="s2">array(1.000000082740371e-10)</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">expm1</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;expm1&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_expm1_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_expm1</span><span class="p">,</span>
+    <span class="n">_EXPM1_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_expm1_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_expm1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_HYPOT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the square root of the sum of squares for each element :math:`x1_i` of</span>
+<span class="s2">the input array `x1` with the respective element :math:`x2_i` of the input</span>
+<span class="s2">array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.hypot`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have a real-valued floating-point data type.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to have a real-valued floating-point data</span>
+<span class="s2">    type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise hypotenuse. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.reduce_hypot` : The square root of the sum of squares of elements</span>
+<span class="s2">    in the input array.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
+<span class="s2">This function is equivalent to :math:`\sqrt{x1^2 + x2^2}`, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = 3 * np.ones((3, 3))</span>
+<span class="s2">&gt;&gt;&gt; x2 = 4 * np.ones((3, 3))</span>
+<span class="s2">&gt;&gt;&gt; np.hypot(x1, x2)</span>
+<span class="s2">array([[5., 5., 5.],</span>
+<span class="s2">       [5., 5., 5.],</span>
+<span class="s2">       [5., 5., 5.]])</span>
+
+<span class="s2">Example showing broadcast of scalar argument:</span>
+
+<span class="s2">&gt;&gt;&gt; np.hypot(x1, 4)</span>
+<span class="s2">array([[ 5.,  5.,  5.],</span>
+<span class="s2">       [ 5.,  5.,  5.],</span>
+<span class="s2">       [ 5.,  5.,  5.]])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">hypot</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;hypot&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_hypot_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_hypot</span><span class="p">,</span>
+    <span class="n">_HYPOT_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_hypot_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_hypot&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LOG_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the natural logarithm for each element :math:`x_i` of input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.log`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise natural logarithm values. The data</span>
+<span class="s2">    type of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.log10` : Calculate :math:`\log_</span><span class="si">{10}</span><span class="s2">(x)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.log2` : Calculate :math:`\log_2(x)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.log1p` : Calculate :math:`\log(1 + x)`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.log` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`e^z = x`. The convention is to return the `z`</span>
+<span class="s2">whose the imaginary part lies in the interval :math:`[-\pi, \pi]`.</span>
+
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.log` always returns</span>
+<span class="s2">real output. For each value that cannot be expressed as a real number or</span>
+<span class="s2">nfinity, it yields ``NaN``.</span>
+
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.log` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts</span>
+<span class="s2">:math:`(-\infty, 0)` and is continuous from above on it.</span>
+
+<span class="s2">In the cases where the input has a negative real part and a very small negative</span>
+<span class="s2">complex part (approaching 0), the result is so close to :math:`-\pi` that it</span>
+<span class="s2">evaluates to exactly :math:`-\pi`.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([1, np.e, np.e**2, 0])</span>
+<span class="s2">&gt;&gt;&gt; np.log(x)</span>
+<span class="s2">array([  0.,   1.,   2., -inf])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;log&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_log_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_log</span><span class="p">,</span>
+    <span class="n">_LOG_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_ln_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_ln&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LOG10_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the base-10 logarithm for each element :math:`x_i` of input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.log10`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise base-10 logarithm of `x`. The data</span>
+<span class="s2">    type of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.log2` : Calculate :math:`\log_2(x)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.log1p` : Calculate :math:`\log(1 + x)`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.log10` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`10^z = x`. The convention is to return the `z`</span>
+<span class="s2">whose the imaginary part lies in the interval :math:`[-\pi, \pi]`.</span>
+
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.log10` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or nfinity, it yields ``NaN``.</span>
+
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.log10` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts</span>
+<span class="s2">:math:`(-\infty, 0)` and is continuous from above on it.</span>
+
+<span class="s2">In the cases where the input has a negative real part and a very small negative</span>
+<span class="s2">complex part (approaching 0), the result is so close to :math:`-\pi` that it</span>
+<span class="s2">evaluates to exactly :math:`-\pi`.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.arange(3.)</span>
+<span class="s2">&gt;&gt;&gt; np.log10(x)</span>
+<span class="s2">array([-inf, 0.0, 0.30102999566])</span>
+
+<span class="s2">&gt;&gt;&gt; np.log10(np.array([1e-15, -3.]))</span>
+<span class="s2">array([-15.,  nan])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">log10</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;log10&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_log10_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_log10</span><span class="p">,</span>
+    <span class="n">_LOG10_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_log10_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_log10&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LOG1P_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the natural logarithm of (1 + `x`) for each element :math:`x_i` of</span>
+<span class="s2">input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.log1p`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise :math:`\log(1 + x)` results. The data</span>
+<span class="s2">    type of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.expm1` : Calculate :math:`e^x - 1`, element-wise,</span>
+<span class="s2">    the inverse of :obj:`dpnp.log1p`.</span>
+<span class="s2">:obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.log10` : Calculate :math:`\log_</span><span class="si">{10}</span><span class="s2">(x)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.log2` : Calculate :math:`\log_2(x)`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.log1p` provides</span>
+<span class="s2">greater precision than :math:`\log(1 + x)` for `x` so small that</span>
+<span class="s2">:math:`1 + x == 1`.</span>
+
+<span class="s2">:obj:`dpnp.log1p` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`e^z = 1 + x`. The convention is to return the</span>
+<span class="s2">`z` whose the imaginary part lies in the interval :math:`[-\pi, \pi]`.</span>
+
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.log1p` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or nfinity, it yields ``NaN``.</span>
+
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.log1p` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts</span>
+<span class="s2">:math:`(-\infty, 0)` and is continuous from above on it.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.arange(3.)</span>
+<span class="s2">&gt;&gt;&gt; np.log1p(x)</span>
+<span class="s2">array([0.0, 0.69314718, 1.09861229])</span>
+
+<span class="s2">&gt;&gt;&gt; np.log1p(array(1e-99))</span>
+<span class="s2">array(1e-99)</span>
+
+<span class="s2">&gt;&gt;&gt; np.log(array(1 + 1e-99))</span>
+<span class="s2">array(0.0)</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">log1p</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;log1p&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_log1p_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_log1p</span><span class="p">,</span>
+    <span class="n">_LOG1P_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_log1p_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_log1p&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LOG2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the base-2 logarithm for each element :math:`x_i` of input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.log2`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise base-2 logarithm of `x`. The data type</span>
+<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.log10` : Calculate :math:`\log_</span><span class="si">{10}</span><span class="s2">(x)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.log1p` : Calculate :math:`\log(1 + x)`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.log2` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`2^z = x`. The convention is to return the `z`</span>
+<span class="s2">whose the imaginary part lies in the interval :math:`[-\pi, \pi]`.</span>
+
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.log2` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or nfinity, it yields ``NaN``.</span>
+
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.log2` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts</span>
+<span class="s2">:math:`(-\infty, 0)` and is continuous from above on it.</span>
+
+<span class="s2">In the cases where the input has a negative real part and a very small negative</span>
+<span class="s2">complex part (approaching 0), the result is so close to :math:`-\pi` that it</span>
+<span class="s2">evaluates to exactly :math:`-\pi`.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([0, 1, 2, 2**4])</span>
+<span class="s2">&gt;&gt;&gt; np.log2(x)</span>
+<span class="s2">array([-inf, 0.0, 1.0, 4.0])</span>
+
+<span class="s2">&gt;&gt;&gt; xi = np.array([0+1.j, 1, 2+0.j, 4.j])</span>
+<span class="s2">&gt;&gt;&gt; np.log2(xi)</span>
+<span class="s2">array([ 0.+2.26618007j,  0.+0.j        ,  1.+0.j        ,  2.+2.26618007j])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">log2</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;log2&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_log2_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_log2</span><span class="p">,</span>
+    <span class="n">_LOG2_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_log2_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_log2&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LOGADDEXP_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the natural logarithm of the sum of exponentiations</span>
+<span class="s2">:math:`\log(e^</span><span class="si">{x1}</span><span class="s2"> + e^</span><span class="si">{x2}</span><span class="s2">)` for each element :math:`x1_i` of the input array</span>
+<span class="s2">`x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.logaddexp`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have a real-valued floating-point</span>
+<span class="s2">    data type.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to have a real-valued floating-point data</span>
+<span class="s2">    type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise results. The data type of the returned</span>
+<span class="s2">    array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.</span>
+<span class="s2">:obj:`dpnp.logaddexp2`: Calculate :math:`\log_2(2^</span><span class="si">{x1}</span><span class="s2"> + 2^</span><span class="si">{x2}</span><span class="s2">)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentials of elements in the</span>
+<span class="s2">    input array.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
+<span class="s2">This function is useful in statistics where the calculated probabilities of</span>
+<span class="s2">events may be so small as to exceed the range of normal floating-point numbers.</span>
+<span class="s2">In such cases the natural logarithm of the calculated probability is stored.</span>
+<span class="s2">This function allows adding probabilities stored in such a fashion.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; prob1 = np.log(np.array(1e-50))</span>
+<span class="s2">&gt;&gt;&gt; prob2 = np.log(np.array(2.5e-50))</span>
+<span class="s2">&gt;&gt;&gt; prob12 = np.logaddexp(prob1, prob2)</span>
+<span class="s2">&gt;&gt;&gt; prob12</span>
+<span class="s2">array(-113.87649168)</span>
+<span class="s2">&gt;&gt;&gt; np.exp(prob12)</span>
+<span class="s2">array(3.5e-50)</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">logaddexp</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;logaddexp&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logaddexp_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_logaddexp</span><span class="p">,</span>
+    <span class="n">_LOGADDEXP_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LOGADDEXP2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the base-2 logarithm of the sum of exponentiations</span>
+<span class="s2">:math:`\log_2(2^</span><span class="si">{x1}</span><span class="s2"> + 2^</span><span class="si">{x2}</span><span class="s2">)` for each element :math:`x1_i` of the input</span>
+<span class="s2">array `x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.logaddexp2`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have a real-valued floating-point</span>
+<span class="s2">    data type.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to have a real-valued floating-point data</span>
+<span class="s2">    type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise results. The data type</span>
+<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.logaddexp`: Calculate :math:`\log(e^</span><span class="si">{x1}</span><span class="s2"> + e^</span><span class="si">{x2}</span><span class="s2">)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentials of elements in the</span>
+<span class="s2">    input array.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
+<span class="s2">This function is useful in machine learning when the calculated probabilities</span>
+<span class="s2">of events may be so small as to exceed the range of normal floating-point</span>
+<span class="s2">numbers. In such cases the base-2 logarithm of the calculated probability can</span>
+<span class="s2">be used instead. This function allows adding probabilities stored in such a</span>
+<span class="s2">fashion.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; prob1 = np.log2(np.array(1e-50))</span>
+<span class="s2">&gt;&gt;&gt; prob2 = np.log2(np.array(2.5e-50))</span>
+<span class="s2">&gt;&gt;&gt; prob12 = np.logaddexp2(prob1, prob2)</span>
+<span class="s2">&gt;&gt;&gt; prob1, prob2, prob12</span>
+<span class="s2">(array(-166.09640474), array(-164.77447665), array(-164.28904982))</span>
+<span class="s2">&gt;&gt;&gt; 2**prob12</span>
+<span class="s2">array(3.5e-50)</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">logaddexp2</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;logaddexp2&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_logaddexp2_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_logaddexp2</span><span class="p">,</span>
+    <span class="n">_LOGADDEXP2_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="logsumexp">
+<a class="viewcode-back" href="../../reference/generated/dpnp.logsumexp.html#dpnp.logsumexp">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">logsumexp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the natural logarithm of the sum of exponentials of elements in</span>
+<span class="sd">    the input array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array, expected to have a boolean or real-valued floating-point</span>
+<span class="sd">        data type.</span>
+<span class="sd">    axis : {None, int or tuple of ints}, optional</span>
+<span class="sd">        Axis or axes along which values must be computed. If a tuple of unique</span>
+<span class="sd">        integers, values are computed over multiple axes. If ``None``, the</span>
+<span class="sd">        result is computed over the entire array.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
+<span class="sd">        Data type of the returned array. If ``None``, the default data type is</span>
+<span class="sd">        inferred from the &quot;kind&quot; of the input array data type.</span>
+
+<span class="sd">        - If `x` has a real-valued floating-point data type, the returned array</span>
+<span class="sd">          will have the same data type as `x`.</span>
+<span class="sd">        - If `x` has a boolean or integral data type, the returned array will</span>
+<span class="sd">          have the default floating point data type for the device where input</span>
+<span class="sd">          array `x` is allocated.</span>
+<span class="sd">        - If `x` has a complex-valued floating-point data type, an error is</span>
+<span class="sd">          raised.</span>
+
+<span class="sd">        If the data type (either specified or resolved) differs from the data</span>
+<span class="sd">        type of `x`, the input array elements are cast to the specified data</span>
+<span class="sd">        type before computing the result.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">        as singleton dimensions, so that the returned array remains compatible</span>
+<span class="sd">        with the input arrays according to Array Broadcasting rules. Otherwise,</span>
+<span class="sd">        if ``False``, the reduced axes are not included in the returned array.</span>
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        The array into which the result is written. The data type of `out` must</span>
+<span class="sd">        match the expected shape and the expected data type of the result or</span>
+<span class="sd">        (if provided) `dtype`. If ``None`` then a new array is returned.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array containing the results. If the result was computed over the</span>
+<span class="sd">        entire array, a zero-dimensional array is returned. The returned array</span>
+<span class="sd">        has the data type as described in the `dtype` parameter description</span>
+<span class="sd">        above.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.</span>
+<span class="sd">    :obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.</span>
+<span class="sd">    :obj:`dpnp.logaddexp`: Calculate :math:`\log(e^{x1} + e^{x2})`,</span>
+<span class="sd">        element-wise.</span>
+<span class="sd">    :obj:`dpnp.logaddexp2`: Calculate :math:`\log_2(2^{x1} + 2^{x2})`,</span>
+<span class="sd">        element-wise.</span>
+<span class="sd">    :obj:`dpnp.cumlogsumexp` : Cumulative the natural logarithm of the sum of</span>
+<span class="sd">        elements in the input array.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    This function is equivalent of `numpy.logaddexp.reduce`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.ones(10)</span>
+<span class="sd">    &gt;&gt;&gt; np.logsumexp(a)</span>
+<span class="sd">    array(3.30258509)</span>
+<span class="sd">    &gt;&gt;&gt; np.log(np.sum(np.exp(a)))</span>
+<span class="sd">    array(3.30258509)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">usm_x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
+        <span class="n">usm_x</span><span class="p">,</span>
+        <span class="n">out</span><span class="p">,</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">,</span>
+        <span class="n">_get_accumulation_res_dt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="p">),</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="n">_RAD2DEG_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Convert angles from radians to degrees for each element :math:`x_i` for input</span>
+<span class="s2">array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.rad2deg`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise angle in degrees.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion</span>
+<span class="s2">    Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.deg2rad` : Convert angles from degrees to radians.</span>
+<span class="s2">:obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.</span>
+<span class="s2">:obj:`dpnp.degrees` : Equivalent function.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">The mathematical definition is</span>
+
+<span class="s2">.. math:: \operatorname</span><span class="si">{rad2deg}</span><span class="s2">(x) = \frac{180 * x}{\pi}</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array(np.pi / 2)</span>
+<span class="s2">&gt;&gt;&gt; np.rad2deg(x)</span>
+<span class="s2">array(90.)</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">rad2deg</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;rad2deg&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
+    <span class="n">_RAD2DEG_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_RADIANS_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Convert angles from degrees to radians for each element :math:`x_i` for input</span>
+<span class="s2">array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.radians`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise angle in radians.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion</span>
+<span class="s2">    Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.deg2rad` : Equivalent function.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">The mathematical definition is</span>
+
+<span class="s2">.. math:: \operatorname</span><span class="si">{radians}</span><span class="s2">(x) = \frac{x * \pi}</span><span class="si">{180}</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; deg = np.arange(12.) * 30.</span>
+
+<span class="s2">Convert a degree array to radians:</span>
+
+<span class="s2">&gt;&gt;&gt; np.radians(deg)</span>
+<span class="s2">array([0.        , 0.52359878, 1.04719755, 1.57079633, 2.0943951 ,</span>
+<span class="s2">       2.61799388, 3.14159265, 3.66519143, 4.1887902 , 4.71238898,</span>
+<span class="s2">       5.23598776, 5.75958653])</span>
+
+<span class="s2">&gt;&gt;&gt; out = np.zeros_like(deg)</span>
+<span class="s2">&gt;&gt;&gt; ret = np.radians(deg, out)</span>
+<span class="s2">&gt;&gt;&gt; ret is out</span>
+<span class="s2">True</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">radians</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;radians&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
+    <span class="n">_RADIANS_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_RECIPROCAL_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the reciprocal for each element :math:`x_i` for input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.reciprocal`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise reciprocals. The returned array has</span>
+<span class="s2">    a floating-point data type determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.rsqrt` : Calculate :math:`\frac</span><span class="si">{1}</span><span class="s2">{\sqrt</span><span class="si">{x}</span><span class="s2">}`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">This function is equivalent to :math:`\frac</span><span class="si">{1}{x}</span><span class="s2">`, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([1, 2., 3.33])</span>
+<span class="s2">&gt;&gt;&gt; np.reciprocal(x)</span>
+<span class="s2">array([1.0, 0.5, 0.3003003])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">reciprocal</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;reciprocal&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_reciprocal_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_reciprocal</span><span class="p">,</span>
+    <span class="n">_RECIPROCAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_inv_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_inv&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="reduce_hypot">
+<a class="viewcode-back" href="../../reference/generated/dpnp.reduce_hypot.html#dpnp.reduce_hypot">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reduce_hypot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the square root of the sum of squares of elements in</span>
+<span class="sd">    the input array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array, expected to have a boolean or real-valued floating-point</span>
+<span class="sd">        data type.</span>
+<span class="sd">    axis : {None, int or tuple of ints}, optional</span>
+<span class="sd">        Axis or axes along which values must be computed. If a tuple of unique</span>
+<span class="sd">        integers, values are computed over multiple axes. If ``None``, the</span>
+<span class="sd">        result is computed over the entire array.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
+<span class="sd">        Data type of the returned array. If ``None``, the default data type is</span>
+<span class="sd">        inferred from the &quot;kind&quot; of the input array data type.</span>
+
+<span class="sd">        - If `x` has a real-valued floating-point data type, the returned array</span>
+<span class="sd">          will have the same data type as `x`.</span>
+<span class="sd">        - If `x` has a boolean or integral data type, the returned array will</span>
+<span class="sd">          have the default floating point data type for the device where input</span>
+<span class="sd">          array `x` is allocated.</span>
+<span class="sd">        - If `x` has a complex-valued floating-point data type, an error is</span>
+<span class="sd">          raised.</span>
+
+<span class="sd">        If the data type (either specified or resolved) differs from the data</span>
+<span class="sd">        type of `x`, the input array elements are cast to the specified data</span>
+<span class="sd">        type before computing the result.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">        as singleton dimensions, so that the returned array remains compatible</span>
+<span class="sd">        with the input arrays according to Array Broadcasting rules. Otherwise,</span>
+<span class="sd">        if ``False``, the reduced axes are not included in the returned array.</span>
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        The array into which the result is written. The data type of `out` must</span>
+<span class="sd">        match the expected shape and the expected data type of the result or</span>
+<span class="sd">        (if provided) `dtype`. If ``None`` then a new array is returned.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array containing the results. If the result was computed over the</span>
+<span class="sd">        entire array, a zero-dimensional array is returned. The returned array</span>
+<span class="sd">        has the data type as described in the `dtype` parameter description</span>
+<span class="sd">        above.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.hypot` : Calculates :math:`\sqrt{x1^2 + x2^2}`, element-wise.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    This function is equivalent of `numpy.hypot.reduce`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.ones(10)</span>
+<span class="sd">    &gt;&gt;&gt; np.reduce_hypot(a)</span>
+<span class="sd">    array(3.16227766)</span>
+<span class="sd">    &gt;&gt;&gt; np.sqrt(np.sum(np.square(a)))</span>
+<span class="sd">    array(3.16227766)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">usm_x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
+        <span class="n">usm_x</span><span class="p">,</span>
+        <span class="n">out</span><span class="p">,</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">reduce_hypot</span><span class="p">,</span>
+        <span class="n">_get_accumulation_res_dt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="p">),</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="n">_RSQRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the reciprocal square-root for each element :math:`x_i` for input</span>
+<span class="s2">array `x`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is `None`.</span>
+<span class="s2">    Default: ``&quot;K&quot;``</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise reciprocal square-roots.</span>
+<span class="s2">    The returned array has a floating-point data type determined by</span>
+<span class="s2">    the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.sqrt` : Calculate :math:`\sqrt</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
+<span class="s2">:obj:`dpnp.reciprocal` : Calculate :math:`\frac</span><span class="si">{1}{x}</span><span class="s2">`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">This function is equivalent to :math:`\frac</span><span class="si">{1}</span><span class="s2">{\sqrt</span><span class="si">{x}</span><span class="s2">}`, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([1, 8, 27])</span>
+<span class="s2">&gt;&gt;&gt; np.rsqrt(x)</span>
+<span class="s2">array([1.        , 0.35355338, 0.19245009])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">rsqrt</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;rsqrt&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_rsqrt_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_rsqrt</span><span class="p">,</span>
+    <span class="n">_RSQRT_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_SIN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the sine for each element :math:`x_i` of input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.sin`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise sine, in radians. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.cos` : Trigonometric cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([0, np.pi/2, np.pi])</span>
+<span class="s2">&gt;&gt;&gt; np.sin(x)</span>
+<span class="s2">array([ 0.000000e+00,  1.000000e+00, -8.742278e-08])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">sin</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;sin&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sin_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sin</span><span class="p">,</span>
+    <span class="n">_SIN_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sin_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sin&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_SINH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the hyperbolic sine for each element :math:`x_i` for input array `x`.</span>
+
+<span class="s2">The mathematical definition of the hyperbolic sine is</span>
+
+<span class="s2">.. math:: \operatorname</span><span class="si">{sinh}</span><span class="s2">(x) = \frac{e^x - e^{-x}}</span><span class="si">{2}</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.sinh`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise hyperbolic sine. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.sin` : Trigonometric sine, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([0, np.pi/2, np.pi])</span>
+<span class="s2">&gt;&gt;&gt; np.sinh(x)</span>
+<span class="s2">array([0.0, 2.3012989, 11.548739])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">sinh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;sinh&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sinh_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sinh</span><span class="p">,</span>
+    <span class="n">_SINH_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sinh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sinh&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_SQRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the principal square-root for each element :math:`x_i` of input array</span>
+<span class="s2">`x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.sqrt`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise principal square-roots of `x`. The</span>
+<span class="s2">    data type of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.cbrt` : Calculate :math:`\sqrt[3]</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
+<span class="s2">:obj:`dpnp.rsqrt` : Calculate :math:`\frac</span><span class="si">{1}</span><span class="s2">{\sqrt</span><span class="si">{x}</span><span class="s2">}`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">This function is equivalent to :math:`\sqrt</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
+
+<span class="s2">By convention, the branch cut of the square root is the negative real axis</span>
+<span class="s2">:math:`(-\infty, 0)`.</span>
+
+<span class="s2">The square root is a continuous function from above the branch cut, taking into</span>
+<span class="s2">account the sign of the imaginary component.</span>
+
+<span class="s2">Accordingly, for complex arguments, the function returns the square root in the</span>
+<span class="s2">range of the right half-plane, including the imaginary axis (i.e., the plane</span>
+<span class="s2">defined by :math:`[0, +\infty)` along the real axis and</span>
+<span class="s2">:math:`(-\infty, +\infty)` along the imaginary axis).</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([1, 4, 9])</span>
+<span class="s2">&gt;&gt;&gt; np.sqrt(x)</span>
+<span class="s2">array([1., 2., 3.])</span>
+
+<span class="s2">&gt;&gt;&gt; x2 = np.array([4, -1, np.inf])</span>
+<span class="s2">&gt;&gt;&gt; np.sqrt(x2)</span>
+<span class="s2">array([ 2., nan, inf])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">sqrt</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;sqrt&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sqrt_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sqrt</span><span class="p">,</span>
+    <span class="n">_SQRT_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sqrt_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sqrt&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_SQUARE_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Squares each element :math:`x_i` of input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.square`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, may have any data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise squares of `x`. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.linalg.matrix_power` : Raise a square matrix to the (integer)</span>
+<span class="s2">    power `n`.</span>
+<span class="s2">:obj:`dpnp.sqrt` : Calculate :math:`\sqrt</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
+<span class="s2">:obj:`dpnp.power` : Calculate :math:`</span><span class="si">{x1}</span><span class="s2">^</span><span class="si">{x2}</span><span class="s2">`, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([-1j, 1])</span>
+<span class="s2">&gt;&gt;&gt; np.square(x)</span>
+<span class="s2">array([-1.+0.j,  1.+0.j])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">square</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;square&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_square_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_square</span><span class="p">,</span>
+    <span class="n">_SQUARE_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sqr_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sqr&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_TAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the tangent for each element :math:`x_i` for input array `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.tan`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise tangent, in radians. The data type of</span>
+<span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.sin` : Trigonometric sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.cos` : Trigonometric cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([-np.pi, np.pi/2, np.pi])</span>
+<span class="s2">&gt;&gt;&gt; np.tan(x)</span>
+<span class="s2">array([1.22460635e-16, 1.63317787e+16, -1.22460635e-16])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">tan</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;tan&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_tan_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_tan</span><span class="p">,</span>
+    <span class="n">_TAN_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_tan_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_tan&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_TANH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the hyperbolic tangent for each element :math:`x_i` for input array</span>
+<span class="s2">`x`.</span>
+
+<span class="s2">The mathematical definition of the hyperbolic tangent is</span>
+
+<span class="s2">.. math::</span>
+<span class="s2">    \operatorname</span><span class="si">{tanh}</span><span class="s2">(x) = \frac{\operatorname</span><span class="si">{sinh}</span><span class="s2">(x)}{\operatorname</span><span class="si">{cosh}</span><span class="s2">(x)}</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.tanh`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    A tuple (possible only as a keyword argument) must have length equal to the</span>
+<span class="s2">    number of outputs.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise hyperbolic tangent. The data type of</span>
+<span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.atanh` : Hyperbolic inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.array([0, -np.pi, np.pi/2, np.pi])</span>
+<span class="s2">&gt;&gt;&gt; np.tanh(x)</span>
+<span class="s2">array([0.0, -0.996272, 0.917152, 0.996272])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">tanh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;tanh&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_tanh_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_tanh</span><span class="p">,</span>
+    <span class="n">_TANH_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_tanh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_tanh&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="unwrap">
+<a class="viewcode-back" href="../../reference/generated/dpnp.unwrap.html#dpnp.unwrap">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">unwrap</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">discont</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">pi</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unwrap by taking the complement of large deltas with respect to the period.</span>
+
+<span class="sd">    This unwraps a signal `p` by changing elements which have an absolute</span>
+<span class="sd">    difference from their predecessor of more than</span>
+<span class="sd">    :math:`\max(discont, \frac{period}{2})` to their `period`-complementary</span>
+<span class="sd">    values.</span>
+
+<span class="sd">    For the default case where `period` is :math:`2\pi` and `discont` is</span>
+<span class="sd">    :math:`\pi`, this unwraps a radian phase `p` such that adjacent differences</span>
+<span class="sd">    are never greater than :math:`\pi` by adding :math:`2k\pi` for some integer</span>
+<span class="sd">    :math:`k`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.unwrap`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    discont : {float, None}, optional</span>
+<span class="sd">        Maximum discontinuity between values, default is ``None`` which is an</span>
+<span class="sd">        alias for :math:`\frac{period}{2}`. Values below</span>
+<span class="sd">        :math:`\frac{period}{2}` are treated as if they were</span>
+<span class="sd">        :math:`\frac{period}{2}`. To have an effect different from the default,</span>
+<span class="sd">        `discont` should be larger than :math:`\frac{period}{2}`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        Axis along which unwrap will operate, default is the last axis.</span>
+
+<span class="sd">        Default: ``-1``.</span>
+<span class="sd">    period : float, optional</span>
+<span class="sd">        Size of the range over which the input wraps.</span>
+
+<span class="sd">        Default: ``2 * pi``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Output array.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.rad2deg` : Convert angles from radians to degrees.</span>
+<span class="sd">    :obj:`dpnp.deg2rad` : Convert angles from degrees to radians.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If the discontinuity in `p` is smaller than :math:`\frac{period}{2}`, but</span>
+<span class="sd">    larger than `discont`, no unwrapping is done because taking the complement</span>
+<span class="sd">    would only make the discontinuity larger.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; phase = np.linspace(0, np.pi, num=5)</span>
+<span class="sd">    &gt;&gt;&gt; phase[3:] += np.pi</span>
+<span class="sd">    &gt;&gt;&gt; phase</span>
+<span class="sd">    array([0.        , 0.78539816, 1.57079633, 5.49778714, 6.28318531])</span>
+<span class="sd">    &gt;&gt;&gt; np.unwrap(phase)</span>
+<span class="sd">    array([ 0.        ,  0.78539816,  1.57079633, -0.78539816,  0.        ])</span>
+
+<span class="sd">    &gt;&gt;&gt; phase = np.array([0, 1, 2, -1, 0])</span>
+<span class="sd">    &gt;&gt;&gt; np.unwrap(phase, period=4)</span>
+<span class="sd">    array([0, 1, 2, 3, 4])</span>
+
+<span class="sd">    &gt;&gt;&gt; phase = np.array([1, 2, 3, 4, 5, 6, 1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.unwrap(phase, period=6)</span>
+<span class="sd">    array([1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+
+<span class="sd">    &gt;&gt;&gt; phase = np.array([2, 3, 4, 5, 2, 3, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; np.unwrap(phase, period=4)</span>
+<span class="sd">    array([2, 3, 4, 5, 6, 7, 8, 9])</span>
+
+<span class="sd">    &gt;&gt;&gt; phase_deg = np.mod(np.linspace(0 ,720, 19), 360) - 180</span>
+<span class="sd">    &gt;&gt;&gt; np.unwrap(phase_deg, period=360)</span>
+<span class="sd">    array([-180., -140., -100.,  -60.,  -20.,   20.,   60.,  100.,  140.,</span>
+<span class="sd">            180.,  220.,  260.,  300.,  340.,  380.,  420.,  460.,  500.,</span>
+<span class="sd">            540.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+    <span class="n">p_nd</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">p_diff</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">discont</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">discont</span> <span class="o">=</span> <span class="n">period</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="c1"># full slices</span>
+    <span class="n">slice1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">p_nd</span>
+    <span class="n">slice1</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">slice1</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">p_diff</span><span class="p">,</span> <span class="n">period</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="n">interval_high</span><span class="p">,</span> <span class="n">rem</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">boundary_ambiguous</span> <span class="o">=</span> <span class="n">rem</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">interval_high</span> <span class="o">=</span> <span class="n">period</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">boundary_ambiguous</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">interval_low</span> <span class="o">=</span> <span class="o">-</span><span class="n">interval_high</span>
+
+    <span class="n">ddmod</span> <span class="o">=</span> <span class="n">p_diff</span> <span class="o">-</span> <span class="n">interval_low</span>
+    <span class="n">ddmod</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">ddmod</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">ddmod</span><span class="p">)</span>
+    <span class="n">ddmod</span> <span class="o">+=</span> <span class="n">interval_low</span>
+
+    <span class="k">if</span> <span class="n">boundary_ambiguous</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">ddmod</span> <span class="o">==</span> <span class="n">interval_low</span>
+        <span class="n">mask</span> <span class="o">&amp;=</span> <span class="n">p_diff</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">ddmod</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">interval_high</span><span class="p">,</span> <span class="n">ddmod</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">ddmod</span><span class="p">)</span>
+
+    <span class="n">ph_correct</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">ddmod</span><span class="p">,</span> <span class="n">p_diff</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">ddmod</span><span class="p">)</span>
+    <span class="n">abs_p_diff</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">p_diff</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">p_diff</span><span class="p">)</span>
+    <span class="n">ph_correct</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">abs_p_diff</span> <span class="o">&lt;</span> <span class="n">discont</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ph_correct</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">ph_correct</span><span class="p">)</span>
+
+    <span class="n">up</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">up</span><span class="p">[</span><span class="n">slice1</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="n">slice1</span><span class="p">]</span>
+    <span class="n">up</span><span class="p">[</span><span class="n">slice1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ph_correct</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">up</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
