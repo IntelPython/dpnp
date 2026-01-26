@@ -148,6 +148,7 @@ disable = [
   "ungrouped-imports",
   "wrong-import-position"
 ]
+ignored-modules = ["dpctl", "dpctl.*"]
 include-naming-hint = true
 
 [tool.pylint.classes]
