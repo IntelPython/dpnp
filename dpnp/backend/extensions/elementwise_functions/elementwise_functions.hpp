@@ -34,12 +34,12 @@
 #include <utility>
 #include <vector>
 
-#include <sycl/sycl.hpp>
-
-#include "dpctl4pybind11.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+
+#include <sycl/sycl.hpp>
+
+#include "dpnp4pybind11.hpp"
 
 #include "elementwise_functions_type_utils.hpp"
 #include "simplify_iteration_space.hpp"

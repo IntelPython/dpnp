@@ -108,7 +108,7 @@ target-version = ['py310', 'py311', 'py312', 'py313', 'py314']
 [tool.codespell]
 builtin = "clear,rare,informal,names"
 check-filenames = true
-ignore-words-list = "amin,arange,elemt,fro,hist,ith,mone,nd,nin,sinc,vart"
+ignore-words-list = "amin,arange,elemt,fro,hist,ith,mone,nd,nin,sinc,vart,GroupT"
 quiet-level = 3
 
 [tool.coverage.report]
@@ -134,13 +134,21 @@ source = [
 ensure_newline_before_comments = true
 force_grid_wrap = 0
 include_trailing_comma = true
+known_third_party = ["dpctl"]
 line_length = 80
 multi_line_output = 3
+profile = "black"
 skip = ["dpnp/__init__.py"]
 split_on_trailing_comma = true
 use_parentheses = true
 
 [tool.pylint.basic]
+disable = [
+  "wrong-import-order",
+  "ungrouped-imports",
+  "wrong-import-position"
+]
+ignored-modules = ["dpctl", "dpctl.*"]
 include-naming-hint = true
 
 [tool.pylint.classes]

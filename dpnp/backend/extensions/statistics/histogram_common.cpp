@@ -31,14 +31,17 @@
 #include <string>
 #include <vector>
 
-#include "dpctl4pybind11.hpp"
-#include "utils/type_dispatch.hpp"
-
 #include <pybind11/pybind11.h>
+
+#include "dpnp4pybind11.hpp"
 
 #include "histogram_common.hpp"
 
+// utils extension header
 #include "ext/validation_utils.hpp"
+
+// dpctl tensor headers
+#include "utils/type_dispatch.hpp"
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
@@ -57,7 +60,6 @@ using ext::validation::name_of;
 
 namespace statistics::histogram
 {
-
 void validate(const usm_ndarray &sample,
               const std::optional<const dpctl::tensor::usm_ndarray> &bins,
               const std::optional<const dpctl::tensor::usm_ndarray> &weights,

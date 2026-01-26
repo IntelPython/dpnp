@@ -31,7 +31,9 @@
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
+
+// utils extension header
 #include "ext/dispatch_table.hpp"
 
 namespace statistics::histogram

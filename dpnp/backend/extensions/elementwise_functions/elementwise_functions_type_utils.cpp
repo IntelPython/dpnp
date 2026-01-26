@@ -26,11 +26,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include "dpctl4pybind11.hpp"
-
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+
 #include <sycl/sycl.hpp>
+
+#include "dpnp4pybind11.hpp"
 
 #include "elementwise_functions_type_utils.hpp"
 

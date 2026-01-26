@@ -30,15 +30,18 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <sycl/sycl.hpp>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
+#include <sycl/sycl.hpp>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+#include "dpnp4pybind11.hpp"
+
 #include "choose_kernel.hpp"
-#include "dpctl4pybind11.hpp"
 
 // utils extension header
 #include "ext/common.hpp"
@@ -52,7 +55,6 @@
 
 namespace dpnp::extensions::indexing
 {
-
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 static kernels::choose_fn_ptr_t choose_clip_dispatch_table[td_ns::num_types]
@@ -459,5 +461,4 @@ void init_choose(py::module_ m)
 
     return;
 }
-
 } // namespace dpnp::extensions::indexing

@@ -30,9 +30,10 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
 
 // dpctl tensor headers
 #include "utils/output_validation.hpp"
@@ -41,7 +42,6 @@
 
 namespace dpnp::extensions::window
 {
-
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
 namespace py = pybind11;
