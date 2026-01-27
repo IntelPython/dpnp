@@ -102,14 +102,18 @@ class dpnp_array:
 
             if dtype is None and hasattr(buffer, "dtype"):
                 dtype = buffer.dtype
-
-            if not (strides is None or dtype is None):
-                # dpctl expects strides as elements displacement in memory,
-                # while dpnp (and numpy as well) relies on bytes displacement
-                it_sz = dpnp.dtype(dtype).itemsize
-                strides = tuple(el // it_sz for el in strides)
         else:
             buffer = usm_type
+
+        if strides is not None:
+            # dpctl expects strides as elements displacement in memory,
+            # while dpnp (and numpy as well) relies on bytes displacement
+            if dtype is None:
+                dtype = dpnp.default_float_type(
+                    device=device, sycl_queue=sycl_queue
+                )
+            it_sz = dpnp.dtype(dtype).itemsize
+            strides = tuple(el // it_sz for el in strides)
 
         sycl_queue_normalized = dpnp.get_normalized_queue_device(
             device=device, sycl_queue=sycl_queue

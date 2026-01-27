@@ -290,7 +290,7 @@ def test_flags_strides(dtype, order, strides):
         (4, 4), dtype=dtype, order=order, strides=strides
     )
     a = numpy.ndarray((4, 4), dtype=dtype, order=order, strides=numpy_strides)
-    ia = dpnp.ndarray((4, 4), dtype=dtype, order=order, strides=strides)
+    ia = dpnp.ndarray((4, 4), dtype=dtype, order=order, strides=numpy_strides)
     assert usm_array.flags == ia.flags
     assert a.flags.c_contiguous == ia.flags.c_contiguous
     assert a.flags.f_contiguous == ia.flags.f_contiguous

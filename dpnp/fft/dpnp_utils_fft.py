@@ -224,6 +224,10 @@ def _compute_result(dsc, a, out, forward, c2c, out_strides):
                         if a.dtype == dpnp.complex64
                         else dpnp.float64
                     )
+            # cast to expected strides format
+            out_strides = tuple(
+                el * dpnp.dtype(out_dtype).itemsize for el in out_strides
+            )
             result = dpnp_array(
                 out_shape,
                 dtype=out_dtype,
