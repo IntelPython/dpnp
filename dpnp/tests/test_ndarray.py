@@ -60,10 +60,10 @@ class TestAttributes:
         assert_equal(self.three.shape, (10, 3, 2))
         self.three.shape = (2, 5, 6)
 
-        assert_equal(self.one.strides, (self.one.itemsize / self.one.itemsize,))
-        num = self.two.itemsize / self.two.itemsize
+        assert_equal(self.one.strides, (self.one.itemsize,))
+        num = self.two.itemsize
         assert_equal(self.two.strides, (5 * num, num))
-        num = self.three.itemsize / self.three.itemsize
+        num = self.three.itemsize
         assert_equal(self.three.strides, (30 * num, 6 * num, num))
 
         assert_equal(self.one.ndim, 1)

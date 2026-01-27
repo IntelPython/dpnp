@@ -8,8 +8,18 @@ import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
 
+# from cupy_backends.cuda.api import driver
+# from cupy_backends.cuda.api import runtime
+# from cupy_backends.cuda import stream as stream_module
 import dpnp as cupy
+
+# from cupy import _util
+# from cupy import _core
+# from cupy import cuda
+# from cupy import get_array_module
 from dpnp.tests.third_party.cupy import testing
+
+# from cupy.exceptions import AxisError
 
 
 def get_array_module(*args):
@@ -67,8 +77,8 @@ class TestNdarrayInit(unittest.TestCase):
         memptr = buf.data
 
         # self-overlapping strides
-        a = cupy.ndarray((2, 3), numpy.float32, memptr, strides=(2, 1))
-        assert a.strides == (2, 1)
+        a = cupy.ndarray((2, 3), numpy.float32, memptr, strides=(8, 4))
+        assert a.strides == (8, 4)
 
         a[:] = 1
         a[0, 2] = 4
@@ -85,35 +95,31 @@ class TestNdarrayInit(unittest.TestCase):
     def test_strides_is_given_and_order_is_ignored(self):
         buf = cupy.ndarray(20, numpy.uint8)
         a = cupy.ndarray(
-            (2, 3), numpy.float32, buf.data, strides=(2, 1), order="C"
+            (2, 3), numpy.float32, buf.data, strides=(8, 4), order="C"
         )
-        assert a.strides == (2, 1)
+        assert a.strides == (8, 4)
 
     @testing.with_requires("numpy>=1.19")
     def test_strides_is_given_but_order_is_invalid(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
-                xp.ndarray((2, 3), numpy.float32, strides=(2, 1), order="!")
+                xp.ndarray((2, 3), numpy.float32, strides=(8, 4), order="!")
 
     def test_order(self):
         shape = (2, 3, 4)
         a = cupy.ndarray(shape, order="F")
-        a_cpu = numpy.ndarray(shape, order="F", dtype=a.dtype)
-        assert all(
-            i * a.itemsize == j for i, j in zip(a.strides, a_cpu.strides)
-        )
+        a_cpu = numpy.ndarray(shape, order="F")
+        assert a.strides == a_cpu.strides
         assert a.flags.f_contiguous
         assert not a.flags.c_contiguous
 
     def test_order_none(self):
         shape = (2, 3, 4)
         a = cupy.ndarray(shape, order=None)
-        a_cpu = numpy.ndarray(shape, order=None, dtype=a.dtype)
+        a_cpu = numpy.ndarray(shape, order=None)
         assert a.flags.c_contiguous == a_cpu.flags.c_contiguous
         assert a.flags.f_contiguous == a_cpu.flags.f_contiguous
-        assert all(
-            i * a.itemsize == j for i, j in zip(a.strides, a_cpu.strides)
-        )
+        assert a.strides == a_cpu.strides
 
     def test_slots(self):
         # Test for #7883.
@@ -147,10 +153,7 @@ class TestNdarrayInitStrides(unittest.TestCase):
     @testing.numpy_cupy_equal()
     def test_strides(self, xp):
         arr = xp.ndarray(self.shape, dtype=self.dtype, order=self.order)
-        strides = arr.strides
-        if xp is cupy:
-            strides = tuple(i * arr.itemsize for i in strides)
-        return (strides, arr.flags.c_contiguous, arr.flags.f_contiguous)
+        return (arr.strides, arr.flags.c_contiguous, arr.flags.f_contiguous)
 
 
 class TestNdarrayInitRaise(unittest.TestCase):

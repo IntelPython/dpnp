@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy
 import pytest
 
@@ -8,6 +10,7 @@ if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
     from numpy.exceptions import ComplexWarning
 else:
     from numpy import ComplexWarning
+# from cupy import _util
 
 
 def astype_without_warning(x, dtype, *args, **kwargs):
@@ -17,12 +20,6 @@ def astype_without_warning(x, dtype, *args, **kwargs):
             return x.astype(dtype, *args, **kwargs)
     else:
         return x.astype(dtype, *args, **kwargs)
-
-
-def get_strides(xp, a):
-    if xp is numpy:
-        return tuple(el // a.itemsize for el in a.strides)
-    return a.strides
 
 
 class TestView:
@@ -189,6 +186,9 @@ class TestView:
 
 class TestArrayCopy:
 
+    # @pytest.mark.skipif(
+    #     not _util.ENABLE_SLICE_COPY, reason="Special copy disabled"
+    # )
     @testing.for_orders("CF")
     @testing.for_dtypes(
         [numpy.int16, numpy.int64, numpy.float16, numpy.float64]
@@ -200,13 +200,19 @@ class TestArrayCopy:
         b[:] = a
         return b
 
+    # @pytest.mark.skipif(
+    #     not _util.ENABLE_SLICE_COPY, reason="Special copy disabled"
+    # )
     @pytest.mark.skip("copy from host to device is allowed")
     def test_isinstance_numpy_copy_wrong_dtype(self):
-        a = numpy.arange(100, dtype=cupy.default_float_type()).reshape(10, 10)
+        a = numpy.arange(100, dtype=numpy.float64).reshape(10, 10)
         b = cupy.empty(a.shape, dtype=numpy.int32)
         with pytest.raises(ValueError):
             b[:] = a
 
+    # @pytest.mark.skipif(
+    #     not _util.ENABLE_SLICE_COPY, reason="Special copy disabled"
+    # )
     def test_isinstance_numpy_copy_wrong_shape(self):
         for xp in (numpy, cupy):
             a = numpy.arange(100, dtype=cupy.default_float_type()).reshape(
@@ -216,12 +222,18 @@ class TestArrayCopy:
             with pytest.raises(ValueError):
                 b[:] = a
 
+    # @pytest.mark.skipif(
+    #     not _util.ENABLE_SLICE_COPY, reason="Special copy disabled"
+    # )
     @testing.numpy_cupy_array_equal()
     def test_isinstance_numpy_copy_not_slice(self, xp):
         a = xp.arange(5, dtype=cupy.default_float_type())
         a[a < 3] = 0
         return a
 
+    # @pytest.mark.skipif(
+    #     not _util.ENABLE_SLICE_COPY, reason="Special copy disabled"
+    # )
     @pytest.mark.skip("copy from host to device is allowed")
     def test_copy_host_to_device_view(self):
         dev = cupy.empty((10, 10), dtype=numpy.float32)[2:5, 1:8]
@@ -337,7 +349,7 @@ class TestArrayAsType:
         b = astype_without_warning(a, dst_dtype, order=order)
         a_cpu = testing.shaped_arange((2, 3, 4), numpy, src_dtype)
         b_cpu = astype_without_warning(a_cpu, dst_dtype, order=order)
-        assert b.dtype == b_cpu.dtype
+        assert b.dtype.type == b_cpu.dtype.type
 
     @testing.for_orders("CAK")
     @testing.for_all_dtypes()
@@ -358,24 +370,24 @@ class TestArrayAsType:
     @testing.numpy_cupy_equal()
     def test_astype_strides(self, xp, src_dtype, dst_dtype):
         src = testing.shaped_arange((1, 2, 3), xp, dtype=src_dtype)
-        dst = astype_without_warning(src, dst_dtype, order="K")
-        return get_strides(xp, dst)
+        return astype_without_warning(src, dst_dtype, order="K").strides
 
     @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_equal()
     def test_astype_strides_negative(self, xp, src_dtype, dst_dtype):
         src = testing.shaped_arange((2, 3), xp, dtype=src_dtype)
         src = src[::-1, :]
-        dst = astype_without_warning(src, dst_dtype, order="K")
-        return tuple(abs(x) for x in get_strides(xp, dst))
+        return tuple(
+            abs(el)
+            for el in astype_without_warning(src, dst_dtype, order="K").strides
+        )
 
     @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_equal()
     def test_astype_strides_swapped(self, xp, src_dtype, dst_dtype):
         src = testing.shaped_arange((2, 3, 4), xp, dtype=src_dtype)
         src = xp.swapaxes(src, 1, 0)
-        dst = astype_without_warning(src, dst_dtype, order="K")
-        return get_strides(xp, dst)
+        return astype_without_warning(src, dst_dtype, order="K").strides
 
     @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_equal()
@@ -383,8 +395,7 @@ class TestArrayAsType:
         src1 = testing.shaped_arange((2, 3, 2), xp, dtype=src_dtype)
         src2 = testing.shaped_arange((2,), xp, dtype=src_dtype)
         src, _ = xp.broadcast_arrays(src1, src2)
-        dst = astype_without_warning(src, dst_dtype, order="K")
-        return get_strides(xp, dst)
+        return astype_without_warning(src, dst_dtype, order="K").strides
 
     @testing.numpy_cupy_array_equal()
     def test_astype_boolean_view(self, xp):
@@ -413,6 +424,9 @@ class TestArrayDiagonal:
     {"src_order": "F"},
 )
 class TestNumPyArrayCopyView:
+    # @pytest.mark.skipif(
+    #     not _util.ENABLE_SLICE_COPY, reason="Special copy disabled"
+    # )
     @testing.for_orders("CF")
     @testing.for_dtypes(
         [numpy.int16, numpy.int64, numpy.float16, numpy.float64]
