@@ -34,8 +34,8 @@ import dpctl
 import dpctl.memory as dpmem
 import numpy as np
 
-from .._backend cimport DPCTLSyclUSMRef
-from .._sycl_device_factory cimport _cached_default_device
+from dpctl._backend cimport DPCTLSyclUSMRef
+from dpctl._sycl_device_factory cimport _cached_default_device
 
 from ._data_types import bool as dpt_bool
 from ._device import Device
