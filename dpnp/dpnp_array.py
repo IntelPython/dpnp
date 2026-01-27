@@ -103,10 +103,10 @@ class dpnp_array:
             if dtype is None and hasattr(buffer, "dtype"):
                 dtype = buffer.dtype
 
-            if strides is not None:
+            if not (strides is None or dtype is None):
                 # dpctl expects strides as elements displacement in memory,
                 # while dpnp (and numpy as well) relies on bytes displacement
-                it_sz = buffer.itemsize
+                it_sz = dpnp.dtype(dtype).itemsize
                 strides = tuple(el // it_sz for el in strides)
         else:
             buffer = usm_type
@@ -2378,23 +2378,20 @@ class dpnp_array:
 
         # resize on last axis only
         axis = ndim - 1
-        if old_sh[axis] != 1 and self.size != 0 and old_strides[axis] != 1:
+        if (
+            old_sh[axis] != 1
+            and self.size != 0
+            and old_strides[axis] != old_itemsz
+        ):
             raise ValueError(
                 "To change to a dtype of a different size, "
                 "the last axis must be contiguous"
             )
 
         # normalize strides whenever itemsize changes
-        if old_itemsz > new_itemsz:
-            new_strides = list(
-                el * (old_itemsz // new_itemsz) for el in old_strides
-            )
-        else:
-            new_strides = list(
-                el // (new_itemsz // old_itemsz) for el in old_strides
-            )
-        new_strides[axis] = 1
-        new_strides = tuple(new_strides)
+        new_strides = tuple(
+            old_strides[i] if i != axis else new_itemsz for i in range(ndim)
+        )
 
         new_dim = old_sh[axis] * old_itemsz
         if new_dim % new_itemsz != 0:
@@ -2404,9 +2401,10 @@ class dpnp_array:
             )
 
         # normalize shape whenever itemsize changes
-        new_sh = list(old_sh)
-        new_sh[axis] = new_dim // new_itemsz
-        new_sh = tuple(new_sh)
+        new_sh = tuple(
+            old_sh[i] if i != axis else new_dim // new_itemsz
+            for i in range(ndim)
+        )
 
         return dpnp_array(
             new_sh,
