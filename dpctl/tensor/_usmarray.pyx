@@ -47,14 +47,12 @@ cimport dpctl.tensor._dlpack as c_dlpack
 from cpython.mem cimport PyMem_Free
 from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
-from ._dlpack import get_build_dlpack_version
-
-from .._sycl_device_factory cimport _cached_default_device
-
 from enum import IntEnum
 
 import dpctl.tensor._flags as _flags
 from dpctl.tensor._tensor_impl import default_device_fp_type
+
+from ._dlpack import get_build_dlpack_version
 
 include "_stride_utils.pxi"
 include "_types.pxi"
