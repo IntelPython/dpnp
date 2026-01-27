@@ -1855,16 +1855,53 @@ class dpnp_array:
     @property
     def strides(self):
         """
-        Return memory displacement in array elements, upon unit
-        change of respective index.
+        Tuple of bytes to step in each dimension when traversing an array.
 
-        For example, for strides ``(s1, s2, s3)`` and multi-index
-        ``(i1, i2, i3)`` position of the respective element relative
-        to zero multi-index element is ``s1*s1 + s2*i2 + s3*i3``.
+        The byte offset of element ``(i[0], i[1], ..., i[n])`` in an array `a`
+        is::
+
+            offset = sum(dpnp.array(i) * a.strides)
+
+        For full documentation refer to :obj:`numpy.ndarray.strides`.
+
+        See Also
+        --------
+        :obj:`dpnp.lib.stride_tricks.as_strided` : Return a view into the array
+            with given shape and strides.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> y = np.reshape(np.arange(2 * 3 * 4, dtype=np.int32), (2, 3, 4))
+        >>> y
+        array([[[ 0,  1,  2,  3],
+                [ 4,  5,  6,  7],
+                [ 8,  9, 10, 11]],
+               [[12, 13, 14, 15],
+                [16, 17, 18, 19],
+                [20, 21, 22, 23]]], dtype=np.int32)
+        >>> y.strides
+        (48, 16, 4)
+        >>> y[1, 1, 1]
+        array(17, dtype=int32)
+        >>> offset = sum(i * s for i, s in zip((1, 1, 1), y.strides))
+        >>> offset // y.itemsize
+        17
+
+        >>> x = np.reshape(np.arange(5*6*7*8, dtype=np.int32), (5, 6, 7, 8))
+        >>> x = x.transpose(2, 3, 1, 0)
+        >>> x.strides
+        (32, 4, 224, 1344)
+        >>> offset = sum(i * s for i, s in zip((3, 5, 2, 2), x.strides))
+        >>> x[3, 5, 2, 2]
+        array(813, dtype=int32)
+        >>> offset // x.itemsize
+        813
 
         """
 
-        return self._array_obj.strides
+        it_sz = self.itemsize
+        return tuple(el * it_sz for el in self._array_obj.strides)
 
     def sum(
         self,
