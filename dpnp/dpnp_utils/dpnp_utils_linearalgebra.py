@@ -185,18 +185,14 @@ def _define_contig_flag(x):
     """
 
     flag = False
-    x_strides = x.strides
+    x_strides = dpnp.get_usm_ndarray(x).strides
     x_shape = x.shape
     if x.ndim < 2:
         return True, True, True
 
     x_strides = _standardize_strides_to_nonzero(x_strides, x_shape)
-    x_is_c_contiguous = (
-        x_strides[-1] == x.itemsize and x_strides[-2] == x_shape[-1]
-    )
-    x_is_f_contiguous = (
-        x_strides[-2] == x.itemsize and x_strides[-1] == x_shape[-2]
-    )
+    x_is_c_contiguous = x_strides[-1] == 1 and x_strides[-2] == x_shape[-1]
+    x_is_f_contiguous = x_strides[-2] == 1 and x_strides[-1] == x_shape[-2]
     if x_is_c_contiguous or x_is_f_contiguous:
         flag = True
     return flag, x_is_c_contiguous, x_is_f_contiguous
