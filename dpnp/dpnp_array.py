@@ -102,6 +102,12 @@ class dpnp_array:
 
             if dtype is None and hasattr(buffer, "dtype"):
                 dtype = buffer.dtype
+
+            if strides is not None:
+                # dpctl expects strides as elements displacement in memory,
+                # while dpnp (and numpy as well) relies on bytes displacement
+                it_sz = buffer.itemsize
+                strides = tuple(el // it_sz for el in strides)
         else:
             buffer = usm_type
 
