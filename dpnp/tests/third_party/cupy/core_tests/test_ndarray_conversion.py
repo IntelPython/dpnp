@@ -1,56 +1,69 @@
 from __future__ import annotations
 
-import unittest
-
 import numpy
 import pytest
 
 import dpnp as cupy
+
+# from cupy.cuda import runtime
 from dpnp.tests.third_party.cupy import testing
 
 
-@testing.parameterize(
-    {"shape": ()},
-    {"shape": (1,)},
-    {"shape": (1, 1, 1)},
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (),
+        (1,),
+        (1, 1, 1),
+    ],
 )
-class TestNdarrayItem(unittest.TestCase):
+class TestNdarrayItem:
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
-    def test_item(self, xp, dtype):
-        a = xp.full(self.shape, 3, dtype=dtype)
+    def test_item(self, xp, dtype, shape):
+        a = xp.full(shape, 3, dtype=dtype)
         return a.item()
 
 
-@testing.parameterize(
-    {"shape": (0,)},
-    {"shape": (2, 3)},
-    {"shape": (1, 0, 1)},
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (0,),
+        (2, 3),
+        (1, 0, 1),
+    ],
 )
-class TestNdarrayItemRaise(unittest.TestCase):
+class TestNdarrayItemRaise:
 
-    def test_item(self):
+    def test_item(self, shape):
         for xp in (numpy, cupy):
-            a = testing.shaped_arange(self.shape, xp, xp.float32)
+            a = testing.shaped_arange(shape, xp, xp.float32)
             with pytest.raises(ValueError):
                 a.item()
 
 
-@testing.parameterize(
-    {"shape": ()},
-    {"shape": (1,)},
-    {"shape": (2, 3)},
-    {"shape": (2, 3), "order": "C"},
-    {"shape": (2, 3), "order": "F"},
+@pytest.mark.parametrize(
+    "shape, order",
+    [
+        ((), None),
+        ((1,), None),
+        ((2, 3), None),
+        ((2, 3), "C"),
+        ((2, 3), "F"),
+    ],
 )
-class TestNdarrayToBytes(unittest.TestCase):
+class TestNdarrayToBytes:
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
-    def test_item(self, xp, dtype):
-        a = testing.shaped_arange(self.shape, xp, dtype)
-        if hasattr(self, "order"):
-            return a.tobytes(self.order)
+    def test_item(self, xp, dtype, shape, order):
+        # if runtime.is_hip and (
+        #     shape == (1,) or (shape == (2, 3) and order is None)
+        # ):
+        #     pytest.xfail("ROCm/HIP may have a bug")
+        a = testing.shaped_arange(shape, xp, dtype)
+        if order is not None:
+            return a.tobytes(order)
         else:
             return a.tobytes()
