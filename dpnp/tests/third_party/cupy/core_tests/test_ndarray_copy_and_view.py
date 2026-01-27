@@ -349,7 +349,7 @@ class TestArrayAsType:
         b = astype_without_warning(a, dst_dtype, order=order)
         a_cpu = testing.shaped_arange((2, 3, 4), numpy, src_dtype)
         b_cpu = astype_without_warning(a_cpu, dst_dtype, order=order)
-        assert b.dtype.type == b_cpu.dtype.type
+        assert b.dtype == b_cpu.dtype
 
     @testing.for_orders("CAK")
     @testing.for_all_dtypes()
