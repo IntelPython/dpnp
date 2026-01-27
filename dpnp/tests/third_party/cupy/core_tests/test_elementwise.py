@@ -65,7 +65,7 @@ class TestElementwise:
         a = cupy.empty((2, 3, 4))
         b = cupy.copy(a, order)
 
-        a_cpu = numpy.empty((2, 3, 4))
+        a_cpu = numpy.empty((2, 3, 4), dtype=a.dtype)
         b_cpu = numpy.copy(a_cpu, order)
 
         assert b.strides == b_cpu.strides
