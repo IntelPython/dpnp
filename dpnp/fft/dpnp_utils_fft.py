@@ -193,7 +193,7 @@ def _compute_result(dsc, a, out, forward, c2c, out_strides):
         )
         result = a
     else:
-        out_usm = dpnp.get_usm_ndarray(out) if out else None
+        out_usm = None if out is None else dpnp.get_usm_ndarray(out)
         if (
             out is not None
             and out_usm.strides == tuple(out_strides)
