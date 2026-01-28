@@ -43,9 +43,13 @@ from ._print import usm_ndarray_repr, usm_ndarray_str
 
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
-cimport dpctl.tensor._dlpack as c_dlpack
 from cpython.mem cimport PyMem_Free
 from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
+
+# TODO: replace with
+# cimport dpctl.tensor._dlpack as c_dlpack
+# when dpctl.tensor is removed from dpctl
+cimport ._dlpack as c_dlpack
 
 from enum import IntEnum
 
