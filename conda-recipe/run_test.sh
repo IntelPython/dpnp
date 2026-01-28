@@ -37,4 +37,8 @@ set -e
 
 $PYTHON -c "import dpnp; print(dpnp.__version__)"
 $PYTHON -m dpctl -f
+
+timeout 10m gdb --batch -ex run -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex thread apply all bt --args "$PYTHON" -m pytest -ra --disable-warnings --pyargs dpnp.tests.test_histogram || true
+$PYTHON -m pytest -sv --pyargs dpnp.tests.test_histogram
+
 $PYTHON -m pytest -ra --pyargs dpnp

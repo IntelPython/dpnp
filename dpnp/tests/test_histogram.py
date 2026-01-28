@@ -22,8 +22,14 @@ from .helper import (
     get_integer_float_dtypes,
     has_support_aspect64,
     numpy_version,
+    requires_memory,
 )
 from .third_party.cupy import testing
+
+# Build a list of bin sizes to check the histogram
+_bin_counts = [10, 10**2, 10**3, 10**4, 10**5]
+if requires_memory(16):
+    _bin_counts += [10**6]
 
 
 class TestDigitize:
@@ -487,10 +493,7 @@ class TestHistogram:
         with assert_raises(ValueError):
             dpnp.histogram(v, weights=w)
 
-    @pytest.mark.parametrize(
-        "bins_count",
-        [10, 10**2, 10**3, 10**4, 10**5, 10**6],
-    )
+    @pytest.mark.parametrize("bins_count", _bin_counts)
     def test_different_bins_amount(self, bins_count):
         v = numpy.linspace(0, bins_count, bins_count, dtype=numpy.float32)
         iv = dpnp.array(v)
@@ -585,10 +588,7 @@ class TestBincount:
         w = xp.arange(5, dtype=dt)
         assert_raises((TypeError, ValueError), xp.bincount, v, weights=w)
 
-    @pytest.mark.parametrize(
-        "bins_count",
-        [10, 10**2, 10**3, 10**4, 10**5, 10**6],
-    )
+    @pytest.mark.parametrize("bins_count", _bin_counts)
     def test_different_bins_amount(self, bins_count):
         v = numpy.arange(0, bins_count, dtype=int)
         iv = dpnp.array(v)
@@ -851,10 +851,7 @@ class TestHistogramDd:
         with assert_raises(ValueError):
             dpnp.histogramdd(v, weights=w)
 
-    @pytest.mark.parametrize(
-        "bins_count",
-        [10, 10**2, 10**3, 10**4, 10**5, 10**6],
-    )
+    @pytest.mark.parametrize("bins_count", _bin_counts)
     def test_different_bins_amount(self, bins_count):
         v = numpy.linspace(0, bins_count, bins_count, dtype=numpy.float32)
         iv = dpnp.array(v)

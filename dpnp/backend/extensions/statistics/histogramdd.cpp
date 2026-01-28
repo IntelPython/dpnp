@@ -327,7 +327,7 @@ std::tuple<sycl::event, sycl::event> Histogramdd::call(
             exec_q, {sample, bins_edges, bins_edges_count, histogram}, {ev});
     }
 
-    return {args_ev, ev};
+    return std::make_pair(args_ev, ev);
 }
 
 std::unique_ptr<Histogramdd> histdd;

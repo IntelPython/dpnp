@@ -318,9 +318,18 @@ def get_dev_id(device=None):
     Obtain Intel Device ID for a device (the default device if not provided).
     """
 
+    return get_dev_info(device).get("device_id", 0)
+
+
+def get_dev_info(device=None):
+    """
+    Obtain a dictionary with the info for a device (the default device if not
+    provided).
+
+    """
+
     dev = dpctl.select_default_device() if device is None else device
-    dev_info = dpctl.utils.intel_device_info(dev)
-    return dev_info.get("device_id", 0)
+    return dpctl.utils.intel_device_info(dev)
 
 
 def get_float_dtypes(no_float16=True, device=None):
@@ -540,3 +549,14 @@ def requires_intel_mkl_version(version):  # pragma: no cover
 
     build_deps = numpy.show_config(mode="dicts")["Build Dependencies"]
     return build_deps["blas"]["version"] >= version
+
+
+def requires_memory(no_of_gbs, device=None):
+    """
+    Check if the required number of GBs in memory of a device (the default one
+    if not provided) is available.
+
+    """
+
+    free_mem = get_dev_info(device).get("free_memory", 0)
+    return free_mem >= no_of_gbs * (1024**3)

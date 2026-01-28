@@ -3103,7 +3103,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     right_usm = right.get_array() if right is not None else None
 
     _manager = dpu.SequentialOrderManager[exec_q]
-    mem_ev, ht_ev = ufi._interpolate(
+    ht_ev, inter_ev = ufi._interpolate(
         x.get_array(),
         idx.get_array(),
         xp.get_array(),
@@ -3114,7 +3114,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         exec_q,
         depends=_manager.submitted_events,
     )
-    _manager.add_event_pair(mem_ev, ht_ev)
+    _manager.add_event_pair(ht_ev, inter_ev)
 
     return output
 
@@ -3747,11 +3747,11 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     q = x.sycl_queue
     _manager = dpu.SequentialOrderManager[q]
 
-    h_ev, comp_ev = ufi._nan_to_num(
+    ht_ev, comp_ev = ufi._nan_to_num(
         x_ary, nan, max_f, min_f, out_ary, q, depends=_manager.submitted_events
     )
 
-    _manager.add_event_pair(h_ev, comp_ev)
+    _manager.add_event_pair(ht_ev, comp_ev)
 
     return dpnp.get_result_array(out)
 
