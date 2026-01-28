@@ -1543,6 +1543,8 @@ class TestTrimZeros:
         expected = numpy.trim_zeros(a, axis=axis, trim=trim)
         assert_array_equal(result, expected)
 
+    # NOTE: numpy behaves differently on 0-sized input array
+    # and returns the input array with reduced shapes
     @pytest.mark.parametrize("axis", [None, -1, 0])
     @pytest.mark.parametrize("trim", ALL_TRIMS)
     def test_empty_array(self, axis, trim):
