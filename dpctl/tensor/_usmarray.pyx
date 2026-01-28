@@ -53,6 +53,7 @@ cimport ._dlpack as c_dlpack
 
 from enum import IntEnum
 
+# TODO: migrate dpctl.tensor._tensor_impl into dpnp
 from dpctl.tensor._tensor_impl import default_device_fp_type
 
 # TODO: replace with
