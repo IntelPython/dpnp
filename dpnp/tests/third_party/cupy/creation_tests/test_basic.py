@@ -270,7 +270,9 @@ class TestBasic:
         ],
     )
     def test_ndarray_strides(self, shape, strides):
-        a = cupy.ndarray(shape, strides=strides, dtype="float64")
+        a = cupy.ndarray(
+            shape, strides=strides, dtype=cupy.default_float_type()
+        )
         assert cupy.byte_bounds(a)[0] == a.data.ptr
         assert cupy.byte_bounds(a)[1] - a.data.ptr <= a.data.size
 

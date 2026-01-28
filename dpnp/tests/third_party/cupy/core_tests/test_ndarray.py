@@ -108,7 +108,7 @@ class TestNdarrayInit(unittest.TestCase):
     def test_order(self):
         shape = (2, 3, 4)
         a = cupy.ndarray(shape, order="F")
-        a_cpu = numpy.ndarray(shape, order="F")
+        a_cpu = numpy.ndarray(shape, order="F", dtype=a.dtype)
         assert a.strides == a_cpu.strides
         assert a.flags.f_contiguous
         assert not a.flags.c_contiguous
@@ -116,7 +116,7 @@ class TestNdarrayInit(unittest.TestCase):
     def test_order_none(self):
         shape = (2, 3, 4)
         a = cupy.ndarray(shape, order=None)
-        a_cpu = numpy.ndarray(shape, order=None)
+        a_cpu = numpy.ndarray(shape, order=None, dtype=a.dtype)
         assert a.flags.c_contiguous == a_cpu.flags.c_contiguous
         assert a.flags.f_contiguous == a_cpu.flags.f_contiguous
         assert a.strides == a_cpu.strides
