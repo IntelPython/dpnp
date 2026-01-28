@@ -215,7 +215,7 @@ def _batched_inv(a, res_type):
     _manager.add_event_pair(ht_ev, copy_ev)
 
     ipiv_stride = n
-    a_stride = a_h.strides[0]
+    a_stride = a_h.strides[0] // a_h.itemsize
 
     # Call the LAPACK extension function _getrf_batch
     # to perform LU decomposition of a batch of general matrices
@@ -298,7 +298,7 @@ def _batched_lu_factor(a, res_type):
         dev_info_h = [0] * batch_size
 
         ipiv_stride = n
-        a_stride = a_h.strides[0]
+        a_stride = a_h.strides[0] // a_h.itemsize
 
         # Call the LAPACK extension function _getrf_batch
         # to perform LU decomposition of a batch of general matrices
@@ -471,8 +471,8 @@ def _batched_qr(a, mode="reduced"):
         dtype=res_type,
     )
 
-    a_stride = a_t.strides[0]
-    tau_stride = tau_h.strides[0]
+    a_stride = a_t.strides[0] // a_t.itemsize
+    tau_stride = tau_h.strides[0] // tau_h.itemsize
 
     # Call the LAPACK extension function _geqrf_batch to compute
     # the QR factorization of a general m x n matrix.
@@ -535,8 +535,8 @@ def _batched_qr(a, mode="reduced"):
     )
     _manager.add_event_pair(ht_ev, copy_ev)
 
-    q_stride = q.strides[0]
-    tau_stride = tau_h.strides[0]
+    q_stride = q.strides[0] // q.itemsize
+    tau_stride = tau_h.strides[0] // tau_h.itemsize
 
     # Get LAPACK function (_orgqr_batch for real or _ungqf_batch for complex
     # data types) for QR factorization
@@ -1818,7 +1818,7 @@ def dpnp_cholesky_batch(a, upper_lower, res_type):
     )
     _manager.add_event_pair(ht_ev, copy_ev)
 
-    a_stride = a_h.strides[0]
+    a_stride = a_h.strides[0] // a_h.itemsize
 
     # Call the LAPACK extension function _potrf_batch
     # to computes the Cholesky decomposition of a batch of

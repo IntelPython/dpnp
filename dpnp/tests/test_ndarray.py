@@ -60,10 +60,10 @@ class TestAttributes:
         assert_equal(self.three.shape, (10, 3, 2))
         self.three.shape = (2, 5, 6)
 
-        assert_equal(self.one.strides, (self.one.itemsize / self.one.itemsize,))
-        num = self.two.itemsize / self.two.itemsize
+        assert_equal(self.one.strides, (self.one.itemsize,))
+        num = self.two.itemsize
         assert_equal(self.two.strides, (5 * num, num))
-        num = self.three.itemsize / self.three.itemsize
+        num = self.three.itemsize
         assert_equal(self.three.strides, (30 * num, 6 * num, num))
 
         assert_equal(self.one.ndim, 1)
@@ -290,7 +290,7 @@ def test_flags_strides(dtype, order, strides):
         (4, 4), dtype=dtype, order=order, strides=strides
     )
     a = numpy.ndarray((4, 4), dtype=dtype, order=order, strides=numpy_strides)
-    ia = dpnp.ndarray((4, 4), dtype=dtype, order=order, strides=strides)
+    ia = dpnp.ndarray((4, 4), dtype=dtype, order=order, strides=numpy_strides)
     assert usm_array.flags == ia.flags
     assert a.flags.c_contiguous == ia.flags.c_contiguous
     assert a.flags.f_contiguous == ia.flags.f_contiguous

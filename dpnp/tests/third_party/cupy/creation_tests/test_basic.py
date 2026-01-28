@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings
 
 import numpy
@@ -152,10 +154,7 @@ class TestBasic:
         bg.fill(0)
 
         # make sure NumPy and CuPy strides agree
-        scaled_numpy_strides = b.strides
-        scale = b.itemsize
-        numpy_strides = tuple(i / scale for i in scaled_numpy_strides)
-        assert numpy_strides == bg.strides
+        assert b.strides == bg.strides
         return
 
     @testing.with_requires("numpy>=1.19")
@@ -171,7 +170,7 @@ class TestBasic:
         with pytest.raises(NotImplementedError):
             cupy.empty_like(a, subok=True)
 
-    @pytest.mark.skip("strides for zero sized array is different")
+    @pytest.mark.skip("strides for zero sized array are different")
     @testing.for_CF_orders()
     @testing.with_requires("numpy>=1.23")
     def test_empty_zero_sized_array_strides(self, order):
@@ -221,8 +220,7 @@ class TestBasic:
     def test_zeros_strides(self, order):
         a = numpy.zeros((2, 3), dtype=cupy.default_float_type(), order=order)
         b = cupy.zeros((2, 3), dtype=cupy.default_float_type(), order=order)
-        b_strides = tuple(x * b.itemsize for x in b.strides)
-        assert b_strides == a.strides
+        assert b.strides == a.strides
 
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
@@ -235,6 +233,15 @@ class TestBasic:
         a = cupy.ndarray((2, 3, 4))
         with pytest.raises(NotImplementedError):
             cupy.zeros_like(a, subok=True)
+
+    @pytest.mark.skip("only native byteorder is supported")
+    def test_reject_byteswap(self):
+        # Reject creation of arrays with bad byte-order at a low level
+        with pytest.raises(ValueError, match=".*byte-order"):
+            cupy.ndarray((2, 3, 4), dtype=">i")
+
+        with pytest.raises(ValueError, match=".*byte-order"):
+            cupy.zeros((2, 3, 4), dtype=">i")
 
     @testing.for_CF_orders()
     @testing.for_all_dtypes()
@@ -253,6 +260,33 @@ class TestBasic:
         a = cupy.ndarray((2, 3, 4))
         with pytest.raises(NotImplementedError):
             cupy.ones_like(a, subok=True)
+
+    @pytest.mark.parametrize(
+        "shape, strides",
+        [
+            ((2, 3, 4), (8 * 3 * 4, 8 * 4, 8)),  # contiguous
+            ((2, 3, 4), (8, 0, 8)),  # smaller than contiguous needed
+            ((2, 0, 4), (8, 128, 1024)),  # empty can be OK
+        ],
+    )
+    def test_ndarray_strides(self, shape, strides):
+        a = cupy.ndarray(
+            shape, strides=strides, dtype=cupy.default_float_type()
+        )
+        assert cupy.byte_bounds(a)[0] == a.data.ptr
+        assert cupy.byte_bounds(a)[1] - a.data.ptr <= a.data.size
+
+    @pytest.mark.skip("due to dpctl-2239")
+    @pytest.mark.parametrize(
+        "shape, strides",
+        [
+            ((2, 3, 4), (8, 128, 1024)),  # too large
+            ((2, 3, 4), (-8, 8, 8)),  # negative (needs offset)
+        ],
+    )
+    def test_ndarray_strides_raises(self, shape, strides):
+        with pytest.raises(ValueError, match=r"ndarray\(\) with strides.*"):
+            cupy.ndarray(shape, strides=strides)
 
     @testing.for_CF_orders()
     @testing.for_all_dtypes()
@@ -457,10 +491,7 @@ class TestBasicReshape:
         bg.fill(0)
 
         # make sure NumPy and CuPy strides agree
-        scaled_numpy_strides = b.strides
-        scale = b.itemsize
-        numpy_strides = tuple(i / scale for i in scaled_numpy_strides)
-        assert numpy_strides == bg.strides
+        assert b.strides == bg.strides
         return
 
     @testing.with_requires("numpy>=1.17.0")

@@ -105,7 +105,7 @@ def _get_empty_array(
         elif a.flags.c_contiguous:
             order = "C"
         else:
-            strides = _get_strides_for_order_k(a, _shape)
+            strides = _get_strides_for_order_k(a, _dtype, shape=_shape)
             order = "C"
     elif order not in "cfCF":
         raise ValueError(
@@ -122,7 +122,7 @@ def _get_empty_array(
     )
 
 
-def _get_strides_for_order_k(x, shape=None):
+def _get_strides_for_order_k(x, dtype, shape=None):
     """
     Calculate strides when order='K' for empty_like, ones_like, zeros_like,
     and full_like where `shape` is ``None`` or len(shape) == x.ndim.
@@ -130,7 +130,7 @@ def _get_strides_for_order_k(x, shape=None):
     """
     stride_and_index = sorted([(abs(s), -i) for i, s in enumerate(x.strides)])
     strides = [0] * x.ndim
-    stride = 1
+    stride = dpnp.dtype(dtype).itemsize
     for _, i in stride_and_index:
         strides[-i] = stride
         stride *= shape[-i] if shape else x.shape[-i]
