@@ -1543,6 +1543,13 @@ class TestTrimZeros:
         expected = numpy.trim_zeros(a, axis=axis, trim=trim)
         assert_array_equal(result, expected)
 
+    @pytest.mark.parametrize("axis", [None, -1, 0])
+    @pytest.mark.parametrize("trim", ALL_TRIMS)
+    def test_empty_array(self, axis, trim):
+        a = dpnp.ones((0, 3))
+        result = dpnp.trim_zeros(a, axis=axis, trim=trim)
+        assert result is a
+
     @pytest.mark.parametrize(
         "a", [numpy.array([0, 2**62, 0]), numpy.array([0, 2**63, 0])]
     )
