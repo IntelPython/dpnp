@@ -49,7 +49,7 @@ from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 # TODO: replace with
 # cimport dpctl.tensor._dlpack as c_dlpack
 # when dpctl.tensor is removed from dpctl
-cimport ._dlpack as c_dlpack
+from . cimport _dlpack as c_dlpack
 
 from enum import IntEnum
 
