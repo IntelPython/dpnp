@@ -33,23 +33,15 @@ import operator
 
 import dpctl
 
-# TODO: migrate the necessary functions from dpctl.tensor to dpnp
-# dpt.get_print_options()
-# dpt.set_print_options()
-# dpt.asnumpy()
-# dpt.empty()
-# dpt.usm_ndarray
-# dpt.bool
-# dpt.int64
-# dpt.float64
-# dpt.complex128
-import dpctl.tensor as dpt
-
 # TODO: migrate dpctl.tensor._tensor_impl into dpnp
 # ti._copy_usm_ndarray_into_usm_ndarray()
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
 import numpy as np
+
+# TODO: revert to `import dpctl.tensor as dpt`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt
 
 __doc__ = "Print functions for :class:`dpctl.tensor.usm_ndarray`."
 
