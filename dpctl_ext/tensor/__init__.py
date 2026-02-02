@@ -71,24 +71,6 @@ from ._device import Device
 # TODO: revert to `from dpctl.tensor._dlpack import ...`
 from ._dlpack import from_dlpack
 
-# TODO: revert to `from dpctl.tensor._print import ...`
-from ._print import (
-    get_print_options,
-    print_options,
-    set_print_options,
-    usm_ndarray_repr,
-    usm_ndarray_str,
-)
-
-# TODO: revert to `from dpctl.tensor._usmarray import ...`
-from ._usmarray import DLDeviceType, usm_ndarray
-
-# from dpctl.tensor._dldevice_conversions import (
-#     dldevice_to_sycl_device,
-#     sycl_device_to_dldevice,
-# )
-
-
 # from dpctl.tensor._indexing_functions import (
 #     extract,
 #     nonzero,
@@ -104,21 +86,26 @@ from ._usmarray import DLDeviceType, usm_ndarray
 #     tensordot,
 #     vecdot,
 # )
-# from dpctl.tensor._manipulation_functions import (
-#     broadcast_arrays,
-#     broadcast_to,
-#     concat,
-#     expand_dims,
-#     flip,
-#     moveaxis,
-#     permute_dims,
-#     repeat,
-#     roll,
-#     squeeze,
-#     stack,
-#     swapaxes,
-#     tile,
-#     unstack,
+# TODO: revert to `from dpctl.tensor._manipulation_functions import ...`
+from ._manipulation_functions import (  # broadcast_arrays,; broadcast_to,; concat,; expand_dims,; flip,; moveaxis,; repeat,; roll,; squeeze,; stack,; swapaxes,; tile,; unstack,
+    permute_dims,
+)
+
+# TODO: revert to `from dpctl.tensor._print import ...`
+from ._print import (
+    get_print_options,
+    print_options,
+    set_print_options,
+    usm_ndarray_repr,
+    usm_ndarray_str,
+)
+
+# TODO: revert to `from dpctl.tensor._usmarray import ...`
+from ._usmarray import DLDeviceType, usm_ndarray
+
+# from dpctl.tensor._dldevice_conversions import (
+#     dldevice_to_sycl_device,
+#     sycl_device_to_dldevice,
 # )
 
 
@@ -254,7 +241,7 @@ __all__ = [
     # "broadcast_arrays",
     # "broadcast_to",
     # "expand_dims",
-    # "permute_dims",
+    "permute_dims",
     # "squeeze",
     # "take",
     # "put",
