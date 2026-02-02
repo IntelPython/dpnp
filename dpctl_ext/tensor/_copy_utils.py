@@ -33,6 +33,11 @@ import numpy as np
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
 
+__doc__ = (
+    "Implementation module for copy- and cast- operations on "
+    ":class:`dpctl.tensor.usm_ndarray`."
+)
+
 
 def _copy_to_numpy(ary):
     if not isinstance(ary, dpt.usm_ndarray):
