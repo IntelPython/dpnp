@@ -60,7 +60,15 @@ from dpctl.tensor._tensor_impl import default_device_fp_type
 # import dpctl.tensor._flags as _flags
 # when dpctl.tensor is removed from dpctl
 from . import _flags
-from ._dlpack import get_build_dlpack_version
+
+# from ._dlpack import get_build_dlpack_version
+try:
+    from ._dlpack import get_build_dlpack_version
+except Exception:
+    # _dlpack may still be initializing when imported via cimport in _dlpack.pxd
+    def get_build_dlpack_version():
+        from . import _dlpack
+        return _dlpack.get_build_dlpack_version()
 
 include "_stride_utils.pxi"
 include "_types.pxi"
