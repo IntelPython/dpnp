@@ -336,3 +336,4 @@ if(DEFINED SKBUILD)
 endif()
 
 add_subdirectory(dpnp)
+add_subdirectory(dpctl_ext)
