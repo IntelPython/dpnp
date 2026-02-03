@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,16 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-set(python_module_name _window_impl)
-set(_module_src
-    ${CMAKE_CURRENT_SOURCE_DIR}/kaiser.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/window_py.cpp
-)
-
-pybind11_add_module(${python_module_name} MODULE ${_module_src})
-add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
-
-if(_dpnp_sycl_targets)
-    # make fat binary
-    target_compile_options(
-        ${python_module_name}
-        PRIVATE ${_dpnp_sycl_target_compile_options}
-    )
-    target_link_options(${python_module_name} PRIVATE ${_dpnp_sycl_target_link_options})
-endif()
+file(GLOB _cython_sources *.pyx)
+foreach(_cy_file ${_cython_sources})
+    get_filename_component(_trgt ${_cy_file} NAME_WLE)
+    build_dpctl_ext(${_trgt} ${_cy_file} "dpctl_ext/tensor" RELATIVE_PATH "..")
+    target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    # target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)
+endforeach()
 
 if(WIN32)
-    if(${CMAKE_VERSION} VERSION_LESS "3.27")
+    if(${CMAKE_VERSION} VERSION_LESS "3.23")
         # this is a work-around for target_link_options inserting option after -link option, cause
         # linker to ignore it.
         set(CMAKE_CXX_LINK_FLAGS
@@ -55,47 +45,9 @@ if(WIN32)
     endif()
 endif()
 
-set_target_properties(
-    ${python_module_name}
-    PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON
-)
+# TODO: add missing lines
 
-target_include_directories(
-    ${python_module_name}
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../
-        ${CMAKE_CURRENT_SOURCE_DIR}/../common
-        ${CMAKE_SOURCE_DIR}/dpnp/backend/include
-        ${CMAKE_SOURCE_DIR}/dpctl_ext/tensor/libtensor/include
-)
-target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIR})
-
+set(_clang_prefix "")
 if(WIN32)
-    target_compile_options(
-        ${python_module_name}
-        PRIVATE /clang:-fno-approx-func /clang:-fno-finite-math-only
-    )
-else()
-    target_compile_options(
-        ${python_module_name}
-        PRIVATE -fno-approx-func -fno-finite-math-only
-    )
+    set(_clang_prefix "/clang:")
 endif()
-
-target_link_options(${python_module_name} PUBLIC -fsycl-device-code-split=per_kernel)
-
-if(DPNP_GENERATE_COVERAGE)
-    target_link_options(
-        ${python_module_name}
-        PRIVATE -fprofile-instr-generate -fcoverage-mapping
-    )
-endif()
-
-if(DPNP_WITH_REDIST)
-    set_target_properties(
-        ${python_module_name}
-        PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../../../"
-    )
-endif()
-
-install(TARGETS ${python_module_name} DESTINATION "dpnp/backend/extensions/window")

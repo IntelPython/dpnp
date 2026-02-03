@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,42 +25,3 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
-
-import skbuild
-import versioneer
-
-skbuild.setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=[
-        "dpnp",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.exceptions",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.memory",
-        "dpnp.random",
-        "dpnp.scipy",
-        "dpnp.scipy.linalg",
-        "dpnp.scipy.special",
-        # dpctl_ext
-        "dpctl_ext",
-        "dpctl_ext.tensor",
-    ],
-    package_data={
-        "dpnp": [
-            "backend/include/*.hpp",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "tests/*.*",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-            "tests/third_party/cupyx/*.py",
-            "tests/third_party/cupyx/*/*.py",
-        ]
-    },
-    include_package_data=False,
-)

@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,41 +26,53 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import skbuild
-import versioneer
+# TODO: revert to `import dpctl.tensor as dpt`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt
 
-skbuild.setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=[
-        "dpnp",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.exceptions",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.memory",
-        "dpnp.random",
-        "dpnp.scipy",
-        "dpnp.scipy.linalg",
-        "dpnp.scipy.special",
-        # dpctl_ext
-        "dpctl_ext",
-        "dpctl_ext.tensor",
-    ],
-    package_data={
-        "dpnp": [
-            "backend/include/*.hpp",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "tests/*.*",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-            "tests/third_party/cupyx/*.py",
-            "tests/third_party/cupyx/*/*.py",
-        ]
-    },
-    include_package_data=False,
+from ._numpy_helper import normalize_axis_tuple
+
+__doc__ = (
+    "Implementation module for array manipulation "
+    "functions in :module:`dpctl.tensor`"
 )
+
+
+def permute_dims(X, /, axes):
+    """permute_dims(x, axes)
+
+    Permute the axes (dimensions) of an array; returns the permuted
+    array as a view.
+
+    Args:
+        x (usm_ndarray): input array.
+        axes (Tuple[int, ...]): tuple containing permutation of
+           `(0,1,...,N-1)` where `N` is the number of axes (dimensions)
+           of `x`.
+    Returns:
+        usm_ndarray:
+            An array with permuted axes.
+            The returned array must has the same data type as `x`,
+            is created on the same device as `x` and has the same USM allocation
+            type as `x`.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+
+    axes = normalize_axis_tuple(axes, X.ndim, "axes")
+    if not X.ndim == len(axes):
+        raise ValueError(
+            "The length of the passed axes does not match "
+            "to the number of usm_ndarray dimensions."
+        )
+
+    newstrides = tuple(X.strides[i] for i in axes)
+    newshape = tuple(X.shape[i] for i in axes)
+
+    return dpt.usm_ndarray(
+        shape=newshape,
+        dtype=X.dtype,
+        buffer=X,
+        strides=newstrides,
+        offset=X._element_offset,
+    )

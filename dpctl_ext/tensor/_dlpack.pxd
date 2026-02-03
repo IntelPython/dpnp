@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,41 +26,48 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import skbuild
-import versioneer
+# distutils: language = c++
+# cython: language_level=3
+# cython: linetrace=True
 
-skbuild.setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=[
-        "dpnp",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.exceptions",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.memory",
-        "dpnp.random",
-        "dpnp.scipy",
-        "dpnp.scipy.linalg",
-        "dpnp.scipy.special",
-        # dpctl_ext
-        "dpctl_ext",
-        "dpctl_ext.tensor",
-    ],
-    package_data={
-        "dpnp": [
-            "backend/include/*.hpp",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "tests/*.*",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-            "tests/third_party/cupyx/*.py",
-            "tests/third_party/cupyx/*/*.py",
-        ]
-    },
-    include_package_data=False,
-)
+cdef extern from "numpy/npy_no_deprecated_api.h":
+    pass
+from dpctl._sycl_device cimport SyclDevice
+from numpy cimport ndarray
+
+from ._usmarray cimport usm_ndarray
+
+
+cdef extern from "dlpack/dlpack.h" nogil:
+    int device_CPU "kDLCPU"
+    int device_CUDA "kDLCUDA"
+    int device_CUDAHost "kDLCUDAHost"
+    int device_CUDAManaged "kDLCUDAManaged"
+    int device_DLROCM "kDLROCM"
+    int device_ROCMHost "kDLROCMHost"
+    int device_OpenCL "kDLOpenCL"
+    int device_Vulkan "kDLVulkan"
+    int device_Metal "kDLMetal"
+    int device_VPI "kDLVPI"
+    int device_OneAPI "kDLOneAPI"
+    int device_WebGPU "kDLWebGPU"
+    int device_Hexagon "kDLHexagon"
+    int device_MAIA "kDLMAIA"
+    int device_Trn "kDLTrn"
+
+cpdef object to_dlpack_capsule(usm_ndarray array) except +
+cpdef object to_dlpack_versioned_capsule(
+    usm_ndarray array, bint copied
+) except +
+cpdef object numpy_to_dlpack_versioned_capsule(
+    ndarray array, bint copied
+) except +
+cpdef object from_dlpack_capsule(object dltensor) except +
+
+cdef class DLPackCreationError(Exception):
+    """
+    A DLPackCreateError exception is raised when constructing
+    DLPack capsule from `usm_ndarray` based on a USM allocation
+    on a partitioned SYCL device.
+    """
+    pass

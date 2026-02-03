@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,41 +26,19 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import skbuild
-import versioneer
+import numpy as np
 
-skbuild.setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=[
-        "dpnp",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.exceptions",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.memory",
-        "dpnp.random",
-        "dpnp.scipy",
-        "dpnp.scipy.linalg",
-        "dpnp.scipy.special",
-        # dpctl_ext
-        "dpctl_ext",
-        "dpctl_ext.tensor",
-    ],
-    package_data={
-        "dpnp": [
-            "backend/include/*.hpp",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "tests/*.*",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-            "tests/third_party/cupyx/*.py",
-            "tests/third_party/cupyx/*/*.py",
-        ]
-    },
-    include_package_data=False,
-)
+_npver = np.lib.NumpyVersion(np.__version__)
+
+if _npver < "1.25.0":  # pragma: no cover
+    from numpy import AxisError
+else:
+    from numpy.exceptions import AxisError
+
+if _npver >= "2.0.0":
+    from numpy._core.numeric import normalize_axis_index, normalize_axis_tuple
+else:  # pragma: no cover
+    from numpy.core.numeric import normalize_axis_index, normalize_axis_tuple
+
+
+__all__ = ["AxisError", "normalize_axis_index", "normalize_axis_tuple"]
