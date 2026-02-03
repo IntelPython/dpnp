@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev2+16.g2dadca097ae documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev2+17.g665bbc7b684 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5b7af1d6"></script>
+      <script src="../../_static/documentation_options.js?v=4a91de6c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -3839,14 +3839,12 @@
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_check_nan_inf</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_nan_inf</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">val_dt</span><span class="p">):</span>
         <span class="c1"># Python boolean is a subtype of an integer</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="n">val</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-                <span class="n">val</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+                <span class="n">val</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">val_dt</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must not be of a complex type&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">val</span>
 
     <span class="n">x_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span>
@@ -3855,11 +3853,18 @@
 
     <span class="n">max_f</span><span class="p">,</span> <span class="n">min_f</span> <span class="o">=</span> <span class="n">_get_max_min</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 
-    <span class="n">nan</span> <span class="o">=</span> <span class="n">_check_nan_inf</span><span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="s2">&quot;nan&quot;</span><span class="p">)</span>
+    <span class="c1"># get dtype of nan and infs values if casting required</span>
+    <span class="n">is_complex</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x_type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_complex</span><span class="p">:</span>
+        <span class="n">val_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">val_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+
+    <span class="n">nan</span> <span class="o">=</span> <span class="n">_check_nan_inf</span><span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="n">val_dt</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">posinf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">max_f</span> <span class="o">=</span> <span class="n">_check_nan_inf</span><span class="p">(</span><span class="n">posinf</span><span class="p">,</span> <span class="s2">&quot;posinf&quot;</span><span class="p">)</span>
+        <span class="n">max_f</span> <span class="o">=</span> <span class="n">_check_nan_inf</span><span class="p">(</span><span class="n">posinf</span><span class="p">,</span> <span class="n">val_dt</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">neginf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">min_f</span> <span class="o">=</span> <span class="n">_check_nan_inf</span><span class="p">(</span><span class="n">neginf</span><span class="p">,</span> <span class="s2">&quot;neginf&quot;</span><span class="p">)</span>
+        <span class="n">min_f</span> <span class="o">=</span> <span class="n">_check_nan_inf</span><span class="p">(</span><span class="n">neginf</span><span class="p">,</span> <span class="n">val_dt</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -3891,7 +3896,7 @@
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
     <span class="c1"># handle a common case with broadcasting of input nan and infs</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x_type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">is_complex</span><span class="p">:</span>
         <span class="n">parts</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
         <span class="n">parts_out</span> <span class="o">=</span> <span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
