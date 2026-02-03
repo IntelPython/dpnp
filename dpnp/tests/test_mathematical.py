@@ -1480,10 +1480,11 @@ class TestNanToNum:
         expected = numpy.nan_to_num(a)
         assert_allclose(result, expected)
 
+    @pytest.mark.parametrize("dt", get_float_complex_dtypes())
     @pytest.mark.parametrize("kw_name", ["nan", "posinf", "neginf"])
-    @pytest.mark.parametrize("val", [[1, 2, -1, -2, 7], (7,), numpy.array(1)])
-    def test_nan_infs_array_like(self, kw_name, val):
-        a = numpy.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf])
+    @pytest.mark.parametrize("val", [[1, 2, -1, -2, 7], (7.0,), numpy.array(1)])
+    def test_nan_infs_array_like(self, dt, kw_name, val):
+        a = numpy.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf], dtype=dt)
         ia = dpnp.array(a)
 
         result = dpnp.nan_to_num(ia, **{kw_name: val})
@@ -1494,7 +1495,7 @@ class TestNanToNum:
     @pytest.mark.parametrize("kw_name", ["nan", "posinf", "neginf"])
     def test_nan_infs_complex_dtype(self, xp, kw_name):
         ia = xp.array([0, 1, xp.nan, xp.inf, -xp.inf])
-        with pytest.raises((TypeError, ValueError), match="complex.*type"):
+        with pytest.raises(TypeError, match="complex"):
             xp.nan_to_num(ia, **{kw_name: 1j})
 
     def test_numpy_input_array(self):

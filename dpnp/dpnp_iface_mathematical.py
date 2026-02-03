@@ -3719,14 +3719,12 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
 
     dpnp.check_supported_arrays_type(x)
 
-    def _check_nan_inf(val, name):
+    def _check_nan_inf(val, val_dt):
         # Python boolean is a subtype of an integer
         if not isinstance(val, (int, float)):
             val = dpnp.asarray(
-                val, sycl_queue=x.sycl_queue, usm_type=x.usm_type
+                val, dtype=val_dt, sycl_queue=x.sycl_queue, usm_type=x.usm_type
             )
-            if dpnp.issubdtype(val.dtype, dpnp.complexfloating):
-                raise TypeError(f"{name} must not be of a complex type")
         return val
 
     x_type = x.dtype.type
@@ -3735,11 +3733,18 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
 
     max_f, min_f = _get_max_min(x.real.dtype)
 
-    nan = _check_nan_inf(nan, "nan")
+    # get dtype of nan and infs values if casting required
+    is_complex = dpnp.issubdtype(x_type, dpnp.complexfloating)
+    if is_complex:
+        val_dt = x.real.dtype
+    else:
+        val_dt = x.dtype
+
+    nan = _check_nan_inf(nan, val_dt)
     if posinf is not None:
-        max_f = _check_nan_inf(posinf, "posinf")
+        max_f = _check_nan_inf(posinf, val_dt)
     if neginf is not None:
-        min_f = _check_nan_inf(neginf, "neginf")
+        min_f = _check_nan_inf(neginf, val_dt)
 
     if copy:
         out = dpnp.empty_like(x)
@@ -3771,7 +3776,7 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
         return dpnp.get_result_array(out)
 
     # handle a common case with broadcasting of input nan and infs
-    if dpnp.issubdtype(x_type, dpnp.complexfloating):
+    if is_complex:
         parts = (x.real, x.imag)
         parts_out = (out.real, out.imag)
     else:
