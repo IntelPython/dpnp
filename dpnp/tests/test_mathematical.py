@@ -1480,37 +1480,34 @@ class TestNanToNum:
         expected = numpy.nan_to_num(a)
         assert_allclose(result, expected)
 
-    def test_errors(self):
-        ia = dpnp.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf])
+    @pytest.mark.parametrize("kw_name", ["nan", "posinf", "neginf"])
+    @pytest.mark.parametrize("val", [[1, 2, -1, -2, 7], (7,), numpy.array(1)])
+    def test_nan_infs_array_like(self, kw_name, val):
+        a = numpy.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf])
+        ia = dpnp.array(a)
 
-        # unsupported type `a`
-        a = dpnp.asnumpy(ia)
-        assert_raises(TypeError, dpnp.nan_to_num, a)
+        result = dpnp.nan_to_num(ia, **{kw_name: val})
+        expected = numpy.nan_to_num(a, **{kw_name: val})
+        assert_allclose(result, expected)
 
-        # unsupported type `nan`
-        i_nan = dpnp.array(1)
-        assert_raises(TypeError, dpnp.nan_to_num, ia, nan=i_nan)
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("kw_name", ["nan", "posinf", "neginf"])
+    def test_nan_infs_complex_dtype(self, xp, kw_name):
+        ia = xp.array([0, 1, xp.nan, xp.inf, -xp.inf])
+        with pytest.raises((TypeError, ValueError), match="complex.*type"):
+            xp.nan_to_num(ia, **{kw_name: 1j})
 
-        # unsupported type `posinf`
-        i_posinf = dpnp.array(1)
-        assert_raises(TypeError, dpnp.nan_to_num, ia, posinf=i_posinf)
+    def test_numpy_input_array(self):
+        a = numpy.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf])
+        with pytest.raises(TypeError, match="must be any of supported type"):
+            dpnp.nan_to_num(a)
 
-        # unsupported type `neginf`
-        i_neginf = dpnp.array(1)
-        assert_raises(TypeError, dpnp.nan_to_num, ia, neginf=i_neginf)
-
-    @pytest.mark.parametrize("kwarg", ["nan", "posinf", "neginf"])
-    @pytest.mark.parametrize("value", [1 - 0j, [1, 2], (1,)])
-    def test_errors_diff_types(self, kwarg, value):
-        ia = dpnp.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf])
-        with pytest.raises(TypeError):
-            dpnp.nan_to_num(ia, **{kwarg: value})
-
-    def test_error_readonly(self):
-        a = dpnp.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf])
-        a.flags.writable = False
-        with pytest.raises(ValueError):
-            dpnp.nan_to_num(a, copy=False)
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_error_readonly(self, xp):
+        a = xp.array([0, 1, xp.nan, xp.inf, -xp.inf])
+        a.flags["W"] = False
+        with pytest.raises(ValueError, match="read-only"):
+            xp.nan_to_num(a, copy=False)
 
     @pytest.mark.parametrize("copy", [True, False])
     @pytest.mark.parametrize("dt", get_all_dtypes(no_bool=True, no_none=True))
@@ -1522,9 +1519,9 @@ class TestNanToNum:
         if dt.kind in "fc":
             a[::4] = numpy.nan
             ia[::4] = dpnp.nan
+
         result = dpnp.nan_to_num(ia[::-2], copy=copy, nan=57.0)
         expected = numpy.nan_to_num(a[::-2], copy=copy, nan=57.0)
-
         assert_dtype_allclose(result, expected)
 
 
