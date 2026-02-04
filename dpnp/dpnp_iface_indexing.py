@@ -734,7 +734,7 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
         out_offset = st_m // a.itemsize * offset
     else:
         out_shape = a_shape[:-2] + (0,)
-        out_strides = a_straides[:-2] + (1,)
+        out_strides = a_straides[:-2] + (a.itemsize,)
         out_offset = 0
 
     return dpnp_array(
