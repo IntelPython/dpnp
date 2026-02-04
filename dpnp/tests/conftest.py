@@ -96,9 +96,16 @@ def _origin_from_filename(filename: str) -> str:
         return "third_party"
 
 _warn_counts = Counter()
-_warn_examples = {}
+_warn_events = {}
 _warn_totals = Counter()
 _warn_env = {}
+_warn_events_fp = None
+_warn_events_file = None
+_warn_print_events = os.getenv("DPNP_INFRA_WARNINGS_PRINT", "0") == "1"
+
+
+def _json_dumps_one_line(obj) -> str:
+    return json.dumps(obj, separators=(",", ":"))
 
 def pytest_configure(config):
     # By default, tests marked as slow will be deselected.
@@ -151,6 +158,28 @@ def pytest_configure(config):
             dpctl_version = "unknown"
             dpctl_path = "unknown"
 
+        global _warn_events_fp
+        global _warn_events_file
+        if DPNP_INFRA_WARNINGS_DIRECTORY:
+            os.makedirs(DPNP_INFRA_WARNINGS_DIRECTORY, exist_ok=True)
+            # Optional override for file name.
+            events_file_override = os.getenv("DPNP_INFRA_WARNINGS_EVENTS_FILE")
+            if events_file_override:
+                _warn_events_file = events_file_override
+            else:
+                _warn_events_file = os.path.join(
+                    DPNP_INFRA_WARNINGS_DIRECTORY,
+                    "dpnp_infra_warnings_events.jsonl",
+                )
+            # Line-buffered for streaming CI artifacts without holding everything in memory.
+            _warn_events_fp = open(
+                _warn_events_file,
+                "w",
+                encoding="utf-8",
+                buffering=1,
+                newline="\n",
+            )
+
         _warn_env.update({
             "numpy_version": numpy_version,
             "numpy_path": numpy_path,
@@ -161,6 +190,7 @@ def pytest_configure(config):
             "job": os.getenv("JOB_NAME", "unknown"),
             "build_number": os.getenv("BUILD_NUMBER", "unknown"),
             "git_sha": os.getenv("GIT_COMMIT", "unknown"),
+            "events_file": _warn_events_file,
         })
 
 
@@ -313,8 +343,8 @@ def pytest_warning_recorded(warning_message, when, nodeid, location):
     _warn_totals[f"origin::{origin}"] += 1
     _warn_totals[f"phase::{when}"] += 1
 
-    if key not in _warn_examples:
-        _warn_examples[key] = {
+    if key not in _warn_events:
+        _warn_events[key] = {
             "category": category,
             "origin": origin,
             "when": when,
@@ -324,6 +354,33 @@ def pytest_warning_recorded(warning_message, when, nodeid, location):
             "function": func,
             "message": msg,
         }
+
+    event = {
+        "when": when,
+        "nodeid": nodeid,
+        "category": category,
+        "origin": origin,
+        "message": msg,
+        "filename": filename,
+        "lineno": lineno,
+        "function": func,
+    }
+
+    # Write every warning event to artifact (JSONL).
+    if _warn_events_fp is not None:
+        try:
+            _warn_events_fp.write(_json_dumps_one_line(event) + "\n")
+        except Exception:
+            # Never break the test run due to artifact IO.
+            pass
+
+    # Optionally print every warning event to console (one-line JSON).
+    if _warn_print_events:
+        try:
+            sys.stderr.write("DPNP_WARNING_EVENT " + _json_dumps_one_line(event) + "\n")
+            sys.stderr.flush()
+        except Exception:
+            pass
 
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
@@ -338,9 +395,9 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         "unique_warning_types": len(_warn_counts),
         "totals": dict(_warn_totals),
         "top_unique_warnings": [
-            dict(_warn_examples[k], count=c)
+            dict(_warn_events[k], count=c)
             for k, c in _warn_counts.most_common(50)
-            if k in _warn_examples
+            if k in _warn_events
         ],
     }
 
@@ -360,6 +417,24 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
                 f"Failed to write DPNP infrastructure warnings summary to: {output_file}. Error: {e}"
             )
 
+    global _warn_events_fp
+    if _warn_events_fp is not None:
+        try:
+            _warn_events_fp.close()
+        except Exception:
+            pass
+        _warn_events_fp = None
+
     terminalreporter.write_line("DPNP_WARNINGS_SUMMARY_BEGIN")
-    terminalreporter.write_line(json.dumps(summary, sort_keys=True))
+    terminalreporter.write_line(_json_dumps_one_line(summary))
     terminalreporter.write_line("DPNP_WARNINGS_SUMMARY_END")
+
+
+def pytest_unconfigure(config):
+    global _warn_events_fp
+    if _warn_events_fp is not None:
+        try:
+            _warn_events_fp.close()
+        except Exception:
+            pass
+        _warn_events_fp = None
