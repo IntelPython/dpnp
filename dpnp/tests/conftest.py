@@ -28,11 +28,14 @@
 
 import os
 import sys
+import json
 import warnings
 
 import dpctl
 import numpy
 import pytest
+
+from collections import Counter
 
 from . import config as dtype_config
 
@@ -78,6 +81,24 @@ def normalize_test_name(nodeid):
 
     return normalized_nodeid
 
+DPNP_INFRA_WARNINGS_ENABLE = os.getenv("DPNP_INFRA_WARNINGS_ENABLE", "0") == "1"
+DPNP_INFRA_WARNINGS_DIRECTORY = os.getenv("DPNP_INFRA_WARNINGS_DIRECTORY", None)
+
+def _origin_from_filename(filename: str) -> str:
+    file = (filename or "").replace("\\", "/")
+    if "/dpnp/" in file or file.startswith("dpnp/"):
+        return "dpnp"
+    elif "/numpy/" in file or file.startswith("numpy/"):
+        return "numpy"
+    elif "/dpctl/" in file or file.startswith("dpctl/"):
+        return "dpctl"
+    else:
+        return "third_party"
+
+_warn_counts = Counter()
+_warn_examples = {}
+_warn_totals = Counter()
+_warn_env = {}
 
 def pytest_configure(config):
     # By default, tests marked as slow will be deselected.
@@ -113,6 +134,34 @@ def pytest_configure(config):
         "filterwarnings",
         "ignore:invalid value encountered in arccosh:RuntimeWarning",
     )
+
+    if DPNP_INFRA_WARNINGS_ENABLE:
+        try:
+            numpy_version = numpy.__version__
+            numpy_path = getattr(numpy, "__file__", "unknown")
+            dpnp_version = dpnp.__version__
+            dpnp_path = getattr(dpnp, "__file__", "unknown")
+            dpctl_version = dpctl.__version__
+            dpctl_path = getattr(dpctl, "__file__", "unknown")
+        except Exception:
+            numpy_version = "unknown"
+            dpnp_version = "unknown"
+            numpy_path = "unknown"
+            dpnp_path = "unknown"
+            dpctl_version = "unknown"
+            dpctl_path = "unknown"
+
+        _warn_env.update({
+            "numpy_version": numpy_version,
+            "numpy_path": numpy_path,
+            "dpnp_version": dpnp_version,
+            "dpnp_path": dpnp_path,
+            "dpctl_version": dpctl_version,
+            "dpctl_path": dpctl_path,
+            "job": os.getenv("JOB_NAME", "unknown"),
+            "build_number": os.getenv("BUILD_NUMBER", "unknown"),
+            "git_sha": os.getenv("GIT_COMMIT", "unknown"),
+        })
 
 
 def pytest_collection_modifyitems(config, items):
@@ -236,3 +285,81 @@ def suppress_divide_invalid_numpy_warnings(
     suppress_divide_numpy_warnings, suppress_invalid_numpy_warnings
 ):
     yield
+
+
+def pytest_warning_recorded(warning_message, when, nodeid, location):
+    if not DPNP_INFRA_WARNINGS_ENABLE:
+        return
+
+    category = getattr(
+        getattr(warning_message, "category", None),
+        "__name__",
+        str(getattr(warning_message, "category", "Warning")),
+    )
+    msg = str(getattr(warning_message, "message", warning_message))
+
+    filename = getattr(warning_message, "filename", None) or (
+        location[0] if location and len(location) > 0 else None
+    )
+    lineno = getattr(warning_message, "lineno", None) or (
+        location[1] if location and len(location) > 1 else None
+    )
+    func = location[2] if location and len(location) > 2 else None
+
+    origin = _origin_from_filename(filename or "")
+    key = f"{category}||{origin}||{msg}"
+    _warn_counts[key] += 1
+    _warn_totals[f"category::{category}"] += 1
+    _warn_totals[f"origin::{origin}"] += 1
+    _warn_totals[f"phase::{when}"] += 1
+
+    if key not in _warn_examples:
+        _warn_examples[key] = {
+            "category": category,
+            "origin": origin,
+            "when": when,
+            "nodeid": nodeid,
+            "filename": filename,
+            "lineno": lineno,
+            "function": func,
+            "message": msg,
+        }
+
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    if not DPNP_INFRA_WARNINGS_ENABLE:
+        return
+
+    summary = {
+        "schema_version": "1.0",
+        "exit_status": exitstatus,
+        "environment": dict(_warn_env),
+        "total_warning_events": sum(_warn_counts.values()),
+        "unique_warning_types": len(_warn_counts),
+        "totals": dict(_warn_totals),
+        "top_unique_warnings": [
+            dict(_warn_examples[k], count=c)
+            for k, c in _warn_counts.most_common(50)
+            if k in _warn_examples
+        ],
+    }
+
+    if DPNP_INFRA_WARNINGS_DIRECTORY:
+        os.makedirs(DPNP_INFRA_WARNINGS_DIRECTORY, exist_ok=True)
+        output_file = os.path.join(
+            DPNP_INFRA_WARNINGS_DIRECTORY, "dpnp_infra_warnings_summary.json"
+        )
+        try:
+            with open(output_file, "w", encoding="utf-8") as f:
+                json.dump(summary, f, indent=2, sort_keys=True)
+            terminalreporter.write_line(
+                f"DPNP infrastructure warnings summary written to: {output_file}"
+            )
+        except Exception as e:
+            terminalreporter.write_line(
+                f"Failed to write DPNP infrastructure warnings summary to: {output_file}. Error: {e}"
+            )
+
+    terminalreporter.write_line("DPNP_WARNINGS_SUMMARY_BEGIN")
+    terminalreporter.write_line(json.dumps(summary, sort_keys=True))
+    terminalreporter.write_line("DPNP_WARNINGS_SUMMARY_END")
