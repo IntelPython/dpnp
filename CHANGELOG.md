@@ -46,6 +46,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Changed the build scripts and documentation due to `python setup.py develop` deprecation notice [#2716](https://github.com/IntelPython/dpnp/pull/2716)
 * Clarified behavior on repeated `axes` in `dpnp.tensordot` and `dpnp.linalg.tensordot` functions [#2733](https://github.com/IntelPython/dpnp/pull/2733)
 * Improved documentation of `file` argument in `dpnp.fromfile` [#2745](https://github.com/IntelPython/dpnp/pull/2745)
+* Aligned `dpnp.trim_zeros` with NumPy 2.4 to support a tuple of integers passed with `axis` keyword [#2746](https://github.com/IntelPython/dpnp/pull/2746)
 * Aligned `strides` property of `dpnp.ndarray` with NumPy and CuPy implementations [#2747](https://github.com/IntelPython/dpnp/pull/2747)
 
 ### Deprecated
