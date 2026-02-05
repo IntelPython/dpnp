@@ -27,12 +27,16 @@
 # *****************************************************************************
 
 
+from dpctl_ext.tensor._ctors import (
+    full,
+)
 from dpctl_ext.tensor._indexing_functions import (
     put,
     take,
 )
 
 __all__ = [
+    "full",
     "put",
     "take",
 ]
