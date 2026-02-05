@@ -83,6 +83,15 @@ def normalize_test_name(nodeid):
 
 DPNP_INFRA_WARNINGS_ENABLE = os.getenv("DPNP_INFRA_WARNINGS_ENABLE", "0") == "1"
 DPNP_INFRA_WARNINGS_DIRECTORY = os.getenv("DPNP_INFRA_WARNINGS_DIRECTORY", None)
+DPNP_INFRA_WARNINGS_EVENTS_ARTIFACT = "dpnp_infra_warnings_events.jsonl"
+DPNP_INFRA_WARNINGS_SUMMARY_ARTIFACT = "dpnp_infra_warnings_summary.json"
+_warn_counts = Counter()
+_warn_events = {}
+_warn_totals = Counter()
+_warn_env = {}
+_warn_events_fp = None
+_WARN_EVENTS_FILE = None
+
 
 def _origin_from_filename(filename: str) -> str:
     file = (filename or "").replace("\\", "/")
@@ -95,17 +104,10 @@ def _origin_from_filename(filename: str) -> str:
     else:
         return "third_party"
 
-_warn_counts = Counter()
-_warn_events = {}
-_warn_totals = Counter()
-_warn_env = {}
-_warn_events_fp = None
-_warn_events_file = None
-_warn_print_events = os.getenv("DPNP_INFRA_WARNINGS_PRINT", "0") == "1"
-
 
 def _json_dumps_one_line(obj) -> str:
     return json.dumps(obj, separators=(",", ":"))
+
 
 def pytest_configure(config):
     # By default, tests marked as slow will be deselected.
@@ -143,6 +145,7 @@ def pytest_configure(config):
     )
 
     if DPNP_INFRA_WARNINGS_ENABLE:
+        # Capture packages information
         try:
             numpy_version = numpy.__version__
             numpy_path = getattr(numpy, "__file__", "unknown")
@@ -159,21 +162,15 @@ def pytest_configure(config):
             dpctl_path = "unknown"
 
         global _warn_events_fp
-        global _warn_events_file
+        global _WARN_EVENTS_FILE
         if DPNP_INFRA_WARNINGS_DIRECTORY:
             os.makedirs(DPNP_INFRA_WARNINGS_DIRECTORY, exist_ok=True)
-            # Optional override for file name.
-            events_file_override = os.getenv("DPNP_INFRA_WARNINGS_EVENTS_FILE")
-            if events_file_override:
-                _warn_events_file = events_file_override
-            else:
-                _warn_events_file = os.path.join(
-                    DPNP_INFRA_WARNINGS_DIRECTORY,
-                    "dpnp_infra_warnings_events.jsonl",
-                )
-            # Line-buffered for streaming CI artifacts without holding everything in memory.
+            _WARN_EVENTS_FILE = os.path.join(
+                DPNP_INFRA_WARNINGS_DIRECTORY,
+                DPNP_INFRA_WARNINGS_EVENTS_ARTIFACT,
+            )
             _warn_events_fp = open(
-                _warn_events_file,
+                _WARN_EVENTS_FILE,
                 "w",
                 encoding="utf-8",
                 buffering=1,
@@ -190,7 +187,7 @@ def pytest_configure(config):
             "job": os.getenv("JOB_NAME", "unknown"),
             "build_number": os.getenv("BUILD_NUMBER", "unknown"),
             "git_sha": os.getenv("GIT_COMMIT", "unknown"),
-            "events_file": _warn_events_file,
+            "events_file": _WARN_EVENTS_FILE,
         })
 
 
@@ -326,7 +323,7 @@ def pytest_warning_recorded(warning_message, when, nodeid, location):
         "__name__",
         str(getattr(warning_message, "category", "Warning")),
     )
-    msg = str(getattr(warning_message, "message", warning_message))
+    message = str(getattr(warning_message, "message", warning_message))
 
     filename = getattr(warning_message, "filename", None) or (
         location[0] if location and len(location) > 0 else None
@@ -337,7 +334,7 @@ def pytest_warning_recorded(warning_message, when, nodeid, location):
     func = location[2] if location and len(location) > 2 else None
 
     origin = _origin_from_filename(filename or "")
-    key = f"{category}||{origin}||{msg}"
+    key = f"{category}||{origin}||{message}"
     _warn_counts[key] += 1
     _warn_totals[f"category::{category}"] += 1
     _warn_totals[f"origin::{origin}"] += 1
@@ -352,7 +349,7 @@ def pytest_warning_recorded(warning_message, when, nodeid, location):
             "filename": filename,
             "lineno": lineno,
             "function": func,
-            "message": msg,
+            "message": message,
         }
 
     event = {
@@ -360,25 +357,15 @@ def pytest_warning_recorded(warning_message, when, nodeid, location):
         "nodeid": nodeid,
         "category": category,
         "origin": origin,
-        "message": msg,
+        "message": message,
         "filename": filename,
         "lineno": lineno,
         "function": func,
     }
 
-    # Write every warning event to artifact (JSONL).
     if _warn_events_fp is not None:
         try:
             _warn_events_fp.write(_json_dumps_one_line(event) + "\n")
-        except Exception:
-            # Never break the test run due to artifact IO.
-            pass
-
-    # Optionally print every warning event to console (one-line JSON).
-    if _warn_print_events:
-        try:
-            sys.stderr.write("DPNP_WARNING_EVENT " + _json_dumps_one_line(event) + "\n")
-            sys.stderr.flush()
         except Exception:
             pass
 
@@ -404,17 +391,19 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     if DPNP_INFRA_WARNINGS_DIRECTORY:
         os.makedirs(DPNP_INFRA_WARNINGS_DIRECTORY, exist_ok=True)
         output_file = os.path.join(
-            DPNP_INFRA_WARNINGS_DIRECTORY, "dpnp_infra_warnings_summary.json"
+            DPNP_INFRA_WARNINGS_DIRECTORY, DPNP_INFRA_WARNINGS_SUMMARY_ARTIFACT
         )
         try:
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(summary, f, indent=2, sort_keys=True)
             terminalreporter.write_line(
-                f"DPNP infrastructure warnings summary written to: {output_file}"
+                f"DPNP infrastructure warnings summary written " \
+                f"to: {output_file}"
             )
         except Exception as e:
             terminalreporter.write_line(
-                f"Failed to write DPNP infrastructure warnings summary to: {output_file}. Error: {e}"
+                f"Failed to write DPNP infrastructure warnings" \
+                f" summary to: {output_file}. Error: {e}"
             )
 
     global _warn_events_fp
