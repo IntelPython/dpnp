@@ -430,15 +430,15 @@ PYBIND11_MODULE(_tensor_impl, m)
           "Determines if the memory regions indexed by each array overlap",
           py::arg("array1"), py::arg("array2"));
 
-    // auto same_logical_tensors =
-    //     [](const dpctl::tensor::usm_ndarray &x1,
-    //        const dpctl::tensor::usm_ndarray &x2) -> bool {
-    //     auto const &same_logical_tensors = SameLogicalTensors();
-    //     return same_logical_tensors(x1, x2);
-    // };
-    // m.def("_same_logical_tensors", same_logical_tensors,
-    //       "Determines if the memory regions indexed by each array are the
-    //       same", py::arg("array1"), py::arg("array2"));
+    auto same_logical_tensors =
+        [](const dpctl::tensor::usm_ndarray &x1,
+           const dpctl::tensor::usm_ndarray &x2) -> bool {
+        auto const &same_logical_tensors = SameLogicalTensors();
+        return same_logical_tensors(x1, x2);
+    };
+    m.def("_same_logical_tensors", same_logical_tensors,
+          "Determines if the memory regions indexed by each array are the same",
+          py::arg("array1"), py::arg("array2"));
 
     // m.def("_place", &py_place, "", py::arg("dst"), py::arg("cumsum"),
     //       py::arg("axis_start"), py::arg("axis_end"), py::arg("rhs"),
