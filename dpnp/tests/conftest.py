@@ -44,6 +44,7 @@ else:
 import dpnp
 
 from .helper import get_dev_id
+from .infra_warning_utils import register_infra_warnings_plugin_if_enabled
 
 skip_mark = pytest.mark.skip(reason="Skipping test.")
 
@@ -113,6 +114,8 @@ def pytest_configure(config):
         "filterwarnings",
         "ignore:invalid value encountered in arccosh:RuntimeWarning",
     )
+
+    register_infra_warnings_plugin_if_enabled(config)
 
 
 def pytest_collection_modifyitems(config, items):
