@@ -27,12 +27,19 @@
 # *****************************************************************************
 
 
-from dpctl_ext.tensor._indexing_functions import (
-    put,
-    take,
-)
+import numpy as np
 
-__all__ = [
-    "put",
-    "take",
-]
+_npver = np.lib.NumpyVersion(np.__version__)
+
+if _npver < "1.25.0":  # pragma: no cover
+    from numpy import AxisError
+else:
+    from numpy.exceptions import AxisError
+
+if _npver >= "2.0.0":
+    from numpy._core.numeric import normalize_axis_index, normalize_axis_tuple
+else:  # pragma: no cover
+    from numpy.core.numeric import normalize_axis_index, normalize_axis_tuple
+
+
+__all__ = ["AxisError", "normalize_axis_index", "normalize_axis_tuple"]
