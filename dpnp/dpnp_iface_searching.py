@@ -40,8 +40,8 @@ it contains:
 """
 
 import dpctl.tensor as dpt
-import dpctl.tensor._tensor_impl as dti
 
+import dpctl_ext.tensor._tensor_impl as dti
 import dpnp
 
 from .dpnp_array import dpnp_array

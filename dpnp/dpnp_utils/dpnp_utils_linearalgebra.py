@@ -28,7 +28,6 @@
 
 import dpctl
 import dpctl.tensor as dpt
-import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._numpy_helper import (
@@ -38,6 +37,7 @@ from dpctl.tensor._numpy_helper import (
 )
 from dpctl.utils import ExecutionPlacementError
 
+import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_array import dpnp_array
