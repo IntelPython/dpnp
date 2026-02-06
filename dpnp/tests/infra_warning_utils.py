@@ -8,13 +8,7 @@ import dpctl
 import numpy
 
 import dpnp
-
-
-def _env_check(var_name: str, *, default: bool = False) -> bool:
-    value = os.getenv(var_name)
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+from . import config as warn_config
 
 
 def _origin_from_filename(filename: str) -> str:
@@ -50,16 +44,10 @@ class DpnpInfraWarningsPlugin:
     EVENT_PREFIX = "DPNP_WARNING_EVENT "
 
     def __init__(self):
-        self.enabled = _env_check("DPNP_INFRA_WARNINGS_ENABLE", default=False)
-        self.directory = os.getenv("DPNP_INFRA_WARNINGS_DIRECTORY", None)
-        self.events_artifact = os.getenv(
-            "DPNP_INFRA_WARNINGS_EVENTS_ARTIFACT", "dpnp_infra_warnings_events.jsonl"
-        )
-        self.summary_artifact = os.getenv(
-            "DPNP_INFRA_WARNINGS_SUMMARY_ARTIFACT", "dpnp_infra_warnings_summary.json"
-        )
-
-        self.print_events = self.enabled
+        self.enabled = bool(warn_config.infra_warnings_enable)
+        self.directory = warn_config.infra_warnings_directory
+        self.events_artifact = warn_config.infra_warnings_events_artifact
+        self.summary_artifact = warn_config.infra_warnings_summary_artifact
 
         self._counts = Counter()
         self._warnings = {}
@@ -72,21 +60,21 @@ class DpnpInfraWarningsPlugin:
     def pytest_configure(self, config):
         if not self.enabled:
             return
-
-        try:
-            numpy_version = numpy.__version__
-            numpy_path = getattr(numpy, "__file__", "unknown")
-            dpnp_version = dpnp.__version__
-            dpnp_path = getattr(dpnp, "__file__", "unknown")
-            dpctl_version = dpctl.__version__
-            dpctl_path = getattr(dpctl, "__file__", "unknown")
-        except Exception:
-            numpy_version = "unknown"
-            numpy_path = "unknown"
-            dpnp_version = "unknown"
-            dpnp_path = "unknown"
-            dpctl_version = "unknown"
-            dpctl_path = "unknown"
+        
+        self._env.update(
+            {
+                "numpy_version": getattr(numpy, "__version__", "unknown"),
+                "numpy_path": getattr(numpy, "__file__", "unknown"),
+                "dpnp_version": getattr(dpnp, "__version__", "unknown"),
+                "dpnp_path": getattr(dpnp, "__file__", "unknown"),
+                "dpctl_version": getattr(dpctl, "__version__", "unknown"),
+                "dpctl_path": getattr(dpctl, "__file__", "unknown"),
+                "job": os.getenv("JOB_NAME", "unknown"),
+                "build_number": os.getenv("BUILD_NUMBER", "unknown"),
+                "git_sha": os.getenv("GIT_COMMIT", "unknown"),
+                "events_file": self._events_file,
+            }
+        )
 
         if self.directory:
             os.makedirs(self.directory, exist_ok=True)
@@ -99,20 +87,6 @@ class DpnpInfraWarningsPlugin:
                 newline="\n",
             )
 
-        self._env.update(
-            {
-                "numpy_version": numpy_version,
-                "numpy_path": numpy_path,
-                "dpnp_version": dpnp_version,
-                "dpnp_path": dpnp_path,
-                "dpctl_version": dpctl_version,
-                "dpctl_path": dpctl_path,
-                "job": os.getenv("JOB_NAME", "unknown"),
-                "build_number": os.getenv("BUILD_NUMBER", "unknown"),
-                "git_sha": os.getenv("GIT_COMMIT", "unknown"),
-                "events_file": self._events_file,
-            }
-        )
 
     def pytest_warning_recorded(self, warning_message, when, nodeid, location):
         if not self.enabled:
@@ -169,12 +143,12 @@ class DpnpInfraWarningsPlugin:
             except Exception:
                 pass
 
-        if self.print_events:
-            try:
-                sys.stderr.write(self.EVENT_PREFIX + _json_dumps_one_line(event) + "\n")
-                sys.stderr.flush()
-            except Exception:
-                pass
+        #Write the warnings to terminal           
+        try:
+            sys.stderr.write(self.EVENT_PREFIX + _json_dumps_one_line(event) + "\n")
+            sys.stderr.flush()
+        except Exception:
+            pass
 
     def pytest_terminal_summary(self, terminalreporter, exitstatus, config):
         if not self.enabled:
@@ -229,7 +203,7 @@ class DpnpInfraWarningsPlugin:
 def register_infra_warnings_plugin_if_enabled(config) -> None:
     """Register infra warnings plugin if enabled via env var."""
 
-    if not _env_check("DPNP_INFRA_WARNINGS_ENABLE"):
+    if not bool(warn_config.infra_warnings_enable):
         return
 
     plugin_name = "dpnp-infra-warnings"
