@@ -59,9 +59,187 @@ using dpctl::tensor::ssize_t;
  */
 
 template <typename Ty>
+class linear_sequence_step_kernel;
+template <typename Ty, typename wTy>
+class linear_sequence_affine_kernel;
+template <typename Ty>
 class full_strided_kernel;
+// template <typename Ty> class eye_kernel;
 
 using namespace dpctl::tensor::offset_utils;
+
+template <typename Ty>
+class LinearSequenceStepFunctor
+{
+private:
+    Ty *p = nullptr;
+    Ty start_v;
+    Ty step_v;
+
+public:
+    LinearSequenceStepFunctor(char *dst_p, Ty v0, Ty dv)
+        : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), step_v(dv)
+    {
+    }
+
+    void operator()(sycl::id<1> wiid) const
+    {
+        auto i = wiid.get(0);
+        using dpctl::tensor::type_utils::is_complex;
+        if constexpr (is_complex<Ty>::value) {
+            p[i] = Ty{start_v.real() + i * step_v.real(),
+                      start_v.imag() + i * step_v.imag()};
+        }
+        else {
+            p[i] = start_v + i * step_v;
+        }
+    }
+};
+
+/*!
+ * @brief Function to submit kernel to populate given contiguous memory
+ * allocation with linear sequence specified by typed starting value and
+ * increment.
+ *
+ * @param q  Sycl queue to which the kernel is submitted
+ * @param nelems Length of the sequence
+ * @param start_v Typed starting value of the sequence
+ * @param step_v  Typed increment of the sequence
+ * @param array_data Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
+template <typename Ty>
+sycl::event lin_space_step_impl(sycl::queue &exec_q,
+                                std::size_t nelems,
+                                Ty start_v,
+                                Ty step_v,
+                                char *array_data,
+                                const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
+    sycl::event lin_space_step_event = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.parallel_for<linear_sequence_step_kernel<Ty>>(
+            sycl::range<1>{nelems},
+            LinearSequenceStepFunctor<Ty>(array_data, start_v, step_v));
+    });
+
+    return lin_space_step_event;
+}
+
+// Constructor to populate tensor with linear sequence defined by
+// start and and data
+
+template <typename Ty, typename wTy>
+class LinearSequenceAffineFunctor
+{
+private:
+    Ty *p = nullptr;
+    Ty start_v;
+    Ty end_v;
+    std::size_t n;
+
+public:
+    LinearSequenceAffineFunctor(char *dst_p, Ty v0, Ty v1, std::size_t den)
+        : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), end_v(v1),
+          n((den == 0) ? 1 : den)
+    {
+    }
+
+    void operator()(sycl::id<1> wiid) const
+    {
+        auto i = wiid.get(0);
+        wTy wc = wTy(i) / n;
+        wTy w = wTy(n - i) / n;
+        using dpctl::tensor::type_utils::is_complex;
+        if constexpr (is_complex<Ty>::value) {
+            using reT = typename Ty::value_type;
+            auto _w = static_cast<reT>(w);
+            auto _wc = static_cast<reT>(wc);
+            auto re_comb = sycl::fma(start_v.real(), _w, reT(0));
+            re_comb =
+                sycl::fma(end_v.real(), _wc,
+                          re_comb); // start_v.real() * _w + end_v.real() * _wc;
+            auto im_comb =
+                sycl::fma(start_v.imag(), _w,
+                          reT(0)); // start_v.imag() * _w + end_v.imag() * _wc;
+            im_comb = sycl::fma(end_v.imag(), _wc, im_comb);
+            Ty affine_comb = Ty{re_comb, im_comb};
+            p[i] = affine_comb;
+        }
+        else if constexpr (std::is_floating_point<Ty>::value) {
+            Ty _w = static_cast<Ty>(w);
+            Ty _wc = static_cast<Ty>(wc);
+            auto affine_comb =
+                sycl::fma(start_v, _w, Ty(0)); // start_v * w + end_v * wc;
+            affine_comb = sycl::fma(end_v, _wc, affine_comb);
+            p[i] = affine_comb;
+        }
+        else {
+            using dpctl::tensor::type_utils::convert_impl;
+            auto affine_comb = start_v * w + end_v * wc;
+            p[i] = convert_impl<Ty, decltype(affine_comb)>(affine_comb);
+        }
+    }
+};
+
+/*!
+ * @brief Function to submit kernel to populate given contiguous memory
+ * allocation with linear sequence specified by typed starting and end values.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nelems  Length of the sequence.
+ * @param start_v Stating value of the sequence.
+ * @param end_v   End-value of the sequence.
+ * @param include_endpoint  Whether the end-value is included in the sequence.
+ * @param array_data Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
+template <typename Ty>
+sycl::event lin_space_affine_impl(sycl::queue &exec_q,
+                                  std::size_t nelems,
+                                  Ty start_v,
+                                  Ty end_v,
+                                  bool include_endpoint,
+                                  char *array_data,
+                                  const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
+
+    const bool device_supports_doubles =
+        exec_q.get_device().has(sycl::aspect::fp64);
+    const std::size_t den = (include_endpoint) ? nelems - 1 : nelems;
+
+    sycl::event lin_space_affine_event = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        if (device_supports_doubles) {
+            using KernelName = linear_sequence_affine_kernel<Ty, double>;
+            using Impl = LinearSequenceAffineFunctor<Ty, double>;
+
+            cgh.parallel_for<KernelName>(sycl::range<1>{nelems},
+                                         Impl(array_data, start_v, end_v, den));
+        }
+        else {
+            using KernelName = linear_sequence_affine_kernel<Ty, float>;
+            using Impl = LinearSequenceAffineFunctor<Ty, float>;
+
+            cgh.parallel_for<KernelName>(sycl::range<1>{nelems},
+                                         Impl(array_data, start_v, end_v, den));
+        }
+    });
+
+    return lin_space_affine_event;
+}
 
 /* ================ Full ================== */
 

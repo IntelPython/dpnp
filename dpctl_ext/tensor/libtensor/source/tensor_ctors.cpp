@@ -57,7 +57,7 @@
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
 #include "kernels/dpctl_tensor_types.hpp"
-// #include "linear_sequences.hpp"
+#include "linear_sequences.hpp"
 // #include "repeat.hpp"
 #include "simplify_iteration_space.hpp"
 // #include "triul_ctor.hpp"
@@ -98,8 +98,8 @@ using dpctl::tensor::py_internal::py_as_f_contig;
 
 /* ============= linear-sequence ==================== */
 
-// using dpctl::tensor::py_internal::usm_ndarray_linear_sequence_affine;
-// using dpctl::tensor::py_internal::usm_ndarray_linear_sequence_step;
+using dpctl::tensor::py_internal::usm_ndarray_linear_sequence_affine;
+using dpctl::tensor::py_internal::usm_ndarray_linear_sequence_step;
 
 /* ================ Full ================== */
 
@@ -158,7 +158,7 @@ void init_dispatch_vectors(void)
     init_copy_as_contig_dispatch_vectors();
     // init_copy_for_reshape_dispatch_vectors();
     // init_copy_for_roll_dispatch_vectors();
-    // init_linear_sequences_dispatch_vectors();
+    init_linear_sequences_dispatch_vectors();
     init_full_ctor_dispatch_vectors();
     init_zeros_ctor_dispatch_vectors();
     // init_eye_ctor_dispatch_vectors();
@@ -300,22 +300,22 @@ PYBIND11_MODULE(_tensor_impl, m)
     //       py::arg("shifts"), py::arg("sycl_queue"), py::arg("depends") =
     //       py::list());
 
-    // m.def("_linspace_step", &usm_ndarray_linear_sequence_step,
-    //       "Fills input 1D contiguous usm_ndarray `dst` with linear sequence "
-    //       "specified by "
-    //       "starting point `start` and step `dt`. "
-    //       "Returns a tuple of events: (ht_event, comp_event)",
-    //       py::arg("start"), py::arg("dt"), py::arg("dst"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_linspace_step", &usm_ndarray_linear_sequence_step,
+          "Fills input 1D contiguous usm_ndarray `dst` with linear sequence "
+          "specified by "
+          "starting point `start` and step `dt`. "
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("start"), py::arg("dt"), py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    // m.def("_linspace_affine", &usm_ndarray_linear_sequence_affine,
-    //       "Fills input 1D contiguous usm_ndarray `dst` with linear sequence "
-    //       "specified by "
-    //       "starting point `start` and end point `end`. "
-    //       "Returns a tuple of events: (ht_event, comp_event)",
-    //       py::arg("start"), py::arg("end"), py::arg("dst"),
-    //       py::arg("include_endpoint"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    m.def("_linspace_affine", &usm_ndarray_linear_sequence_affine,
+          "Fills input 1D contiguous usm_ndarray `dst` with linear sequence "
+          "specified by "
+          "starting point `start` and end point `end`. "
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("start"), py::arg("end"), py::arg("dst"),
+          py::arg("include_endpoint"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     // m.def("_copy_numpy_ndarray_into_usm_ndarray",
     //       &copy_numpy_ndarray_into_usm_ndarray,
