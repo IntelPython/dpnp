@@ -29,6 +29,8 @@
 
 from dpctl_ext.tensor._ctors import (
     full,
+    tril,
+    triu,
 )
 from dpctl_ext.tensor._indexing_functions import (
     put,
@@ -39,4 +41,6 @@ __all__ = [
     "full",
     "put",
     "take",
+    "tril",
+    "triu",
 ]

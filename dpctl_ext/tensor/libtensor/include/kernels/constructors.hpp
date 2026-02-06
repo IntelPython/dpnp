@@ -343,6 +343,144 @@ sycl::event full_strided_impl(sycl::queue &q,
     return fill_ev;
 }
 
+/* =========================== Tril and triu ============================== */
+
+// define function type
+typedef sycl::event (*tri_fn_ptr_t)(sycl::queue &,
+                                    ssize_t,   // inner_range  //ssize_t
+                                    ssize_t,   // outer_range
+                                    char *,    // src_data_ptr
+                                    char *,    // dst_data_ptr
+                                    ssize_t,   // nd
+                                    ssize_t *, // shape_and_strides
+                                    ssize_t,   // k
+                                    const std::vector<sycl::event> &,
+                                    const std::vector<sycl::event> &);
+
+/*!
+ * @brief Function to copy triangular matrices from source stack to destination
+ * stack.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param inner_range  Number of elements in each matrix.
+ * @param outer_range  Number of matrices to copy.
+ * @param src_p  Kernel accessible USM pointer for the source array.
+ * @param dst_p  Kernel accessible USM pointer for the destination array.
+ * @param nd  The array dimensionality of source and destination arrays.
+ * @param shape_and_strides  Kernel accessible USM pointer to packed shape and
+ * strides of arrays.
+ * @param k Position of the diagonal above/below which to copy filling the rest
+ * with zero elements.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ * @param additional_depends  List of additional events to wait for before
+ * starting computations, if any.
+ *
+ * @return  Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
+template <typename Ty, bool>
+class tri_kernel;
+template <typename Ty, bool upper>
+sycl::event tri_impl(sycl::queue &exec_q,
+                     ssize_t inner_range,
+                     ssize_t outer_range,
+                     char *src_p,
+                     char *dst_p,
+                     ssize_t nd,
+                     ssize_t *shape_and_strides,
+                     ssize_t k,
+                     const std::vector<sycl::event> &depends,
+                     const std::vector<sycl::event> &additional_depends)
+{
+    static constexpr int d2 = 2;
+    ssize_t src_s = nd;
+    ssize_t dst_s = 2 * nd;
+    ssize_t nd_1 = nd - 1;
+    ssize_t nd_2 = nd - 2;
+    Ty *src = reinterpret_cast<Ty *>(src_p);
+    Ty *dst = reinterpret_cast<Ty *>(dst_p);
+
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
+
+    sycl::event tri_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.depends_on(additional_depends);
+
+        cgh.parallel_for<tri_kernel<Ty, upper>>(
+            sycl::range<1>(inner_range * outer_range), [=](sycl::id<1> idx) {
+                ssize_t outer_gid = idx[0] / inner_range;
+                ssize_t inner_gid = idx[0] - inner_range * outer_gid;
+
+                ssize_t src_inner_offset = 0, dst_inner_offset = 0;
+                bool to_copy{false};
+
+                {
+                    using dpctl::tensor::strides::CIndexer_array;
+                    CIndexer_array<d2, ssize_t> indexer_i(
+                        {shape_and_strides[nd_2], shape_and_strides[nd_1]});
+                    indexer_i.set(inner_gid);
+                    const std::array<ssize_t, d2> &inner = indexer_i.get();
+                    src_inner_offset =
+                        inner[0] * shape_and_strides[src_s + nd_2] +
+                        inner[1] * shape_and_strides[src_s + nd_1];
+                    dst_inner_offset =
+                        inner[0] * shape_and_strides[dst_s + nd_2] +
+                        inner[1] * shape_and_strides[dst_s + nd_1];
+
+                    if constexpr (upper)
+                        to_copy = (inner[0] + k >= inner[1]);
+                    else
+                        to_copy = (inner[0] + k <= inner[1]);
+                }
+
+                ssize_t src_offset = 0;
+                ssize_t dst_offset = 0;
+                {
+                    using dpctl::tensor::strides::CIndexer_vector;
+                    CIndexer_vector<ssize_t> outer(nd - d2);
+                    outer.get_displacement(
+                        outer_gid, shape_and_strides, shape_and_strides + src_s,
+                        shape_and_strides + dst_s, src_offset, dst_offset);
+                }
+
+                src_offset += src_inner_offset;
+                dst_offset += dst_inner_offset;
+
+                dst[dst_offset] = (to_copy) ? src[src_offset] : Ty(0);
+            });
+    });
+    return tri_ev;
+}
+
+/*!
+ * @brief  Factory to get function pointer of type `fnT` for data type `Ty`.
+ * @ingroup CtorKernels
+ */
+template <typename fnT, typename Ty>
+struct TrilGenericFactory
+{
+    fnT get()
+    {
+        fnT f = tri_impl<Ty, /*tril*/ true>;
+        return f;
+    }
+};
+
+/*!
+ * @brief  Factory to get function pointer of type `fnT` for data type `Ty`.
+ * @ingroup CtorKernels
+ */
+template <typename fnT, typename Ty>
+struct TriuGenericFactory
+{
+    fnT get()
+    {
+        fnT f = tri_impl<Ty, /*triu*/ false>;
+        return f;
+    }
+};
+
 } // namespace constructors
 } // namespace kernels
 } // namespace tensor

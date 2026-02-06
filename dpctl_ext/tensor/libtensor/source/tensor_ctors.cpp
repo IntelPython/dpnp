@@ -60,7 +60,7 @@
 #include "linear_sequences.hpp"
 // #include "repeat.hpp"
 #include "simplify_iteration_space.hpp"
-// #include "triul_ctor.hpp"
+#include "triul_ctor.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/strided_iters.hpp"
 // #include "where.hpp"
@@ -129,7 +129,7 @@ using dpctl::tensor::py_internal::usm_ndarray_take;
 
 /* =========================== Tril and triu ============================== */
 
-// using dpctl::tensor::py_internal::usm_ndarray_triul;
+using dpctl::tensor::py_internal::usm_ndarray_triul;
 
 /* =========================== Where ============================== */
 
@@ -162,7 +162,7 @@ void init_dispatch_vectors(void)
     init_full_ctor_dispatch_vectors();
     init_zeros_ctor_dispatch_vectors();
     // init_eye_ctor_dispatch_vectors();
-    // init_triul_ctor_dispatch_vectors();
+    init_triul_ctor_dispatch_vectors();
 
     // populate_masked_extract_dispatch_vectors();
     // populate_masked_place_dispatch_vectors();
@@ -388,27 +388,27 @@ PYBIND11_MODULE(_tensor_impl, m)
           dpctl::tensor::py_internal::default_device_index_type,
           "Gives default index type supported by device.", py::arg("dev"));
 
-    // auto tril_fn = [](const dpctl::tensor::usm_ndarray &src,
-    //                   const dpctl::tensor::usm_ndarray &dst, py::ssize_t k,
-    //                   sycl::queue &exec_q,
-    //                   const std::vector<sycl::event> depends)
-    //     -> std::pair<sycl::event, sycl::event> {
-    //     return usm_ndarray_triul(exec_q, src, dst, 'l', k, depends);
-    // };
-    // m.def("_tril", tril_fn, "Tril helper function.", py::arg("src"),
-    //       py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    auto tril_fn = [](const dpctl::tensor::usm_ndarray &src,
+                      const dpctl::tensor::usm_ndarray &dst, py::ssize_t k,
+                      sycl::queue &exec_q,
+                      const std::vector<sycl::event> depends)
+        -> std::pair<sycl::event, sycl::event> {
+        return usm_ndarray_triul(exec_q, src, dst, 'l', k, depends);
+    };
+    m.def("_tril", tril_fn, "Tril helper function.", py::arg("src"),
+          py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
-    // auto triu_fn = [](const dpctl::tensor::usm_ndarray &src,
-    //                   const dpctl::tensor::usm_ndarray &dst, py::ssize_t k,
-    //                   sycl::queue &exec_q,
-    //                   const std::vector<sycl::event> depends)
-    //     -> std::pair<sycl::event, sycl::event> {
-    //     return usm_ndarray_triul(exec_q, src, dst, 'u', k, depends);
-    // };
-    // m.def("_triu", triu_fn, "Triu helper function.", py::arg("src"),
-    //       py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    auto triu_fn = [](const dpctl::tensor::usm_ndarray &src,
+                      const dpctl::tensor::usm_ndarray &dst, py::ssize_t k,
+                      sycl::queue &exec_q,
+                      const std::vector<sycl::event> depends)
+        -> std::pair<sycl::event, sycl::event> {
+        return usm_ndarray_triul(exec_q, src, dst, 'u', k, depends);
+    };
+    m.def("_triu", triu_fn, "Triu helper function.", py::arg("src"),
+          py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     // m.def("mask_positions", &py_mask_positions, "", py::arg("mask"),
     //       py::arg("cumsum"), py::arg("sycl_queue"),

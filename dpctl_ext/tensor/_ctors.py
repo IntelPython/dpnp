@@ -26,6 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import operator
 from numbers import Number
 
 import dpctl
@@ -166,4 +167,160 @@ def full(
     # populating new allocation, no dependent events
     hev, full_ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
     _manager.add_event_pair(hev, full_ev)
+    return res
+
+
+def tril(x, /, *, k=0):
+    """
+    Returns the lower triangular part of a matrix (or a stack of matrices)
+    ``x``.
+
+    The lower triangular part of the matrix is defined as the elements on and
+    below the specified diagonal ``k``.
+
+    Args:
+        x (usm_ndarray):
+            Input array
+        k (int, optional):
+            Specifies the diagonal above which to set
+            elements to zero. If ``k = 0``, the diagonal is the main diagonal.
+            If ``k < 0``, the diagonal is below the main diagonal.
+            If ``k > 0``, the diagonal is above the main diagonal.
+            Default: ``0``
+
+    Returns:
+        usm_ndarray:
+            A lower-triangular array or a stack of lower-triangular arrays.
+    """
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(
+            "Expected argument of type dpctl.tensor.usm_ndarray, "
+            f"got {type(x)}."
+        )
+
+    k = operator.index(k)
+
+    order = "F" if (x.flags.f_contiguous) else "C"
+
+    shape = x.shape
+    nd = x.ndim
+    if nd < 2:
+        raise ValueError("Array dimensions less than 2.")
+
+    q = x.sycl_queue
+    if k >= shape[nd - 1] - 1:
+        res = dpt.empty(
+            x.shape,
+            dtype=x.dtype,
+            order=order,
+            usm_type=x.usm_type,
+            sycl_queue=q,
+        )
+        _manager = dpctl.utils.SequentialOrderManager[q]
+        dep_evs = _manager.submitted_events
+        hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=x, dst=res, sycl_queue=q, depends=dep_evs
+        )
+        _manager.add_event_pair(hev, cpy_ev)
+    elif k < -shape[nd - 2]:
+        res = dpt.zeros(
+            x.shape,
+            dtype=x.dtype,
+            order=order,
+            usm_type=x.usm_type,
+            sycl_queue=q,
+        )
+    else:
+        res = dpt.empty(
+            x.shape,
+            dtype=x.dtype,
+            order=order,
+            usm_type=x.usm_type,
+            sycl_queue=q,
+        )
+        _manager = dpctl.utils.SequentialOrderManager[q]
+        dep_evs = _manager.submitted_events
+        hev, tril_ev = ti._tril(
+            src=x, dst=res, k=k, sycl_queue=q, depends=dep_evs
+        )
+        _manager.add_event_pair(hev, tril_ev)
+
+    return res
+
+
+def triu(x, /, *, k=0):
+    """
+    Returns the upper triangular part of a matrix (or a stack of matrices)
+    ``x``.
+
+    The upper triangular part of the matrix is defined as the elements on and
+    above the specified diagonal ``k``.
+
+    Args:
+        x (usm_ndarray):
+            Input array
+        k (int, optional):
+            Specifies the diagonal below which to set
+            elements to zero. If ``k = 0``, the diagonal is the main diagonal.
+            If ``k < 0``, the diagonal is below the main diagonal.
+            If ``k > 0``, the diagonal is above the main diagonal.
+            Default: ``0``
+
+    Returns:
+        usm_ndarray:
+            An upper-triangular array or a stack of upper-triangular arrays.
+    """
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(
+            "Expected argument of type dpctl.tensor.usm_ndarray, "
+            f"got {type(x)}."
+        )
+
+    k = operator.index(k)
+
+    order = "F" if (x.flags.f_contiguous) else "C"
+
+    shape = x.shape
+    nd = x.ndim
+    if nd < 2:
+        raise ValueError("Array dimensions less than 2.")
+
+    q = x.sycl_queue
+    if k > shape[nd - 1]:
+        res = dpt.zeros(
+            x.shape,
+            dtype=x.dtype,
+            order=order,
+            usm_type=x.usm_type,
+            sycl_queue=q,
+        )
+    elif k <= -shape[nd - 2] + 1:
+        res = dpt.empty(
+            x.shape,
+            dtype=x.dtype,
+            order=order,
+            usm_type=x.usm_type,
+            sycl_queue=q,
+        )
+        _manager = dpctl.utils.SequentialOrderManager[q]
+        dep_evs = _manager.submitted_events
+        hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=x, dst=res, sycl_queue=q, depends=dep_evs
+        )
+        _manager.add_event_pair(hev, cpy_ev)
+    else:
+        res = dpt.empty(
+            x.shape,
+            dtype=x.dtype,
+            order=order,
+            usm_type=x.usm_type,
+            sycl_queue=q,
+        )
+        _manager = dpctl.utils.SequentialOrderManager[q]
+        dep_evs = _manager.submitted_events
+        hev, triu_ev = ti._triu(
+            src=x, dst=res, k=k, sycl_queue=q, depends=dep_evs
+        )
+        _manager.add_event_pair(hev, triu_ev)
+
     return res
