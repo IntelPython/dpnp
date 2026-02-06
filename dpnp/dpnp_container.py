@@ -38,6 +38,7 @@ This module contains code and dependency on different containers used in DPNP
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
 
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 from dpnp.dpnp_array import dpnp_array
 
@@ -228,7 +229,7 @@ def full(
         fill_value = fill_value.get_array()
 
     """Creates `dpnp_array` having a specified shape, filled with fill_value."""
-    array_obj = dpt.full(
+    array_obj = dpt_ext.full(
         shape,
         fill_value,
         dtype=dtype,
