@@ -42,7 +42,6 @@ available as a pybind11 extension.
 from collections.abc import Sequence
 
 import dpctl
-import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._numpy_helper import (
@@ -51,6 +50,7 @@ from dpctl.tensor._numpy_helper import (
 )
 from dpctl.utils import ExecutionPlacementError
 
+import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.fft._fft_impl as fi
 
