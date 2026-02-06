@@ -32,3 +32,5 @@ dpnp/**/*.cpython*.so
 dpnp/**/*.pyd
 *~
 core
+
+dpctl_ext/**/*.cpython*.so
