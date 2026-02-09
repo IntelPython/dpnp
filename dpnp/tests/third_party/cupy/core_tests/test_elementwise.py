@@ -6,8 +6,6 @@ import pytest
 import dpnp as cupy
 from dpnp.tests.helper import (
     has_support_aspect64,
-    is_win_platform,
-    numpy_version,
 )
 from dpnp.tests.third_party.cupy import testing
 
@@ -67,10 +65,10 @@ class TestElementwise:
         a = cupy.empty((2, 3, 4))
         b = cupy.copy(a, order)
 
-        a_cpu = numpy.empty((2, 3, 4))
+        a_cpu = numpy.empty((2, 3, 4), dtype=a.dtype)
         b_cpu = numpy.copy(a_cpu, order)
 
-        assert b.strides == tuple(x / b_cpu.itemsize for x in b_cpu.strides)
+        assert b.strides == b_cpu.strides
 
 
 @pytest.mark.skip("`ElementwiseKernel` isn't supported")

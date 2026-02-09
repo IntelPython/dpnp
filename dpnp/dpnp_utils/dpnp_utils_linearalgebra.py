@@ -185,7 +185,7 @@ def _define_contig_flag(x):
     """
 
     flag = False
-    x_strides = x.strides
+    x_strides = dpnp.get_usm_ndarray(x).strides
     x_shape = x.shape
     if x.ndim < 2:
         return True, True, True
