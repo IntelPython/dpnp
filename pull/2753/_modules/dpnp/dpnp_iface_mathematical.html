@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev2+14.g8eb85fe6e6c documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev2+17.ga98e7196f6c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e5e1cc10"></script>
+      <script src="../../_static/documentation_options.js?v=f0af79d0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -3766,20 +3766,24 @@
 <span class="sd">        an array does not require a copy.</span>
 
 <span class="sd">        Default: ``True``.</span>
-<span class="sd">    nan : {int, float, bool}, optional</span>
-<span class="sd">        Value to be used to fill ``NaN`` values.</span>
+<span class="sd">    nan : {scalar, array_like}, optional</span>
+<span class="sd">        Values to be used to fill ``NaN`` values. If no values are passed then</span>
+<span class="sd">        ``NaN`` values will be replaced with ``0.0``.</span>
+<span class="sd">        Expected to have a real-valued data type for the values.</span>
 
 <span class="sd">        Default: ``0.0``.</span>
-<span class="sd">    posinf : {int, float, bool, None}, optional</span>
-<span class="sd">        Value to be used to fill positive infinity values. If no value is</span>
+<span class="sd">    posinf : {None, scalar, array_like}, optional</span>
+<span class="sd">        Values to be used to fill positive infinity values. If no values are</span>
 <span class="sd">        passed then positive infinity values will be replaced with a very</span>
 <span class="sd">        large number.</span>
+<span class="sd">        Expected to have a real-valued data type for the values.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    neginf : {int, float, bool, None} optional</span>
-<span class="sd">        Value to be used to fill negative infinity values. If no value is</span>
+<span class="sd">    neginf : {None, scalar, array_like}, optional</span>
+<span class="sd">        Values to be used to fill negative infinity values. If no values are</span>
 <span class="sd">        passed then negative infinity values will be replaced with a very</span>
 <span class="sd">        small (or negative) number.</span>
+<span class="sd">        Expected to have a real-valued data type for the values.</span>
 
 <span class="sd">        Default: ``None``.</span>
 
@@ -3807,6 +3811,7 @@
 <span class="sd">    array(-1.79769313e+308)</span>
 <span class="sd">    &gt;&gt;&gt; np.nan_to_num(np.array(np.nan))</span>
 <span class="sd">    array(0.)</span>
+
 <span class="sd">    &gt;&gt;&gt; x = np.array([np.inf, -np.inf, np.nan, -128, 128])</span>
 <span class="sd">    &gt;&gt;&gt; np.nan_to_num(x)</span>
 <span class="sd">    array([ 1.79769313e+308, -1.79769313e+308,  0.00000000e+000,</span>
@@ -3814,6 +3819,14 @@
 <span class="sd">    &gt;&gt;&gt; np.nan_to_num(x, nan=-9999, posinf=33333333, neginf=33333333)</span>
 <span class="sd">    array([ 3.3333333e+07,  3.3333333e+07, -9.9990000e+03, -1.2800000e+02,</span>
 <span class="sd">            1.2800000e+02])</span>
+
+<span class="sd">    &gt;&gt;&gt; nan = np.array([11, 12, -9999, 13, 14])</span>
+<span class="sd">    &gt;&gt;&gt; posinf = np.array([33333333, 11, 12, 13, 14])</span>
+<span class="sd">    &gt;&gt;&gt; neginf = np.array([11, 33333333, 12, 13, 14])</span>
+<span class="sd">    &gt;&gt;&gt; np.nan_to_num(x, nan=nan, posinf=posinf, neginf=neginf)</span>
+<span class="sd">    array([ 3.3333333e+07,  3.3333333e+07, -9.9990000e+03, -1.2800000e+02,</span>
+<span class="sd">            1.2800000e+02])</span>
+
 <span class="sd">    &gt;&gt;&gt; y = np.array([complex(np.inf, np.nan), np.nan, complex(np.nan, np.inf)])</span>
 <span class="sd">    &gt;&gt;&gt; np.nan_to_num(y)</span>
 <span class="sd">    array([1.79769313e+308 +0.00000000e+000j, # may vary</span>
@@ -3826,33 +3839,32 @@
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-    <span class="c1"># Python boolean is a subtype of an integer</span>
-    <span class="c1"># so additional check for bool is not needed.</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;nan must be a scalar of an integer, float, bool, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">nan</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-    <span class="n">x_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_nan_inf</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">val_dt</span><span class="p">):</span>
+        <span class="c1"># Python boolean is a subtype of an integer</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">val</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">val_dt</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">x_type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+    <span class="n">x_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x_type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="n">max_f</span><span class="p">,</span> <span class="n">min_f</span> <span class="o">=</span> <span class="n">_get_max_min</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="c1"># get dtype of nan and infs values if casting required</span>
+    <span class="n">is_complex</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x_type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_complex</span><span class="p">:</span>
+        <span class="n">val_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">val_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+
+    <span class="n">nan</span> <span class="o">=</span> <span class="n">_check_nan_inf</span><span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="n">val_dt</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">posinf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">posinf</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;posinf must be a scalar of an integer, float, bool, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;or be None, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">posinf</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="n">max_f</span> <span class="o">=</span> <span class="n">posinf</span>
+        <span class="n">max_f</span> <span class="o">=</span> <span class="n">_check_nan_inf</span><span class="p">(</span><span class="n">posinf</span><span class="p">,</span> <span class="n">val_dt</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">neginf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">neginf</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;neginf must be a scalar of an integer, float, bool, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;or be None, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">neginf</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="n">min_f</span> <span class="o">=</span> <span class="n">neginf</span>
+        <span class="n">min_f</span> <span class="o">=</span> <span class="n">_check_nan_inf</span><span class="p">(</span><span class="n">neginf</span><span class="p">,</span> <span class="n">val_dt</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -3861,19 +3873,45 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;copy is required for read-only array `x`&quot;</span><span class="p">)</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">x</span>
 
-    <span class="n">x_ary</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">out_ary</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+    <span class="c1"># handle a special case when nan and infs are all scalars</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="n">max_f</span><span class="p">,</span> <span class="n">min_f</span><span class="p">)):</span>
+        <span class="n">x_ary</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">out_ary</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
-    <span class="n">q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
-    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
 
-    <span class="n">h_ev</span><span class="p">,</span> <span class="n">comp_ev</span> <span class="o">=</span> <span class="n">ufi</span><span class="o">.</span><span class="n">_nan_to_num</span><span class="p">(</span>
-        <span class="n">x_ary</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">max_f</span><span class="p">,</span> <span class="n">min_f</span><span class="p">,</span> <span class="n">out_ary</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
-    <span class="p">)</span>
+        <span class="n">h_ev</span><span class="p">,</span> <span class="n">comp_ev</span> <span class="o">=</span> <span class="n">ufi</span><span class="o">.</span><span class="n">_nan_to_num</span><span class="p">(</span>
+            <span class="n">x_ary</span><span class="p">,</span>
+            <span class="n">nan</span><span class="p">,</span>
+            <span class="n">max_f</span><span class="p">,</span>
+            <span class="n">min_f</span><span class="p">,</span>
+            <span class="n">out_ary</span><span class="p">,</span>
+            <span class="n">q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span><span class="p">,</span>
+        <span class="p">)</span>
 
-    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">h_ev</span><span class="p">,</span> <span class="n">comp_ev</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">h_ev</span><span class="p">,</span> <span class="n">comp_ev</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="c1"># handle a common case with broadcasting of input nan and infs</span>
+    <span class="k">if</span> <span class="n">is_complex</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+        <span class="n">parts_out</span> <span class="o">=</span> <span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,)</span>
+        <span class="n">parts_out</span> <span class="o">=</span> <span class="p">(</span><span class="n">out</span><span class="p">,)</span>
+
+    <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">part_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parts</span><span class="p">,</span> <span class="n">parts_out</span><span class="p">):</span>
+        <span class="n">nan_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+        <span class="n">posinf_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isposinf</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+        <span class="n">neginf_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isneginf</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+
+        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">nan_mask</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part_out</span><span class="p">)</span>
+        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">posinf_mask</span><span class="p">,</span> <span class="n">max_f</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part_out</span><span class="p">)</span>
+        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">neginf_mask</span><span class="p">,</span> <span class="n">min_f</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part_out</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span></div>
 
 
 

@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.nan_to_num &mdash; Data Parallel Extension for NumPy 0.20.0dev2+14.g8eb85fe6e6c documentation</title>
+  <title>dpnp.nan_to_num &mdash; Data Parallel Extension for NumPy 0.20.0dev2+17.ga98e7196f6c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e5e1cc10"></script>
+      <script src="../../_static/documentation_options.js?v=f0af79d0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -159,17 +159,21 @@ in-place (<code class="docutils literal notranslate"><span class="pre">False</sp
 an array does not require a copy.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </p></li>
-<li><p><strong>nan</strong> (<em>{int</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>Value to be used to fill <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values.</p>
+<li><p><strong>nan</strong> (<em>{scalar</em><em>, </em><em>array_like}</em><em>, </em><em>optional</em>) -- <p>Values to be used to fill <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values. If no values are passed then
+<code class="docutils literal notranslate"><span class="pre">NaN</span></code> values will be replaced with <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.
+Expected to have a real-valued data type for the values.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p>
 </p></li>
-<li><p><strong>posinf</strong> (<em>{int</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>None}</em><em>, </em><em>optional</em>) -- <p>Value to be used to fill positive infinity values. If no value is
+<li><p><strong>posinf</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><em>array_like}</em><em>, </em><em>optional</em>) -- <p>Values to be used to fill positive infinity values. If no values are
 passed then positive infinity values will be replaced with a very
-large number.</p>
+large number.
+Expected to have a real-valued data type for the values.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>neginf</strong> (<em>{int</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>None} optional</em>) -- <p>Value to be used to fill negative infinity values. If no value is
+<li><p><strong>neginf</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><em>array_like}</em><em>, </em><em>optional</em>) -- <p>Values to be used to fill negative infinity values. If no values are
 passed then negative infinity values will be replaced with a very
-small (or negative) number.</p>
+small (or negative) number.
+Expected to have a real-valued data type for the values.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 </ul>
@@ -205,14 +209,26 @@ may be <cite>x</cite> itself.</p>
 <span class="go">array(-1.79769313e+308)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">))</span>
 <span class="go">array(0.)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="go">array([ 1.79769313e+308, -1.79769313e+308,  0.00000000e+000,</span>
 <span class="go">       -1.28000000e+002,  1.28000000e+002])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">nan</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="mi">33333333</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="mi">33333333</span><span class="p">)</span>
 <span class="go">array([ 3.3333333e+07,  3.3333333e+07, -9.9990000e+03, -1.2800000e+02,</span>
 <span class="go">        1.2800000e+02])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">complex</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="nb">complex</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mi">9999</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">posinf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">33333333</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">neginf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">11</span><span class="p">,</span> <span class="mi">33333333</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="n">nan</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="n">posinf</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="n">neginf</span><span class="p">)</span>
+<span class="go">array([ 3.3333333e+07,  3.3333333e+07, -9.9990000e+03, -1.2800000e+02,</span>
+<span class="go">        1.2800000e+02])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">complex</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="nb">complex</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 <span class="go">array([1.79769313e+308 +0.00000000e+000j, # may vary</span>
 <span class="go">       0.00000000e+000 +0.00000000e+000j,</span>
