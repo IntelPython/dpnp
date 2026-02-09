@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+from pathlib import Path
 
 from collections import Counter
 
@@ -41,7 +42,7 @@ class DpnpInfraWarningsPlugin:
 
     SUMMARY_BEGIN = "DPNP_WARNINGS_SUMMARY_BEGIN"
     SUMMARY_END = "DPNP_WARNINGS_SUMMARY_END"
-    EVENT_PREFIX = "DPNP_WARNING_EVENT "
+    EVENT_PREFIX = "DPNP_WARNING_EVENT - "
 
     def __init__(self):
         self.enabled = bool(warn_config.infra_warnings_enable)
@@ -57,10 +58,17 @@ class DpnpInfraWarningsPlugin:
         self._events_fp = None
         self._events_file = None
 
-    def pytest_configure(self, config):
+    def _log_stdout(self, message: str) -> None:
+        try:
+            sys.stderr.write(message.rstrip("\n") + "\n")
+            sys.stderr.flush()
+        except Exception:
+            pass
+
+    def pytest_configure(self, _config):
         if not self.enabled:
             return
-        
+
         self._env.update(
             {
                 "numpy_version": getattr(numpy, "__version__", "unknown"),
@@ -72,20 +80,36 @@ class DpnpInfraWarningsPlugin:
                 "job": os.getenv("JOB_NAME", "unknown"),
                 "build_number": os.getenv("BUILD_NUMBER", "unknown"),
                 "git_sha": os.getenv("GIT_COMMIT", "unknown"),
-                "events_file": self._events_file,
             }
         )
 
         if self.directory:
-            os.makedirs(self.directory, exist_ok=True)
-            self._events_file = os.path.join(self.directory, self.events_artifact)
-            self._events_fp = open(
-                self._events_file,
-                "w",
-                encoding="utf-8",
-                buffering=1,
-                newline="\n",
-            )
+            try:
+                p = Path(self.directory).expanduser().resolve()
+                if p.exists() and not p.is_dir():
+                    raise ValueError(f"{p} exists and is not a directory")
+
+                p.mkdir(parents=True, exist_ok=True)
+
+                if (not self.events_artifact
+                    or Path(self.events_artifact).name != self.events_artifact
+                ):
+                    raise ValueError(
+                        "Invalid events artifact filename (must not contain path parts)"
+                    )
+
+                self._events_file = p / self.events_artifact
+                self._events_fp = self._events_file.open(
+                    mode="w", encoding="utf-8", buffering=1, newline="\n"
+                )
+            except Exception as exc:
+                self._events_fp = None
+                self._events_file = None
+                self.directory = None
+                self._log_stdout(
+                    "DPNP infra warnings plugin: artifacts disabled "
+                    f"(failed to initialize directory/files): {exc}"
+                )
 
 
     def pytest_warning_recorded(self, warning_message, when, nodeid, location):
@@ -143,14 +167,9 @@ class DpnpInfraWarningsPlugin:
             except Exception:
                 pass
 
-        #Write the warnings to terminal           
-        try:
-            sys.stderr.write(self.EVENT_PREFIX + _json_dumps_one_line(event) + "\n")
-            sys.stderr.flush()
-        except Exception:
-            pass
+        self._log_stdout(f"{self.EVENT_PREFIX} {_json_dumps_one_line(event)}")
 
-    def pytest_terminal_summary(self, terminalreporter, exitstatus, config):
+    def pytest_terminal_summary(self, terminalreporter, exitstatus, _config):
         if not self.enabled:
             return
 
@@ -187,7 +206,7 @@ class DpnpInfraWarningsPlugin:
         terminalreporter.write_line(_json_dumps_one_line(summary))
         terminalreporter.write_line(self.SUMMARY_END)
 
-    def pytest_unconfigure(self, config):
+    def pytest_unconfigure(self, _config):
         self._close_events_fp()
 
     def _close_events_fp(self):

@@ -6,7 +6,7 @@ complex_types = bool(os.getenv("DPNP_TEST_COMPLEX_TYPES", 0))
 bool_types = bool(os.getenv("DPNP_TEST_BOOL_TYPES", 0))
 
 
-infra_warnings_enable = os.getenv("DPNP_INFRA_WARNINGS_ENABLE", "0") == "1"
+infra_warnings_enable = bool(os.getenv("DPNP_INFRA_WARNINGS_ENABLE", 0))
 infra_warnings_directory = os.getenv("DPNP_INFRA_WARNINGS_DIRECTORY", None)
 infra_warnings_events_artifact = os.getenv(
     "DPNP_INFRA_WARNINGS_EVENTS_ARTIFACT",
