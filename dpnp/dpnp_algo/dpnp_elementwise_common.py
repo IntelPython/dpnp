@@ -44,6 +44,7 @@ from dpctl.tensor._scalar_utils import (
     _validate_dtype,
 )
 
+# pylint: disable=no-name-in-module
 import dpctl_ext.tensor._tensor_impl as dti
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi

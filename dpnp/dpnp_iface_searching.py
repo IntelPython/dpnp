@@ -41,6 +41,7 @@ it contains:
 
 import dpctl.tensor as dpt
 
+# pylint: disable=no-name-in-module
 import dpctl_ext.tensor._tensor_impl as dti
 import dpnp
 
