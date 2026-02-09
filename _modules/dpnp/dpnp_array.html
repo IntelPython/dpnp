@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev2+13.gf4591e1cc38 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev2+14.g2f796e09dfe documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8444f15b"></script>
+      <script src="../../_static/documentation_options.js?v=cbebc190"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -191,6 +191,16 @@
                 <span class="n">dtype</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">dtype</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">buffer</span> <span class="o">=</span> <span class="n">usm_type</span>
+
+        <span class="k">if</span> <span class="n">strides</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># dpctl expects strides as elements displacement in memory,</span>
+            <span class="c1"># while dpnp (and numpy as well) relies on bytes displacement</span>
+            <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span>
+                    <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+                <span class="p">)</span>
+            <span class="n">it_sz</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">itemsize</span>
+            <span class="n">strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">el</span> <span class="o">//</span> <span class="n">it_sz</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">strides</span><span class="p">)</span>
 
         <span class="n">sycl_queue_normalized</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
@@ -2050,16 +2060,53 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">strides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return memory displacement in array elements, upon unit</span>
-<span class="sd">        change of respective index.</span>
+<span class="sd">        Tuple of bytes to step in each dimension when traversing an array.</span>
 
-<span class="sd">        For example, for strides ``(s1, s2, s3)`` and multi-index</span>
-<span class="sd">        ``(i1, i2, i3)`` position of the respective element relative</span>
-<span class="sd">        to zero multi-index element is ``s1*s1 + s2*i2 + s3*i3``.</span>
+<span class="sd">        The byte offset of element ``(i[0], i[1], ..., i[n])`` in an array `a`</span>
+<span class="sd">        is::</span>
+
+<span class="sd">            offset = sum(dpnp.array(i) * a.strides)</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.strides`.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.lib.stride_tricks.as_strided` : Return a view into the array</span>
+<span class="sd">            with given shape and strides.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; y = np.reshape(np.arange(2 * 3 * 4, dtype=np.int32), (2, 3, 4))</span>
+<span class="sd">        &gt;&gt;&gt; y</span>
+<span class="sd">        array([[[ 0,  1,  2,  3],</span>
+<span class="sd">                [ 4,  5,  6,  7],</span>
+<span class="sd">                [ 8,  9, 10, 11]],</span>
+<span class="sd">               [[12, 13, 14, 15],</span>
+<span class="sd">                [16, 17, 18, 19],</span>
+<span class="sd">                [20, 21, 22, 23]]], dtype=np.int32)</span>
+<span class="sd">        &gt;&gt;&gt; y.strides</span>
+<span class="sd">        (48, 16, 4)</span>
+<span class="sd">        &gt;&gt;&gt; y[1, 1, 1]</span>
+<span class="sd">        array(17, dtype=int32)</span>
+<span class="sd">        &gt;&gt;&gt; offset = sum(i * s for i, s in zip((1, 1, 1), y.strides))</span>
+<span class="sd">        &gt;&gt;&gt; offset // y.itemsize</span>
+<span class="sd">        17</span>
+
+<span class="sd">        &gt;&gt;&gt; x = np.reshape(np.arange(5*6*7*8, dtype=np.int32), (5, 6, 7, 8))</span>
+<span class="sd">        &gt;&gt;&gt; x = x.transpose(2, 3, 1, 0)</span>
+<span class="sd">        &gt;&gt;&gt; x.strides</span>
+<span class="sd">        (32, 4, 224, 1344)</span>
+<span class="sd">        &gt;&gt;&gt; offset = sum(i * s for i, s in zip((3, 5, 2, 2), x.strides))</span>
+<span class="sd">        &gt;&gt;&gt; x[3, 5, 2, 2]</span>
+<span class="sd">        array(813, dtype=int32)</span>
+<span class="sd">        &gt;&gt;&gt; offset // x.itemsize</span>
+<span class="sd">        813</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">strides</span>
+        <span class="n">it_sz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">el</span> <span class="o">*</span> <span class="n">it_sz</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">strides</span><span class="p">)</span>
 
 <div class="viewcode-block" id="dpnp_array.sum">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.sum.html#dpnp.dpnp_array.dpnp_array.sum">[docs]</a>
@@ -2562,23 +2609,20 @@
 
         <span class="c1"># resize on last axis only</span>
         <span class="n">axis</span> <span class="o">=</span> <span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">old_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">old_strides</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">old_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="n">old_strides</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="n">old_itemsz</span>
+        <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;To change to a dtype of a different size, &quot;</span>
                 <span class="s2">&quot;the last axis must be contiguous&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># normalize strides whenever itemsize changes</span>
-        <span class="k">if</span> <span class="n">old_itemsz</span> <span class="o">&gt;</span> <span class="n">new_itemsz</span><span class="p">:</span>
-            <span class="n">new_strides</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                <span class="n">el</span> <span class="o">*</span> <span class="p">(</span><span class="n">old_itemsz</span> <span class="o">//</span> <span class="n">new_itemsz</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">old_strides</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_strides</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-                <span class="n">el</span> <span class="o">//</span> <span class="p">(</span><span class="n">new_itemsz</span> <span class="o">//</span> <span class="n">old_itemsz</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">old_strides</span>
-            <span class="p">)</span>
-        <span class="n">new_strides</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">new_strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">new_strides</span><span class="p">)</span>
+        <span class="n">new_strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">old_strides</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">new_itemsz</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="n">new_dim</span> <span class="o">=</span> <span class="n">old_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">*</span> <span class="n">old_itemsz</span>
         <span class="k">if</span> <span class="n">new_dim</span> <span class="o">%</span> <span class="n">new_itemsz</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -2588,9 +2632,10 @@
             <span class="p">)</span>
 
         <span class="c1"># normalize shape whenever itemsize changes</span>
-        <span class="n">new_sh</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">old_sh</span><span class="p">)</span>
-        <span class="n">new_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_dim</span> <span class="o">//</span> <span class="n">new_itemsz</span>
-        <span class="n">new_sh</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">new_sh</span><span class="p">)</span>
+        <span class="n">new_sh</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">old_sh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">new_dim</span> <span class="o">//</span> <span class="n">new_itemsz</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span>
             <span class="n">new_sh</span><span class="p">,</span>
