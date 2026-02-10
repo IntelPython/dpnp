@@ -1,14 +1,14 @@
 import json
 import os
 import sys
-from pathlib import Path
-
 from collections import Counter
+from pathlib import Path
 
 import dpctl
 import numpy
 
 import dpnp
+
 from . import config as warn_config
 
 
@@ -92,14 +92,16 @@ class DpnpInfraWarningsPlugin:
 
                 p.mkdir(parents=True, exist_ok=True)
 
-                if (not self.events_artifact
+                if (
+                    not self.events_artifact
                     or Path(self.events_artifact).name != self.events_artifact
                 ):
                     raise ValueError(
                         f"Invalid events artifact filename: {self.events_artifact}"
                     )
 
-                if (not self.summary_artifact
+                if (
+                    not self.summary_artifact
                     or Path(self.summary_artifact).name != self.summary_artifact
                 ):
                     raise ValueError(
@@ -117,7 +119,6 @@ class DpnpInfraWarningsPlugin:
                     "DPNP infra warnings plugin: artifacts disabled "
                     f"(failed to initialize directory/files): {exc}"
                 )
-
 
     def pytest_warning_recorded(self, warning_message, when, nodeid, location):
         if not self.enabled:
