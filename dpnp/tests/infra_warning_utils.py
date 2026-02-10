@@ -214,15 +214,14 @@ class DpnpInfraWarningsPlugin:
             return
         try:
             self._events_fp.close()
-        except Exception:
-            pass
-        self._events_fp = None
+        finally:
+            self._events_fp = None
 
 
 def register_infra_warnings_plugin_if_enabled(config) -> None:
     """Register infra warnings plugin if enabled via env var."""
 
-    if not bool(warn_config.infra_warnings_enable):
+    if not warn_config.infra_warnings_enable:
         return
 
     plugin_name = "dpnp-infra-warnings"
