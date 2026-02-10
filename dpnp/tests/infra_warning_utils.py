@@ -45,7 +45,7 @@ class DpnpInfraWarningsPlugin:
     EVENT_PREFIX = "DPNP_WARNING_EVENT - "
 
     def __init__(self):
-        self.enabled = bool(warn_config.infra_warnings_enable)
+        self.enabled = warn_config.infra_warnings_enable
         self.directory = warn_config.infra_warnings_directory
         self.events_artifact = warn_config.infra_warnings_events_artifact
         self.summary_artifact = warn_config.infra_warnings_summary_artifact
