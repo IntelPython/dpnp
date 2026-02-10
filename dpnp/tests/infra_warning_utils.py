@@ -95,7 +95,14 @@ class DpnpInfraWarningsPlugin:
                     or Path(self.events_artifact).name != self.events_artifact
                 ):
                     raise ValueError(
-                        "Invalid events artifact filename (must not contain path parts)"
+                        f"Invalid events artifact filename: {self.events_artifact}"
+                    )
+
+                if (not self.summary_artifact
+                    or Path(self.summary_artifact).name != self.summary_artifact
+                ):
+                    raise ValueError(
+                        f"Invalid summary artifact filename: {self.summary_artifact}"
                     )
 
                 self._events_file = p / self.events_artifact
@@ -105,7 +112,6 @@ class DpnpInfraWarningsPlugin:
             except Exception as exc:
                 self._events_fp = None
                 self._events_file = None
-                self.directory = None
                 self._log_stdout(
                     "DPNP infra warnings plugin: artifacts disabled "
                     f"(failed to initialize directory/files): {exc}"
