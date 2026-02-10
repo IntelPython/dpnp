@@ -19,14 +19,10 @@ def is_available():
 
 def check_available(feature):
     if not is_available():
-        raise RuntimeError(
-            """\
+        raise RuntimeError("""\
 cupy.testing: {} is not available.
 
-Reason: {}: {}""".format(
-                feature, type(_error).__name__, _error
-            )
-        )
+Reason: {}: {}""".format(feature, type(_error).__name__, _error))
 
 
 if is_available():

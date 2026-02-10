@@ -35,7 +35,6 @@ This module contains code and dependency on different containers used in DPNP
 
 """
 
-
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
 

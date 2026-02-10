@@ -37,7 +37,6 @@ and DPNP for several matrix multiplication
 
 """
 
-
 import time
 
 import dpctl

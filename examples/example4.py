@@ -34,7 +34,6 @@ This is useful for development
 
 """
 
-
 import numpy
 
 """

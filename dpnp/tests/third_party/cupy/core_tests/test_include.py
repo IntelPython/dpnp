@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import os
-from unittest import mock
 
 import pytest
 
@@ -18,25 +19,19 @@ _code_base = """
 #include <cupy/hip_workaround.cuh>
 """
 
-_code_nvcc = (
-    _code_base
-    + """
+_code_nvcc = _code_base + """
 #include <cupy/type_dispatcher.cuh>
 
 int main() {
     return 0;
 }
 """
-)
 
-_code_nvrtc = (
-    _code_base
-    + """
+_code_nvrtc = _code_base + """
 
 __device__ void kernel() {
 }
 """
-)
 
 
 @pytest.mark.skipif(cupy.cuda.runtime.is_hip, reason="for CUDA")
@@ -77,22 +72,23 @@ class TestIncludesCompileCUDA:
                 _code_nvcc, options=options, arch=arch
             )
 
-    def test_nvrtc(self):
+    def test_nvrtc(self, monkeypatch):
         cuda_ver = cupy.cuda.runtime.runtimeGetVersion()
         options = self._get_options()
         for arch in self._get_cuda_archs():
-            with mock.patch(
-                "cupy.cuda.compiler._get_arch_for_options_for_nvrtc",
+            monkeypatch.setattr(
+                cupy.cuda.compiler,
+                "_get_arch_for_options_for_nvrtc",
                 lambda _: (f"-arch=compute_{arch}", "ptx"),
-            ):
+            )
+            cupy.cuda.compiler.compile_using_nvrtc(_code_nvrtc, options=options)
+
+            if cuda_ver >= 11010:
+                monkeypatch.setattr(
+                    cupy.cuda.compiler,
+                    "_get_arch_for_options_for_nvrtc",
+                    lambda _: (f"-arch=sm_{arch}", "cubin"),
+                )
                 cupy.cuda.compiler.compile_using_nvrtc(
                     _code_nvrtc, options=options
                 )
-            if cuda_ver >= 11010:
-                with mock.patch(
-                    "cupy.cuda.compiler._get_arch_for_options_for_nvrtc",
-                    lambda _: (f"-arch=sm_{arch}", "cubin"),
-                ):
-                    cupy.cuda.compiler.compile_using_nvrtc(
-                        _code_nvrtc, options=options
-                    )

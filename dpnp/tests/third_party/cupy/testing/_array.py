@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings
 
 import numpy
@@ -171,18 +173,13 @@ def assert_array_equal(
         )
 
     if strides_check:
-        strides = desired.strides
-        if isinstance(actual, cupy.ndarray):
-            # need to agreed the strides with numpy.ndarray
-            strides = tuple(el // desired.itemsize for el in desired.strides)
-
-        if actual.strides != strides:
+        if actual.strides != desired.strides:
             msg = ["Strides are not equal:"]
             if err_msg:
                 msg = [msg[0] + " " + err_msg]
             if verbose:
                 msg.append(" x: {}".format(actual.strides))
-                msg.append(" y: {}".format(strides))
+                msg.append(" y: {}".format(desired.strides))
             raise AssertionError("\n".join(msg))
 
 

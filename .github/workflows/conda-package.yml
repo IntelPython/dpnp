@@ -20,7 +20,7 @@ env:
   test-env-name: 'test'
   rerun-tests-on-failure: 'true'
   rerun-tests-max-attempts: 2
-  rerun-tests-timeout: 40
+  rerun-tests-timeout: 45
 
 jobs:
   build:
@@ -54,14 +54,14 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
 
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -71,7 +71,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -145,7 +145,7 @@ jobs:
           swap-size-gb: 8
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
@@ -159,7 +159,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -169,7 +169,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -274,7 +274,7 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
@@ -299,7 +299,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -309,7 +309,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -434,7 +434,7 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: ${{ env.fetch-depth }}
 
@@ -451,7 +451,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -461,7 +461,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -522,7 +522,7 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
@@ -536,7 +536,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -546,7 +546,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -595,7 +595,7 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Clone array API tests repo
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: 'data-apis/array-api-tests'
           path: ${{ env.array-api-tests-path }}
@@ -678,14 +678,14 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: ${{ env.fetch-depth }}
 
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -695,7 +695,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@835234971496cad1653abb28a638a281cf32541f # v3.2.0
+        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -704,7 +704,7 @@ jobs:
           activate-environment: ${{ env.cleanup-env-name }}
 
       - name: Checkout repo
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: IntelPython/devops-tools
           fetch-depth: ${{ env.fetch-depth }}

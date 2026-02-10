@@ -36,11 +36,9 @@ def _run_script(code):
 
 
 def _test_cupy_available(self):
-    returncode, stdoutdata, stderrdata = _run_script(
-        """
+    returncode, stdoutdata, stderrdata = _run_script("""
 import dpnp as cupy
-print(cupy.is_available())"""
-    )
+print(cupy.is_available())""")
     assert returncode == 0, "stderr: {!r}".format(stderrdata)
     assert stdoutdata in (b"True\n", b"True\r\n", b"False\n", b"False\r\n")
     return stdoutdata == b"True\n" or stdoutdata == b"True\r\n"
@@ -49,14 +47,12 @@ print(cupy.is_available())"""
 class TestImportError(unittest.TestCase):
 
     def test_import_error(self):
-        returncode, stdoutdata, stderrdata = _run_script(
-            """
+        returncode, stdoutdata, stderrdata = _run_script("""
 try:
     import dpnp as cupy
 except Exception as e:
     print(type(e).__name__)
-"""
-        )
+""")
         assert returncode == 0, "stderr: {!r}".format(stderrdata)
         assert stdoutdata in (b"", b"RuntimeError\n")
 
