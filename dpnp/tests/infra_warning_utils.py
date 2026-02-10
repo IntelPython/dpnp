@@ -57,6 +57,7 @@ class DpnpInfraWarningsPlugin:
 
         self._events_fp = None
         self._events_file = None
+        self._summary_file = None
 
     def _log_stdout(self, message: str) -> None:
         try:
@@ -109,9 +110,9 @@ class DpnpInfraWarningsPlugin:
                 self._events_fp = self._events_file.open(
                     mode="w", encoding="utf-8", buffering=1, newline="\n"
                 )
+                self._summary_file = p / self.summary_artifact
             except Exception as exc:
-                self._events_fp = None
-                self._events_file = None
+                self._close_events_fp()
                 self._log_stdout(
                     "DPNP infra warnings plugin: artifacts disabled "
                     f"(failed to initialize directory/files): {exc}"
@@ -193,21 +194,19 @@ class DpnpInfraWarningsPlugin:
             ],
         }
 
-        if self.directory:
-            output_file = os.path.join(self.directory, self.summary_artifact)
+        if self._summary_file:
             try:
-                with open(output_file, "w", encoding="utf-8") as f:
+                with open(self._summary_file, "w", encoding="utf-8") as f:
                     json.dump(summary, f, indent=2, sort_keys=True)
                 terminalreporter.write_line(
-                    f"DPNP infrastructure warnings summary written to: {output_file}"
+                    f"DPNP infrastructure warnings summary written to: {self._summary_file}"
                 )
             except Exception as exc:
                 terminalreporter.write_line(
-                    f"Failed to write DPNP infrastructure warnings summary to: {output_file}. Error: {exc}"
+                    f"Failed to write DPNP infrastructure warnings summary to: {self._summary_file}. Error: {exc}"
                 )
 
         self._close_events_fp()
-
         terminalreporter.write_line(self.SUMMARY_BEGIN)
         terminalreporter.write_line(_json_dumps_one_line(summary))
         terminalreporter.write_line(self.SUMMARY_END)
