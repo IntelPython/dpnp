@@ -1,0 +1,10 @@
+﻿
+
+dpnp.sum
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: sum
