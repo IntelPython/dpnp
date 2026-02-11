@@ -70,90 +70,25 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
-    if (ndim == 1) // 1d array with C-contiguous data
-    {
-        _DataType *arr = static_cast<_DataType *>(array1_in);
-        _DataType *result = static_cast<_DataType *>(result1);
+    _DataType *arr = static_cast<_DataType *>(array1_in);
+    _DataType *result = static_cast<_DataType *>(result1);
 
-        auto policy = oneapi::dpl::execution::make_device_policy<
-            dpnp_partition_c_kernel<_DataType>>(q);
+    auto policy = oneapi::dpl::execution::make_device_policy<
+        dpnp_partition_c_kernel<_DataType>>(q);
 
-        // fill the result array with data from input one
-        q.memcpy(result, arr, size * sizeof(_DataType)).wait();
+    // fill the result array with data from input one
+    q.memcpy(result, arr, size * sizeof(_DataType)).wait();
 
-        // make a partial sorting such that:
+    for (size_t i = 0; i < size_; i++) {
+        _DataType *bufptr = result + i * shape_[0];
+
+        // for every slice it makes a partial sorting such that:
         // 1. result[0 <= i < kth]    <= result[kth]
         // 2. result[kth <= i < size] >= result[kth]
         // event-blocking call, no need for wait()
-        std::nth_element(policy, result, result + kth, result + size,
+        std::nth_element(policy, bufptr, bufptr + kth, bufptr + size,
                          dpnp_less_comp());
-        return event_ref;
     }
-
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size, true);
-    DPNPC_ptr_adapter<_DataType> input2_ptr(q_ref, array2_in, size, true);
-    DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result1, size, true, true);
-    _DataType *arr = input1_ptr.get_ptr();
-    _DataType *arr2 = input2_ptr.get_ptr();
-    _DataType *result = result1_ptr.get_ptr();
-
-    auto arr_to_result_event = q.memcpy(result, arr, size * sizeof(_DataType));
-    arr_to_result_event.wait();
-
-    _DataType *matrix = new _DataType[shape_[ndim - 1]];
-
-    for (size_t i = 0; i < size_; ++i) {
-        size_t ind_begin = i * shape_[ndim - 1];
-        size_t ind_end = (i + 1) * shape_[ndim - 1] - 1;
-
-        for (size_t j = ind_begin; j < ind_end + 1; ++j) {
-            size_t ind = j - ind_begin;
-            matrix[ind] = arr2[j];
-        }
-        std::partial_sort(matrix, matrix + shape_[ndim - 1],
-                          matrix + shape_[ndim - 1], dpnp_less_comp());
-        for (size_t j = ind_begin; j < ind_end + 1; ++j) {
-            size_t ind = j - ind_begin;
-            arr2[j] = matrix[ind];
-        }
-    }
-
-    shape_elem_type *shape = reinterpret_cast<shape_elem_type *>(
-        sycl::malloc_shared(ndim * sizeof(shape_elem_type), q));
-    auto memcpy_event = q.memcpy(shape, shape_, ndim * sizeof(shape_elem_type));
-
-    memcpy_event.wait();
-
-    sycl::range<2> gws(size_, kth + 1);
-    auto kernel_parallel_for_func = [=](sycl::id<2> global_id) {
-        size_t j = global_id[0];
-        size_t k = global_id[1];
-
-        _DataType val = arr2[j * shape[ndim - 1] + k];
-
-        for (size_t i = 0; i < static_cast<size_t>(shape[ndim - 1]); ++i) {
-            if (result[j * shape[ndim - 1] + i] == val) {
-                _DataType change_val1 = result[j * shape[ndim - 1] + i];
-                _DataType change_val2 = result[j * shape[ndim - 1] + k];
-                result[j * shape[ndim - 1] + k] = change_val1;
-                result[j * shape[ndim - 1] + i] = change_val2;
-            }
-        }
-    };
-
-    auto kernel_func = [&](sycl::handler &cgh) {
-        cgh.depends_on({memcpy_event});
-        cgh.parallel_for<class dpnp_partition_c_kernel<_DataType>>(
-            gws, kernel_parallel_for_func);
-    };
-
-    auto event = q.submit(kernel_func);
-
-    event.wait();
-
-    delete[] matrix;
-    sycl::free(shape, q);
-
     return event_ref;
 }
 
