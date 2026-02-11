@@ -432,6 +432,7 @@ class TestPartition:
         assert_raises(ValueError, a.partition, 10)
         assert_raises(ValueError, a.partition, -11)
         assert_raises(TypeError, a.partition, 9.0)
+        assert_raises(TypeError, a.partition, [1, 7.0])
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     def test_kth_axis_errors(self, xp):
