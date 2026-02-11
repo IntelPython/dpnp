@@ -1459,21 +1459,34 @@ class dpnp_array:
 
     def partition(self, /, kth, axis=-1, kind="introselect", order=None):
         """
-        Return a partitioned copy of an array.
-
-        Rearranges the elements in the array in such a way that the value of
-        the element in `kth` position is in the position it would be in
-        a sorted array.
-
-        All elements smaller than the `kth` element are moved before this
-        element and all equal or greater are moved behind it. The ordering
-        of the elements in the two partitions is undefined.
+        Partially sorts the elements in the array in such a way that the value
+        of the element in k-th position is in the position it would be in a
+        sorted array. In the output array, all elements smaller than the k-th
+        element are located to the left of this element and all equal or
+        greater are located to its right. The ordering of the elements in the
+        two partitions on the either side of the k-th element in the output
+        array is undefined.
 
         Refer to `dpnp.partition` for full documentation.
+
+        kth : {int, sequence of ints}
+            Element index to partition by. The kth element value will be in its
+            final sorted position and all smaller elements will be moved before
+            it and all equal or greater elements behind it.
+            The order of all elements in the partitions is undefined. If
+            provided with a sequence of kth it will partition all elements
+            indexed by kth of them into their sorted position at once.
+        axis : int, optional
+            Axis along which to sort. The default is ``-1``, which means sort
+            along the the last axis.
+
+            Default: ``-1``.
 
         See Also
         --------
         :obj:`dpnp.partition` : Return a partitioned copy of an array.
+        :obj:`dpnp.argpartition` : Indirect partition.
+        :obj:`dpnp.sort` : Full sort.
 
         Examples
         --------
@@ -1481,13 +1494,19 @@ class dpnp_array:
         >>> a = np.array([3, 4, 2, 1])
         >>> a.partition(3)
         >>> a
+        array([1, 2, 3, 4]) # may vary
+
+        >>> a.partition((1, 3))
+        >>> a
         array([1, 2, 3, 4])
 
         """
 
-        self._array_obj = dpnp.partition(
-            self, kth, axis=axis, kind=kind, order=order
-        ).get_array()
+        if axis is None:
+            raise TypeError(
+                "'NoneType' object cannot be interpreted as an integer"
+            )
+        self[...] = dpnp.partition(self, kth, axis=axis, kind=kind, order=order)
 
     def prod(
         self,
