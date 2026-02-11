@@ -66,7 +66,7 @@ class DpnpInfraWarningsPlugin:
         except Exception:
             pass
 
-    def pytest_configure(self, _config):
+    def pytest_configure(self):
         if not self.enabled:
             return
 
@@ -177,7 +177,7 @@ class DpnpInfraWarningsPlugin:
 
         self._log_stdout(f"{self.EVENT_PREFIX} {_json_dumps_one_line(event)}")
 
-    def pytest_terminal_summary(self, terminalreporter, exitstatus, _config):
+    def pytest_terminal_summary(self, terminalreporter, exitstatus):
         if not self.enabled:
             return
 
@@ -212,7 +212,7 @@ class DpnpInfraWarningsPlugin:
         terminalreporter.write_line(_json_dumps_one_line(summary))
         terminalreporter.write_line(self.SUMMARY_END)
 
-    def pytest_unconfigure(self, _config):
+    def pytest_unconfigure(self):
         self._close_events_fp()
 
     def _close_events_fp(self):
