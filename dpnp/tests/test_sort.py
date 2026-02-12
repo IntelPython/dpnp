@@ -410,6 +410,40 @@ class TestPartition:
         assert (p[0:k] <= p[k : k + 1]).all()
         assert (p[k : k + 1] <= p[k + 1 :]).all()
 
+    @pytest.mark.parametrize("axis", [0, -1, None])
+    def test_axis_1d(self, axis):
+        a = numpy.array([2, 1])
+        ia = dpnp.array(a)
+
+        result = dpnp.partition(ia, 1, axis=axis)
+        expected = numpy.partition(a, 1, axis=axis)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("kth, axis", [(1, 0), (4, 1)])
+    def test_axis_2d(self, kth, axis):
+        a = generate_random_numpy_array((2, 5))
+
+        ia = dpnp.array(a)
+        ia.partition(kth, axis=axis)
+        p = dpnp.rollaxis(ia, axis, ia.ndim)
+        assert (p[..., 0:kth] <= p[..., kth : kth + 1]).all()
+        assert (p[..., kth : kth + 1] <= p[..., kth + 1 :]).all()
+
+        ia = dpnp.array(a)
+        p = dpnp.partition(ia, kth, axis=axis)
+        p = dpnp.rollaxis(p, axis, ia.ndim)
+        assert (p[..., 0:kth] <= p[..., kth : kth + 1]).all()
+        assert (p[..., kth : kth + 1] <= p[..., kth + 1 :]).all()
+
+    @pytest.mark.parametrize("kth", [1, 9])
+    def test_axis_2d_none(self, kth):
+        a = generate_random_numpy_array((2, 5))
+        ia = dpnp.array(a)
+
+        p = dpnp.partition(ia, kth, axis=None)
+        assert (p[..., 0:kth] <= p[..., kth : kth + 1]).all()
+        assert (p[..., kth : kth + 1] <= p[..., kth + 1 :]).all()
+
     @pytest.mark.parametrize("axis", list(range(-4, 4)) + [None])
     def test_empty_array(self, axis):
         a = numpy.empty((3, 2, 1, 0))
