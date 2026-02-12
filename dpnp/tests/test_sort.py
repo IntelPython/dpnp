@@ -301,8 +301,9 @@ class TestPartition:
         ],
     )
     @pytest.mark.parametrize("kth", [0, 1, 2])
-    def test_1d_3size(self, data, kth):
-        a = dpnp.array(data)
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_1d_3size(self, data, kth, dt):
+        a = dpnp.array(data, dtype=dt)
         p = dpnp.partition(a, kth)
 
         assert (p[..., 0:kth] <= p[..., kth : kth + 1]).all()
