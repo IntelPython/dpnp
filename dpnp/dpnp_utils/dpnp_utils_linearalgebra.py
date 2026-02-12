@@ -38,6 +38,8 @@ from dpctl.tensor._numpy_helper import (
 from dpctl.utils import ExecutionPlacementError
 
 # pylint: disable=no-name-in-module
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi

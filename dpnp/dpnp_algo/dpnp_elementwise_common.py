@@ -45,6 +45,8 @@ from dpctl.tensor._scalar_utils import (
 )
 
 # pylint: disable=no-name-in-module
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor._tensor_impl as dti
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
