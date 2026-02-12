@@ -1,0 +1,609 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mathematical functions &mdash; Data Parallel Extension for NumPy 0.20.0dev2+19.g01a92cd2e2c documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=03dbea4b"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dpnp.unwrap" href="generated/dpnp.unwrap.html" />
+    <link rel="prev" title="dpnp.array_equiv" href="generated/dpnp.array_equiv.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines (NumPy)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="constants.html">Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bitwise.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions and Warnings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fft.html">Discrete Fourier Transform (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.fft</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.linalg</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic functions</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Mathematical functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#trigonometric-functions">Trigonometric functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#hyperbolic-functions">Hyperbolic functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rounding">Rounding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sums-products-differences">Sums, products, differences</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exponents-and-logarithms">Exponents and logarithms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#other-special-functions">Other special functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#floating-point-routines">Floating point routines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rational-routines">Rational routines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arithmetic-operations">Arithmetic operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#handling-complex-numbers">Handling complex numbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#extrema-finding">Extrema finding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="window.html">Window functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array_api.html">Array API standard compatibility</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="routines.html">Routines (NumPy)</a></li>
+      <li class="breadcrumb-item active">Mathematical functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/math.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mathematical-functions">
+<h1>Mathematical functions<a class="headerlink" href="#mathematical-functions" title="Link to this heading"></a></h1>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/routines.math.html">NumPy API Reference: Mathematical functions</a></p>
+</div>
+<section id="trigonometric-functions">
+<h2>Trigonometric functions<a class="headerlink" href="#trigonometric-functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.sin.html#dpnp.sin" title="dpnp.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sin</span></code></a></p></td>
+<td><p>Computes the sine for each element <span class="math notranslate nohighlight">\(x_i\)</span> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.cos.html#dpnp.cos" title="dpnp.cos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cos</span></code></a></p></td>
+<td><p>Computes the cosine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.tan.html#dpnp.tan" title="dpnp.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tan</span></code></a></p></td>
+<td><p>Computes the tangent for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.arcsin.html#dpnp.arcsin" title="dpnp.arcsin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arcsin</span></code></a></p></td>
+<td><p>Computes inverse sine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.asin.html#dpnp.asin" title="dpnp.asin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asin</span></code></a></p></td>
+<td><p>Computes inverse sine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.arccos.html#dpnp.arccos" title="dpnp.arccos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arccos</span></code></a></p></td>
+<td><p>Computes inverse cosine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.acos.html#dpnp.acos" title="dpnp.acos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">acos</span></code></a></p></td>
+<td><p>Computes inverse cosine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.arctan.html#dpnp.arctan" title="dpnp.arctan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arctan</span></code></a></p></td>
+<td><p>Computes inverse tangent for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.atan.html#dpnp.atan" title="dpnp.atan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atan</span></code></a></p></td>
+<td><p>Computes inverse tangent for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.hypot.html#dpnp.hypot" title="dpnp.hypot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hypot</span></code></a></p></td>
+<td><p>Computes the square root of the sum of squares for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.arctan2.html#dpnp.arctan2" title="dpnp.arctan2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arctan2</span></code></a></p></td>
+<td><p>Calculates the inverse tangent of the quotient <span class="math notranslate nohighlight">\(\frac{x1_i}{x2_i}\)</span> for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.atan2.html#dpnp.atan2" title="dpnp.atan2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atan2</span></code></a></p></td>
+<td><p>Calculates the inverse tangent of the quotient <span class="math notranslate nohighlight">\(\frac{x1_i}{x2_i}\)</span> for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.degrees.html#dpnp.degrees" title="dpnp.degrees"><code class="xref py py-obj docutils literal notranslate"><span class="pre">degrees</span></code></a></p></td>
+<td><p>Convert angles from radian to degrees for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.radians.html#dpnp.radians" title="dpnp.radians"><code class="xref py py-obj docutils literal notranslate"><span class="pre">radians</span></code></a></p></td>
+<td><p>Convert angles from degrees to radians for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.unwrap.html#dpnp.unwrap" title="dpnp.unwrap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unwrap</span></code></a></p></td>
+<td><p>Unwrap by taking the complement of large deltas with respect to the period.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.deg2rad.html#dpnp.deg2rad" title="dpnp.deg2rad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deg2rad</span></code></a></p></td>
+<td><p>Convert angles from degrees to radians for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.rad2deg.html#dpnp.rad2deg" title="dpnp.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rad2deg</span></code></a></p></td>
+<td><p>Convert angles from radians to degrees for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.reduce_hypot.html#dpnp.reduce_hypot" title="dpnp.reduce_hypot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reduce_hypot</span></code></a></p></td>
+<td><p>Calculates the square root of the sum of squares of elements in the input array.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="hyperbolic-functions">
+<h2>Hyperbolic functions<a class="headerlink" href="#hyperbolic-functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.sinh.html#dpnp.sinh" title="dpnp.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinh</span></code></a></p></td>
+<td><p>Computes the hyperbolic sine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.cosh.html#dpnp.cosh" title="dpnp.cosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cosh</span></code></a></p></td>
+<td><p>Computes the hyperbolic cosine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.tanh.html#dpnp.tanh" title="dpnp.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a></p></td>
+<td><p>Computes the hyperbolic tangent for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.arcsinh.html#dpnp.arcsinh" title="dpnp.arcsinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arcsinh</span></code></a></p></td>
+<td><p>Computes inverse hyperbolic sine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.asinh.html#dpnp.asinh" title="dpnp.asinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asinh</span></code></a></p></td>
+<td><p>Computes inverse hyperbolic sine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.arccosh.html#dpnp.arccosh" title="dpnp.arccosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arccosh</span></code></a></p></td>
+<td><p>Computes inverse hyperbolic cosine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.acosh.html#dpnp.acosh" title="dpnp.acosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">acosh</span></code></a></p></td>
+<td><p>Computes inverse hyperbolic cosine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.arctanh.html#dpnp.arctanh" title="dpnp.arctanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arctanh</span></code></a></p></td>
+<td><p>Computes hyperbolic inverse tangent for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.atanh.html#dpnp.atanh" title="dpnp.atanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atanh</span></code></a></p></td>
+<td><p>Computes hyperbolic inverse tangent for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="rounding">
+<h2>Rounding<a class="headerlink" href="#rounding" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.round.html#dpnp.round" title="dpnp.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code></a></p></td>
+<td><p>Rounds each element <span class="math notranslate nohighlight">\(x_i\)</span> of the input array <cite>x</cite> to the nearest integer-valued number.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.around.html#dpnp.around" title="dpnp.around"><code class="xref py py-obj docutils literal notranslate"><span class="pre">around</span></code></a></p></td>
+<td><p>Round an array to the given number of decimals.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.rint.html#dpnp.rint" title="dpnp.rint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rint</span></code></a></p></td>
+<td><p>Rounds each element <span class="math notranslate nohighlight">\(x_i\)</span> of the input array <cite>x</cite> to the nearest integer-valued number.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fix.html#dpnp.fix" title="dpnp.fix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix</span></code></a></p></td>
+<td><p>Round to nearest integer towards zero.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.floor.html#dpnp.floor" title="dpnp.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floor</span></code></a></p></td>
+<td><p>Returns the floor for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ceil.html#dpnp.ceil" title="dpnp.ceil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ceil</span></code></a></p></td>
+<td><p>Returns the ceiling for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.trunc.html#dpnp.trunc" title="dpnp.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a></p></td>
+<td><p>Returns the truncated value for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="sums-products-differences">
+<h2>Sums, products, differences<a class="headerlink" href="#sums-products-differences" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.prod.html#dpnp.prod" title="dpnp.prod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prod</span></code></a></p></td>
+<td><p>Return the product of array elements over a given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.sum.html#dpnp.sum" title="dpnp.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum</span></code></a></p></td>
+<td><p>Sum of array elements over a given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.nanprod.html#dpnp.nanprod" title="dpnp.nanprod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nanprod</span></code></a></p></td>
+<td><p>Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.nansum.html#dpnp.nansum" title="dpnp.nansum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nansum</span></code></a></p></td>
+<td><p>Return the sum of array elements over a given axis treating Not a Numbers (NaNs) as zero.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.cumulative_sum.html#dpnp.cumulative_sum" title="dpnp.cumulative_sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumulative_sum</span></code></a></p></td>
+<td><p>Return the cumulative sum of the elements along a given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.cumulative_prod.html#dpnp.cumulative_prod" title="dpnp.cumulative_prod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumulative_prod</span></code></a></p></td>
+<td><p>Return the cumulative product of elements along a given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.cumprod.html#dpnp.cumprod" title="dpnp.cumprod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumprod</span></code></a></p></td>
+<td><p>Return the cumulative product of elements along a given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.cumsum.html#dpnp.cumsum" title="dpnp.cumsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumsum</span></code></a></p></td>
+<td><p>Return the cumulative sum of the elements along a given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.nancumprod.html#dpnp.nancumprod" title="dpnp.nancumprod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nancumprod</span></code></a></p></td>
+<td><p>Return the cumulative product of array elements over a given axis treating Not a Numbers (NaNs) as zero.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.nancumsum.html#dpnp.nancumsum" title="dpnp.nancumsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nancumsum</span></code></a></p></td>
+<td><p>Return the cumulative sum of array elements over a given axis treating Not a Numbers (NaNs) as zero.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.diff.html#dpnp.diff" title="dpnp.diff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">diff</span></code></a></p></td>
+<td><p>Calculate the n-th discrete difference along the given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ediff1d.html#dpnp.ediff1d" title="dpnp.ediff1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ediff1d</span></code></a></p></td>
+<td><p>The differences between consecutive elements of an array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.gradient.html#dpnp.gradient" title="dpnp.gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gradient</span></code></a></p></td>
+<td><p>Return the gradient of an N-dimensional array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.cross.html#dpnp.cross" title="dpnp.cross"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross</span></code></a></p></td>
+<td><p>Return the cross product of two (arrays of) vectors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.trapezoid.html#dpnp.trapezoid" title="dpnp.trapezoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trapezoid</span></code></a></p></td>
+<td><p>Integrate along the given axis using the composite trapezoidal rule.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="exponents-and-logarithms">
+<h2>Exponents and logarithms<a class="headerlink" href="#exponents-and-logarithms" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.exp.html#dpnp.exp" title="dpnp.exp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp</span></code></a></p></td>
+<td><p>Computes the exponential for each element <span class="math notranslate nohighlight">\(x_i\)</span> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.expm1.html#dpnp.expm1" title="dpnp.expm1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expm1</span></code></a></p></td>
+<td><p>Computes the exponential minus <code class="docutils literal notranslate"><span class="pre">1</span></code> for each element <span class="math notranslate nohighlight">\(x_i\)</span> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.exp2.html#dpnp.exp2" title="dpnp.exp2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp2</span></code></a></p></td>
+<td><p>Computes the base-2 exponential for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.log.html#dpnp.log" title="dpnp.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
+<td><p>Computes the natural logarithm for each element <span class="math notranslate nohighlight">\(x_i\)</span> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.log10.html#dpnp.log10" title="dpnp.log10"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log10</span></code></a></p></td>
+<td><p>Computes the base-10 logarithm for each element <span class="math notranslate nohighlight">\(x_i\)</span> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.log2.html#dpnp.log2" title="dpnp.log2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log2</span></code></a></p></td>
+<td><p>Computes the base-2 logarithm for each element <span class="math notranslate nohighlight">\(x_i\)</span> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.log1p.html#dpnp.log1p" title="dpnp.log1p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log1p</span></code></a></p></td>
+<td><p>Computes the natural logarithm of (1 + <cite>x</cite>) for each element <span class="math notranslate nohighlight">\(x_i\)</span> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.logaddexp.html#dpnp.logaddexp" title="dpnp.logaddexp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logaddexp</span></code></a></p></td>
+<td><p>Calculates the natural logarithm of the sum of exponentiations <span class="math notranslate nohighlight">\(\log(e^{x1} + e^{x2})\)</span> for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.logaddexp2.html#dpnp.logaddexp2" title="dpnp.logaddexp2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logaddexp2</span></code></a></p></td>
+<td><p>Calculates the base-2 logarithm of the sum of exponentiations <span class="math notranslate nohighlight">\(\log_2(2^{x1} + 2^{x2})\)</span> for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.logsumexp.html#dpnp.logsumexp" title="dpnp.logsumexp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logsumexp</span></code></a></p></td>
+<td><p>Calculates the natural logarithm of the sum of exponentials of elements in the input array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.cumlogsumexp.html#dpnp.cumlogsumexp" title="dpnp.cumlogsumexp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cumlogsumexp</span></code></a></p></td>
+<td><p>Calculates the cumulative logarithm of the sum of elements in the input array <cite>x</cite>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="other-special-functions">
+<h2>Other special functions<a class="headerlink" href="#other-special-functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.i0.html#dpnp.i0" title="dpnp.i0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">i0</span></code></a></p></td>
+<td><p>Modified Bessel function of the first kind, order 0.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.sinc.html#dpnp.sinc" title="dpnp.sinc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinc</span></code></a></p></td>
+<td><p>Return the normalized sinc function.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="floating-point-routines">
+<h2>Floating point routines<a class="headerlink" href="#floating-point-routines" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.signbit.html#dpnp.signbit" title="dpnp.signbit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signbit</span></code></a></p></td>
+<td><p>Determines whether the sign bit is set for each element <span class="math notranslate nohighlight">\(x_i\)</span> of the input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.copysign.html#dpnp.copysign" title="dpnp.copysign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copysign</span></code></a></p></td>
+<td><p>Composes a floating-point value with the magnitude of <span class="math notranslate nohighlight">\(x1_i\)</span> and the sign of <span class="math notranslate nohighlight">\(x2_i\)</span> for each element of the input array <cite>x1</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.frexp.html#dpnp.frexp" title="dpnp.frexp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">frexp</span></code></a></p></td>
+<td><p>Decompose each element <span class="math notranslate nohighlight">\(x_i\)</span> of the input array <cite>x</cite> into the mantissa and the twos exponent.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ldexp.html#dpnp.ldexp" title="dpnp.ldexp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ldexp</span></code></a></p></td>
+<td><p>Returns <span class="math notranslate nohighlight">\(x1 * 2^{x2}\)</span>, element-wise.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.nextafter.html#dpnp.nextafter" title="dpnp.nextafter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nextafter</span></code></a></p></td>
+<td><p>Return the next floating-point value after <cite>x1</cite> towards <cite>x2</cite>, element-wise.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.spacing.html#dpnp.spacing" title="dpnp.spacing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spacing</span></code></a></p></td>
+<td><p>Return the distance between <cite>x</cite> and the nearest adjacent number.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="rational-routines">
+<h2>Rational routines<a class="headerlink" href="#rational-routines" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.lcm.html#dpnp.lcm" title="dpnp.lcm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcm</span></code></a></p></td>
+<td><p>Returns the lowest common multiple of <span class="math notranslate nohighlight">\(|x_1|\)</span> and <span class="math notranslate nohighlight">\(|x_2|\)</span>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.gcd.html#dpnp.gcd" title="dpnp.gcd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gcd</span></code></a></p></td>
+<td><p>Returns the greatest common divisor of <span class="math notranslate nohighlight">\(|x_1|\)</span> and <span class="math notranslate nohighlight">\(|x_2|\)</span>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="arithmetic-operations">
+<h2>Arithmetic operations<a class="headerlink" href="#arithmetic-operations" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.add.html#dpnp.add" title="dpnp.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code></a></p></td>
+<td><p>Calculates the sum for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.reciprocal.html#dpnp.reciprocal" title="dpnp.reciprocal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reciprocal</span></code></a></p></td>
+<td><p>Computes the reciprocal for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.positive.html#dpnp.positive" title="dpnp.positive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">positive</span></code></a></p></td>
+<td><p>Computes the numerical positive of each element <span class="math notranslate nohighlight">\(x_i\)</span> (i.e., <span class="math notranslate nohighlight">\(y_i = +x_i\)</span>) of the input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.negative.html#dpnp.negative" title="dpnp.negative"><code class="xref py py-obj docutils literal notranslate"><span class="pre">negative</span></code></a></p></td>
+<td><p>Computes the numerical negative of each element <span class="math notranslate nohighlight">\(x_i\)</span> (i.e., <span class="math notranslate nohighlight">\(y_i = -x_i\)</span>) of the input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.multiply.html#dpnp.multiply" title="dpnp.multiply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiply</span></code></a></p></td>
+<td><p>Calculates the product for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.divide.html#dpnp.divide" title="dpnp.divide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">divide</span></code></a></p></td>
+<td><p>Calculates the ratio for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.power.html#dpnp.power" title="dpnp.power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power</span></code></a></p></td>
+<td><p>Calculates <span class="math notranslate nohighlight">\(x1_i\)</span> raised to <span class="math notranslate nohighlight">\(x2_i\)</span> for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.pow.html#dpnp.pow" title="dpnp.pow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pow</span></code></a></p></td>
+<td><p>Calculates <span class="math notranslate nohighlight">\(x1_i\)</span> raised to <span class="math notranslate nohighlight">\(x2_i\)</span> for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.subtract.html#dpnp.subtract" title="dpnp.subtract"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subtract</span></code></a></p></td>
+<td><p>Calculates the difference for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.true_divide.html#dpnp.true_divide" title="dpnp.true_divide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">true_divide</span></code></a></p></td>
+<td><p>Calculates the ratio for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.floor_divide.html#dpnp.floor_divide" title="dpnp.floor_divide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floor_divide</span></code></a></p></td>
+<td><p>Rounds the result of dividing each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> by the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite> to the greatest (i.e., closest to <code class="docutils literal notranslate"><span class="pre">+infinity</span></code>) integer-value number that is not greater than the division result.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.float_power.html#dpnp.float_power" title="dpnp.float_power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float_power</span></code></a></p></td>
+<td><p>Calculates <span class="math notranslate nohighlight">\(x1_i\)</span> raised to <span class="math notranslate nohighlight">\(x2_i\)</span> for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fmod.html#dpnp.fmod" title="dpnp.fmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fmod</span></code></a></p></td>
+<td><p>Calculates the remainder of division for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.mod.html#dpnp.mod" title="dpnp.mod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mod</span></code></a></p></td>
+<td><p>Calculates the remainder of division for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.modf.html#dpnp.modf" title="dpnp.modf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modf</span></code></a></p></td>
+<td><p>Decompose each element <span class="math notranslate nohighlight">\(x_i\)</span> of the input array <cite>x</cite> into the fractional and the integral parts.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.remainder.html#dpnp.remainder" title="dpnp.remainder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remainder</span></code></a></p></td>
+<td><p>Calculates the remainder of division for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.divmod.html#dpnp.divmod" title="dpnp.divmod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">divmod</span></code></a></p></td>
+<td><p>Calculates the quotient and the remainder for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="handling-complex-numbers">
+<h2>Handling complex numbers<a class="headerlink" href="#handling-complex-numbers" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.angle.html#dpnp.angle" title="dpnp.angle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">angle</span></code></a></p></td>
+<td><p>Computes the phase angle (also called the argument) of each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.real.html#dpnp.real" title="dpnp.real"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></a></p></td>
+<td><p>Returns the real component of a complex number for each element <span class="math notranslate nohighlight">\(x_i\)</span> of the input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.imag.html#dpnp.imag" title="dpnp.imag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imag</span></code></a></p></td>
+<td><p>Returns the imaginary component of a complex number for each element <span class="math notranslate nohighlight">\(x_i\)</span> of the input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.conj.html#dpnp.conj" title="dpnp.conj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">conj</span></code></a></p></td>
+<td><p>Returns the complex conjugate for each element <span class="math notranslate nohighlight">\(x_i\)</span> of the input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.conjugate.html#dpnp.conjugate" title="dpnp.conjugate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">conjugate</span></code></a></p></td>
+<td><p>Returns the complex conjugate for each element <span class="math notranslate nohighlight">\(x_i\)</span> of the input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.proj.html#dpnp.proj" title="dpnp.proj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">proj</span></code></a></p></td>
+<td><p>Computes the complex projection of each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="extrema-finding">
+<h2>Extrema finding<a class="headerlink" href="#extrema-finding" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.maximum.html#dpnp.maximum" title="dpnp.maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></a></p></td>
+<td><p>Computes the maximum value for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> relative to the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.max.html#dpnp.max" title="dpnp.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></a></p></td>
+<td><p>Return the maximum of an array or maximum along an axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.amax.html#dpnp.amax" title="dpnp.amax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">amax</span></code></a></p></td>
+<td><p>Return the maximum of an array or maximum along an axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.fmax.html#dpnp.fmax" title="dpnp.fmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fmax</span></code></a></p></td>
+<td><p>Compares two input arrays <cite>x1</cite> and <cite>x2</cite> and returns a new array containing the element-wise maxima.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.nanmax.html#dpnp.nanmax" title="dpnp.nanmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nanmax</span></code></a></p></td>
+<td><p>Return the maximum of an array or maximum along an axis, ignoring any NaNs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.minimum.html#dpnp.minimum" title="dpnp.minimum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum</span></code></a></p></td>
+<td><p>Computes the minimum value for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite> relative to the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.min.html#dpnp.min" title="dpnp.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code></a></p></td>
+<td><p>Return the minimum of an array or maximum along an axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.amin.html#dpnp.amin" title="dpnp.amin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">amin</span></code></a></p></td>
+<td><p>Return the minimum of an array or minimum along an axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fmin.html#dpnp.fmin" title="dpnp.fmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fmin</span></code></a></p></td>
+<td><p>Compares two input arrays <cite>x1</cite> and <cite>x2</cite> and returns a new array containing the element-wise minima.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.nanmin.html#dpnp.nanmin" title="dpnp.nanmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nanmin</span></code></a></p></td>
+<td><p>Return the minimum of an array or minimum along an axis, ignoring any NaNs.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.convolve.html#dpnp.convolve" title="dpnp.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convolve</span></code></a></p></td>
+<td><p>Returns the discrete, linear convolution of two one-dimensional sequences.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.clip.html#dpnp.clip" title="dpnp.clip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clip</span></code></a></p></td>
+<td><p>Clip (limit) the values in an array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.sqrt.html#dpnp.sqrt" title="dpnp.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a></p></td>
+<td><p>Computes the principal square-root for each element <span class="math notranslate nohighlight">\(x_i\)</span> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.cbrt.html#dpnp.cbrt" title="dpnp.cbrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cbrt</span></code></a></p></td>
+<td><p>Computes the cube-root for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.square.html#dpnp.square" title="dpnp.square"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square</span></code></a></p></td>
+<td><p>Squares each element <span class="math notranslate nohighlight">\(x_i\)</span> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.rsqrt.html#dpnp.rsqrt" title="dpnp.rsqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rsqrt</span></code></a></p></td>
+<td><p>Computes the reciprocal square-root for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.abs.html#dpnp.abs" title="dpnp.abs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">abs</span></code></a></p></td>
+<td><p>Calculates the absolute value for each element <span class="math notranslate nohighlight">\(x_i\)</span> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.absolute.html#dpnp.absolute" title="dpnp.absolute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">absolute</span></code></a></p></td>
+<td><p>Calculates the absolute value for each element <span class="math notranslate nohighlight">\(x_i\)</span> of input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.fabs.html#dpnp.fabs" title="dpnp.fabs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fabs</span></code></a></p></td>
+<td><p>Compute the absolute values element-wise.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.sign.html#dpnp.sign" title="dpnp.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sign</span></code></a></p></td>
+<td><p>Returns an indication of the sign of a number for each element <span class="math notranslate nohighlight">\(x_i\)</span> of the input array <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.heaviside.html#dpnp.heaviside" title="dpnp.heaviside"><code class="xref py py-obj docutils literal notranslate"><span class="pre">heaviside</span></code></a></p></td>
+<td><p>Compute the Heaviside step function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.nan_to_num.html#dpnp.nan_to_num" title="dpnp.nan_to_num"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nan_to_num</span></code></a></p></td>
+<td><p>Replace <code class="docutils literal notranslate"><span class="pre">NaN</span></code> with zero and infinity with large finite numbers (default behavior) or with the numbers defined by the user using the <cite>nan</cite>, <cite>posinf</cite> and/or <cite>neginf</cite> keywords.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.real_if_close.html#dpnp.real_if_close" title="dpnp.real_if_close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real_if_close</span></code></a></p></td>
+<td><p>If input is complex with all imaginary parts close to zero, return real parts.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.interp.html#dpnp.interp" title="dpnp.interp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interp</span></code></a></p></td>
+<td><p>One-dimensional linear interpolation.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="generated/dpnp.array_equiv.html" class="btn btn-neutral float-left" title="dpnp.array_equiv" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/dpnp.unwrap.html" class="btn btn-neutral float-right" title="dpnp.unwrap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
