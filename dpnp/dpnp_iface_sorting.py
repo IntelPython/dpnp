@@ -310,7 +310,14 @@ def partition(a, kth, axis=-1, kind="introselect", order=None):
         if not 0 <= kth[i] < length:
             raise ValueError(f"kth(={kth[i]}) out of bounds {length}")
 
-    if a.ndim > 1 or nkth > 1 or dpnp.is_cuda_backend(a.get_array()):
+    dt = a.dtype
+    if (
+        nd > 1
+        or nkth > 1
+        or dpnp.issubdtype(dt, dpnp.unsignedinteger)
+        or dt in (dpnp.int8, dpnp.int16)
+        or dpnp.is_cuda_backend(a.get_array())
+    ):
         # sort is a faster path in case of ndim > 1
         return dpnp.sort(a, axis=axis)
 
