@@ -27,13 +27,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-find_package(Python REQUIRED COMPONENTS NumPy)
-
-# -t is to only Cythonize sources with timestamps newer than existing CXX files (if present)
-# -w is to set working directory (and correctly set __pyx_f[] array of filenames)
-set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
-find_package(Cython REQUIRED)
-
+# TODO: rework this logic to remove current duplication
 if(WIN32)
     string(
         CONCAT WARNING_FLAGS
@@ -118,7 +112,7 @@ else()
 endif()
 
 # at build time create include/ directory and copy header files over
-set(DPCTL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# set(DPCTL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
