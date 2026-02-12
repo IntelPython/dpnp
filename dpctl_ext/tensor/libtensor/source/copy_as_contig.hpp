@@ -32,14 +32,9 @@
 #include <vector>
 
 #include "dpnp4pybind11.hpp"
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 std::pair<sycl::event, sycl::event>
@@ -56,6 +51,4 @@ std::pair<sycl::event, sycl::event>
 
 void init_copy_as_contig_dispatch_vectors(void);
 
-} // end of namespace py_internal
-} // end of namespace tensor
-} // end of namespace dpctl
+} // namespace dpctl::tensor::py_internal

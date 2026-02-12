@@ -39,12 +39,10 @@
 #include <pybind11/stl.h>
 #include <sycl/sycl.hpp>
 
-namespace dpctl
+namespace dpctl::tensor::py_internal
 {
-namespace tensor
-{
-namespace py_internal
-{
+
+namespace py = pybind11;
 
 namespace
 {
@@ -61,7 +59,6 @@ std::string _default_device_fp_type(const sycl::device &d)
 
 int get_numpy_major_version()
 {
-    namespace py = pybind11;
 
     py::module_ numpy = py::module_::import("numpy");
     py::str version_string = numpy.attr("__version__");
@@ -179,6 +176,4 @@ std::string default_device_index_type(const py::object &arg)
     return _default_device_index_type(d);
 }
 
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal

@@ -32,10 +32,11 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
-#include <algorithm>
 #include <cstddef>
+#include <iterator>
 #include <numeric>
 #include <stdexcept>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -54,13 +55,10 @@
 #include "copy_as_contig.hpp"
 #include "simplify_iteration_space.hpp"
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
+namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::kernels::copy_as_contig::
@@ -753,6 +751,4 @@ std::pair<sycl::event, sycl::event>
                           ascontig_ev);
 }
 
-} // end of namespace py_internal
-} // end of namespace tensor
-} // end of namespace dpctl
+} // namespace dpctl::tensor::py_internal
