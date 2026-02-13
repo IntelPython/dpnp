@@ -60,7 +60,16 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 # 8. Paths stored in the CMake System Package Registry
 # 9. Paths specified by the PATHS option (assumed hard-coded guesses)
 set(path_to_cmake_dir ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules)
-find_package(IntelSYCL REQUIRED PATHS ${path_to_cmake_dir})
+# TODO: use the commented logic once the compiler resolves CMake issue
+# find_package(IntelSYCL REQUIRED PATHS ${path_to_cmake_dir})
+find_package(IntelSYCL QUIET)
+if(SYCL_LIBRARY_FOUND)
+    find_package(IntelSYCL REQUIRED)
+else()
+    # compiler CMake might have an issue and can't find SYCL_LIBRARY properly
+    # then use vendored CMake with fixed logic
+    find_package(IntelSYCL REQUIRED PATHS ${path_to_cmake_dir} NO_DEFAULT_PATH)
+endif()
 find_package(TBB REQUIRED PATHS ${path_to_cmake_dir})
 
 set(MKL_ARCH "intel64")
