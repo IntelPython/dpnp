@@ -45,7 +45,6 @@ import operator
 from collections.abc import Iterable
 
 import dpctl.tensor as dpt
-import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._copy_utils import _nonzero_impl
@@ -53,7 +52,11 @@ from dpctl.tensor._indexing_functions import _get_indexing_mode
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpctl_ext.tensor as dpt_ext
-import dpctl_ext.tensor._tensor_impl as ti_ext
+
+# pylint: disable=no-name-in-module
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 
 # pylint: disable=no-name-in-module
@@ -297,7 +300,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
                 "Input and output allocation queues are not compatible"
             )
 
-        if ti_ext._array_overlap(x, out):
+        if ti._array_overlap(x, out):
             # Allocate a temporary buffer to avoid memory overlapping.
             out = dpt.empty_like(out)
     else:
@@ -306,7 +309,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
     _manager = dpu.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
 
-    h_ev, take_ev = ti_ext._take(
+    h_ev, take_ev = ti._take(
         src=x,
         ind=(inds,),
         dst=out,
