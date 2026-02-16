@@ -45,6 +45,8 @@ requirements:
       - python-gil     # [py>=314]
       - {{ pin_compatible('dpctl', min_pin='x.x.x', max_pin=None) }}
       - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
+      - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
+      - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-blas', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-dft', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-lapack', min_pin='x.x', max_pin='x') }}
