@@ -1,15 +1,26 @@
+from __future__ import annotations
+
 import unittest
 
 import numpy
 import pytest
 
 import dpnp as cupy
+
+# from cupyx import cusolver
+# from cupy.cuda import driver
+# from cupy.cuda import runtime
+# from cupy.linalg import _util
 from dpnp.tests.helper import (
+    LTS_VERSION,
     has_support_aspect64,
-    is_cpu_device,
+    is_lts_driver,
+    is_win_platform,
 )
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
+
+# import cupyx
 
 
 def random_matrix(shape, dtype, scale, sym=False):
@@ -95,6 +106,8 @@ class TestCholeskyDecomposition:
         ]
     )
     def test_batched_decomposition(self, dtype):
+        # if not cusolver.check_availability("potrfBatched"):
+        #     pytest.skip("potrfBatched is not available")
         Ab1 = random_matrix((3, 5, 5), dtype, scale=(10, 10000), sym=True)
         self.check_L(Ab1)
         Ab2 = random_matrix((2, 2, 5, 5), dtype, scale=(10, 10000), sym=True)
@@ -134,9 +147,6 @@ class TestCholeskyInvalid(unittest.TestCase):
             with pytest.raises(xp.linalg.LinAlgError):
                 xp.linalg.cholesky(a)
 
-    # TODO: remove skipif when MKLD-17318 is resolved
-    # _potrf does not raise an error with singular matrices on CPU.
-    @pytest.mark.skipif(is_cpu_device(), reason="MKLD-17318")
     @testing.for_dtypes(
         [
             numpy.int32,
@@ -163,6 +173,10 @@ class TestQRDecomposition(unittest.TestCase):
 
     @testing.for_dtypes("fdFD")
     def check_mode(self, array, mode, dtype):
+        # if runtime.is_hip and driver.get_build_version() < 307:
+        #     if dtype in (numpy.complex64, numpy.complex128):
+        #         pytest.skip("ungqr unsupported")
+
         a_cpu = numpy.asarray(array, dtype=dtype)
         a_gpu = cupy.asarray(array, dtype=dtype)
         result_gpu = cupy.linalg.qr(a_gpu, mode=mode)
@@ -189,6 +203,10 @@ class TestQRDecomposition(unittest.TestCase):
         self.check_mode(numpy.random.randn(3, 3), mode=self.mode)
         self.check_mode(numpy.random.randn(5, 4), mode=self.mode)
 
+    @pytest.mark.skipif(
+        not is_win_platform() and is_lts_driver(version=LTS_VERSION.V1_6),
+        reason="SAT-8375",
+    )
     @testing.with_requires("numpy>=1.22")
     @testing.fix_random()
     def test_mode_rank3(self):
@@ -196,6 +214,10 @@ class TestQRDecomposition(unittest.TestCase):
         self.check_mode(numpy.random.randn(4, 3, 3), mode=self.mode)
         self.check_mode(numpy.random.randn(2, 5, 4), mode=self.mode)
 
+    @pytest.mark.skipif(
+        not is_win_platform() and is_lts_driver(version=LTS_VERSION.V1_6),
+        reason="SAT-8375",
+    )
     @testing.with_requires("numpy>=1.22")
     @testing.fix_random()
     def test_mode_rank4(self):
