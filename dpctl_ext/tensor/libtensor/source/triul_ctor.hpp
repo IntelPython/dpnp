@@ -40,6 +40,8 @@
 #include "dpnp4pybind11.hpp"
 #include <pybind11/pybind11.h>
 
+namespace py = pybind11;
+
 namespace dpctl
 {
 namespace tensor

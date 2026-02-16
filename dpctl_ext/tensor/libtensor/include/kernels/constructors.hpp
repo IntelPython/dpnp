@@ -33,8 +33,9 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include <complex>
+#include <array>
 #include <cstddef>
+#include <vector>
 
 #include <sycl/sycl.hpp>
 

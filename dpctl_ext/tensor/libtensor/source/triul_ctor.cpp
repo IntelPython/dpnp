@@ -34,8 +34,8 @@
 
 #include <algorithm> // for std::copy
 #include <cstddef>   // for std::size_t
+#include <iterator>  // for std::begin, std::end
 #include <memory>    // for std::make_shared
-#include <stdexcept> // for std::runtime_error
 #include <utility>   // for std::pair, std::move
 #include <vector>    // for std::vector, std::begin, std::end
 
@@ -47,7 +47,6 @@
 #include "kernels/constructors.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
-#include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
