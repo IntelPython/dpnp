@@ -15,7 +15,6 @@ from dpnp.tests.helper import (
     LTS_VERSION,
     has_support_aspect64,
     is_lts_driver,
-    is_win_platform,
 )
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
@@ -204,8 +203,7 @@ class TestQRDecomposition(unittest.TestCase):
         self.check_mode(numpy.random.randn(5, 4), mode=self.mode)
 
     @pytest.mark.skipif(
-        not is_win_platform() and is_lts_driver(version=LTS_VERSION.V1_6),
-        reason="SAT-8375",
+        is_lts_driver(version=LTS_VERSION.V1_6), reason="SAT-8375"
     )
     @testing.with_requires("numpy>=1.22")
     @testing.fix_random()
@@ -215,8 +213,7 @@ class TestQRDecomposition(unittest.TestCase):
         self.check_mode(numpy.random.randn(2, 5, 4), mode=self.mode)
 
     @pytest.mark.skipif(
-        not is_win_platform() and is_lts_driver(version=LTS_VERSION.V1_6),
-        reason="SAT-8375",
+        is_lts_driver(version=LTS_VERSION.V1_6), reason="SAT-8375"
     )
     @testing.with_requires("numpy>=1.22")
     @testing.fix_random()
