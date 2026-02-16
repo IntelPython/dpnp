@@ -42,11 +42,7 @@
 
 namespace py = pybind11;
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
@@ -59,6 +55,4 @@ extern std::pair<sycl::event, sycl::event>
 
 extern void init_triul_ctor_dispatch_vectors(void);
 
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal

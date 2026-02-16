@@ -44,13 +44,7 @@
 #include "utils/strided_iters.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace kernels
-{
-namespace constructors
+namespace dpctl::tensor::kernels::constructors
 {
 
 using dpctl::tensor::ssize_t;
@@ -305,7 +299,4 @@ struct TriuGenericFactory
     }
 };
 
-} // namespace constructors
-} // namespace kernels
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::kernels::constructors

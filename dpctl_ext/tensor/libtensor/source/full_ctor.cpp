@@ -53,11 +53,7 @@
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 using dpctl::utils::keep_args_alive;
@@ -310,6 +306,4 @@ void init_full_ctor_dispatch_vectors(void)
     dvb2.populate_dispatch_vector(full_strided_dispatch_vector);
 }
 
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal

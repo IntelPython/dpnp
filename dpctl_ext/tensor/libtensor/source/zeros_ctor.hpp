@@ -41,11 +41,7 @@
 #include "dpnp4pybind11.hpp"
 #include <pybind11/pybind11.h>
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
@@ -55,6 +51,4 @@ extern std::pair<sycl::event, sycl::event>
 
 extern void init_zeros_ctor_dispatch_vectors(void);
 
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal

@@ -43,13 +43,7 @@
 #include "utils/offset_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace kernels
-{
-namespace indexing
+namespace dpctl::tensor::kernels::indexing
 {
 
 using dpctl::tensor::ssize_t;
@@ -419,7 +413,4 @@ struct PutClipFactory
     }
 };
 
-} // namespace indexing
-} // namespace kernels
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::kernels::indexing

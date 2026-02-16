@@ -62,11 +62,7 @@
 #define WRAP_MODE      0
 #define CLIP_MODE      1
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 namespace td_ns = dpctl::tensor::type_dispatch;
@@ -816,6 +812,4 @@ void init_advanced_indexing_dispatch_tables(void)
     dtb_putwrap.populate_dispatch_table(put_dispatch_table[WRAP_MODE]);
 }
 
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal
