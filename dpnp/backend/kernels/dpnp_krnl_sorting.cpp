@@ -79,6 +79,8 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
     // fill the result array with data from input one
     q.memcpy(result, arr, size * sizeof(_DataType)).wait();
 
+    // note, a loop for a multidemension input array (size_ > 1) is an
+    // experimental and it isn't tested properly as for now
     for (size_t i = 0; i < size_; i++) {
         _DataType *bufptr = result + i * shape_[0];
 
