@@ -1,0 +1,10 @@
+﻿
+
+dpnp.logaddexp2
+===============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: logaddexp2
