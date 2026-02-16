@@ -63,7 +63,7 @@ build:
     script_env:
       - WHEELS_OUTPUT_FOLDER
       - OVERRIDE_INTEL_IPO  # [win]
-    ignore_run_export:
+    ignore_run_exports:
       - dpctl
 
 test:
