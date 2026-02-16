@@ -36,14 +36,8 @@
 
 #include "dpnp4pybind11.hpp"
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <sycl/sycl.hpp>
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 extern std::string default_device_fp_type(const py::object &);
@@ -53,6 +47,4 @@ extern std::string default_device_bool_type(const py::object &);
 extern std::string default_device_complex_type(const py::object &);
 extern std::string default_device_index_type(const py::object &);
 
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal

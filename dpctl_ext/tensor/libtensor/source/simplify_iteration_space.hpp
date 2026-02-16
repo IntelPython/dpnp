@@ -36,11 +36,7 @@
 #include <pybind11/pybind11.h>
 #include <vector>
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 namespace py = pybind11;
@@ -125,6 +121,5 @@ std::vector<py::ssize_t> _unravel_index_c(py::ssize_t,
                                           std::vector<py::ssize_t> const &);
 std::vector<py::ssize_t> _unravel_index_f(py::ssize_t,
                                           std::vector<py::ssize_t> const &);
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+
+} // namespace dpctl::tensor::py_internal

@@ -33,11 +33,12 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include <complex>
+#include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <sycl/sycl.hpp>
-#include <type_traits>
+#include <vector>
 
 #include "dpctl_tensor_types.hpp"
 #include "kernels/alignment.hpp"
@@ -45,13 +46,7 @@
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace kernels
-{
-namespace copy_as_contig
+namespace dpctl::tensor::kernels::copy_as_contig
 {
 
 using dpctl::tensor::ssize_t;
@@ -648,8 +643,4 @@ struct AsCContigNDBatchOfSquareMatricesFactory
         return as_c_contiguous_nd_batch_of_square_matrices_impl<T>;
     }
 };
-
-} // namespace copy_as_contig
-} // namespace kernels
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::kernels::copy_as_contig

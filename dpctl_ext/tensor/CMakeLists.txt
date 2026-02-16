@@ -27,8 +27,10 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+find_package(Python COMPONENTS Development)
+
 if(WIN32)
-    if(${CMAKE_VERSION} VERSION_LESS "3.23")
+    if(${CMAKE_VERSION} VERSION_LESS "3.27")
         # this is a work-around for target_link_options inserting option after -link option, cause
         # linker to ignore it.
         set(CMAKE_CXX_LINK_FLAGS
@@ -37,6 +39,7 @@ if(WIN32)
     endif()
 endif()
 
+# TODO: reuse this library for dpnp ufunc extension build
 set(_static_lib_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
 )
@@ -67,11 +70,11 @@ add_library(${_static_lib_trgt} STATIC ${_static_lib_sources})
 target_include_directories(
     ${_static_lib_trgt}
     PRIVATE
-        ${Python_INCLUDE_DIRS}
-        ${DPCTL_INCLUDE_DIR}
+        # ${Python_INCLUDE_DIRS}
+        # ${Dpctl_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
 )
-target_link_libraries(${_static_lib_trgt} PRIVATE pybind11::headers ${Python_LIBRARIES})
+target_link_libraries(${_static_lib_trgt} PRIVATE pybind11::headers Python::Python)
 set_target_properties(${_static_lib_trgt} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 set(_py_trgts)
@@ -94,14 +97,14 @@ set(_no_fast_math_sources
     # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
     # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/where.cpp
 )
-list(
-    APPEND _no_fast_math_sources
-    # ${_elementwise_sources}
-    # ${_reduction_sources}
-    # ${_sorting_sources}
-    # ${_linalg_sources}
-    # ${_accumulator_sources}
-)
+#list(
+#APPEND _no_fast_math_sources
+# ${_elementwise_sources}
+# ${_reduction_sources}
+# ${_sorting_sources}
+# ${_linalg_sources}
+# ${_accumulator_sources}
+#)
 
 foreach(_src_fn ${_no_fast_math_sources})
     get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
@@ -114,7 +117,7 @@ endforeach()
 
 set(_compiler_definitions "")
 
-set(_linker_options "LINKER:${DPCTL_LDFLAGS}")
+set(_linker_options "LINKER:${DPNP_LDFLAGS}")
 foreach(python_module_name ${_py_trgts})
     target_compile_options(
         ${python_module_name}
@@ -124,6 +127,7 @@ foreach(python_module_name ${_py_trgts})
         ${python_module_name}
         PRIVATE -fsycl-device-code-split=per_kernel
     )
+    # TODO: expand DPCTL_OFFLOAD_COMPRESS to the whole dpnp level
     if(DPCTL_OFFLOAD_COMPRESS)
         target_link_options(${python_module_name} PRIVATE --offload-compress)
     endif()
@@ -149,22 +153,22 @@ foreach(python_module_name ${_py_trgts})
             PRIVATE -fprofile-instr-generate -fcoverage-mapping
         )
     endif()
-    if(_dpctl_sycl_targets)
+    if(_dpnp_sycl_targets)
         # make fat binary
         target_compile_options(
             ${python_module_name}
-            PRIVATE ${_dpctl_sycl_target_compile_options}
+            PRIVATE ${_dpnp_sycl_target_compile_options}
         )
         target_link_options(
             ${python_module_name}
-            PRIVATE ${_dpctl_sycl_target_link_options}
+            PRIVATE ${_dpnp_sycl_target_link_options}
         )
     endif()
     # TODO: update source so they reference individual libraries instead of
     #   dpctl4pybind11.hpp. It will allow to simplify dependency tree
     # NOTE: dpctl C-API is resolved at runtime via Python
     # target_link_libraries(${python_module_name} PRIVATE DpctlCAPI)
-    if(DPCTL_WITH_REDIST)
+    if(DPNP_WITH_REDIST)
         set_target_properties(
             ${python_module_name}
             PROPERTIES INSTALL_RPATH "$ORIGIN/../../../.."

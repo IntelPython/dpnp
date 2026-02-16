@@ -38,13 +38,8 @@
 #include <vector>
 
 #include "dpnp4pybind11.hpp"
-#include <pybind11/pybind11.h>
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 extern std::pair<sycl::event, sycl::event> copy_usm_ndarray_into_usm_ndarray(
@@ -55,6 +50,4 @@ extern std::pair<sycl::event, sycl::event> copy_usm_ndarray_into_usm_ndarray(
 
 extern void init_copy_and_cast_usm_to_usm_dispatch_tables();
 
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal

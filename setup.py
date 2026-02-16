@@ -44,7 +44,7 @@ skbuild.setup(
         "dpnp.scipy",
         "dpnp.scipy.linalg",
         "dpnp.scipy.special",
-        # dpctl_ext
+        # TODO: replace with dpctl; dpctl.tensor
         "dpctl_ext",
         "dpctl_ext.tensor",
     ],

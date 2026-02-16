@@ -40,6 +40,7 @@ it contains:
 """
 
 # pylint: disable=protected-access
+# pylint: disable=no-name-in-module
 
 import os
 
@@ -49,12 +50,12 @@ import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._device import normalize_queue_device
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 
 from .dpnp_array import dpnp_array
-
-# pylint: disable=no-name-in-module
 from .dpnp_utils import (
     dpnp_descriptor,
     map_dtype_to_device,

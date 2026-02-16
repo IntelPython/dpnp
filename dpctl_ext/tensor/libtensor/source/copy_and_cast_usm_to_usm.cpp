@@ -32,21 +32,15 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
-#include <algorithm>
-#include <complex>
+#include <array>
 #include <cstddef>
-#include <cstdint>
-#include <stdexcept>
 #include <sycl/sycl.hpp>
-#include <thread>
-#include <type_traits>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "dpnp4pybind11.hpp"
-#include <pybind11/complex.h>
-#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "kernels/copy_and_cast.hpp"
 #include "utils/memory_overlap.hpp"
@@ -54,16 +48,11 @@
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
-#include "utils/type_utils.hpp"
 
 #include "copy_as_contig.hpp"
 #include "simplify_iteration_space.hpp"
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 namespace td_ns = dpctl::tensor::type_dispatch;
@@ -305,6 +294,4 @@ void init_copy_and_cast_usm_to_usm_dispatch_tables(void)
     dtb_1d.populate_dispatch_table(copy_and_cast_1d_dispatch_table);
 }
 
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal

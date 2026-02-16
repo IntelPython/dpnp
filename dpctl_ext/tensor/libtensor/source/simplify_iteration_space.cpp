@@ -34,15 +34,13 @@
 
 #include "simplify_iteration_space.hpp"
 #include "utils/strided_iters.hpp"
+#include <algorithm>
 #include <cstddef>
+#include <iterator>
 #include <pybind11/pybind11.h>
 #include <vector>
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 namespace py = pybind11;
@@ -539,6 +537,4 @@ std::vector<py::ssize_t> _unravel_index_f(py::ssize_t flat_index,
     return mi;
 }
 
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal

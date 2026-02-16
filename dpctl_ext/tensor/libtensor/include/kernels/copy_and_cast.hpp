@@ -33,11 +33,12 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include <complex>
+#include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <sycl/sycl.hpp>
-#include <type_traits>
+#include <vector>
 
 #include "dpctl_tensor_types.hpp"
 #include "kernels/alignment.hpp"
@@ -45,13 +46,7 @@
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace kernels
-{
-namespace copy_and_cast
+namespace dpctl::tensor::kernels::copy_and_cast
 {
 
 using dpctl::tensor::ssize_t;
@@ -1282,7 +1277,4 @@ struct CopyForRollNDShiftFactory
     }
 };
 
-} // namespace copy_and_cast
-} // namespace kernels
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::kernels::copy_and_cast
