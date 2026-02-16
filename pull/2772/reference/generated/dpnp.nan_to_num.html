@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnp.nan_to_num &mdash; Data Parallel Extension for NumPy 0.20.0dev3+4.g9843fa7c07 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d8e8e68"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpnp.real_if_close" href="dpnp.real_if_close.html" />
+    <link rel="prev" title="dpnp.abs" href="dpnp.abs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines (NumPy)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../constants.html">Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions.html">Exceptions and Warnings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.fft</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.linalg</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../math.html">Mathematical functions</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../math.html#trigonometric-functions">Trigonometric functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#hyperbolic-functions">Hyperbolic functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#rounding">Rounding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#sums-products-differences">Sums, products, differences</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#exponents-and-logarithms">Exponents and logarithms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#other-special-functions">Other special functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#floating-point-routines">Floating point routines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#rational-routines">Rational routines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#arithmetic-operations">Arithmetic operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#handling-complex-numbers">Handling complex numbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#extrema-finding">Extrema finding</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../math.html#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../routines.html">Routines (NumPy)</a></li>
+          <li class="breadcrumb-item"><a href="../math.html">Mathematical functions</a></li>
+      <li class="breadcrumb-item active">dpnp.nan_to_num</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/generated/dpnp.nan_to_num.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dpnp-nan-to-num">
+<h1>dpnp.nan_to_num<a class="headerlink" href="#dpnp-nan-to-num" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpnp.nan_to_num">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">nan_to_num</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posinf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neginf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#nan_to_num"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.nan_to_num" title="Link to this definition"></a></dt>
+<dd><p>Replace <code class="docutils literal notranslate"><span class="pre">NaN</span></code> with zero and infinity with large finite numbers (default
+behavior) or with the numbers defined by the user using the <cite>nan</cite>,
+<cite>posinf</cite> and/or <cite>neginf</cite> keywords.</p>
+<p>If <cite>x</cite> is inexact, <code class="docutils literal notranslate"><span class="pre">NaN</span></code> is replaced by zero or by the user defined value
+in <cite>nan</cite> keyword, infinity is replaced by the largest finite floating point
+values representable by <code class="docutils literal notranslate"><span class="pre">x.dtype</span></code> or by the user defined value in
+<cite>posinf</cite> keyword and -infinity is replaced by the most negative finite
+floating point values representable by <code class="docutils literal notranslate"><span class="pre">x.dtype</span></code> or by the user defined
+value in <cite>neginf</cite> keyword.</p>
+<p>For complex dtypes, the above is applied to each of the real and
+imaginary components of <cite>x</cite> separately.</p>
+<p>If <cite>x</cite> is not inexact, then no replacements are made.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.nan_to_num.html#numpy.nan_to_num" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.nan_to_num</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input data.</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to create a copy of <cite>x</cite> (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or to replace values
+in-place (<code class="docutils literal notranslate"><span class="pre">False</span></code>). The in-place operation only occurs if casting to
+an array does not require a copy.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</p></li>
+<li><p><strong>nan</strong> (<em>{scalar</em><em>, </em><em>array_like}</em><em>, </em><em>optional</em>) -- <p>Values to be used to fill <code class="docutils literal notranslate"><span class="pre">NaN</span></code> values. If no values are passed then
+<code class="docutils literal notranslate"><span class="pre">NaN</span></code> values will be replaced with <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.
+Expected to have a real-valued data type for the values.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p>
+</p></li>
+<li><p><strong>posinf</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><em>array_like}</em><em>, </em><em>optional</em>) -- <p>Values to be used to fill positive infinity values. If no values are
+passed then positive infinity values will be replaced with a very
+large number.
+Expected to have a real-valued data type for the values.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>neginf</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><em>array_like}</em><em>, </em><em>optional</em>) -- <p>Values to be used to fill negative infinity values. If no values are
+passed then negative infinity values will be replaced with a very
+small (or negative) number.
+Expected to have a real-valued data type for the values.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> -- <cite>x</cite>, with the non-finite values replaced. If <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, this
+may be <cite>x</cite> itself.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.isinf.html#dpnp.isinf" title="dpnp.isinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isinf</span></code></a></dt><dd><p>Shows which elements are positive or negative infinity.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.isneginf.html#dpnp.isneginf" title="dpnp.isneginf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isneginf</span></code></a></dt><dd><p>Shows which elements are negative infinity.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.isposinf.html#dpnp.isposinf" title="dpnp.isposinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isposinf</span></code></a></dt><dd><p>Shows which elements are positive infinity.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.isnan.html#dpnp.isnan" title="dpnp.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isnan</span></code></a></dt><dd><p>Shows which elements are Not a Number (NaN).</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.isfinite.html#dpnp.isfinite" title="dpnp.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isfinite</span></code></a></dt><dd><p>Shows which elements are finite (not NaN, not infinity)</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+<span class="go">array(1.79769313e+308)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+<span class="go">array(-1.79769313e+308)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">))</span>
+<span class="go">array(0.)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">array([ 1.79769313e+308, -1.79769313e+308,  0.00000000e+000,</span>
+<span class="go">       -1.28000000e+002,  1.28000000e+002])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">nan</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="mi">33333333</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="mi">33333333</span><span class="p">)</span>
+<span class="go">array([ 3.3333333e+07,  3.3333333e+07, -9.9990000e+03, -1.2800000e+02,</span>
+<span class="go">        1.2800000e+02])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mi">9999</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">posinf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">33333333</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">neginf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">11</span><span class="p">,</span> <span class="mi">33333333</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="n">nan</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="n">posinf</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="n">neginf</span><span class="p">)</span>
+<span class="go">array([ 3.3333333e+07,  3.3333333e+07, -9.9990000e+03, -1.2800000e+02,</span>
+<span class="go">        1.2800000e+02])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">complex</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="nb">complex</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="go">array([1.79769313e+308 +0.00000000e+000j, # may vary</span>
+<span class="go">       0.00000000e+000 +0.00000000e+000j,</span>
+<span class="go">       0.00000000e+000 +1.79769313e+308j])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mi">111111</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="mi">222222</span><span class="p">)</span>
+<span class="go">array([222222.+111111.j, 111111.     +0.j, 111111.+222222.j])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dpnp.abs.html" class="btn btn-neutral float-left" title="dpnp.abs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.real_if_close.html" class="btn btn-neutral float-right" title="dpnp.real_if_close" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
