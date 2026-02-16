@@ -1541,7 +1541,7 @@ class TestTrimZeros:
 
         result = dpnp.trim_zeros(ia, axis=axis, trim=trim)
         expected = numpy.trim_zeros(a, axis=axis, trim=trim)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     # NOTE: numpy behaves differently on 0-sized input array
     # and returns the input array with reduced shapes
