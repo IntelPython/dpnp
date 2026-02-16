@@ -60,7 +60,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 # 8. Paths stored in the CMake System Package Registry
 # 9. Paths specified by the PATHS option (assumed hard-coded guesses)
 set(path_to_cmake_dir ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules)
-# TODO: use the commented logic once the compiler resolves CMake issue
+# TODO: use the commented logic once the compiler resolves CMake issue CMPLRLLVM-73484
 # find_package(IntelSYCL REQUIRED PATHS ${path_to_cmake_dir})
 find_package(IntelSYCL QUIET)
 if(SYCL_LIBRARY_FOUND)
