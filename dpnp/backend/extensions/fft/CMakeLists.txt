@@ -57,13 +57,6 @@ set_target_properties(
     PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON
 )
 
-target_include_directories(
-    ${python_module_name}
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../src
-)
-
 # treat below headers as system to suppress the warnings there during the build
 target_include_directories(
     ${python_module_name}
