@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.partition &mdash; Data Parallel Extension for NumPy 0.20.0dev2+17.ga98e7196f6c documentation</title>
+  <title>dpnp.partition &mdash; Data Parallel Extension for NumPy 0.20.0dev2+23.gea76b088ae1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=f0af79d0"></script>
+      <script src="../../_static/documentation_options.js?v=ca8db2c4"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -127,14 +127,73 @@
 <h1>dpnp.partition<a class="headerlink" href="#dpnp-partition" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.partition">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">partition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'introselect'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_sorting.html#partition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.partition" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">partition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'introselect'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_sorting.html#partition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.partition" title="Link to this definition"></a></dt>
 <dd><p>Return a partitioned copy of an array.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.partition.html#numpy.partition" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.partition</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array to be sorted.</p></li>
+<li><p><strong>kth</strong> (<em>{int</em><em>, </em><em>sequence</em><em> of </em><em>ints}</em>) -- Element index to partition by. The k-th value of the element will be in
+its final sorted position and all smaller elements will be moved before
+it and all equal or greater elements behind it. The order of all
+elements in the partitions is undefined. If provided with a sequence of
+k-th it will partition all elements indexed by k-th of them into their
+sorted position at once.</p></li>
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- <p>Axis along which to sort. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the array is flattened before
+sorting. The default is <code class="docutils literal notranslate"><span class="pre">-1</span></code>, which sorts along the last axis.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> -- Array of the same type and shape as <cite>a</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
+</dd>
+</dl>
 <p class="rubric">Limitations</p>
-<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Input <cite>kth</cite> is supported as <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>.
-Parameters <cite>axis</cite>, <cite>kind</cite> and <cite>order</cite> are supported only with default
-values.</p>
+<p>Parameters <cite>kind</cite> and <cite>order</cite> are only supported with its default value.
+Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.ndarray.partition.html#dpnp.ndarray.partition" title="dpnp.ndarray.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.partition</span></code></a></dt><dd><p>Equivalent method.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.argpartition</span></code></dt><dd><p>Indirect partition.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.sort.html#dpnp.sort" title="dpnp.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sort</span></code></a></dt><dd><p>Full sorting.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span>
+<span class="go">array([0, 1, 1, 2, 2, 2, 3, 3, 5, 7, 7, 7, 7, 6]) # may vary</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">p[4]</span></code> is 2;  all elements in <code class="docutils literal notranslate"><span class="pre">p[:4]</span></code> are less than or equal to
+<code class="docutils literal notranslate"><span class="pre">p[4]</span></code>, and all elements in <code class="docutils literal notranslate"><span class="pre">p[5:]</span></code> are greater than or equal to
+<code class="docutils literal notranslate"><span class="pre">p[4]</span></code>. The partition is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The next example shows the use of multiple values passed to <cite>kth</cite>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p2</span>
+<span class="go">array([0, 1, 1, 2, 2, 2, 3, 3, 5, 6, 7, 7, 7, 7])</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">p2[4]</span></code> is 2  and <code class="docutils literal notranslate"><span class="pre">p2[8]</span></code> is 5. All elements in <code class="docutils literal notranslate"><span class="pre">p2[:4]</span></code> are less
+than or equal to <code class="docutils literal notranslate"><span class="pre">p2[4]</span></code>, all elements in <code class="docutils literal notranslate"><span class="pre">p2[5:8]</span></code> are greater than or
+equal to <code class="docutils literal notranslate"><span class="pre">p2[4]</span></code> and less than or equal to <code class="docutils literal notranslate"><span class="pre">p2[8]</span></code>, and all elements in
+<code class="docutils literal notranslate"><span class="pre">p2[9:]</span></code> are greater than or equal to <code class="docutils literal notranslate"><span class="pre">p2[8]</span></code>. The partition is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
