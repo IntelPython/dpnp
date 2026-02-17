@@ -53,7 +53,7 @@
 #include "copy_as_contig.hpp"
 // #include "copy_for_reshape.hpp"
 // #include "copy_for_roll.hpp"
-// #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
+#include "copy_numpy_ndarray_into_usm_ndarray.hpp"
 #include "device_support_queries.hpp"
 // #include "eye_ctor.hpp"
 #include "full_ctor.hpp"
@@ -96,7 +96,7 @@ using dpctl::tensor::py_internal::py_as_f_contig;
 
 /* ============= Copy from numpy.ndarray to usm_ndarray ==================== */
 
-// using dpctl::tensor::py_internal::copy_numpy_ndarray_into_usm_ndarray;
+using dpctl::tensor::py_internal::copy_numpy_ndarray_into_usm_ndarray;
 
 /* ============= linear-sequence ==================== */
 
@@ -146,7 +146,7 @@ void init_dispatch_tables(void)
     using namespace dpctl::tensor::py_internal;
 
     init_copy_and_cast_usm_to_usm_dispatch_tables();
-    // init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables();
+    init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables();
     init_advanced_indexing_dispatch_tables();
     // init_where_dispatch_tables();
     return;
@@ -317,11 +317,11 @@ PYBIND11_MODULE(_tensor_impl, m)
     //           py::arg("include_endpoint"), py::arg("sycl_queue"),
     //           py::arg("depends") = py::list());
 
-    // m.def("_copy_numpy_ndarray_into_usm_ndarray",
-    //       &copy_numpy_ndarray_into_usm_ndarray,
-    //       "Copy from numpy array `src` into usm_ndarray `dst`
-    //       synchronously.", py::arg("src"), py::arg("dst"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_copy_numpy_ndarray_into_usm_ndarray",
+          &copy_numpy_ndarray_into_usm_ndarray,
+          "Copy from numpy array `src` into usm_ndarray `dst` synchronously.",
+          py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     m.def("_zeros_usm_ndarray", &usm_ndarray_zeros,
           "Populate usm_ndarray `dst` with zeros.", py::arg("dst"),
