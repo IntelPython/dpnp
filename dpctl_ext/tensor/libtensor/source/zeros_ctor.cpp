@@ -32,6 +32,7 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
+#include <complex>
 #include <cstddef>
 #include <stdexcept>
 #include <utility>
@@ -40,6 +41,7 @@
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
+#include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 
 #include "utils/output_validation.hpp"

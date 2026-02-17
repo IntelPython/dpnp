@@ -33,10 +33,12 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
+#include <complex>
 #include <cstddef>
-#include <sycl/sycl.hpp>
 #include <type_traits>
 #include <vector>
+
+#include <sycl/sycl.hpp>
 
 #include "dpctl_tensor_types.hpp"
 #include "utils/indexing_utils.hpp"
