@@ -47,6 +47,7 @@ from dpctl.tensor._scalar_utils import (
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as dti
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
@@ -212,7 +213,7 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
 
         x_usm = dpnp.get_usm_ndarray(x)
         if dtype is not None:
-            x_usm = dpt.astype(x_usm, dtype, copy=False)
+            x_usm = dpt_ext.astype(x_usm, dtype, copy=False)
 
         out = self._unpack_out_kw(out)
         out_usm = None if out is None else dpnp.get_usm_ndarray(out)
@@ -718,9 +719,9 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                     sycl_queue=x2.sycl_queue,
                     usm_type=x2.usm_type,
                 )
-                x2_usm = dpt.astype(x2_usm, dtype, copy=False)
+                x2_usm = dpt_ext.astype(x2_usm, dtype, copy=False)
             elif dpnp.isscalar(x2):
-                x1_usm = dpt.astype(x1_usm, dtype, copy=False)
+                x1_usm = dpt_ext.astype(x1_usm, dtype, copy=False)
                 x2_usm = dpt.asarray(
                     x2,
                     dtype=dtype,
@@ -728,8 +729,8 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                     usm_type=x1.usm_type,
                 )
             else:
-                x1_usm = dpt.astype(x1_usm, dtype, copy=False)
-                x2_usm = dpt.astype(x2_usm, dtype, copy=False)
+                x1_usm = dpt_ext.astype(x1_usm, dtype, copy=False)
+                x2_usm = dpt_ext.astype(x2_usm, dtype, copy=False)
 
         res_usm = super().__call__(x1_usm, x2_usm, out=out_usm, order=order)
 
@@ -1325,7 +1326,7 @@ class DPNPRound(DPNPUnaryFunc):
                 res_usm = dpt.divide(x_usm, 10**decimals, out=out_usm)
 
             if dtype is not None:
-                res_usm = dpt.astype(res_usm, dtype, copy=False)
+                res_usm = dpt_ext.astype(res_usm, dtype, copy=False)
 
             if out is not None and isinstance(out, dpnp_array):
                 return out

@@ -46,6 +46,9 @@ import operator
 import dpctl.tensor as dpt
 import numpy
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 from dpnp import dpnp_container
 
@@ -934,7 +937,7 @@ def astype(x, dtype, /, *, order="K", casting="unsafe", copy=True, device=None):
         order = "K"
 
     usm_x = dpnp.get_usm_ndarray(x)
-    usm_res = dpt.astype(
+    usm_res = dpt_ext.astype(
         usm_x, dtype, order=order, casting=casting, copy=copy, device=device
     )
 
@@ -3129,7 +3132,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
         output = dpt.broadcast_arrays(*output)
 
     if copy:
-        output = [dpt.copy(x) for x in output]
+        output = [dpt_ext.copy(x) for x in output]
 
     return [dpnp_array._create_from_usm_ndarray(x) for x in output]
 

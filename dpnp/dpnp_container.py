@@ -38,6 +38,8 @@ This module contains code and dependency on different containers used in DPNP
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 import dpnp
 from dpnp.dpnp_array import dpnp_array
@@ -141,7 +143,7 @@ def copy(x1, /, *, order="K"):
     if order is None:
         order = "K"
 
-    array_obj = dpt.copy(dpnp.get_usm_ndarray(x1), order=order)
+    array_obj = dpt_ext.copy(dpnp.get_usm_ndarray(x1), order=order)
     return dpnp_array._create_from_usm_ndarray(array_obj)
 
 

@@ -51,11 +51,10 @@ from dpctl.tensor._copy_utils import _nonzero_impl
 from dpctl.tensor._indexing_functions import _get_indexing_mode
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
-import dpctl_ext.tensor as dpt_ext
-
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 
@@ -243,7 +242,7 @@ def choose(a, choices, out=None, mode="wrap"):
         # NumPy will cast up to int64 in general but
         # int32 is more than safe for bool
         if ind_dt == dpnp.bool:
-            inds = dpt.astype(inds, dpt.int32)
+            inds = dpt_ext.astype(inds, dpt.int32)
         else:
             raise TypeError("input index array must be of integer data type")
 
@@ -256,7 +255,7 @@ def choose(a, choices, out=None, mode="wrap"):
         choices = tuple(
             map(
                 lambda chc: (
-                    chc if chc.dtype == res_dt else dpt.astype(chc, res_dt)
+                    chc if chc.dtype == res_dt else dpt_ext.astype(chc, res_dt)
                 ),
                 choices,
             )
@@ -1616,7 +1615,9 @@ def place(a, mask, vals):
     if usm_vals.dtype != usm_a.dtype:
         # dpt.place casts values to a.dtype with "unsafe" rule,
         # while numpy.place does that with "safe" casting rule
-        usm_vals = dpt.astype(usm_vals, usm_a.dtype, casting="safe", copy=False)
+        usm_vals = dpt_ext.astype(
+            usm_vals, usm_a.dtype, casting="safe", copy=False
+        )
 
     dpt.place(usm_a, usm_mask, usm_vals)
 
@@ -1712,7 +1713,7 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
 
     if not dpnp.issubdtype(usm_ind.dtype, dpnp.integer):
         # dpt.put supports only integer dtype for array of indices
-        usm_ind = dpt.astype(usm_ind, dpnp.intp, casting="safe")
+        usm_ind = dpt_ext.astype(usm_ind, dpnp.intp, casting="safe")
 
     in_usm_a = usm_a
     if axis is None and usm_a.ndim > 1:
@@ -2171,7 +2172,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
 
     if not dpnp.issubdtype(usm_ind.dtype, dpnp.integer):
         # dpt.take supports only integer dtype for array of indices
-        usm_ind = dpt.astype(usm_ind, dpnp.intp, copy=False, casting="safe")
+        usm_ind = dpt_ext.astype(usm_ind, dpnp.intp, copy=False, casting="safe")
 
     usm_res = _take_index(
         usm_a, usm_ind, axis, exec_q, res_usm_type, out=out, mode=mode

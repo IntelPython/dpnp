@@ -33,6 +33,9 @@ import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import numpy
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations, map_dtype_to_device
@@ -256,7 +259,7 @@ def dpnp_linspace(
     if dpnp.issubdtype(dtype, dpnp.integer):
         dpt.floor(usm_res, out=usm_res)
 
-    res = dpt.astype(usm_res, dtype, copy=False)
+    res = dpt_ext.astype(usm_res, dtype, copy=False)
     res = dpnp_array._create_from_usm_ndarray(res)
 
     if retstep is True:
