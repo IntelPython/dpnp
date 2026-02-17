@@ -43,6 +43,7 @@ from dpctl_ext.tensor._indexing_functions import (
     put,
     take,
 )
+from dpctl_ext.tensor._reshape import reshape
 
 __all__ = [
     "asnumpy",
@@ -51,6 +52,7 @@ __all__ = [
     "from_numpy",
     "full",
     "put",
+    "reshape",
     "take",
     "to_numpy",
     "tril",
