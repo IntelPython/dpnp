@@ -65,6 +65,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Removed the obsolete interface from DPNP to Numba JIT [#2647](https://github.com/IntelPython/dpnp/pull/2647)
 * Removed the `newshape` parameter from `dpnp.reshape`, which has been deprecated since dpnp 0.17.0. Pass it positionally or use `shape=` on newer versions [#2670](https://github.com/IntelPython/dpnp/pull/2670)
 * Removed unused `pytest` configuration from `pyproject.toml` [#2729](https://github.com/IntelPython/dpnp/pull/2729)
+* Dropped a conda run dependency on `onemkl-sycl-stats` package [#2771](https://github.com/IntelPython/dpnp/pull/2771)
 
 ### Fixed
 
