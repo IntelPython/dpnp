@@ -233,7 +233,9 @@ def dpnp_linspace(
             usm_type=_usm_type,
             sycl_queue=sycl_queue_normalized,
         )
-        usm_res = dpt.reshape(usm_res, (-1,) + (1,) * delta.ndim, copy=False)
+        usm_res = dpt_ext.reshape(
+            usm_res, (-1,) + (1,) * delta.ndim, copy=False
+        )
 
         if step_num > 0:
             step = delta / step_num

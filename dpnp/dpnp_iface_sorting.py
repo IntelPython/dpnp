@@ -43,6 +43,9 @@ import dpctl.tensor as dpt
 import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 
 # pylint: disable=no-name-in-module
@@ -84,7 +87,7 @@ def _wrap_sort_argsort(
 
     usm_a = dpnp.get_usm_ndarray(a)
     if axis is None:
-        usm_a = dpt.reshape(usm_a, -1)
+        usm_a = dpt_ext.reshape(usm_a, -1)
         axis = -1
 
     axis = normalize_axis_index(axis, ndim=usm_a.ndim)

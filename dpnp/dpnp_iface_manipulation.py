@@ -53,6 +53,9 @@ from dpctl.tensor._numpy_helper import (
     normalize_axis_tuple,
 )
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 
 from .dpnp_array import dpnp_array
@@ -415,7 +418,7 @@ def _unique_1d(
             dpt.place(
                 usm_res.inverse_indices,
                 usm_res.inverse_indices > first_nan,
-                dpt.reshape(first_nan, 1),
+                dpt_ext.reshape(first_nan, 1),
             )
 
         result += (usm_res.inverse_indices,)
@@ -3057,7 +3060,7 @@ def reshape(a, /, shape, order="C", *, copy=None):
         )
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.reshape(usm_a, shape=shape, order=order, copy=copy)
+    usm_res = dpt_ext.reshape(usm_a, shape=shape, order=order, copy=copy)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -3259,7 +3262,7 @@ def roll(x, shift, axis=None):
         shift = dpnp.asnumpy(shift)
 
     if axis is None:
-        return roll(dpt.reshape(usm_x, -1), shift, 0).reshape(x.shape)
+        return roll(dpt_ext.reshape(usm_x, -1), shift, 0).reshape(x.shape)
 
     usm_res = dpt.roll(usm_x, shift=shift, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)

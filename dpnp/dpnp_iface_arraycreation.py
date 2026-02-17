@@ -3117,7 +3117,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
 
     s0 = (1,) * ndim
     output = [
-        dpt.reshape(dpnp.get_usm_ndarray(x), s0[:i] + (-1,) + s0[i + 1 :])
+        dpt_ext.reshape(dpnp.get_usm_ndarray(x), s0[:i] + (-1,) + s0[i + 1 :])
         for i, x in enumerate(xi)
     ]
 
@@ -3125,8 +3125,8 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     _, _ = get_usm_allocations(output)
 
     if indexing == "xy" and ndim > 1:
-        output[0] = dpt.reshape(output[0], (1, -1) + s0[2:])
-        output[1] = dpt.reshape(output[1], (-1, 1) + s0[2:])
+        output[0] = dpt_ext.reshape(output[0], (1, -1) + s0[2:])
+        output[1] = dpt_ext.reshape(output[1], (-1, 1) + s0[2:])
 
     if not sparse:
         output = dpt.broadcast_arrays(*output)
@@ -3932,7 +3932,7 @@ def vander(
 
     tmp = m[:, ::-1] if not increasing else m
     dpnp.power(
-        dpt.reshape(usm_x, (-1, 1)),
+        dpt_ext.reshape(usm_x, (-1, 1)),
         dpt.arange(
             N, dtype=_dtype, usm_type=x_usm_type, sycl_queue=x_sycl_queue
         ),
