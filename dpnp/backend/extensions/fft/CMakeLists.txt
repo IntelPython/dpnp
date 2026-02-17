@@ -57,17 +57,12 @@ set_target_properties(
     PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON
 )
 
+# treat below headers as system to suppress the warnings there during the build
 target_include_directories(
     ${python_module_name}
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include
+    SYSTEM
+    PRIVATE ${SYCL_INCLUDE_DIR} ${Dpctl_INCLUDE_DIRS} ${Dpctl_TENSOR_INCLUDE_DIR}
 )
-target_include_directories(
-    ${python_module_name}
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../src
-)
-
-target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
-target_include_directories(${python_module_name} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
 
 if(WIN32)
     target_compile_options(

@@ -51,6 +51,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Extended `dpnp.nan_to_num` to support broadcasting of `nan`, `posinf`, and `neginf` keywords [#2754](https://github.com/IntelPython/dpnp/pull/2754)
 * Changed `dpnp.partition` implementation to reuse `dpnp.sort` where it brings the performance benefit [#2766](https://github.com/IntelPython/dpnp/pull/2766)
 * `dpnp` uses pybind11 3.0.2 [#27734](https://github.com/IntelPython/dpnp/pull/2773)
+* Modified CMake files for the extension to explicitly mark DPC++ compiler and dpctl headers as system ones and so to suppress the build warning generated inside them [#2770](https://github.com/IntelPython/dpnp/pull/2770)
 
 ### Deprecated
 
