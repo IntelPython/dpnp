@@ -49,7 +49,7 @@ set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_and_cast_usm_to_usm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_as_contig.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_numpy_ndarray_into_usm_ndarray.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_for_reshape.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_for_reshape.cpp
     # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_for_roll.cpp
     # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/integer_advanced_indexing.cpp

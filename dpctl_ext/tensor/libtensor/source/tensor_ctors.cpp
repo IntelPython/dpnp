@@ -51,7 +51,7 @@
 // #include "clip.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_as_contig.hpp"
-// #include "copy_for_reshape.hpp"
+#include "copy_for_reshape.hpp"
 // #include "copy_for_roll.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
 #include "device_support_queries.hpp"
@@ -87,7 +87,7 @@ using dpctl::tensor::py_internal::py_as_f_contig;
 
 /* =========================== Copy for reshape ============================= */
 
-// using dpctl::tensor::py_internal::copy_usm_ndarray_for_reshape;
+using dpctl::tensor::py_internal::copy_usm_ndarray_for_reshape;
 
 /* =========================== Copy for roll ============================= */
 
@@ -279,12 +279,13 @@ PYBIND11_MODULE(_tensor_impl, m)
         },
         "");
 
-    // m.def("_copy_usm_ndarray_for_reshape", &copy_usm_ndarray_for_reshape,
-    //       "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same
-    //       " "number of elements using underlying 'C'-contiguous order for
-    //       flat " "traversal. " "Returns a tuple of events: (ht_event,
-    //       comp_event)", py::arg("src"), py::arg("dst"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_copy_usm_ndarray_for_reshape", &copy_usm_ndarray_for_reshape,
+          "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same "
+          "number of elements using underlying 'C'-contiguous order for flat "
+          "traversal. "
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     // m.def("_copy_usm_ndarray_for_roll_1d", &copy_usm_ndarray_for_roll_1d,
     //       "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same
