@@ -50,6 +50,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Aligned `strides` property of `dpnp.ndarray` with NumPy and CuPy implementations [#2747](https://github.com/IntelPython/dpnp/pull/2747)
 * Extended `dpnp.nan_to_num` to support broadcasting of `nan`, `posinf`, and `neginf` keywords [#2754](https://github.com/IntelPython/dpnp/pull/2754)
 * Changed `dpnp.partition` implementation to reuse `dpnp.sort` where it brings the performance benefit [#2766](https://github.com/IntelPython/dpnp/pull/2766)
+* `dpnp` uses pybind11 3.0.2 [#27734](https://github.com/IntelPython/dpnp/pull/2773)
 * Modified CMake files for the extension to explicitly mark DPC++ compiler and dpctl headers as system ones and so to suppress the build warning generated inside them [#2770](https://github.com/IntelPython/dpnp/pull/2770)
 
 ### Deprecated
@@ -65,6 +66,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Removed the obsolete interface from DPNP to Numba JIT [#2647](https://github.com/IntelPython/dpnp/pull/2647)
 * Removed the `newshape` parameter from `dpnp.reshape`, which has been deprecated since dpnp 0.17.0. Pass it positionally or use `shape=` on newer versions [#2670](https://github.com/IntelPython/dpnp/pull/2670)
 * Removed unused `pytest` configuration from `pyproject.toml` [#2729](https://github.com/IntelPython/dpnp/pull/2729)
+* Dropped a conda run dependency on `onemkl-sycl-stats` package [#2771](https://github.com/IntelPython/dpnp/pull/2771)
 
 ### Fixed
 
