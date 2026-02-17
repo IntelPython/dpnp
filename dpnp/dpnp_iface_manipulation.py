@@ -3264,7 +3264,7 @@ def roll(x, shift, axis=None):
     if axis is None:
         return roll(dpt_ext.reshape(usm_x, -1), shift, 0).reshape(x.shape)
 
-    usm_res = dpt.roll(usm_x, shift=shift, axis=axis)
+    usm_res = dpt_ext.roll(usm_x, shift=shift, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
