@@ -27,6 +27,11 @@
 # *****************************************************************************
 
 
+from dpctl_ext.tensor._copy_utils import (
+    asnumpy,
+    from_numpy,
+    to_numpy,
+)
 from dpctl_ext.tensor._ctors import (
     full,
     tril,
@@ -38,9 +43,12 @@ from dpctl_ext.tensor._indexing_functions import (
 )
 
 __all__ = [
+    "asnumpy",
+    "from_numpy",
     "full",
     "put",
     "take",
+    "to_numpy",
     "tril",
     "triu",
 ]
