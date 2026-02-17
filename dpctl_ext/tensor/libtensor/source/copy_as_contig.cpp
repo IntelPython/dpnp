@@ -189,6 +189,12 @@ std::pair<sycl::event, sycl::event>
             "Execution queue is not compatible with allocation queues");
     }
 
+    // check that arrays do not overlap, and concurrent copying is safe.
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+
     const auto &src_strides_vec = src.get_strides_vector();
 
     if (src_nd >= 2) {
@@ -312,6 +318,12 @@ std::pair<sycl::event, sycl::event>
     if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
+    }
+
+    // check that arrays do not overlap, and concurrent copying is safe.
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
     }
 
     const auto &src_strides_vec = src.get_strides_vector();
@@ -457,6 +469,12 @@ std::pair<sycl::event, sycl::event>
     if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
+    }
+
+    // check that arrays do not overlap, and concurrent copying is safe.
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
     }
 
     if (nelems == 0) {
@@ -622,6 +640,20 @@ std::pair<sycl::event, sycl::event>
 
     if (src_strides_vec[1] != py::ssize_t(1)) {
         throw py::value_error("Unexpected destination array layout");
+    }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
+    // check compatibility of execution queue and allocation queue
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    // check that arrays do not overlap, and concurrent copying is safe.
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, dst)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
     }
 
     int src_typenum = src.get_typenum();
