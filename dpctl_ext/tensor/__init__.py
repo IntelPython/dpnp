@@ -43,6 +43,9 @@ from dpctl_ext.tensor._indexing_functions import (
     put,
     take,
 )
+from dpctl_ext.tensor._manipulation_functions import (
+    roll,
+)
 from dpctl_ext.tensor._reshape import reshape
 
 __all__ = [
@@ -53,6 +56,7 @@ __all__ = [
     "full",
     "put",
     "reshape",
+    "roll",
     "take",
     "to_numpy",
     "tril",
