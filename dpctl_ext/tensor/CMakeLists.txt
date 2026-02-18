@@ -27,7 +27,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-find_package(Python COMPONENTS Development)
+find_package(Python COMPONENTS Development.Module)
 
 if(WIN32)
     if(${CMAKE_VERSION} VERSION_LESS "3.27")
@@ -74,7 +74,7 @@ target_include_directories(
         # ${Dpctl_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
 )
-target_link_libraries(${_static_lib_trgt} PRIVATE pybind11::headers Python::Python)
+target_link_libraries(${_static_lib_trgt} PRIVATE pybind11::headers Python::Module)
 set_target_properties(${_static_lib_trgt} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 set(_py_trgts)
