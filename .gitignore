@@ -33,4 +33,6 @@ dpnp/**/*.pyd
 *~
 core
 
+# TODO: revert to `dpctl/`
+# when dpnp fully migrates dpctl/tensor
 dpctl_ext/**/*.cpython*.so
