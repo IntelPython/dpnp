@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.20.0dev2+31.g323910ff090 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.20.0dev2+48.gc234c08921e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b94758b6"></script>
+      <script src="../../_static/documentation_options.js?v=e3d4adfa"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -130,7 +130,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._copy_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_nonzero_impl</span>
@@ -138,7 +137,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl_ext.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt_ext</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl_ext.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti_ext</span>
+
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="c1"># TODO: revert to `import dpctl.tensor...`</span>
+<span class="c1"># when dpnp fully migrates dpctl/tensor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl_ext.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
@@ -385,7 +388,7 @@
                 <span class="s2">&quot;Input and output allocation queues are not compatible&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">ti_ext</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
             <span class="c1"># Allocate a temporary buffer to avoid memory overlapping.</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -394,7 +397,7 @@
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
 
-    <span class="n">h_ev</span><span class="p">,</span> <span class="n">take_ev</span> <span class="o">=</span> <span class="n">ti_ext</span><span class="o">.</span><span class="n">_take</span><span class="p">(</span>
+    <span class="n">h_ev</span><span class="p">,</span> <span class="n">take_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_take</span><span class="p">(</span>
         <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
         <span class="n">ind</span><span class="o">=</span><span class="p">(</span><span class="n">inds</span><span class="p">,),</span>
         <span class="n">dst</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
