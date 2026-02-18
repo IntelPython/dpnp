@@ -60,7 +60,16 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 # 8. Paths stored in the CMake System Package Registry
 # 9. Paths specified by the PATHS option (assumed hard-coded guesses)
 set(path_to_cmake_dir ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules)
-find_package(IntelSYCL REQUIRED PATHS ${path_to_cmake_dir})
+# TODO: use the commented logic once the compiler resolves CMake issue CMPLRLLVM-73484
+# find_package(IntelSYCL REQUIRED PATHS ${path_to_cmake_dir})
+find_package(IntelSYCL QUIET)
+if(SYCL_LIBRARY_FOUND)
+    find_package(IntelSYCL REQUIRED)
+else()
+    # compiler CMake might have an issue and can't find SYCL_LIBRARY properly
+    # then use vendored CMake with fixed logic
+    find_package(IntelSYCL REQUIRED PATHS ${path_to_cmake_dir} NO_DEFAULT_PATH)
+endif()
 find_package(TBB REQUIRED PATHS ${path_to_cmake_dir})
 
 set(MKL_ARCH "intel64")
@@ -86,8 +95,8 @@ find_package(Python 3.10...<3.15 REQUIRED COMPONENTS Development.Module NumPy)
 include(FetchContent)
 FetchContent_Declare(
     pybind11
-    URL https://github.com/pybind/pybind11/archive/refs/tags/v3.0.1.tar.gz
-    URL_HASH SHA256=741633da746b7c738bb71f1854f957b9da660bcd2dce68d71949037f0969d0ca
+    URL https://github.com/pybind/pybind11/archive/refs/tags/v3.0.2.tar.gz
+    URL_HASH SHA256=2f20a0af0b921815e0e169ea7fec63909869323581b89d7de1553468553f6a2d
     FIND_PACKAGE_ARGS NAMES pybind11
 )
 FetchContent_MakeAvailable(pybind11)

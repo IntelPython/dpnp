@@ -3646,20 +3646,24 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
         an array does not require a copy.
 
         Default: ``True``.
-    nan : {int, float, bool}, optional
-        Value to be used to fill ``NaN`` values.
+    nan : {scalar, array_like}, optional
+        Values to be used to fill ``NaN`` values. If no values are passed then
+        ``NaN`` values will be replaced with ``0.0``.
+        Expected to have a real-valued data type for the values.
 
         Default: ``0.0``.
-    posinf : {int, float, bool, None}, optional
-        Value to be used to fill positive infinity values. If no value is
+    posinf : {None, scalar, array_like}, optional
+        Values to be used to fill positive infinity values. If no values are
         passed then positive infinity values will be replaced with a very
         large number.
+        Expected to have a real-valued data type for the values.
 
         Default: ``None``.
-    neginf : {int, float, bool, None} optional
-        Value to be used to fill negative infinity values. If no value is
+    neginf : {None, scalar, array_like}, optional
+        Values to be used to fill negative infinity values. If no values are
         passed then negative infinity values will be replaced with a very
         small (or negative) number.
+        Expected to have a real-valued data type for the values.
 
         Default: ``None``.
 
@@ -3687,6 +3691,7 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     array(-1.79769313e+308)
     >>> np.nan_to_num(np.array(np.nan))
     array(0.)
+
     >>> x = np.array([np.inf, -np.inf, np.nan, -128, 128])
     >>> np.nan_to_num(x)
     array([ 1.79769313e+308, -1.79769313e+308,  0.00000000e+000,
@@ -3694,6 +3699,14 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     >>> np.nan_to_num(x, nan=-9999, posinf=33333333, neginf=33333333)
     array([ 3.3333333e+07,  3.3333333e+07, -9.9990000e+03, -1.2800000e+02,
             1.2800000e+02])
+
+    >>> nan = np.array([11, 12, -9999, 13, 14])
+    >>> posinf = np.array([33333333, 11, 12, 13, 14])
+    >>> neginf = np.array([11, 33333333, 12, 13, 14])
+    >>> np.nan_to_num(x, nan=nan, posinf=posinf, neginf=neginf)
+    array([ 3.3333333e+07,  3.3333333e+07, -9.9990000e+03, -1.2800000e+02,
+            1.2800000e+02])
+
     >>> y = np.array([complex(np.inf, np.nan), np.nan, complex(np.nan, np.inf)])
     >>> np.nan_to_num(y)
     array([1.79769313e+308 +0.00000000e+000j, # may vary
@@ -3706,33 +3719,32 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
 
     dpnp.check_supported_arrays_type(x)
 
-    # Python boolean is a subtype of an integer
-    # so additional check for bool is not needed.
-    if not isinstance(nan, (int, float)):
-        raise TypeError(
-            "nan must be a scalar of an integer, float, bool, "
-            f"but got {type(nan)}"
-        )
-    x_type = x.dtype.type
+    def _check_nan_inf(val, val_dt):
+        # Python boolean is a subtype of an integer
+        if not isinstance(val, (int, float)):
+            val = dpnp.asarray(
+                val, dtype=val_dt, sycl_queue=x.sycl_queue, usm_type=x.usm_type
+            )
+        return val
 
-    if not issubclass(x_type, dpnp.inexact):
+    x_type = x.dtype.type
+    if not dpnp.issubdtype(x_type, dpnp.inexact):
         return dpnp.copy(x) if copy else dpnp.get_result_array(x)
 
     max_f, min_f = _get_max_min(x.real.dtype)
+
+    # get dtype of nan and infs values if casting required
+    is_complex = dpnp.issubdtype(x_type, dpnp.complexfloating)
+    if is_complex:
+        val_dt = x.real.dtype
+    else:
+        val_dt = x.dtype
+
+    nan = _check_nan_inf(nan, val_dt)
     if posinf is not None:
-        if not isinstance(posinf, (int, float)):
-            raise TypeError(
-                "posinf must be a scalar of an integer, float, bool, "
-                f"or be None, but got {type(posinf)}"
-            )
-        max_f = posinf
+        max_f = _check_nan_inf(posinf, val_dt)
     if neginf is not None:
-        if not isinstance(neginf, (int, float)):
-            raise TypeError(
-                "neginf must be a scalar of an integer, float, bool, "
-                f"or be None, but got {type(neginf)}"
-            )
-        min_f = neginf
+        min_f = _check_nan_inf(neginf, val_dt)
 
     if copy:
         out = dpnp.empty_like(x)
@@ -3741,19 +3753,45 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
             raise ValueError("copy is required for read-only array `x`")
         out = x
 
-    x_ary = dpnp.get_usm_ndarray(x)
-    out_ary = dpnp.get_usm_ndarray(out)
+    # handle a special case when nan and infs are all scalars
+    if all(dpnp.isscalar(el) for el in (nan, max_f, min_f)):
+        x_ary = dpnp.get_usm_ndarray(x)
+        out_ary = dpnp.get_usm_ndarray(out)
 
-    q = x.sycl_queue
-    _manager = dpu.SequentialOrderManager[q]
+        q = x.sycl_queue
+        _manager = dpu.SequentialOrderManager[q]
 
-    h_ev, comp_ev = ufi._nan_to_num(
-        x_ary, nan, max_f, min_f, out_ary, q, depends=_manager.submitted_events
-    )
+        h_ev, comp_ev = ufi._nan_to_num(
+            x_ary,
+            nan,
+            max_f,
+            min_f,
+            out_ary,
+            q,
+            depends=_manager.submitted_events,
+        )
 
-    _manager.add_event_pair(h_ev, comp_ev)
+        _manager.add_event_pair(h_ev, comp_ev)
 
-    return dpnp.get_result_array(out)
+        return dpnp.get_result_array(out)
+
+    # handle a common case with broadcasting of input nan and infs
+    if is_complex:
+        parts = (x.real, x.imag)
+        parts_out = (out.real, out.imag)
+    else:
+        parts = (x,)
+        parts_out = (out,)
+
+    for part, part_out in zip(parts, parts_out):
+        nan_mask = dpnp.isnan(part)
+        posinf_mask = dpnp.isposinf(part)
+        neginf_mask = dpnp.isneginf(part)
+
+        part = dpnp.where(nan_mask, nan, part, out=part_out)
+        part = dpnp.where(posinf_mask, max_f, part, out=part_out)
+        part = dpnp.where(neginf_mask, min_f, part, out=part_out)
+    return out
 
 
 _NEGATIVE_DOCSTRING = """

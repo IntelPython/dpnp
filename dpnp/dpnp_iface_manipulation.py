@@ -3983,7 +3983,7 @@ def trim_zeros(filt, trim="fb", axis=None):
         (or index -1).
 
         Default: ``"fb"``.
-    axis : {None, int}, optional
+    axis : {None, int, tuple of ints}, optional
         If ``None``, `filt` is cropped such that the smallest bounding box is
         returned that still contains all values which are not zero.
         If an `axis` is specified, `filt` will be sliced in that dimension only
@@ -4038,11 +4038,14 @@ def trim_zeros(filt, trim="fb", axis=None):
         raise ValueError(f"unexpected character(s) in `trim`: {trim!r}")
 
     nd = filt.ndim
-    if axis is not None:
-        axis = normalize_axis_index(axis, nd)
+    if axis is None:
+        axis = tuple(range(nd))
+    else:
+        axis = normalize_axis_tuple(axis, nd, argname="axis")
 
-    if filt.size == 0:
-        return filt  # no trailing zeros in empty array
+    # check if an empty array or no trimming requested
+    if filt.size == 0 or not axis:
+        return filt
 
     non_zero = dpnp.argwhere(filt)
     if non_zero.size == 0:
@@ -4061,13 +4064,10 @@ def trim_zeros(filt, trim="fb", axis=None):
         else:
             stop = (None,) * nd
 
-    if axis is None:
-        # trim all axes
-        sl = tuple(slice(*x) for x in zip(start, stop))
-    else:
-        # only trim single axis
-        sl = (slice(None),) * axis + (slice(start[axis], stop[axis]),) + (...,)
-
+    sl = tuple(
+        slice(start[ax], stop[ax]) if ax in axis else slice(None)
+        for ax in range(nd)
+    )
     return filt[sl]
 
 

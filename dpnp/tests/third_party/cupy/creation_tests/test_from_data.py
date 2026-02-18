@@ -131,7 +131,7 @@ class TestFromData(unittest.TestCase):
     @testing.for_orders("CFAK", name="dst_order")
     @testing.for_all_dtypes_combination(names=("dtype1", "dtype2"))
     @testing.numpy_cupy_array_equal(
-        type_check=has_support_aspect64(), strides_check=True
+        type_check=has_support_aspect64(), strides_check=has_support_aspect64()
     )
     def test_array_from_list_of_cupy(
         self, xp, dtype1, dtype2, src_order, dst_order

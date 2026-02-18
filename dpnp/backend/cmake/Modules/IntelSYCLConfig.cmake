@@ -329,7 +329,7 @@ if(SYCL_COMPILER)
       )
   #TODO Make an input file to configure and update the lib current version
   if(WIN32)
-    set(sycl_lib_suffix "8")
+    set(sycl_lib_suffix "9")
   else()
     set(sycl_lib_suffix "")
   endif()
