@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.helper import has_support_aspect64, numpy_version
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -155,10 +157,7 @@ class TestMisc:
             # (min or max) as a keyword argument according to Python Array API.
             # In older versions of numpy, both arguments must be positional;
             # passing only one raises a TypeError.
-            if (
-                xp is numpy
-                and numpy.lib.NumpyVersion(numpy.__version__) < "2.1.0"
-            ):
+            if xp is numpy and numpy_version() < "2.1.0":
                 with pytest.raises(TypeError):
                     xp.clip(a, 3)
             else:
@@ -257,9 +256,10 @@ class TestMisc:
     def test_nan_to_num_nan(self):
         self.check_unary_nan("nan_to_num")
 
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
+    @pytest.mark.skip("no scalar support")
+    @testing.numpy_cupy_allclose(atol=1e-5)
     def test_nan_to_num_scalar_nan(self, xp):
-        return xp.nan_to_num(xp.array(xp.nan))
+        return xp.nan_to_num(xp.nan)
 
     @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     def test_nan_to_num_inf_nan(self):
@@ -286,14 +286,44 @@ class TestMisc:
         return y
 
     @pytest.mark.parametrize("kwarg", ["nan", "posinf", "neginf"])
-    def test_nan_to_num_broadcast(self, kwarg):
+    @testing.numpy_cupy_array_equal()
+    def test_nan_to_num_broadcast_same_shapes(self, xp, kwarg):
+        x = xp.asarray(
+            [[0, 1, xp.nan, 4], [11, xp.inf, 12, 13]],
+            dtype=cupy.default_float_type(),
+        )
+        y = xp.zeros((2, 4), dtype=x.dtype)
+        return xp.nan_to_num(x, **{kwarg: y})
+
+    @pytest.mark.parametrize("kwarg", ["nan", "posinf", "neginf"])
+    @testing.numpy_cupy_array_equal()
+    def test_nan_to_num_broadcast_different_columns(self, xp, kwarg):
+        x = xp.asarray(
+            [[0, 1, xp.nan, 4], [11, xp.inf, 12, 13]],
+            dtype=cupy.default_float_type(),
+        )
+        y = xp.zeros((2, 1), dtype=x.dtype)
+        return xp.nan_to_num(x, **{kwarg: y})
+
+    @pytest.mark.parametrize("kwarg", ["nan", "posinf", "neginf"])
+    @testing.numpy_cupy_array_equal()
+    def test_nan_to_num_broadcast_different_rows(self, xp, kwarg):
+        x = xp.asarray(
+            [[0, 1, xp.nan, 4], [11, -xp.inf, 12, 13]],
+            dtype=cupy.default_float_type(),
+        )
+        y = xp.zeros((1, 4), dtype=x.dtype)
+        return xp.nan_to_num(x, **{kwarg: y})
+
+    @pytest.mark.parametrize("kwarg", ["nan", "posinf", "neginf"])
+    def test_nan_to_num_broadcast_invalid_shapes(self, kwarg):
         for xp in (numpy, cupy):
             x = xp.asarray([0, 1, xp.nan, 4], dtype=cupy.default_float_type())
-            y = xp.zeros((2, 4), dtype=cupy.default_float_type())
-            with pytest.raises((ValueError, TypeError)):
+            y = xp.zeros((2, 4), dtype=x.dtype)
+            with pytest.raises(ValueError):
                 xp.nan_to_num(x, **{kwarg: y})
-            with pytest.raises((ValueError, TypeError)):
-                xp.nan_to_num(0.0, **{kwarg: y})
+            with pytest.raises(ValueError):
+                xp.nan_to_num(xp.array(0.0), **{kwarg: y})
 
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 import numpy
@@ -455,7 +457,6 @@ class TestSort_complex(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestPartition(unittest.TestCase):
 
     def partition(self, a, kth, axis=-1):
@@ -478,9 +479,6 @@ class TestPartition(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_partition_one_dim(self, xp, dtype):
-        flag = xp.issubdtype(dtype, xp.unsignedinteger)
-        if flag or dtype in [xp.int8, xp.int16]:
-            pytest.skip("dpnp.partition() does not support new integer dtypes.")
         a = testing.shaped_random((self.length,), xp, dtype)
         kth = 2
         x = self.partition(a, kth)
@@ -488,7 +486,6 @@ class TestPartition(unittest.TestCase):
         assert xp.all(x[kth : kth + 1] <= x[kth + 1 :])
         return x[kth]
 
-    @pytest.mark.skip("multidimensional case doesn't work properly")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_partition_multi_dim(self, xp, dtype):
@@ -505,6 +502,12 @@ class TestPartition(unittest.TestCase):
     def test_partition_non_contiguous(self, xp):
         a = testing.shaped_random((self.length,), xp)[::-1]
         kth = 2
+        # if not self.external:
+        #     if xp is cupy:
+        #         with self.assertRaises(NotImplementedError):
+        #             return self.partition(a, kth)
+        #     return 0  # dummy
+        # else:
         x = self.partition(a, kth)
         assert xp.all(x[0:kth] <= x[kth : kth + 1])
         assert xp.all(x[kth : kth + 1] <= x[kth + 1 :])
@@ -607,7 +610,7 @@ class TestPartition(unittest.TestCase):
         }
     )
 )
-@pytest.mark.skip("not fully supported yet")
+@pytest.mark.skip("not supported yet")
 class TestArgpartition(unittest.TestCase):
 
     def argpartition(self, a, kth, axis=-1):

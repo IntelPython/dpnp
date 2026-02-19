@@ -1,4 +1,4 @@
-import unittest
+from __future__ import annotations
 
 import pytest
 
@@ -7,9 +7,9 @@ import pytest
 pytest.skip("owndata attribute is not supported", allow_module_level=True)
 
 
-class TestArrayOwndata(unittest.TestCase):
+class TestArrayOwndata:
 
-    def setUp(self):
+    def setup_method(self):
         self.a = _core.ndarray(())
 
     def test_original_array(self):

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy
 import pytest
 
@@ -25,8 +27,6 @@ class TestReshape:
     def test_reshape_strides(self):
         def func(xp):
             a = testing.shaped_arange((1, 1, 1, 2, 2), xp)
-            if xp is cupy:
-                return tuple(el * a.itemsize for el in a.strides)
             return a.strides
 
         assert func(numpy) == func(cupy)
@@ -259,5 +259,7 @@ class TestReshapeOrder:
         assert b_cupy.flags.f_contiguous == b_numpy.flags.f_contiguous
         assert b_cupy.flags.c_contiguous == b_numpy.flags.c_contiguous
 
-        # testing.assert_array_equal(b_cupy.strides, b_numpy.strides)
+        if shape_final != (1, 6, 1):
+            # strides mismatching is allowed due to multiple representation
+            testing.assert_array_equal(b_cupy.strides, b_numpy.strides)
         testing.assert_array_equal(b_cupy, b_numpy)

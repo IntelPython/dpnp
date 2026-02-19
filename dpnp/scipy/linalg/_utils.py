@@ -37,6 +37,7 @@ available as a pybind11 extension.
 
 """
 
+# pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
@@ -146,7 +147,7 @@ def _batched_lu_factor_scipy(a, res_type):  # pylint: disable=too-many-locals
         dev_info_h = [0] * batch_size
 
         ipiv_stride = k
-        a_stride = a_h.strides[-1]
+        a_stride = a_h.strides[-1] // a_h.itemsize
 
         # Call the LAPACK extension function _getrf_batch
         # to perform LU decomposition of a batch of general matrices
