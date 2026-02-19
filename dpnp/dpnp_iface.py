@@ -53,6 +53,7 @@ from dpctl.tensor._device import normalize_queue_device
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 
@@ -136,7 +137,7 @@ def asnumpy(a, order="C"):
         return a.asnumpy()
 
     if isinstance(a, dpt.usm_ndarray):
-        return dpt.asnumpy(a)
+        return dpt_ext.asnumpy(a)
 
     return numpy.asarray(a, order=order)
 

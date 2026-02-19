@@ -51,11 +51,10 @@ from dpctl.tensor._copy_utils import _nonzero_impl
 from dpctl.tensor._indexing_functions import _get_indexing_mode
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
-import dpctl_ext.tensor as dpt_ext
-
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 
@@ -243,7 +242,7 @@ def choose(a, choices, out=None, mode="wrap"):
         # NumPy will cast up to int64 in general but
         # int32 is more than safe for bool
         if ind_dt == dpnp.bool:
-            inds = dpt.astype(inds, dpt.int32)
+            inds = dpt_ext.astype(inds, dpt.int32)
         else:
             raise TypeError("input index array must be of integer data type")
 
@@ -256,7 +255,7 @@ def choose(a, choices, out=None, mode="wrap"):
         choices = tuple(
             map(
                 lambda chc: (
-                    chc if chc.dtype == res_dt else dpt.astype(chc, res_dt)
+                    chc if chc.dtype == res_dt else dpt_ext.astype(chc, res_dt)
                 ),
                 choices,
             )
@@ -815,14 +814,14 @@ def extract(condition, a):
     )
 
     if usm_cond.size != usm_a.size:
-        usm_a = dpt.reshape(usm_a, -1)
-        usm_cond = dpt.reshape(usm_cond, -1)
+        usm_a = dpt_ext.reshape(usm_a, -1)
+        usm_cond = dpt_ext.reshape(usm_cond, -1)
 
         usm_res = dpt_ext.take(usm_a, dpt.nonzero(usm_cond)[0])
     else:
         if usm_cond.shape != usm_a.shape:
-            usm_a = dpt.reshape(usm_a, -1)
-            usm_cond = dpt.reshape(usm_cond, -1)
+            usm_a = dpt_ext.reshape(usm_a, -1)
+            usm_cond = dpt_ext.reshape(usm_cond, -1)
 
         usm_res = dpt.extract(usm_cond, usm_a)
 
@@ -959,18 +958,18 @@ def fill_diagonal(a, val, wrap=False):
     # a.flat[:end:step] = val
     # but need to consider use case when `a` is usm_ndarray also
     a_sh = a.shape
-    tmp_a = dpt.reshape(usm_a, -1)
+    tmp_a = dpt_ext.reshape(usm_a, -1)
     if dpnp.isscalar(usm_val):
         tmp_a[:end:step] = usm_val
     else:
-        usm_val = dpt.reshape(usm_val, -1)
+        usm_val = dpt_ext.reshape(usm_val, -1)
 
         # Setitem can work only if index size equal val size.
         # Using loop for general case without dependencies of val size.
         for i in range(0, usm_val.size):
             tmp_a[step * i : end : step * (i + 1)] = usm_val[i]
 
-    tmp_a = dpt.reshape(tmp_a, a_sh)
+    tmp_a = dpt_ext.reshape(tmp_a, a_sh)
     usm_a[:] = tmp_a
 
 
@@ -1611,12 +1610,14 @@ def place(a, mask, vals):
 
     if usm_vals.ndim != 1:
         # dpt.place supports only 1-D array of values
-        usm_vals = dpt.reshape(usm_vals, -1)
+        usm_vals = dpt_ext.reshape(usm_vals, -1)
 
     if usm_vals.dtype != usm_a.dtype:
         # dpt.place casts values to a.dtype with "unsafe" rule,
         # while numpy.place does that with "safe" casting rule
-        usm_vals = dpt.astype(usm_vals, usm_a.dtype, casting="safe", copy=False)
+        usm_vals = dpt_ext.astype(
+            usm_vals, usm_a.dtype, casting="safe", copy=False
+        )
 
     dpt.place(usm_a, usm_mask, usm_vals)
 
@@ -1708,19 +1709,19 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
 
     if usm_ind.ndim != 1:
         # dpt.put supports only 1-D array of indices
-        usm_ind = dpt.reshape(usm_ind, -1, copy=False)
+        usm_ind = dpt_ext.reshape(usm_ind, -1, copy=False)
 
     if not dpnp.issubdtype(usm_ind.dtype, dpnp.integer):
         # dpt.put supports only integer dtype for array of indices
-        usm_ind = dpt.astype(usm_ind, dpnp.intp, casting="safe")
+        usm_ind = dpt_ext.astype(usm_ind, dpnp.intp, casting="safe")
 
     in_usm_a = usm_a
     if axis is None and usm_a.ndim > 1:
-        usm_a = dpt.reshape(usm_a, -1)
+        usm_a = dpt_ext.reshape(usm_a, -1)
 
     dpt_ext.put(usm_a, usm_ind, usm_v, axis=axis, mode=mode)
     if in_usm_a._pointer != usm_a._pointer:  # pylint: disable=protected-access
-        in_usm_a[:] = dpt.reshape(usm_a, in_usm_a.shape, copy=False)
+        in_usm_a[:] = dpt_ext.reshape(usm_a, in_usm_a.shape, copy=False)
 
 
 def put_along_axis(a, ind, values, axis, mode="wrap"):
@@ -2162,7 +2163,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     if axis is None:
         if a_ndim > 1:
             # flatten input array
-            usm_a = dpt.reshape(usm_a, -1)
+            usm_a = dpt_ext.reshape(usm_a, -1)
         axis = 0
     elif a_ndim == 0:
         axis = normalize_axis_index(operator.index(axis), 1)
@@ -2171,7 +2172,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
 
     if not dpnp.issubdtype(usm_ind.dtype, dpnp.integer):
         # dpt.take supports only integer dtype for array of indices
-        usm_ind = dpt.astype(usm_ind, dpnp.intp, copy=False, casting="safe")
+        usm_ind = dpt_ext.astype(usm_ind, dpnp.intp, copy=False, casting="safe")
 
     usm_res = _take_index(
         usm_a, usm_ind, axis, exec_q, res_usm_type, out=out, mode=mode

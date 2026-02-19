@@ -48,9 +48,9 @@
 // #include "clip.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_as_contig.hpp"
-// #include "copy_for_reshape.hpp"
-// #include "copy_for_roll.hpp"
-// #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
+#include "copy_for_reshape.hpp"
+#include "copy_for_roll.hpp"
+#include "copy_numpy_ndarray_into_usm_ndarray.hpp"
 #include "device_support_queries.hpp"
 // #include "eye_ctor.hpp"
 #include "full_ctor.hpp"
@@ -84,16 +84,16 @@ using dpctl::tensor::py_internal::py_as_f_contig;
 
 /* =========================== Copy for reshape ============================= */
 
-// using dpctl::tensor::py_internal::copy_usm_ndarray_for_reshape;
+using dpctl::tensor::py_internal::copy_usm_ndarray_for_reshape;
 
 /* =========================== Copy for roll ============================= */
 
-// using dpctl::tensor::py_internal::copy_usm_ndarray_for_roll_1d;
-// using dpctl::tensor::py_internal::copy_usm_ndarray_for_roll_nd;
+using dpctl::tensor::py_internal::copy_usm_ndarray_for_roll_1d;
+using dpctl::tensor::py_internal::copy_usm_ndarray_for_roll_nd;
 
 /* ============= Copy from numpy.ndarray to usm_ndarray ==================== */
 
-// using dpctl::tensor::py_internal::copy_numpy_ndarray_into_usm_ndarray;
+using dpctl::tensor::py_internal::copy_numpy_ndarray_into_usm_ndarray;
 
 /* ============= linear-sequence ==================== */
 
@@ -143,7 +143,7 @@ void init_dispatch_tables(void)
     using namespace dpctl::tensor::py_internal;
 
     init_copy_and_cast_usm_to_usm_dispatch_tables();
-    // init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables();
+    init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables();
     init_advanced_indexing_dispatch_tables();
     // init_where_dispatch_tables();
     return;
@@ -155,8 +155,8 @@ void init_dispatch_vectors(void)
     using namespace dpctl::tensor::py_internal;
 
     init_copy_as_contig_dispatch_vectors();
-    // init_copy_for_reshape_dispatch_vectors();
-    // init_copy_for_roll_dispatch_vectors();
+    init_copy_for_reshape_dispatch_vectors();
+    init_copy_for_roll_dispatch_vectors();
     // init_linear_sequences_dispatch_vectors();
     init_full_ctor_dispatch_vectors();
     init_zeros_ctor_dispatch_vectors();
@@ -276,28 +276,29 @@ PYBIND11_MODULE(_tensor_impl, m)
         },
         "");
 
-    // m.def("_copy_usm_ndarray_for_reshape", &copy_usm_ndarray_for_reshape,
-    //       "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same
-    //       " "number of elements using underlying 'C'-contiguous order for
-    //       flat " "traversal. " "Returns a tuple of events: (ht_event,
-    //       comp_event)", py::arg("src"), py::arg("dst"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_copy_usm_ndarray_for_reshape", &copy_usm_ndarray_for_reshape,
+          "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same "
+          "number of elements using underlying 'C'-contiguous order for flat "
+          "traversal. "
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
-    // m.def("_copy_usm_ndarray_for_roll_1d", &copy_usm_ndarray_for_roll_1d,
-    //       "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same
-    //       " "shapes using underlying 'C'-contiguous order for flat "
-    //       "traversal with shift. "
-    //       "Returns a tuple of events: (ht_event, comp_event)",
-    //       py::arg("src"), py::arg("dst"), py::arg("shift"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_copy_usm_ndarray_for_roll_1d", &copy_usm_ndarray_for_roll_1d,
+          "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same "
+          "shapes using underlying 'C'-contiguous order for flat "
+          "traversal with shift. "
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("src"), py::arg("dst"), py::arg("shift"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    // m.def("_copy_usm_ndarray_for_roll_nd", &copy_usm_ndarray_for_roll_nd,
-    //       "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same
-    //       " "shapes using underlying 'C'-contiguous order for " "traversal
-    //       with shifts along each axis. " "Returns a tuple of events:
-    //       (ht_event, comp_event)", py::arg("src"), py::arg("dst"),
-    //       py::arg("shifts"), py::arg("sycl_queue"), py::arg("depends") =
-    //       py::list());
+    m.def("_copy_usm_ndarray_for_roll_nd", &copy_usm_ndarray_for_roll_nd,
+          "Copies from usm_ndarray `src` into usm_ndarray `dst` with the same "
+          "shapes using underlying 'C'-contiguous order for "
+          "traversal with shifts along each axis. "
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("src"), py::arg("dst"), py::arg("shifts"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
     //     m.def("_linspace_step", &usm_ndarray_linear_sequence_step,
     //           "Fills input 1D contiguous usm_ndarray `dst` with linear
@@ -314,11 +315,11 @@ PYBIND11_MODULE(_tensor_impl, m)
     //           py::arg("include_endpoint"), py::arg("sycl_queue"),
     //           py::arg("depends") = py::list());
 
-    // m.def("_copy_numpy_ndarray_into_usm_ndarray",
-    //       &copy_numpy_ndarray_into_usm_ndarray,
-    //       "Copy from numpy array `src` into usm_ndarray `dst`
-    //       synchronously.", py::arg("src"), py::arg("dst"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_copy_numpy_ndarray_into_usm_ndarray",
+          &copy_numpy_ndarray_into_usm_ndarray,
+          "Copy from numpy array `src` into usm_ndarray `dst` synchronously.",
+          py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     m.def("_zeros_usm_ndarray", &usm_ndarray_zeros,
           "Populate usm_ndarray `dst` with zeros.", py::arg("dst"),
