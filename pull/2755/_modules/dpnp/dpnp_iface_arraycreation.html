@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.20.0dev2+30.g8fe933f21e7 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.20.0dev3+30.g001c232f0c8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6cf568d0"></script>
+      <script src="../../_static/documentation_options.js?v=b0332044"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -190,7 +190,7 @@
         <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
             <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">strides</span> <span class="o">=</span> <span class="n">_get_strides_for_order_k</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">_shape</span><span class="p">)</span>
+            <span class="n">strides</span> <span class="o">=</span> <span class="n">_get_strides_for_order_k</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">_dtype</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">_shape</span><span class="p">)</span>
             <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
     <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;cfCF&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -207,7 +207,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_strides_for_order_k</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_strides_for_order_k</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate strides when order=&#39;K&#39; for empty_like, ones_like, zeros_like,</span>
 <span class="sd">    and full_like where `shape` is ``None`` or len(shape) == x.ndim.</span>
@@ -215,7 +215,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">stride_and_index</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([(</span><span class="nb">abs</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="o">-</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">strides</span><span class="p">)])</span>
     <span class="n">strides</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="n">stride</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">stride</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">itemsize</span>
     <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">stride_and_index</span><span class="p">:</span>
         <span class="n">strides</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">stride</span>
         <span class="n">stride</span> <span class="o">*=</span> <span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">shape</span> <span class="k">else</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="p">]</span>
@@ -1850,7 +1850,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    file : file or str or Path</span>
-<span class="sd">        Open file object or filename.</span>
+<span class="sd">        An open file object, a string containing the filename, or a Path object.</span>
+<span class="sd">        When reading from a file object it must support random access (i.e. it</span>
+<span class="sd">        must have tell and seek methods).</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Data type of the returned array.</span>
 <span class="sd">        For binary files, it is used to determine the size and byte-order</span>

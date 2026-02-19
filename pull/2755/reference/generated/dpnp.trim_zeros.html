@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.trim_zeros &mdash; Data Parallel Extension for NumPy 0.20.0dev2+30.g8fe933f21e7 documentation</title>
+  <title>dpnp.trim_zeros &mdash; Data Parallel Extension for NumPy 0.20.0dev3+30.g001c232f0c8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6cf568d0"></script>
+      <script src="../../_static/documentation_options.js?v=b0332044"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -148,7 +148,7 @@ the lowest index 0, and &quot;back&quot; referring to the highest index
 (or index -1).</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;fb&quot;</span></code>.</p>
 </p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <cite>filt</cite> is cropped such that the smallest bounding box is
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <cite>filt</cite> is cropped such that the smallest bounding box is
 returned that still contains all values which are not zero.
 If an <cite>axis</cite> is specified, <cite>filt</cite> will be sliced in that dimension only
 on the sides specified by <cite>trim</cite>. The remaining area will be the
