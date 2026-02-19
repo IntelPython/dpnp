@@ -39,6 +39,7 @@ import dpctl_ext.tensor._tensor_impl as ti
 
 from ._copy_utils import (
     _extract_impl,
+    _nonzero_impl,
 )
 from ._numpy_helper import normalize_axis_index
 
@@ -96,6 +97,33 @@ def extract(condition, arr):
     if condition.shape != arr.shape:
         raise ValueError("Arrays are not of the same size")
     return _extract_impl(arr, condition)
+
+
+def nonzero(arr):
+    """nonzero(arr)
+
+    Return the indices of non-zero elements.
+
+    Returns a tuple of usm_ndarrays, one for each dimension
+    of ``arr``, containing the indices of the non-zero elements
+    in that dimension. The values of ``arr`` are always tested in
+    row-major, C-style order.
+
+    Args:
+        arr (usm_ndarray):
+            Input array, which has non-zero array rank.
+
+    Returns:
+        Tuple[usm_ndarray, ...]:
+            Indices of non-zero array elements.
+    """
+    if not isinstance(arr, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(arr)}"
+        )
+    if arr.ndim == 0:
+        raise ValueError("Array of positive rank is expected")
+    return _nonzero_impl(arr)
 
 
 def place(arr, mask, vals):

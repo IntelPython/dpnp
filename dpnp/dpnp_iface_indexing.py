@@ -817,7 +817,7 @@ def extract(condition, a):
         usm_a = dpt_ext.reshape(usm_a, -1)
         usm_cond = dpt_ext.reshape(usm_cond, -1)
 
-        usm_res = dpt_ext.take(usm_a, dpt.nonzero(usm_cond)[0])
+        usm_res = dpt_ext.take(usm_a, dpt_ext.nonzero(usm_cond)[0])
     else:
         if usm_cond.shape != usm_a.shape:
             usm_a = dpt_ext.reshape(usm_a, -1)
@@ -1546,7 +1546,7 @@ def nonzero(a):
 
     usm_a = dpnp.get_usm_ndarray(a)
     return tuple(
-        dpnp_array._create_from_usm_ndarray(y) for y in dpt.nonzero(usm_a)
+        dpnp_array._create_from_usm_ndarray(y) for y in dpt_ext.nonzero(usm_a)
     )
 
 

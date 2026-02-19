@@ -41,6 +41,7 @@ from dpctl_ext.tensor._ctors import (
 )
 from dpctl_ext.tensor._indexing_functions import (
     extract,
+    nonzero,
     place,
     put,
     take,
@@ -57,6 +58,7 @@ __all__ = [
     "extract",
     "from_numpy",
     "full",
+    "nonzero",
     "place",
     "put",
     "reshape",

@@ -200,6 +200,37 @@ def _extract_impl(ary, ary_mask, axis=0):
     return dst
 
 
+def _nonzero_impl(ary):
+    if not isinstance(ary, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+        )
+    exec_q = ary.sycl_queue
+    usm_type = ary.usm_type
+    mask_nelems = ary.size
+    cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
+    cumsum = dpt.empty(
+        mask_nelems, dtype=cumsum_dt, sycl_queue=exec_q, order="C"
+    )
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+    mask_count = ti.mask_positions(
+        ary, cumsum, sycl_queue=exec_q, depends=dep_evs
+    )
+    indexes_dt = ti.default_device_index_type(exec_q.sycl_device)
+    indexes = dpt.empty(
+        (ary.ndim, mask_count),
+        dtype=indexes_dt,
+        usm_type=usm_type,
+        sycl_queue=exec_q,
+        order="C",
+    )
+    hev, nz_ev = ti._nonzero(cumsum, indexes, ary.shape, exec_q)
+    res = tuple(indexes[i, :] for i in range(ary.ndim))
+    _manager.add_event_pair(hev, nz_ev)
+    return res
+
+
 def from_numpy(np_ary, /, *, device=None, usm_type="device", sycl_queue=None):
     """
     from_numpy(arg, device=None, usm_type="device", sycl_queue=None)
