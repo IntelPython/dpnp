@@ -3,14 +3,18 @@
 ## Source of truth
 This file is canonical for Copilot behavior in this repository.
 
-`AGENTS.md` files provide directory scope/guardrails for AGENTS-aware tools and should not duplicate Copilot policy text.
+For project context and directory routing, read root `AGENTS.md` first.
+
+`AGENTS.md` files provide directory scope/guardrails and should not duplicate Copilot policy text.
 
 ## Mandatory flow
-Read root `AGENTS.md`, then nearest local `AGENTS.md` for edited files; most specific wins.
+1. Read root `AGENTS.md`.
+2. Read nearest local `AGENTS.md` for edited files.
+3. Most specific AGENTS wins when multiple apply.
 
 ## Contribution expectations
 - Keep diffs minimal and scoped to the task.
-- Preserve API behavior by default.
+- Preserve NumPy-compatible API behavior by default.
 - For behavior/API changes: update tests, and docs/examples when user-visible.
 - For bug fixes: prefer adding regression coverage.
 
@@ -19,6 +23,7 @@ Read root `AGENTS.md`, then nearest local `AGENTS.md` for edited files; most spe
 - Do not invent or hardcode versions, flags, or matrix values.
 
 ## Source-of-truth files
+All paths relative to project root:
 - Build/config: `CMakeLists.txt`, `pyproject.toml`, `setup.py`, `setup.cfg`
 - CI/checks: `.github/workflows/`
 - Style/lint: `.pre-commit-config.yaml`, `.clang-format`, `.flake8`
