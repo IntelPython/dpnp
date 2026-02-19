@@ -1,4 +1,0 @@
-var NAVTREEINDEX2 =
-{
-"":[1,0,0,0]
-};
