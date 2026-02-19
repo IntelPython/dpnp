@@ -62,7 +62,7 @@
 #include "triul_ctor.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/strided_iters.hpp"
-// #include "where.hpp"
+#include "where.hpp"
 #include "zeros_ctor.hpp"
 
 namespace py = pybind11;
@@ -132,7 +132,7 @@ using dpctl::tensor::py_internal::usm_ndarray_triul;
 
 /* =========================== Where ============================== */
 
-// using dpctl::tensor::py_internal::py_where;
+using dpctl::tensor::py_internal::py_where;
 
 /* =========================== Clip ============================== */
 // using dpctl::tensor::py_internal::py_clip;
@@ -446,9 +446,9 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("mask_shape"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    // m.def("_where", &py_where, "", py::arg("condition"), py::arg("x1"),
-    //       py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    m.def("_where", &py_where, "", py::arg("condition"), py::arg("x1"),
+          py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     auto repeat_sequence = [](const dpctl::tensor::usm_ndarray &src,
                               const dpctl::tensor::usm_ndarray &dst,
