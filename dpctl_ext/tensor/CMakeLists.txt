@@ -60,7 +60,7 @@ set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/triul_ctor.cpp
     # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/where.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
     # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
 )
 
