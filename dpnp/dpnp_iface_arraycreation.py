@@ -108,7 +108,7 @@ def _get_empty_array(
         elif a.flags.c_contiguous:
             order = "C"
         else:
-            strides = _get_strides_for_order_k(a, _shape)
+            strides = _get_strides_for_order_k(a, _dtype, shape=_shape)
             order = "C"
     elif order not in "cfCF":
         raise ValueError(
@@ -125,7 +125,7 @@ def _get_empty_array(
     )
 
 
-def _get_strides_for_order_k(x, shape=None):
+def _get_strides_for_order_k(x, dtype, shape=None):
     """
     Calculate strides when order='K' for empty_like, ones_like, zeros_like,
     and full_like where `shape` is ``None`` or len(shape) == x.ndim.
@@ -133,7 +133,7 @@ def _get_strides_for_order_k(x, shape=None):
     """
     stride_and_index = sorted([(abs(s), -i) for i, s in enumerate(x.strides)])
     strides = [0] * x.ndim
-    stride = 1
+    stride = dpnp.dtype(dtype).itemsize
     for _, i in stride_and_index:
         strides[-i] = stride
         stride *= shape[-i] if shape else x.shape[-i]
@@ -1724,7 +1724,9 @@ def fromfile(
     Parameters
     ----------
     file : file or str or Path
-        Open file object or filename.
+        An open file object, a string containing the filename, or a Path object.
+        When reading from a file object it must support random access (i.e. it
+        must have tell and seek methods).
     dtype : {None, str, dtype object}, optional
         Data type of the returned array.
         For binary files, it is used to determine the size and byte-order

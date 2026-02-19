@@ -201,12 +201,13 @@ def _compute_result(dsc, a, out, forward, c2c, out_strides):
         )
         result = a
     else:
+        out_usm = None if out is None else dpnp.get_usm_ndarray(out)
         if (
             out is not None
             and out.strides == tuple(out_strides)
             and not ti_ext._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
         ):
-            res_usm = dpnp.get_usm_ndarray(out)
+            res_usm = out_usm
             result = out
         else:
             # Result array that is used in oneMKL must have the exact same
@@ -231,6 +232,10 @@ def _compute_result(dsc, a, out, forward, c2c, out_strides):
                         if a.dtype == dpnp.complex64
                         else dpnp.float64
                     )
+            # cast to expected strides format
+            out_strides = tuple(
+                el * dpnp.dtype(out_dtype).itemsize for el in out_strides
+            )
             result = dpnp_array(
                 out_shape,
                 dtype=out_dtype,
@@ -427,7 +432,8 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
     if cufft_wa:  # pragma: no cover
         a = dpnp.moveaxis(a, -1, -2)
 
-    a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
+    strides = dpnp.get_usm_ndarray(a).strides
+    a_strides = _standardize_strides_to_nonzero(strides, a.shape)
     dsc, out_strides = _commit_descriptor(
         a, forward, in_place, c2c, a_strides, index, batch_fft
     )

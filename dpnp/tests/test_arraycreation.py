@@ -864,12 +864,12 @@ def test_full_order(order1, order2):
 def test_full_strides():
     a = numpy.full((3, 3), numpy.arange(3, dtype="i4"))
     ia = dpnp.full((3, 3), dpnp.arange(3, dtype="i4"))
-    assert ia.strides == tuple(el // a.itemsize for el in a.strides)
+    assert ia.strides == a.strides
     assert_array_equal(ia, a)
 
     a = numpy.full((3, 3), numpy.arange(6, dtype="i4")[::2])
     ia = dpnp.full((3, 3), dpnp.arange(6, dtype="i4")[::2])
-    assert ia.strides == tuple(el // a.itemsize for el in a.strides)
+    assert ia.strides == a.strides
     assert_array_equal(ia, a)
 
 

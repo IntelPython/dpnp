@@ -45,6 +45,13 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Updated `dpnp.fix` to reuse `dpnp.trunc` internally [#2722](https://github.com/IntelPython/dpnp/pull/2722)
 * Changed the build scripts and documentation due to `python setup.py develop` deprecation notice [#2716](https://github.com/IntelPython/dpnp/pull/2716)
 * Clarified behavior on repeated `axes` in `dpnp.tensordot` and `dpnp.linalg.tensordot` functions [#2733](https://github.com/IntelPython/dpnp/pull/2733)
+* Improved documentation of `file` argument in `dpnp.fromfile` [#2745](https://github.com/IntelPython/dpnp/pull/2745)
+* Aligned `dpnp.trim_zeros` with NumPy 2.4 to support a tuple of integers passed with `axis` keyword [#2746](https://github.com/IntelPython/dpnp/pull/2746)
+* Aligned `strides` property of `dpnp.ndarray` with NumPy and CuPy implementations [#2747](https://github.com/IntelPython/dpnp/pull/2747)
+* Extended `dpnp.nan_to_num` to support broadcasting of `nan`, `posinf`, and `neginf` keywords [#2754](https://github.com/IntelPython/dpnp/pull/2754)
+* Changed `dpnp.partition` implementation to reuse `dpnp.sort` where it brings the performance benefit [#2766](https://github.com/IntelPython/dpnp/pull/2766)
+* `dpnp` uses pybind11 3.0.2 [#27734](https://github.com/IntelPython/dpnp/pull/2773)
+* Modified CMake files for the extension to explicitly mark DPC++ compiler and dpctl headers as system ones and so to suppress the build warning generated inside them [#2770](https://github.com/IntelPython/dpnp/pull/2770)
 
 ### Deprecated
 
@@ -59,6 +66,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Removed the obsolete interface from DPNP to Numba JIT [#2647](https://github.com/IntelPython/dpnp/pull/2647)
 * Removed the `newshape` parameter from `dpnp.reshape`, which has been deprecated since dpnp 0.17.0. Pass it positionally or use `shape=` on newer versions [#2670](https://github.com/IntelPython/dpnp/pull/2670)
 * Removed unused `pytest` configuration from `pyproject.toml` [#2729](https://github.com/IntelPython/dpnp/pull/2729)
+* Dropped a conda run dependency on `onemkl-sycl-stats` package [#2771](https://github.com/IntelPython/dpnp/pull/2771)
 
 ### Fixed
 

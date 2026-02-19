@@ -11,6 +11,7 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
+    get_integer_dtypes,
 )
 from .third_party.cupy import testing
 
@@ -275,6 +276,232 @@ class TestSearchSorted:
         assert_equal(result, expected)
 
 
+class TestPartition:
+    @pytest.mark.parametrize("data", [[2, 1], [1, 2], [1, 1]])
+    @pytest.mark.parametrize("kth", [0, 1])
+    def test_1d_2size(self, data, kth):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+
+        result = dpnp.partition(ia, kth)
+        expected = numpy.partition(a, kth)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "data",
+        [
+            [3, 2, 1],
+            [1, 2, 3],
+            [2, 1, 3],
+            [2, 3, 1],
+            [1, 1, 1],
+            [1, 2, 2],
+            [2, 2, 1],
+            [1, 2, 1],
+        ],
+    )
+    @pytest.mark.parametrize("kth", [0, 1, 2])
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_1d_3size(self, data, kth, dt):
+        a = dpnp.array(data, dtype=dt)
+        p = dpnp.partition(a, kth)
+
+        assert (p[..., 0:kth] <= p[..., kth : kth + 1]).all()
+        assert (p[..., kth : kth + 1] <= p[..., kth + 1 :]).all()
+
+    @pytest.mark.parametrize("kth", [6, 16, -6, 41, -16, 31])
+    def test_1d_reversed(self, kth):
+        a = dpnp.arange(47)[::-1]
+        p = dpnp.partition(a, kth)
+
+        assert (p[..., 0:kth] <= p[..., kth : kth + 1]).all()
+        assert (p[..., kth : kth + 1] <= p[..., kth + 1 :]).all()
+
+    @pytest.mark.parametrize("val", [4, dpnp.nan])
+    def test_1d_ones(self, val):
+        a = numpy.ones(10)
+        a[1] = val
+        ia = dpnp.array(a)
+
+        result = dpnp.partition(ia, (2, -1))
+        expected = numpy.partition(a, (2, -1))
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("kth", [0, 3, 19, 20])
+    def test_1d_equal_elements(self, kth):
+        a = dpnp.array(
+            [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                9,
+            ]
+        )
+        p = dpnp.partition(a, kth)
+
+        assert (p[..., 0:kth] <= p[..., kth : kth + 1]).all()
+        assert (p[..., kth : kth + 1] <= p[..., kth + 1 :]).all()
+
+    @pytest.mark.parametrize("kth", [(0, 3), (-3, -1)])
+    def test_kth_iterative(self, kth):
+        a = numpy.array([3, 4, 2, 1])
+        ia = dpnp.array(a)
+
+        result = dpnp.partition(ia, kth)
+        expected = numpy.partition(a, kth)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_integer_dtypes())
+    def test_max_min_int_values(self, dt):
+        N = 512
+        rnd = numpy.random.RandomState(1100710816)
+
+        # random data with min and max values
+        minv = numpy.iinfo(dt).min
+        maxv = numpy.iinfo(dt).max
+        a = rnd.randint(low=minv, high=maxv, size=N, dtype=dt)
+        i, j = rnd.choice(N, 2, replace=False)
+        a[i] = minv
+        a[j] = maxv
+        k = int(rnd.choice(N, 1)[0])
+
+        ia = dpnp.array(a)
+        p = dpnp.partition(ia, k)
+        assert (p[0:k] <= p[k : k + 1]).all()
+        assert (p[k : k + 1] <= p[k + 1 :]).all()
+
+        # random data with max value at the end of array
+        a = rnd.randint(low=minv, high=maxv, size=N, dtype=dt)
+        a[N - 1] = maxv
+
+        ia = dpnp.array(a)
+        p = dpnp.partition(ia, k)
+        assert (p[0:k] <= p[k : k + 1]).all()
+        assert (p[k : k + 1] <= p[k + 1 :]).all()
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_float_values(self, dt):
+        N = 512
+        rnd = numpy.random.RandomState(1100710816)
+        a = -0.5 + rnd.random(N).astype(dt)
+        k = int(rnd.choice(N, 1)[0])
+
+        ia = dpnp.array(a)
+        p = dpnp.partition(ia, k)
+        assert (p[0:k] <= p[k : k + 1]).all()
+        assert (p[k : k + 1] <= p[k + 1 :]).all()
+
+    @pytest.mark.parametrize("axis", [0, -1, None])
+    def test_axis_1d(self, axis):
+        a = numpy.array([2, 1])
+        ia = dpnp.array(a)
+
+        result = dpnp.partition(ia, 1, axis=axis)
+        expected = numpy.partition(a, 1, axis=axis)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("kth, axis", [(1, 0), (4, 1)])
+    def test_axis_2d(self, kth, axis):
+        a = generate_random_numpy_array((2, 5))
+
+        ia = dpnp.array(a)
+        ia.partition(kth, axis=axis)
+        p = dpnp.rollaxis(ia, axis, ia.ndim)
+        assert (p[..., 0:kth] <= p[..., kth : kth + 1]).all()
+        assert (p[..., kth : kth + 1] <= p[..., kth + 1 :]).all()
+
+        ia = dpnp.array(a)
+        p = dpnp.partition(ia, kth, axis=axis)
+        p = dpnp.rollaxis(p, axis, ia.ndim)
+        assert (p[..., 0:kth] <= p[..., kth : kth + 1]).all()
+        assert (p[..., kth : kth + 1] <= p[..., kth + 1 :]).all()
+
+    @pytest.mark.parametrize("kth", [1, 9])
+    def test_axis_2d_none(self, kth):
+        a = generate_random_numpy_array((2, 5))
+        ia = dpnp.array(a)
+
+        p = dpnp.partition(ia, kth, axis=None)
+        assert (p[..., 0:kth] <= p[..., kth : kth + 1]).all()
+        assert (p[..., kth : kth + 1] <= p[..., kth + 1 :]).all()
+
+    @pytest.mark.parametrize("axis", list(range(-4, 4)) + [None])
+    def test_empty_array(self, axis):
+        a = numpy.empty((3, 2, 1, 0))
+        ia = dpnp.array(a)
+        kth = 0
+
+        result = dpnp.partition(ia, kth, axis=axis)
+        expected = numpy.partition(a, kth, axis=axis)
+        assert_equal(result, expected)
+
+    def test_empty_partition(self):
+        a = numpy.array([0, 2, 4, 6, 8, 10])
+        ia = dpnp.array(a)
+
+        ia.partition([])
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_kth_errors(self, xp):
+        a = xp.arange(10)
+        assert_raises(ValueError, a.partition, 10)
+        assert_raises(ValueError, a.partition, -11)
+        assert_raises(TypeError, a.partition, 9.0)
+        assert_raises(TypeError, a.partition, [1, 7.0])
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_kth_axis_errors(self, xp):
+        a = xp.array([2, 1])
+        assert_raises(ValueError, a.partition, 2)
+        assert_raises(AxisError, a.partition, 3, axis=1)
+        assert_raises(ValueError, xp.partition, a, 2)
+        assert_raises(AxisError, xp.partition, a, 2, axis=1)
+
+        a = xp.arange(10).reshape((2, 5))
+        assert_raises(ValueError, a.partition, 2, axis=0)
+        assert_raises(ValueError, a.partition, 11, axis=1)
+        assert_raises(TypeError, a.partition, 2, axis=None)
+        assert_raises(ValueError, xp.partition, a, 9, axis=1)
+        assert_raises(ValueError, xp.partition, a, 11, axis=None)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_kth_iterative_error(self, xp):
+        a = xp.arange(17)
+        kth = (0, 1, 2, 429, 231)
+        assert_raises(ValueError, a.partition, kth)
+
+        a = xp.arange(10).reshape((2, 5))
+        assert_raises(ValueError, a.partition, kth, axis=0)
+        assert_raises(ValueError, a.partition, kth, axis=1)
+        assert_raises(ValueError, xp.partition, a, kth, axis=1)
+        assert_raises(ValueError, xp.partition, a, kth, axis=None)
+
+    def test_not_implemented_kwargs(self):
+        a = dpnp.arange(10)
+        assert_raises(NotImplementedError, a.partition, 2, kind="nonsense")
+        assert_raises(NotImplementedError, a.partition, 2, order=[])
+
+
 class TestSort:
     @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
@@ -407,40 +634,3 @@ class TestSortComplex:
         result = dpnp.sort_complex(ia)
         expected = numpy.sort_complex(a)
         assert_equal(result, expected)
-
-
-@pytest.mark.parametrize("kth", [0, 1])
-@pytest.mark.parametrize(
-    "dtype",
-    get_all_dtypes(
-        no_none=True, no_unsigned=True, xfail_dtypes=[dpnp.int8, dpnp.int16]
-    ),
-)
-@pytest.mark.parametrize(
-    "array",
-    [
-        [3, 4, 2, 1],
-        [[1, 0], [3, 0]],
-        [[3, 2], [1, 6]],
-        [[4, 2, 3], [3, 4, 1]],
-        [[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]],
-        [
-            [[[8, 2], [3, 0]], [[5, 2], [0, 1]]],
-            [[[1, 3], [3, 1]], [[5, 2], [0, 1]]],
-        ],
-    ],
-    ids=[
-        "[3, 4, 2, 1]",
-        "[[1, 0], [3, 0]]",
-        "[[3, 2], [1, 6]]",
-        "[[4, 2, 3], [3, 4, 1]]",
-        "[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]",
-        "[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]",
-    ],
-)
-def test_partition(array, dtype, kth):
-    a = dpnp.array(array, dtype)
-    p = dpnp.partition(a, kth)
-
-    assert (p[..., 0:kth] <= p[..., kth : kth + 1]).all()
-    assert (p[..., kth : kth + 1] <= p[..., kth + 1 :]).all()
