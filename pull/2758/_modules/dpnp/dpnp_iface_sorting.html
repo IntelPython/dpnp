@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.20.0dev2+48.gc234c08921e documentation</title>
+  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.20.0dev3+49.g34c1ecad5fc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e3d4adfa"></script>
+      <script src="../../_static/documentation_options.js?v=18617560"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -124,8 +124,9 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
@@ -136,7 +137,6 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">call_origin</span><span class="p">,</span>
     <span class="n">map_dtype_to_device</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -234,7 +234,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters `order` is only supported with its default value.</span>
+<span class="sd">    Parameter `order` is only supported with its default value.</span>
 <span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
 <span class="sd">    Sorting algorithms ``&quot;quicksort&quot;`` and ``&quot;heapsort&quot;`` are not supported.</span>
 
@@ -291,44 +291,128 @@
 
 <div class="viewcode-block" id="partition">
 <a class="viewcode-back" href="../../reference/generated/dpnp.partition.html#dpnp.partition">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">partition</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;introselect&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">partition</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;introselect&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a partitioned copy of an array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.partition`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array to be sorted.</span>
+<span class="sd">    kth : {int, sequence of ints}</span>
+<span class="sd">        Element index to partition by. The k-th value of the element will be in</span>
+<span class="sd">        its final sorted position and all smaller elements will be moved before</span>
+<span class="sd">        it and all equal or greater elements behind it. The order of all</span>
+<span class="sd">        elements in the partitions is undefined. If provided with a sequence of</span>
+<span class="sd">        k-th it will partition all elements indexed by k-th of them into their</span>
+<span class="sd">        sorted position at once.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        Axis along which to sort. If ``None``, the array is flattened before</span>
+<span class="sd">        sorting. The default is ``-1``, which sorts along the last axis.</span>
+
+<span class="sd">        Default: ``-1``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Array of the same type and shape as `a`.</span>
+
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Input array is supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Input `kth` is supported as :obj:`int`.</span>
-<span class="sd">    Parameters `axis`, `kind` and `order` are supported only with default</span>
-<span class="sd">    values.</span>
+<span class="sd">    Parameters `kind` and `order` are only supported with its default value.</span>
+<span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ndarray.partition` : Equivalent method.</span>
+<span class="sd">    :obj:`dpnp.argpartition` : Indirect partition.</span>
+<span class="sd">    :obj:`dpnp.sort` : Full sorting.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([7, 1, 7, 7, 1, 5, 7, 2, 3, 2, 6, 2, 3, 0])</span>
+<span class="sd">    &gt;&gt;&gt; p = np.partition(a, 4)</span>
+<span class="sd">    &gt;&gt;&gt; p</span>
+<span class="sd">    array([0, 1, 1, 2, 2, 2, 3, 3, 5, 7, 7, 7, 7, 6]) # may vary</span>
+
+<span class="sd">    ``p[4]`` is 2;  all elements in ``p[:4]`` are less than or equal to</span>
+<span class="sd">    ``p[4]``, and all elements in ``p[5:]`` are greater than or equal to</span>
+<span class="sd">    ``p[4]``. The partition is::</span>
+
+<span class="sd">        [0, 1, 1, 2], [2], [2, 3, 3, 5, 7, 7, 7, 7, 6]</span>
+
+<span class="sd">    The next example shows the use of multiple values passed to `kth`.</span>
+
+<span class="sd">    &gt;&gt;&gt; p2 = np.partition(a, (4, 8))</span>
+<span class="sd">    &gt;&gt;&gt; p2</span>
+<span class="sd">    array([0, 1, 1, 2, 2, 2, 3, 3, 5, 6, 7, 7, 7, 7])</span>
+
+<span class="sd">    ``p2[4]`` is 2  and ``p2[8]`` is 5. All elements in ``p2[:4]`` are less</span>
+<span class="sd">    than or equal to ``p2[4]``, all elements in ``p2[5:8]`` are greater than or</span>
+<span class="sd">    equal to ``p2[4]`` and less than or equal to ``p2[8]``, and all elements in</span>
+<span class="sd">    ``p2[9:]`` are greater than or equal to ``p2[8]``. The partition is::</span>
+
+<span class="sd">        [0, 1, 1, 2], [2], [2, 3, 3], [5], [6, 7, 7, 7, 7]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_cuda_backend</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_array</span><span class="p">()):</span>  <span class="c1"># pragma: no cover</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">&quot;Running on CUDA is currently not supported&quot;</span>
-            <span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kth</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">kth</span> <span class="o">&gt;=</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">+</span> <span class="n">kth</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">axis</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;introselect&quot;</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_partition</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;introselect&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;`kind` keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;`order` keyword argument is only supported with its default value.&quot;</span>
+        <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">partition</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">kth</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">nd</span><span class="p">)</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kth</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">kth</span> <span class="o">=</span> <span class="p">(</span><span class="n">kth</span><span class="p">,)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kth</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;kth must be int or sequence of ints, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">kth</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kth</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;kth is a sequence, but not all elements are integers&quot;</span><span class="p">)</span>
+
+    <span class="n">nkth</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kth</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nkth</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="c1"># validate kth</span>
+    <span class="n">kth</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">kth</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nkth</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">kth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">kth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">length</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">kth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;kth(=</span><span class="si">{</span><span class="n">kth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">) out of bounds </span><span class="si">{</span><span class="n">length</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">nd</span> <span class="o">&gt;</span> <span class="mi">1</span>
+        <span class="ow">or</span> <span class="n">nkth</span> <span class="o">&gt;</span> <span class="mi">1</span>
+        <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_cuda_backend</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">get_array</span><span class="p">())</span>
+    <span class="p">):</span>
+        <span class="c1"># sort is a faster path in case of ndim &gt; 1</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+
+    <span class="n">desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_partition</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">kth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span></div>
 
 
 
