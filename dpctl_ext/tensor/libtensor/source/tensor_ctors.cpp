@@ -43,7 +43,7 @@
 
 #include "dpnp4pybind11.hpp"
 
-// #include "accumulators.hpp"
+#include "accumulators.hpp"
 // #include "boolean_advanced_indexing.hpp"
 // #include "clip.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
@@ -113,12 +113,12 @@ using dpctl::tensor::py_internal::usm_ndarray_put;
 using dpctl::tensor::py_internal::usm_ndarray_take;
 
 // using dpctl::tensor::py_internal::py_extract;
-// using dpctl::tensor::py_internal::py_mask_positions;
+using dpctl::tensor::py_internal::py_mask_positions;
 // using dpctl::tensor::py_internal::py_nonzero;
 // using dpctl::tensor::py_internal::py_place;
 
 /* ================= Repeat ====================*/
-// using dpctl::tensor::py_internal::py_cumsum_1d;
+using dpctl::tensor::py_internal::py_cumsum_1d;
 // using dpctl::tensor::py_internal::py_repeat_by_scalar;
 // using dpctl::tensor::py_internal::py_repeat_by_sequence;
 
@@ -166,9 +166,9 @@ void init_dispatch_vectors(void)
     // populate_masked_extract_dispatch_vectors();
     // populate_masked_place_dispatch_vectors();
 
-    // populate_mask_positions_dispatch_vectors();
+    populate_mask_positions_dispatch_vectors();
 
-    // populate_cumsum_1d_dispatch_vectors();
+    populate_cumsum_1d_dispatch_vectors();
     // init_repeat_dispatch_vectors();
 
     // init_clip_dispatch_vectors();
@@ -408,12 +408,12 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    // m.def("mask_positions", &py_mask_positions, "", py::arg("mask"),
-    //       py::arg("cumsum"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    m.def("mask_positions", &py_mask_positions, "", py::arg("mask"),
+          py::arg("cumsum"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
-    // m.def("_cumsum_1d", &py_cumsum_1d, "", py::arg("src"), py::arg("cumsum"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_cumsum_1d", &py_cumsum_1d, "", py::arg("src"), py::arg("cumsum"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
     // m.def("_extract", &py_extract, "", py::arg("src"), py::arg("cumsum"),
     //       py::arg("axis_start"), py::arg("axis_end"), py::arg("dst"),
