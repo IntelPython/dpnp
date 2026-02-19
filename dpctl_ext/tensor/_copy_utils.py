@@ -384,6 +384,58 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
     return
 
 
+def _take_multi_index(ary, inds, p, mode=0):
+    if not isinstance(ary, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+        )
+    ary_nd = ary.ndim
+    p = normalize_axis_index(operator.index(p), ary_nd)
+    mode = operator.index(mode)
+    if mode not in [0, 1]:
+        raise ValueError(
+            "Invalid value for mode keyword, only 0 or 1 is supported"
+        )
+    if not isinstance(inds, (list, tuple)):
+        inds = (inds,)
+
+    exec_q, res_usm_type = _get_indices_queue_usm_type(
+        inds, ary.sycl_queue, ary.usm_type
+    )
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError(
+            "Can not automatically determine where to allocate the "
+            "result or performance execution. "
+            "Use `usm_ndarray.to_device` method to migrate data to "
+            "be associated with the same queue."
+        )
+
+    inds = _prepare_indices_arrays(inds, exec_q, res_usm_type)
+
+    ind0 = inds[0]
+    ary_sh = ary.shape
+    p_end = p + len(inds)
+    if 0 in ary_sh[p:p_end] and ind0.size != 0:
+        raise IndexError("cannot take non-empty indices from an empty axis")
+    res_shape = ary_sh[:p] + ind0.shape + ary_sh[p_end:]
+    res = dpt.empty(
+        res_shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    dep_ev = _manager.submitted_events
+    hev, take_ev = ti._take(
+        src=ary,
+        ind=inds,
+        dst=res,
+        axis_start=p,
+        mode=mode,
+        sycl_queue=exec_q,
+        depends=dep_ev,
+    )
+    _manager.add_event_pair(hev, take_ev)
+    return res
+
+
 def from_numpy(np_ary, /, *, device=None, usm_type="device", sycl_queue=None):
     """
     from_numpy(arg, device=None, usm_type="device", sycl_queue=None)

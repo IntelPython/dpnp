@@ -2295,7 +2295,7 @@ def take_along_axis(a, indices, axis=-1, mode="wrap"):
     usm_a = dpnp.get_usm_ndarray(a)
     usm_ind = dpnp.get_usm_ndarray(indices)
 
-    usm_res = dpt.take_along_axis(usm_a, usm_ind, axis=axis, mode=mode)
+    usm_res = dpt_ext.take_along_axis(usm_a, usm_ind, axis=axis, mode=mode)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 

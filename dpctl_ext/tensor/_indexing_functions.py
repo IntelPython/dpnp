@@ -41,6 +41,7 @@ from ._copy_utils import (
     _extract_impl,
     _nonzero_impl,
     _put_multi_index,
+    _take_multi_index,
 )
 from ._numpy_helper import normalize_axis_index
 
@@ -561,3 +562,80 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
         out = orig_out
 
     return out
+
+
+def take_along_axis(x, indices, /, *, axis=-1, mode="wrap"):
+    """
+    Returns elements from an array at the one-dimensional indices specified
+    by ``indices`` along a provided ``axis``.
+
+    Args:
+        x (usm_ndarray):
+            input array. Must be compatible with ``indices``, except for the
+            axis (dimension) specified by ``axis``.
+        indices (usm_ndarray):
+            array indices. Must have the same rank (i.e., number of dimensions)
+            as ``x``.
+        axis: int
+            axis along which to select values. If ``axis`` is negative, the
+            function determines the axis along which to select values by
+            counting from the last dimension. Default: ``-1``.
+        mode (str, optional):
+            How out-of-bounds indices will be handled. Possible values
+            are:
+
+            - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
+              negative indices.
+            - ``"clip"``: clips indices to (``0 <= i < n``).
+
+            Default: ``"wrap"``.
+
+    Returns:
+        usm_ndarray:
+            an array having the same data type as ``x``. The returned array has
+            the same rank (i.e., number of dimensions) as ``x`` and a shape
+            determined according to broadcasting rules, except for the axis
+            (dimension) specified by ``axis`` whose size must equal the size
+            of the corresponding axis (dimension) in ``indices``.
+
+    Note:
+        Treatment of the out-of-bound indices in ``indices`` array is controlled
+        by the value of ``mode`` keyword.
+    """
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+    if not isinstance(indices, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expected dpctl.tensor.usm_ndarray, got {type(indices)}"
+        )
+    x_nd = x.ndim
+    if x_nd != indices.ndim:
+        raise ValueError(
+            "Number of dimensions in the first and the second "
+            "argument arrays must be equal"
+        )
+    pp = normalize_axis_index(operator.index(axis), x_nd)
+    out_usm_type = dpctl.utils.get_coerced_usm_type(
+        (x.usm_type, indices.usm_type)
+    )
+    exec_q = dpctl.utils.get_execution_queue((x.sycl_queue, indices.sycl_queue))
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError(
+            "Execution placement can not be unambiguously inferred "
+            "from input arguments. "
+        )
+    mode_i = _get_indexing_mode(mode)
+    indexes_dt = (
+        dpt.uint64
+        if indices.dtype == dpt.uint64
+        else ti.default_device_index_type(exec_q.sycl_device)
+    )
+    _ind = tuple(
+        (
+            indices
+            if i == pp
+            else _range(x.shape[i], i, x_nd, exec_q, out_usm_type, indexes_dt)
+        )
+        for i in range(x_nd)
+    )
+    return _take_multi_index(x, _ind, 0, mode=mode_i)
