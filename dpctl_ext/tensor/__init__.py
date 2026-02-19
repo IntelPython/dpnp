@@ -44,6 +44,7 @@ from dpctl_ext.tensor._indexing_functions import (
     nonzero,
     place,
     put,
+    put_along_axis,
     take,
 )
 from dpctl_ext.tensor._manipulation_functions import (
@@ -61,6 +62,7 @@ __all__ = [
     "nonzero",
     "place",
     "put",
+    "put_along_axis",
     "reshape",
     "roll",
     "take",

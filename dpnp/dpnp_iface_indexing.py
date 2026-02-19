@@ -1807,7 +1807,7 @@ def put_along_axis(a, ind, values, axis, mode="wrap"):
             values, usm_type=a.usm_type, sycl_queue=a.sycl_queue
         )
 
-    dpt.put_along_axis(usm_a, usm_ind, usm_vals, axis=axis, mode=mode)
+    dpt_ext.put_along_axis(usm_a, usm_ind, usm_vals, axis=axis, mode=mode)
 
 
 def putmask(x1, mask, values):

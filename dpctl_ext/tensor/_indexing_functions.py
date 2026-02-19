@@ -40,6 +40,7 @@ import dpctl_ext.tensor._tensor_impl as ti
 from ._copy_utils import (
     _extract_impl,
     _nonzero_impl,
+    _put_multi_index,
 )
 from ._numpy_helper import normalize_axis_index
 
@@ -52,6 +53,12 @@ def _get_indexing_mode(name):
         raise ValueError(
             "`mode` must be `wrap` or `clip`." "Got `{}`.".format(name)
         )
+
+
+def _range(sh_i, i, nd, q, usm_t, dt):
+    ind = dpt.arange(sh_i, dtype=dt, usm_type=usm_t, sycl_queue=q)
+    ind.shape = tuple(sh_i if i == j else 1 for j in range(nd))
+    return ind
 
 
 def extract(condition, arr):
@@ -341,6 +348,86 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         x, (indices,), rhs, axis, mode, sycl_queue=exec_q, depends=deps_ev
     )
     _manager.add_event_pair(hev, put_ev)
+
+
+def put_along_axis(x, indices, vals, /, *, axis=-1, mode="wrap"):
+    """
+    Puts elements into an array at the one-dimensional indices specified by
+    ``indices`` along a provided ``axis``.
+
+    Args:
+        x (usm_ndarray):
+            input array. Must be compatible with ``indices``, except for the
+            axis (dimension) specified by ``axis``.
+        indices (usm_ndarray):
+            array indices. Must have the same rank (i.e., number of dimensions)
+            as ``x``.
+        vals (usm_ndarray):
+            Array of values to be put into ``x``.
+            Must be broadcastable to the shape of ``indices``.
+        axis: int
+            axis along which to select values. If ``axis`` is negative, the
+            function determines the axis along which to select values by
+            counting from the last dimension. Default: ``-1``.
+        mode (str, optional):
+            How out-of-bounds indices will be handled. Possible values
+            are:
+
+            - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
+              negative indices.
+            - ``"clip"``: clips indices to (``0 <= i < n``).
+
+            Default: ``"wrap"``.
+
+    .. note::
+
+        If input array ``indices`` contains duplicates, a race condition
+        occurs, and the value written into corresponding positions in ``x``
+        may vary from run to run. Preserving sequential semantics in handing
+        the duplicates to achieve deterministic behavior requires additional
+        work.
+    """
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+    if not isinstance(indices, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expected dpctl.tensor.usm_ndarray, got {type(indices)}"
+        )
+    x_nd = x.ndim
+    if x_nd != indices.ndim:
+        raise ValueError(
+            "Number of dimensions in the first and the second "
+            "argument arrays must be equal"
+        )
+    pp = normalize_axis_index(operator.index(axis), x_nd)
+    if isinstance(vals, dpt.usm_ndarray):
+        queues_ = [x.sycl_queue, indices.sycl_queue, vals.sycl_queue]
+        usm_types_ = [x.usm_type, indices.usm_type, vals.usm_type]
+    else:
+        queues_ = [x.sycl_queue, indices.sycl_queue]
+        usm_types_ = [x.usm_type, indices.usm_type]
+    exec_q = dpctl.utils.get_execution_queue(queues_)
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError(
+            "Execution placement can not be unambiguously inferred "
+            "from input arguments. "
+        )
+    out_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
+    mode_i = _get_indexing_mode(mode)
+    indexes_dt = (
+        dpt.uint64
+        if indices.dtype == dpt.uint64
+        else ti.default_device_index_type(exec_q.sycl_device)
+    )
+    _ind = tuple(
+        (
+            indices
+            if i == pp
+            else _range(x.shape[i], i, x_nd, exec_q, out_usm_type, indexes_dt)
+        )
+        for i in range(x_nd)
+    )
+    return _put_multi_index(x, _ind, 0, vals, mode=mode_i)
 
 
 def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
