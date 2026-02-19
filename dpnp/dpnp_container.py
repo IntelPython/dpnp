@@ -38,6 +38,7 @@ This module contains code and dependency on different containers used in DPNP
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
 
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 from dpnp.dpnp_array import dpnp_array
 
@@ -228,7 +229,7 @@ def full(
         fill_value = fill_value.get_array()
 
     """Creates `dpnp_array` having a specified shape, filled with fill_value."""
-    array_obj = dpt.full(
+    array_obj = dpt_ext.full(
         shape,
         fill_value,
         dtype=dtype,
@@ -269,13 +270,13 @@ def ones(
 
 def tril(x1, /, *, k=0):
     """Creates `dpnp_array` as lower triangular part of an input array."""
-    array_obj = dpt.tril(dpnp.get_usm_ndarray(x1), k=k)
+    array_obj = dpt_ext.tril(dpnp.get_usm_ndarray(x1), k=k)
     return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def triu(x1, /, *, k=0):
     """Creates `dpnp_array` as upper triangular part of an input array."""
-    array_obj = dpt.triu(dpnp.get_usm_ndarray(x1), k=k)
+    array_obj = dpt_ext.triu(dpnp.get_usm_ndarray(x1), k=k)
     return dpnp_array._create_from_usm_ndarray(array_obj)
 
 

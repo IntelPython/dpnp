@@ -42,6 +42,10 @@ available as a pybind11 extension.
 from collections.abc import Sequence
 
 import dpctl
+
+# pylint: disable=no-name-in-module
+# TODO: remove it when ti.__linspace_step
+# is migrated to dpctl_ext/tensor
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
@@ -51,6 +55,10 @@ from dpctl.tensor._numpy_helper import (
 )
 from dpctl.utils import ExecutionPlacementError
 
+# pylint: disable=no-name-in-module
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor._tensor_impl as ti_ext
 import dpnp
 import dpnp.backend.extensions.fft._fft_impl as fi
 
@@ -196,8 +204,8 @@ def _compute_result(dsc, a, out, forward, c2c, out_strides):
         out_usm = None if out is None else dpnp.get_usm_ndarray(out)
         if (
             out is not None
-            and out_usm.strides == tuple(out_strides)
-            and not ti._array_overlap(a_usm, out_usm)
+            and out.strides == tuple(out_strides)
+            and not ti_ext._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
         ):
             res_usm = out_usm
             result = out
@@ -530,7 +538,7 @@ def _truncate_or_pad(a, shape, axes):
             )
             _manager = dpu.SequentialOrderManager[exec_q]
             dep_evs = _manager.submitted_events
-            ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_copy_ev, copy_ev = ti_ext._copy_usm_ndarray_into_usm_ndarray(
                 src=dpnp.get_usm_ndarray(a),
                 dst=z.get_array()[tuple(index)],
                 sycl_queue=exec_q,

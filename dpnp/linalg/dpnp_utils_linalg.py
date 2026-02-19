@@ -42,12 +42,15 @@ available as a pybind11 extension.
 
 from typing import NamedTuple
 
-import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_index
 from numpy import prod
 
+# pylint: disable=no-name-in-module
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations

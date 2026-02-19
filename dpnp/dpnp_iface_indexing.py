@@ -45,13 +45,18 @@ import operator
 from collections.abc import Iterable
 
 import dpctl.tensor as dpt
-import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._copy_utils import _nonzero_impl
 from dpctl.tensor._indexing_functions import _get_indexing_mode
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
+import dpctl_ext.tensor as dpt_ext
+
+# pylint: disable=no-name-in-module
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 
 # pylint: disable=no-name-in-module
@@ -813,7 +818,7 @@ def extract(condition, a):
         usm_a = dpt.reshape(usm_a, -1)
         usm_cond = dpt.reshape(usm_cond, -1)
 
-        usm_res = dpt.take(usm_a, dpt.nonzero(usm_cond)[0])
+        usm_res = dpt_ext.take(usm_a, dpt.nonzero(usm_cond)[0])
     else:
         if usm_cond.shape != usm_a.shape:
             usm_a = dpt.reshape(usm_a, -1)
@@ -1713,7 +1718,7 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
     if axis is None and usm_a.ndim > 1:
         usm_a = dpt.reshape(usm_a, -1)
 
-    dpt.put(usm_a, usm_ind, usm_v, axis=axis, mode=mode)
+    dpt_ext.put(usm_a, usm_ind, usm_v, axis=axis, mode=mode)
     if in_usm_a._pointer != usm_a._pointer:  # pylint: disable=protected-access
         in_usm_a[:] = dpt.reshape(usm_a, in_usm_a.shape, copy=False)
 
