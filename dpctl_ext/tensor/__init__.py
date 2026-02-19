@@ -55,20 +55,27 @@ from dpctl_ext.tensor._manipulation_functions import (
 )
 from dpctl_ext.tensor._reshape import reshape
 
+from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
+
 __all__ = [
     "asnumpy",
     "astype",
+    "can_cast",
     "copy",
     "extract",
     "eye",
+    "finfo",
     "from_numpy",
     "full",
+    "iinfo",
+    "isdtype",
     "nonzero",
     "place",
     "put",
     "put_along_axis",
     "repeat",
     "reshape",
+    "result_type",
     "roll",
     "take",
     "take_along_axis",
