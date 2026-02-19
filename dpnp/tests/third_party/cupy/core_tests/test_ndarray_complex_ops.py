@@ -1,4 +1,4 @@
-import unittest
+from __future__ import annotations
 
 import numpy
 import pytest
@@ -7,7 +7,7 @@ import dpnp as cupy
 from dpnp.tests.third_party.cupy import testing
 
 
-class TestConj(unittest.TestCase):
+class TestConj:
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_almost_equal()
@@ -38,7 +38,7 @@ class TestConj(unittest.TestCase):
         return y
 
 
-class TestAngle(unittest.TestCase):
+class TestAngle:
 
     # For dtype=int8, uint8, NumPy returns float16, but dpnp returns float32
     # so type_check=False
@@ -49,7 +49,7 @@ class TestAngle(unittest.TestCase):
         return xp.angle(x)
 
 
-class TestRealImag(unittest.TestCase):
+class TestRealImag:
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_almost_equal(accept_error=False)
@@ -157,7 +157,7 @@ class TestRealImag(unittest.TestCase):
         assert cupy.all(x == expected)
 
 
-class TestScalarConversion(unittest.TestCase):
+class TestScalarConversion:
 
     @testing.for_all_dtypes()
     def test_scalar_conversion(self, dtype):

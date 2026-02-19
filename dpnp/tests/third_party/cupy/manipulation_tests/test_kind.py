@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 import numpy
@@ -35,8 +37,6 @@ class TestKind(unittest.TestCase):
             ret = xp.asfortranarray(x)
             assert x.flags.c_contiguous
             assert ret.flags.f_contiguous
-            if xp is cupy:
-                return tuple(el * ret.itemsize for el in ret.strides)
             return ret.strides
 
         assert func(numpy) == func(cupy)
@@ -48,8 +48,6 @@ class TestKind(unittest.TestCase):
             ret = xp.asfortranarray(x)
             assert x.flags.c_contiguous
             assert ret.flags.f_contiguous
-            if xp is cupy:
-                return tuple(el * ret.itemsize for el in ret.strides)
             return ret.strides
 
         assert func(numpy) == func(cupy)
@@ -61,8 +59,6 @@ class TestKind(unittest.TestCase):
             ret = xp.asfortranarray(xp.asfortranarray(x))
             assert x.flags.c_contiguous
             assert ret.flags.f_contiguous
-            if xp is cupy:
-                return tuple(el * ret.itemsize for el in ret.strides)
             return ret.strides
 
         assert func(numpy) == func(cupy)
@@ -74,8 +70,6 @@ class TestKind(unittest.TestCase):
             x = xp.transpose(x, (1, 0))
             ret = xp.asfortranarray(x)
             assert ret.flags.f_contiguous
-            if xp is cupy:
-                return tuple(el * ret.itemsize for el in ret.strides)
             return ret.strides
 
         assert func(numpy) == func(cupy)
@@ -87,8 +81,6 @@ class TestKind(unittest.TestCase):
             ret = xp.asfortranarray(x)
             assert x.flags.c_contiguous
             assert ret.flags.f_contiguous
-            if xp is cupy:
-                return tuple(el * ret.itemsize for el in ret.strides)
             return ret.strides
 
         assert func(numpy) == func(cupy)
@@ -106,7 +98,7 @@ class TestKind(unittest.TestCase):
     @pytest.mark.skip("dpnp.require() does not support requirement ['O']")
     @testing.for_all_dtypes()
     def test_require_owndata(self, dtype):
-        x = cupy.zeros((2, 3, 4), dtype=dtype)
+        x = cupy.zeros((2, 3, 4), dtype)
         arr = x.view()
         arr = cupy.require(arr, dtype, ["O"])
         assert arr.flags["OWNDATA"]

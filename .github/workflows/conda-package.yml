@@ -20,7 +20,7 @@ env:
   test-env-name: 'test'
   rerun-tests-on-failure: 'true'
   rerun-tests-max-attempts: 2
-  rerun-tests-timeout: 40
+  rerun-tests-timeout: 45
 
 jobs:
   build:

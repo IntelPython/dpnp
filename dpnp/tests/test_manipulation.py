@@ -1432,6 +1432,8 @@ class TestTranspose:
 
 
 class TestTrimZeros:
+    ALL_TRIMS = ["F", "B", "fb"]
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_basic(self, dtype):
         a = numpy.array([0, 0, 1, 0, 2, 3, 4, 0], dtype=dtype)
@@ -1443,7 +1445,7 @@ class TestTrimZeros:
 
     @testing.with_requires("numpy>=2.2")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize("trim", ["F", "B", "fb"])
+    @pytest.mark.parametrize("trim", ALL_TRIMS)
     @pytest.mark.parametrize("ndim", [0, 1, 2, 3])
     def test_basic_nd(self, dtype, trim, ndim):
         a = numpy.ones((2,) * ndim, dtype=dtype)
@@ -1477,7 +1479,7 @@ class TestTrimZeros:
 
     @testing.with_requires("numpy>=2.2")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize("trim", ["F", "B", "fb"])
+    @pytest.mark.parametrize("trim", ALL_TRIMS)
     @pytest.mark.parametrize("ndim", [0, 1, 2, 3])
     def test_all_zero_nd(self, dtype, trim, ndim):
         a = numpy.zeros((3,) * ndim, dtype=dtype)
@@ -1495,6 +1497,60 @@ class TestTrimZeros:
         result = dpnp.trim_zeros(ia)
         expected = numpy.trim_zeros(a)
         assert_array_equal(result, expected)
+
+    @testing.with_requires("numpy>=2.4")
+    @pytest.mark.parametrize(
+        "shape, axis",
+        [
+            [(5,), None],
+            [(5,), ()],
+            [(5,), 0],
+            [(5, 6), None],
+            [(5, 6), ()],
+            [(5, 6), 0],
+            [(5, 6), (-1,)],
+            [(5, 6, 7), None],
+            [(5, 6, 7), ()],
+            [(5, 6, 7), 1],
+            [(5, 6, 7), (0, 2)],
+            [(5, 6, 7, 8), None],
+            [(5, 6, 7, 8), ()],
+            [(5, 6, 7, 8), -2],
+            [(5, 6, 7, 8), (0, 1, 3)],
+        ],
+    )
+    @pytest.mark.parametrize("trim", ALL_TRIMS)
+    def test_multiple_axes(self, shape, axis, trim):
+        # standardize axis to a tuple
+        if axis is None:
+            axis = tuple(range(len(shape)))
+        elif isinstance(axis, int):
+            axis = (len(shape) + axis if axis < 0 else axis,)
+        else:
+            axis = tuple(len(shape) + ax if ax < 0 else ax for ax in axis)
+
+        # populate a random interior slice with nonzero entries
+        rng = numpy.random.default_rng(4321)
+        a = numpy.zeros(shape)
+        start = rng.integers(low=0, high=numpy.array(shape) - 1)
+        end = rng.integers(low=start + 1, high=shape)
+        shape = tuple(end - start)
+        data = 1 + rng.random(shape)
+        a[tuple(slice(i, j) for i, j in zip(start, end))] = data
+        ia = dpnp.array(a)
+
+        result = dpnp.trim_zeros(ia, axis=axis, trim=trim)
+        expected = numpy.trim_zeros(a, axis=axis, trim=trim)
+        assert_dtype_allclose(result, expected)
+
+    # NOTE: numpy behaves differently on 0-sized input array
+    # and returns the input array with reduced shapes
+    @pytest.mark.parametrize("axis", [None, -1, 0])
+    @pytest.mark.parametrize("trim", ALL_TRIMS)
+    def test_empty_array(self, axis, trim):
+        a = dpnp.ones((0, 3))
+        result = dpnp.trim_zeros(a, axis=axis, trim=trim)
+        assert result is a
 
     @pytest.mark.parametrize(
         "a", [numpy.array([0, 2**62, 0]), numpy.array([0, 2**63, 0])]

@@ -1,4 +1,4 @@
-{% set max_compiler_and_mkl_version = environ.get("MAX_BUILD_CMPL_MKL_VERSION", "2026.0a0") %}
+{% set max_compiler_and_mkl_version = environ.get("MAX_BUILD_CMPL_MKL_VERSION", "2027.0a0") %}
 {% set required_compiler_and_mkl_version = "2025.0" %}
 {% set required_dpctl_version = "0.22.0*" %}
 
@@ -49,7 +49,6 @@ requirements:
       - {{ pin_compatible('onemkl-sycl-dft', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-lapack', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-rng', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('onemkl-sycl-stats', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-vm', min_pin='x.x', max_pin='x') }}
       - numpy
       - intel-gpu-ocl-icd-system
