@@ -35,6 +35,7 @@ from dpctl_ext.tensor._copy_utils import (
     to_numpy,
 )
 from dpctl_ext.tensor._ctors import (
+    eye,
     full,
     tril,
     triu,
@@ -58,6 +59,7 @@ __all__ = [
     "astype",
     "copy",
     "extract",
+    "eye",
     "from_numpy",
     "full",
     "nonzero",
