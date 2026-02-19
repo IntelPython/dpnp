@@ -44,7 +44,7 @@
 #include "dpnp4pybind11.hpp"
 
 #include "accumulators.hpp"
-// #include "boolean_advanced_indexing.hpp"
+#include "boolean_advanced_indexing.hpp"
 // #include "clip.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_as_contig.hpp"
@@ -112,10 +112,10 @@ using dpctl::tensor::py_internal::usm_ndarray_zeros;
 using dpctl::tensor::py_internal::usm_ndarray_put;
 using dpctl::tensor::py_internal::usm_ndarray_take;
 
-// using dpctl::tensor::py_internal::py_extract;
+using dpctl::tensor::py_internal::py_extract;
 using dpctl::tensor::py_internal::py_mask_positions;
-// using dpctl::tensor::py_internal::py_nonzero;
-// using dpctl::tensor::py_internal::py_place;
+using dpctl::tensor::py_internal::py_nonzero;
+using dpctl::tensor::py_internal::py_place;
 
 /* ================= Repeat ====================*/
 using dpctl::tensor::py_internal::py_cumsum_1d;
@@ -163,8 +163,8 @@ void init_dispatch_vectors(void)
     // init_eye_ctor_dispatch_vectors();
     init_triul_ctor_dispatch_vectors();
 
-    // populate_masked_extract_dispatch_vectors();
-    // populate_masked_place_dispatch_vectors();
+    populate_masked_extract_dispatch_vectors();
+    populate_masked_place_dispatch_vectors();
 
     populate_mask_positions_dispatch_vectors();
 
@@ -415,9 +415,9 @@ PYBIND11_MODULE(_tensor_impl, m)
     m.def("_cumsum_1d", &py_cumsum_1d, "", py::arg("src"), py::arg("cumsum"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    // m.def("_extract", &py_extract, "", py::arg("src"), py::arg("cumsum"),
-    //       py::arg("axis_start"), py::arg("axis_end"), py::arg("dst"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_extract", &py_extract, "", py::arg("src"), py::arg("cumsum"),
+          py::arg("axis_start"), py::arg("axis_end"), py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
     auto overlap = [](const dpctl::tensor::usm_ndarray &x1,
                       const dpctl::tensor::usm_ndarray &x2) -> bool {
@@ -438,13 +438,13 @@ PYBIND11_MODULE(_tensor_impl, m)
           "Determines if the memory regions indexed by each array are the same",
           py::arg("array1"), py::arg("array2"));
 
-    // m.def("_place", &py_place, "", py::arg("dst"), py::arg("cumsum"),
-    //       py::arg("axis_start"), py::arg("axis_end"), py::arg("rhs"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_place", &py_place, "", py::arg("dst"), py::arg("cumsum"),
+          py::arg("axis_start"), py::arg("axis_end"), py::arg("rhs"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    // m.def("_nonzero", &py_nonzero, "", py::arg("cumsum"), py::arg("indexes"),
-    //       py::arg("mask_shape"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    m.def("_nonzero", &py_nonzero, "", py::arg("cumsum"), py::arg("indexes"),
+          py::arg("mask_shape"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     // m.def("_where", &py_where, "", py::arg("condition"), py::arg("x1"),
     //       py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),

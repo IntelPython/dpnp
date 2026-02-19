@@ -53,7 +53,7 @@ set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_for_roll.cpp
     # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/integer_advanced_indexing.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_advanced_indexing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_advanced_indexing.cpp
     # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/eye_ctor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/zeros_ctor.cpp
