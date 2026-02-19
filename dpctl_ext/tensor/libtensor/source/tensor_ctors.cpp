@@ -52,7 +52,7 @@
 #include "copy_for_roll.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
 #include "device_support_queries.hpp"
-// #include "eye_ctor.hpp"
+#include "eye_ctor.hpp"
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
 #include "kernels/dpctl_tensor_types.hpp"
@@ -124,7 +124,7 @@ using dpctl::tensor::py_internal::py_cumsum_1d;
 
 /* ================ Eye ================== */
 
-// using dpctl::tensor::py_internal::usm_ndarray_eye;
+using dpctl::tensor::py_internal::usm_ndarray_eye;
 
 /* =========================== Tril and triu ============================== */
 
@@ -160,7 +160,7 @@ void init_dispatch_vectors(void)
     // init_linear_sequences_dispatch_vectors();
     init_full_ctor_dispatch_vectors();
     init_zeros_ctor_dispatch_vectors();
-    // init_eye_ctor_dispatch_vectors();
+    init_eye_ctor_dispatch_vectors();
     init_triul_ctor_dispatch_vectors();
 
     populate_masked_extract_dispatch_vectors();
@@ -348,15 +348,15 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("mode"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    // m.def("_eye", &usm_ndarray_eye,
-    //       "Fills input 2D contiguous usm_ndarray `dst` with "
-    //       "zeros outside of the diagonal "
-    //       "specified by "
-    //       "the diagonal index `k` "
-    //       "which is filled with ones."
-    //       "Returns a tuple of events: (ht_event, comp_event)",
-    //       py::arg("k"), py::arg("dst"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    m.def("_eye", &usm_ndarray_eye,
+          "Fills input 2D contiguous usm_ndarray `dst` with "
+          "zeros outside of the diagonal "
+          "specified by "
+          "the diagonal index `k` "
+          "which is filled with ones."
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("k"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     m.def("default_device_fp_type",
           dpctl::tensor::py_internal::default_device_fp_type,
