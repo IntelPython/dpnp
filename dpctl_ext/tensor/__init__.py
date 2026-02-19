@@ -40,6 +40,7 @@ from dpctl_ext.tensor._ctors import (
     triu,
 )
 from dpctl_ext.tensor._indexing_functions import (
+    extract,
     place,
     put,
     take,
@@ -53,6 +54,7 @@ __all__ = [
     "asnumpy",
     "astype",
     "copy",
+    "extract",
     "from_numpy",
     "full",
     "place",

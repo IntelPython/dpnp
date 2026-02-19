@@ -823,7 +823,7 @@ def extract(condition, a):
             usm_a = dpt_ext.reshape(usm_a, -1)
             usm_cond = dpt_ext.reshape(usm_cond, -1)
 
-        usm_res = dpt.extract(usm_cond, usm_a)
+        usm_res = dpt_ext.extract(usm_cond, usm_a)
 
     return dpnp_array._create_from_usm_ndarray(usm_res)
 

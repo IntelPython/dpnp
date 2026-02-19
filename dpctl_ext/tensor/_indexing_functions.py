@@ -37,6 +37,9 @@ import dpctl.utils
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
 
+from ._copy_utils import (
+    _extract_impl,
+)
 from ._numpy_helper import normalize_axis_index
 
 
@@ -48,6 +51,51 @@ def _get_indexing_mode(name):
         raise ValueError(
             "`mode` must be `wrap` or `clip`." "Got `{}`.".format(name)
         )
+
+
+def extract(condition, arr):
+    """extract(condition, arr)
+
+    Returns the elements of an array that satisfies the condition.
+
+    If ``condition`` is boolean ``dpctl.tensor.extract`` is
+    equivalent to ``arr[condition]``.
+
+    Note that ``dpctl.tensor.place`` does the opposite of
+    ``dpctl.tensor.extract``.
+
+    Args:
+       conditions (usm_ndarray):
+            An array whose non-zero or ``True`` entries indicate the element
+            of ``arr`` to extract.
+
+       arr (usm_ndarray):
+            Input array of the same size as ``condition``.
+
+    Returns:
+        usm_ndarray:
+            Rank 1 array of values from ``arr`` where ``condition`` is
+            ``True``.
+    """
+    if not isinstance(condition, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(condition)}"
+        )
+    if not isinstance(arr, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(arr)}"
+        )
+    exec_q = dpctl.utils.get_execution_queue(
+        (
+            condition.sycl_queue,
+            arr.sycl_queue,
+        )
+    )
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError
+    if condition.shape != arr.shape:
+        raise ValueError("Arrays are not of the same size")
+    return _extract_impl(arr, condition)
 
 
 def place(arr, mask, vals):

@@ -27,6 +27,7 @@
 # *****************************************************************************
 
 import builtins
+import operator
 
 import dpctl
 import dpctl.memory as dpm
@@ -40,6 +41,8 @@ from dpctl.tensor._type_utils import _dtype_supported_by_device_impl
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor._tensor_impl as ti
+
+from ._numpy_helper import normalize_axis_index
 
 __doc__ = (
     "Implementation module for copy- and cast- operations on "
@@ -128,6 +131,73 @@ def _copy_from_numpy_into(dst, np_ary):
     ti._copy_numpy_ndarray_into_usm_ndarray(
         src=src_ary, dst=dst, sycl_queue=copy_q, depends=dep_ev
     )
+
+
+def _extract_impl(ary, ary_mask, axis=0):
+    """
+    Extract elements of ary by applying mask starting from slot
+    dimension axis
+    """
+    if not isinstance(ary, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+        )
+    if isinstance(ary_mask, dpt.usm_ndarray):
+        dst_usm_type = dpctl.utils.get_coerced_usm_type(
+            (ary.usm_type, ary_mask.usm_type)
+        )
+        exec_q = dpctl.utils.get_execution_queue(
+            (ary.sycl_queue, ary_mask.sycl_queue)
+        )
+        if exec_q is None:
+            raise dpctl.utils.ExecutionPlacementError(
+                "arrays have different associated queues. "
+                "Use `y.to_device(x.device)` to migrate."
+            )
+    elif isinstance(ary_mask, np.ndarray):
+        dst_usm_type = ary.usm_type
+        exec_q = ary.sycl_queue
+        ary_mask = dpt.asarray(
+            ary_mask, usm_type=dst_usm_type, sycl_queue=exec_q
+        )
+    else:
+        raise TypeError(
+            "Expecting type dpctl.tensor.usm_ndarray or numpy.ndarray, got "
+            f"{type(ary_mask)}"
+        )
+    ary_nd = ary.ndim
+    pp = normalize_axis_index(operator.index(axis), ary_nd)
+    mask_nd = ary_mask.ndim
+    if pp < 0 or pp + mask_nd > ary_nd:
+        raise ValueError(
+            "Parameter p is inconsistent with input array dimensions"
+        )
+    mask_nelems = ary_mask.size
+    cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
+    cumsum = dpt.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
+    exec_q = cumsum.sycl_queue
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+    mask_count = ti.mask_positions(
+        ary_mask, cumsum, sycl_queue=exec_q, depends=dep_evs
+    )
+    dst_shape = ary.shape[:pp] + (mask_count,) + ary.shape[pp + mask_nd :]
+    dst = dpt.empty(
+        dst_shape, dtype=ary.dtype, usm_type=dst_usm_type, device=ary.device
+    )
+    if dst.size == 0:
+        return dst
+    hev, ev = ti._extract(
+        src=ary,
+        cumsum=cumsum,
+        axis_start=pp,
+        axis_end=pp + mask_nd,
+        dst=dst,
+        sycl_queue=exec_q,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(hev, ev)
+    return dst
 
 
 def from_numpy(np_ary, /, *, device=None, usm_type="device", sycl_queue=None):
