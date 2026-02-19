@@ -415,7 +415,7 @@ def _unique_1d(
         if first_nan is not None:
             # all NaNs are collapsed, so need to replace the indices with
             # the index of the first NaN value in result array of unique values
-            dpt.place(
+            dpt_ext.place(
                 usm_res.inverse_indices,
                 usm_res.inverse_indices > first_nan,
                 dpt_ext.reshape(first_nan, 1),

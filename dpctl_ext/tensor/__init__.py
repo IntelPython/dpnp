@@ -40,6 +40,7 @@ from dpctl_ext.tensor._ctors import (
     triu,
 )
 from dpctl_ext.tensor._indexing_functions import (
+    place,
     put,
     take,
 )
@@ -54,6 +55,7 @@ __all__ = [
     "copy",
     "from_numpy",
     "full",
+    "place",
     "put",
     "reshape",
     "roll",

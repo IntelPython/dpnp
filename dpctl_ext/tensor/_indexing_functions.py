@@ -50,6 +50,74 @@ def _get_indexing_mode(name):
         )
 
 
+def place(arr, mask, vals):
+    """place(arr, mask, vals)
+
+    Change elements of an array based on conditional and input values.
+
+    If ``mask`` is boolean ``dpctl.tensor.place`` is
+    equivalent to ``arr[condition] = vals``.
+
+    Args:
+        arr (usm_ndarray):
+            Array to put data into.
+        mask (usm_ndarray):
+            Boolean mask array. Must have the same size as ``arr``.
+        vals (usm_ndarray, sequence):
+            Values to put into ``arr``. Only the first N elements are
+            used, where N is the number of True values in ``mask``. If
+            ``vals`` is smaller than N, it will be repeated, and if
+            elements of ``arr`` are to be masked, this sequence must be
+            non-empty. Array ``vals`` must be one dimensional.
+    """
+    if not isinstance(arr, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(arr)}"
+        )
+    if not isinstance(mask, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(mask)}"
+        )
+    if not isinstance(vals, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(vals)}"
+        )
+    exec_q = dpctl.utils.get_execution_queue(
+        (
+            arr.sycl_queue,
+            mask.sycl_queue,
+            vals.sycl_queue,
+        )
+    )
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError
+    if arr.shape != mask.shape or vals.ndim != 1:
+        raise ValueError("Array sizes are not as required")
+    cumsum = dpt.empty(mask.size, dtype="i8", sycl_queue=exec_q)
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    deps_ev = _manager.submitted_events
+    nz_count = ti.mask_positions(
+        mask, cumsum, sycl_queue=exec_q, depends=deps_ev
+    )
+    if nz_count == 0:
+        return
+    if vals.size == 0:
+        raise ValueError("Cannot insert from an empty array!")
+    if vals.dtype == arr.dtype:
+        rhs = vals
+    else:
+        rhs = dpt.astype(vals, arr.dtype)
+    hev, pl_ev = ti._place(
+        dst=arr,
+        cumsum=cumsum,
+        axis_start=0,
+        axis_end=mask.ndim,
+        rhs=rhs,
+        sycl_queue=exec_q,
+    )
+    _manager.add_event_pair(hev, pl_ev)
+
+
 def put(x, indices, vals, /, *, axis=None, mode="wrap"):
     """put(x, indices, vals, axis=None, mode="wrap")
 

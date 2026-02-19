@@ -1619,7 +1619,7 @@ def place(a, mask, vals):
             usm_vals, usm_a.dtype, casting="safe", copy=False
         )
 
-    dpt.place(usm_a, usm_mask, usm_vals)
+    dpt_ext.place(usm_a, usm_mask, usm_vals)
 
 
 def put(a, ind, v, /, *, axis=None, mode="wrap"):
