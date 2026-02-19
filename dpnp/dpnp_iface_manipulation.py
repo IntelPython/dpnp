@@ -2837,7 +2837,7 @@ def repeat(a, repeats, axis=None):
         a = dpnp.ravel(a)
 
     usm_arr = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.repeat(usm_arr, repeats, axis=axis)
+    usm_res = dpt_ext.repeat(usm_arr, repeats, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
