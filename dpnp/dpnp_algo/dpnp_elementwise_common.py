@@ -31,7 +31,6 @@ from functools import wraps
 
 import dpctl.tensor as dpt
 import dpctl.tensor._copy_utils as dtc
-import dpctl.tensor._tensor_impl as dti
 import dpctl.tensor._type_utils as dtu
 import dpctl.utils as dpu
 import numpy
@@ -45,6 +44,10 @@ from dpctl.tensor._scalar_utils import (
     _validate_dtype,
 )
 
+# pylint: disable=no-name-in-module
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor._tensor_impl as dti
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.dpnp_array import dpnp_array

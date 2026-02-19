@@ -91,7 +91,7 @@ target_include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/../../
         ${CMAKE_CURRENT_SOURCE_DIR}/../common
         ${CMAKE_SOURCE_DIR}/dpnp/backend/include
-        ${CMAKE_SOURCE_DIR}/dpctl/tensor/libtensor/include
+        ${CMAKE_SOURCE_DIR}/dpctl_ext/tensor/libtensor/include
 )
 
 # treat below headers as system to suppress the warnings there during the build

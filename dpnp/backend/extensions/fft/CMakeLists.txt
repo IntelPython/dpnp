@@ -61,7 +61,7 @@ target_include_directories(
     ${python_module_name}
     PRIVATE
         ${CMAKE_SOURCE_DIR}/dpnp/backend/include
-        ${CMAKE_SOURCE_DIR}/dpctl/tensor/libtensor/include
+        ${CMAKE_SOURCE_DIR}/dpctl_ext/tensor/libtensor/include
 )
 
 # treat below headers as system to suppress the warnings there during the build

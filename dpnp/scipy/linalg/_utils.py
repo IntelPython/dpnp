@@ -43,9 +43,11 @@ available as a pybind11 extension.
 
 from warnings import warn
 
-import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
