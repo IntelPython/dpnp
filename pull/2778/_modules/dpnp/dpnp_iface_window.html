@@ -1,0 +1,701 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnp.dpnp_iface_window &mdash; Data Parallel Extension for NumPy 0.20.0dev3+81.g090eb890962 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=51bf9f6c"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">dpnp.dpnp_iface_window</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for dpnp.dpnp_iface_window</h1><div class="highlight"><pre>
+<span></span><span class="c1"># *****************************************************************************</span>
+<span class="c1"># Copyright (c) 2025, Intel Corporation</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Redistribution and use in source and binary forms, with or without</span>
+<span class="c1"># modification, are permitted provided that the following conditions are met:</span>
+<span class="c1"># - Redistributions of source code must retain the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer.</span>
+<span class="c1"># - Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer in the documentation</span>
+<span class="c1">#   and/or other materials provided with the distribution.</span>
+<span class="c1"># - Neither the name of the copyright holder nor the names of its contributors</span>
+<span class="c1">#   may be used to endorse or promote products derived from this software</span>
+<span class="c1">#   without specific prior written permission.</span>
+<span class="c1">#</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+<span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
+<span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
+<span class="c1"># LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span>
+<span class="c1"># CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</span>
+<span class="c1"># SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span>
+<span class="c1"># INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN</span>
+<span class="c1"># CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span>
+<span class="c1"># ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF</span>
+<span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c1"># *****************************************************************************</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Interface of the window functions of dpnp</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is a face or public interface file for the library</span>
+<span class="sd">it contains:</span>
+<span class="sd"> - Interface functions</span>
+<span class="sd"> - documentation for the functions</span>
+<span class="sd"> - The functions parameters check</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="c1"># pylint: disable=invalid-name</span>
+<span class="c1"># pylint: disable=protected-access</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.window._window_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">wi</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_call_window_kernel</span><span class="p">(</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">_window_kernel</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;M must be an integer&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="n">cfd_kwarg</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
+        <span class="s2">&quot;usm_type&quot;</span><span class="p">:</span> <span class="n">usm_type</span><span class="p">,</span>
+        <span class="s2">&quot;sycl_queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">M</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">cfd_kwarg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">M</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">cfd_kwarg</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">**</span><span class="n">cfd_kwarg</span><span class="p">)</span>
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+
+    <span class="c1"># there are no dependent events for window kernels</span>
+    <span class="k">if</span> <span class="n">beta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">win_ev</span> <span class="o">=</span> <span class="n">_window_kernel</span><span class="p">(</span>
+            <span class="n">exec_q</span><span class="p">,</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">result</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">win_ev</span> <span class="o">=</span> <span class="n">_window_kernel</span><span class="p">(</span>
+            <span class="n">exec_q</span><span class="p">,</span>
+            <span class="n">beta</span><span class="p">,</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">result</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">win_ev</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<div class="viewcode-block" id="bartlett">
+<a class="viewcode-back" href="../../reference/generated/dpnp.bartlett.html#dpnp.bartlett">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bartlett</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the Bartlett window.</span>
+
+<span class="sd">    The Bartlett window is very similar to a triangular window, except that the</span>
+<span class="sd">    end points are at zero. It is often used in signal processing for tapering</span>
+<span class="sd">    a signal, without generating too much ripple in the frequency domain.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.bartlett`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    M : int</span>
+<span class="sd">        Number of points in the output window. If zero or less, an empty array</span>
+<span class="sd">        is returned.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
+<span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
+<span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
+<span class="sd">        a default queue.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray of shape (M,)</span>
+<span class="sd">        The triangular window, with the maximum value normalized to one</span>
+<span class="sd">        (the value one appears only if the number of samples is odd), with the</span>
+<span class="sd">        first and last samples equal to zero.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.blackman` : Return the Blackman window.</span>
+<span class="sd">    :obj:`dpnp.hamming` : Return the Hamming window.</span>
+<span class="sd">    :obj:`dpnp.hanning` : Return the Hanning window.</span>
+<span class="sd">    :obj:`dpnp.kaiser` : Return the Kaiser window.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Bartlett window is defined as</span>
+
+<span class="sd">    .. math::  w(n) = \frac{2}{M-1} \left(\frac{M-1}{2} -</span>
+<span class="sd">               \left|n - \frac{M-1}{2}\right|\right)</span>
+<span class="sd">               \qquad 0 \leq n \leq M-1</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.bartlett(12)</span>
+<span class="sd">    array([0.        , 0.18181818, 0.36363636, 0.54545455, 0.72727273,</span>
+<span class="sd">        0.90909091, 0.90909091, 0.72727273, 0.54545455, 0.36363636,</span>
+<span class="sd">        0.18181818, 0.        ])</span>
+
+<span class="sd">    Creating the output array on a different device or with a</span>
+<span class="sd">    specified usm_type:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.bartlett(4) # default case</span>
+<span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
+<span class="sd">    (array([0.        , 0.66666667, 0.66666667, 0.        ]),</span>
+<span class="sd">     Device(level_zero:gpu:0),</span>
+<span class="sd">     &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.bartlett(4, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
+<span class="sd">    (array([0.        , 0.66666667, 0.66666667, 0.        ]),</span>
+<span class="sd">     Device(opencl:cpu:0),</span>
+<span class="sd">     &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; z = np.bartlett(4, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
+<span class="sd">    (array([0.        , 0.66666667, 0.66666667, 0.        ]),</span>
+<span class="sd">     Device(level_zero:gpu:0),</span>
+<span class="sd">     &#39;host&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_call_window_kernel</span><span class="p">(</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">wi</span><span class="o">.</span><span class="n">_bartlett</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="blackman">
+<a class="viewcode-back" href="../../reference/generated/dpnp.blackman.html#dpnp.blackman">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">blackman</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the Blackman window.</span>
+
+<span class="sd">    The Blackman window is a taper formed by using the first three terms of a</span>
+<span class="sd">    summation of cosines. It was designed to have close to the minimal leakage</span>
+<span class="sd">    possible. It is close to optimal, only slightly worse than a Kaiser window.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.blackman`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    M : int</span>
+<span class="sd">        Number of points in the output window. If zero or less, an empty array</span>
+<span class="sd">        is returned.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
+<span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
+<span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
+<span class="sd">        a default queue.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray of shape (M,)</span>
+<span class="sd">        The window, with the maximum value normalized to one (the value one</span>
+<span class="sd">        appears only if the number of samples is odd).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.bartlett` : Return the Bartlett window.</span>
+<span class="sd">    :obj:`dpnp.hamming` : Return the Hamming window.</span>
+<span class="sd">    :obj:`dpnp.hanning` : Return the Hanning window.</span>
+<span class="sd">    :obj:`dpnp.kaiser` : Return the Kaiser window.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Blackman window is defined as</span>
+
+<span class="sd">    .. math::  w(n) = 0.42 - 0.5\cos\left(\frac{2\pi{n}}{M-1}\right)</span>
+<span class="sd">               + 0.08\cos\left(\frac{4\pi{n}}{M-1}\right)</span>
+<span class="sd">               \qquad 0 \leq n \leq M-1</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.blackman(12)</span>
+<span class="sd">    array([-1.38777878e-17,  3.26064346e-02,  1.59903635e-01,  4.14397981e-01,</span>
+<span class="sd">            7.36045180e-01,  9.67046769e-01,  9.67046769e-01,  7.36045180e-01,</span>
+<span class="sd">            4.14397981e-01,  1.59903635e-01,  3.26064346e-02, -1.38777878e-17])</span>
+
+<span class="sd">    Creating the output array on a different device or with a</span>
+<span class="sd">    specified usm_type:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.blackman(3) # default case</span>
+<span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
+<span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
+<span class="sd">     Device(level_zero:gpu:0),</span>
+<span class="sd">     &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.blackman(3, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
+<span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
+<span class="sd">     Device(opencl:cpu:0),</span>
+<span class="sd">     &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; z = np.blackman(3, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
+<span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
+<span class="sd">     Device(level_zero:gpu:0),</span>
+<span class="sd">     &#39;host&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_call_window_kernel</span><span class="p">(</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">wi</span><span class="o">.</span><span class="n">_blackman</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="hamming">
+<a class="viewcode-back" href="../../reference/generated/dpnp.hamming.html#dpnp.hamming">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">hamming</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the Hamming window.</span>
+
+<span class="sd">    The Hamming window is a taper formed by using a weighted cosine.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.hamming`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    M : int</span>
+<span class="sd">        Number of points in the output window. If zero or less, an empty array</span>
+<span class="sd">        is returned.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
+<span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
+<span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
+<span class="sd">        a default queue.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray of shape (M,)</span>
+<span class="sd">        The window, with the maximum value normalized to one (the value one</span>
+<span class="sd">        appears only if the number of samples is odd).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.bartlett` : Return the Bartlett window.</span>
+<span class="sd">    :obj:`dpnp.blackman` : Return the Blackman window.</span>
+<span class="sd">    :obj:`dpnp.hanning` : Return the Hanning window.</span>
+<span class="sd">    :obj:`dpnp.kaiser` : Return the Kaiser window.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Hamming window is defined as</span>
+
+<span class="sd">    .. math::  w(n) = 0.54 - 0.46\cos\left(\frac{2\pi{n}}{M-1}\right)</span>
+<span class="sd">               \qquad 0 \leq n \leq M-1</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.hamming(12)</span>
+<span class="sd">    array([0.08      , 0.15302337, 0.34890909, 0.60546483, 0.84123594,</span>
+<span class="sd">           0.98136677, 0.98136677, 0.84123594, 0.60546483, 0.34890909,</span>
+<span class="sd">           0.15302337, 0.08      ])  # may vary</span>
+
+<span class="sd">    Creating the output array on a different device or with a</span>
+<span class="sd">    specified usm_type:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.hamming(4) # default case</span>
+<span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
+<span class="sd">    (array([0.08, 0.77, 0.77, 0.08]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.hamming(4, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
+<span class="sd">    (array([0.08, 0.77, 0.77, 0.08]), Device(opencl:cpu:0), &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; z = np.hamming(4, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
+<span class="sd">    (array([0.08, 0.77, 0.77, 0.08]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_call_window_kernel</span><span class="p">(</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">wi</span><span class="o">.</span><span class="n">_hamming</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="hanning">
+<a class="viewcode-back" href="../../reference/generated/dpnp.hanning.html#dpnp.hanning">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">hanning</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the Hanning window.</span>
+
+<span class="sd">    The Hanning window is a taper formed by using a weighted cosine.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.hanning`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    M : int</span>
+<span class="sd">        Number of points in the output window. If zero or less, an empty array</span>
+<span class="sd">        is returned.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
+<span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
+<span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
+<span class="sd">        a default queue.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray of shape (M,)</span>
+<span class="sd">        The window, with the maximum value normalized to one (the value one</span>
+<span class="sd">        appears only if the number of samples is odd).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.bartlett` : Return the Bartlett window.</span>
+<span class="sd">    :obj:`dpnp.blackman` : Return the Blackman window.</span>
+<span class="sd">    :obj:`dpnp.hamming` : Return the Hamming window.</span>
+<span class="sd">    :obj:`dpnp.kaiser` : Return the Kaiser window.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Hanning window is defined as</span>
+
+<span class="sd">    .. math::  w(n) = 0.5 - 0.5\cos\left(\frac{2\pi{n}}{M-1}\right)</span>
+<span class="sd">               \qquad 0 \leq n \leq M-1</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.hanning(12)</span>
+<span class="sd">    array([0.        , 0.07937323, 0.29229249, 0.57115742, 0.82743037,</span>
+<span class="sd">           0.97974649, 0.97974649, 0.82743037, 0.57115742, 0.29229249,</span>
+<span class="sd">           0.07937323, 0.        ])</span>
+
+<span class="sd">    Creating the output array on a different device or with a</span>
+<span class="sd">    specified usm_type:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.hanning(4) # default case</span>
+<span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
+<span class="sd">    (array([0.  , 0.75, 0.75, 0.  ]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.hanning(4, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
+<span class="sd">    (array([0.  , 0.75, 0.75, 0.  ]), Device(opencl:cpu:0), &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; z = np.hanning(4, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
+<span class="sd">    (array([0.  , 0.75, 0.75, 0.  ]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_call_window_kernel</span><span class="p">(</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">wi</span><span class="o">.</span><span class="n">_hanning</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="kaiser">
+<a class="viewcode-back" href="../../reference/generated/dpnp.kaiser.html#dpnp.kaiser">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">kaiser</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the Kaiser window.</span>
+
+<span class="sd">    The Kaiser window is a taper formed by using a Bessel function.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.kaiser`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    M : int</span>
+<span class="sd">        Number of points in the output window. If zero or less, an empty array</span>
+<span class="sd">        is returned.</span>
+<span class="sd">    beta : float</span>
+<span class="sd">        Shape parameter for window.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
+<span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
+<span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
+<span class="sd">        a default queue.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray of shape (M,)</span>
+<span class="sd">        The window, with the maximum value normalized to one (the value one</span>
+<span class="sd">        appears only if the number of samples is odd).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.bartlett` : Return the Bartlett window.</span>
+<span class="sd">    :obj:`dpnp.blackman` : Return the Blackman window.</span>
+<span class="sd">    :obj:`dpnp.hamming` : Return the Hamming window.</span>
+<span class="sd">    :obj:`dpnp.hanning` : Return the Hanning window.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Kaiser window is defined as</span>
+
+<span class="sd">    .. math::  w(n) = I_0\left( \beta \sqrt{1-\frac{4n^2}{(M-1)^2}}</span>
+<span class="sd">               \right)/I_0(\beta)</span>
+
+<span class="sd">    with</span>
+
+<span class="sd">    .. math:: \quad -\frac{M-1}{2} \leq n \leq \frac{M-1}{2},</span>
+
+<span class="sd">    where :math:`I_0` is the modified zeroth-order Bessel function.</span>
+
+<span class="sd">    The Kaiser can approximate many other windows by varying the beta</span>
+<span class="sd">    parameter.</span>
+
+<span class="sd">    ====  =======================</span>
+<span class="sd">    beta  Window shape</span>
+<span class="sd">    ====  =======================</span>
+<span class="sd">    0     Rectangular</span>
+<span class="sd">    5     Similar to a Hamming</span>
+<span class="sd">    6     Similar to a Hanning</span>
+<span class="sd">    8.6   Similar to a Blackman</span>
+<span class="sd">    ====  =======================</span>
+
+<span class="sd">    A beta value of ``14`` is probably a good starting point. Note that as beta</span>
+<span class="sd">    gets large, the window narrows, and so the number of samples needs to be</span>
+<span class="sd">    large enough to sample the increasingly narrow spike, otherwise NaNs will</span>
+<span class="sd">    get returned.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.kaiser(12, 14)</span>
+<span class="sd">    array([7.72686638e-06, 3.46009173e-03, 4.65200161e-02, 2.29737107e-01,</span>
+<span class="sd">           5.99885281e-01, 9.45674843e-01, 9.45674843e-01, 5.99885281e-01,</span>
+<span class="sd">           2.29737107e-01, 4.65200161e-02, 3.46009173e-03, 7.72686638e-06])</span>
+
+<span class="sd">    Creating the output array on a different device or with a</span>
+<span class="sd">    specified usm_type:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.kaiser(3, 14) # default case</span>
+<span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
+<span class="sd">    (array([7.72686638e-06, 9.99999941e-01, 7.72686638e-06]),</span>
+<span class="sd">     Device(level_zero:gpu:0),</span>
+<span class="sd">     &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.kaiser(3, 14, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
+<span class="sd">    (array([7.72686638e-06, 9.99999941e-01, 7.72686638e-06]),</span>
+<span class="sd">     Device(opencl:cpu:0),</span>
+<span class="sd">     &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; z = np.kaiser(3, 14, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
+<span class="sd">    (array([7.72686638e-06, 9.99999941e-01, 7.72686638e-06]),</span>
+<span class="sd">     Device(level_zero:gpu:0),</span>
+<span class="sd">     &#39;host&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;beta must be a float&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="k">return</span> <span class="n">_call_window_kernel</span><span class="p">(</span>
+        <span class="n">M</span><span class="p">,</span>
+        <span class="n">wi</span><span class="o">.</span><span class="n">_kaiser</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
