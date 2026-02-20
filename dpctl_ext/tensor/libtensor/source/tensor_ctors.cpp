@@ -45,7 +45,7 @@
 
 #include "accumulators.hpp"
 #include "boolean_advanced_indexing.hpp"
-// #include "clip.hpp"
+#include "clip.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_as_contig.hpp"
 #include "copy_for_reshape.hpp"
@@ -135,7 +135,7 @@ using dpctl::tensor::py_internal::usm_ndarray_triul;
 using dpctl::tensor::py_internal::py_where;
 
 /* =========================== Clip ============================== */
-// using dpctl::tensor::py_internal::py_clip;
+using dpctl::tensor::py_internal::py_clip;
 
 // populate dispatch tables
 void init_dispatch_tables(void)
@@ -171,7 +171,7 @@ void init_dispatch_vectors(void)
     populate_cumsum_1d_dispatch_vectors();
     init_repeat_dispatch_vectors();
 
-    // init_clip_dispatch_vectors();
+    init_clip_dispatch_vectors();
 
     return;
 }
@@ -488,11 +488,11 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("reps"), py::arg("axis"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    // m.def("_clip", &py_clip,
-    //       "Clamps elements of array `x` to the range "
-    //       "[`min`, `max] and writes the result to the "
-    //       "array `dst` for each element of `x`, `min`, and `max`."
-    //       "Returns a tuple of events: (hev, ev)",
-    //       py::arg("src"), py::arg("min"), py::arg("max"), py::arg("dst"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_clip", &py_clip,
+          "Clamps elements of array `x` to the range "
+          "[`min`, `max] and writes the result to the "
+          "array `dst` for each element of `x`, `min`, and `max`."
+          "Returns a tuple of events: (hev, ev)",
+          py::arg("src"), py::arg("min"), py::arg("max"), py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 }

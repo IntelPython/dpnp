@@ -61,7 +61,7 @@ set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/where.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
 )
 
 set(_static_lib_trgt simplify_iteration_space)
@@ -94,7 +94,7 @@ set(_no_fast_math_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_and_cast_usm_to_usm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
     # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/where.cpp
 )
 #list(
