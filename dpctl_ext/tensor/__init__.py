@@ -27,6 +27,8 @@
 # *****************************************************************************
 
 
+from dpctl.tensor._search_functions import where
+
 from dpctl_ext.tensor._copy_utils import (
     asnumpy,
     astype,
@@ -82,4 +84,5 @@ __all__ = [
     "to_numpy",
     "tril",
     "triu",
+    "where",
 ]
