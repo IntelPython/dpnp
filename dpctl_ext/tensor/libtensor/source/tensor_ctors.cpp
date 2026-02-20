@@ -145,7 +145,7 @@ void init_dispatch_tables(void)
     init_copy_and_cast_usm_to_usm_dispatch_tables();
     init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables();
     init_advanced_indexing_dispatch_tables();
-    // init_where_dispatch_tables();
+    init_where_dispatch_tables();
     return;
 }
 
