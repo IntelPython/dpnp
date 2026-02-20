@@ -3195,7 +3195,7 @@ def result_type(*arrays_and_dtypes):
         )
         for X in arrays_and_dtypes
     ]
-    return dpt.result_type(*usm_arrays_and_dtypes)
+    return dpt_ext.result_type(*usm_arrays_and_dtypes)
 
 
 def roll(x, shift, axis=None):

@@ -291,7 +291,7 @@ def _prepare_indices_arrays(inds, q, usm_type):
     )
 
     # promote to a common integral type if possible
-    ind_dt = dpt.result_type(*inds)
+    ind_dt = dpt_ext.result_type(*inds)
     if ind_dt.kind not in "ui":
         raise ValueError(
             "cannot safely promote indices to an integer data type"
