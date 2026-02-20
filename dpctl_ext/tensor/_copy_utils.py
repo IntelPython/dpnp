@@ -37,12 +37,12 @@ import dpctl.utils
 import numpy as np
 from dpctl.tensor._data_types import _get_dtype
 from dpctl.tensor._device import normalize_queue_device
-from dpctl.tensor._type_utils import _dtype_supported_by_device_impl
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
+from dpctl_ext.tensor._type_utils import _dtype_supported_by_device_impl
 
 from ._numpy_helper import normalize_axis_index
 

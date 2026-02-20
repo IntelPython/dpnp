@@ -26,6 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import itertools
 import operator
 
 import dpctl
@@ -43,6 +44,45 @@ __doc__ = (
     "Implementation module for array manipulation "
     "functions in :module:`dpctl.tensor`"
 )
+
+
+def _broadcast_shape_impl(shapes):
+    if len(set(shapes)) == 1:
+        return shapes[0]
+    mutable_shapes = False
+    nds = [len(s) for s in shapes]
+    biggest = max(nds)
+    sh_len = len(shapes)
+    for i in range(sh_len):
+        diff = biggest - nds[i]
+        if diff > 0:
+            ty = type(shapes[i])
+            shapes[i] = ty(
+                itertools.chain(itertools.repeat(1, diff), shapes[i])
+            )
+    common_shape = []
+    for axis in range(biggest):
+        lengths = [s[axis] for s in shapes]
+        unique = set(lengths + [1])
+        if len(unique) > 2:
+            raise ValueError(
+                "Shape mismatch: two or more arrays have "
+                f"incompatible dimensions on axis ({axis},)"
+            )
+        elif len(unique) == 2:
+            unique.remove(1)
+            new_length = unique.pop()
+            common_shape.append(new_length)
+            for i in range(sh_len):
+                if shapes[i][axis] == 1:
+                    if not mutable_shapes:
+                        shapes = [list(s) for s in shapes]
+                        mutable_shapes = True
+                    shapes[i][axis] = new_length
+        else:
+            common_shape.append(1)
+
+    return tuple(common_shape)
 
 
 def repeat(x, repeats, /, *, axis=None):
