@@ -35,13 +35,19 @@ from dpctl_ext.tensor._copy_utils import (
     to_numpy,
 )
 from dpctl_ext.tensor._ctors import (
+    eye,
     full,
     tril,
     triu,
 )
 from dpctl_ext.tensor._indexing_functions import (
+    extract,
+    nonzero,
+    place,
     put,
+    put_along_axis,
     take,
+    take_along_axis,
 )
 from dpctl_ext.tensor._manipulation_functions import (
     roll,
@@ -52,12 +58,18 @@ __all__ = [
     "asnumpy",
     "astype",
     "copy",
+    "extract",
+    "eye",
     "from_numpy",
     "full",
+    "nonzero",
+    "place",
     "put",
+    "put_along_axis",
     "reshape",
     "roll",
     "take",
+    "take_along_axis",
     "to_numpy",
     "tril",
     "triu",

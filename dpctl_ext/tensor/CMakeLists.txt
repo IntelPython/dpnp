@@ -45,7 +45,7 @@ set(_static_lib_sources
 )
 set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_ctors.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_and_cast_usm_to_usm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_as_contig.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_numpy_ndarray_into_usm_ndarray.cpp
@@ -53,8 +53,8 @@ set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_for_roll.cpp
     # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/integer_advanced_indexing.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_advanced_indexing.cpp
-    # ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/eye_ctor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_advanced_indexing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/eye_ctor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/zeros_ctor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/triul_ctor.cpp
