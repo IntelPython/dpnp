@@ -36,6 +36,7 @@ import numpy as np
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
 
 from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
@@ -162,7 +163,7 @@ def repeat(x, repeats, /, *, axis=None):
             )
         )
         dpctl.utils.validate_usm_type(usm_type, allow_none=False)
-        if not dpt.can_cast(repeats.dtype, dpt.int64, casting="same_kind"):
+        if not dpt_ext.can_cast(repeats.dtype, dpt.int64, casting="same_kind"):
             raise TypeError(
                 f"'repeats' data type {repeats.dtype} cannot be cast to "
                 "'int64' according to the casting rule ''safe.''"

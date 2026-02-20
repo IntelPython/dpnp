@@ -1270,7 +1270,7 @@ def can_cast(from_, to, casting="safe"):
         if dpnp.is_supported_array_type(from_)
         else dpnp.dtype(from_)
     )
-    return dpt.can_cast(dtype_from, to, casting=casting)
+    return dpt_ext.can_cast(dtype_from, to, casting=casting)
 
 
 def column_stack(tup):

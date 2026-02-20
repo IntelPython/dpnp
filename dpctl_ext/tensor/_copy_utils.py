@@ -1013,7 +1013,7 @@ def astype(
     else:
         target_dtype = _get_dtype(newdtype, usm_ary.sycl_queue)
 
-    if not dpt.can_cast(ary_dtype, target_dtype, casting=casting):
+    if not dpt_ext.can_cast(ary_dtype, target_dtype, casting=casting):
         raise TypeError(
             f"Can not cast from {ary_dtype} to {newdtype} "
             f"according to rule {casting}."

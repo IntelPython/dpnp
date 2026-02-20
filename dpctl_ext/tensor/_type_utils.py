@@ -33,6 +33,7 @@ import numpy as np
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
 
 
@@ -955,7 +956,7 @@ def _default_accumulation_dtype_fp_types(inp_dt, q):
     inp_kind = inp_dt.kind
     if inp_kind in "biu":
         res_dt = dpt.dtype(ti.default_device_fp_type(q))
-        can_cast_v = dpt.can_cast(inp_dt, res_dt)
+        can_cast_v = dpt_ext.can_cast(inp_dt, res_dt)
         if not can_cast_v:
             _fp64 = q.sycl_device.has_aspect_fp64
             res_dt = dpt.float64 if _fp64 else dpt.float32
