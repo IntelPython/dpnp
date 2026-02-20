@@ -47,9 +47,6 @@ from collections.abc import Iterable
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._copy_utils import _nonzero_impl
-from dpctl.tensor._indexing_functions import _get_indexing_mode
-from dpctl.tensor._numpy_helper import normalize_axis_index
 
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
@@ -60,6 +57,9 @@ import dpnp
 
 # pylint: disable=no-name-in-module
 import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
+from dpctl_ext.tensor._copy_utils import _nonzero_impl
+from dpctl_ext.tensor._indexing_functions import _get_indexing_mode
+from dpctl_ext.tensor._numpy_helper import normalize_axis_index
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
