@@ -45,8 +45,10 @@ it contains:
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
-import dpctl.tensor._type_utils as dtu
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 

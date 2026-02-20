@@ -40,6 +40,7 @@ it contains:
 """
 
 # pylint: disable=protected-access
+# pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
 
 
@@ -48,15 +49,17 @@ import warnings
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
-import dpctl.tensor._type_utils as dtu
 import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
 )
-from dpctl.tensor._type_utils import _acceptance_fn_divide
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 
@@ -727,7 +730,7 @@ def clip(a, /, min=None, max=None, *, out=None, order="K", **kwargs):
     usm_max = None if max is None else dpnp.get_usm_ndarray_or_scalar(max)
 
     usm_out = None if out is None else dpnp.get_usm_ndarray(out)
-    usm_res = dpt.clip(usm_arr, usm_min, usm_max, out=usm_out, order=order)
+    usm_res = dpt_ext.clip(usm_arr, usm_min, usm_max, out=usm_out, order=order)
     if out is not None and isinstance(out, dpnp_array):
         return out
     return dpnp_array._create_from_usm_ndarray(usm_res)
@@ -1561,7 +1564,7 @@ divide = DPNPBinaryFunc(
     mkl_fn_to_call="_mkl_div_to_call",
     mkl_impl_fn="_div",
     binary_inplace_fn=ti._divide_inplace,
-    acceptance_fn=_acceptance_fn_divide,
+    acceptance_fn=dtu._acceptance_fn_divide,
 )
 
 

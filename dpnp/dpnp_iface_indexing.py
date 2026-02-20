@@ -250,7 +250,7 @@ def choose(a, choices, out=None, mode="wrap"):
 
     res_usm_type, exec_q = get_usm_allocations(choices + [inds])
     # apply type promotion to input choices
-    res_dt = dpt.result_type(*choices)
+    res_dt = dpt_ext.result_type(*choices)
     if len(choices) > 1:
         choices = tuple(
             map(

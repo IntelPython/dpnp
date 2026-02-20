@@ -37,12 +37,12 @@ import dpctl.utils
 import numpy as np
 from dpctl.tensor._data_types import _get_dtype
 from dpctl.tensor._device import normalize_queue_device
-from dpctl.tensor._type_utils import _dtype_supported_by_device_impl
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
+from dpctl_ext.tensor._type_utils import _dtype_supported_by_device_impl
 
 from ._numpy_helper import normalize_axis_index
 
@@ -291,7 +291,7 @@ def _prepare_indices_arrays(inds, q, usm_type):
     )
 
     # promote to a common integral type if possible
-    ind_dt = dpt.result_type(*inds)
+    ind_dt = dpt_ext.result_type(*inds)
     if ind_dt.kind not in "ui":
         raise ValueError(
             "cannot safely promote indices to an integer data type"
@@ -1013,7 +1013,7 @@ def astype(
     else:
         target_dtype = _get_dtype(newdtype, usm_ary.sycl_queue)
 
-    if not dpt.can_cast(ary_dtype, target_dtype, casting=casting):
+    if not dpt_ext.can_cast(ary_dtype, target_dtype, casting=casting):
         raise TypeError(
             f"Can not cast from {ary_dtype} to {newdtype} "
             f"according to rule {casting}."

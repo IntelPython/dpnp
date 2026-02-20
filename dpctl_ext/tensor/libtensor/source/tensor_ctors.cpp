@@ -45,7 +45,7 @@
 
 #include "accumulators.hpp"
 #include "boolean_advanced_indexing.hpp"
-// #include "clip.hpp"
+#include "clip.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_as_contig.hpp"
 #include "copy_for_reshape.hpp"
@@ -57,12 +57,12 @@
 #include "integer_advanced_indexing.hpp"
 #include "kernels/dpctl_tensor_types.hpp"
 // #include "linear_sequences.hpp"
-// #include "repeat.hpp"
+#include "repeat.hpp"
 #include "simplify_iteration_space.hpp"
 #include "triul_ctor.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/strided_iters.hpp"
-// #include "where.hpp"
+#include "where.hpp"
 #include "zeros_ctor.hpp"
 
 namespace py = pybind11;
@@ -119,8 +119,8 @@ using dpctl::tensor::py_internal::py_place;
 
 /* ================= Repeat ====================*/
 using dpctl::tensor::py_internal::py_cumsum_1d;
-// using dpctl::tensor::py_internal::py_repeat_by_scalar;
-// using dpctl::tensor::py_internal::py_repeat_by_sequence;
+using dpctl::tensor::py_internal::py_repeat_by_scalar;
+using dpctl::tensor::py_internal::py_repeat_by_sequence;
 
 /* ================ Eye ================== */
 
@@ -132,10 +132,10 @@ using dpctl::tensor::py_internal::usm_ndarray_triul;
 
 /* =========================== Where ============================== */
 
-// using dpctl::tensor::py_internal::py_where;
+using dpctl::tensor::py_internal::py_where;
 
 /* =========================== Clip ============================== */
-// using dpctl::tensor::py_internal::py_clip;
+using dpctl::tensor::py_internal::py_clip;
 
 // populate dispatch tables
 void init_dispatch_tables(void)
@@ -145,7 +145,7 @@ void init_dispatch_tables(void)
     init_copy_and_cast_usm_to_usm_dispatch_tables();
     init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables();
     init_advanced_indexing_dispatch_tables();
-    // init_where_dispatch_tables();
+    init_where_dispatch_tables();
     return;
 }
 
@@ -169,9 +169,9 @@ void init_dispatch_vectors(void)
     populate_mask_positions_dispatch_vectors();
 
     populate_cumsum_1d_dispatch_vectors();
-    // init_repeat_dispatch_vectors();
+    init_repeat_dispatch_vectors();
 
-    // init_clip_dispatch_vectors();
+    init_clip_dispatch_vectors();
 
     return;
 }
@@ -446,55 +446,53 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("mask_shape"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    // m.def("_where", &py_where, "", py::arg("condition"), py::arg("x1"),
-    //       py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    m.def("_where", &py_where, "", py::arg("condition"), py::arg("x1"),
+          py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
-    // auto repeat_sequence = [](const dpctl::tensor::usm_ndarray &src,
-    //                           const dpctl::tensor::usm_ndarray &dst,
-    //                           const dpctl::tensor::usm_ndarray &reps,
-    //                           const dpctl::tensor::usm_ndarray &cumsum,
-    //                           std::optional<int> axis, sycl::queue &exec_q,
-    //                           const std::vector<sycl::event> depends)
-    //     -> std::pair<sycl::event, sycl::event> {
-    //     if (axis) {
-    //         return py_repeat_by_sequence(src, dst, reps, cumsum,
-    //         axis.value(),
-    //                                      exec_q, depends);
-    //     }
-    //     else {
-    //         return py_repeat_by_sequence(src, dst, reps, cumsum, exec_q,
-    //                                      depends);
-    //     }
-    // };
-    // m.def("_repeat_by_sequence", repeat_sequence, py::arg("src"),
-    //       py::arg("dst"), py::arg("reps"), py::arg("cumsum"),
-    //       py::arg("axis"), py::arg("sycl_queue"), py::arg("depends") =
-    //       py::list());
+    auto repeat_sequence = [](const dpctl::tensor::usm_ndarray &src,
+                              const dpctl::tensor::usm_ndarray &dst,
+                              const dpctl::tensor::usm_ndarray &reps,
+                              const dpctl::tensor::usm_ndarray &cumsum,
+                              std::optional<int> axis, sycl::queue &exec_q,
+                              const std::vector<sycl::event> depends)
+        -> std::pair<sycl::event, sycl::event> {
+        if (axis) {
+            return py_repeat_by_sequence(src, dst, reps, cumsum, axis.value(),
+                                         exec_q, depends);
+        }
+        else {
+            return py_repeat_by_sequence(src, dst, reps, cumsum, exec_q,
+                                         depends);
+        }
+    };
+    m.def("_repeat_by_sequence", repeat_sequence, py::arg("src"),
+          py::arg("dst"), py::arg("reps"), py::arg("cumsum"), py::arg("axis"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    // auto repeat_scalar = [](const dpctl::tensor::usm_ndarray &src,
-    //                         const dpctl::tensor::usm_ndarray &dst,
-    //                         const py::ssize_t reps, std::optional<int> axis,
-    //                         sycl::queue &exec_q,
-    //                         const std::vector<sycl::event> depends)
-    //     -> std::pair<sycl::event, sycl::event> {
-    //     if (axis) {
-    //         return py_repeat_by_scalar(src, dst, reps, axis.value(), exec_q,
-    //                                    depends);
-    //     }
-    //     else {
-    //         return py_repeat_by_scalar(src, dst, reps, exec_q, depends);
-    //     }
-    // };
-    // m.def("_repeat_by_scalar", repeat_scalar, py::arg("src"), py::arg("dst"),
-    //       py::arg("reps"), py::arg("axis"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    auto repeat_scalar = [](const dpctl::tensor::usm_ndarray &src,
+                            const dpctl::tensor::usm_ndarray &dst,
+                            const py::ssize_t reps, std::optional<int> axis,
+                            sycl::queue &exec_q,
+                            const std::vector<sycl::event> depends)
+        -> std::pair<sycl::event, sycl::event> {
+        if (axis) {
+            return py_repeat_by_scalar(src, dst, reps, axis.value(), exec_q,
+                                       depends);
+        }
+        else {
+            return py_repeat_by_scalar(src, dst, reps, exec_q, depends);
+        }
+    };
+    m.def("_repeat_by_scalar", repeat_scalar, py::arg("src"), py::arg("dst"),
+          py::arg("reps"), py::arg("axis"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
-    // m.def("_clip", &py_clip,
-    //       "Clamps elements of array `x` to the range "
-    //       "[`min`, `max] and writes the result to the "
-    //       "array `dst` for each element of `x`, `min`, and `max`."
-    //       "Returns a tuple of events: (hev, ev)",
-    //       py::arg("src"), py::arg("min"), py::arg("max"), py::arg("dst"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_clip", &py_clip,
+          "Clamps elements of array `x` to the range "
+          "[`min`, `max] and writes the result to the "
+          "array `dst` for each element of `x`, `min`, and `max`."
+          "Returns a tuple of events: (hev, ev)",
+          py::arg("src"), py::arg("min"), py::arg("max"), py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 }

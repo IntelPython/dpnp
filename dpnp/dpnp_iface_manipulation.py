@@ -1270,7 +1270,7 @@ def can_cast(from_, to, casting="safe"):
         if dpnp.is_supported_array_type(from_)
         else dpnp.dtype(from_)
     )
-    return dpt.can_cast(dtype_from, to, casting=casting)
+    return dpt_ext.can_cast(dtype_from, to, casting=casting)
 
 
 def column_stack(tup):
@@ -2837,7 +2837,7 @@ def repeat(a, repeats, axis=None):
         a = dpnp.ravel(a)
 
     usm_arr = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.repeat(usm_arr, repeats, axis=axis)
+    usm_res = dpt_ext.repeat(usm_arr, repeats, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -3195,7 +3195,7 @@ def result_type(*arrays_and_dtypes):
         )
         for X in arrays_and_dtypes
     ]
-    return dpt.result_type(*usm_arrays_and_dtypes)
+    return dpt_ext.result_type(*usm_arrays_and_dtypes)
 
 
 def roll(x, shift, axis=None):

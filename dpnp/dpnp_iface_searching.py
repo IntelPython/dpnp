@@ -44,6 +44,7 @@ import dpctl.tensor as dpt
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as dti
 import dpnp
 
@@ -473,5 +474,7 @@ def where(condition, x=None, y=None, /, *, order="K", out=None):
     usm_condition = dpnp.get_usm_ndarray(condition)
 
     usm_out = None if out is None else dpnp.get_usm_ndarray(out)
-    usm_res = dpt.where(usm_condition, usm_x, usm_y, order=order, out=usm_out)
+    usm_res = dpt_ext.where(
+        usm_condition, usm_x, usm_y, order=order, out=usm_out
+    )
     return dpnp.get_result_array(usm_res, out)

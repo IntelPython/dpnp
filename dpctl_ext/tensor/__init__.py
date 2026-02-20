@@ -27,6 +27,8 @@
 # *****************************************************************************
 
 
+from dpctl.tensor._search_functions import where
+
 from dpctl_ext.tensor._copy_utils import (
     asnumpy,
     astype,
@@ -50,27 +52,39 @@ from dpctl_ext.tensor._indexing_functions import (
     take_along_axis,
 )
 from dpctl_ext.tensor._manipulation_functions import (
+    repeat,
     roll,
 )
 from dpctl_ext.tensor._reshape import reshape
 
+from ._clip import clip
+from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
+
 __all__ = [
     "asnumpy",
     "astype",
+    "can_cast",
     "copy",
+    "clip",
     "extract",
     "eye",
+    "finfo",
     "from_numpy",
     "full",
+    "iinfo",
+    "isdtype",
     "nonzero",
     "place",
     "put",
     "put_along_axis",
+    "repeat",
     "reshape",
+    "result_type",
     "roll",
     "take",
     "take_along_axis",
     "to_numpy",
     "tril",
     "triu",
+    "where",
 ]
