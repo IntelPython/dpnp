@@ -57,6 +57,7 @@ from dpctl_ext.tensor._manipulation_functions import (
 )
 from dpctl_ext.tensor._reshape import reshape
 
+from ._clip import clip
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [
@@ -64,6 +65,7 @@ __all__ = [
     "astype",
     "can_cast",
     "copy",
+    "clip",
     "extract",
     "eye",
     "finfo",
