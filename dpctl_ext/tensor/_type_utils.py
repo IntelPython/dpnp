@@ -450,7 +450,7 @@ def _resolve_weak_types_all_py_ints(o1_dtype, o2_dtype, dev):
                 o1_dtype, WeakIntegralType
             ):
                 o1_val = o1_dtype.get()
-                o2_iinfo = dpt.iinfo(o2_dtype)
+                o2_iinfo = dpt_ext.iinfo(o2_dtype)
                 if (o1_val < o2_iinfo.min) or (o1_val > o2_iinfo.max):
                     return dpt.dtype(np.min_scalar_type(o1_val)), o2_dtype
             return o2_dtype, o2_dtype
@@ -473,7 +473,7 @@ def _resolve_weak_types_all_py_ints(o1_dtype, o2_dtype, dev):
                 o2_dtype, WeakIntegralType
             ):
                 o2_val = o2_dtype.get()
-                o1_iinfo = dpt.iinfo(o1_dtype)
+                o1_iinfo = dpt_ext.iinfo(o1_dtype)
                 if (o2_val < o1_iinfo.min) or (o2_val > o1_iinfo.max):
                     return o1_dtype, dpt.dtype(np.min_scalar_type(o2_val))
             return o1_dtype, o1_dtype
@@ -936,8 +936,8 @@ def _default_accumulation_dtype(inp_dt, q):
             res_dt = inp_dt
     elif inp_kind in "u":
         res_dt = dpt.dtype(ti.default_device_uint_type(q))
-        res_ii = dpt.iinfo(res_dt)
-        inp_ii = dpt.iinfo(inp_dt)
+        res_ii = dpt_ext.iinfo(res_dt)
+        inp_ii = dpt_ext.iinfo(inp_dt)
         if inp_ii.min >= res_ii.min and inp_ii.max <= res_ii.max:
             pass
         else:
