@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnp.histogram2d &mdash; Data Parallel Extension for NumPy 0.20.0dev3+5.gc3877de9b19 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a8db30b0"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpnp.histogramdd" href="dpnp.histogramdd.html" />
+    <link rel="prev" title="dpnp.histogram" href="dpnp.histogram.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines (NumPy)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../constants.html">Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions.html">Exceptions and Warnings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.fft</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io.html">Input and output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.linalg</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../other.html">Miscellaneous routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../statistics.html">Statistics</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../statistics.html#order-statistics">Order statistics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../statistics.html#averages-and-variances">Averages and variances</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../statistics.html#correlations">Correlations</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../statistics.html#histograms">Histograms</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../routines.html">Routines (NumPy)</a></li>
+          <li class="breadcrumb-item"><a href="../statistics.html">Statistics</a></li>
+      <li class="breadcrumb-item active">dpnp.histogram2d</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/generated/dpnp.histogram2d.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dpnp-histogram2d">
+<h1>dpnp.histogram2d<a class="headerlink" href="#dpnp-histogram2d" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpnp.histogram2d">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">histogram2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_histograms.html#histogram2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.histogram2d" title="Link to this definition"></a></dt>
+<dd><p>Compute the bi-dimensional histogram of two data samples.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.histogram2d.html#numpy.histogram2d" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.histogram2d</span></code></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function may synchronize in order to check a monotonically increasing
+array of bin edges. This may harm performance in some applications.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em>) -- An array containing the <cite>x</cite> coordinates of the points to be
+histogrammed.</p></li>
+<li><p><strong>y</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em>) -- An array containing the <cite>y</cite> coordinates of the points to be
+histogrammed.</p></li>
+<li><p><strong>bins</strong> (<em>{int</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>, </em><em>[</em><em>array</em><em>, </em><em>array</em><em>]</em><em>,         </em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>array</em><em>]</em><em>, </em><em>[</em><em>array</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>}</em><em>, </em><em>optional</em>) -- <p>The bins specification:</p>
+<ul>
+<li><p>If int, the number of bins for the two dimensions (nx=ny=bins).</p></li>
+<li><p>If array, the bin edges for the two dimensions
+(x_edges=y_edges=bins).</p></li>
+<li><p>If [int, int], the number of bins in each dimension
+(nx, ny = bins).</p></li>
+<li><p>If [array, array], the bin edges in each dimension
+(x_edges, y_edges = bins).</p></li>
+<li><p>A combination [int, array] or [array, int], where int
+is the number of bins and array is the bin edges.</p></li>
+</ul>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
+</p></li>
+<li><p><strong>range</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>2</em><em>, </em><em>2</em><em>)</em><em>, </em><em>optional</em>) -- <p>The leftmost and rightmost edges of the bins along each dimension
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> the ranges are
+<code class="docutils literal notranslate"><span class="pre">[[x.min(),</span> <span class="pre">x.max()],</span> <span class="pre">[y.min(),</span> <span class="pre">y.max()]]</span></code>. All values outside
+of this range will be considered outliers and not tallied in the
+histogram.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>density</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default, returns the number of
+samples in each bin.
+If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns the probability <em>density</em> function at the bin,
+<code class="docutils literal notranslate"><span class="pre">bin_count</span> <span class="pre">/</span> <span class="pre">sample_count</span> <span class="pre">/</span> <span class="pre">bin_volume</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>weights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em><em>, </em><em>optional</em>) -- <p>An array of values <code class="docutils literal notranslate"><span class="pre">w_i</span></code> weighing each sample <code class="docutils literal notranslate"><span class="pre">(x_i,</span> <span class="pre">y_i)</span></code>.
+Weights are normalized to <code class="docutils literal notranslate"><span class="pre">1</span></code> if <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+If <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the values of the returned histogram
+are equal to the sum of the weights belonging to the samples
+falling into each bin.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> all samples are assigned a weight of <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>H</strong> (<em>dpnp.ndarray of shape (nx, ny)</em>) -- The bi-dimensional histogram of samples <cite>x</cite> and <cite>y</cite>. Values in <cite>x</cite>
+are histogrammed along the first dimension and values in <cite>y</cite> are
+histogrammed along the second dimension.</p></li>
+<li><p><strong>xedges</strong> (<em>dpnp.ndarray of shape (nx+1,)</em>) -- The bin edges along the first dimension.</p></li>
+<li><p><strong>yedges</strong> (<em>dpnp.ndarray of shape (ny+1,)</em>) -- The bin edges along the second dimension.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.histogram.html#dpnp.histogram" title="dpnp.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.histogram</span></code></a></dt><dd><p>1D histogram</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.histogramdd.html#dpnp.histogramdd" title="dpnp.histogramdd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.histogramdd</span></code></a></dt><dd><p>Multidimensional histogram</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>When <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the returned histogram is the sample
+density, defined such that the sum over bins of the product
+<code class="docutils literal notranslate"><span class="pre">bin_value</span> <span class="pre">*</span> <span class="pre">bin_area</span></code> is 1.</p>
+<p>Please note that the histogram does not follow the Cartesian convention
+where <cite>x</cite> values are on the abscissa and <cite>y</cite> values on the ordinate
+axis. Rather, <cite>x</cite> is histogrammed along the first dimension of the
+array (vertical), and <cite>y</cite> along the second dimension of the array
+(horizontal). This ensures compatibility with <cite>histogramdd</cite>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hist</span><span class="p">,</span> <span class="n">edges_x</span><span class="p">,</span> <span class="n">edges_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hist</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(4, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hist</span>
+<span class="go">array([[1., 2., 0.],</span>
+<span class="go">       [0., 3., 1.],</span>
+<span class="go">       [1., 4., 1.],</span>
+<span class="go">       [1., 3., 3.]], dtype=float32)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edges_x</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(5,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edges_x</span>
+<span class="go">array([-1.7516936 , -0.96109843, -0.17050326,  0.62009203,  1.4106871 ],</span>
+<span class="go">      dtype=float32)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edges_y</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(4,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edges_y</span>
+<span class="go">array([-2.6604428 , -0.94615364,  0.76813555,  2.4824247 ], dtype=float32)</span>
+</pre></div>
+</div>
+<p>Please note, that resulting values of histogram and edges may vary.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dpnp.histogram.html" class="btn btn-neutral float-left" title="dpnp.histogram" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.histogramdd.html" class="btn btn-neutral float-right" title="dpnp.histogramdd" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2026, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
