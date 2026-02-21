@@ -1,0 +1,10 @@
+﻿
+
+dpnp.linalg.outer
+=================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: outer
