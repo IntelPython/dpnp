@@ -65,6 +65,7 @@ from dpctl_ext.tensor._indexing_functions import (
 from dpctl_ext.tensor._manipulation_functions import (
     broadcast_arrays,
     broadcast_to,
+    concat,
     repeat,
     roll,
 )
@@ -81,6 +82,7 @@ __all__ = [
     "broadcast_arrays",
     "broadcast_to",
     "can_cast",
+    "concat",
     "copy",
     "clip",
     "empty",

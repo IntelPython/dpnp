@@ -40,11 +40,52 @@ import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
 
 from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
+from ._type_utils import _supported_dtype, _to_device_supported_dtype
 
 __doc__ = (
     "Implementation module for array manipulation "
     "functions in :module:`dpctl.tensor`"
 )
+
+
+def _arrays_validation(arrays, check_ndim=True):
+    n = len(arrays)
+    if n == 0:
+        raise TypeError("Missing 1 required positional argument: 'arrays'.")
+
+    if not isinstance(arrays, (list, tuple)):
+        raise TypeError(f"Expected tuple or list type, got {type(arrays)}.")
+
+    for X in arrays:
+        if not isinstance(X, dpt.usm_ndarray):
+            raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+
+    exec_q = dputils.get_execution_queue([X.sycl_queue for X in arrays])
+    if exec_q is None:
+        raise ValueError("All the input arrays must have same sycl queue.")
+
+    res_usm_type = dputils.get_coerced_usm_type([X.usm_type for X in arrays])
+    if res_usm_type is None:
+        raise ValueError("All the input arrays must have usm_type.")
+
+    X0 = arrays[0]
+    _supported_dtype(Xi.dtype for Xi in arrays)
+
+    res_dtype = X0.dtype
+    dev = exec_q.sycl_device
+    for i in range(1, n):
+        res_dtype = np.promote_types(res_dtype, arrays[i])
+        res_dtype = _to_device_supported_dtype(res_dtype, dev)
+
+    if check_ndim:
+        for i in range(1, n):
+            if X0.ndim != arrays[i].ndim:
+                raise ValueError(
+                    "All the input arrays must have same number of dimensions, "
+                    f"but the array at index 0 has {X0.ndim} dimension(s) and "
+                    f"the array at index {i} has {arrays[i].ndim} dimension(s)."
+                )
+    return res_dtype, res_usm_type, exec_q
 
 
 def _broadcast_shapes(*args):
@@ -110,6 +151,74 @@ def _broadcast_strides(X_shape, X_strides, res_ndim):
         str_dim += 1
 
     return tuple(out_strides)
+
+
+def _check_same_shapes(X0_shape, axis, n, arrays):
+    for i in range(1, n):
+        Xi_shape = arrays[i].shape
+        for j, X0j in enumerate(X0_shape):
+            if X0j != Xi_shape[j] and j != axis:
+                raise ValueError(
+                    "All the input array dimensions for the concatenation "
+                    f"axis must match exactly, but along dimension {j}, the "
+                    f"array at index 0 has size {X0j} and the array "
+                    f"at index {i} has size {Xi_shape[j]}."
+                )
+
+
+def _concat_axis_None(arrays):
+    """Implementation of concat(arrays, axis=None)."""
+    res_dtype, res_usm_type, exec_q = _arrays_validation(
+        arrays, check_ndim=False
+    )
+    res_shape = 0
+    for array in arrays:
+        res_shape += array.size
+    res = dpt_ext.empty(
+        res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+
+    fill_start = 0
+    _manager = dputils.SequentialOrderManager[exec_q]
+    deps = _manager.submitted_events
+    for array in arrays:
+        fill_end = fill_start + array.size
+        if array.flags.c_contiguous:
+            hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=dpt_ext.reshape(array, -1),
+                dst=res[fill_start:fill_end],
+                sycl_queue=exec_q,
+                depends=deps,
+            )
+            _manager.add_event_pair(hev, cpy_ev)
+        else:
+            src_ = array
+            # _copy_usm_ndarray_for_reshape requires src and dst to have
+            # the same data type
+            if not array.dtype == res_dtype:
+                src2_ = dpt_ext.empty_like(src_, dtype=res_dtype)
+                ht_copy_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                    src=src_, dst=src2_, sycl_queue=exec_q, depends=deps
+                )
+                _manager.add_event_pair(ht_copy_ev, cpy_ev)
+                hev, reshape_copy_ev = ti._copy_usm_ndarray_for_reshape(
+                    src=src2_,
+                    dst=res[fill_start:fill_end],
+                    sycl_queue=exec_q,
+                    depends=[cpy_ev],
+                )
+                _manager.add_event_pair(hev, reshape_copy_ev)
+            else:
+                hev, cpy_ev = ti._copy_usm_ndarray_for_reshape(
+                    src=src_,
+                    dst=res[fill_start:fill_end],
+                    sycl_queue=exec_q,
+                    depends=deps,
+                )
+                _manager.add_event_pair(hev, cpy_ev)
+        fill_start = fill_end
+
+    return res
 
 
 def broadcast_arrays(*args):
@@ -178,6 +287,76 @@ def broadcast_to(X, /, shape):
         strides=new_sts,
         offset=X._element_offset,
     )
+
+
+def concat(arrays, /, *, axis=0):
+    """concat(arrays, axis)
+
+    Joins a sequence of arrays along an existing axis.
+
+    Args:
+        arrays (Union[List[usm_ndarray, Tuple[usm_ndarray,...]]]):
+            input arrays to join. The arrays must have the same shape,
+            except in the dimension specified by `axis`.
+        axis (Optional[int]): axis along which the arrays will be joined.
+            If `axis` is `None`, arrays must be flattened before
+            concatenation. If `axis` is negative, it is understood as
+            being counted from the last dimension. Default: `0`.
+
+    Returns:
+        usm_ndarray:
+            An output array containing the concatenated
+            values. The output array data type is determined by Type
+            Promotion Rules of array API.
+
+    All input arrays must have the same device attribute. The output array
+    is allocated on that same device, and data movement operations are
+    scheduled on a queue underlying the device. The USM allocation type
+    of the output array is determined by USM allocation type promotion
+    rules.
+    """
+    if axis is None:
+        return _concat_axis_None(arrays)
+
+    res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
+    n = len(arrays)
+    X0 = arrays[0]
+
+    axis = normalize_axis_index(axis, X0.ndim)
+    X0_shape = X0.shape
+    _check_same_shapes(X0_shape, axis, n, arrays)
+
+    res_shape_axis = 0
+    for X in arrays:
+        res_shape_axis = res_shape_axis + X.shape[axis]
+
+    res_shape = tuple(
+        X0_shape[i] if i != axis else res_shape_axis for i in range(X0.ndim)
+    )
+
+    res = dpt_ext.empty(
+        res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+
+    _manager = dputils.SequentialOrderManager[exec_q]
+    deps = _manager.submitted_events
+    fill_start = 0
+    for i in range(n):
+        fill_end = fill_start + arrays[i].shape[axis]
+        c_shapes_copy = tuple(
+            np.s_[fill_start:fill_end] if j == axis else np.s_[:]
+            for j in range(X0.ndim)
+        )
+        hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=arrays[i],
+            dst=res[c_shapes_copy],
+            sycl_queue=exec_q,
+            depends=deps,
+        )
+        _manager.add_event_pair(hev, cpy_ev)
+        fill_start = fill_end
+
+    return res
 
 
 def repeat(x, repeats, /, *, axis=None):
