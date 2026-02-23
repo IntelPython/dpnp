@@ -165,7 +165,7 @@ def empty(
         order = "C"
 
     """Creates `dpnp_array` from uninitialized USM allocation."""
-    array_obj = dpt.empty(
+    array_obj = dpt_ext.empty(
         shape,
         dtype=dtype,
         order=order,

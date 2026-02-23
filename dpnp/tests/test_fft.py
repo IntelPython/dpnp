@@ -5,6 +5,9 @@ import pytest
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 from dpnp.dpnp_utils import map_dtype_to_device
 
@@ -80,7 +83,7 @@ class TestFft:
         a_usm = dpt.asarray(a)
 
         expected = numpy.fft.fft(a, n=n)
-        out = dpt.empty(expected.shape, dtype=a_usm.dtype)
+        out = dpt_ext.empty(expected.shape, dtype=a_usm.dtype)
         result = dpnp.fft.fft(a_usm, n=n, out=out)
         assert out is result.get_array()
         assert_dtype_allclose(result, expected)
@@ -639,7 +642,7 @@ class TestIrfft:
         a_usm = dpt.asarray(a)
 
         expected = numpy.fft.irfft(a, n=n)
-        out = dpt.empty(expected.shape, dtype=a_usm.real.dtype)
+        out = dpt_ext.empty(expected.shape, dtype=a_usm.real.dtype)
         result = dpnp.fft.irfft(a_usm, n=n, out=out)
         assert out is result.get_array()
         assert_dtype_allclose(result, expected)
@@ -727,7 +730,7 @@ class TestRfft:
 
         expected = numpy.fft.rfft(a, n=n)
         out_dt = map_dtype_to_device(dpnp.complex128, a_usm.sycl_device)
-        out = dpt.empty(expected.shape, dtype=out_dt)
+        out = dpt_ext.empty(expected.shape, dtype=out_dt)
 
         result = dpnp.fft.rfft(a_usm, n=n, out=out)
         assert out is result.get_array()

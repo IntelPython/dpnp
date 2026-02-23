@@ -1146,7 +1146,7 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                         x1, x2, res_dt, res_shape, res_usm_type, exec_q
                     )
                 else:
-                    out[i] = dpt.empty(
+                    out[i] = dpt_ext.empty(
                         res_shape,
                         dtype=res_dt,
                         order=order,

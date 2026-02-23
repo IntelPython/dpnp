@@ -3,6 +3,9 @@ import numpy
 import pytest
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 
 from .helper import (
@@ -36,7 +39,7 @@ class TestArgmaxArgmin:
         assert_array_equal(result, expected)
 
         # out is usm_ndarray
-        dpt_out = dpt.empty(expected.shape, dtype=expected.dtype)
+        dpt_out = dpt_ext.empty(expected.shape, dtype=expected.dtype)
         result = getattr(dpnp, func)(ia, axis=0, out=dpt_out)
         assert dpt_out is result.get_array()
         assert_array_equal(result, expected)

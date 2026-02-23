@@ -143,7 +143,7 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
             # Allocate a temporary buffer to avoid memory overlapping.
             out = dpt.empty_like(out)
     else:
-        out = dpt.empty(
+        out = dpt_ext.empty(
             inds.shape, dtype=chcs[0].dtype, usm_type=usm_type, sycl_queue=q
         )
 
@@ -303,7 +303,9 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
             # Allocate a temporary buffer to avoid memory overlapping.
             out = dpt.empty_like(out)
     else:
-        out = dpt.empty(res_sh, dtype=x.dtype, usm_type=usm_type, sycl_queue=q)
+        out = dpt_ext.empty(
+            res_sh, dtype=x.dtype, usm_type=usm_type, sycl_queue=q
+        )
 
     _manager = dpu.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
