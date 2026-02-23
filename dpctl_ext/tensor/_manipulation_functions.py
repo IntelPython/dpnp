@@ -934,3 +934,41 @@ def stack(arrays, /, *, axis=0):
         _manager.add_event_pair(hev, cpy_ev)
 
     return res
+
+
+def swapaxes(X, axis1, axis2):
+    """swapaxes(x, axis1, axis2)
+
+    Interchanges two axes of an array.
+
+    Args:
+        x (usm_ndarray): input array
+
+        axis1 (int): First axis.
+            If `x` has rank (i.e., number of dimensions) `N`,
+            a valid `axis` must be in the half-open interval `[-N, N)`.
+
+        axis2 (int): Second axis.
+            If `x` has rank (i.e., number of dimensions) `N`,
+            a valid `axis` must be in the half-open interval `[-N, N)`.
+
+    Returns:
+        usm_ndarray:
+            Array with swapped axes.
+            The returned array must has the same data type as `x`,
+            is created on the same device as `x` and has the same USM
+            allocation type as `x`.
+
+    Raises:
+        AxisError: if `axis` value is invalid.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+
+    axis1 = normalize_axis_index(axis1, X.ndim, "axis1")
+    axis2 = normalize_axis_index(axis2, X.ndim, "axis2")
+
+    ind = list(range(0, X.ndim))
+    ind[axis1] = axis2
+    ind[axis2] = axis1
+    return dpt_ext.permute_dims(X, tuple(ind))

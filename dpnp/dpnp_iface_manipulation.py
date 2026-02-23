@@ -3812,7 +3812,7 @@ def swapaxes(a, axis1, axis2):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.swapaxes(usm_a, axis1=axis1, axis2=axis2)
+    usm_res = dpt_ext.swapaxes(usm_a, axis1=axis1, axis2=axis2)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
