@@ -68,6 +68,7 @@ from dpctl_ext.tensor._manipulation_functions import (
     concat,
     expand_dims,
     flip,
+    permute_dims,
     repeat,
     roll,
 )
@@ -101,6 +102,7 @@ __all__ = [
     "isdtype",
     "linspace",
     "meshgrid",
+    "permute_dims",
     "nonzero",
     "ones",
     "ones_like",

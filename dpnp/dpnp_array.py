@@ -2283,7 +2283,7 @@ class dpnp_array:
                 # self.transpose(None).shape == self.shape[::-1]
                 axes = tuple((ndim - x - 1) for x in range(ndim))
 
-            usm_res = dpt.permute_dims(self._array_obj, axes)
+            usm_res = dpt_ext.permute_dims(self._array_obj, axes)
         return dpnp_array._create_from_usm_ndarray(usm_res)
 
     def var(

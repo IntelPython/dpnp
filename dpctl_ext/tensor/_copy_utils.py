@@ -695,7 +695,7 @@ def _make_empty_like_orderK(x, dt, usm_type, dev):
             for i in range(x.ndim)
         )
         R = R[sl]
-    return dpt.permute_dims(R, inv_perm)
+    return dpt_ext.permute_dims(R, inv_perm)
 
 
 def _empty_like_orderK(x, dt, usm_type=None, dev=None):
@@ -800,7 +800,7 @@ def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
             for i in range(nd1)
         )
         R = R[sl]
-    return dpt.permute_dims(R, inv_perm)
+    return dpt_ext.permute_dims(R, inv_perm)
 
 
 def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
@@ -876,7 +876,7 @@ def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
             for i in range(nd1)
         )
         R = R[sl]
-    return dpt.permute_dims(R, inv_perm)
+    return dpt_ext.permute_dims(R, inv_perm)
 
 
 def copy(usm_ary, /, *, order="K"):

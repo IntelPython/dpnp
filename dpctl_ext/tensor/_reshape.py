@@ -37,6 +37,10 @@ from dpctl.tensor._tensor_impl import (
     _unravel_index,
 )
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
+
 __doc__ = "Implementation module for :func:`dpctl.tensor.reshape`."
 
 
@@ -184,7 +188,7 @@ def reshape(X, /, shape, *, order="C", copy=None):
                 src=X, dst=flat_res, sycl_queue=copy_q, depends=dep_evs
             )
         else:
-            X_t = dpt.permute_dims(X, range(X.ndim - 1, -1, -1))
+            X_t = dpt_ext.permute_dims(X, range(X.ndim - 1, -1, -1))
             hev, r_e = _copy_usm_ndarray_for_reshape(
                 src=X_t, dst=flat_res, sycl_queue=copy_q, depends=dep_evs
             )

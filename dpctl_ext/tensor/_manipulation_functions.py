@@ -437,6 +437,43 @@ def flip(X, /, *, axis=None):
     return X[indexer]
 
 
+def permute_dims(X, /, axes):
+    """permute_dims(x, axes)
+
+    Permute the axes (dimensions) of an array; returns the permuted
+    array as a view.
+
+    Args:
+        x (usm_ndarray): input array.
+        axes (Tuple[int, ...]): tuple containing permutation of
+           `(0,1,...,N-1)` where `N` is the number of axes (dimensions)
+           of `x`.
+    Returns:
+        usm_ndarray:
+            An array with permuted axes.
+            The returned array must has the same data type as `x`,
+            is created on the same device as `x` and has the same USM allocation
+            type as `x`.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+    axes = normalize_axis_tuple(axes, X.ndim, "axes")
+    if not X.ndim == len(axes):
+        raise ValueError(
+            "The length of the passed axes does not match "
+            "to the number of usm_ndarray dimensions."
+        )
+    newstrides = tuple(X.strides[i] for i in axes)
+    newshape = tuple(X.shape[i] for i in axes)
+    return dpt.usm_ndarray(
+        shape=newshape,
+        dtype=X.dtype,
+        buffer=X,
+        strides=newstrides,
+        offset=X._element_offset,
+    )
+
+
 def repeat(x, repeats, /, *, axis=None):
     """repeat(x, repeats, axis=None)
 
