@@ -76,6 +76,7 @@ from dpctl_ext.tensor._manipulation_functions import (
     stack,
     swapaxes,
     tile,
+    unstack,
 )
 from dpctl_ext.tensor._reshape import reshape
 
@@ -128,6 +129,7 @@ __all__ = [
     "to_numpy",
     "tril",
     "triu",
+    "unstack",
     "where",
     "zeros",
     "zeros_like",

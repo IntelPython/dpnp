@@ -974,6 +974,35 @@ def swapaxes(X, axis1, axis2):
     return dpt_ext.permute_dims(X, tuple(ind))
 
 
+def unstack(X, /, *, axis=0):
+    """unstack(x, axis=0)
+
+    Splits an array in a sequence of arrays along the given axis.
+
+    Args:
+        x (usm_ndarray): input array
+
+        axis (int, optional): axis along which `x` is unstacked.
+            If `x` has rank (i.e, number of dimensions) `N`,
+            a valid `axis` must reside in the half-open interval `[-N, N)`.
+            Default: `0`.
+
+    Returns:
+        Tuple[usm_ndarray,...]:
+            Output sequence of arrays which are views into the input array.
+
+    Raises:
+        AxisError: if the `axis` value is invalid.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+
+    axis = normalize_axis_index(axis, X.ndim)
+    Y = dpt_ext.moveaxis(X, axis, 0)
+
+    return tuple(Y[i] for i in range(Y.shape[0]))
+
+
 def tile(x, repetitions, /):
     """tile(x, repetitions)
 

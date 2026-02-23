@@ -1093,7 +1093,9 @@ def broadcast_arrays(*args, subok=False):
     if len(args) == 0:
         return []
 
-    usm_arrays = dpt.broadcast_arrays(*[dpnp.get_usm_ndarray(a) for a in args])
+    usm_arrays = dpt_ext.broadcast_arrays(
+        *[dpnp.get_usm_ndarray(a) for a in args]
+    )
     return [dpnp_array._create_from_usm_ndarray(a) for a in usm_arrays]
 
 
@@ -1521,7 +1523,7 @@ def copyto(dst, src, casting="same_kind", where=True):
                 f"but got {where.dtype}"
             )
 
-        dst_usm, src_usm, mask_usm = dpt.broadcast_arrays(
+        dst_usm, src_usm, mask_usm = dpt_ext.broadcast_arrays(
             dpnp.get_usm_ndarray(dst),
             dpnp.get_usm_ndarray(src),
             dpnp.get_usm_ndarray(where),
@@ -4522,7 +4524,7 @@ def unstack(x, /, *, axis=0):
     if usm_x.ndim == 0:
         raise ValueError("Input array must be at least 1-d.")
 
-    res = dpt.unstack(usm_x, axis=axis)
+    res = dpt_ext.unstack(usm_x, axis=axis)
     return tuple(dpnp_array._create_from_usm_ndarray(a) for a in res)
 
 
