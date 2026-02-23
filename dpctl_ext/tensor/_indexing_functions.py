@@ -329,7 +329,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         val_shape = indices.shape
 
     if not isinstance(vals, dpt.usm_ndarray):
-        vals = dpt.asarray(
+        vals = dpt_ext.asarray(
             vals, dtype=x.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
         )
     # choose to throw here for consistency with `place`

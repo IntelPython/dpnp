@@ -33,6 +33,10 @@ import dpctl.tensor as dpt
 import numpy as np
 from dpctl.tensor._usmarray import _is_object_with_buffer_protocol as _is_buffer
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
+
 from ._type_utils import (
     WeakBooleanType,
     WeakComplexType,
@@ -59,7 +63,7 @@ def _get_dtype(o, dev):
     if isinstance(o, dpt.usm_ndarray):
         return o.dtype
     if hasattr(o, "__sycl_usm_array_interface__"):
-        return dpt.asarray(o).dtype
+        return dpt_ext.asarray(o).dtype
     if _is_buffer(o):
         host_dt = np.array(o).dtype
         dev_dt = _to_device_supported_dtype(host_dt, dev)

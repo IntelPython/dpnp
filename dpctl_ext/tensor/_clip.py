@@ -176,7 +176,7 @@ def _clip_none(x, val, out, order, _binary_fn):
     if isinstance(val, dpt.usm_ndarray):
         val_ary = val
     else:
-        val_ary = dpt.asarray(val, dtype=val_dtype, sycl_queue=exec_q)
+        val_ary = dpt_ext.asarray(val, dtype=val_dtype, sycl_queue=exec_q)
 
     if order == "A":
         order = (
@@ -540,11 +540,11 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
         if isinstance(min, dpt.usm_ndarray):
             a_min = min
         else:
-            a_min = dpt.asarray(min, dtype=min_dtype, sycl_queue=exec_q)
+            a_min = dpt_ext.asarray(min, dtype=min_dtype, sycl_queue=exec_q)
         if isinstance(max, dpt.usm_ndarray):
             a_max = max
         else:
-            a_max = dpt.asarray(max, dtype=max_dtype, sycl_queue=exec_q)
+            a_max = dpt_ext.asarray(max, dtype=max_dtype, sycl_queue=exec_q)
 
         if order == "A":
             order = (

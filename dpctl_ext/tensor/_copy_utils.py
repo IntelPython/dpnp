@@ -159,7 +159,7 @@ def _extract_impl(ary, ary_mask, axis=0):
     elif isinstance(ary_mask, np.ndarray):
         dst_usm_type = ary.usm_type
         exec_q = ary.sycl_queue
-        ary_mask = dpt.asarray(
+        ary_mask = dpt_ext.asarray(
             ary_mask, usm_type=dst_usm_type, sycl_queue=exec_q
         )
     else:
@@ -284,7 +284,7 @@ def _prepare_indices_arrays(inds, q, usm_type):
             lambda ind: (
                 ind
                 if isinstance(ind, dpt.usm_ndarray)
-                else dpt.asarray(ind, usm_type=usm_type, sycl_queue=q)
+                else dpt_ext.asarray(ind, usm_type=usm_type, sycl_queue=q)
             ),
             inds,
         )
@@ -332,7 +332,7 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
 
     if exec_q is not None:
         if not isinstance(vals, dpt.usm_ndarray):
-            vals = dpt.asarray(
+            vals = dpt_ext.asarray(
                 vals,
                 dtype=ary.dtype,
                 usm_type=coerced_usm_type,

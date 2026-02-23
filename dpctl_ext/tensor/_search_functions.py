@@ -323,9 +323,9 @@ def where(condition, x1, x2, /, *, order="K", out=None):
             else "C"
         )
     if not isinstance(x1, dpt.usm_ndarray):
-        x1 = dpt.asarray(x1, dtype=x1_dtype, sycl_queue=exec_q)
+        x1 = dpt_ext.asarray(x1, dtype=x1_dtype, sycl_queue=exec_q)
     if not isinstance(x2, dpt.usm_ndarray):
-        x2 = dpt.asarray(x2, dtype=x2_dtype, sycl_queue=exec_q)
+        x2 = dpt_ext.asarray(x2, dtype=x2_dtype, sycl_queue=exec_q)
 
     if condition.size == 0:
         if out is not None:

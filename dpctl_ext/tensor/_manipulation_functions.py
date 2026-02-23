@@ -204,7 +204,7 @@ def repeat(x, repeats, /, *, axis=None):
                     "`repeats` sequence must have the same length as the "
                     "repeated axis"
                 )
-            repeats = dpt.asarray(
+            repeats = dpt_ext.asarray(
                 repeats, dtype=dpt.int64, usm_type=usm_type, sycl_queue=exec_q
             )
             if not dpt.all(repeats >= 0):
