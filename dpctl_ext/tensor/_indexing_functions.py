@@ -341,7 +341,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         rhs = vals
     else:
         rhs = dpt_ext.astype(vals, x.dtype)
-    rhs = dpt.broadcast_to(rhs, val_shape)
+    rhs = dpt_ext.broadcast_to(rhs, val_shape)
 
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events

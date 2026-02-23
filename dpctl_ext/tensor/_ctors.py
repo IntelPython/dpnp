@@ -1200,7 +1200,7 @@ def full(
             usm_type=usm_type,
             sycl_queue=sycl_queue,
         )
-        return dpt_ext.copy(dpt.broadcast_to(X, shape), order=order)
+        return dpt_ext.copy(dpt_ext.broadcast_to(X, shape), order=order)
     else:
         _validate_fill_value(fill_value)
 
@@ -1307,7 +1307,7 @@ def full_like(
                 usm_type=usm_type,
                 sycl_queue=sycl_queue,
             )
-            X = dpt.broadcast_to(X, sh)
+            X = dpt_ext.broadcast_to(X, sh)
             res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
             _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
             # order copy after tasks populating X

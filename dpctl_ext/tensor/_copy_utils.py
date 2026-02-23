@@ -368,7 +368,7 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
         rhs = vals
     else:
         rhs = dpt_ext.astype(vals, ary.dtype)
-    rhs = dpt.broadcast_to(rhs, expected_vals_shape)
+    rhs = dpt_ext.broadcast_to(rhs, expected_vals_shape)
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_ev = _manager.submitted_events
     hev, put_ev = ti._put(

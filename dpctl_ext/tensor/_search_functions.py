@@ -389,11 +389,11 @@ def where(condition, x1, x2, /, *, order="K", out=None):
             )
 
     if condition_shape != res_shape:
-        condition = dpt.broadcast_to(condition, res_shape)
+        condition = dpt_ext.broadcast_to(condition, res_shape)
     if x1_shape != res_shape:
-        x1 = dpt.broadcast_to(x1, res_shape)
+        x1 = dpt_ext.broadcast_to(x1, res_shape)
     if x2_shape != res_shape:
-        x2 = dpt.broadcast_to(x2, res_shape)
+        x2 = dpt_ext.broadcast_to(x2, res_shape)
 
     dep_evs = _manager.submitted_events
     hev, where_ev = ti._where(

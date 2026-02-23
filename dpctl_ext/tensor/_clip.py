@@ -205,9 +205,9 @@ def _clip_none(x, val, out, order, _binary_fn):
                     order=order,
                 )
         if x_shape != res_shape:
-            x = dpt.broadcast_to(x, res_shape)
+            x = dpt_ext.broadcast_to(x, res_shape)
         if val_ary.shape != res_shape:
-            val_ary = dpt.broadcast_to(val_ary, res_shape)
+            val_ary = dpt_ext.broadcast_to(val_ary, res_shape)
         _manager = SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
         ht_binary_ev, binary_ev = _binary_fn(
@@ -251,8 +251,8 @@ def _clip_none(x, val, out, order, _binary_fn):
                 )
 
         if x_shape != res_shape:
-            x = dpt.broadcast_to(x, res_shape)
-        buf = dpt.broadcast_to(buf, res_shape)
+            x = dpt_ext.broadcast_to(x, res_shape)
+        buf = dpt_ext.broadcast_to(buf, res_shape)
         ht_binary_ev, binary_ev = _binary_fn(
             src1=x,
             src2=buf,
@@ -580,11 +580,11 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                         order=order,
                     )
             if x_shape != res_shape:
-                x = dpt.broadcast_to(x, res_shape)
+                x = dpt_ext.broadcast_to(x, res_shape)
             if a_min.shape != res_shape:
-                a_min = dpt.broadcast_to(a_min, res_shape)
+                a_min = dpt_ext.broadcast_to(a_min, res_shape)
             if a_max.shape != res_shape:
-                a_max = dpt.broadcast_to(a_max, res_shape)
+                a_max = dpt_ext.broadcast_to(a_max, res_shape)
             _manager = SequentialOrderManager[exec_q]
             dep_ev = _manager.submitted_events
             ht_binary_ev, binary_ev = ti._clip(
@@ -639,10 +639,10 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                         order=order,
                     )
 
-            x = dpt.broadcast_to(x, res_shape)
+            x = dpt_ext.broadcast_to(x, res_shape)
             if a_min.shape != res_shape:
-                a_min = dpt.broadcast_to(a_min, res_shape)
-            buf2 = dpt.broadcast_to(buf2, res_shape)
+                a_min = dpt_ext.broadcast_to(a_min, res_shape)
+            buf2 = dpt_ext.broadcast_to(buf2, res_shape)
             ht_binary_ev, binary_ev = ti._clip(
                 src=x,
                 min=a_min,
@@ -695,10 +695,10 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                         order=order,
                     )
 
-            x = dpt.broadcast_to(x, res_shape)
-            buf1 = dpt.broadcast_to(buf1, res_shape)
+            x = dpt_ext.broadcast_to(x, res_shape)
+            buf1 = dpt_ext.broadcast_to(buf1, res_shape)
             if a_max.shape != res_shape:
-                a_max = dpt.broadcast_to(a_max, res_shape)
+                a_max = dpt_ext.broadcast_to(a_max, res_shape)
             ht_binary_ev, binary_ev = ti._clip(
                 src=x,
                 min=buf1,
@@ -766,9 +766,9 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                     order=order,
                 )
 
-        x = dpt.broadcast_to(x, res_shape)
-        buf1 = dpt.broadcast_to(buf1, res_shape)
-        buf2 = dpt.broadcast_to(buf2, res_shape)
+        x = dpt_ext.broadcast_to(x, res_shape)
+        buf1 = dpt_ext.broadcast_to(buf1, res_shape)
+        buf2 = dpt_ext.broadcast_to(buf2, res_shape)
         ht_, clip_ev = ti._clip(
             src=x,
             min=buf1,

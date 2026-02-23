@@ -86,6 +86,60 @@ def _broadcast_shape_impl(shapes):
     return tuple(common_shape)
 
 
+def _broadcast_strides(X_shape, X_strides, res_ndim):
+    """
+    Broadcasts strides to match the given dimensions;
+    returns tuple type strides.
+    """
+    out_strides = [0] * res_ndim
+    X_shape_len = len(X_shape)
+    str_dim = -X_shape_len
+    for i in range(X_shape_len):
+        shape_value = X_shape[i]
+        if not shape_value == 1:
+            out_strides[str_dim] = X_strides[i]
+        str_dim += 1
+
+    return tuple(out_strides)
+
+
+def broadcast_to(X, /, shape):
+    """broadcast_to(x, shape)
+
+    Broadcast an array to a new `shape`; returns the broadcasted
+    :class:`dpctl.tensor.usm_ndarray` as a view.
+
+    Args:
+        x (usm_ndarray): input array
+        shape (Tuple[int,...]): array shape. The `shape` must be
+            compatible with `x` according to broadcasting rules.
+
+    Returns:
+        usm_ndarray:
+            An array with the specified `shape`.
+            The output array is a view of the input array, and
+            hence has the same data type, USM allocation type and
+            device attributes.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+
+    # Use numpy.broadcast_to to check the validity of the input
+    # parameter 'shape'. Raise ValueError if 'X' is not compatible
+    # with 'shape' according to NumPy's broadcasting rules.
+    new_array = np.broadcast_to(
+        np.broadcast_to(np.empty(tuple(), dtype="u1"), X.shape), shape
+    )
+    new_sts = _broadcast_strides(X.shape, X.strides, new_array.ndim)
+    return dpt.usm_ndarray(
+        shape=new_array.shape,
+        dtype=X.dtype,
+        buffer=X,
+        strides=new_sts,
+        offset=X._element_offset,
+    )
+
+
 def repeat(x, repeats, /, *, axis=None):
     """repeat(x, repeats, axis=None)
 
