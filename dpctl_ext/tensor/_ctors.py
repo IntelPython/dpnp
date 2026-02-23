@@ -1443,6 +1443,81 @@ def linspace(
     return res if int_dt is None else dpt.astype(res, int_dt)
 
 
+def meshgrid(*arrays, indexing="xy"):
+    """
+    Creates list of :class:`dpctl.tensor.usm_ndarray` coordinate matrices
+    from vectors.
+
+    Args:
+        arrays (usm_ndarray):
+            an arbitrary number of one-dimensional arrays
+            representing grid coordinates. Each array should have the same
+            numeric data type.
+        indexing (``"xy"``, or ``"ij"``):
+            Cartesian (``"xy"``) or matrix (``"ij"``) indexing of output.
+            If provided zero or one one-dimensional vector(s) (i.e., the
+            zero- and one-dimensional cases, respectively), the ``indexing``
+            keyword has no effect and should be ignored. Default: ``"xy"``
+
+    Returns:
+        List[array]:
+            list of ``N`` arrays, where ``N`` is the number of
+            provided one-dimensional input arrays. Each returned array must
+            have rank ``N``.
+            For a set of ``n`` vectors with lengths ``N0``, ``N1``, ``N2``, ...
+            The cartesian indexing results in arrays of shape
+            ``(N1, N0, N2, ...)``, while the
+            matrix indexing results in arrays of shape
+            ``(N0, N1, N2, ...)``.
+            Default: ``"xy"``.
+
+    Raises:
+        ValueError: If vectors are not of the same data type, or are not
+            one-dimensional.
+
+    """
+    ref_dt = None
+    ref_unset = True
+    for array in arrays:
+        if not isinstance(array, dpt.usm_ndarray):
+            raise TypeError(
+                f"Expected instance of dpt.usm_ndarray, got {type(array)}."
+            )
+        if array.ndim != 1:
+            raise ValueError("All arrays must be one-dimensional.")
+        if ref_unset:
+            ref_unset = False
+            ref_dt = array.dtype
+        else:
+            if not ref_dt == array.dtype:
+                raise ValueError(
+                    "All arrays must be of the same numeric data type."
+                )
+    if indexing not in ["xy", "ij"]:
+        raise ValueError(
+            "Unrecognized indexing keyword value, expecting 'xy' or 'ij.'"
+        )
+    n = len(arrays)
+    if n == 0:
+        return []
+
+    sh = (-1,) + (1,) * (n - 1)
+
+    res = []
+    if n > 1 and indexing == "xy":
+        res.append(dpt_ext.reshape(arrays[0], (1, -1) + sh[2:], copy=True))
+        res.append(dpt_ext.reshape(arrays[1], sh, copy=True))
+        arrays, sh = arrays[2:], sh[-2:] + sh[:-2]
+
+    for array in arrays:
+        res.append(dpt_ext.reshape(array, sh, copy=True))
+        sh = sh[-1:] + sh[:-1]
+
+    output = dpt.broadcast_arrays(*res)
+
+    return output
+
+
 def tril(x, /, *, k=0):
     """
     Returns the lower triangular part of a matrix (or a stack of matrices)
