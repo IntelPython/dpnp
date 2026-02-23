@@ -873,3 +873,64 @@ def squeeze(X, /, axis=None):
         return X
     else:
         return dpt_ext.reshape(X, new_shape)
+
+
+def stack(arrays, /, *, axis=0):
+    """
+    stack(arrays, axis)
+
+    Joins a sequence of arrays along a new axis.
+
+    Args:
+        arrays (Union[List[usm_ndarray], Tuple[usm_ndarray,...]]):
+            input arrays to join. Each array must have the same shape.
+        axis (int): axis along which the arrays will be joined. Providing
+            an `axis` specified the index of the new axis in the dimensions
+            of the output array. A valid axis must be on the interval
+            `[-N, N)`, where `N` is the rank (number of dimensions) of `x`.
+            Default: `0`.
+
+    Returns:
+        usm_ndarray:
+            An output array having rank `N+1`, where `N` is
+            the rank (number of dimensions) of `x`. If the input arrays have
+            different data types, array API Type Promotion Rules apply.
+
+    Raises:
+        ValueError: if not all input arrays have the same shape
+        IndexError: if provided an `axis` outside of the required interval.
+    """
+    res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
+
+    n = len(arrays)
+    X0 = arrays[0]
+    res_ndim = X0.ndim + 1
+    axis = normalize_axis_index(axis, res_ndim)
+    X0_shape = X0.shape
+
+    for i in range(1, n):
+        if X0_shape != arrays[i].shape:
+            raise ValueError("All input arrays must have the same shape")
+
+    res_shape = tuple(
+        X0_shape[i - 1 * (i >= axis)] if i != axis else n
+        for i in range(res_ndim)
+    )
+
+    res = dpt_ext.empty(
+        res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
+    )
+
+    _manager = dputils.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+    for i in range(n):
+        c_shapes_copy = tuple(
+            i if j == axis else np.s_[:] for j in range(res_ndim)
+        )
+        _dst = res[c_shapes_copy]
+        hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=arrays[i], dst=_dst, sycl_queue=exec_q, depends=dep_evs
+        )
+        _manager.add_event_pair(hev, cpy_ev)
+
+    return res

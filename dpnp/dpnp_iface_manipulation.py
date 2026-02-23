@@ -3751,7 +3751,7 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
         )
 
     usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
-    usm_res = dpt.stack(usm_arrays, axis=axis)
+    usm_res = dpt_ext.stack(usm_arrays, axis=axis)
 
     res = dpnp_array._create_from_usm_ndarray(usm_res)
     if dtype is not None:

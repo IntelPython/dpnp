@@ -73,6 +73,7 @@ from dpctl_ext.tensor._manipulation_functions import (
     repeat,
     roll,
     squeeze,
+    stack,
 )
 from dpctl_ext.tensor._reshape import reshape
 
@@ -117,6 +118,7 @@ __all__ = [
     "result_type",
     "roll",
     "squeeze",
+    "stack",
     "take",
     "take_along_axis",
     "to_numpy",
