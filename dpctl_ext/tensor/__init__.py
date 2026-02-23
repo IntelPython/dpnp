@@ -38,6 +38,7 @@ from dpctl_ext.tensor._copy_utils import (
 )
 from dpctl_ext.tensor._ctors import (
     empty,
+    empty_like,
     eye,
     full,
     linspace,
@@ -69,6 +70,7 @@ __all__ = [
     "copy",
     "clip",
     "empty",
+    "empty_like",
     "extract",
     "eye",
     "finfo",

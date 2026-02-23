@@ -714,11 +714,11 @@ def _empty_like_orderK(x, dt, usm_type=None, dev=None):
         dev = x.device
     fl = x.flags
     if fl["C"] or x.size <= 1:
-        return dpt.empty_like(
+        return dpt_ext.empty_like(
             x, dtype=dt, usm_type=usm_type, device=dev, order="C"
         )
     elif fl["F"]:
-        return dpt.empty_like(
+        return dpt_ext.empty_like(
             x, dtype=dt, usm_type=usm_type, device=dev, order="F"
         )
     return _make_empty_like_orderK(x, dt, usm_type, dev)

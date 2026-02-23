@@ -163,7 +163,7 @@ def _clip_none(x, val, out, order, _binary_fn):
 
         if ti._array_overlap(x, out):
             if not ti._same_logical_tensors(x, out):
-                out = dpt.empty_like(out)
+                out = dpt_ext.empty_like(out)
 
         if isinstance(val, dpt.usm_ndarray):
             if (
@@ -171,7 +171,7 @@ def _clip_none(x, val, out, order, _binary_fn):
                 and not ti._same_logical_tensors(val, out)
                 and val_dtype == res_dt
             ):
-                out = dpt.empty_like(out)
+                out = dpt_ext.empty_like(out)
 
     if isinstance(val, dpt.usm_ndarray):
         val_ary = val
@@ -229,7 +229,7 @@ def _clip_none(x, val, out, order, _binary_fn):
         if order == "K":
             buf = _empty_like_orderK(val_ary, res_dt)
         else:
-            buf = dpt.empty_like(val_ary, dtype=res_dt, order=order)
+            buf = dpt_ext.empty_like(val_ary, dtype=res_dt, order=order)
         _manager = SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -353,14 +353,14 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
 
             if ti._array_overlap(x, out):
                 if not ti._same_logical_tensors(x, out):
-                    out = dpt.empty_like(out)
+                    out = dpt_ext.empty_like(out)
                 else:
                     return out
         else:
             if order == "K":
                 out = _empty_like_orderK(x, x.dtype)
             else:
-                out = dpt.empty_like(x, order=order)
+                out = dpt_ext.empty_like(x, order=order)
 
         _manager = SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
@@ -519,7 +519,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
 
             if ti._array_overlap(x, out):
                 if not ti._same_logical_tensors(x, out):
-                    out = dpt.empty_like(out)
+                    out = dpt_ext.empty_like(out)
 
             if isinstance(min, dpt.usm_ndarray):
                 if (
@@ -527,7 +527,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                     and not ti._same_logical_tensors(min, out)
                     and buf1_dt is None
                 ):
-                    out = dpt.empty_like(out)
+                    out = dpt_ext.empty_like(out)
 
             if isinstance(max, dpt.usm_ndarray):
                 if (
@@ -535,7 +535,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                     and not ti._same_logical_tensors(max, out)
                     and buf2_dt is None
                 ):
-                    out = dpt.empty_like(out)
+                    out = dpt_ext.empty_like(out)
 
         if isinstance(min, dpt.usm_ndarray):
             a_min = min
@@ -612,7 +612,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
             if order == "K":
                 buf2 = _empty_like_orderK(a_max, buf2_dt)
             else:
-                buf2 = dpt.empty_like(a_max, dtype=buf2_dt, order=order)
+                buf2 = dpt_ext.empty_like(a_max, dtype=buf2_dt, order=order)
             _manager = SequentialOrderManager[exec_q]
             dep_ev = _manager.submitted_events
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -668,7 +668,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
             if order == "K":
                 buf1 = _empty_like_orderK(a_min, buf1_dt)
             else:
-                buf1 = dpt.empty_like(a_min, dtype=buf1_dt, order=order)
+                buf1 = dpt_ext.empty_like(a_min, dtype=buf1_dt, order=order)
             _manager = SequentialOrderManager[exec_q]
             dep_ev = _manager.submitted_events
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -736,7 +736,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
         if order == "K":
             buf1 = _empty_like_orderK(a_min, buf1_dt)
         else:
-            buf1 = dpt.empty_like(a_min, dtype=buf1_dt, order=order)
+            buf1 = dpt_ext.empty_like(a_min, dtype=buf1_dt, order=order)
 
         _manager = SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
@@ -747,7 +747,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
         if order == "K":
             buf2 = _empty_like_orderK(a_max, buf2_dt)
         else:
-            buf2 = dpt.empty_like(a_max, dtype=buf2_dt, order=order)
+            buf2 = dpt_ext.empty_like(a_max, dtype=buf2_dt, order=order)
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=a_max, dst=buf2, sycl_queue=exec_q, depends=dep_evs
         )

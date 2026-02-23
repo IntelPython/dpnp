@@ -42,6 +42,9 @@ from dpctl.tensor._usmarray import _is_object_with_buffer_protocol
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
+from dpctl_ext.tensor._copy_utils import (
+    _empty_like_orderK,
+)
 
 __doc__ = "Implementation of creation functions in :module:`dpctl.tensor`"
 
@@ -174,6 +177,21 @@ def _ensure_native_dtype_device_support(dtype, dev) -> None:
         )
 
 
+def _normalize_order(order, arr):
+    """
+    Utility function for processing the `order` keyword of array-like
+    constructors, which support `"K"` and `"A"` orders.
+    """
+    arr_flags = arr.flags
+    f_contig = arr_flags["F"]
+    c_contig = arr_flags["C"]
+    if order == "A":
+        order = "F" if f_contig and not c_contig else "C"
+    if order == "K" and (f_contig or c_contig):
+        order = "C" if c_contig else "F"
+    return order
+
+
 def _to_scalar(obj, sc_ty):
     """A way to convert object to NumPy scalar type.
     Raises OverflowError if obj can not be represented
@@ -265,6 +283,82 @@ def empty(
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
     return res
+
+
+def empty_like(
+    x, /, *, dtype=None, order="K", device=None, usm_type=None, sycl_queue=None
+):
+    """
+    Returns an uninitialized :class:`dpctl.tensor.usm_ndarray` with the
+    same `shape` as the input array `x`.
+
+    Args:
+        x (usm_ndarray):
+            Input array from which to derive the output array shape.
+        dtype (optional):
+            data type of the array. Can be a typestring,
+            a :class:`numpy.dtype` object, NumPy char string,
+            or a NumPy scalar type. Default: ``None``
+        order ("C", "F", "A", or "K"):
+            memory layout for the array. Default: ``"K"``
+        device (optional): array API concept of device where the output array
+            is created. ``device`` can be ``None``, a oneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation. Default: ``None``
+
+    Returns:
+        usm_ndarray:
+            Created empty array with uninitialized memory.
+    """
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
+    if (
+        not isinstance(order, str)
+        or len(order) == 0
+        or order[0] not in "CcFfAaKk"
+    ):
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'C', 'F', 'A', or 'K'."
+        )
+    order = order[0].upper()
+    if dtype is None:
+        dtype = x.dtype
+    if usm_type is None:
+        usm_type = x.usm_type
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    if device is None and sycl_queue is None:
+        device = x.device
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    dtype = dpt.dtype(dtype)
+    order = _normalize_order(order, x)
+    if order == "K":
+        _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
+        return _empty_like_orderK(x, dtype, usm_type, sycl_queue)
+    else:
+        shape = x.shape
+        _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
+        res = dpt.usm_ndarray(
+            shape,
+            dtype=dtype,
+            buffer=usm_type,
+            order=order,
+            buffer_ctor_kwargs={"queue": sycl_queue},
+        )
+        return res
 
 
 def eye(
