@@ -197,7 +197,7 @@ def _clip_none(x, val, out, order, _binary_fn):
                     x, val_ary, res_dt, res_shape, res_usm_type, exec_q
                 )
             else:
-                out = dpt.empty(
+                out = dpt_ext.empty(
                     res_shape,
                     dtype=res_dt,
                     usm_type=res_usm_type,
@@ -242,7 +242,7 @@ def _clip_none(x, val, out, order, _binary_fn):
                     x, buf, res_dt, res_shape, res_usm_type, exec_q
                 )
             else:
-                out = dpt.empty(
+                out = dpt_ext.empty(
                     res_shape,
                     dtype=res_dt,
                     usm_type=res_usm_type,
@@ -572,7 +572,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                         exec_q,
                     )
                 else:
-                    out = dpt.empty(
+                    out = dpt_ext.empty(
                         res_shape,
                         dtype=res_dt,
                         usm_type=res_usm_type,
@@ -631,7 +631,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                         exec_q,
                     )
                 else:
-                    out = dpt.empty(
+                    out = dpt_ext.empty(
                         res_shape,
                         dtype=res_dt,
                         usm_type=res_usm_type,
@@ -687,7 +687,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                         exec_q,
                     )
                 else:
-                    out = dpt.empty(
+                    out = dpt_ext.empty(
                         res_shape,
                         dtype=res_dt,
                         usm_type=res_usm_type,
@@ -758,7 +758,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                     x, buf1, buf2, res_dt, res_shape, res_usm_type, exec_q
                 )
             else:
-                out = dpt.empty(
+                out = dpt_ext.empty(
                     res_shape,
                     dtype=res_dt,
                     usm_type=res_usm_type,

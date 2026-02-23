@@ -291,7 +291,7 @@ def where(condition, x1, x2, /, *, order="K", out=None):
         if ti._array_overlap(condition, out) and not ti._same_logical_tensors(
             condition, out
         ):
-            out = dpt.empty_like(out)
+            out = dpt_ext.empty_like(out)
 
         if isinstance(x1, dpt.usm_ndarray):
             if (
@@ -299,7 +299,7 @@ def where(condition, x1, x2, /, *, order="K", out=None):
                 and not ti._same_logical_tensors(x1, out)
                 and x1_dtype == out_dtype
             ):
-                out = dpt.empty_like(out)
+                out = dpt_ext.empty_like(out)
 
         if isinstance(x2, dpt.usm_ndarray):
             if (
@@ -307,7 +307,7 @@ def where(condition, x1, x2, /, *, order="K", out=None):
                 and not ti._same_logical_tensors(x2, out)
                 and x2_dtype == out_dtype
             ):
-                out = dpt.empty_like(out)
+                out = dpt_ext.empty_like(out)
 
     if order == "A":
         order = (
@@ -342,7 +342,7 @@ def where(condition, x1, x2, /, *, order="K", out=None):
                     exec_q,
                 )
             else:
-                return dpt.empty(
+                return dpt_ext.empty(
                     res_shape,
                     dtype=out_dtype,
                     order=order,
@@ -356,7 +356,7 @@ def where(condition, x1, x2, /, *, order="K", out=None):
         if order == "K":
             _x1 = _empty_like_orderK(x1, out_dtype)
         else:
-            _x1 = dpt.empty_like(x1, dtype=out_dtype, order=order)
+            _x1 = dpt_ext.empty_like(x1, dtype=out_dtype, order=order)
         ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x1, dst=_x1, sycl_queue=exec_q, depends=dep_evs
         )
@@ -367,7 +367,7 @@ def where(condition, x1, x2, /, *, order="K", out=None):
         if order == "K":
             _x2 = _empty_like_orderK(x2, out_dtype)
         else:
-            _x2 = dpt.empty_like(x2, dtype=out_dtype, order=order)
+            _x2 = dpt_ext.empty_like(x2, dtype=out_dtype, order=order)
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x2, dst=_x2, sycl_queue=exec_q, depends=dep_evs
         )
@@ -380,7 +380,7 @@ def where(condition, x1, x2, /, *, order="K", out=None):
                 condition, x1, x2, out_dtype, res_shape, out_usm_type, exec_q
             )
         else:
-            out = dpt.empty(
+            out = dpt_ext.empty(
                 res_shape,
                 dtype=out_dtype,
                 order=order,

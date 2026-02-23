@@ -177,7 +177,7 @@ def place(arr, mask, vals):
         raise dpctl.utils.ExecutionPlacementError
     if arr.shape != mask.shape or vals.ndim != 1:
         raise ValueError("Array sizes are not as required")
-    cumsum = dpt.empty(mask.size, dtype="i8", sycl_queue=exec_q)
+    cumsum = dpt_ext.empty(mask.size, dtype="i8", sycl_queue=exec_q)
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     nz_count = ti.mask_positions(
@@ -540,9 +540,9 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
                 "Input and output allocation queues are not compatible"
             )
         if ti._array_overlap(x, out):
-            out = dpt.empty_like(out)
+            out = dpt_ext.empty_like(out)
     else:
-        out = dpt.empty(
+        out = dpt_ext.empty(
             res_shape, dtype=dt, usm_type=res_usm_type, sycl_queue=exec_q
         )
 

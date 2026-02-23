@@ -202,6 +202,71 @@ def _usm_ndarray_from_suai(obj):
     return ary
 
 
+def empty(
+    shape,
+    *,
+    dtype=None,
+    order="C",
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    """
+    Creates :class:`dpctl.tensor.usm_ndarray` from uninitialized
+    USM allocation.
+
+    Args:
+        shape (Tuple[int], int):
+            Dimensions of the array to be created.
+        dtype (optional):
+            data type of the array. Can be typestring,
+            a :class:`numpy.dtype` object, :mod:`numpy` char string,
+            or a NumPy scalar type. The ``None`` value creates an
+            array of floating point data type. Default: ``None``
+        order (``"C"``, or ``F"``):
+            memory layout for the array. Default: ``"C"``
+        device (optional): array API concept of device where the output array
+            is created. ``device`` can be ``None``, a oneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
+
+    Returns:
+        usm_ndarray:
+            Created empty array.
+    """
+    if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'F' or 'C'."
+        )
+    order = order[0].upper()
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    dtype = _get_dtype(dtype, sycl_queue)
+    _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
+    res = dpt.usm_ndarray(
+        shape,
+        dtype=dtype,
+        buffer=usm_type,
+        order=order,
+        buffer_ctor_kwargs={"queue": sycl_queue},
+    )
+    return res
+
+
 def eye(
     n_rows,
     n_cols=None,
@@ -497,7 +562,7 @@ def linspace(
         start = float(start)
         stop = float(stop)
 
-    res = dpt.empty(num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue)
+    res = dpt_ext.empty(num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue)
     _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
     hev, la_ev = ti._linspace_affine(
         start, stop, dst=res, include_endpoint=endpoint, sycl_queue=sycl_queue
@@ -546,7 +611,7 @@ def tril(x, /, *, k=0):
 
     q = x.sycl_queue
     if k >= shape[nd - 1] - 1:
-        res = dpt.empty(
+        res = dpt_ext.empty(
             x.shape,
             dtype=x.dtype,
             order=order,
@@ -568,7 +633,7 @@ def tril(x, /, *, k=0):
             sycl_queue=q,
         )
     else:
-        res = dpt.empty(
+        res = dpt_ext.empty(
             x.shape,
             dtype=x.dtype,
             order=order,
@@ -632,7 +697,7 @@ def triu(x, /, *, k=0):
             sycl_queue=q,
         )
     elif k <= -shape[nd - 2] + 1:
-        res = dpt.empty(
+        res = dpt_ext.empty(
             x.shape,
             dtype=x.dtype,
             order=order,
@@ -646,7 +711,7 @@ def triu(x, /, *, k=0):
         )
         _manager.add_event_pair(hev, cpy_ev)
     else:
-        res = dpt.empty(
+        res = dpt_ext.empty(
             x.shape,
             dtype=x.dtype,
             order=order,

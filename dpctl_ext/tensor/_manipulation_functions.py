@@ -223,7 +223,7 @@ def repeat(x, repeats, /, *, axis=None):
             res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
         else:
             res_shape = (res_axis_size,)
-        res = dpt.empty(
+        res = dpt_ext.empty(
             res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
         )
         if res_axis_size > 0:
@@ -238,7 +238,7 @@ def repeat(x, repeats, /, *, axis=None):
             _manager.add_event_pair(ht_rep_ev, rep_ev)
     else:
         if repeats.dtype != dpt.int64:
-            rep_buf = dpt.empty(
+            rep_buf = dpt_ext.empty(
                 repeats.shape,
                 dtype=dpt.int64,
                 usm_type=usm_type,
@@ -248,7 +248,7 @@ def repeat(x, repeats, /, *, axis=None):
                 src=repeats, dst=rep_buf, sycl_queue=exec_q, depends=dep_evs
             )
             _manager.add_event_pair(ht_copy_ev, copy_ev)
-            cumsum = dpt.empty(
+            cumsum = dpt_ext.empty(
                 (axis_size,),
                 dtype=dpt.int64,
                 usm_type=usm_type,
@@ -264,7 +264,7 @@ def repeat(x, repeats, /, *, axis=None):
                 )
             else:
                 res_shape = (res_axis_size,)
-            res = dpt.empty(
+            res = dpt_ext.empty(
                 res_shape,
                 dtype=x.dtype,
                 usm_type=usm_type,
@@ -281,7 +281,7 @@ def repeat(x, repeats, /, *, axis=None):
                 )
                 _manager.add_event_pair(ht_rep_ev, rep_ev)
         else:
-            cumsum = dpt.empty(
+            cumsum = dpt_ext.empty(
                 (axis_size,),
                 dtype=dpt.int64,
                 usm_type=usm_type,
@@ -296,7 +296,7 @@ def repeat(x, repeats, /, *, axis=None):
                 )
             else:
                 res_shape = (res_axis_size,)
-            res = dpt.empty(
+            res = dpt_ext.empty(
                 res_shape,
                 dtype=x.dtype,
                 usm_type=usm_type,
@@ -353,7 +353,7 @@ def roll(x, /, shift, *, axis=None):
     _manager = dputils.SequentialOrderManager[exec_q]
     if axis is None:
         shift = operator.index(shift)
-        res = dpt.empty(
+        res = dpt_ext.empty(
             x.shape, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
         )
         sz = operator.index(x.size)
@@ -380,7 +380,7 @@ def roll(x, /, shift, *, axis=None):
         n_i = operator.index(shape[ax])
         shifted = shifts[ax] + operator.index(sh)
         shifts[ax] = (shifted % n_i) if n_i > 0 else 0
-    res = dpt.empty(
+    res = dpt_ext.empty(
         x.shape, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
     )
     dep_evs = _manager.submitted_events
