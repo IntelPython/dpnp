@@ -35,12 +35,11 @@ This module contains code and dependency on different containers used in DPNP
 
 """
 
-import dpctl.tensor as dpt
 import dpctl.utils as dpu
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpnp
 from dpnp.dpnp_array import dpnp_array
 
@@ -75,7 +74,7 @@ def arange(
         sycl_queue=sycl_queue, device=device
     )
 
-    array_obj = dpt_ext.arange(
+    array_obj = dpt.arange(
         start,
         stop=stop,
         step=step,
@@ -103,7 +102,7 @@ def asarray(
 
     """Converts incoming 'x1' object to 'dpnp_array'."""
     if isinstance(x1, (list, tuple, range)):
-        array_obj = dpt_ext.asarray(
+        array_obj = dpt.asarray(
             x1,
             dtype=dtype,
             copy=copy,
@@ -122,7 +121,7 @@ def asarray(
             x1_obj, device=device, sycl_queue=sycl_queue
         )
 
-        array_obj = dpt_ext.asarray(
+        array_obj = dpt.asarray(
             x1_obj,
             dtype=dtype,
             copy=copy,
@@ -143,7 +142,7 @@ def copy(x1, /, *, order="K"):
     if order is None:
         order = "K"
 
-    array_obj = dpt_ext.copy(dpnp.get_usm_ndarray(x1), order=order)
+    array_obj = dpt.copy(dpnp.get_usm_ndarray(x1), order=order)
     return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
@@ -165,7 +164,7 @@ def empty(
         order = "C"
 
     """Creates `dpnp_array` from uninitialized USM allocation."""
-    array_obj = dpt_ext.empty(
+    array_obj = dpt.empty(
         shape,
         dtype=dtype,
         order=order,
@@ -196,7 +195,7 @@ def eye(
         order = "C"
 
     """Creates `dpnp_array` with ones on the `k`th diagonal."""
-    array_obj = dpt_ext.eye(
+    array_obj = dpt.eye(
         N,
         M,
         k=k,
@@ -231,7 +230,7 @@ def full(
         fill_value = fill_value.get_array()
 
     """Creates `dpnp_array` having a specified shape, filled with fill_value."""
-    array_obj = dpt_ext.full(
+    array_obj = dpt.full(
         shape,
         fill_value,
         dtype=dtype,
@@ -260,7 +259,7 @@ def ones(
         order = "C"
 
     """Creates `dpnp_array` of ones with the given shape, dtype, and order."""
-    array_obj = dpt_ext.ones(
+    array_obj = dpt.ones(
         shape,
         dtype=dtype,
         order=order,
@@ -272,13 +271,13 @@ def ones(
 
 def tril(x1, /, *, k=0):
     """Creates `dpnp_array` as lower triangular part of an input array."""
-    array_obj = dpt_ext.tril(dpnp.get_usm_ndarray(x1), k=k)
+    array_obj = dpt.tril(dpnp.get_usm_ndarray(x1), k=k)
     return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def triu(x1, /, *, k=0):
     """Creates `dpnp_array` as upper triangular part of an input array."""
-    array_obj = dpt_ext.triu(dpnp.get_usm_ndarray(x1), k=k)
+    array_obj = dpt.triu(dpnp.get_usm_ndarray(x1), k=k)
     return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
