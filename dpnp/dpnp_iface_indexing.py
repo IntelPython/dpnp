@@ -141,7 +141,7 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
             ti._array_overlap(out, chc) for chc in chcs
         ):
             # Allocate a temporary buffer to avoid memory overlapping.
-            out = dpt.empty_like(out)
+            out = dpt_ext.empty_like(out)
     else:
         out = dpt_ext.empty(
             inds.shape, dtype=chcs[0].dtype, usm_type=usm_type, sycl_queue=q
@@ -301,7 +301,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
 
         if ti._array_overlap(x, out):
             # Allocate a temporary buffer to avoid memory overlapping.
-            out = dpt.empty_like(out)
+            out = dpt_ext.empty_like(out)
     else:
         out = dpt_ext.empty(
             res_sh, dtype=x.dtype, usm_type=usm_type, sycl_queue=q

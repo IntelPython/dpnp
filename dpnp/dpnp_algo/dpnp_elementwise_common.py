@@ -467,7 +467,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
                     )
 
                 # Allocate a temporary buffer with the required dtype
-                out[i] = dpt.empty_like(res, dtype=res_dt)
+                out[i] = dpt_ext.empty_like(res, dtype=res_dt)
             elif (
                 buf_dt is None
                 and dti._array_overlap(x, res)
@@ -476,7 +476,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
                 # Allocate a temporary buffer to avoid memory overlapping.
                 # Note if `buf_dt` is not None, a temporary copy of `x` will be
                 # created, so the array overlap check isn't needed.
-                out[i] = dpt.empty_like(res)
+                out[i] = dpt_ext.empty_like(res)
 
         _manager = dpu.SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
@@ -486,7 +486,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
             if order == "K":
                 buf = dtc._empty_like_orderK(x, buf_dt)
             else:
-                buf = dpt.empty_like(x, dtype=buf_dt, order=order)
+                buf = dpt_ext.empty_like(x, dtype=buf_dt, order=order)
 
             ht_copy_ev, copy_ev = dti._copy_usm_ndarray_into_usm_ndarray(
                 src=x, dst=buf, sycl_queue=exec_q, depends=dep_evs
@@ -503,7 +503,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
                 if order == "K":
                     out[i] = dtc._empty_like_orderK(x, res_dt)
                 else:
-                    out[i] = dpt.empty_like(x, dtype=res_dt, order=order)
+                    out[i] = dpt_ext.empty_like(x, dtype=res_dt, order=order)
 
         # Call the unary function with input and output arrays
         ht_unary_ev, unary_ev = self.get_implementation_function()(
@@ -1078,7 +1078,7 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                     )
 
                 # Allocate a temporary buffer with the required dtype
-                out[i] = dpt.empty_like(res, dtype=res_dt)
+                out[i] = dpt_ext.empty_like(res, dtype=res_dt)
             else:
                 # If `dt` is not None, a temporary copy of `x` will be created,
                 # so the array overlap check isn't needed.
@@ -1094,7 +1094,7 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                     for x in x_to_check
                 ):
                     # allocate a temporary buffer to avoid memory overlapping
-                    out[i] = dpt.empty_like(res)
+                    out[i] = dpt_ext.empty_like(res)
 
         x1 = dpnp.as_usm_ndarray(x1, dtype=x1_dt, sycl_queue=exec_q)
         x2 = dpnp.as_usm_ndarray(x2, dtype=x2_dt, sycl_queue=exec_q)
@@ -1127,7 +1127,7 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                 if order == "K":
                     buf = dtc._empty_like_orderK(x, buf_dt)
                 else:
-                    buf = dpt.empty_like(x, dtype=buf_dt, order=order)
+                    buf = dpt_ext.empty_like(x, dtype=buf_dt, order=order)
 
                 ht_copy_ev, copy_ev = dti._copy_usm_ndarray_into_usm_ndarray(
                     src=x, dst=buf, sycl_queue=exec_q, depends=dep_evs
