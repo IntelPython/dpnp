@@ -1156,9 +1156,9 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
 
         # Broadcast shapes of input arrays
         if x1.shape != res_shape:
-            x1 = dpt.broadcast_to(x1, res_shape)
+            x1 = dpt_ext.broadcast_to(x1, res_shape)
         if x2.shape != res_shape:
-            x2 = dpt.broadcast_to(x2, res_shape)
+            x2 = dpt_ext.broadcast_to(x2, res_shape)
 
         # Call the binary function with input and output arrays
         ht_binary_ev, binary_ev = self.get_implementation_function()(

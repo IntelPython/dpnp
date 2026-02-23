@@ -1178,7 +1178,7 @@ def broadcast_to(array, /, shape, subok=False):
         raise NotImplementedError(f"subok={subok} is currently not supported")
 
     usm_array = dpnp.get_usm_ndarray(array)
-    new_array = dpt.broadcast_to(usm_array, shape)
+    new_array = dpt_ext.broadcast_to(usm_array, shape)
     return dpnp_array._create_from_usm_ndarray(new_array)
 
 
