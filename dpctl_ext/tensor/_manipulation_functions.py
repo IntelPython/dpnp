@@ -405,6 +405,38 @@ def expand_dims(X, /, *, axis=0):
     return dpt_ext.reshape(X, shape)
 
 
+def flip(X, /, *, axis=None):
+    """flip(x, axis)
+
+    Reverses the order of elements in an array `x` along the given `axis`.
+    The shape of the array is preserved, but the elements are reordered.
+
+    Args:
+        x (usm_ndarray): input array.
+        axis (Optional[Union[int, Tuple[int,...]]]): axis (or axes) along
+            which to flip.
+            If `axis` is `None`, all input array axes are flipped.
+            If `axis` is negative, the flipped axis is counted from the
+            last dimension. If provided more than one axis, only the specified
+            axes are flipped. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            A view of `x` with the entries of `axis` reversed.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+    X_ndim = X.ndim
+    if axis is None:
+        indexer = (np.s_[::-1],) * X_ndim
+    else:
+        axis = normalize_axis_tuple(axis, X_ndim)
+        indexer = tuple(
+            np.s_[::-1] if i in axis else np.s_[:] for i in range(X.ndim)
+        )
+    return X[indexer]
+
+
 def repeat(x, repeats, /, *, axis=None):
     """repeat(x, repeats, axis=None)
 

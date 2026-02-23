@@ -1920,7 +1920,7 @@ def flip(m, axis=None):
     """
 
     m_usm = dpnp.get_usm_ndarray(m)
-    return dpnp_array._create_from_usm_ndarray(dpt.flip(m_usm, axis=axis))
+    return dpnp_array._create_from_usm_ndarray(dpt_ext.flip(m_usm, axis=axis))
 
 
 def fliplr(m):

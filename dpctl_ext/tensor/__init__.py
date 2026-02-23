@@ -67,6 +67,7 @@ from dpctl_ext.tensor._manipulation_functions import (
     broadcast_to,
     concat,
     expand_dims,
+    flip,
     repeat,
     roll,
 )
@@ -92,6 +93,7 @@ __all__ = [
     "expand_dims",
     "eye",
     "finfo",
+    "flip",
     "from_numpy",
     "full",
     "full_like",
