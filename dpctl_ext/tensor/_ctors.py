@@ -1513,7 +1513,7 @@ def meshgrid(*arrays, indexing="xy"):
         res.append(dpt_ext.reshape(array, sh, copy=True))
         sh = sh[-1:] + sh[:-1]
 
-    output = dpt.broadcast_arrays(*res)
+    output = dpt_ext.broadcast_arrays(*res)
 
     return output
 

@@ -306,7 +306,7 @@ def _prepare_indices_arrays(inds, q, usm_type):
     )
 
     # broadcast
-    inds = dpt.broadcast_arrays(*inds)
+    inds = dpt_ext.broadcast_arrays(*inds)
 
     return inds
 

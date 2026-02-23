@@ -260,7 +260,7 @@ def choose(a, choices, out=None, mode="wrap"):
                 choices,
             )
         )
-    arrs_broadcast = dpt.broadcast_arrays(inds, *choices)
+    arrs_broadcast = dpt_ext.broadcast_arrays(inds, *choices)
     inds = arrs_broadcast[0]
     choices = tuple(arrs_broadcast[1:])
 

@@ -3131,7 +3131,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
         output[1] = dpt_ext.reshape(output[1], (-1, 1) + s0[2:])
 
     if not sparse:
-        output = dpt.broadcast_arrays(*output)
+        output = dpt_ext.broadcast_arrays(*output)
 
     if copy:
         output = [dpt_ext.copy(x) for x in output]

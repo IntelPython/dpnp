@@ -47,6 +47,15 @@ __doc__ = (
 )
 
 
+def _broadcast_shapes(*args):
+    """
+    Broadcast the input shapes into a single shape;
+    returns tuple broadcasted shape.
+    """
+    array_shapes = [array.shape for array in args]
+    return _broadcast_shape_impl(array_shapes)
+
+
 def _broadcast_shape_impl(shapes):
     if len(set(shapes)) == 1:
         return shapes[0]
@@ -101,6 +110,37 @@ def _broadcast_strides(X_shape, X_strides, res_ndim):
         str_dim += 1
 
     return tuple(out_strides)
+
+
+def broadcast_arrays(*args):
+    """broadcast_arrays(*arrays)
+
+    Broadcasts one or more :class:`dpctl.tensor.usm_ndarrays` against
+    one another.
+
+    Args:
+        arrays (usm_ndarray): an arbitrary number of arrays to be
+            broadcasted.
+
+    Returns:
+        List[usm_ndarray]:
+            A list of broadcasted arrays. Each array
+            must have the same shape. Each array must have the same `dtype`,
+            `device` and `usm_type` attributes as its corresponding input
+            array.
+    """
+    if len(args) == 0:
+        raise ValueError("`broadcast_arrays` requires at least one argument")
+    for X in args:
+        if not isinstance(X, dpt.usm_ndarray):
+            raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+
+    shape = _broadcast_shapes(*args)
+
+    if all(X.shape == shape for X in args):
+        return args
+
+    return [broadcast_to(X, shape) for X in args]
 
 
 def broadcast_to(X, /, shape):

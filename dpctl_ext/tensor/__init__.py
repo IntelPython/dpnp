@@ -63,6 +63,7 @@ from dpctl_ext.tensor._indexing_functions import (
     take_along_axis,
 )
 from dpctl_ext.tensor._manipulation_functions import (
+    broadcast_arrays,
     broadcast_to,
     repeat,
     roll,
@@ -77,6 +78,7 @@ __all__ = [
     "asarray",
     "asnumpy",
     "astype",
+    "broadcast_arrays",
     "broadcast_to",
     "can_cast",
     "copy",
