@@ -1849,7 +1849,7 @@ def expand_dims(a, axis):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.expand_dims(usm_a, axis=axis)
+    usm_res = dpt_ext.expand_dims(usm_a, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
