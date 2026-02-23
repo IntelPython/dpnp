@@ -437,6 +437,57 @@ def flip(X, /, *, axis=None):
     return X[indexer]
 
 
+def moveaxis(X, source, destination, /):
+    """moveaxis(x, source, destination)
+
+    Moves axes of an array to new positions.
+
+    Args:
+        x (usm_ndarray): input array
+
+        source (int or a sequence of int):
+            Original positions of the axes to move.
+            These must be unique. If `x` has rank (i.e., number of
+            dimensions) `N`, a valid `axis` must be in the
+            half-open interval `[-N, N)`.
+
+        destination (int or a sequence of int):
+            Destination positions for each of the original axes.
+            These must also be unique. If `x` has rank
+            (i.e., number of dimensions) `N`, a valid `axis` must be
+            in the half-open interval `[-N, N)`.
+
+    Returns:
+        usm_ndarray:
+            Array with moved axes.
+            The returned array must has the same data type as `x`,
+            is created on the same device as `x` and has the same
+            USM allocation type as `x`.
+
+    Raises:
+        AxisError: if `axis` value is invalid.
+        ValueError: if `src` and `dst` have not equal number of elements.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+
+    source = normalize_axis_tuple(source, X.ndim, "source")
+    destination = normalize_axis_tuple(destination, X.ndim, "destination")
+
+    if len(source) != len(destination):
+        raise ValueError(
+            "`source` and `destination` arguments must have "
+            "the same number of elements"
+        )
+
+    ind = [n for n in range(X.ndim) if n not in source]
+
+    for src, dst in sorted(zip(destination, source)):
+        ind.insert(src, dst)
+
+    return dpt_ext.permute_dims(X, tuple(ind))
+
+
 def permute_dims(X, /, axes):
     """permute_dims(x, axes)
 

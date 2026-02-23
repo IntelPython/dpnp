@@ -256,7 +256,7 @@ def dpnp_linspace(
             usm_res[-1, ...] = usm_stop
 
     if axis != 0:
-        usm_res = dpt.moveaxis(usm_res, 0, axis)
+        usm_res = dpt_ext.moveaxis(usm_res, 0, axis)
 
     if dpnp.issubdtype(dtype, dpnp.integer):
         dpt.floor(usm_res, out=usm_res)

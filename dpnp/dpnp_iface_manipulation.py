@@ -2408,7 +2408,7 @@ def moveaxis(a, source, destination):
 
     usm_array = dpnp.get_usm_ndarray(a)
     return dpnp_array._create_from_usm_ndarray(
-        dpt.moveaxis(usm_array, source, destination)
+        dpt_ext.moveaxis(usm_array, source, destination)
     )
 
 
