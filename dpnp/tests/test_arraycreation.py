@@ -972,7 +972,7 @@ def test_ones_like(array, dtype, order):
     ],
 )
 def test_dpctl_tensor_input(func, args):
-    x0 = dpt_ext.reshape(dpt.arange(9), (3, 3))
+    x0 = dpt_ext.reshape(dpt_ext.arange(9), (3, 3))
     new_args = [eval(val, {"x0": x0}) for val in args]
     X = getattr(dpt, func)(*new_args)
     Y = getattr(dpnp, func)(*new_args)

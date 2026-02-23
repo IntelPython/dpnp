@@ -225,7 +225,7 @@ def dpnp_linspace(
 
         delta = usm_stop - usm_start
 
-        usm_res = dpt.arange(
+        usm_res = dpt_ext.arange(
             0,
             stop=num,
             step=1,

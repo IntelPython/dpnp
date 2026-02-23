@@ -57,7 +57,7 @@ def _get_indexing_mode(name):
 
 
 def _range(sh_i, i, nd, q, usm_t, dt):
-    ind = dpt.arange(sh_i, dtype=dt, usm_type=usm_t, sycl_queue=q)
+    ind = dpt_ext.arange(sh_i, dtype=dt, usm_type=usm_t, sycl_queue=q)
     ind.shape = tuple(sh_i if i == j else 1 for j in range(nd))
     return ind
 

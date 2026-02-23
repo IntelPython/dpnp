@@ -3935,7 +3935,7 @@ def vander(
     tmp = m[:, ::-1] if not increasing else m
     dpnp.power(
         dpt_ext.reshape(usm_x, (-1, 1)),
-        dpt.arange(
+        dpt_ext.arange(
             N, dtype=_dtype, usm_type=x_usm_type, sycl_queue=x_sycl_queue
         ),
         out=tmp,

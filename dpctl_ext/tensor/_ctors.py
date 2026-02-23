@@ -177,6 +177,20 @@ def _ensure_native_dtype_device_support(dtype, dev) -> None:
         )
 
 
+def _get_arange_length(start, stop, step):
+    """Compute length of arange sequence"""
+    span = stop - start
+    if hasattr(step, "__float__") and hasattr(span, "__float__"):
+        return _round_for_arange(span / step)
+    tmp = span / step
+    if hasattr(tmp, "__complex__"):
+        tmp = complex(tmp)
+        tmp = tmp.real
+    else:
+        tmp = float(tmp)
+    return _round_for_arange(tmp)
+
+
 def _normalize_order(order, arr):
     """
     Utility function for processing the `order` keyword of array-like
@@ -190,6 +204,13 @@ def _normalize_order(order, arr):
     if order == "K" and (f_contig or c_contig):
         order = "C" if c_contig else "F"
     return order
+
+
+def _round_for_arange(tmp):
+    k = int(tmp)
+    if k >= 0 and float(k) < tmp:
+        tmp = tmp + 1
+    return tmp
 
 
 def _to_scalar(obj, sc_ty):
@@ -218,6 +239,117 @@ def _usm_ndarray_from_suai(obj):
     if ro_field:
         ary.flags["W"] = False
     return ary
+
+
+def arange(
+    start,
+    /,
+    stop=None,
+    step=1,
+    *,
+    dtype=None,
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    """
+    Returns evenly spaced values within the half-open interval [start, stop)
+    as a one-dimensional array.
+
+    Args:
+        start:
+            Starting point of the interval
+        stop:
+            Ending point of the interval. Default: ``None``
+        step: Increment of the returned sequence. Default: ``1``
+        dtype: Output array data type. Default: ``None``
+        device (optional): array API concept of device where the output array
+            is created. ``device`` can be ``None``, a oneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
+
+    Returns:
+        usm_ndarray:
+            Array populated with evenly spaced values.
+    """
+    if stop is None:
+        stop = start
+        start = 0
+    if step is None:
+        step = 1
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    is_bool = False
+    if dtype:
+        is_bool = (dtype is bool) or (dpt.dtype(dtype) == dpt.bool)
+    _, dt = _coerce_and_infer_dt(
+        start,
+        stop,
+        step,
+        dt=dpt.int8 if is_bool else dtype,
+        sycl_queue=sycl_queue,
+        err_msg="start, stop, and step must be Python scalars",
+        allow_bool=False,
+    )
+    try:
+        tmp = _get_arange_length(start, stop, step)
+        sh = max(int(tmp), 0)
+    except TypeError:
+        sh = 0
+    if is_bool and sh > 2:
+        raise ValueError("no fill-function for boolean data type")
+    res = dpt.usm_ndarray(
+        (sh,),
+        dtype=dt,
+        buffer=usm_type,
+        order="C",
+        buffer_ctor_kwargs={"queue": sycl_queue},
+    )
+    sc_ty = dt.type
+    _first = _to_scalar(start, sc_ty)
+    if sh > 1:
+        _second = _to_scalar(start + step, sc_ty)
+        if dt in [dpt.uint8, dpt.uint16, dpt.uint32, dpt.uint64]:
+            int64_ty = dpt.int64.type
+            _step = int64_ty(_second) - int64_ty(_first)
+        else:
+            _step = _second - _first
+        _step = sc_ty(_step)
+    else:
+        _step = sc_ty(1)
+    _start = _first
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    # populating newly allocated array, no task dependencies
+    hev, lin_ev = ti._linspace_step(_start, _step, res, sycl_queue)
+    _manager.add_event_pair(hev, lin_ev)
+    if is_bool:
+        res_out = dpt.usm_ndarray(
+            (sh,),
+            dtype=dpt.bool,
+            buffer=usm_type,
+            order="C",
+            buffer_ctor_kwargs={"queue": sycl_queue},
+        )
+        hev_cpy, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=res, dst=res_out, sycl_queue=sycl_queue, depends=[lin_ev]
+        )
+        _manager.add_event_pair(hev_cpy, cpy_ev)
+        return res_out
+    return res
 
 
 def empty(

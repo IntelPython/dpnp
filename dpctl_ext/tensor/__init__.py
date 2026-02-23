@@ -37,6 +37,7 @@ from dpctl_ext.tensor._copy_utils import (
     to_numpy,
 )
 from dpctl_ext.tensor._ctors import (
+    arange,
     empty,
     empty_like,
     eye,
@@ -64,6 +65,7 @@ from ._clip import clip
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [
+    "arange",
     "asnumpy",
     "astype",
     "can_cast",

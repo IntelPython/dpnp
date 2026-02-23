@@ -75,7 +75,7 @@ def arange(
         sycl_queue=sycl_queue, device=device
     )
 
-    array_obj = dpt.arange(
+    array_obj = dpt_ext.arange(
         start,
         stop=stop,
         step=step,
