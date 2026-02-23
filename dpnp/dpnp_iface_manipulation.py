@@ -3663,7 +3663,7 @@ def squeeze(a, /, axis=None):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.squeeze(usm_a, axis=axis)
+    usm_res = dpt_ext.squeeze(usm_a, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 

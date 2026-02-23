@@ -72,6 +72,7 @@ from dpctl_ext.tensor._manipulation_functions import (
     permute_dims,
     repeat,
     roll,
+    squeeze,
 )
 from dpctl_ext.tensor._reshape import reshape
 
@@ -115,6 +116,7 @@ __all__ = [
     "reshape",
     "result_type",
     "roll",
+    "squeeze",
     "take",
     "take_along_axis",
     "to_numpy",

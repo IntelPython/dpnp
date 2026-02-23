@@ -828,3 +828,48 @@ def roll(x, /, shift, *, axis=None):
     )
     _manager.add_event_pair(ht_e, roll_ev)
     return res
+
+
+def squeeze(X, /, axis=None):
+    """squeeze(x, axis)
+
+    Removes singleton dimensions (axes) from array `x`.
+
+    Args:
+        x (usm_ndarray): input array
+        axis (Union[int, Tuple[int,...]]): axis (or axes) to squeeze.
+
+    Returns:
+        usm_ndarray:
+            Output array is a view, if possible,
+            and a copy otherwise, but with all or a subset of the
+            dimensions of length 1 removed. Output has the same data
+            type as the input, is allocated on the same device as the
+            input and has the same USM allocation type as the input
+            array `x`.
+
+    Raises:
+        ValueError: if the specified axis has a size greater than one.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+    X_shape = X.shape
+    if axis is not None:
+        axis = normalize_axis_tuple(axis, X.ndim if X.ndim != 0 else X.ndim + 1)
+        new_shape = []
+        for i, x in enumerate(X_shape):
+            if i not in axis:
+                new_shape.append(x)
+            else:
+                if x != 1:
+                    raise ValueError(
+                        "Cannot select an axis to squeeze out "
+                        "which has size not equal to one."
+                    )
+        new_shape = tuple(new_shape)
+    else:
+        new_shape = tuple(axis for axis in X_shape if axis != 1)
+    if new_shape == X.shape:
+        return X
+    else:
+        return dpt_ext.reshape(X, new_shape)
