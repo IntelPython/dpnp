@@ -3892,7 +3892,7 @@ def tile(A, reps):
     """
 
     usm_a = dpnp.get_usm_ndarray(A)
-    usm_res = dpt.tile(usm_a, reps)
+    usm_res = dpt_ext.tile(usm_a, reps)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 

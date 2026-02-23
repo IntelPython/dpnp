@@ -972,3 +972,100 @@ def swapaxes(X, axis1, axis2):
     ind[axis1] = axis2
     ind[axis2] = axis1
     return dpt_ext.permute_dims(X, tuple(ind))
+
+
+def tile(x, repetitions, /):
+    """tile(x, repetitions)
+
+    Repeat an input array `x` along each axis a number of times given by
+    `repetitions`.
+
+    For `N` = len(`repetitions`) and `M` = len(`x.shape`):
+
+        * If `M < N`, `x` will have `N - M` new axes prepended to its shape
+        * If `M > N`, `repetitions` will have `M - N` ones prepended to it
+
+    Args:
+        x (usm_ndarray): input array
+
+        repetitions (Union[int, Tuple[int, ...]]):
+            The number of repetitions along each dimension of `x`.
+
+    Returns:
+        usm_ndarray:
+            tiled output array.
+
+            The returned array will have rank `max(M, N)`. If `S` is the
+            shape of `x` after prepending dimensions and `R` is
+            `repetitions` after prepending ones, then the shape of the
+            result will be `S[i] * R[i]` for each dimension `i`.
+
+            The returned array will have the same data type as `x`.
+            The returned array will be located on the same device as `x` and
+            have the same USM allocation type as `x`.
+    """
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
+
+    if not isinstance(repetitions, tuple):
+        if isinstance(repetitions, int):
+            repetitions = (repetitions,)
+        else:
+            raise TypeError(
+                f"Expected tuple or integer type, got {type(repetitions)}."
+            )
+
+    rep_dims = len(repetitions)
+    x_dims = x.ndim
+    if rep_dims < x_dims:
+        repetitions = (x_dims - rep_dims) * (1,) + repetitions
+    elif x_dims < rep_dims:
+        x = dpt_ext.reshape(x, (rep_dims - x_dims) * (1,) + x.shape)
+    res_shape = tuple(map(lambda sh, rep: sh * rep, x.shape, repetitions))
+    # case of empty input
+    if x.size == 0:
+        return dpt_ext.empty(
+            res_shape,
+            dtype=x.dtype,
+            usm_type=x.usm_type,
+            sycl_queue=x.sycl_queue,
+        )
+    in_sh = x.shape
+    if res_shape == in_sh:
+        return dpt_ext.copy(x)
+    expanded_sh = []
+    broadcast_sh = []
+    out_sz = 1
+    for i in range(len(res_shape)):
+        out_sz *= res_shape[i]
+        reps, sh = repetitions[i], in_sh[i]
+        if reps == 1:
+            # dimension will be unchanged
+            broadcast_sh.append(sh)
+            expanded_sh.append(sh)
+        elif sh == 1:
+            # dimension will be broadcast
+            broadcast_sh.append(reps)
+            expanded_sh.append(sh)
+        else:
+            broadcast_sh.extend([reps, sh])
+            expanded_sh.extend([1, sh])
+    exec_q = x.sycl_queue
+    xdt = x.dtype
+    xut = x.usm_type
+    res = dpt_ext.empty((out_sz,), dtype=xdt, usm_type=xut, sycl_queue=exec_q)
+    # no need to copy data for empty output
+    if out_sz > 0:
+        x = dpt_ext.broadcast_to(
+            # this reshape should never copy
+            dpt_ext.reshape(x, expanded_sh),
+            broadcast_sh,
+        )
+        # copy broadcast input into flat array
+        _manager = dputils.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+        hev, cp_ev = ti._copy_usm_ndarray_for_reshape(
+            src=x, dst=res, sycl_queue=exec_q, depends=dep_evs
+        )
+        _manager.add_event_pair(hev, cp_ev)
+    return dpt_ext.reshape(res, res_shape)

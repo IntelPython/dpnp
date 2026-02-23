@@ -75,6 +75,7 @@ from dpctl_ext.tensor._manipulation_functions import (
     squeeze,
     stack,
     swapaxes,
+    tile,
 )
 from dpctl_ext.tensor._reshape import reshape
 
@@ -123,6 +124,7 @@ __all__ = [
     "swapaxes",
     "take",
     "take_along_axis",
+    "tile",
     "to_numpy",
     "tril",
     "triu",
