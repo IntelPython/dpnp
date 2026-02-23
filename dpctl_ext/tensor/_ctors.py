@@ -30,16 +30,83 @@ import operator
 from numbers import Number
 
 import dpctl
+import dpctl.memory as dpm
 import dpctl.tensor as dpt
 import dpctl.utils
 import numpy as np
 from dpctl.tensor._data_types import _get_dtype
 from dpctl.tensor._device import normalize_queue_device
+from dpctl.tensor._usmarray import _is_object_with_buffer_protocol
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
+
+__doc__ = "Implementation of creation functions in :module:`dpctl.tensor`"
+
+_empty_tuple = ()
+_host_set = frozenset([None])
+
+
+def _array_info_dispatch(obj):
+    if isinstance(obj, dpt.usm_ndarray):
+        return obj.shape, obj.dtype, frozenset([obj.sycl_queue])
+    if isinstance(obj, np.ndarray):
+        return obj.shape, obj.dtype, _host_set
+    if isinstance(obj, range):
+        return (len(obj),), int, _host_set
+    if isinstance(obj, bool):
+        return _empty_tuple, bool, _host_set
+    if isinstance(obj, float):
+        return _empty_tuple, float, _host_set
+    if isinstance(obj, int):
+        return _empty_tuple, int, _host_set
+    if isinstance(obj, complex):
+        return _empty_tuple, complex, _host_set
+    if isinstance(
+        obj,
+        (
+            list,
+            tuple,
+        ),
+    ):
+        return _array_info_sequence(obj)
+    if _is_object_with_buffer_protocol(obj):
+        np_obj = np.array(obj)
+        return np_obj.shape, np_obj.dtype, _host_set
+    if hasattr(obj, "__usm_ndarray__"):
+        usm_ar = obj.__usm_ndarray__
+        if isinstance(usm_ar, dpt.usm_ndarray):
+            return usm_ar.shape, usm_ar.dtype, frozenset([usm_ar.sycl_queue])
+    if hasattr(obj, "__sycl_usm_array_interface__"):
+        usm_ar = _usm_ndarray_from_suai(obj)
+        return usm_ar.shape, usm_ar.dtype, frozenset([usm_ar.sycl_queue])
+
+
+def _array_info_sequence(li):
+    if not isinstance(li, (list, tuple, range)):
+        raise TypeError(f"Expected list, tuple, or range, got {type(li)}")
+    n = len(li)
+    dim = None
+    dt = None
+    device = frozenset()
+    for el in li:
+        el_dim, el_dt, el_dev = _array_info_dispatch(el)
+        if dim is None:
+            dim = el_dim
+            dt = np.promote_types(el_dt, el_dt)
+            device = device.union(el_dev)
+        elif el_dim == dim:
+            dt = np.promote_types(dt, el_dt)
+            device = device.union(el_dev)
+        else:
+            raise ValueError(f"Inconsistent dimensions, {dim} and {el_dim}")
+    if dim is None:
+        dim = ()
+        dt = float
+        device = _host_set
+    return (n,) + dim, dt, device
 
 
 def _cast_fill_val(fill_val, dt):
@@ -56,6 +123,23 @@ def _cast_fill_val(fill_val, dt):
         return _to_scalar(fill_val, dt)
     else:
         return fill_val
+
+
+def _coerce_and_infer_dt(*args, dt, sycl_queue, err_msg, allow_bool=False):
+    """Deduce arange type from sequence spec"""
+    nd, seq_dt, d = _array_info_sequence(args)
+    if d != _host_set or nd != (len(args),):
+        raise ValueError(err_msg)
+    dt = _get_dtype(dt, sycl_queue, ref_type=seq_dt)
+    if np.issubdtype(dt, np.integer):
+        return tuple(int(v) for v in args), dt
+    if np.issubdtype(dt, np.floating):
+        return tuple(float(v) for v in args), dt
+    if np.issubdtype(dt, np.complexfloating):
+        return tuple(complex(v) for v in args), dt
+    if allow_bool and dt.char == "?":
+        return tuple(bool(v) for v in args), dt
+    raise ValueError(f"Data type {dt} is not supported")
 
 
 def _ensure_native_dtype_device_support(dtype, dev) -> None:
@@ -97,6 +181,25 @@ def _to_scalar(obj, sc_ty):
     """
     zd_arr = np.asarray(obj, dtype=sc_ty)
     return zd_arr[()]
+
+
+def _usm_ndarray_from_suai(obj):
+    sua_iface = obj.__sycl_usm_array_interface__
+    membuf = dpm.as_usm_memory(obj)
+    ary = dpt.usm_ndarray(
+        sua_iface["shape"],
+        dtype=sua_iface["typestr"],
+        buffer=membuf,
+        strides=sua_iface.get("strides", None),
+    )
+    _data_field = sua_iface["data"]
+    if isinstance(_data_field, tuple) and len(_data_field) > 1:
+        ro_field = _data_field[1]
+    else:
+        ro_field = False
+    if ro_field:
+        ary.flags["W"] = False
+    return ary
 
 
 def eye(
@@ -299,6 +402,109 @@ def full(
     hev, full_ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
     _manager.add_event_pair(hev, full_ev)
     return res
+
+
+def linspace(
+    start,
+    stop,
+    /,
+    num,
+    *,
+    dtype=None,
+    device=None,
+    endpoint=True,
+    sycl_queue=None,
+    usm_type="device",
+):
+    """
+    linspace(start, stop, num, dtype=None, device=None, endpoint=True, \
+        sycl_queue=None, usm_type="device")
+
+    Returns :class:`dpctl.tensor.usm_ndarray` array populated with
+    evenly spaced numbers of specified interval.
+
+    Args:
+        start:
+            the start of the interval.
+        stop:
+            the end of the interval. If the ``endpoint`` is ``False``, the
+            function generates ``num+1`` evenly spaced points starting
+            with ``start`` and ending with ``stop`` and exclude the
+            ``stop`` from the returned array such that the returned array
+            consists of evenly spaced numbers over the half-open interval
+            ``[start, stop)``. If ``endpoint`` is ``True``, the output
+            array consists of evenly spaced numbers over the closed
+            interval ``[start, stop]``. Default: ``True``
+        num (int):
+            number of samples. Must be a non-negative integer; otherwise,
+            the function raises ``ValueError`` exception.
+        dtype:
+            output array data type. Should be a floating data type.
+            If ``dtype`` is ``None``, the output array must be the default
+            floating point data type for target device.
+            Default: ``None``
+        device (optional):
+            array API concept of device where the output array
+            is created. ``device`` can be ``None``, a oneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
+        endpoint: boolean indicating whether to include ``stop`` in the
+            interval. Default: ``True``
+
+    Returns:
+        usm_ndarray:
+            Array populated with evenly spaced numbers in the requested
+            interval.
+    """
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    if endpoint not in [True, False]:
+        raise TypeError("endpoint keyword argument must be of boolean type")
+
+    num = operator.index(num)
+    if num < 0:
+        raise ValueError("Number of points must be non-negative")
+
+    _, dt = _coerce_and_infer_dt(
+        start,
+        stop,
+        dt=dtype,
+        sycl_queue=sycl_queue,
+        err_msg="start and stop must be Python scalars.",
+        allow_bool=True,
+    )
+
+    int_dt = None
+    if np.issubdtype(dt, np.integer):
+        if dtype is not None:
+            int_dt = dt
+        dt = ti.default_device_fp_type(sycl_queue)
+        dt = dpt.dtype(dt)
+        start = float(start)
+        stop = float(stop)
+
+    res = dpt.empty(num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue)
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    hev, la_ev = ti._linspace_affine(
+        start, stop, dst=res, include_endpoint=endpoint, sycl_queue=sycl_queue
+    )
+    _manager.add_event_pair(hev, la_ev)
+
+    return res if int_dt is None else dpt.astype(res, int_dt)
 
 
 def tril(x, /, *, k=0):

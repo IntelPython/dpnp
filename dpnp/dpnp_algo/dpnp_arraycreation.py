@@ -196,7 +196,7 @@ def dpnp_linspace(
 
     if dpnp.isscalar(start) and dpnp.isscalar(stop):
         # Call linspace() function for scalars.
-        usm_res = dpt.linspace(
+        usm_res = dpt_ext.linspace(
             start,
             stop,
             num,

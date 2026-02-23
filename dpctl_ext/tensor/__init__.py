@@ -39,6 +39,7 @@ from dpctl_ext.tensor._copy_utils import (
 from dpctl_ext.tensor._ctors import (
     eye,
     full,
+    linspace,
     tril,
     triu,
 )
@@ -73,6 +74,7 @@ __all__ = [
     "full",
     "iinfo",
     "isdtype",
+    "linspace",
     "nonzero",
     "place",
     "put",
