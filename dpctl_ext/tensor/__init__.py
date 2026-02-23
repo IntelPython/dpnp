@@ -51,6 +51,7 @@ from dpctl_ext.tensor._ctors import (
     tril,
     triu,
     zeros,
+    zeros_like,
 )
 from dpctl_ext.tensor._indexing_functions import (
     extract,
@@ -107,4 +108,5 @@ __all__ = [
     "triu",
     "where",
     "zeros",
+    "zeros_like",
 ]
