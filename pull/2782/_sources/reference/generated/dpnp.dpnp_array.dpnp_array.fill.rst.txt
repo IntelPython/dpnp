@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.dpnp\_array.dpnp\_array.fill
+=================================
+
+.. currentmodule:: dpnp.dpnp_array
+
+method
+
+.. automethod:: dpnp_array.fill
