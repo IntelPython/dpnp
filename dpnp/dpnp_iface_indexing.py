@@ -1805,7 +1805,7 @@ def put_along_axis(a, ind, values, axis, mode="wrap"):
     if dpnp.is_supported_array_type(values):
         usm_vals = dpnp.get_usm_ndarray(values)
     else:
-        usm_vals = dpt.asarray(
+        usm_vals = dpt_ext.asarray(
             values, usm_type=a.usm_type, sycl_queue=a.sycl_queue
         )
 
@@ -2153,7 +2153,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
 
     usm_a = dpnp.get_usm_ndarray(a)
     if not dpnp.is_supported_array_type(indices):
-        usm_ind = dpt.asarray(
+        usm_ind = dpt_ext.asarray(
             indices, usm_type=a.usm_type, sycl_queue=a.sycl_queue
         )
     else:

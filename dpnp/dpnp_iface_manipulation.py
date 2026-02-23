@@ -375,7 +375,7 @@ def _unique_1d(
         ):
             if dpnp.issubdtype(usm_a.dtype, dpnp.complexfloating):
                 # for complex all NaNs are considered equivalent
-                true_val = dpt.asarray(
+                true_val = dpt_ext.asarray(
                     True, sycl_queue=usm_a.sycl_queue, usm_type=usm_a.usm_type
                 )
                 return dpt.searchsorted(dpt.isnan(usm_a), true_val, side="left")

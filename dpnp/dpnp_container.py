@@ -103,7 +103,7 @@ def asarray(
 
     """Converts incoming 'x1' object to 'dpnp_array'."""
     if isinstance(x1, (list, tuple, range)):
-        array_obj = dpt.asarray(
+        array_obj = dpt_ext.asarray(
             x1,
             dtype=dtype,
             copy=copy,
@@ -122,7 +122,7 @@ def asarray(
             x1_obj, device=device, sycl_queue=sycl_queue
         )
 
-        array_obj = dpt.asarray(
+        array_obj = dpt_ext.asarray(
             x1_obj,
             dtype=dtype,
             copy=copy,

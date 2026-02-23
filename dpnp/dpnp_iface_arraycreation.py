@@ -3912,7 +3912,7 @@ def vander(
 
     if dpnp.is_supported_array_type(x):
         x = dpnp.get_usm_ndarray(x)
-    usm_x = dpt.asarray(
+    usm_x = dpt_ext.asarray(
         x, device=device, usm_type=usm_type, sycl_queue=sycl_queue
     )
 

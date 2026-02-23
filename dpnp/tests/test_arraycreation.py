@@ -668,7 +668,7 @@ def test_tri_default_dtype():
         5,
         numpy.array(1),
         dpnp.array(2),
-        dpt.asarray(3),
+        dpt_ext.asarray(3),
     ],
     ids=[
         "-3",
@@ -682,7 +682,7 @@ def test_tri_default_dtype():
         "5",
         "np.array(1)",
         "dpnp.array(2)",
-        "dpt.asarray(3)",
+        "dpt_ext.asarray(3)",
     ],
 )
 @pytest.mark.parametrize(
@@ -725,7 +725,7 @@ def test_tril(m, k, dtype):
         5,
         numpy.array(1),
         dpnp.array(2),
-        dpt.asarray(3),
+        dpt_ext.asarray(3),
     ],
     ids=[
         "-3",
@@ -739,7 +739,7 @@ def test_tril(m, k, dtype):
         "5",
         "np.array(1)",
         "dpnp.array(2)",
-        "dpt.asarray(3)",
+        "dpt_ext.asarray(3)",
     ],
 )
 @pytest.mark.parametrize(

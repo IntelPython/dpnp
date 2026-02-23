@@ -1,5 +1,4 @@
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from numpy.testing import (
@@ -11,7 +10,7 @@ from numpy.testing import (
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpnp
 
 from .helper import (
@@ -815,7 +814,7 @@ class TestMaxMin:
         assert_allclose(result, expected)
 
         # out is usm_ndarray
-        dpt_out = dpt_ext.empty(expected.shape, dtype=expected.dtype)
+        dpt_out = dpt.empty(expected.shape, dtype=expected.dtype)
         result = getattr(dpnp, func)(ia, axis=0, out=dpt_out)
         assert dpt_out is result.get_array()
         assert_allclose(result, expected)

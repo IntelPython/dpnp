@@ -713,7 +713,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
 
         if dtype is not None:
             if dpnp.isscalar(x1):
-                x1_usm = dpt.asarray(
+                x1_usm = dpt_ext.asarray(
                     x1,
                     dtype=dtype,
                     sycl_queue=x2.sycl_queue,
@@ -722,7 +722,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 x2_usm = dpt_ext.astype(x2_usm, dtype, copy=False)
             elif dpnp.isscalar(x2):
                 x1_usm = dpt_ext.astype(x1_usm, dtype, copy=False)
-                x2_usm = dpt.asarray(
+                x2_usm = dpt_ext.asarray(
                     x2,
                     dtype=dtype,
                     sycl_queue=x1.sycl_queue,
