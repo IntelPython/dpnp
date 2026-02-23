@@ -47,6 +47,7 @@ from dpctl_ext.tensor._ctors import (
     linspace,
     meshgrid,
     ones,
+    ones_like,
     tril,
     triu,
 )
@@ -90,6 +91,7 @@ __all__ = [
     "meshgrid",
     "nonzero",
     "ones",
+    "ones_like",
     "place",
     "put",
     "put_along_axis",
