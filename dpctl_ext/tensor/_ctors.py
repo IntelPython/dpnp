@@ -1223,6 +1223,123 @@ def full(
     return res
 
 
+def full_like(
+    x,
+    /,
+    fill_value,
+    *,
+    dtype=None,
+    order="K",
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
+    """full_like(x, fill_value, dtype=None, order="K", \
+                 device=None, usm_type=None, sycl_queue=None)
+
+    Returns a new :class:`dpctl.tensor.usm_ndarray` filled with `fill_value`
+    and having the same `shape` as the input array `x`.
+
+    Args:
+        x (usm_ndarray): Input array from which to derive the output array
+            shape.
+        fill_value: the value to fill output array with
+        dtype (optional):
+            data type of the array. Can be typestring,
+            a :class:`numpy.dtype` object, :mod:`numpy` char string, or a
+            NumPy scalar type. If ``dtype`` is ``None``, the output array data
+            type is inferred from ``x``. Default: ``None``
+        order ("C", "F", "A", or "K"):
+            memory layout for the array. Default: ``"K"``
+        device (optional):
+            array API concept of device where the output array
+            is created. ``device`` can be ``None``, a oneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
+
+    Returns:
+        usm_ndarray:
+            New array initialized with given value.
+    """
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
+    if (
+        not isinstance(order, str)
+        or len(order) == 0
+        or order[0] not in "CcFfAaKk"
+    ):
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'C', 'F', 'A', or 'K'."
+        )
+    order = order[0].upper()
+    if dtype is None:
+        dtype = x.dtype
+    if usm_type is None:
+        usm_type = x.usm_type
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    if device is None and sycl_queue is None:
+        device = x.device
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    sh = x.shape
+    dtype = dpt.dtype(dtype)
+    order = _normalize_order(order, x)
+    if order == "K":
+        _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
+        if isinstance(fill_value, (dpt.usm_ndarray, np.ndarray, tuple, list)):
+            X = dpt_ext.asarray(
+                fill_value,
+                dtype=dtype,
+                order=order,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
+            )
+            X = dpt.broadcast_to(X, sh)
+            res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
+            _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+            # order copy after tasks populating X
+            dep_evs = _manager.submitted_events
+            hev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=X, dst=res, sycl_queue=sycl_queue, depends=dep_evs
+            )
+            _manager.add_event_pair(hev, copy_ev)
+            return res
+        else:
+            _validate_fill_value(fill_value)
+
+        dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
+        res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
+        fill_value = _cast_fill_val(fill_value, dtype)
+        _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+        # populating new allocation, no dependent events
+        hev, full_ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
+        _manager.add_event_pair(hev, full_ev)
+        return res
+    else:
+        return full(
+            sh,
+            fill_value,
+            dtype=dtype,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
+
+
 def linspace(
     start,
     stop,
