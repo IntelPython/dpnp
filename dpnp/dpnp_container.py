@@ -260,7 +260,7 @@ def ones(
         order = "C"
 
     """Creates `dpnp_array` of ones with the given shape, dtype, and order."""
-    array_obj = dpt.ones(
+    array_obj = dpt_ext.ones(
         shape,
         dtype=dtype,
         order=order,

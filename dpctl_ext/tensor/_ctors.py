@@ -1518,6 +1518,74 @@ def meshgrid(*arrays, indexing="xy"):
     return output
 
 
+def ones(
+    shape,
+    *,
+    dtype=None,
+    order="C",
+    device=None,
+    usm_type="device",
+    sycl_queue=None,
+):
+    """ones(shape, dtype=None, order="C", \
+            device=None, usm_type="device", sycl_queue=None)
+
+    Returns a new :class:`dpctl.tensor.usm_ndarray` having a specified
+    shape and filled with ones.
+
+    Args:
+        shape (Tuple[int], int):
+            Dimensions of the array to be created.
+        dtype (optional):
+            data type of the array. Can be typestring,
+            a :class:`numpy.dtype` object, :mod:`numpy` char string,
+            or a NumPy scalar type. Default: ``None``
+        order ("C", or "F"): memory layout for the array. Default: ``"C"``
+        device (optional): array API concept of device where the output array
+            is created. ``device`` can be ``None``, a oneAPI filter selector
+            string, an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+            Default: ``None``
+        usm_type (``"device"``, ``"shared"``, ``"host"``, optional):
+            The type of SYCL USM allocation for the output array.
+            Default: ``"device"``
+        sycl_queue (:class:`dpctl.SyclQueue`, optional):
+            The SYCL queue to use
+            for output array allocation and copying. ``sycl_queue`` and
+            ``device`` are complementary arguments, i.e. use one or another.
+            If both are specified, a :exc:`TypeError` is raised unless both
+            imply the same underlying SYCL queue to be used. If both are
+            ``None``, a cached queue targeting default-selected device is
+            used for allocation and population. Default: ``None``
+
+    Returns:
+        usm_ndarray:
+            Created array initialized with ones.
+    """
+    if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'F' or 'C'."
+        )
+    order = order[0].upper()
+    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
+    dtype = _get_dtype(dtype, sycl_queue)
+    res = dpt.usm_ndarray(
+        shape,
+        dtype=dtype,
+        buffer=usm_type,
+        order=order,
+        buffer_ctor_kwargs={"queue": sycl_queue},
+    )
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    # populating new allocation, no dependent events
+    hev, full_ev = ti._full_usm_ndarray(1, res, sycl_queue)
+    _manager.add_event_pair(hev, full_ev)
+    return res
+
+
 def tril(x, /, *, k=0):
     """
     Returns the lower triangular part of a matrix (or a stack of matrices)

@@ -3696,7 +3696,7 @@ def tri(
     if usm_type is None:
         usm_type = "device"
 
-    m = dpt.ones(
+    m = dpt_ext.ones(
         (N, M),
         dtype=_dtype,
         device=device,

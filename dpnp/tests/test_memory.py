@@ -2,6 +2,9 @@ import dpctl.tensor as dpt
 import numpy
 import pytest
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 import dpnp.memory as dpm
 
@@ -21,7 +24,7 @@ class TestCreateData:
             dpm.create_data(x)
 
     def test_wrong_usm_data(self):
-        a = dpt.ones(10)
+        a = dpt_ext.ones(10)
         d = IntUsmData(a.shape, buffer=a)
 
         with pytest.raises(TypeError):
