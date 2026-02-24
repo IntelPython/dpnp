@@ -69,7 +69,7 @@ repos:
     -   id: black
         exclude: "dpnp/_version.py"
 -   repo: https://github.com/pycqa/isort
-    rev: 7.0.0
+    rev: 8.0.0
     hooks:
     -   id: isort
         name: isort (python)
@@ -123,11 +123,11 @@ repos:
     -   id: pretty-format-toml
         args: [--autofix]
 -   repo: https://github.com/rhysd/actionlint
-    rev: v1.7.10
+    rev: v1.7.11
     hooks:
     -   id: actionlint
 -   repo: https://github.com/BlankSpruce/gersemi
-    rev: 0.25.4
+    rev: 0.26.0
     hooks:
     -   id: gersemi
         exclude: "dpnp/backend/cmake/Modules/"
