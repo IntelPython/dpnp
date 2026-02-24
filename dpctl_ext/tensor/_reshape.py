@@ -31,7 +31,10 @@ import operator
 import dpctl.tensor as dpt
 import dpctl.utils
 import numpy as np
-from dpctl.tensor._tensor_impl import (
+
+# TODO: revert to `from dpctl.tensor._tensor_impl...`
+# when dpnp fully migrates dpctl/tensor
+from dpctl_ext.tensor._tensor_impl import (
     _copy_usm_ndarray_for_reshape,
     _ravel_multi_index,
     _unravel_index,
