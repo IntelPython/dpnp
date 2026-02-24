@@ -202,9 +202,6 @@ class TestQRDecomposition(unittest.TestCase):
         self.check_mode(numpy.random.randn(3, 3), mode=self.mode)
         self.check_mode(numpy.random.randn(5, 4), mode=self.mode)
 
-    @pytest.mark.skipif(
-        is_lts_driver(version=LTS_VERSION.V1_6), reason="SAT-8375"
-    )
     @testing.with_requires("numpy>=1.22")
     @testing.fix_random()
     def test_mode_rank3(self):
@@ -212,9 +209,6 @@ class TestQRDecomposition(unittest.TestCase):
         self.check_mode(numpy.random.randn(4, 3, 3), mode=self.mode)
         self.check_mode(numpy.random.randn(2, 5, 4), mode=self.mode)
 
-    @pytest.mark.skipif(
-        is_lts_driver(version=LTS_VERSION.V1_6), reason="SAT-8375"
-    )
     @testing.with_requires("numpy>=1.22")
     @testing.fix_random()
     def test_mode_rank4(self):
