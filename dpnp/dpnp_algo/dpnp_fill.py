@@ -31,13 +31,16 @@ from numbers import Number
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
 from dpctl.tensor._ctors import _cast_fill_val
-from dpctl.tensor._tensor_impl import (
+
+import dpnp
+
+# TODO: revert to `from dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+from dpctl_ext.tensor._tensor_impl import (
     _copy_usm_ndarray_into_usm_ndarray,
     _full_usm_ndarray,
     _zeros_usm_ndarray,
 )
-
-import dpnp
 
 
 def dpnp_fill(arr, val):

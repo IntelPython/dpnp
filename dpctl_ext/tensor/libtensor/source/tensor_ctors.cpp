@@ -53,17 +53,17 @@
 // #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
 #include "device_support_queries.hpp"
 // #include "eye_ctor.hpp"
-// #include "full_ctor.hpp"
-// #include "integer_advanced_indexing.hpp"
+#include "full_ctor.hpp"
+#include "integer_advanced_indexing.hpp"
 #include "kernels/dpctl_tensor_types.hpp"
 // #include "linear_sequences.hpp"
 // #include "repeat.hpp"
 #include "simplify_iteration_space.hpp"
-// #include "triul_ctor.hpp"
+#include "triul_ctor.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/strided_iters.hpp"
 // #include "where.hpp"
-// #include "zeros_ctor.hpp"
+#include "zeros_ctor.hpp"
 
 namespace py = pybind11;
 
@@ -102,15 +102,15 @@ using dpctl::tensor::py_internal::py_as_f_contig;
 
 /* ================ Full ================== */
 
-// using dpctl::tensor::py_internal::usm_ndarray_full;
+using dpctl::tensor::py_internal::usm_ndarray_full;
 
 /* ================ Zeros ================== */
 
-// using dpctl::tensor::py_internal::usm_ndarray_zeros;
+using dpctl::tensor::py_internal::usm_ndarray_zeros;
 
 /* ============== Advanced Indexing ============= */
-// using dpctl::tensor::py_internal::usm_ndarray_put;
-// using dpctl::tensor::py_internal::usm_ndarray_take;
+using dpctl::tensor::py_internal::usm_ndarray_put;
+using dpctl::tensor::py_internal::usm_ndarray_take;
 
 // using dpctl::tensor::py_internal::py_extract;
 // using dpctl::tensor::py_internal::py_mask_positions;
@@ -128,7 +128,7 @@ using dpctl::tensor::py_internal::py_as_f_contig;
 
 /* =========================== Tril and triu ============================== */
 
-// using dpctl::tensor::py_internal::usm_ndarray_triul;
+using dpctl::tensor::py_internal::usm_ndarray_triul;
 
 /* =========================== Where ============================== */
 
@@ -144,7 +144,7 @@ void init_dispatch_tables(void)
 
     init_copy_and_cast_usm_to_usm_dispatch_tables();
     // init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables();
-    // init_advanced_indexing_dispatch_tables();
+    init_advanced_indexing_dispatch_tables();
     // init_where_dispatch_tables();
     return;
 }
@@ -158,10 +158,10 @@ void init_dispatch_vectors(void)
     // init_copy_for_reshape_dispatch_vectors();
     // init_copy_for_roll_dispatch_vectors();
     // init_linear_sequences_dispatch_vectors();
-    // init_full_ctor_dispatch_vectors();
-    // init_zeros_ctor_dispatch_vectors();
+    init_full_ctor_dispatch_vectors();
+    init_zeros_ctor_dispatch_vectors();
     // init_eye_ctor_dispatch_vectors();
-    // init_triul_ctor_dispatch_vectors();
+    init_triul_ctor_dispatch_vectors();
 
     // populate_masked_extract_dispatch_vectors();
     // populate_masked_place_dispatch_vectors();
@@ -299,22 +299,20 @@ PYBIND11_MODULE(_tensor_impl, m)
     //       py::arg("shifts"), py::arg("sycl_queue"), py::arg("depends") =
     //       py::list());
 
-    // m.def("_linspace_step", &usm_ndarray_linear_sequence_step,
-    //       "Fills input 1D contiguous usm_ndarray `dst` with linear sequence "
-    //       "specified by "
-    //       "starting point `start` and step `dt`. "
-    //       "Returns a tuple of events: (ht_event, comp_event)",
-    //       py::arg("start"), py::arg("dt"), py::arg("dst"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    //     m.def("_linspace_step", &usm_ndarray_linear_sequence_step,
+    //           "Fills input 1D contiguous usm_ndarray `dst` with linear
+    //           sequence " "specified by " "starting point `start` and step
+    //           `dt`. " "Returns a tuple of events: (ht_event, comp_event)",
+    //           py::arg("start"), py::arg("dt"), py::arg("dst"),
+    //           py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    // m.def("_linspace_affine", &usm_ndarray_linear_sequence_affine,
-    //       "Fills input 1D contiguous usm_ndarray `dst` with linear sequence "
-    //       "specified by "
-    //       "starting point `start` and end point `end`. "
-    //       "Returns a tuple of events: (ht_event, comp_event)",
-    //       py::arg("start"), py::arg("end"), py::arg("dst"),
-    //       py::arg("include_endpoint"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    //     m.def("_linspace_affine", &usm_ndarray_linear_sequence_affine,
+    //           "Fills input 1D contiguous usm_ndarray `dst` with linear
+    //           sequence " "specified by " "starting point `start` and end
+    //           point `end`. " "Returns a tuple of events: (ht_event,
+    //           comp_event)", py::arg("start"), py::arg("end"), py::arg("dst"),
+    //           py::arg("include_endpoint"), py::arg("sycl_queue"),
+    //           py::arg("depends") = py::list());
 
     // m.def("_copy_numpy_ndarray_into_usm_ndarray",
     //       &copy_numpy_ndarray_into_usm_ndarray,
@@ -322,32 +320,32 @@ PYBIND11_MODULE(_tensor_impl, m)
     //       synchronously.", py::arg("src"), py::arg("dst"),
     //       py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    // m.def("_zeros_usm_ndarray", &usm_ndarray_zeros,
-    //       "Populate usm_ndarray `dst` with zeros.", py::arg("dst"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_zeros_usm_ndarray", &usm_ndarray_zeros,
+          "Populate usm_ndarray `dst` with zeros.", py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    // m.def("_full_usm_ndarray", &usm_ndarray_full,
-    //       "Populate usm_ndarray `dst` with given fill_value.",
-    //       py::arg("fill_value"), py::arg("dst"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    m.def("_full_usm_ndarray", &usm_ndarray_full,
+          "Populate usm_ndarray `dst` with given fill_value.",
+          py::arg("fill_value"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
-    // m.def("_take", &usm_ndarray_take,
-    //       "Takes elements at usm_ndarray indices `ind` and axes starting "
-    //       "at axis `axis_start` from array `src` and copies them "
-    //       "into usm_ndarray `dst` synchronously."
-    //       "Returns a tuple of events: (hev, ev)",
-    //       py::arg("src"), py::arg("ind"), py::arg("dst"),
-    //       py::arg("axis_start"), py::arg("mode"), py::arg("sycl_queue"),
-    //   py::arg("depends") = py::list());
+    m.def("_take", &usm_ndarray_take,
+          "Takes elements at usm_ndarray indices `ind` and axes starting "
+          "at axis `axis_start` from array `src` and copies them "
+          "into usm_ndarray `dst` synchronously."
+          "Returns a tuple of events: (hev, ev)",
+          py::arg("src"), py::arg("ind"), py::arg("dst"), py::arg("axis_start"),
+          py::arg("mode"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
-    // m.def("_put", &usm_ndarray_put,
-    //       "Puts elements at usm_ndarray indices `ind` and axes starting "
-    //       "at axis `axis_start` into array `dst` from "
-    //       "usm_ndarray `val` synchronously."
-    //       "Returns a tuple of events: (hev, ev)",
-    //       py::arg("dst"), py::arg("ind"), py::arg("val"),
-    //       py::arg("axis_start"), py::arg("mode"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    m.def("_put", &usm_ndarray_put,
+          "Puts elements at usm_ndarray indices `ind` and axes starting "
+          "at axis `axis_start` into array `dst` from "
+          "usm_ndarray `val` synchronously."
+          "Returns a tuple of events: (hev, ev)",
+          py::arg("dst"), py::arg("ind"), py::arg("val"), py::arg("axis_start"),
+          py::arg("mode"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     // m.def("_eye", &usm_ndarray_eye,
     //       "Fills input 2D contiguous usm_ndarray `dst` with "
@@ -387,27 +385,27 @@ PYBIND11_MODULE(_tensor_impl, m)
           dpctl::tensor::py_internal::default_device_index_type,
           "Gives default index type supported by device.", py::arg("dev"));
 
-    // auto tril_fn = [](const dpctl::tensor::usm_ndarray &src,
-    //                   const dpctl::tensor::usm_ndarray &dst, py::ssize_t k,
-    //                   sycl::queue &exec_q,
-    //                   const std::vector<sycl::event> depends)
-    //     -> std::pair<sycl::event, sycl::event> {
-    //     return usm_ndarray_triul(exec_q, src, dst, 'l', k, depends);
-    // };
-    // m.def("_tril", tril_fn, "Tril helper function.", py::arg("src"),
-    //       py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    auto tril_fn = [](const dpctl::tensor::usm_ndarray &src,
+                      const dpctl::tensor::usm_ndarray &dst, py::ssize_t k,
+                      sycl::queue &exec_q,
+                      const std::vector<sycl::event> depends)
+        -> std::pair<sycl::event, sycl::event> {
+        return usm_ndarray_triul(exec_q, src, dst, 'l', k, depends);
+    };
+    m.def("_tril", tril_fn, "Tril helper function.", py::arg("src"),
+          py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
-    // auto triu_fn = [](const dpctl::tensor::usm_ndarray &src,
-    //                   const dpctl::tensor::usm_ndarray &dst, py::ssize_t k,
-    //                   sycl::queue &exec_q,
-    //                   const std::vector<sycl::event> depends)
-    //     -> std::pair<sycl::event, sycl::event> {
-    //     return usm_ndarray_triul(exec_q, src, dst, 'u', k, depends);
-    // };
-    // m.def("_triu", triu_fn, "Triu helper function.", py::arg("src"),
-    //       py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    auto triu_fn = [](const dpctl::tensor::usm_ndarray &src,
+                      const dpctl::tensor::usm_ndarray &dst, py::ssize_t k,
+                      sycl::queue &exec_q,
+                      const std::vector<sycl::event> depends)
+        -> std::pair<sycl::event, sycl::event> {
+        return usm_ndarray_triul(exec_q, src, dst, 'u', k, depends);
+    };
+    m.def("_triu", triu_fn, "Triu helper function.", py::arg("src"),
+          py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     // m.def("mask_positions", &py_mask_positions, "", py::arg("mask"),
     //       py::arg("cumsum"), py::arg("sycl_queue"),
