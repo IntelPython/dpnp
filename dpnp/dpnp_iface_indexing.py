@@ -40,6 +40,7 @@ it contains:
 """
 
 # pylint: disable=protected-access
+# pylint: disable=c-extension-no-member
 
 import operator
 from collections.abc import Iterable
@@ -57,12 +58,8 @@ import dpnp
 # pylint: disable=no-name-in-module
 import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
 
-# pylint: disable=no-name-in-module
-from .dpnp_algo import (
-    dpnp_putmask,
-)
 from .dpnp_array import dpnp_array
-from .dpnp_utils import call_origin, get_usm_allocations
+from .dpnp_utils import get_usm_allocations
 
 
 def _ravel_multi_index_checks(multi_index, dims, order):
@@ -1804,30 +1801,93 @@ def put_along_axis(a, ind, values, axis, mode="wrap"):
     dpt.put_along_axis(usm_a, usm_ind, usm_vals, axis=axis, mode=mode)
 
 
-def putmask(x1, mask, values):
+def putmask(a, /, mask, values):
     """
     Changes elements of an array based on conditional and input values.
 
     For full documentation refer to :obj:`numpy.putmask`.
 
-    Limitations
-    -----------
-    Input arrays ``arr``, ``mask`` and ``values`` are supported
-    as :obj:`dpnp.ndarray`.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Target array.
+    mask : {dpnp.ndarray, usm_ndarray}
+        Boolean mask array. It has to be the same shape as `a`.
+    values : {scalar, array_like}
+         Values to put into `a` where `mask` is True.
+         If `values` is smaller than `a`, then it will be repeated.
+
+    See Also
+    --------
+    :obj:`dpnp.place` : Change elements of an array based on conditional and
+                        input values.
+    :obj:`dpnp.put` : Replaces specified elements of an array with given values.
+    :obj:`dpnp.take` :  Take elements from an array along an axis.
+    :obj:`dpnp.copyto` : Copies values from one array to another, broadcasting
+                         as necessary.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(6).reshape(2, 3)
+    >>> np.putmask(x, x>2, x**2)
+    >>> x
+    array([[ 0,  1,  2],
+           [ 9, 16, 25]])
+
+    If `values` is smaller than `a` it is repeated:
+
+    >>> x = np.arange(5)
+    >>> np.putmask(x, x>1, np.array([-33, -44]))
+    >>> x
+    array([  0,   1, -33, -44, -33])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    mask_desc = dpnp.get_dpnp_descriptor(mask, copy_when_nondefault_queue=False)
-    values_desc = dpnp.get_dpnp_descriptor(
-        values, copy_when_nondefault_queue=False
-    )
-    if x1_desc and mask_desc and values_desc:
-        return dpnp_putmask(x1_desc, mask_desc, values_desc)
+    dpnp.check_supported_arrays_type(a, mask)
+    dpnp.check_supported_arrays_type(values, scalar_type=True, all_scalars=True)
 
-    return call_origin(numpy.putmask, x1, mask, values, dpnp_inplace=True)
+    if not a.shape == mask.shape:
+        raise ValueError("mask and data must be the same size")
+
+    mask = dpnp.astype(mask, dpnp.bool, copy=False)
+
+    if dpnp.isscalar(values):
+        a[mask] = values
+
+    elif not dpnp.can_cast(values.dtype, a.dtype):
+        raise TypeError(
+            "Cannot cast array data from"
+            f" {values.dtype} to {a.dtype} according to the rule 'safe'"
+        )
+
+    elif a.shape == values.shape:
+        a[mask] = values[mask]
+
+    else:
+        values = values.ravel(order="C")
+
+        if a.dtype != values.dtype:
+            values = dpnp.astype(values, a.dtype, casting="safe", copy=False)
+
+        exec_q = a.sycl_queue
+        if (
+            dpu.get_execution_queue(
+                [exec_q, mask.sycl_queue, values.sycl_queue]
+            )
+            is None
+        ):
+            raise ValueError(
+                "`mask` and `values` must be allocated on "
+                "the same SYCL queue as `a`"
+            )
+        _manager = dpu.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+
+        h_ev, putmask_ev = indexing_ext._putmask(
+            a.get_array(), mask.get_array(), values.get_array(), exec_q, dep_evs
+        )
+        _manager.add_event_pair(h_ev, putmask_ev)
 
 
 def ravel_multi_index(multi_index, dims, mode="raise", order="C"):

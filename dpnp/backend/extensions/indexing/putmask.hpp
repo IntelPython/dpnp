@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2025, Intel Corporation
+// Copyright (c) 2026, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,18 +25,14 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._indexing_impl extensions
-//
-//*****************************************************************************
+
+#pragma once
 
 #include <pybind11/pybind11.h>
 
-#include "choose.hpp"
-#include "putmask.hpp"
+namespace py = pybind11;
 
-PYBIND11_MODULE(_indexing_impl, m)
+namespace dpnp::extensions::indexing
 {
-    dpnp::extensions::indexing::init_choose(m);
-    dpnp::extensions::indexing::init_putmask(m);
-}
+void init_putmask(py::module_ m);
+} // namespace dpnp::extensions::indexing

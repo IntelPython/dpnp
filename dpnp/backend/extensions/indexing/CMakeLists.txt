@@ -30,6 +30,7 @@
 set(python_module_name _indexing_impl)
 set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/choose.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/putmask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/indexing_py.cpp
 )
 
