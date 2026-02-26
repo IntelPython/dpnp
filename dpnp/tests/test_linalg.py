@@ -3188,12 +3188,12 @@ class TestQr:
             )
 
             assert tau_dp.shape == tau_np.shape
-            if has_support_aspect64(tau_dp.sycl_device):
+            if not has_support_aspect64(tau_dp.sycl_device):
                 if tau_np.dtype == numpy.float64:
                     tau_np = tau_np.astype("float32")
                 elif tau_np.dtype == numpy.complex128:
                     tau_np = tau_np.astype("complex64")
-            assert tau_dp.dtype == tau_np.dtypes
+            assert tau_dp.dtype == tau_np.dtype
 
         else:  # mode == "r"
             R_np = numpy.linalg.qr(a_np, mode="r")
