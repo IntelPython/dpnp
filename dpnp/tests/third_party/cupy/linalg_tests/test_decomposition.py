@@ -12,9 +12,7 @@ import dpnp as cupy
 # from cupy.cuda import runtime
 # from cupy.linalg import _util
 from dpnp.tests.helper import (
-    LTS_VERSION,
     has_support_aspect64,
-    is_lts_driver,
 )
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
@@ -169,6 +167,18 @@ class TestCholeskyInvalid(unittest.TestCase):
     )
 )
 class TestQRDecomposition(unittest.TestCase):
+    def _gram(self, x, xp):
+        # Gram matrix: X^H @ X
+        return xp.conjugate(x).swapaxes(-1, -2) @ x
+
+    def _get_R_from_raw(self, h, m, n, xp):
+        # Get reduced R from NumPy-style raw QR:
+        # R = triu((tril(h))^T), shape (..., k, n)
+        k = min(m, n)
+        Rt = xp.tril(h)
+        R = xp.swapaxes(Rt, -1, -2)
+        R = xp.triu(R[..., :m, :n])
+        return R[..., :k, :]
 
     @testing.for_dtypes("fdFD")
     def check_mode(self, array, mode, dtype):
@@ -184,16 +194,64 @@ class TestQRDecomposition(unittest.TestCase):
             or numpy.lib.NumpyVersion(numpy.__version__) >= "1.22.0rc1"
         ):
             result_cpu = numpy.linalg.qr(a_cpu, mode=mode)
-            self._check_result(result_cpu, result_gpu)
+            self._check_result(result_cpu, result_gpu, a_cpu, a_gpu, mode)
 
-    def _check_result(self, result_cpu, result_gpu):
-        if isinstance(result_cpu, tuple):
-            for b_cpu, b_gpu in zip(result_cpu, result_gpu):
-                assert b_cpu.dtype == b_gpu.dtype
-                testing.assert_allclose(b_cpu, b_gpu, atol=1e-4)
-        else:
-            assert result_cpu.dtype == result_gpu.dtype
-            testing.assert_allclose(result_cpu, result_gpu, atol=1e-4)
+    # def _check_result(self, result_cpu, result_gpu):
+    #     if isinstance(result_cpu, tuple):
+    #         for b_cpu, b_gpu in zip(result_cpu, result_gpu):
+    #             assert b_cpu.dtype == b_gpu.dtype
+    #             testing.assert_allclose(b_cpu, b_gpu, atol=1e-4)
+    #     else:
+    #         assert result_cpu.dtype == result_gpu.dtype
+    #         testing.assert_allclose(result_cpu, result_gpu, atol=1e-4)
+
+    # QR is not unique:
+    # element-wise comparison with NumPy may differ by sign/phase.
+    # To verify correctness use mode-dependent functional checks:
+    # complete/reduced: check decomposition Q @ R = A
+    # raw/r: check invariant R^H @ R = A^H @ A
+    def _check_result(self, result_cpu, result_gpu, a_cpu, a_gpu, mode):
+
+        if mode in ("complete", "reduced"):
+            q_gpu, r_gpu = result_gpu
+            testing.assert_allclose(q_gpu @ r_gpu, a_gpu, atol=1e-4)
+
+        elif mode == "raw":
+            h_gpu, tau_gpu = result_gpu
+            h_cpu, tau_cpu = result_cpu
+            m, n = a_gpu.shape[-2], a_gpu.shape[-1]
+            r_gpu = self._get_R_from_raw(h_gpu, m, n, cupy)
+            r_cpu = self._get_R_from_raw(h_cpu, m, n, numpy)
+
+            exp_gpu = self._gram(a_gpu, cupy)
+            exp_cpu = self._gram(a_cpu, numpy)
+
+            testing.assert_allclose(
+                self._gram(r_gpu, cupy), exp_gpu, atol=1e-4, rtol=1e-4
+            )
+            testing.assert_allclose(
+                self._gram(r_cpu, numpy), exp_cpu, atol=1e-4, rtol=1e-4
+            )
+
+            assert tau_gpu.shape == tau_cpu.shape
+            if not has_support_aspect64(tau_gpu.sycl_device):
+                if tau_cpu.dtype == numpy.float64:
+                    tau_cpu = tau_cpu.astype("float32")
+                elif tau_cpu.dtype == numpy.complex128:
+                    tau_cpu = tau_cpu.astype("complex64")
+            assert tau_gpu.dtype == tau_cpu.dtype
+
+        else:  # mode == "r"
+            r_gpu = result_gpu
+            r_cpu = result_cpu
+            exp_gpu = self._gram(a_gpu, cupy)
+            exp_cpu = self._gram(a_cpu, numpy)
+            testing.assert_allclose(
+                self._gram(r_gpu, cupy), exp_gpu, atol=1e-4, rtol=1e-4
+            )
+            testing.assert_allclose(
+                self._gram(r_cpu, numpy), exp_cpu, atol=1e-4, rtol=1e-4
+            )
 
     @testing.fix_random()
     @_condition.repeat(3, 10)
