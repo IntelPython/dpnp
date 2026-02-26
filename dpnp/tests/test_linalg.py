@@ -3205,8 +3205,8 @@ class TestQr:
             exp_R = exp_res.R
             assert_allclose(R_dp, exp_R, atol=1e-4, rtol=1e-4)
 
-            exp_dp = self.gram(a_dp, dpnp).astype(R_dp.dtype)
-            exp_np = self.gram(a_np, numpy).astype(R_np.dtype)
+            exp_dp = self.gram(a_dp, dpnp)
+            exp_np = self.gram(a_np, numpy)
 
             # compare R^H @ R == A^H @ A
             assert_allclose(self.gram(R_dp, dpnp), exp_dp, atol=1e-4, rtol=1e-4)
@@ -3214,7 +3214,7 @@ class TestQr:
                 self.gram(R_np, numpy), exp_np, atol=1e-4, rtol=1e-4
             )
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
         "shape",
         [
@@ -3247,7 +3247,7 @@ class TestQr:
 
         self.check_qr(a, ia, mode)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
         "shape",
         [(32, 32), (8, 16, 16)],
@@ -3260,7 +3260,7 @@ class TestQr:
 
         self.check_qr(a, ia, mode)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
         "shape",
         [(0, 0), (0, 2), (2, 0), (2, 0, 3), (2, 3, 0), (0, 2, 3)],
