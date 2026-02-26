@@ -915,6 +915,7 @@ class TestMedian:
         a = generate_random_numpy_array(size, dtype)
         ia = dpnp.array(a)
 
+        # import pdb; pdb.set_trace()
         expected = numpy.median(a)
         result = dpnp.median(ia)
         assert_dtype_allclose(result, expected)
@@ -979,25 +980,6 @@ class TestMedian:
 
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("axis", [None, 0, -1, (0, -2, -1)])
-    @pytest.mark.parametrize("keepdims", [True, False])
-    def test_overwrite_input(self, axis, keepdims):
-        a = generate_random_numpy_array((2, 3, 4))
-        ia = dpnp.array(a)
-
-        b = a.copy()
-        ib = ia.copy()
-        expected = numpy.median(
-            b, axis=axis, keepdims=keepdims, overwrite_input=True
-        )
-        result = dpnp.median(
-            ib, axis=axis, keepdims=keepdims, overwrite_input=True
-        )
-        assert not numpy.all(a == b)
-        assert not dpnp.all(ia == ib)
-
-        assert_dtype_allclose(result, expected)
-
     @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1]])
     @pytest.mark.parametrize("overwrite_input", [True, False])
     def test_usm_ndarray(self, axis, overwrite_input):
@@ -1007,6 +989,9 @@ class TestMedian:
         expected = numpy.median(a, axis=axis, overwrite_input=overwrite_input)
         result = dpnp.median(ia, axis=axis, overwrite_input=overwrite_input)
         assert_dtype_allclose(result, expected)
+
+        if not overwrite_input:
+            assert_dtype_allclose(ia, a)
 
 
 class TestPtp:

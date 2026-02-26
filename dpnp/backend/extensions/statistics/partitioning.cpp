@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2024-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -9,9 +9,6 @@
 // - Redistributions in binary form must reproduce the above copyright notice,
 //   this list of conditions and the following disclaimer in the documentation
 //   and/or other materials provided with the distribution.
-// - Neither the name of the copyright holder nor the names of its contributors
-//   may be used to endorse or promote products derived from this software
-//   without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -25,24 +22,46 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._statistics_impl extensions
-//
-//*****************************************************************************
 
+#include <string>
+#include <vector>
+
+#include "dpctl4pybind11.hpp"
+#include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
 
-#include "bincount.hpp"
-#include "histogram.hpp"
-#include "histogramdd.hpp"
-#include "kth_element1d.hpp"
-#include "sliding_dot_product1d.hpp"
+#include "ext/common.hpp"
+#include "ext/validation_utils.hpp"
+#include "sliding_window1d.hpp"
 
-PYBIND11_MODULE(_statistics_impl, m)
+namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+using namespace ext::common;
+using namespace ext::validation;
+
+using dpctl::tensor::usm_ndarray;
+using dpctl_td_ns::typenum_t;
+
+namespace statistics::partitioning
 {
-    statistics::histogram::populate_bincount(m);
-    statistics::histogram::populate_histogram(m);
-    statistics::partitioning::populate_kth_element1d(m);
-    statistics::sliding_window1d::populate_sliding_dot_product1d(m);
-    statistics::histogram::populate_histogramdd(m);
+
+void validate(const usm_ndarray &a,
+              const usm_ndarray &partitioned,
+              const size_t k)
+{
+    array_names names = {{&a, "a"}, {&partitioned, "partitioned"}};
+
+    common_checks({&a}, {&partitioned}, names);
+    check_same_size(&a, &partitioned, names);
+    check_num_dims(&a, 1, names);
+    check_num_dims(&partitioned, 1, names);
+    check_same_dtype(&a, &partitioned, names);
+
+    if (k > a.get_size() - 2) {
+        throw py::value_error("'k' must be from 0 to a.size() - 2, "
+                              "but got k = " +
+                              std::to_string(k) + " and a.size() = " +
+                              std::to_string(a.get_size()));
+    }
 }
+
+} // namespace statistics::partitioning

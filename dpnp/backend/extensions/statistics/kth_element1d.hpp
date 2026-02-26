@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2024-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -9,9 +9,6 @@
 // - Redistributions in binary form must reproduce the above copyright notice,
 //   this list of conditions and the following disclaimer in the documentation
 //   and/or other materials provided with the distribution.
-// - Neither the name of the copyright holder nor the names of its contributors
-//   may be used to endorse or promote products derived from this software
-//   without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -25,24 +22,34 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._statistics_impl extensions
-//
-//*****************************************************************************
 
+#pragma once
+
+#include "ext/dispatch_table.hpp"
 #include <pybind11/pybind11.h>
+#include <sycl/sycl.hpp>
 
-#include "bincount.hpp"
-#include "histogram.hpp"
-#include "histogramdd.hpp"
-#include "kth_element1d.hpp"
-#include "sliding_dot_product1d.hpp"
-
-PYBIND11_MODULE(_statistics_impl, m)
+namespace statistics::partitioning
 {
-    statistics::histogram::populate_bincount(m);
-    statistics::histogram::populate_histogram(m);
-    statistics::partitioning::populate_kth_element1d(m);
-    statistics::sliding_window1d::populate_sliding_dot_product1d(m);
-    statistics::histogram::populate_histogramdd(m);
-}
+struct KthElement1d
+{
+    using RetT = std::tuple<bool, uint64_t, uint64_t, uint64_t, uint64_t>;
+    using FnT = RetT (*)(sycl::queue &,
+                         const void *,
+                         void *,
+                         const size_t,
+                         const size_t,
+                         const std::vector<sycl::event> &);
+
+    ext::common::DispatchTable<FnT> dispatch_table;
+
+    KthElement1d();
+
+    RetT call(const dpctl::tensor::usm_ndarray &a,
+              dpctl::tensor::usm_ndarray &partitioned,
+              uint64_t k,
+              const std::vector<sycl::event> &depends);
+};
+
+void populate_kth_element1d(py::module_ m);
+} // namespace statistics::partitioning
