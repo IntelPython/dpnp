@@ -2605,6 +2605,463 @@ class TestLuSolveBatched:
             dpnp.scipy.linalg.lu_solve((lu, piv), b, check_finite=False)
 
 
+class TestLu:
+    @staticmethod
+    def _make_nonsingular_np(shape, dtype, order):
+        A = generate_random_numpy_array(shape, dtype, order)
+        m, n = shape
+        k = min(m, n)
+        for i in range(k):
+            off = numpy.sum(numpy.abs(A[i, :n])) - numpy.abs(A[i, i])
+            A[i, i] = A.dtype.type(off + 1.0)
+        return A
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(1, 1), (2, 2), (3, 3), (1, 5), (5, 1), (2, 5), (5, 2)],
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_lu_default(self, shape, order, dtype):
+        a_np = self._make_nonsingular_np(shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        P, L, U = dpnp.scipy.linalg.lu(a_dp)
+
+        m, n = shape
+        k = min(m, n)
+        assert P.shape == (m, m)
+        assert L.shape == (m, k)
+        assert U.shape == (k, n)
+
+        A_cast = a_dp.astype(L.dtype, copy=False)
+        A_rec = P @ L @ U
+        assert dpnp.allclose(A_rec, A_cast, rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(1, 1), (2, 2), (3, 3), (1, 5), (5, 1), (2, 5), (5, 2)],
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_lu_permute_l(self, shape, order, dtype):
+        a_np = self._make_nonsingular_np(shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        PL, U = dpnp.scipy.linalg.lu(a_dp, permute_l=True)
+
+        m, n = shape
+        k = min(m, n)
+        assert PL.shape == (m, k)
+        assert U.shape == (k, n)
+
+        A_cast = a_dp.astype(PL.dtype, copy=False)
+        A_rec = PL @ U
+        assert dpnp.allclose(A_rec, A_cast, rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(1, 1), (2, 2), (3, 3), (1, 5), (5, 1), (2, 5), (5, 2)],
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_lu_p_indices(self, shape, order, dtype):
+        a_np = self._make_nonsingular_np(shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        p, L, U = dpnp.scipy.linalg.lu(a_dp, p_indices=True)
+
+        m, n = shape
+        k = min(m, n)
+        assert p.shape == (m,)
+        assert L.shape == (m, k)
+        assert U.shape == (k, n)
+        assert dpnp.issubdtype(p.dtype, dpnp.integer)
+
+        p_np = dpnp.asnumpy(p)
+        L_np = dpnp.asnumpy(L)
+        U_np = dpnp.asnumpy(U)
+        A_rec = L_np[p_np] @ U_np
+        A_cast = a_dp.astype(L.dtype, copy=False)
+        assert_allclose(A_rec, dpnp.asnumpy(A_cast), rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize(
+        "in_dtype, expected_p_dtype",
+        [
+            (dpnp.float32, dpnp.float32),
+            (dpnp.float64, dpnp.float64),
+            (dpnp.complex64, dpnp.float32),
+            (dpnp.complex128, dpnp.float64),
+        ],
+    )
+    def test_p_matrix_dtype(self, in_dtype, expected_p_dtype):
+        if in_dtype in (dpnp.float64, dpnp.complex128):
+            if not has_support_aspect64():
+                pytest.skip("fp64 not supported on this device")
+
+        a_np = self._make_nonsingular_np((4, 4), in_dtype, "F")
+        a_dp = dpnp.array(a_np, order="F")
+        P, L, U = dpnp.scipy.linalg.lu(a_dp)
+
+        assert P.dtype == expected_p_dtype
+        assert dpnp.issubdtype(P.dtype, dpnp.floating)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_p_indices_dtype(self, dtype):
+        a_np = self._make_nonsingular_np((4, 4), dtype, "F")
+        a_dp = dpnp.array(a_np, order="F")
+        p, _, _ = dpnp.scipy.linalg.lu(a_dp, p_indices=True)
+        assert dpnp.issubdtype(p.dtype, dpnp.integer)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_l_structure(self, dtype):
+        a_np = self._make_nonsingular_np((5, 5), dtype, "F")
+        a_dp = dpnp.array(a_np, order="F")
+        _, L, _ = dpnp.scipy.linalg.lu(a_dp)
+        L_np = dpnp.asnumpy(L)
+
+        # unit diagonal
+        diag_abs = numpy.abs(numpy.diag(L_np))
+        assert_allclose(diag_abs, numpy.ones(5, dtype=diag_abs.dtype))
+        # lower triangular
+        assert_allclose(numpy.triu(L_np, 1), numpy.zeros_like(L_np))
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_u_upper_triangular(self, dtype):
+        a_np = self._make_nonsingular_np((5, 5), dtype, "F")
+        a_dp = dpnp.array(a_np, order="F")
+        _, _, U = dpnp.scipy.linalg.lu(a_dp)
+        U_np = dpnp.asnumpy(U)
+        assert_allclose(numpy.tril(U_np, -1), numpy.zeros_like(U_np))
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_p_is_permutation(self, dtype):
+        a_np = self._make_nonsingular_np((5, 5), dtype, "F")
+        a_dp = dpnp.array(a_np, order="F")
+        P, _, _ = dpnp.scipy.linalg.lu(a_dp)
+        P_np = dpnp.asnumpy(P)
+
+        assert_allclose(P_np.sum(axis=0), numpy.ones(5, dtype=P_np.dtype))
+        assert_allclose(P_np.sum(axis=1), numpy.ones(5, dtype=P_np.dtype))
+        assert_allclose(P_np.T @ P_np, numpy.eye(5, dtype=P_np.dtype), atol=1e-15)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_modes_consistency(self, dtype):
+        a_np = self._make_nonsingular_np((5, 5), dtype, "F")
+        a_dp = dpnp.array(a_np, order="F")
+
+        P, L, U = dpnp.scipy.linalg.lu(a_dp)
+        PL, U2 = dpnp.scipy.linalg.lu(a_dp, permute_l=True)
+        p, L3, U3 = dpnp.scipy.linalg.lu(a_dp, p_indices=True)
+
+        A_cast = a_dp.astype(L.dtype, copy=False)
+        A1 = P @ L @ U
+        A2 = PL @ U2
+        p_np = dpnp.asnumpy(p)
+        A3_np = dpnp.asnumpy(L3)[p_np] @ dpnp.asnumpy(U3)
+
+        assert dpnp.allclose(A1, A_cast, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(A2, A_cast, rtol=1e-6, atol=1e-6)
+        assert_allclose(A3_np, dpnp.asnumpy(A_cast), rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_p_times_l_equals_pl(self, dtype):
+        a_np = self._make_nonsingular_np((5, 5), dtype, "F")
+        a_dp = dpnp.array(a_np, order="F")
+        P, L, _ = dpnp.scipy.linalg.lu(a_dp)
+        PL, _ = dpnp.scipy.linalg.lu(a_dp, permute_l=True)
+        assert dpnp.allclose(P @ L, PL, rtol=1e-12, atol=1e-12)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_p_indices_to_matrix(self, dtype):
+        a_np = self._make_nonsingular_np((5, 5), dtype, "F")
+        a_dp = dpnp.array(a_np, order="F")
+        P, _, _ = dpnp.scipy.linalg.lu(a_dp)
+        p, _, _ = dpnp.scipy.linalg.lu(a_dp, p_indices=True)
+        P_from_idx = dpnp.eye(5, dtype=P.dtype)[p]
+        assert dpnp.allclose(P_from_idx, P, rtol=1e-15, atol=1e-15)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_overwrite_a_false(self, dtype):
+        a_dp = dpnp.array([[4, 3], [6, 3]], dtype=dtype, order="F")
+        a_dp_orig = a_dp.copy()
+        dpnp.scipy.linalg.lu(a_dp, overwrite_a=False)
+        assert dpnp.allclose(a_dp, a_dp_orig)
+
+    @pytest.mark.parametrize("shape", [(0, 0), (0, 2), (2, 0)])
+    def test_empty_inputs(self, shape):
+        a_dp = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
+        P, L, U = dpnp.scipy.linalg.lu(a_dp)
+        m, n = shape
+        k = min(m, n)
+        assert P.shape == (m, m)
+        assert L.shape == (m, k)
+        assert U.shape == (k, n)
+
+    @pytest.mark.parametrize("shape", [(0, 0), (0, 2), (2, 0)])
+    def test_empty_permute_l(self, shape):
+        a_dp = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
+        PL, U = dpnp.scipy.linalg.lu(a_dp, permute_l=True)
+        m, n = shape
+        k = min(m, n)
+        assert PL.shape == (m, k)
+        assert U.shape == (k, n)
+
+    @pytest.mark.parametrize("shape", [(0, 0), (0, 2), (2, 0)])
+    def test_empty_p_indices(self, shape):
+        a_dp = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
+        p, L, U = dpnp.scipy.linalg.lu(a_dp, p_indices=True)
+        m, n = shape
+        k = min(m, n)
+        assert p.shape == (m,)
+        assert L.shape == (m, k)
+        assert U.shape == (k, n)
+
+    @pytest.mark.parametrize(
+        "sl",
+        [
+            (slice(None, None, 2), slice(None, None, 2)),
+            (slice(None, None, -1), slice(None, None, -1)),
+        ],
+    )
+    def test_strided(self, sl):
+        base = self._make_nonsingular_np(
+            (7, 7), dpnp.default_float_type(), "F"
+        )
+        a_np = base[sl]
+        a_dp = dpnp.array(a_np)
+
+        P, L, U = dpnp.scipy.linalg.lu(a_dp)
+        A_rec = P @ L @ U
+        assert dpnp.allclose(A_rec, a_dp, rtol=1e-6, atol=1e-6)
+
+    def test_singular_matrix(self):
+        a_np = numpy.array([[1.0, 2.0], [2.0, 4.0]])
+        a_dp = dpnp.array(a_np)
+        P, L, U = dpnp.scipy.linalg.lu(a_dp)
+        A_rec = dpnp.asnumpy(P @ L @ U)
+        assert_allclose(A_rec, a_np, atol=1e-12)
+
+    def test_identity_matrix(self):
+        n = 4
+        I_dp = dpnp.eye(n, dtype=dpnp.default_float_type())
+        P, L, U = dpnp.scipy.linalg.lu(I_dp)
+        I_np = numpy.eye(n)
+        assert_allclose(dpnp.asnumpy(P), I_np, atol=1e-15)
+        assert_allclose(dpnp.asnumpy(L), I_np, atol=1e-15)
+        assert_allclose(dpnp.asnumpy(U), I_np, atol=1e-15)
+
+    def test_1d_input_raises(self):
+        a_dp = dpnp.array([1.0, 2.0, 3.0])
+        with pytest.raises(ValueError):
+            dpnp.scipy.linalg.lu(a_dp)
+
+    @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
+    def test_check_finite_raises(self, bad):
+        a_dp = dpnp.array([[1.0, 2.0], [3.0, bad]], order="F")
+        assert_raises(
+            ValueError, dpnp.scipy.linalg.lu, a_dp, check_finite=True
+        )
+
+    def test_check_finite_disabled(self):
+        a_dp = dpnp.array([[1.0, numpy.nan], [3.0, 4.0]])
+        result = dpnp.scipy.linalg.lu(a_dp, check_finite=False)
+        assert len(result) == 3
+
+
+class TestLuBatched:
+    @staticmethod
+    def _make_nonsingular_nd_np(shape, dtype, order):
+        A = generate_random_numpy_array(shape, dtype, order)
+        m, n = shape[-2], shape[-1]
+        k = min(m, n)
+        A3 = A.reshape((-1, m, n))
+        for B in A3:
+            for i in range(k):
+                off = numpy.sum(numpy.abs(B[i, :n])) - numpy.abs(B[i, i])
+                B[i, i] = A.dtype.type(off + 1.0)
+        A = A3.reshape(shape)
+        A = numpy.array(A, order=order)
+        return A
+
+    @staticmethod
+    def _reconstruct_p_indices(p, L, U):
+        """Reconstruct A from (p, L, U) for batched p_indices mode."""
+        idx = dpnp.expand_dims(p, axis=-1)
+        idx = dpnp.broadcast_to(idx, L.shape).copy()
+        PL = dpnp.take_along_axis(L, idx, axis=-2)
+        return PL @ U
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2, 2), (3, 4, 4), (2, 3, 5, 2), (4, 1, 3)],
+        ids=["(2,2,2)", "(3,4,4)", "(2,3,5,2)", "(4,1,3)"],
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_lu_default_batched(self, shape, order, dtype):
+        a_np = self._make_nonsingular_nd_np(shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        P, L, U = dpnp.scipy.linalg.lu(a_dp)
+
+        m, n = shape[-2], shape[-1]
+        k = min(m, n)
+        assert P.shape == (*shape[:-2], m, m)
+        assert L.shape == (*shape[:-2], m, k)
+        assert U.shape == (*shape[:-2], k, n)
+
+        A_cast = a_dp.astype(L.dtype, copy=False)
+        A_rec = P @ L @ U
+        assert dpnp.allclose(A_rec, A_cast, rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2, 2), (3, 4, 4), (2, 3, 5, 2), (4, 1, 3)],
+        ids=["(2,2,2)", "(3,4,4)", "(2,3,5,2)", "(4,1,3)"],
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_lu_permute_l_batched(self, shape, order, dtype):
+        a_np = self._make_nonsingular_nd_np(shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        PL, U = dpnp.scipy.linalg.lu(a_dp, permute_l=True)
+
+        m, n = shape[-2], shape[-1]
+        k = min(m, n)
+        assert PL.shape == (*shape[:-2], m, k)
+        assert U.shape == (*shape[:-2], k, n)
+
+        A_cast = a_dp.astype(PL.dtype, copy=False)
+        A_rec = PL @ U
+        assert dpnp.allclose(A_rec, A_cast, rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(2, 2, 2), (3, 4, 4), (2, 3, 5, 2), (4, 1, 3)],
+        ids=["(2,2,2)", "(3,4,4)", "(2,3,5,2)", "(4,1,3)"],
+    )
+    @pytest.mark.parametrize("order", ["C", "F"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_lu_p_indices_batched(self, shape, order, dtype):
+        a_np = self._make_nonsingular_nd_np(shape, dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+
+        p, L, U = dpnp.scipy.linalg.lu(a_dp, p_indices=True)
+
+        m, n = shape[-2], shape[-1]
+        k = min(m, n)
+        assert p.shape == (*shape[:-2], m)
+        assert L.shape == (*shape[:-2], m, k)
+        assert U.shape == (*shape[:-2], k, n)
+        assert dpnp.issubdtype(p.dtype, dpnp.integer)
+
+        A_cast = a_dp.astype(L.dtype, copy=False)
+        A_rec = self._reconstruct_p_indices(p, L, U)
+        assert dpnp.allclose(A_rec, A_cast, rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_overwrite_a(self, dtype, order):
+        a_np = self._make_nonsingular_nd_np((3, 2, 2), dtype, order)
+        a_dp = dpnp.array(a_np, order=order)
+        a_dp_orig = a_dp.copy()
+
+        dpnp.scipy.linalg.lu(a_dp, overwrite_a=False)
+        assert dpnp.allclose(a_dp, a_dp_orig)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_modes_consistency_batched(self, dtype):
+        a_np = self._make_nonsingular_nd_np((3, 4, 4), dtype, "F")
+        a_dp = dpnp.array(a_np, order="F")
+        A_cast = a_dp.astype(
+            dpnp.complex128 if dpnp.issubdtype(dtype, dpnp.complexfloating)
+            else dpnp.float64, copy=False
+        )
+
+        P, L, U = dpnp.scipy.linalg.lu(a_dp)
+        PL, U2 = dpnp.scipy.linalg.lu(a_dp, permute_l=True)
+        p, L3, U3 = dpnp.scipy.linalg.lu(a_dp, p_indices=True)
+
+        A1 = P @ L @ U
+        A2 = PL @ U2
+        A3 = self._reconstruct_p_indices(p, L3, U3)
+
+        A_cast2 = a_dp.astype(L.dtype, copy=False)
+        assert dpnp.allclose(A1, A_cast2, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(A2, A_cast2, rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(A3, A_cast2, rtol=1e-6, atol=1e-6)
+
+    @pytest.mark.parametrize(
+        "shape", [(0, 2, 2), (2, 0, 2), (2, 2, 0), (0, 0, 0)]
+    )
+    def test_empty_inputs(self, shape):
+        a = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
+
+        P, L, U = dpnp.scipy.linalg.lu(a)
+        m, n = shape[-2:]
+        k = min(m, n)
+        assert P.shape == (*shape[:-2], m, m)
+        assert L.shape == (*shape[:-2], m, k)
+        assert U.shape == (*shape[:-2], k, n)
+
+    @pytest.mark.parametrize(
+        "shape", [(0, 2, 2), (2, 0, 2), (2, 2, 0), (0, 0, 0)]
+    )
+    def test_empty_permute_l(self, shape):
+        a = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
+
+        PL, U = dpnp.scipy.linalg.lu(a, permute_l=True)
+        m, n = shape[-2:]
+        k = min(m, n)
+        assert PL.shape == (*shape[:-2], m, k)
+        assert U.shape == (*shape[:-2], k, n)
+
+    @pytest.mark.parametrize(
+        "shape", [(0, 2, 2), (2, 0, 2), (2, 2, 0), (0, 0, 0)]
+    )
+    def test_empty_p_indices(self, shape):
+        a = dpnp.empty(shape, dtype=dpnp.default_float_type(), order="F")
+
+        p, L, U = dpnp.scipy.linalg.lu(a, p_indices=True)
+        m, n = shape[-2:]
+        k = min(m, n)
+        assert p.shape == (*shape[:-2], m)
+        assert L.shape == (*shape[:-2], m, k)
+        assert U.shape == (*shape[:-2], k, n)
+
+    def test_strided(self):
+        a_np = self._make_nonsingular_nd_np(
+            (5, 3, 3), dpnp.default_float_type(), "F"
+        )
+        a_dp = dpnp.array(a_np, order="F")
+        a_stride = a_dp[::2]
+
+        P, L, U = dpnp.scipy.linalg.lu(a_stride)
+        for i in range(a_stride.shape[0]):
+            A_rec = dpnp.asnumpy(P[i] @ L[i] @ U[i])
+            A_orig = dpnp.asnumpy(a_stride[i].astype(L.dtype, copy=False))
+            assert_allclose(A_rec, A_orig, rtol=1e-6, atol=1e-6)
+
+    def test_singular_matrix(self):
+        a = dpnp.zeros((3, 2, 2), dtype=dpnp.default_float_type())
+        a[0] = dpnp.array([[1.0, 2.0], [2.0, 4.0]])
+        a[1] = dpnp.eye(2)
+        a[2] = dpnp.array([[1.0, 1.0], [1.0, 1.0]])
+
+        P, L, U = dpnp.scipy.linalg.lu(a)
+        A_rec = P @ L @ U
+        assert dpnp.allclose(A_rec, a, rtol=1e-6, atol=1e-6)
+
+    def test_check_finite_raises(self):
+        a = dpnp.ones((2, 3, 3), dtype=dpnp.default_float_type(), order="F")
+        a[1, 0, 0] = dpnp.nan
+        assert_raises(
+            ValueError, dpnp.scipy.linalg.lu, a, check_finite=True
+        )
+
+
 class TestMatrixPower:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
