@@ -1218,7 +1218,7 @@ def cumsum(a, axis=None, dtype=None, out=None):
     return dpnp_wrap_reduction_call(
         usm_a,
         out,
-        dpt.cumulative_sum,
+        dpt_ext.cumulative_sum,
         _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
@@ -1403,7 +1403,7 @@ def cumulative_sum(
     return dpnp_wrap_reduction_call(
         dpnp.get_usm_ndarray(x),
         out,
-        dpt.cumulative_sum,
+        dpt_ext.cumulative_sum,
         _get_reduction_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
