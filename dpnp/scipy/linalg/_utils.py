@@ -137,7 +137,9 @@ def _get_real_dtype(res_type):
     """
 
     if dpnp.issubdtype(res_type, dpnp.complexfloating):
-        return dpnp.float32 if dpnp.dtype(res_type).itemsize <= 8 else dpnp.float64
+        return (
+            dpnp.float32 if dpnp.dtype(res_type).itemsize <= 8 else dpnp.float64
+        )
     return res_type
 
 
@@ -451,12 +453,12 @@ def _pivots_to_permutation(piv, m):
         j = piv[..., i : i + 1]
 
         # Gather the two values to be swapped.
-        val_i = perm[..., i : i + 1].copy()                   # slice (free)
-        val_j = dpnp.take_along_axis(perm, j, axis=-1)        # gather
+        val_i = perm[..., i : i + 1].copy()  # slice (free)
+        val_j = dpnp.take_along_axis(perm, j, axis=-1)  # gather
 
         # Perform the swap.
-        perm[..., i : i + 1] = val_j                           # slice assign
-        dpnp.put_along_axis(perm, j, val_i, axis=-1)           # scatter
+        perm[..., i : i + 1] = val_j  # slice assign
+        dpnp.put_along_axis(perm, j, val_i, axis=-1)  # scatter
 
     return perm
 

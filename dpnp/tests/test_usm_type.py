@@ -1538,6 +1538,7 @@ class TestLinAlgebra:
         assert a.usm_type == usm_type
         for param in result:
             assert param.usm_type == a.usm_type
+
     def test_lu_factor(self, data, usm_type):
         a = dpnp.array(data, usm_type=usm_type)
         result = dpnp.scipy.linalg.lu_factor(a)

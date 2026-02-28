@@ -52,8 +52,9 @@ from ._utils import (
 )
 
 
-def lu(a, permute_l=False, overwrite_a=False, check_finite=True,
-       p_indices=False):
+def lu(
+    a, permute_l=False, overwrite_a=False, check_finite=True, p_indices=False
+):
     """
     Compute LU decomposition of a matrix with partial pivoting.
 

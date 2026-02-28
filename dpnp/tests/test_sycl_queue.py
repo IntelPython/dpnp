@@ -1665,6 +1665,7 @@ class TestLinAlgebra:
         for param in result:
             param_queue = param.sycl_queue
             assert_sycl_queue_equal(param_queue, a.sycl_queue)
+
     def test_lu(self, data, device):
         a = dpnp.array(data, device=device)
         result = dpnp.scipy.linalg.lu(a)

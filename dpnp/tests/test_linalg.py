@@ -2743,7 +2743,9 @@ class TestLu:
 
         assert_allclose(P_np.sum(axis=0), numpy.ones(5, dtype=P_np.dtype))
         assert_allclose(P_np.sum(axis=1), numpy.ones(5, dtype=P_np.dtype))
-        assert_allclose(P_np.T @ P_np, numpy.eye(5, dtype=P_np.dtype), atol=1e-15)
+        assert_allclose(
+            P_np.T @ P_np, numpy.eye(5, dtype=P_np.dtype), atol=1e-15
+        )
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_modes_consistency(self, dtype):
@@ -2825,9 +2827,7 @@ class TestLu:
         ],
     )
     def test_strided(self, sl):
-        base = self._make_nonsingular_np(
-            (7, 7), dpnp.default_float_type(), "F"
-        )
+        base = self._make_nonsingular_np((7, 7), dpnp.default_float_type(), "F")
         a_np = base[sl]
         a_dp = dpnp.array(a_np)
 
@@ -2859,9 +2859,7 @@ class TestLu:
     @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
     def test_check_finite_raises(self, bad):
         a_dp = dpnp.array([[1.0, 2.0], [3.0, bad]], order="F")
-        assert_raises(
-            ValueError, dpnp.scipy.linalg.lu, a_dp, check_finite=True
-        )
+        assert_raises(ValueError, dpnp.scipy.linalg.lu, a_dp, check_finite=True)
 
     def test_check_finite_disabled(self):
         a_dp = dpnp.array([[1.0, numpy.nan], [3.0, 4.0]])
@@ -2976,8 +2974,12 @@ class TestLuBatched:
         a_np = self._make_nonsingular_nd_np((3, 4, 4), dtype, "F")
         a_dp = dpnp.array(a_np, order="F")
         A_cast = a_dp.astype(
-            dpnp.complex128 if dpnp.issubdtype(dtype, dpnp.complexfloating)
-            else dpnp.float64, copy=False
+            (
+                dpnp.complex128
+                if dpnp.issubdtype(dtype, dpnp.complexfloating)
+                else dpnp.float64
+            ),
+            copy=False,
         )
 
         P, L, U = dpnp.scipy.linalg.lu(a_dp)
@@ -3057,9 +3059,7 @@ class TestLuBatched:
     def test_check_finite_raises(self):
         a = dpnp.ones((2, 3, 3), dtype=dpnp.default_float_type(), order="F")
         a[1, 0, 0] = dpnp.nan
-        assert_raises(
-            ValueError, dpnp.scipy.linalg.lu, a, check_finite=True
-        )
+        assert_raises(ValueError, dpnp.scipy.linalg.lu, a, check_finite=True)
 
 
 class TestMatrixPower:
