@@ -1,0 +1,10 @@
+﻿
+
+dpnp.vecmat
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: vecmat
