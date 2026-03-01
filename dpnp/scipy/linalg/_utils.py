@@ -596,126 +596,100 @@ def dpnp_lu(
             if not dpnp.isfinite(a).all():
                 raise ValueError("array must not contain infs or NaNs")
 
-        _L = dpnp.ones(
+        low = dpnp.ones(
             a.shape,
             dtype=res_type,
             usm_type=a_usm_type,
             sycl_queue=a_sycl_queue,
         )
-        _U = dpnp.array(a, dtype=res_type)
-
-        if permute_l:
-            return _L.copy(), _U
-
-        if p_indices:
-            _p = dpnp.zeros(
-                (*batch_shape, 1),
-                dtype=dpnp.int64,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
-            )
-            return _p, _L, _U
-
-        _P = dpnp.ones(
-            a.shape,
-            dtype=real_type,
+        up = dpnp.array(a, dtype=res_type)
+        inv_perm = dpnp.zeros(
+            (*batch_shape, 1),
+            dtype=dpnp.int64,
             usm_type=a_usm_type,
             sycl_queue=a_sycl_queue,
         )
-        return _P, _L, _U
 
     # ---- Fast path: empty arrays ----
-    if a.size == 0:
-        _L = dpnp.empty(
+    elif a.size == 0:
+        low = dpnp.empty(
             (*batch_shape, m, k),
             dtype=res_type,
             usm_type=a_usm_type,
             sycl_queue=a_sycl_queue,
         )
-        _U = dpnp.empty(
+        up = dpnp.empty(
             (*batch_shape, k, n),
             dtype=res_type,
             usm_type=a_usm_type,
             sycl_queue=a_sycl_queue,
         )
-
-        if permute_l:
-            return _L, _U
-
-        if p_indices:
-            _p = dpnp.empty(
-                (*batch_shape, m),
-                dtype=dpnp.int64,
-                usm_type=a_usm_type,
-                sycl_queue=a_sycl_queue,
-            )
-            return _p, _L, _U
-
-        _P = dpnp.empty(
-            (*batch_shape, m, m),
-            dtype=real_type,
+        inv_perm = dpnp.empty(
+            (*batch_shape, m),
+            dtype=dpnp.int64,
             usm_type=a_usm_type,
             sycl_queue=a_sycl_queue,
         )
-        return _P, _L, _U
 
     # ---- General case: LAPACK factorization ----
-    lu_compact, piv = dpnp_lu_factor(
-        a, overwrite_a=overwrite_a, check_finite=check_finite
-    )
+    else:
+        lu_compact, piv = dpnp_lu_factor(
+            a, overwrite_a=overwrite_a, check_finite=check_finite
+        )
 
-    # ---- Extract L: lower-triangular with unit diagonal ----
-    # L has shape (..., M, K).
-    _L = dpnp.tril(lu_compact[..., :, :k], k=-1)
-    _L += dpnp.eye(
-        m,
-        k,
-        dtype=lu_compact.dtype,
-        usm_type=a_usm_type,
-        sycl_queue=a_sycl_queue,
-    )
+        # ---- Extract L: lower-triangular with unit diagonal ----
+        # L has shape (..., M, K).
+        low = dpnp.tril(lu_compact[..., :, :k], k=-1)
+        low += dpnp.eye(
+            m,
+            k,
+            dtype=lu_compact.dtype,
+            usm_type=a_usm_type,
+            sycl_queue=a_sycl_queue,
+        )
 
-    # ---- Extract U: upper-triangular ----
-    # U has shape (..., K, N).
-    _U = dpnp.triu(lu_compact[..., :k, :])
+        # ---- Extract U: upper-triangular ----
+        # U has shape (..., K, N).
+        up = dpnp.triu(lu_compact[..., :k, :])
 
-    # ---- Convert pivot indices → row permutation ----
-    # ``perm`` (forward): A[perm] = L @ U.
-    # This is the only step that requires a host transfer because the
-    # sequential swap semantics of LAPACK pivots cannot be parallelised.
-    # Only the small pivot array (min(M, N) elements per slice) is
-    # transferred; all subsequent work stays on the device.
-    perm = _pivots_to_permutation(piv, m)
+        # ---- Convert pivot indices → row permutation ----
+        # ``perm`` (forward): A[perm] = L @ U.
+        # This is the only step that requires a host transfer because the
+        # sequential swap semantics of LAPACK pivots cannot be parallelised.
+        # Only the small pivot array (min(M, N) elements per slice) is
+        # transferred; all subsequent work stays on the device.
+        perm = _pivots_to_permutation(piv, m)
 
-    # ``inv_perm`` (inverse): A = L[inv_perm] @ U.
-    # This is SciPy's ``p_indices`` convention.
-    # ``dpnp.argsort`` is an efficient on-device O(M log M) operation
-    # that avoids a second host round-trip.
-    inv_perm = dpnp.argsort(perm, axis=-1).astype(dpnp.int64)
+        # ``inv_perm`` (inverse): A = L[inv_perm] @ U.
+        # This is SciPy's ``p_indices`` convention.
+        # ``dpnp.argsort`` is an efficient on-device O(M log M) operation
+        # that avoids a second host round-trip.
+        inv_perm = dpnp.argsort(perm, axis=-1).astype(dpnp.int64)
 
+    # ---- Assemble output (SciPy convention) ----
     if permute_l:
         # Return (PL, U) where PL = P @ L = L[inv_perm].
         # A = PL @ U directly.
-        _PL = _apply_permutation_to_rows(_L, inv_perm)
-        return _PL, _U
+        perm_low = _apply_permutation_to_rows(low, inv_perm)
+        return perm_low, up
 
     if p_indices:
         # SciPy convention: A = L[inv_perm] @ U.
-        return inv_perm, _L, _U
+        return inv_perm, low, up
 
     # ---- Build full permutation matrix P = I[inv_perm] ----
     # P has shape (..., M, M) with real dtype (SciPy convention).
     # The gather from an identity matrix is efficient on device:
     # each output row selects one row of the identity (one hot encoding).
-    _I = dpnp.eye(
+    eye_m = dpnp.eye(
         m,
         dtype=real_type,
         usm_type=a_usm_type,
         sycl_queue=a_sycl_queue,
     )
-    _P = _apply_permutation_to_rows(_I, inv_perm)
+    perm_matrix = _apply_permutation_to_rows(eye_m, inv_perm)
 
-    return _P, _L, _U
+    return perm_matrix, low, up
 
 
 def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):

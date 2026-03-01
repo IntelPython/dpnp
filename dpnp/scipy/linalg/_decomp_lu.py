@@ -323,13 +323,13 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
 
     """
 
-    lu, piv = lu_and_piv
-    dpnp.check_supported_arrays_type(lu, piv, b)
-    assert_stacked_2d(lu)
-    assert_stacked_square(lu)
+    lu_matrix, piv = lu_and_piv
+    dpnp.check_supported_arrays_type(lu_matrix, piv, b)
+    assert_stacked_2d(lu_matrix)
+    assert_stacked_square(lu_matrix)
 
     return dpnp_lu_solve(
-        lu,
+        lu_matrix,
         piv,
         b,
         trans=trans,
