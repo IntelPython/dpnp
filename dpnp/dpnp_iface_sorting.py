@@ -404,7 +404,7 @@ def sort(a, axis=-1, kind=None, order=None, *, descending=False, stable=None):
 
     return _wrap_sort_argsort(
         a,
-        dpt.sort,
+        dpt_ext.sort,
         axis=axis,
         kind=kind,
         order=order,
