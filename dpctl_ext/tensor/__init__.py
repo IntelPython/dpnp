@@ -90,7 +90,7 @@ from ._set_functions import (
     unique_inverse,
     unique_values,
 )
-from ._sorting import argsort, sort
+from ._sorting import argsort, sort, top_k
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [
@@ -143,6 +143,7 @@ __all__ = [
     "take",
     "take_along_axis",
     "tile",
+    "top_k",
     "to_numpy",
     "tril",
     "triu",
