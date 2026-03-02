@@ -1,0 +1,10 @@
+﻿
+
+dpnp.atanh
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: atanh
