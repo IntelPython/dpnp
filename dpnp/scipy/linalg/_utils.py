@@ -596,12 +596,7 @@ def dpnp_lu(
             if not dpnp.isfinite(a).all():
                 raise ValueError("array must not contain infs or NaNs")
 
-        low = dpnp.ones(
-            a.shape,
-            dtype=res_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
-        )
+        low = dpnp.ones_like(a, dtype=res_type)
         up = dpnp.array(a, dtype=res_type)
         inv_perm = dpnp.zeros(
             (*batch_shape, 1),
