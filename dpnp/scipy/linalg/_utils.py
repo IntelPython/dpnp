@@ -539,6 +539,32 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
     return (a_h, ipiv_h)
 
 
+def _assemble_lu_output(
+    low,
+    up,
+    inv_perm,
+    permute_l,
+    p_indices,
+    m,
+    real_type,
+    a_usm_type,
+    a_sycl_queue,
+):
+    """Select and build the correct dpnp_lu return value."""
+    if permute_l:
+        return _apply_permutation_to_rows(low, inv_perm), up
+    if p_indices:
+        return inv_perm, low, up
+    eye_m = dpnp.eye(
+        m, dtype=real_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+    )
+    return (
+        _apply_permutation_to_rows(eye_m, inv_perm),
+        low,
+        up,
+    )  # perm_matrix, L, U
+
+
 def dpnp_lu(
     a,
     overwrite_a=False,
@@ -582,32 +608,34 @@ def dpnp_lu(
         up = dpnp.astype(a, res_type, copy=not overwrite_a)
         inv_perm = dpnp.zeros_like(a, shape=(*batch_shape, 1), dtype=dpnp.int64)
 
-        if permute_l:
-            # P = I, so PL = L unchanged; no gather needed.
-            return low, up
-        if p_indices:
-            return inv_perm, low, up
-        # P = I exactly: return eye directly, no gather needed.
-        eye_m = dpnp.eye(
-            m, dtype=real_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+        return _assemble_lu_output(
+            low,
+            up,
+            inv_perm,
+            permute_l,
+            p_indices,
+            m,
+            real_type,
+            a_usm_type,
+            a_sycl_queue,
         )
-        return eye_m, low, up
 
     # ---- Fast path: empty arrays ----
     if a.size == 0:
         low = dpnp.empty_like(a, shape=(*batch_shape, m, k), dtype=res_type)
         up = dpnp.empty_like(a, shape=(*batch_shape, k, n), dtype=res_type)
         inv_perm = dpnp.empty_like(a, shape=(*batch_shape, m), dtype=dpnp.int64)
-
-        if permute_l:
-            return low, up
-        if p_indices:
-            return inv_perm, low, up
-        # P is empty: allocate directly, no eye + gather needed.
-        perm_matrix = dpnp.empty_like(
-            a, shape=(*batch_shape, m, m), dtype=real_type
+        return _assemble_lu_output(
+            low,
+            up,
+            inv_perm,
+            permute_l,
+            p_indices,
+            m,
+            real_type,
+            a_usm_type,
+            a_sycl_queue,
         )
-        return perm_matrix, low, up
 
     # ---- General case: LAPACK factorization ----
     lu_compact, piv = dpnp_lu_factor(
@@ -644,29 +672,17 @@ def dpnp_lu(
     inv_perm = dpnp.argsort(perm, axis=-1).astype(dpnp.int64)
 
     # ---- Assemble output (SciPy convention) ----
-    if permute_l:
-        # Return (PL, U) where PL = P @ L = L[inv_perm].
-        # A = PL @ U directly.
-        perm_low = _apply_permutation_to_rows(low, inv_perm)
-        return perm_low, up
-
-    if p_indices:
-        # SciPy convention: A = L[inv_perm] @ U.
-        return inv_perm, low, up
-
-    # ---- Build full permutation matrix P = I[inv_perm] ----
-    # P has shape (..., M, M) with real dtype (SciPy convention).
-    # The gather from an identity matrix is efficient on device:
-    # each output row selects one row of the identity (one hot encoding).
-    eye_m = dpnp.eye(
+    return _assemble_lu_output(
+        low,
+        up,
+        inv_perm,
+        permute_l,
+        p_indices,
         m,
-        dtype=real_type,
-        usm_type=a_usm_type,
-        sycl_queue=a_sycl_queue,
+        real_type,
+        a_usm_type,
+        a_sycl_queue,
     )
-    perm_matrix = _apply_permutation_to_rows(eye_m, inv_perm)
-
-    return perm_matrix, low, up
 
 
 def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
