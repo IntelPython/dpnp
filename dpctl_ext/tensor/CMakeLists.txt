@@ -70,7 +70,7 @@ set(_accumulator_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/cumulative_sum.cpp
 )
 set(_sorting_sources
-    #{CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/isin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/isin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/merge_sort.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/merge_argsort.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/radix_sort.cpp

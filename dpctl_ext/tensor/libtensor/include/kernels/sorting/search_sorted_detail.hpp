@@ -29,8 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
-/// extension.
+/// This file defines kernels for tensor sort/argsort operations.
 //===----------------------------------------------------------------------===//
 
 #pragma once
