@@ -84,6 +84,7 @@ from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._clip import clip
 from ._searchsorted import searchsorted
 from ._set_functions import (
+    isin,
     unique_all,
     unique_counts,
     unique_inverse,
@@ -119,6 +120,7 @@ __all__ = [
     "full_like",
     "iinfo",
     "isdtype",
+    "isin",
     "linspace",
     "meshgrid",
     "moveaxis",

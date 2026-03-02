@@ -26,7 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-from typing import NamedTuple
+from typing import NamedTuple, Optional, Union
 
 import dpctl.tensor as dpt
 import dpctl.utils as du
@@ -36,6 +36,13 @@ from dpctl.tensor._tensor_elementwise_impl import _not_equal, _subtract
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 
+from ._copy_utils import _empty_like_orderK
+from ._scalar_utils import (
+    _get_dtype,
+    _get_queue_usm_type,
+    _get_shape,
+    _validate_dtype,
+)
 from ._tensor_impl import (
     _copy_usm_ndarray_into_usm_ndarray,
     _extract,
@@ -47,9 +54,25 @@ from ._tensor_impl import (
 )
 from ._tensor_sorting_impl import (
     _argsort_ascending,
+    _isin,
     _searchsorted_left,
     _sort_ascending,
 )
+from ._type_utils import (
+    _resolve_weak_types_all_py_ints,
+    _to_device_supported_dtype,
+)
+
+__all__ = [
+    "isin",
+    "unique_values",
+    "unique_counts",
+    "unique_inverse",
+    "unique_all",
+    "UniqueAllResult",
+    "UniqueCountsResult",
+    "UniqueInverseResult",
+]
 
 
 class UniqueAllResult(NamedTuple):
@@ -636,3 +659,145 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         inv,
         _counts,
     )
+
+
+def isin(
+    x: Union[dpt.usm_ndarray, int, float, complex, bool],
+    test_elements: Union[dpt.usm_ndarray, int, float, complex, bool],
+    /,
+    *,
+    invert: Optional[bool] = False,
+) -> dpt.usm_ndarray:
+    """isin(x, test_elements, /, *, invert=False)
+
+    Tests `x in test_elements` for each element of `x`. Returns a boolean array
+    with the same shape as `x` that is `True` where the element is in
+    `test_elements`, `False` otherwise.
+
+    Args:
+        x (Union[usm_ndarray, bool, int, float, complex]):
+            input element or elements.
+        test_elements (Union[usm_ndarray, bool, int, float, complex]):
+            elements against which to test each value of `x`.
+        invert (Optional[bool]):
+            if `True`, the output results are inverted, i.e., are equivalent to
+            testing `x not in test_elements` for each element of `x`.
+            Default: `False`.
+
+    Returns:
+        usm_ndarray:
+            an array of the inclusion test results. The returned array has a
+            boolean data type and the same shape as `x`.
+    """
+    q1, x_usm_type = _get_queue_usm_type(x)
+    q2, test_usm_type = _get_queue_usm_type(test_elements)
+    if q1 is None and q2 is None:
+        raise du.ExecutionPlacementError(
+            "Execution placement can not be unambiguously inferred "
+            "from input arguments. "
+            "One of the arguments must represent USM allocation and "
+            "expose `__sycl_usm_array_interface__` property"
+        )
+    if q1 is None:
+        exec_q = q2
+        res_usm_type = test_usm_type
+    elif q2 is None:
+        exec_q = q1
+        res_usm_type = x_usm_type
+    else:
+        exec_q = du.get_execution_queue((q1, q2))
+        if exec_q is None:
+            raise du.ExecutionPlacementError(
+                "Execution placement can not be unambiguously inferred "
+                "from input arguments."
+            )
+        res_usm_type = du.get_coerced_usm_type(
+            (
+                x_usm_type,
+                test_usm_type,
+            )
+        )
+    du.validate_usm_type(res_usm_type, allow_none=False)
+    sycl_dev = exec_q.sycl_device
+
+    if not isinstance(invert, bool):
+        raise TypeError(
+            "`invert` keyword argument must be of boolean type, "
+            f"got {type(invert)}"
+        )
+
+    x_dt = _get_dtype(x, sycl_dev)
+    test_dt = _get_dtype(test_elements, sycl_dev)
+    if not all(_validate_dtype(dt) for dt in (x_dt, test_dt)):
+        raise ValueError("Operands have unsupported data types")
+
+    x_sh = _get_shape(x)
+    if isinstance(test_elements, dpt.usm_ndarray) and test_elements.size == 0:
+        if invert:
+            return dpt_ext.ones(
+                x_sh, dtype=dpt.bool, usm_type=res_usm_type, sycl_queue=exec_q
+            )
+        else:
+            return dpt_ext.zeros(
+                x_sh, dtype=dpt.bool, usm_type=res_usm_type, sycl_queue=exec_q
+            )
+
+    dt1, dt2 = _resolve_weak_types_all_py_ints(x_dt, test_dt, sycl_dev)
+    dt = _to_device_supported_dtype(dpt_ext.result_type(dt1, dt2), sycl_dev)
+
+    if not isinstance(x, dpt.usm_ndarray):
+        x_arr = dpt_ext.asarray(
+            x, dtype=dt1, usm_type=res_usm_type, sycl_queue=exec_q
+        )
+    else:
+        x_arr = x
+
+    if not isinstance(test_elements, dpt.usm_ndarray):
+        test_arr = dpt_ext.asarray(
+            test_elements, dtype=dt2, usm_type=res_usm_type, sycl_queue=exec_q
+        )
+    else:
+        test_arr = test_elements
+
+    _manager = du.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+
+    if x_dt != dt:
+        x_buf = _empty_like_orderK(x_arr, dt, res_usm_type, exec_q)
+        ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
+            src=x_arr, dst=x_buf, sycl_queue=exec_q, depends=dep_evs
+        )
+        _manager.add_event_pair(ht_ev, ev)
+    else:
+        x_buf = x_arr
+
+    if test_dt != dt:
+        # copy into C-contiguous memory, because the array will be flattened
+        test_buf = dpt_ext.empty_like(
+            test_arr, dtype=dt, order="C", usm_type=res_usm_type
+        )
+        ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
+            src=test_arr, dst=test_buf, sycl_queue=exec_q, depends=dep_evs
+        )
+        _manager.add_event_pair(ht_ev, ev)
+    else:
+        test_buf = test_arr
+
+    test_buf = dpt_ext.reshape(test_buf, -1)
+    test_buf = dpt_ext.sort(test_buf)
+
+    dst = dpt_ext.empty_like(
+        x_buf, dtype=dpt.bool, usm_type=res_usm_type, order="C"
+    )
+
+    dep_evs = _manager.submitted_events
+    ht_ev, s_ev = _isin(
+        needles=x_buf,
+        hay=test_buf,
+        dst=dst,
+        sycl_queue=exec_q,
+        invert=invert,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(ht_ev, s_ev)
+    return dst
