@@ -309,3 +309,83 @@ def cumulative_sum(
         tai._cumsum_dtype_supported,
         _default_accumulation_dtype,
     )
+
+
+def cumulative_prod(
+    x, /, *, axis=None, dtype=None, include_initial=False, out=None
+):
+    """
+    cumulative_prod(x, /, *, axis=None, dtype=None, include_initial=False,
+                   out=None)
+
+    Calculates the cumulative product of elements in the input array `x`.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int]):
+            axis along which cumulative product must be computed.
+            If `None`, the product is computed over the entire array.
+            If `x` is a one-dimensional array, providing an `axis` is optional;
+            however, if `x` has more than one dimension, providing an `axis`
+            is required.
+            Default: `None`.
+        dtype (Optional[dtype]):
+            data type of the returned array. If `None`, the default data
+            type is inferred from the "kind" of the input array data type.
+
+                * If `x` has a real- or complex-valued floating-point data
+                  type, the returned array will have the same data type as
+                  `x`.
+                * If `x` has signed integral data type, the returned array
+                  will have the default signed integral type for the device
+                  where input array `x` is allocated.
+                * If `x` has unsigned integral data type, the returned array
+                  will have the default unsigned integral type for the device
+                  where input array `x` is allocated.
+                * If `x` has a boolean data type, the returned array will
+                  have the default signed integral type for the device
+                  where input array `x` is allocated.
+
+            If the data type (either specified or resolved) differs from the
+            data type of `x`, the input array elements are cast to the
+            specified data type before computing the cumulative product.
+            Default: `None`.
+        include_initial (bool):
+            boolean indicating whether to include the initial value (i.e., the
+            additive identity, zero) as the first value along the provided
+            axis in the output. Default: `False`.
+        out (Optional[usm_ndarray]):
+            the array into which the result is written.
+            The data type of `out` must match the expected shape and the
+            expected data type of the result or (if provided) `dtype`.
+            If `None` then a new array is returned. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            an array containing cumulative products. The returned array has
+            the data type as described in the `dtype` parameter description
+            above.
+
+            The returned array shape is determined as follows:
+
+                * If `include_initial` is `False`, the returned array will
+                  have the same shape as `x`
+                * If `include_initial` is `True`, the returned array will
+                  have the same shape as `x` except the axis along which the
+                  cumulative product is calculated, which will have size `N+1`
+
+            where `N` is the size of the axis the cumulative products are
+            computed along.
+    """
+    return _accumulate_common(
+        x,
+        axis,
+        dtype,
+        include_initial,
+        out,
+        tai._cumprod_over_axis,
+        tai._cumprod_final_axis_include_initial,
+        tai._cumprod_dtype_supported,
+        _default_accumulation_dtype,
+    )

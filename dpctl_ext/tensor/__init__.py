@@ -80,7 +80,7 @@ from dpctl_ext.tensor._manipulation_functions import (
 )
 from dpctl_ext.tensor._reshape import reshape
 
-from ._accumulation import cumulative_sum
+from ._accumulation import cumulative_prod, cumulative_sum
 from ._clip import clip
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
@@ -95,6 +95,7 @@ __all__ = [
     "concat",
     "copy",
     "clip",
+    "cumulative_prod",
     "cumulative_sum",
     "empty",
     "empty_like",

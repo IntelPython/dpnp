@@ -1126,7 +1126,7 @@ def cumprod(a, axis=None, dtype=None, out=None):
     return dpnp_wrap_reduction_call(
         usm_a,
         out,
-        dpt.cumulative_prod,
+        dpt_ext.cumulative_prod,
         _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
@@ -1307,7 +1307,7 @@ def cumulative_prod(
     return dpnp_wrap_reduction_call(
         dpnp.get_usm_ndarray(x),
         out,
-        dpt.cumulative_prod,
+        dpt_ext.cumulative_prod,
         _get_reduction_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
