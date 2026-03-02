@@ -112,7 +112,7 @@ def _apply_permutation_to_rows(mat, perm_indices):
         return mat[perm_indices]
 
     # Batched case: ensure *mat* has the same batch dimensions as
-    # *perm_indices*.  This is needed, for example, when permuting
+    # *perm_indices*. This is needed, for example, when permuting
     # a shared identity matrix across a batch.
     target_shape = perm_indices.shape[:-1] + mat.shape[-2:]
     if mat.shape != target_shape:
