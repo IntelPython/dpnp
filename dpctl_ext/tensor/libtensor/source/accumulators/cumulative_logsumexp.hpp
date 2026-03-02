@@ -33,23 +33,14 @@
 //  extensions
 //===----------------------------------------------------------------------===//
 
+#pragma once
 #include <pybind11/pybind11.h>
-
-#include "cumulative_logsumexp.hpp"
-#include "cumulative_prod.hpp"
-#include "cumulative_sum.hpp"
 
 namespace py = pybind11;
 
 namespace dpctl::tensor::py_internal
 {
 
-/*! @brief Add accumulators to Python module */
-void init_accumulator_functions(py::module_ m)
-{
-    init_cumulative_logsumexp(m);
-    init_cumulative_prod(m);
-    init_cumulative_sum(m);
-}
+extern void init_cumulative_logsumexp(py::module_ m);
 
 } // namespace dpctl::tensor::py_internal
