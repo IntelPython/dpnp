@@ -136,7 +136,7 @@ std::pair<sycl::event, sycl::event>
     const std::size_t hay_nelems = static_cast<std::size_t>(hay.get_shape(0));
 
     const py::ssize_t *needles_shape_ptr = needles.get_shape_raw();
-    const py::ssize_t *dst_shape_ptr = needles.get_shape_raw();
+    const py::ssize_t *dst_shape_ptr = dst.get_shape_raw();
 
     for (int i = 0; (i < needles_nd) && same_shape; ++i) {
         const auto needles_sh_i = needles_shape_ptr[i];
