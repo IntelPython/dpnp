@@ -386,12 +386,12 @@ def _unique_1d(
 
     num_of_flags = (return_index, return_inverse, return_counts).count(True)
     if num_of_flags == 0:
-        usm_res = dpt.unique_values(usm_ar)
+        usm_res = dpt_ext.unique_values(usm_ar)
         usm_res = (usm_res,)  # cast to a tuple to align with other cases
     elif num_of_flags == 1 and return_inverse:
         usm_res = dpt.unique_inverse(usm_ar)
     elif num_of_flags == 1 and return_counts:
-        usm_res = dpt.unique_counts(usm_ar)
+        usm_res = dpt_ext.unique_counts(usm_ar)
     else:
         usm_res = dpt.unique_all(usm_ar)
 
