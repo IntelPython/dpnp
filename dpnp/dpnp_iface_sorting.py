@@ -41,13 +41,11 @@ it contains:
 
 from collections.abc import Sequence
 
-import dpctl.tensor as dpt
-from dpctl.tensor._numpy_helper import normalize_axis_index
-
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpnp
+from dpctl_ext.tensor._numpy_helper import normalize_axis_index
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
@@ -87,7 +85,7 @@ def _wrap_sort_argsort(
 
     usm_a = dpnp.get_usm_ndarray(a)
     if axis is None:
-        usm_a = dpt_ext.reshape(usm_a, -1)
+        usm_a = dpt.reshape(usm_a, -1)
         axis = -1
 
     axis = normalize_axis_index(axis, ndim=usm_a.ndim)
@@ -404,7 +402,7 @@ def sort(a, axis=-1, kind=None, order=None, *, descending=False, stable=None):
 
     return _wrap_sort_argsort(
         a,
-        dpt_ext.sort,
+        dpt.sort,
         axis=axis,
         kind=kind,
         order=order,
