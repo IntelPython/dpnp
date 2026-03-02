@@ -83,8 +83,10 @@ from dpctl_ext.tensor._reshape import reshape
 from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._clip import clip
 from ._searchsorted import searchsorted
-from ._set_functions import (  # isin,; unique_all,; unique_inverse,
+from ._set_functions import (
+    unique_all,
     unique_counts,
+    unique_inverse,
     unique_values,
 )
 from ._sorting import argsort, sort
@@ -142,7 +144,9 @@ __all__ = [
     "to_numpy",
     "tril",
     "triu",
+    "unique_all",
     "unique_counts",
+    "unique_inverse",
     "unique_values",
     "unstack",
     "where",
