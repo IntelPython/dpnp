@@ -28,10 +28,6 @@
 
 import dpctl
 import dpctl.tensor as dpt
-from dpctl.tensor._type_utils import (  # _default_accumulation_dtype_fp_types,
-    _default_accumulation_dtype,
-    _to_device_supported_dtype,
-)
 from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 # TODO: revert to `import dpctl.tensor...`
@@ -39,6 +35,11 @@ from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_accumulation_impl as tai
 import dpctl_ext.tensor._tensor_impl as ti
+from dpctl_ext.tensor._type_utils import (
+    _default_accumulation_dtype,
+    _default_accumulation_dtype_fp_types,
+    _to_device_supported_dtype,
+)
 
 from ._numpy_helper import normalize_axis_index
 
@@ -388,4 +389,82 @@ def cumulative_prod(
         tai._cumprod_final_axis_include_initial,
         tai._cumprod_dtype_supported,
         _default_accumulation_dtype,
+    )
+
+
+def cumulative_logsumexp(
+    x, /, *, axis=None, dtype=None, include_initial=False, out=None
+):
+    """
+    cumulative_logsumexp(x, /, *, axis=None, dtype=None, include_initial=False,
+                   out=None)
+
+    Calculates the cumulative logsmumexp of elements in the input array `x`.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int]):
+            axis along which cumulative logsumexp must be computed.
+            If `None`, the logsumexp is computed over the entire array.
+            If `x` is a one-dimensional array, providing an `axis` is optional;
+            however, if `x` has more than one dimension, providing an `axis`
+            is required.
+            Default: `None`.
+        dtype (Optional[dtype]):
+            data type of the returned array. If `None`, the default data
+            type is inferred from the "kind" of the input array data type.
+
+                * If `x` has a real- or complex-valued floating-point data
+                  type, the returned array will have the same data type as
+                  `x`.
+                * If `x` has signed integral data type, the returned array
+                  will have the default signed integral type for the device
+                  where input array `x` is allocated.
+                * If `x` has unsigned integral data type, the returned array
+                  will have the default unsigned integral type for the device
+                  where input array `x` is allocated.
+                * If `x` has a boolean data type, the returned array will
+                  have the default signed integral type for the device
+                  where input array `x` is allocated.
+
+            If the data type (either specified or resolved) differs from the
+            data type of `x`, the input array elements are cast to the
+            specified data type before computing the cumulative logsumexp.
+            Default: `None`.
+        include_initial (bool):
+            boolean indicating whether to include the initial value (i.e., the
+            additive identity, zero) as the first value along the provided axis
+            in the output. Default: `False`.
+        out (Optional[usm_ndarray]):
+            the array into which the result is written.
+            The data type of `out` must match the expected shape and the
+            expected data type of the result or (if provided) `dtype`.
+            If `None` then a new array is returned. Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            an array containing cumulative logsumexp results. The returned
+            array has the data type as described in the `dtype` parameter
+            description above.
+
+            The returned array shape is determined as follows:
+
+                * If `include_initial` is `False`, the returned array will
+                  have the same shape as `x`
+                * If `include_initial` is `True`, the returned array will
+                  have the same shape as `x` except the axis along which the
+                  cumulative logsumexp is calculated, which will have size
+                  `N+1`
+    """
+    return _accumulate_common(
+        x,
+        axis,
+        dtype,
+        include_initial,
+        out,
+        tai._cumlogsumexp_over_axis,
+        tai._cumlogsumexp_final_axis_include_initial,
+        tai._cumlogsumexp_dtype_supported,
+        _default_accumulation_dtype_fp_types,
     )
