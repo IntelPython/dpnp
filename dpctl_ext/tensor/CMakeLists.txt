@@ -76,7 +76,7 @@ set(_sorting_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/radix_sort.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/radix_argsort.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/searchsorted.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/topk.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/topk.cpp
 )
 set(_tensor_accumulation_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_accumulation.cpp
