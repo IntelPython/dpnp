@@ -49,7 +49,7 @@ import dpctl.utils as dpu
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
-from dpnp.linalg.dpnp_utils_linalg import _common_type
+from dpnp.linalg.dpnp_utils_linalg import _common_type, _real_type
 
 
 def _align_lu_solve_broadcast(lu, b):
@@ -123,24 +123,6 @@ def _apply_permutation_to_rows(mat, perm_indices):
     idx = dpnp.expand_dims(perm_indices, axis=-1)
     idx = dpnp.broadcast_to(idx, target_shape).copy()
     return dpnp.take_along_axis(mat, idx, axis=-2)
-
-
-def _get_real_dtype(res_type):
-    """
-    Return the real floating-point counterpart of *res_type*.
-
-    SciPy uses the real dtype for the permutation matrix ``P`` even when
-    the input is complex (``P`` only contains 0s and 1s).
-
-    ``float32`` and ``complex64`` → ``float32``;
-    ``float64`` and ``complex128`` → ``float64``.
-    """
-
-    if dpnp.issubdtype(res_type, dpnp.complexfloating):
-        return (
-            dpnp.float32 if dpnp.dtype(res_type).itemsize <= 8 else dpnp.float64
-        )
-    return res_type
 
 
 def _batched_lu_factor_scipy(a, res_type):  # pylint: disable=too-many-locals
@@ -586,7 +568,7 @@ def dpnp_lu(
 
     # The permutation matrix P uses a real dtype (SciPy convention):
     # P only contains 0s and 1s, so complex storage would be wasteful.
-    real_type = _get_real_dtype(res_type)
+    real_type = _real_type(res_type)
 
     # ---- Fast path: scalar (1x1) matrices ----
     # For 1x1 input, P = I, L = I, U = A.  This avoids invoking LAPACK
@@ -596,70 +578,70 @@ def dpnp_lu(
             if not dpnp.isfinite(a).all():
                 raise ValueError("array must not contain infs or NaNs")
 
-        low = dpnp.ones_like(a, dtype=res_type)
-        up = dpnp.array(a, dtype=res_type)
-        inv_perm = dpnp.zeros(
-            (*batch_shape, 1),
-            dtype=dpnp.int64,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
+        low = dpnp.ones_like(a, shape=a.shape, dtype=res_type)
+        up = dpnp.astype(a, res_type, copy=not overwrite_a)
+        inv_perm = dpnp.zeros_like(a, shape=(*batch_shape, 1), dtype=dpnp.int64)
+
+        if permute_l:
+            # P = I, so PL = L unchanged; no gather needed.
+            return low, up
+        if p_indices:
+            return inv_perm, low, up
+        # P = I exactly: return eye directly, no gather needed.
+        eye_m = dpnp.eye(
+            m, dtype=real_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
         )
+        return eye_m, low, up
 
     # ---- Fast path: empty arrays ----
-    elif a.size == 0:
-        low = dpnp.empty(
-            (*batch_shape, m, k),
-            dtype=res_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
+    if a.size == 0:
+        low = dpnp.empty_like(a, shape=(*batch_shape, m, k), dtype=res_type)
+        up = dpnp.empty_like(a, shape=(*batch_shape, k, n), dtype=res_type)
+        inv_perm = dpnp.empty_like(a, shape=(*batch_shape, m), dtype=dpnp.int64)
+
+        if permute_l:
+            return low, up
+        if p_indices:
+            return inv_perm, low, up
+        # P is empty: allocate directly, no eye + gather needed.
+        perm_matrix = dpnp.empty_like(
+            a, shape=(*batch_shape, m, m), dtype=real_type
         )
-        up = dpnp.empty(
-            (*batch_shape, k, n),
-            dtype=res_type,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
-        )
-        inv_perm = dpnp.empty(
-            (*batch_shape, m),
-            dtype=dpnp.int64,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
-        )
+        return perm_matrix, low, up
 
     # ---- General case: LAPACK factorization ----
-    else:
-        lu_compact, piv = dpnp_lu_factor(
-            a, overwrite_a=overwrite_a, check_finite=check_finite
-        )
+    lu_compact, piv = dpnp_lu_factor(
+        a, overwrite_a=overwrite_a, check_finite=check_finite
+    )
 
-        # ---- Extract L: lower-triangular with unit diagonal ----
-        # L has shape (..., M, K).
-        low = dpnp.tril(lu_compact[..., :, :k], k=-1)
-        low += dpnp.eye(
-            m,
-            k,
-            dtype=lu_compact.dtype,
-            usm_type=a_usm_type,
-            sycl_queue=a_sycl_queue,
-        )
+    # ---- Extract L: lower-triangular with unit diagonal ----
+    # L has shape (..., M, K).
+    low = dpnp.tril(lu_compact[..., :, :k], k=-1)
+    low += dpnp.eye(
+        m,
+        k,
+        dtype=lu_compact.dtype,
+        usm_type=a_usm_type,
+        sycl_queue=a_sycl_queue,
+    )
 
-        # ---- Extract U: upper-triangular ----
-        # U has shape (..., K, N).
-        up = dpnp.triu(lu_compact[..., :k, :])
+    # ---- Extract U: upper-triangular ----
+    # U has shape (..., K, N).
+    up = dpnp.triu(lu_compact[..., :k, :])
 
-        # ---- Convert pivot indices → row permutation ----
-        # ``perm`` (forward): A[perm] = L @ U.
-        # This is the only step that requires a host transfer because the
-        # sequential swap semantics of LAPACK pivots cannot be parallelised.
-        # Only the small pivot array (min(M, N) elements per slice) is
-        # transferred; all subsequent work stays on the device.
-        perm = _pivots_to_permutation(piv, m)
+    # ---- Convert pivot indices → row permutation ----
+    # ``perm`` (forward): A[perm] = L @ U.
+    # This is the only step that requires a host transfer because the
+    # sequential swap semantics of LAPACK pivots cannot be parallelised.
+    # Only the small pivot array (min(M, N) elements per slice) is
+    # transferred; all subsequent work stays on the device.
+    perm = _pivots_to_permutation(piv, m)
 
-        # ``inv_perm`` (inverse): A = L[inv_perm] @ U.
-        # This is SciPy's ``p_indices`` convention.
-        # ``dpnp.argsort`` is an efficient on-device O(M log M) operation
-        # that avoids a second host round-trip.
-        inv_perm = dpnp.argsort(perm, axis=-1).astype(dpnp.int64)
+    # ``inv_perm`` (inverse): A = L[inv_perm] @ U.
+    # This is SciPy's ``p_indices`` convention.
+    # ``dpnp.argsort`` is an efficient on-device O(M log M) operation
+    # that avoids a second host round-trip.
+    inv_perm = dpnp.argsort(perm, axis=-1).astype(dpnp.int64)
 
     # ---- Assemble output (SciPy convention) ----
     if permute_l:
