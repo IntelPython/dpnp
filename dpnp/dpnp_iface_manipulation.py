@@ -378,8 +378,10 @@ def _unique_1d(
                 true_val = dpt_ext.asarray(
                     True, sycl_queue=usm_a.sycl_queue, usm_type=usm_a.usm_type
                 )
-                return dpt.searchsorted(dpt.isnan(usm_a), true_val, side="left")
-            return dpt.searchsorted(usm_a, usm_a[-1], side="left")
+                return dpt_ext.searchsorted(
+                    dpt.isnan(usm_a), true_val, side="left"
+                )
+            return dpt_ext.searchsorted(usm_a, usm_a[-1], side="left")
         return None
 
     usm_ar = dpnp.get_usm_ndarray(ar)
