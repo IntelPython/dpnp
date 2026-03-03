@@ -27,8 +27,6 @@
 # *****************************************************************************
 
 
-from dpctl.tensor._search_functions import where
-
 from dpctl_ext.tensor._copy_utils import (
     asnumpy,
     astype,
@@ -56,6 +54,7 @@ from dpctl_ext.tensor._manipulation_functions import (
     roll,
 )
 from dpctl_ext.tensor._reshape import reshape
+from dpctl_ext.tensor._search_functions import where
 
 from ._clip import clip
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
