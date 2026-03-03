@@ -2835,6 +2835,7 @@ class TestLu:
         A_rec = P @ L @ U
         assert dpnp.allclose(A_rec, a_dp, rtol=1e-6, atol=1e-6)
 
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     def test_singular_matrix(self):
         a_np = numpy.array([[1.0, 2.0], [2.0, 4.0]])
         a_dp = dpnp.array(a_np)
