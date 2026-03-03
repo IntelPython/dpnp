@@ -76,8 +76,8 @@ set(_reduction_sources
     #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmax.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmin.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/logsumexp.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/max.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/min.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/max.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/min.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/prod.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/reduce_hypot.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/sum.cpp
