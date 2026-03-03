@@ -33,37 +33,14 @@
 /// extension.
 //===---------------------------------------------------------------------===//
 
+#pragma once
 #include <pybind11/pybind11.h>
-
-#include "all.hpp"
-#include "any.hpp"
-#include "argmax.hpp"
-#include "argmin.hpp"
-// #include "logsumexp.hpp"
-#include "max.hpp"
-#include "min.hpp"
-#include "prod.hpp"
-// #include "reduce_hypot.hpp"
-#include "sum.hpp"
 
 namespace py = pybind11;
 
 namespace dpctl::tensor::py_internal
 {
 
-/*! @brief Add reduction functions to Python module */
-void init_reduction_functions(py::module_ m)
-{
-    init_all(m);
-    init_any(m);
-    init_argmax(m);
-    init_argmin(m);
-    // init_logsumexp(m);
-    init_max(m);
-    init_min(m);
-    init_prod(m);
-    // init_reduce_hypot(m);
-    init_sum(m);
-}
+extern void init_sum(py::module_ m);
 
 } // namespace dpctl::tensor::py_internal
