@@ -42,9 +42,9 @@
 #include "angle.hpp"
 #include "asin.hpp"
 #include "asinh.hpp"
-// #include "atan.hpp"
+#include "atan.hpp"
 // #include "atan2.hpp"
-// #include "atanh.hpp"
+#include "atanh.hpp"
 // #include "bitwise_and.hpp"
 // #include "bitwise_invert.hpp"
 // #include "bitwise_left_shift.hpp"
@@ -122,9 +122,9 @@ void init_elementwise_functions(py::module_ m)
     init_angle(m);
     init_asin(m);
     init_asinh(m);
-    // init_atan(m);
+    init_atan(m);
     // init_atan2(m);
-    // init_atanh(m);
+    init_atanh(m);
     // init_bitwise_and(m);
     // init_bitwise_invert(m);
     // init_bitwise_left_shift(m);
