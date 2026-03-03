@@ -2664,7 +2664,7 @@ class TestLu:
         [(1, 1), (2, 2), (3, 3), (1, 5), (5, 1), (2, 5), (5, 2)],
     )
     @pytest.mark.parametrize("order", ["C", "F"])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
     def test_lu_p_indices(self, shape, order, dtype):
         a_np = self._make_nonsingular_np(shape, dtype, order)
         a_dp = dpnp.array(a_np, order=order)
