@@ -69,6 +69,19 @@ set(_accumulator_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/cumulative_prod.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/cumulative_sum.cpp
 )
+set(_reduction_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/reduction_common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/all.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/any.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmax.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmin.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/logsumexp.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/max.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/min.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/prod.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/reduce_hypot.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/sum.cpp
+)
 set(_sorting_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/isin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/merge_sort.cpp
@@ -81,6 +94,10 @@ set(_sorting_sources
 set(_tensor_accumulation_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_accumulation.cpp
     ${_accumulator_sources}
+)
+set(_tensor_reductions_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_reductions.cpp
+    ${_reduction_sources}
 )
 set(_tensor_sorting_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_sorting.cpp
@@ -114,6 +131,12 @@ add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_accumulation_i
 target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
 list(APPEND _py_trgts ${python_module_name})
 
+set(python_module_name _tensor_reductions_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_reductions_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_reductions_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
+list(APPEND _py_trgts ${python_module_name})
+
 set(python_module_name _tensor_sorting_impl)
 pybind11_add_module(${python_module_name} MODULE ${_tensor_sorting_impl_sources})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_sorting_impl_sources})
@@ -135,7 +158,7 @@ set(_no_fast_math_sources
 list(
     APPEND _no_fast_math_sources
     # ${_elementwise_sources}
-    # ${_reduction_sources}
+    ${_reduction_sources}
     ${_sorting_sources}
     # ${_linalg_sources}
     ${_accumulator_sources}
