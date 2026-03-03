@@ -3047,6 +3047,7 @@ class TestLuBatched:
             A_orig = dpnp.asnumpy(a_stride[i].astype(L.dtype, copy=False))
             assert_allclose(A_rec, A_orig, rtol=1e-6, atol=1e-6)
 
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     def test_singular_matrix(self):
         a = dpnp.zeros((3, 2, 2), dtype=dpnp.default_float_type())
         a[0] = dpnp.array([[1.0, 2.0], [2.0, 4.0]])
