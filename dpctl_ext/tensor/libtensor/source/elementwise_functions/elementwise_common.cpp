@@ -46,14 +46,14 @@
 // #include "atan2.hpp"
 #include "atanh.hpp"
 // #include "bitwise_and.hpp"
-// #include "bitwise_invert.hpp"
+#include "bitwise_invert.hpp"
 // #include "bitwise_left_shift.hpp"
 // #include "bitwise_or.hpp"
 // #include "bitwise_right_shift.hpp"
 // #include "bitwise_xor.hpp"
 // #include "cbrt.hpp"
-// #include "ceil.hpp"
-// #include "conj.hpp"
+#include "ceil.hpp"
+#include "conj.hpp"
 // #include "copysign.hpp"
 // #include "cos.hpp"
 // #include "cosh.hpp"
@@ -126,14 +126,14 @@ void init_elementwise_functions(py::module_ m)
     // init_atan2(m);
     init_atanh(m);
     // init_bitwise_and(m);
-    // init_bitwise_invert(m);
+    init_bitwise_invert(m);
     // init_bitwise_left_shift(m);
     // init_bitwise_or(m);
     // init_bitwise_right_shift(m);
     // init_bitwise_xor(m);
     // init_cbrt(m);
-    // init_ceil(m);
-    // init_conj(m);
+    init_ceil(m);
+    init_conj(m);
     // init_copysign(m);
     // init_cos(m);
     // init_cosh(m);
