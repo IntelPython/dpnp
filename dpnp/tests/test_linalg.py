@@ -2685,19 +2685,9 @@ class TestLu:
         A_cast = a_dp.astype(L.dtype, copy=False)
         assert_allclose(A_rec, dpnp.asnumpy(A_cast), rtol=1e-6, atol=1e-6)
 
-    @pytest.mark.parametrize(
-        "in_dtype, expected_p_dtype",
-        [
-            (dpnp.float32, dpnp.float32),
-            (dpnp.float64, dpnp.float64),
-            (dpnp.complex64, dpnp.float32),
-            (dpnp.complex128, dpnp.float64),
-        ],
-    )
-    def test_p_matrix_dtype(self, in_dtype, expected_p_dtype):
-        if in_dtype in (dpnp.float64, dpnp.complex128):
-            if not has_support_aspect64():
-                pytest.skip("fp64 not supported on this device")
+    @pytest.mark.parametrize("in_dtype", get_float_complex_dtypes())
+    def test_p_matrix_dtype(self, in_dtype):
+        expected_p_dtype = numpy.dtype(in_dtype).char.lower()
 
         a_np = self._make_nonsingular_np((4, 4), in_dtype, "F")
         a_dp = dpnp.array(a_np, order="F")
