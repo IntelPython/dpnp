@@ -47,9 +47,6 @@ from collections.abc import Iterable
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._copy_utils import _nonzero_impl
-from dpctl.tensor._indexing_functions import _get_indexing_mode
-from dpctl.tensor._numpy_helper import normalize_axis_index
 
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
@@ -60,6 +57,9 @@ import dpnp
 
 # pylint: disable=no-name-in-module
 import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
+from dpctl_ext.tensor._copy_utils import _nonzero_impl
+from dpctl_ext.tensor._indexing_functions import _get_indexing_mode
+from dpctl_ext.tensor._numpy_helper import normalize_axis_index
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
@@ -817,13 +817,13 @@ def extract(condition, a):
         usm_a = dpt_ext.reshape(usm_a, -1)
         usm_cond = dpt_ext.reshape(usm_cond, -1)
 
-        usm_res = dpt_ext.take(usm_a, dpt.nonzero(usm_cond)[0])
+        usm_res = dpt_ext.take(usm_a, dpt_ext.nonzero(usm_cond)[0])
     else:
         if usm_cond.shape != usm_a.shape:
             usm_a = dpt_ext.reshape(usm_a, -1)
             usm_cond = dpt_ext.reshape(usm_cond, -1)
 
-        usm_res = dpt.extract(usm_cond, usm_a)
+        usm_res = dpt_ext.extract(usm_cond, usm_a)
 
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
@@ -1546,7 +1546,7 @@ def nonzero(a):
 
     usm_a = dpnp.get_usm_ndarray(a)
     return tuple(
-        dpnp_array._create_from_usm_ndarray(y) for y in dpt.nonzero(usm_a)
+        dpnp_array._create_from_usm_ndarray(y) for y in dpt_ext.nonzero(usm_a)
     )
 
 
@@ -1619,7 +1619,7 @@ def place(a, mask, vals):
             usm_vals, usm_a.dtype, casting="safe", copy=False
         )
 
-    dpt.place(usm_a, usm_mask, usm_vals)
+    dpt_ext.place(usm_a, usm_mask, usm_vals)
 
 
 def put(a, ind, v, /, *, axis=None, mode="wrap"):
@@ -1807,7 +1807,7 @@ def put_along_axis(a, ind, values, axis, mode="wrap"):
             values, usm_type=a.usm_type, sycl_queue=a.sycl_queue
         )
 
-    dpt.put_along_axis(usm_a, usm_ind, usm_vals, axis=axis, mode=mode)
+    dpt_ext.put_along_axis(usm_a, usm_ind, usm_vals, axis=axis, mode=mode)
 
 
 def putmask(x1, mask, values):
@@ -2295,7 +2295,7 @@ def take_along_axis(a, indices, axis=-1, mode="wrap"):
     usm_a = dpnp.get_usm_ndarray(a)
     usm_ind = dpnp.get_usm_ndarray(indices)
 
-    usm_res = dpt.take_along_axis(usm_a, usm_ind, axis=axis, mode=mode)
+    usm_res = dpt_ext.take_along_axis(usm_a, usm_ind, axis=axis, mode=mode)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 

@@ -196,7 +196,7 @@ def eye(
         order = "C"
 
     """Creates `dpnp_array` with ones on the `k`th diagonal."""
-    array_obj = dpt.eye(
+    array_obj = dpt_ext.eye(
         N,
         M,
         k=k,

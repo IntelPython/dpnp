@@ -56,7 +56,8 @@ using dpctl::tensor::ssize_t;
 
 template <typename Ty>
 class full_strided_kernel;
-// template <typename Ty> class eye_kernel;
+template <typename Ty>
+class eye_kernel;
 
 using namespace dpctl::tensor::offset_utils;
 
@@ -161,6 +162,99 @@ sycl::event full_strided_impl(sycl::queue &q,
 
     return fill_ev;
 }
+
+/* ================ Eye ================== */
+
+typedef sycl::event (*eye_fn_ptr_t)(sycl::queue &,
+                                    std::size_t nelems, // num_elements
+                                    ssize_t start,
+                                    ssize_t end,
+                                    ssize_t step,
+                                    char *, // dst_data_ptr
+                                    const std::vector<sycl::event> &);
+
+template <typename Ty>
+class EyeFunctor
+{
+private:
+    Ty *p = nullptr;
+    ssize_t start_v;
+    ssize_t end_v;
+    ssize_t step_v;
+
+public:
+    EyeFunctor(char *dst_p,
+               const ssize_t v0,
+               const ssize_t v1,
+               const ssize_t dv)
+        : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), end_v(v1), step_v(dv)
+    {
+    }
+
+    void operator()(sycl::id<1> wiid) const
+    {
+        Ty set_v = 0;
+        ssize_t i = static_cast<ssize_t>(wiid.get(0));
+        if (i >= start_v and i <= end_v) {
+            if ((i - start_v) % step_v == 0) {
+                set_v = 1;
+            }
+        }
+        p[i] = set_v;
+    }
+};
+
+/*!
+ * @brief Function to populate 2D array with eye matrix.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nelems  Number of elements to assign.
+ * @param start   Position of the first non-zero value.
+ * @param end     Position of the last non-zero value.
+ * @param step    Number of array elements between non-zeros.
+ * @param array_data Kernel accessible USM pointer for the destination array.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return  Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
+template <typename Ty>
+sycl::event eye_impl(sycl::queue &exec_q,
+                     std::size_t nelems,
+                     const ssize_t start,
+                     const ssize_t end,
+                     const ssize_t step,
+                     char *array_data,
+                     const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
+    sycl::event eye_event = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using KernelName = eye_kernel<Ty>;
+        using Impl = EyeFunctor<Ty>;
+
+        cgh.parallel_for<KernelName>(sycl::range<1>{nelems},
+                                     Impl(array_data, start, end, step));
+    });
+
+    return eye_event;
+}
+
+/*!
+ * @brief  Factory to get function pointer of type `fnT` for data type `Ty`.
+ * @ingroup CtorKernels
+ */
+template <typename fnT, typename Ty>
+struct EyeFactory
+{
+    fnT get()
+    {
+        fnT f = eye_impl<Ty>;
+        return f;
+    }
+};
 
 /* =========================== Tril and triu ============================== */
 

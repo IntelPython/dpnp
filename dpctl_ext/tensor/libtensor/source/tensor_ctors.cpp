@@ -43,8 +43,8 @@
 
 #include "dpnp4pybind11.hpp"
 
-// #include "accumulators.hpp"
-// #include "boolean_advanced_indexing.hpp"
+#include "accumulators.hpp"
+#include "boolean_advanced_indexing.hpp"
 // #include "clip.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
 #include "copy_as_contig.hpp"
@@ -52,7 +52,7 @@
 #include "copy_for_roll.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
 #include "device_support_queries.hpp"
-// #include "eye_ctor.hpp"
+#include "eye_ctor.hpp"
 #include "full_ctor.hpp"
 #include "integer_advanced_indexing.hpp"
 #include "kernels/dpctl_tensor_types.hpp"
@@ -112,19 +112,19 @@ using dpctl::tensor::py_internal::usm_ndarray_zeros;
 using dpctl::tensor::py_internal::usm_ndarray_put;
 using dpctl::tensor::py_internal::usm_ndarray_take;
 
-// using dpctl::tensor::py_internal::py_extract;
-// using dpctl::tensor::py_internal::py_mask_positions;
-// using dpctl::tensor::py_internal::py_nonzero;
-// using dpctl::tensor::py_internal::py_place;
+using dpctl::tensor::py_internal::py_extract;
+using dpctl::tensor::py_internal::py_mask_positions;
+using dpctl::tensor::py_internal::py_nonzero;
+using dpctl::tensor::py_internal::py_place;
 
 /* ================= Repeat ====================*/
-// using dpctl::tensor::py_internal::py_cumsum_1d;
+using dpctl::tensor::py_internal::py_cumsum_1d;
 // using dpctl::tensor::py_internal::py_repeat_by_scalar;
 // using dpctl::tensor::py_internal::py_repeat_by_sequence;
 
 /* ================ Eye ================== */
 
-// using dpctl::tensor::py_internal::usm_ndarray_eye;
+using dpctl::tensor::py_internal::usm_ndarray_eye;
 
 /* =========================== Tril and triu ============================== */
 
@@ -160,15 +160,15 @@ void init_dispatch_vectors(void)
     // init_linear_sequences_dispatch_vectors();
     init_full_ctor_dispatch_vectors();
     init_zeros_ctor_dispatch_vectors();
-    // init_eye_ctor_dispatch_vectors();
+    init_eye_ctor_dispatch_vectors();
     init_triul_ctor_dispatch_vectors();
 
-    // populate_masked_extract_dispatch_vectors();
-    // populate_masked_place_dispatch_vectors();
+    populate_masked_extract_dispatch_vectors();
+    populate_masked_place_dispatch_vectors();
 
-    // populate_mask_positions_dispatch_vectors();
+    populate_mask_positions_dispatch_vectors();
 
-    // populate_cumsum_1d_dispatch_vectors();
+    populate_cumsum_1d_dispatch_vectors();
     // init_repeat_dispatch_vectors();
 
     // init_clip_dispatch_vectors();
@@ -348,15 +348,15 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("mode"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    // m.def("_eye", &usm_ndarray_eye,
-    //       "Fills input 2D contiguous usm_ndarray `dst` with "
-    //       "zeros outside of the diagonal "
-    //       "specified by "
-    //       "the diagonal index `k` "
-    //       "which is filled with ones."
-    //       "Returns a tuple of events: (ht_event, comp_event)",
-    //       py::arg("k"), py::arg("dst"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    m.def("_eye", &usm_ndarray_eye,
+          "Fills input 2D contiguous usm_ndarray `dst` with "
+          "zeros outside of the diagonal "
+          "specified by "
+          "the diagonal index `k` "
+          "which is filled with ones."
+          "Returns a tuple of events: (ht_event, comp_event)",
+          py::arg("k"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     m.def("default_device_fp_type",
           dpctl::tensor::py_internal::default_device_fp_type,
@@ -408,16 +408,16 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("dst"), py::arg("k") = 0, py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    // m.def("mask_positions", &py_mask_positions, "", py::arg("mask"),
-    //       py::arg("cumsum"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    m.def("mask_positions", &py_mask_positions, "", py::arg("mask"),
+          py::arg("cumsum"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
-    // m.def("_cumsum_1d", &py_cumsum_1d, "", py::arg("src"), py::arg("cumsum"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_cumsum_1d", &py_cumsum_1d, "", py::arg("src"), py::arg("cumsum"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    // m.def("_extract", &py_extract, "", py::arg("src"), py::arg("cumsum"),
-    //       py::arg("axis_start"), py::arg("axis_end"), py::arg("dst"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_extract", &py_extract, "", py::arg("src"), py::arg("cumsum"),
+          py::arg("axis_start"), py::arg("axis_end"), py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
     auto overlap = [](const dpctl::tensor::usm_ndarray &x1,
                       const dpctl::tensor::usm_ndarray &x2) -> bool {
@@ -438,13 +438,13 @@ PYBIND11_MODULE(_tensor_impl, m)
           "Determines if the memory regions indexed by each array are the same",
           py::arg("array1"), py::arg("array2"));
 
-    // m.def("_place", &py_place, "", py::arg("dst"), py::arg("cumsum"),
-    //       py::arg("axis_start"), py::arg("axis_end"), py::arg("rhs"),
-    //       py::arg("sycl_queue"), py::arg("depends") = py::list());
+    m.def("_place", &py_place, "", py::arg("dst"), py::arg("cumsum"),
+          py::arg("axis_start"), py::arg("axis_end"), py::arg("rhs"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    // m.def("_nonzero", &py_nonzero, "", py::arg("cumsum"), py::arg("indexes"),
-    //       py::arg("mask_shape"), py::arg("sycl_queue"),
-    //       py::arg("depends") = py::list());
+    m.def("_nonzero", &py_nonzero, "", py::arg("cumsum"), py::arg("indexes"),
+          py::arg("mask_shape"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 
     // m.def("_where", &py_where, "", py::arg("condition"), py::arg("x1"),
     //       py::arg("x2"), py::arg("dst"), py::arg("sycl_queue"),
