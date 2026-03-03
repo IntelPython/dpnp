@@ -85,6 +85,8 @@ from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._clip import clip
 from ._elementwise_funcs import (
     abs,
+    acos,
+    acosh,
 )
 from ._reduction import (
     argmax,
@@ -110,6 +112,8 @@ from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [
     "abs",
+    "acos",
+    "acosh",
     "all",
     "any",
     "arange",

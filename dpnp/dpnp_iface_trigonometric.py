@@ -47,6 +47,7 @@ import dpctl.tensor._tensor_elementwise_impl as ti
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
+import dpctl_ext.tensor._tensor_elementwise_impl as ti_ext
 import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
@@ -138,8 +139,8 @@ array([0.0,  3.14159265])
 
 acos = DPNPUnaryFunc(
     "acos",
-    ti._acos_result_type,
-    ti._acos,
+    ti_ext._acos_result_type,
+    ti_ext._acos,
     _ACOS_DOCSTRING,
     mkl_fn_to_call="_mkl_acos_to_call",
     mkl_impl_fn="_acos",
@@ -224,8 +225,8 @@ array([0.0, 1.65745445, 2.99322285])
 
 acosh = DPNPUnaryFunc(
     "acosh",
-    ti._acosh_result_type,
-    ti._acosh,
+    ti_ext._acosh_result_type,
+    ti_ext._acosh,
     _ACOSH_DOCSTRING,
     mkl_fn_to_call="_mkl_acosh_to_call",
     mkl_impl_fn="_acosh",

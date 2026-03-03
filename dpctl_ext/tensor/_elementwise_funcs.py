@@ -61,3 +61,61 @@ Returns:
 
 abs = UnaryElementwiseFunc("abs", ti._abs_result_type, ti._abs, _abs_docstring_)
 del _abs_docstring_
+
+# U02: ==== ACOS   (x)
+_acos_docstring = r"""
+acos(x, /, \*, out=None, order='K')
+
+Computes inverse cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise inverse cosine, in radians
+        and in the closed interval :math:`[0, \pi]`. The data type of the
+        returned array is determined by the Type Promotion Rules.
+"""
+
+acos = UnaryElementwiseFunc(
+    "acos", ti._acos_result_type, ti._acos, _acos_docstring
+)
+del _acos_docstring
+
+# U03: ===== ACOSH (x)
+_acosh_docstring = r"""
+acosh(x, /, \*, out=None, order='K')
+
+Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise inverse hyperbolic cosine, in
+        radians and in the half-closed interval :math:`[0, \infty)`. The data
+        type of the returned array is determined by the Type Promotion Rules.
+"""
+
+acosh = UnaryElementwiseFunc(
+    "acosh", ti._acosh_result_type, ti._acosh, _acosh_docstring
+)
+del _acosh_docstring
