@@ -481,8 +481,8 @@ array([0.0, 0.78539816])
 
 atan = DPNPUnaryFunc(
     "atan",
-    ti._atan_result_type,
-    ti._atan,
+    ti_ext._atan_result_type,
+    ti_ext._atan,
     _ATAN_DOCSTRING,
     mkl_fn_to_call="_mkl_atan_to_call",
     mkl_impl_fn="_atan",
@@ -656,8 +656,8 @@ array([0.0, -0.54930614])
 
 atanh = DPNPUnaryFunc(
     "atanh",
-    ti._atanh_result_type,
-    ti._atanh,
+    ti_ext._atanh_result_type,
+    ti_ext._atanh,
     _ATANH_DOCSTRING,
     mkl_fn_to_call="_mkl_atanh_to_call",
     mkl_impl_fn="_atanh",

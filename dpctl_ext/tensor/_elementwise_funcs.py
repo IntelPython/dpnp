@@ -178,6 +178,64 @@ asinh = UnaryElementwiseFunc(
 )
 del _asinh_docstring
 
+# U06: ===== ATAN  (x)
+_atan_docstring = r"""
+atan(x, /, \*, out=None, order='K')
+
+Computes inverse tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise inverse tangent, in radians
+        and in the closed interval :math:`[-\pi/2, \pi/2]`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+atan = UnaryElementwiseFunc(
+    "atan", ti._atan_result_type, ti._atan, _atan_docstring
+)
+del _atan_docstring
+
+# U07: ===== ATANH (x)
+_atanh_docstring = r"""
+atanh(x, /, \*, out=None, order='K')
+
+Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise hyperbolic inverse tangent, in
+        radians. The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+atanh = UnaryElementwiseFunc(
+    "atanh", ti._atanh_result_type, ti._atanh, _atanh_docstring
+)
+del _atanh_docstring
+
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""
 angle(x, /, \*, out=None, order='K')

@@ -90,6 +90,8 @@ from ._elementwise_funcs import (
     angle,
     asin,
     asinh,
+    atan,
+    atanh,
 )
 from ._reduction import (
     argmax,
@@ -129,6 +131,8 @@ __all__ = [
     "asinh",
     "asnumpy",
     "astype",
+    "atan",
+    "atanh",
     "broadcast_arrays",
     "broadcast_to",
     "can_cast",
