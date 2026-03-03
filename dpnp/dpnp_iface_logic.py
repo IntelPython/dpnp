@@ -214,7 +214,7 @@ def all(a, /, axis=None, out=None, keepdims=False, *, where=True):
     dpnp.check_limitations(where=where)
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.all(usm_a, axis=axis, keepdims=keepdims)
+    usm_res = dpt_ext.all(usm_a, axis=axis, keepdims=keepdims)
 
     # TODO: temporary solution until dpt.all supports out parameter
     return dpnp.get_result_array(usm_res, out)

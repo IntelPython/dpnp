@@ -79,6 +79,7 @@ from dpctl_ext.tensor._manipulation_functions import (
     unstack,
 )
 from dpctl_ext.tensor._reshape import reshape
+from dpctl_ext.tensor._utility_functions import all
 
 from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._clip import clip
@@ -94,6 +95,7 @@ from ._sorting import argsort, sort, top_k
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [
+    "all",
     "arange",
     "argsort",
     "asarray",
