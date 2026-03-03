@@ -88,6 +88,8 @@ from ._reduction import (
     argmin,
     max,
     min,
+    prod,
+    sum,
 )
 from ._searchsorted import searchsorted
 from ._set_functions import (
@@ -143,6 +145,7 @@ __all__ = [
     "ones",
     "ones_like",
     "place",
+    "prod",
     "put",
     "put_along_axis",
     "repeat",
@@ -153,6 +156,7 @@ __all__ = [
     "sort",
     "squeeze",
     "stack",
+    "sum",
     "swapaxes",
     "take",
     "take_along_axis",

@@ -47,7 +47,6 @@ it contains:
 import builtins
 import warnings
 
-import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as dpu
 import numpy
@@ -58,7 +57,7 @@ from dpctl.tensor._numpy_helper import (
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
@@ -730,7 +729,7 @@ def clip(a, /, min=None, max=None, *, out=None, order="K", **kwargs):
     usm_max = None if max is None else dpnp.get_usm_ndarray_or_scalar(max)
 
     usm_out = None if out is None else dpnp.get_usm_ndarray(out)
-    usm_res = dpt_ext.clip(usm_arr, usm_min, usm_max, out=usm_out, order=order)
+    usm_res = dpt.clip(usm_arr, usm_min, usm_max, out=usm_out, order=order)
     if out is not None and isinstance(out, dpnp_array):
         return out
     return dpnp_array._create_from_usm_ndarray(usm_res)
@@ -1126,7 +1125,7 @@ def cumprod(a, axis=None, dtype=None, out=None):
     return dpnp_wrap_reduction_call(
         usm_a,
         out,
-        dpt_ext.cumulative_prod,
+        dpt.cumulative_prod,
         _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
@@ -1218,7 +1217,7 @@ def cumsum(a, axis=None, dtype=None, out=None):
     return dpnp_wrap_reduction_call(
         usm_a,
         out,
-        dpt_ext.cumulative_sum,
+        dpt.cumulative_sum,
         _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
@@ -1307,7 +1306,7 @@ def cumulative_prod(
     return dpnp_wrap_reduction_call(
         dpnp.get_usm_ndarray(x),
         out,
-        dpt_ext.cumulative_prod,
+        dpt.cumulative_prod,
         _get_reduction_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
@@ -1403,7 +1402,7 @@ def cumulative_sum(
     return dpnp_wrap_reduction_call(
         dpnp.get_usm_ndarray(x),
         out,
-        dpt_ext.cumulative_sum,
+        dpt.cumulative_sum,
         _get_reduction_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
@@ -1480,9 +1479,7 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     )
     usm_app = None if append is None else dpnp.get_usm_ndarray_or_scalar(append)
 
-    usm_res = dpt_ext.diff(
-        usm_a, axis=axis, n=n, prepend=usm_pre, append=usm_app
-    )
+    usm_res = dpt.diff(usm_a, axis=axis, n=n, prepend=usm_pre, append=usm_app)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
