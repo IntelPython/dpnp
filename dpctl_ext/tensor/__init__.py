@@ -83,6 +83,10 @@ from dpctl_ext.tensor._utility_functions import all, any, diff
 
 from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._clip import clip
+from ._reduction import (
+    max,
+    min,
+)
 from ._searchsorted import searchsorted
 from ._set_functions import (
     isin,
@@ -126,7 +130,9 @@ __all__ = [
     "isdtype",
     "isin",
     "linspace",
+    "max",
     "meshgrid",
+    "min",
     "moveaxis",
     "permute_dims",
     "nonzero",

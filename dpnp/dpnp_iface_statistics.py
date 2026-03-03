@@ -1118,7 +1118,7 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     return dpnp_wrap_reduction_call(
         usm_a,
         out,
-        dpt.max,
+        dpt_ext.max,
         a.dtype,
         axis=axis,
         keepdims=keepdims,
@@ -1395,7 +1395,7 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     return dpnp_wrap_reduction_call(
         usm_a,
         out,
-        dpt.min,
+        dpt_ext.min,
         a.dtype,
         axis=axis,
         keepdims=keepdims,
