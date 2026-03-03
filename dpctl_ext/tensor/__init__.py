@@ -84,6 +84,8 @@ from dpctl_ext.tensor._utility_functions import all, any, diff
 from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._clip import clip
 from ._reduction import (
+    argmax,
+    argmin,
     max,
     min,
 )
@@ -102,6 +104,8 @@ __all__ = [
     "all",
     "any",
     "arange",
+    "argmax",
+    "argmin",
     "argsort",
     "asarray",
     "asnumpy",
