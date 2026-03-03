@@ -328,6 +328,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     using dpctl::tensor::py_internal::simplify_iteration_space;
     using dpctl::tensor::py_internal::simplify_iteration_space_1;
 
+    // TODO: not used anywhere
     auto const &src_shape_vecs = src.get_shape_vector();
     auto const &src_strides_vecs = src.get_strides_vector();
     auto const &dst_strides_vecs = dst.get_strides_vector();
@@ -927,6 +928,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
     shT compact_reduction_src_strides;
     py::ssize_t reduction_src_offset(0);
 
+    // TODO: not used anywhere
     compact_iteration_space(
         reduction_nd, reduction_shape_ptr, reduction_src_strides,
         // output
@@ -1157,6 +1159,7 @@ std::pair<sycl::event, sycl::event>
     bool is_src_f_contig = src.is_f_contiguous();
     bool is_dst_c_contig = dst.is_c_contiguous();
 
+    // TODO: should be dst_nelems == 0?
     if ((is_src_c_contig && is_dst_c_contig) ||
         (is_src_f_contig && dst_nelems == 0))
     {
