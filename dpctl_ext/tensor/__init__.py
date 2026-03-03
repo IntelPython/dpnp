@@ -83,6 +83,9 @@ from dpctl_ext.tensor._utility_functions import all, any, diff
 
 from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._clip import clip
+from ._elementwise_funcs import (
+    abs,
+)
 from ._reduction import (
     argmax,
     argmin,
@@ -106,6 +109,7 @@ from ._sorting import argsort, sort, top_k
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [
+    "abs",
     "all",
     "any",
     "arange",

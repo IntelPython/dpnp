@@ -58,6 +58,7 @@ from dpctl.tensor._numpy_helper import (
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
+import dpctl_ext.tensor._tensor_elementwise_impl as ti_ext
 import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
@@ -384,8 +385,8 @@ array(1.5620499351813308)
 
 abs = DPNPUnaryFunc(
     "abs",
-    ti._abs_result_type,
-    ti._abs,
+    ti_ext._abs_result_type,
+    ti_ext._abs,
     _ABS_DOCSTRING,
     mkl_fn_to_call="_mkl_abs_to_call",
     mkl_impl_fn="_abs",
