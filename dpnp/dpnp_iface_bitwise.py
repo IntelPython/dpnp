@@ -46,6 +46,9 @@ it contains:
 import dpctl.tensor._tensor_elementwise_impl as ti
 import numpy
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor._tensor_elementwise_impl as ti_ext
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
@@ -514,8 +517,8 @@ array([False,  True])
 
 invert = DPNPUnaryFunc(
     "invert",
-    ti._bitwise_invert_result_type,
-    ti._bitwise_invert,
+    ti_ext._bitwise_invert_result_type,
+    ti_ext._bitwise_invert,
     _INVERT_DOCSTRING,
 )
 

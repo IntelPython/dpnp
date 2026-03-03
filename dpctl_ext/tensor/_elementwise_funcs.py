@@ -236,6 +236,94 @@ atanh = UnaryElementwiseFunc(
 )
 del _atanh_docstring
 
+# U08: ===== BITWISE_INVERT        (x)
+_bitwise_invert_docstring = r"""
+bitwise_invert(x, /, \*, out=None, order='K')
+
+Inverts (flips) each bit for each element `x_i` of the input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have integer or boolean data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise results.
+        The data type of the returned array is same as the data type of the
+        input array.
+"""
+
+bitwise_invert = UnaryElementwiseFunc(
+    "bitwise_invert",
+    ti._bitwise_invert_result_type,
+    ti._bitwise_invert,
+    _bitwise_invert_docstring,
+)
+del _bitwise_invert_docstring
+
+# U09: ==== CEIL          (x)
+_ceil_docstring = r"""
+ceil(x, /, \*, out=None, order='K')
+
+Returns the ceiling for each element `x_i` for input array `x`.
+
+The ceil of `x_i` is the smallest integer `n`, such that `n >= x_i`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a boolean or real-valued data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise ceiling.
+"""
+
+ceil = UnaryElementwiseFunc(
+    "ceil", ti._ceil_result_type, ti._ceil, _ceil_docstring
+)
+del _ceil_docstring
+
+# U10: ==== CONJ          (x)
+_conj_docstring = r"""
+conj(x, /, \*, out=None, order='K')
+
+Computes conjugate of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise conjugate values.
+"""
+
+conj = UnaryElementwiseFunc(
+    "conj", ti._conj_result_type, ti._conj, _conj_docstring
+)
+del _conj_docstring
+
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""
 angle(x, /, \*, out=None, order='K')

@@ -92,6 +92,9 @@ from ._elementwise_funcs import (
     asinh,
     atan,
     atanh,
+    bitwise_invert,
+    ceil,
+    conj,
 )
 from ._reduction import (
     argmax,
@@ -133,10 +136,13 @@ __all__ = [
     "astype",
     "atan",
     "atanh",
+    "bitwise_invert",
     "broadcast_arrays",
     "broadcast_to",
     "can_cast",
+    "ceil",
     "concat",
+    "conj",
     "copy",
     "count_nonzero",
     "clip",

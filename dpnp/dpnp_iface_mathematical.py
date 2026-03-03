@@ -647,8 +647,8 @@ array([-1.0, -1.0, -0.0, 1.0, 2.0, 2.0, 2.0])
 
 ceil = DPNPUnaryFunc(
     "ceil",
-    ti._ceil_result_type,
-    ti._ceil,
+    ti_ext._ceil_result_type,
+    ti_ext._ceil,
     _CEIL_DOCSTRING,
     mkl_fn_to_call="_mkl_ceil_to_call",
     mkl_impl_fn="_ceil",
@@ -782,8 +782,8 @@ array([[ 1.-1.j,  0.-0.j],
 
 conj = DPNPUnaryFunc(
     "conj",
-    ti._conj_result_type,
-    ti._conj,
+    ti_ext._conj_result_type,
+    ti_ext._conj,
     _CONJ_DOCSTRING,
     mkl_fn_to_call="_mkl_conj_to_call",
     mkl_impl_fn="_conj",
