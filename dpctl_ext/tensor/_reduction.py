@@ -39,6 +39,7 @@ import dpctl_ext.tensor._tensor_reductions_impl as tri
 from ._numpy_helper import normalize_axis_tuple
 from ._type_utils import (
     _default_accumulation_dtype,
+    _default_accumulation_dtype_fp_types,
     _to_device_supported_dtype,
 )
 
@@ -472,6 +473,111 @@ def argmin(x, /, *, axis=None, keepdims=False, out=None):
     return _search_over_axis(x, axis, keepdims, out, tri._argmin_over_axis)
 
 
+def count_nonzero(x, /, *, axis=None, keepdims=False, out=None):
+    """
+    Counts the number of elements in the input array ``x`` which are non-zero.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int, Tuple[int, ...]]):
+            axis or axes along which to count. If a tuple of unique integers,
+            the number of non-zero values are computed over multiple axes.
+            If ``None``, the number of non-zero values is computed over the
+            entire array.
+            Default: ``None``.
+        keepdims (Optional[bool]):
+            if ``True``, the reduced axes (dimensions) are included in the
+            result as singleton dimensions, so that the returned array remains
+            compatible with the input arrays according to Array Broadcasting
+            rules. Otherwise, if ``False``, the reduced axes are not included
+            in the returned array. Default: ``False``.
+        out (Optional[usm_ndarray]):
+            the array into which the result is written.
+            The data type of ``out`` must match the expected shape and data
+            type.
+            If ``None`` then a new array is returned. Default: ``None``.
+
+    Returns:
+        usm_ndarray:
+            an array containing the count of non-zero values. If the sum was
+            computed over the entire array, a zero-dimensional array is
+            returned. The returned array will have the default array index data
+            type.
+    """
+    if x.dtype != dpt.bool:
+        x = dpt.astype(x, dpt.bool, copy=False)
+    return sum(
+        x,
+        axis=axis,
+        dtype=ti.default_device_index_type(x.sycl_device),
+        keepdims=keepdims,
+        out=out,
+    )
+
+
+def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
+    """
+    Calculates the logarithm of the sum of exponentials of elements in the
+    input array ``x``.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int, Tuple[int, ...]]):
+            axis or axes along which values must be computed. If a tuple
+            of unique integers, values are computed over multiple axes.
+            If ``None``, the result is computed over the entire array.
+            Default: ``None``.
+        dtype (Optional[dtype]):
+            data type of the returned array. If ``None``, the default data
+            type is inferred from the "kind" of the input array data type.
+
+            * If ``x`` has a real-valued floating-point data type, the
+              returned array will have the same data type as ``x``.
+            * If ``x`` has a boolean or integral data type, the returned array
+              will have the default floating point data type for the device
+              where input array ``x`` is allocated.
+            * If ``x`` has a complex-valued floating-point data type,
+              an error is raised.
+
+            If the data type (either specified or resolved) differs from the
+            data type of ``x``, the input array elements are cast to the
+            specified data type before computing the result.
+            Default: ``None``.
+        keepdims (Optional[bool]):
+            if ``True``, the reduced axes (dimensions) are included in the
+            result as singleton dimensions, so that the returned array remains
+            compatible with the input arrays according to Array Broadcasting
+            rules. Otherwise, if ``False``, the reduced axes are not included
+            in the returned array. Default: ``False``.
+        out (Optional[usm_ndarray]):
+            the array into which the result is written.
+            The data type of ``out`` must match the expected shape and the
+            expected data type of the result or (if provided) ``dtype``.
+            If ``None`` then a new array is returned. Default: ``None``.
+
+    Returns:
+        usm_ndarray:
+            an array containing the results. If the result was computed over
+            the entire array, a zero-dimensional array is returned.
+            The returned array has the data type as described in the
+            ``dtype`` parameter description above.
+    """
+    return _reduction_over_axis(
+        x,
+        axis,
+        dtype,
+        keepdims,
+        out,
+        tri._logsumexp_over_axis,
+        lambda inp_dt, res_dt, *_: tri._logsumexp_over_axis_dtype_supported(
+            inp_dt, res_dt
+        ),
+        _default_accumulation_dtype_fp_types,
+    )
+
+
 def max(x, /, *, axis=None, keepdims=False, out=None):
     """
     Calculates the maximum value of the input array ``x``.
@@ -599,6 +705,67 @@ def prod(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         tri._prod_over_axis,
         tri._prod_over_axis_dtype_supported,
         _default_accumulation_dtype,
+    )
+
+
+def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
+    """
+    Calculates the square root of the sum of squares of elements in the input
+    array ``x``.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int, Tuple[int, ...]]):
+            axis or axes along which values must be computed. If a tuple
+            of unique integers, values are computed over multiple axes.
+            If ``None``, the result is computed over the entire array.
+            Default: ``None``.
+        dtype (Optional[dtype]):
+            data type of the returned array. If ``None``, the default data
+            type is inferred from the "kind" of the input array data type.
+
+            * If ``x`` has a real-valued floating-point data type, the
+              returned array will have the same data type as ``x``.
+            * If ``x`` has a boolean or integral data type, the returned array
+              will have the default floating point data type for the device
+              where input array ``x`` is allocated.
+            * If ``x`` has a complex-valued floating-point data type,
+              an error is raised.
+
+            If the data type (either specified or resolved) differs from the
+            data type of ``x``, the input array elements are cast to the
+            specified data type before computing the result. Default: ``None``.
+        keepdims (Optional[bool]):
+            if ``True``, the reduced axes (dimensions) are included in the
+            result as singleton dimensions, so that the returned array remains
+            compatible with the input arrays according to Array Broadcasting
+            rules. Otherwise, if ``False``, the reduced axes are not included
+            in the returned array. Default: ``False``.
+        out (Optional[usm_ndarray]):
+            the array into which the result is written.
+            The data type of ``out`` must match the expected shape and the
+            expected data type of the result or (if provided) ``dtype``.
+            If ``None`` then a new array is returned. Default: ``None``.
+
+    Returns:
+        usm_ndarray:
+            an array containing the results. If the result was computed over
+            the entire array, a zero-dimensional array is returned. The
+            returned array has the data type as described in the ``dtype``
+            parameter description above.
+    """
+    return _reduction_over_axis(
+        x,
+        axis,
+        dtype,
+        keepdims,
+        out,
+        tri._hypot_over_axis,
+        lambda inp_dt, res_dt, *_: tri._hypot_over_axis_dtype_supported(
+            inp_dt, res_dt
+        ),
+        _default_accumulation_dtype_fp_types,
     )
 
 

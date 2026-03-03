@@ -86,9 +86,12 @@ from ._clip import clip
 from ._reduction import (
     argmax,
     argmin,
+    count_nonzero,
+    logsumexp,
     max,
     min,
     prod,
+    reduce_hypot,
     sum,
 )
 from ._searchsorted import searchsorted
@@ -117,6 +120,7 @@ __all__ = [
     "can_cast",
     "concat",
     "copy",
+    "count_nonzero",
     "clip",
     "cumulative_logsumexp",
     "cumulative_prod",
@@ -136,6 +140,7 @@ __all__ = [
     "isdtype",
     "isin",
     "linspace",
+    "logsumexp",
     "max",
     "meshgrid",
     "min",
@@ -148,6 +153,7 @@ __all__ = [
     "prod",
     "put",
     "put_along_axis",
+    "reduce_hypot",
     "repeat",
     "reshape",
     "result_type",

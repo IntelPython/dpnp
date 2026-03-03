@@ -42,13 +42,11 @@ it contains:
 # pylint: disable=protected-access
 # pylint: disable=no-name-in-module
 
-
-import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
@@ -935,7 +933,7 @@ def cumlogsumexp(
     return dpnp_wrap_reduction_call(
         usm_x,
         out,
-        dpt_ext.cumulative_logsumexp,
+        dpt.cumulative_logsumexp,
         _get_accumulation_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
