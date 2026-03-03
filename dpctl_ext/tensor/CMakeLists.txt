@@ -72,7 +72,7 @@ set(_accumulator_sources
 set(_reduction_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/reduction_common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/all.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/any.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/any.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmax.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmin.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/logsumexp.cpp
