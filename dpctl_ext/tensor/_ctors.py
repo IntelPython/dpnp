@@ -36,6 +36,9 @@ import numpy as np
 from dpctl.tensor._data_types import _get_dtype
 from dpctl.tensor._device import normalize_queue_device
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
 
 
@@ -147,7 +150,7 @@ def full(
             usm_type=usm_type,
             sycl_queue=sycl_queue,
         )
-        return dpt.copy(dpt.broadcast_to(X, shape), order=order)
+        return dpt_ext.copy(dpt.broadcast_to(X, shape), order=order)
     else:
         _validate_fill_value(fill_value)
 

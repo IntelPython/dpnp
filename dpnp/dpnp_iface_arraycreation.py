@@ -46,6 +46,9 @@ import operator
 import dpctl.tensor as dpt
 import numpy
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 from dpnp import dpnp_container
 
@@ -934,7 +937,7 @@ def astype(x, dtype, /, *, order="K", casting="unsafe", copy=True, device=None):
         order = "K"
 
     usm_x = dpnp.get_usm_ndarray(x)
-    usm_res = dpt.astype(
+    usm_res = dpt_ext.astype(
         usm_x, dtype, order=order, casting=casting, copy=copy, device=device
     )
 
@@ -3116,7 +3119,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
 
     s0 = (1,) * ndim
     output = [
-        dpt.reshape(dpnp.get_usm_ndarray(x), s0[:i] + (-1,) + s0[i + 1 :])
+        dpt_ext.reshape(dpnp.get_usm_ndarray(x), s0[:i] + (-1,) + s0[i + 1 :])
         for i, x in enumerate(xi)
     ]
 
@@ -3124,14 +3127,14 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     _, _ = get_usm_allocations(output)
 
     if indexing == "xy" and ndim > 1:
-        output[0] = dpt.reshape(output[0], (1, -1) + s0[2:])
-        output[1] = dpt.reshape(output[1], (-1, 1) + s0[2:])
+        output[0] = dpt_ext.reshape(output[0], (1, -1) + s0[2:])
+        output[1] = dpt_ext.reshape(output[1], (-1, 1) + s0[2:])
 
     if not sparse:
         output = dpt.broadcast_arrays(*output)
 
     if copy:
-        output = [dpt.copy(x) for x in output]
+        output = [dpt_ext.copy(x) for x in output]
 
     return [dpnp_array._create_from_usm_ndarray(x) for x in output]
 
@@ -3931,7 +3934,7 @@ def vander(
 
     tmp = m[:, ::-1] if not increasing else m
     dpnp.power(
-        dpt.reshape(usm_x, (-1, 1)),
+        dpt_ext.reshape(usm_x, (-1, 1)),
         dpt.arange(
             N, dtype=_dtype, usm_type=x_usm_type, sycl_queue=x_sycl_queue
         ),

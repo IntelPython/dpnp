@@ -32,6 +32,9 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.utils
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
 
 from ._numpy_helper import normalize_axis_index
@@ -185,7 +188,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
     if vals.dtype == x.dtype:
         rhs = vals
     else:
-        rhs = dpt.astype(vals, x.dtype)
+        rhs = dpt_ext.astype(vals, x.dtype)
     rhs = dpt.broadcast_to(rhs, val_shape)
 
     _manager = dpctl.utils.SequentialOrderManager[exec_q]

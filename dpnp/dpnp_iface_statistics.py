@@ -47,6 +47,9 @@ import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 
 # pylint: disable=no-name-in-module
@@ -1204,7 +1207,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.mean(usm_a, axis=axis, keepdims=keepdims)
     if dtype is not None:
-        usm_res = dpt.astype(usm_res, dtype)
+        usm_res = dpt_ext.astype(usm_res, dtype)
 
     return dpnp.get_result_array(usm_res, out, casting="unsafe")
 
