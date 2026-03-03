@@ -1733,6 +1733,7 @@ class TestSinc:
 
 
 class TestSpacing:
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     @pytest.mark.parametrize("sign", [1, -1])
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_basic(self, sign, dt):
