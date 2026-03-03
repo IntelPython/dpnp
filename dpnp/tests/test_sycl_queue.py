@@ -1086,7 +1086,7 @@ def test_array_creation_from_dpctl(copy, device):
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
 def test_from_dlpack(arr_dtype, shape, device):
-    X = dpnp.empty(shape=shape, dtype=arr_dtype, device=device)
+    X = dpnp.ones(shape=shape, dtype=arr_dtype, device=device)
     Y = dpnp.from_dlpack(X)
     assert_array_equal(X, Y)
     assert X.__dlpack_device__() == Y.__dlpack_device__()
@@ -1101,7 +1101,7 @@ def test_from_dlpack(arr_dtype, shape, device):
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
 def test_from_dlpack_with_dpt(arr_dtype, device):
-    X = dpctl.tensor.empty((64,), dtype=arr_dtype, device=device)
+    X = dpt.ones((64,), dtype=arr_dtype, device=device)
     Y = dpnp.from_dlpack(X)
     assert_array_equal(X, Y)
     assert isinstance(Y, dpnp.dpnp_array.dpnp_array)
