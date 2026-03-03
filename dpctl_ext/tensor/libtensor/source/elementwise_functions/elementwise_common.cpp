@@ -36,8 +36,8 @@
 #include <pybind11/pybind11.h>
 
 #include "abs.hpp"
-// #include "acos.hpp"
-// #include "acosh.hpp"
+#include "acos.hpp"
+#include "acosh.hpp"
 // #include "add.hpp"
 // #include "angle.hpp"
 // #include "asin.hpp"
@@ -116,8 +116,8 @@ namespace py = pybind11;
 void init_elementwise_functions(py::module_ m)
 {
     init_abs(m);
-    // init_acos(m);
-    // init_acosh(m);
+    init_acos(m);
+    init_acosh(m);
     // init_add(m);
     // init_angle(m);
     // init_asin(m);
