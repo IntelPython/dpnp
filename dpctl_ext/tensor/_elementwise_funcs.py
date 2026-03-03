@@ -119,3 +119,96 @@ acosh = UnaryElementwiseFunc(
     "acosh", ti._acosh_result_type, ti._acosh, _acosh_docstring
 )
 del _acosh_docstring
+
+# U04: ===== ASIN  (x)
+_asin_docstring = r"""
+asin(x, /, \*, out=None, order='K')
+
+Computes inverse sine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise inverse sine, in radians
+        and in the closed interval :math:`[-\pi/2, \pi/2]`. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+asin = UnaryElementwiseFunc(
+    "asin", ti._asin_result_type, ti._asin, _asin_docstring
+)
+del _asin_docstring
+
+# U05: ===== ASINH (x)
+_asinh_docstring = r"""
+asinh(x, /, \*, out=None, order='K')
+
+Computes inverse hyperbolic sine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise inverse hyperbolic sine, in
+        radians. The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+asinh = UnaryElementwiseFunc(
+    "asinh", ti._asinh_result_type, ti._asinh, _asinh_docstring
+)
+del _asinh_docstring
+
+# U43: ==== ANGLE        (x)
+_angle_docstring = r"""
+angle(x, /, \*, out=None, order='K')
+
+Computes the phase angle (also called the argument) of each element `x_i` for
+input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a complex floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise phase angles.
+        The returned array has a floating-point data type determined
+        by the Type Promotion Rules.
+"""
+
+angle = UnaryElementwiseFunc(
+    "angle",
+    ti._angle_result_type,
+    ti._angle,
+    _angle_docstring,
+)
+del _angle_docstring
+
+del ti

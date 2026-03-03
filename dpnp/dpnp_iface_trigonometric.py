@@ -311,8 +311,8 @@ array([0.0, 1.5707963267948966, -1.5707963267948966])
 
 asin = DPNPUnaryFunc(
     "asin",
-    ti._asin_result_type,
-    ti._asin,
+    ti_ext._asin_result_type,
+    ti_ext._asin,
     _ASIN_DOCSTRING,
     mkl_fn_to_call="_mkl_asin_to_call",
     mkl_impl_fn="_asin",
@@ -395,8 +395,8 @@ array([1.72538256, 2.99822295])
 
 asinh = DPNPUnaryFunc(
     "asinh",
-    ti._asinh_result_type,
-    ti._asinh,
+    ti_ext._asinh_result_type,
+    ti_ext._asinh,
     _ASINH_DOCSTRING,
     mkl_fn_to_call="_mkl_asinh_to_call",
     mkl_impl_fn="_asinh",

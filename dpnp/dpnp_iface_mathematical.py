@@ -541,8 +541,8 @@ array([ 0., 90., 45.])
 
 angle = DPNPAngle(
     "angle",
-    ti._angle_result_type,
-    ti._angle,
+    ti_ext._angle_result_type,
+    ti_ext._angle,
     _ANGLE_DOCSTRING,
     mkl_fn_to_call="_mkl_arg_to_call",
     mkl_impl_fn="_arg",
