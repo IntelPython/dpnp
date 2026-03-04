@@ -225,7 +225,7 @@ std::pair<sycl::event, sycl::event>
     int nd = src_nd;
 
     // nd, simplified_* and *_offset are modified by reference
-    dpctl::tensor::py_internal::simplify_iteration_space(
+    simplify_iteration_space(
         nd, src_shape_vec.data(), src_strides_vec, dst.get_strides_vector(),
         // output
         simplified_shape, simplified_src_strides, simplified_dst_strides,
@@ -359,7 +359,7 @@ std::pair<sycl::event, sycl::event>
     int nd = src_nd;
 
     // nd, simplified_* and *_offset are modified by reference
-    dpctl::tensor::py_internal::simplify_iteration_space(
+    simplify_iteration_space(
         nd, src_shape_vec.data(), src_strides_vec, dst.get_strides_vector(),
         // output
         simplified_shape, simplified_src_strides, simplified_dst_strides,
@@ -521,7 +521,7 @@ std::pair<sycl::event, sycl::event>
     int nd = static_cast<int>(batch_shape_vec.size());
 
     // nd, simplified_* and *_offset are modified by reference
-    dpctl::tensor::py_internal::simplify_iteration_space(
+    simplify_iteration_space(
         nd, batch_shape_vec.data(), src_batch_strides_vec,
         dst_batch_strides_vec,
         // output
@@ -714,7 +714,7 @@ std::pair<sycl::event, sycl::event>
     int nd = static_cast<int>(batch_shape_vec.size());
 
     // nd, simplified_* and *_offset are modified by reference
-    dpctl::tensor::py_internal::simplify_iteration_space(
+    simplify_iteration_space(
         nd, batch_shape_vec.data(), src_batch_strides_vec,
         dst_batch_strides_vec,
         // output

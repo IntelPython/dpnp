@@ -196,8 +196,8 @@ std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
     int mask_nd = mask.get_ndim();
     int nd = mask_nd;
 
-    dpctl::tensor::py_internal::compact_iteration_space(
-        nd, shape, strides_vector, compact_shape, compact_strides);
+    compact_iteration_space(nd, shape, strides_vector, compact_shape,
+                            compact_strides);
 
     // Strided implementation
     auto strided_fn =
@@ -351,8 +351,8 @@ std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
     int src_nd = src.get_ndim();
     int nd = src_nd;
 
-    dpctl::tensor::py_internal::compact_iteration_space(
-        nd, shape, strides_vector, compact_shape, compact_strides);
+    compact_iteration_space(nd, shape, strides_vector, compact_shape,
+                            compact_strides);
 
     // Strided implementation
     auto strided_fn = cumsum_1d_strided_dispatch_vector[src_typeid];
