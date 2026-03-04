@@ -114,6 +114,10 @@ from ._elementwise_funcs import (
     proj,
     real,
     round,
+    sign,
+    signbit,
+    sin,
+    sinh,
 )
 from ._reduction import (
     argmax,
@@ -221,6 +225,10 @@ __all__ = [
     "roll",
     "round",
     "searchsorted",
+    "sign",
+    "signbit",
+    "sin",
+    "sinh",
     "sort",
     "squeeze",
     "stack",

@@ -2309,8 +2309,8 @@ array([ 0.000000e+00,  1.000000e+00, -8.742278e-08])
 
 sin = DPNPUnaryFunc(
     "sin",
-    ti._sin_result_type,
-    ti._sin,
+    ti_ext._sin_result_type,
+    ti_ext._sin,
     _SIN_DOCSTRING,
     mkl_fn_to_call="_mkl_sin_to_call",
     mkl_impl_fn="_sin",
@@ -2372,8 +2372,8 @@ array([0.0, 2.3012989, 11.548739])
 
 sinh = DPNPUnaryFunc(
     "sinh",
-    ti._sinh_result_type,
-    ti._sinh,
+    ti_ext._sinh_result_type,
+    ti_ext._sinh,
     _SINH_DOCSTRING,
     mkl_fn_to_call="_mkl_sinh_to_call",
     mkl_impl_fn="_sinh",

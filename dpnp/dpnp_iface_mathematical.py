@@ -4668,8 +4668,8 @@ array([1+0j])
 
 sign = DPNPUnaryFunc(
     "sign",
-    ti._sign_result_type,
-    ti._sign,
+    ti_ext._sign_result_type,
+    ti_ext._sign,
     _SIGN_DOCSTRING,
     acceptance_fn=acceptance_fn_sign,
 )
@@ -4730,8 +4730,8 @@ array([False,  True, False])
 
 signbit = DPNPUnaryFunc(
     "signbit",
-    ti._signbit_result_type,
-    ti._signbit,
+    ti_ext._signbit_result_type,
+    ti_ext._signbit,
     _SIGNBIT_DOCSTRING,
 )
 

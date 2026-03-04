@@ -844,6 +844,93 @@ round = UnaryElementwiseFunc(
 )
 del _round_docstring
 
+# U29: ==== SIGN        (x)
+_sign_docstring = r"""
+sign(x, /, \*, out=None, order='K')
+
+Computes an indication of the sign of each element `x_i` of input array `x`
+using the signum function.
+
+The signum function returns `-1` if `x_i` is less than `0`,
+`0` if `x_i` is equal to `0`, and `1` if `x_i` is greater than `0`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise result of the signum function. The
+        data type of the returned array is determined by the Type Promotion
+        Rules.
+"""
+
+sign = UnaryElementwiseFunc(
+    "sign", ti._sign_result_type, ti._sign, _sign_docstring
+)
+del _sign_docstring
+
+# U30: ==== SIN         (x)
+_sin_docstring = r"""
+sin(x, /, \*, out=None, order='K')
+
+Computes sine for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a real-valued floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise sine. The data type of the
+        returned array is determined by the Type Promotion Rules.
+"""
+
+sin = UnaryElementwiseFunc("sin", ti._sin_result_type, ti._sin, _sin_docstring)
+del _sin_docstring
+
+# U31: ==== SINH        (x)
+_sinh_docstring = r"""
+sinh(x, /, \*, out=None, order='K')
+
+Computes hyperbolic sine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise hyperbolic sine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+sinh = UnaryElementwiseFunc(
+    "sinh", ti._sinh_result_type, ti._sinh, _sinh_docstring
+)
+del _sinh_docstring
+
 # U40: ==== PROJ        (x)
 _proj_docstring = r"""
 proj(x, /, \*, out=None, order='K')
@@ -870,6 +957,35 @@ proj = UnaryElementwiseFunc(
     "proj", ti._proj_result_type, ti._proj, _proj_docstring
 )
 del _proj_docstring
+
+# U41: ==== SIGNBIT        (x)
+_signbit_docstring = r"""
+signbit(x, /, \*, out=None, order='K')
+
+Computes an indication of whether the sign bit of each element `x_i` of
+input array `x` is set.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a real-valued floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise signbit results. The returned array
+        must have a data type of `bool`.
+"""
+
+signbit = UnaryElementwiseFunc(
+    "signbit", ti._signbit_result_type, ti._signbit, _signbit_docstring
+)
+del _signbit_docstring
 
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""

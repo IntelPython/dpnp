@@ -95,10 +95,10 @@
 // #include "remainder.hpp"
 #include "round.hpp"
 // #include "rsqrt.hpp"
-// #include "sign.hpp"
-// #include "signbit.hpp"
-// #include "sin.hpp"
-// #include "sinh.hpp"
+#include "sign.hpp"
+#include "signbit.hpp"
+#include "sin.hpp"
+#include "sinh.hpp"
 // #include "sqrt.hpp"
 // #include "square.hpp"
 // #include "subtract.hpp"
@@ -176,10 +176,10 @@ void init_elementwise_functions(py::module_ m)
     // init_remainder(m);
     init_round(m);
     // init_rsqrt(m);
-    // init_sign(m);
-    // init_signbit(m);
-    // init_sin(m);
-    // init_sinh(m);
+    init_sign(m);
+    init_signbit(m);
+    init_sin(m);
+    init_sinh(m);
     // init_sqrt(m);
     // init_square(m);
     // init_subtract(m);
