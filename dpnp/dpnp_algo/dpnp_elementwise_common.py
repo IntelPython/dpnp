@@ -30,8 +30,6 @@ import warnings
 from functools import wraps
 
 import dpctl.tensor as dpt
-import dpctl.tensor._copy_utils as dtc
-import dpctl.tensor._type_utils as dtu
 import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._elementwise_common import (
@@ -48,7 +46,9 @@ from dpctl.tensor._scalar_utils import (
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor._copy_utils as dtc
 import dpctl_ext.tensor._tensor_impl as dti
+import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.dpnp_array import dpnp_array
