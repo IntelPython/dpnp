@@ -225,11 +225,11 @@ std::pair<sycl::event, sycl::event>
     int nd = src_nd;
 
     // nd, simplified_* and *_offset are modified by reference
-    simplify_iteration_space(
-        nd, src_shape_vec.data(), src_strides_vec, dst.get_strides_vector(),
-        // output
-        simplified_shape, simplified_src_strides, simplified_dst_strides,
-        src_offset, dst_offset);
+    simplify_iteration_space(nd, src_shape_vec.data(), src_strides_vec,
+                             dst.get_strides_vector(),
+                             // output
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
 
     if (!((0 == src_offset) && (0 == dst_offset))) {
         throw std::runtime_error(
@@ -359,11 +359,11 @@ std::pair<sycl::event, sycl::event>
     int nd = src_nd;
 
     // nd, simplified_* and *_offset are modified by reference
-    simplify_iteration_space(
-        nd, src_shape_vec.data(), src_strides_vec, dst.get_strides_vector(),
-        // output
-        simplified_shape, simplified_src_strides, simplified_dst_strides,
-        src_offset, dst_offset);
+    simplify_iteration_space(nd, src_shape_vec.data(), src_strides_vec,
+                             dst.get_strides_vector(),
+                             // output
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
 
     if (!((0 == src_offset) && (0 == dst_offset))) {
         throw std::runtime_error(
@@ -521,12 +521,11 @@ std::pair<sycl::event, sycl::event>
     int nd = static_cast<int>(batch_shape_vec.size());
 
     // nd, simplified_* and *_offset are modified by reference
-    simplify_iteration_space(
-        nd, batch_shape_vec.data(), src_batch_strides_vec,
-        dst_batch_strides_vec,
-        // output
-        simplified_shape, simplified_src_strides, simplified_dst_strides,
-        src_offset, dst_offset);
+    simplify_iteration_space(nd, batch_shape_vec.data(), src_batch_strides_vec,
+                             dst_batch_strides_vec,
+                             // output
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
 
     if (!((0 == src_offset) && (0 == dst_offset))) {
         throw std::runtime_error(
@@ -714,12 +713,11 @@ std::pair<sycl::event, sycl::event>
     int nd = static_cast<int>(batch_shape_vec.size());
 
     // nd, simplified_* and *_offset are modified by reference
-    simplify_iteration_space(
-        nd, batch_shape_vec.data(), src_batch_strides_vec,
-        dst_batch_strides_vec,
-        // output
-        simplified_shape, simplified_src_strides, simplified_dst_strides,
-        src_offset, dst_offset);
+    simplify_iteration_space(nd, batch_shape_vec.data(), src_batch_strides_vec,
+                             dst_batch_strides_vec,
+                             // output
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
 
     if (!((0 == src_offset) && (0 == dst_offset))) {
         throw std::runtime_error(
