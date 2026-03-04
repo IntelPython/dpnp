@@ -89,11 +89,11 @@
 // #include "not_equal.hpp"
 #include "positive.hpp"
 // #include "pow.hpp"
-// #include "proj.hpp"
-// #include "real.hpp"
+#include "proj.hpp"
+#include "real.hpp"
 // #include "reciprocal.hpp"
 // #include "remainder.hpp"
-// #include "round.hpp"
+#include "round.hpp"
 // #include "rsqrt.hpp"
 // #include "sign.hpp"
 // #include "signbit.hpp"
@@ -170,11 +170,11 @@ void init_elementwise_functions(py::module_ m)
     // init_not_equal(m);
     init_positive(m);
     // init_pow(m);
-    // init_proj(m);
-    // init_real(m);
+    init_proj(m);
+    init_real(m);
     // init_reciprocal(m);
     // init_remainder(m);
-    // init_round(m);
+    init_round(m);
     // init_rsqrt(m);
     // init_sign(m);
     // init_signbit(m);

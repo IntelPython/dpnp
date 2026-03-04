@@ -782,6 +782,95 @@ positive = UnaryElementwiseFunc(
 )
 del _positive_docstring_
 
+# U27: ==== REAL        (x)
+_real_docstring = r"""
+real(x, /, \*, out=None, order='K')
+
+Computes real part of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise real component of input.
+        If the input is a real-valued data type, the returned array has
+        the same data type. If the input is a complex floating-point
+        data type, the returned array has a floating-point data type
+        with the same floating-point precision as complex input.
+"""
+
+real = UnaryElementwiseFunc(
+    "real", ti._real_result_type, ti._real, _real_docstring
+)
+del _real_docstring
+
+# U28: ==== ROUND       (x)
+_round_docstring = r"""
+round(x, /, \*, out=None, order='K')
+
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
+
+When two integers are equally close to `x_i`, the result is the nearest even
+integer to `x_i`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise rounded values.
+"""
+
+round = UnaryElementwiseFunc(
+    "round", ti._round_result_type, ti._round, _round_docstring
+)
+del _round_docstring
+
+# U40: ==== PROJ        (x)
+_proj_docstring = r"""
+proj(x, /, \*, out=None, order='K')
+
+Computes projection of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a complex data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise projection.
+"""
+
+proj = UnaryElementwiseFunc(
+    "proj", ti._proj_result_type, ti._proj, _proj_docstring
+)
+del _proj_docstring
+
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""
 angle(x, /, \*, out=None, order='K')

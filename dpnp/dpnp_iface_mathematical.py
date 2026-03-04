@@ -4250,8 +4250,8 @@ array([inf+0.j, inf-0.j, inf-0.j])
 
 proj = DPNPUnaryFunc(
     "proj",
-    ti._proj_result_type,
-    ti._proj,
+    ti_ext._proj_result_type,
+    ti_ext._proj,
     _PROJ_DOCSTRING,
 )
 
@@ -4313,8 +4313,8 @@ array(1.)
 
 real = DPNPReal(
     "real",
-    ti._real_result_type,
-    ti._real,
+    ti_ext._real_result_type,
+    ti_ext._real,
     _REAL_DOCSTRING,
 )
 
@@ -4596,8 +4596,8 @@ array([ 0,  0,  0, 10])
 
 round = DPNPRound(
     "round",
-    ti._round_result_type,
-    ti._round,
+    ti_ext._round_result_type,
+    ti_ext._round,
     _ROUND_DOCSTRING,
     mkl_fn_to_call="_mkl_round_to_call",
     mkl_impl_fn="_round",
