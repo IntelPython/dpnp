@@ -42,9 +42,9 @@ from dpctl.tensor._device import normalize_queue_device
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
-from dpctl_ext.tensor._type_utils import _dtype_supported_by_device_impl
 
 from ._numpy_helper import normalize_axis_index
+from ._type_utils import _dtype_supported_by_device_impl
 
 __doc__ = (
     "Implementation module for copy- and cast- operations on "
