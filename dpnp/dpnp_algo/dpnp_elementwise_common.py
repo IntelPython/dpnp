@@ -37,6 +37,11 @@ from dpctl.tensor._elementwise_common import (
     BinaryElementwiseFunc,
     UnaryElementwiseFunc,
 )
+from dpctl.tensor._scalar_utils import (
+    _get_dtype,
+    _get_shape,
+    _validate_dtype,
+)
 
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
@@ -46,11 +51,6 @@ import dpctl_ext.tensor._copy_utils as dtc
 import dpctl_ext.tensor._tensor_impl as dti
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
-from dpctl_ext.tensor._scalar_utils import (
-    _get_dtype,
-    _get_shape,
-    _validate_dtype,
-)
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.dpnp_utils.dpnp_utils_common import (
