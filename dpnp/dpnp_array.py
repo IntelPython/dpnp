@@ -38,13 +38,13 @@ elements stored in a USM allocation on a SYCL device.
 import warnings
 
 import dpctl.tensor as dpt
-from dpctl.tensor._numpy_helper import AxisError
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._type_utils as dtu
 import dpnp
+from dpctl_ext.tensor._numpy_helper import AxisError
 
 from . import memory as dpm
 
