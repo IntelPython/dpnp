@@ -201,7 +201,7 @@ std::pair<sycl::event, sycl::event>
     py::ssize_t x2_offset(0);
     py::ssize_t dst_offset(0);
 
-    dpctl::tensor::py_internal::simplify_iteration_space_4(
+    simplify_iteration_space_4(
         nd, x1_shape, cond_strides, x1_strides, x2_strides, dst_strides,
         // outputs
         simplified_shape, simplified_cond_strides, simplified_x1_strides,

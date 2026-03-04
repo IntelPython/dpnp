@@ -285,17 +285,17 @@ std::pair<sycl::event, sycl::event>
         shT orthog_src_strides;
         shT axis_src_shape;
         shT axis_src_stride;
-        dpctl::tensor::py_internal::split_iteration_space(
-            src_shape_vec, src_strides_vec, axis, axis + 1, orthog_src_shape,
-            axis_src_shape, orthog_src_strides, axis_src_stride);
+        split_iteration_space(src_shape_vec, src_strides_vec, axis, axis + 1,
+                              orthog_src_shape, axis_src_shape,
+                              orthog_src_strides, axis_src_stride);
 
         shT orthog_dst_shape;
         shT orthog_dst_strides;
         shT axis_dst_shape;
         shT axis_dst_stride;
-        dpctl::tensor::py_internal::split_iteration_space(
-            dst_shape_vec, dst_strides_vec, axis, axis + 1, orthog_dst_shape,
-            axis_dst_shape, orthog_dst_strides, axis_dst_stride);
+        split_iteration_space(dst_shape_vec, dst_strides_vec, axis, axis + 1,
+                              orthog_dst_shape, axis_dst_shape,
+                              orthog_dst_strides, axis_dst_stride);
 
         assert(orthog_src_shape.size() == static_cast<std::size_t>(orthog_nd));
         assert(orthog_dst_shape.size() == static_cast<std::size_t>(orthog_nd));
@@ -310,7 +310,7 @@ std::pair<sycl::event, sycl::event>
 
         py::ssize_t orthog_src_offset(0);
         py::ssize_t orthog_dst_offset(0);
-        dpctl::tensor::py_internal::simplify_iteration_space(
+        simplify_iteration_space(
             orthog_nd, _shape, orthog_src_strides, orthog_dst_strides,
             // output
             simplified_orthog_shape, simplified_orthog_src_strides,
@@ -641,17 +641,17 @@ std::pair<sycl::event, sycl::event>
         shT orthog_src_strides;
         shT axis_src_shape;
         shT axis_src_stride;
-        dpctl::tensor::py_internal::split_iteration_space(
-            src_shape_vec, src_strides_vec, axis, axis + 1, orthog_src_shape,
-            axis_src_shape, orthog_src_strides, axis_src_stride);
+        split_iteration_space(src_shape_vec, src_strides_vec, axis, axis + 1,
+                              orthog_src_shape, axis_src_shape,
+                              orthog_src_strides, axis_src_stride);
 
         shT orthog_dst_shape;
         shT orthog_dst_strides;
         shT axis_dst_shape;
         shT axis_dst_stride;
-        dpctl::tensor::py_internal::split_iteration_space(
-            dst_shape_vec, dst_strides_vec, axis, axis + 1, orthog_dst_shape,
-            axis_dst_shape, orthog_dst_strides, axis_dst_stride);
+        split_iteration_space(dst_shape_vec, dst_strides_vec, axis, axis + 1,
+                              orthog_dst_shape, axis_dst_shape,
+                              orthog_dst_strides, axis_dst_stride);
 
         assert(orthog_src_shape.size() == static_cast<std::size_t>(orthog_nd));
         assert(orthog_dst_shape.size() == static_cast<std::size_t>(orthog_nd));
@@ -667,7 +667,7 @@ std::pair<sycl::event, sycl::event>
         py::ssize_t orthog_src_offset(0);
         py::ssize_t orthog_dst_offset(0);
 
-        dpctl::tensor::py_internal::simplify_iteration_space(
+        simplify_iteration_space(
             orthog_nd, _shape, orthog_src_strides, orthog_dst_strides,
             // output
             simplified_orthog_shape, simplified_orthog_src_strides,
