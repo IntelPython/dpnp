@@ -27,20 +27,21 @@
 # *****************************************************************************
 
 
-from dpctl_ext.tensor._copy_utils import (
+from ._clip import clip
+from ._copy_utils import (
     asnumpy,
     astype,
     copy,
     from_numpy,
     to_numpy,
 )
-from dpctl_ext.tensor._ctors import (
+from ._ctors import (
     eye,
     full,
     tril,
     triu,
 )
-from dpctl_ext.tensor._indexing_functions import (
+from ._indexing_functions import (
     extract,
     nonzero,
     place,
@@ -49,14 +50,12 @@ from dpctl_ext.tensor._indexing_functions import (
     take,
     take_along_axis,
 )
-from dpctl_ext.tensor._manipulation_functions import (
+from ._manipulation_functions import (
     repeat,
     roll,
 )
-from dpctl_ext.tensor._reshape import reshape
-from dpctl_ext.tensor._search_functions import where
-
-from ._clip import clip
+from ._reshape import reshape
+from ._search_functions import where
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [
