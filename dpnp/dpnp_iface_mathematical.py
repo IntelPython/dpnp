@@ -59,6 +59,7 @@ from dpctl.tensor._type_utils import _acceptance_fn_divide
 
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
+from dpnp.exceptions import ExecutionPlacementError
 
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPI0,
@@ -273,7 +274,7 @@ def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
         usm_type = dpu.get_coerced_usm_type([usm_type, arg.usm_type])
         # check that arrays have the same allocation queue
         if dpu.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
-            raise dpu.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 f"ary and {arg_name} must be allocated on the same SYCL queue"
             )
 

@@ -2,11 +2,11 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises
 
 import dpnp
 from dpnp.dpnp_utils import map_dtype_to_device
+from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
     assert_dtype_allclose,

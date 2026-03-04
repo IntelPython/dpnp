@@ -56,6 +56,7 @@ import dpnp
 
 # pylint: disable=no-name-in-module
 import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
+from dpnp.exceptions import ExecutionPlacementError
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
@@ -129,7 +130,7 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
             )
 
         if dpu.get_execution_queue((q, out.sycl_queue)) is None:
-            raise dpu.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 
@@ -291,7 +292,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
             )
 
         if dpu.get_execution_queue((q, out.sycl_queue)) is None:
-            raise dpu.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 

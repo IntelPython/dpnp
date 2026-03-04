@@ -5,13 +5,13 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_array_equal, assert_raises
 
 import dpnp
 import dpnp.linalg
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
+from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
     generate_random_numpy_array,

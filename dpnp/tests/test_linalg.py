@@ -4,7 +4,6 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
@@ -14,7 +13,7 @@ from numpy.testing import (
 )
 
 import dpnp
-from dpnp.exceptions import AxisError
+from dpnp.exceptions import AxisError, ExecutionPlacementError
 
 from .helper import (
     assert_dtype_allclose,
