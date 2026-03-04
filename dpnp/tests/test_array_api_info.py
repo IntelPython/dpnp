@@ -1,9 +1,10 @@
 import numpy
 import pytest
-from dpctl import SyclDeviceCreationError, get_devices, select_default_device
+from dpctl import get_devices, select_default_device
 from dpctl.tensor._tensor_impl import default_device_complex_type
 
 import dpnp
+from dpnp.exceptions import SyclDeviceCreationError
 from dpnp.tests.helper import (
     has_support_aspect64,
     is_win_platform,
