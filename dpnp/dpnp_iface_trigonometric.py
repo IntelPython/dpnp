@@ -1127,8 +1127,8 @@ array([1.0, 2.718281828, 7.389056099])
 
 exp = DPNPUnaryFunc(
     "exp",
-    ti._exp_result_type,
-    ti._exp,
+    ti_ext._exp_result_type,
+    ti_ext._exp,
     _EXP_DOCSTRING,
     mkl_fn_to_call="_mkl_exp_to_call",
     mkl_impl_fn="_exp",
@@ -1259,8 +1259,8 @@ array(1.000000082740371e-10)
 
 expm1 = DPNPUnaryFunc(
     "expm1",
-    ti._expm1_result_type,
-    ti._expm1,
+    ti_ext._expm1_result_type,
+    ti_ext._expm1,
     _EXPM1_DOCSTRING,
     mkl_fn_to_call="_mkl_expm1_to_call",
     mkl_impl_fn="_expm1",

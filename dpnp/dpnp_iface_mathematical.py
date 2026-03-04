@@ -2057,8 +2057,8 @@ array([-2.0, -2.0, -1.0, 0.0, 1.0, 1.0, 2.0])
 
 floor = DPNPUnaryFunc(
     "floor",
-    ti._floor_result_type,
-    ti._floor,
+    ti_ext._floor_result_type,
+    ti_ext._floor,
     _FLOOR_DOCSTRING,
     mkl_fn_to_call="_mkl_floor_to_call",
     mkl_impl_fn="_floor",

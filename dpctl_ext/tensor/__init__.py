@@ -97,6 +97,9 @@ from ._elementwise_funcs import (
     conj,
     cos,
     cosh,
+    exp,
+    expm1,
+    floor,
 )
 from ._reduction import (
     argmax,
@@ -159,8 +162,11 @@ __all__ = [
     "extract",
     "expand_dims",
     "eye",
+    "exp",
+    "expm1",
     "finfo",
     "flip",
+    "floor",
     "from_numpy",
     "full",
     "full_like",

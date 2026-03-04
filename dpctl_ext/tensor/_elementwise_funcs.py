@@ -378,6 +378,92 @@ cosh = UnaryElementwiseFunc(
 )
 del _cosh_docstring
 
+# U13: ==== EXP           (x)
+_exp_docstring = r"""
+exp(x, /, \*, out=None, order='K')
+
+Computes the exponential for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise exponential of `x`.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+exp = UnaryElementwiseFunc("exp", ti._exp_result_type, ti._exp, _exp_docstring)
+del _exp_docstring
+
+# U14: ==== EXPM1         (x)
+_expm1_docstring = r"""
+expm1(x, /, \*, out=None, order='K')
+
+Computes the exponential minus 1 for each element `x_i` of input array `x`.
+
+This function calculates `exp(x) - 1.0` more accurately for small values of `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise `exp(x) - 1` results.
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
+"""
+
+expm1 = UnaryElementwiseFunc(
+    "expm1", ti._expm1_result_type, ti._expm1, _expm1_docstring
+)
+del _expm1_docstring
+
+# U15: ==== FLOOR         (x)
+_floor_docstring = r"""
+floor(x, /, \*, out=None, order='K')
+
+Returns the floor for each element `x_i` for input array `x`.
+
+The floor of `x_i` is the largest integer `n`, such that `n <= x_i`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a boolean or real-valued data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise floor.
+"""
+
+floor = UnaryElementwiseFunc(
+    "floor", ti._floor_result_type, ti._floor, _floor_docstring
+)
+del _floor_docstring
+
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""
 angle(x, /, \*, out=None, order='K')
