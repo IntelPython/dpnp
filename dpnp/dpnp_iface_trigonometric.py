@@ -777,8 +777,8 @@ array([ 1.000000e+00, -4.371139e-08, -1.000000e+00])
 
 cos = DPNPUnaryFunc(
     "cos",
-    ti._cos_result_type,
-    ti._cos,
+    ti_ext._cos_result_type,
+    ti_ext._cos,
     _COS_DOCSTRING,
     mkl_fn_to_call="_mkl_cos_to_call",
     mkl_impl_fn="_cos",
@@ -841,8 +841,8 @@ array([1.0, 2.5091786, 11.591953])
 
 cosh = DPNPUnaryFunc(
     "cosh",
-    ti._cosh_result_type,
-    ti._cosh,
+    ti_ext._cosh_result_type,
+    ti_ext._cosh,
     _COSH_DOCSTRING,
     mkl_fn_to_call="_mkl_cosh_to_call",
     mkl_impl_fn="_cosh",

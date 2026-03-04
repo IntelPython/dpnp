@@ -324,6 +324,60 @@ conj = UnaryElementwiseFunc(
 )
 del _conj_docstring
 
+# U11: ==== COS           (x)
+_cos_docstring = r"""
+cos(x, /, \*, out=None, order='K')
+
+Computes cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise cosine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+cos = UnaryElementwiseFunc("cos", ti._cos_result_type, ti._cos, _cos_docstring)
+del _cos_docstring
+
+# U12: ==== COSH          (x)
+_cosh_docstring = r"""
+cosh(x, /, \*, out=None, order='K')
+
+Computes hyperbolic cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise hyperbolic cosine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+cosh = UnaryElementwiseFunc(
+    "cosh", ti._cosh_result_type, ti._cosh, _cosh_docstring
+)
+del _cosh_docstring
+
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""
 angle(x, /, \*, out=None, order='K')

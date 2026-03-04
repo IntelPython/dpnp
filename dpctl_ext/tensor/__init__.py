@@ -95,6 +95,8 @@ from ._elementwise_funcs import (
     bitwise_invert,
     ceil,
     conj,
+    cos,
+    cosh,
 )
 from ._reduction import (
     argmax,
@@ -144,6 +146,8 @@ __all__ = [
     "concat",
     "conj",
     "copy",
+    "cos",
+    "cosh",
     "count_nonzero",
     "clip",
     "cumulative_logsumexp",
