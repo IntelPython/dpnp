@@ -552,6 +552,90 @@ isinf = UnaryElementwiseFunc(
 )
 del _isinf_docstring_
 
+# U19: ==== ISNAN       (x)
+_isnan_docstring_ = r"""
+isnan(x, /, \*, out=None, order='K')
+
+Test if each element of an input array is a NaN.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array which is True where x is NaN, False otherwise.
+        The data type of the returned array is `bool`.
+"""
+
+isnan = UnaryElementwiseFunc(
+    "isnan", ti._isnan_result_type, ti._isnan, _isnan_docstring_
+)
+del _isnan_docstring_
+
+# U20: ==== LOG         (x)
+_log_docstring = r"""
+log(x, /, \*, out=None, order='K')
+
+Computes the natural logarithm for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise natural logarithm values.
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
+"""
+
+log = UnaryElementwiseFunc("log", ti._log_result_type, ti._log, _log_docstring)
+del _log_docstring
+
+# U21: ==== LOG1P       (x)
+_log1p_docstring = r"""
+log1p(x, /, \*, out=None, order='K')
+
+Computes the natural logarithm of (1 + `x`) for each element `x_i` of input
+array `x`.
+
+This function calculates `log(1 + x)` more accurately for small values of `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise `log(1 + x)` results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+log1p = UnaryElementwiseFunc(
+    "log1p", ti._log1p_result_type, ti._log1p, _log1p_docstring
+)
+del _log1p_docstring
+
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""
 angle(x, /, \*, out=None, order='K')

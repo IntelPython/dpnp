@@ -103,6 +103,9 @@ from ._elementwise_funcs import (
     imag,
     isfinite,
     isinf,
+    isnan,
+    log,
+    log1p,
 )
 from ._reduction import (
     argmax,
@@ -179,8 +182,11 @@ __all__ = [
     "isinf",
     "isdtype",
     "isin",
+    "isnan",
     "linspace",
+    "log",
     "logsumexp",
+    "log1p",
     "max",
     "meshgrid",
     "min",

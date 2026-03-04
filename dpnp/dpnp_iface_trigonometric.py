@@ -1416,8 +1416,8 @@ array([  0.,   1.,   2., -inf])
 
 log = DPNPUnaryFunc(
     "log",
-    ti._log_result_type,
-    ti._log,
+    ti_ext._log_result_type,
+    ti_ext._log,
     _LOG_DOCSTRING,
     mkl_fn_to_call="_mkl_ln_to_call",
     mkl_impl_fn="_ln",
@@ -1580,8 +1580,8 @@ array(0.0)
 
 log1p = DPNPUnaryFunc(
     "log1p",
-    ti._log1p_result_type,
-    ti._log1p,
+    ti_ext._log1p_result_type,
+    ti_ext._log1p,
     _LOG1P_DOCSTRING,
     mkl_fn_to_call="_mkl_log1p_to_call",
     mkl_impl_fn="_log1p",

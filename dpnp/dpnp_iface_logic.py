@@ -1396,8 +1396,8 @@ array([False, False,  True])
 
 isnan = DPNPUnaryFunc(
     "isnan",
-    ti._isnan_result_type,
-    ti._isnan,
+    ti_ext._isnan_result_type,
+    ti_ext._isnan,
     _ISNAN_DOCSTRING,
 )
 
