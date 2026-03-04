@@ -2621,7 +2621,9 @@ class TestLu:
         [(1, 1), (2, 2), (3, 3), (1, 5), (5, 1), (2, 5), (5, 2)],
     )
     @pytest.mark.parametrize("order", ["C", "F"])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
     def test_lu_default(self, shape, order, dtype):
         a_np = self._make_nonsingular_np(shape, dtype, order)
         a_dp = dpnp.array(a_np, order=order)
@@ -2643,7 +2645,9 @@ class TestLu:
         [(1, 1), (2, 2), (3, 3), (1, 5), (5, 1), (2, 5), (5, 2)],
     )
     @pytest.mark.parametrize("order", ["C", "F"])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
     def test_lu_permute_l(self, shape, order, dtype):
         a_np = self._make_nonsingular_np(shape, dtype, order)
         a_dp = dpnp.array(a_np, order=order)
@@ -2664,7 +2668,9 @@ class TestLu:
         [(1, 1), (2, 2), (3, 3), (1, 5), (5, 1), (2, 5), (5, 2)],
     )
     @pytest.mark.parametrize("order", ["C", "F"])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
     def test_lu_p_indices(self, shape, order, dtype):
         a_np = self._make_nonsingular_np(shape, dtype, order)
         a_dp = dpnp.array(a_np, order=order)
@@ -2678,10 +2684,7 @@ class TestLu:
         assert U.shape == (k, n)
         assert dpnp.issubdtype(p.dtype, dpnp.integer)
 
-        p_np = dpnp.asnumpy(p)
-        L_np = dpnp.asnumpy(L)
-        U_np = dpnp.asnumpy(U)
-        A_rec = L_np[p_np] @ U_np
+        A_rec = L[p] @ U
         A_cast = a_dp.astype(L.dtype, copy=False)
         assert dpnp.allclose(A_rec, A_cast, rtol=1e-6, atol=1e-6)
 
@@ -2850,6 +2853,12 @@ class TestLu:
     @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
     def test_check_finite_raises(self, bad):
         a_dp = dpnp.array([[1.0, 2.0], [3.0, bad]], order="F")
+        assert_raises(ValueError, dpnp.scipy.linalg.lu, a_dp, check_finite=True)
+
+    @pytest.mark.parametrize("bad", [numpy.inf, -numpy.inf, numpy.nan])
+    def test_check_finite_raises_scalar(self, bad):
+        # Covers the 1x1 scalar fast path in dpnp_lu
+        a_dp = dpnp.array([[bad]])
         assert_raises(ValueError, dpnp.scipy.linalg.lu, a_dp, check_finite=True)
 
     def test_check_finite_disabled(self):
