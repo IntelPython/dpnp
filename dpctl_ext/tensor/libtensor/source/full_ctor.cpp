@@ -44,7 +44,9 @@
 #include <pybind11/pybind11.h>
 
 #include "kernels/constructors.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
