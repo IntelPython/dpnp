@@ -34,7 +34,7 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstdint>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -42,7 +42,6 @@
 
 #include "dpnp4pybind11.hpp"
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "kernels/repeat.hpp"
 #include "utils/memory_overlap.hpp"

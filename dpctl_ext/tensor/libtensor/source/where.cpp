@@ -33,16 +33,14 @@
 /// dpctl.tensor.where
 //===---------------------------------------------------------------------===//
 
-#include <complex>
 #include <cstddef>
-#include <cstdint>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
-#include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 
 #include "kernels/where.hpp"

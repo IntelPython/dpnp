@@ -35,10 +35,10 @@
 #pragma once
 #include <algorithm>
 #include <cmath>
-#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
+#include <vector>
 
 #include <sycl/sycl.hpp>
 
