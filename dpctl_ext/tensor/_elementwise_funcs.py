@@ -931,6 +931,117 @@ sinh = UnaryElementwiseFunc(
 )
 del _sinh_docstring
 
+# U32: ==== SQUARE      (x)
+_square_docstring_ = r"""
+square(x, /, \*, out=None, order='K')
+
+Squares each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise squares of `x`. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+
+square = UnaryElementwiseFunc(
+    "square", ti._square_result_type, ti._square, _square_docstring_
+)
+del _square_docstring_
+
+# U33: ==== SQRT        (x)
+_sqrt_docstring_ = r"""
+sqrt(x, /, \*, out=None, order='K')
+
+Computes the positive square-root for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise positive square-roots of `x`. The
+        data type of the returned array is determined by the Type Promotion
+        Rules.
+"""
+
+sqrt = UnaryElementwiseFunc(
+    "sqrt", ti._sqrt_result_type, ti._sqrt, _sqrt_docstring_
+)
+del _sqrt_docstring_
+
+# U34: ==== TAN         (x)
+_tan_docstring = r"""
+tan(x, /, \*, out=None, order='K')
+
+Computes tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise tangent. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+tan = UnaryElementwiseFunc("tan", ti._tan_result_type, ti._tan, _tan_docstring)
+del _tan_docstring
+
+# U35: ==== TANH        (x)
+_tanh_docstring = r"""
+tanh(x, /, \*, out=None, order='K')
+
+Computes hyperbolic tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise hyperbolic tangent. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+tanh = UnaryElementwiseFunc(
+    "tanh", ti._tanh_result_type, ti._tanh, _tanh_docstring
+)
+del _tanh_docstring
+
 # U40: ==== PROJ        (x)
 _proj_docstring = r"""
 proj(x, /, \*, out=None, order='K')

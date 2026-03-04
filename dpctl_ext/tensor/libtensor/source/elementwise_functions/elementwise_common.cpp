@@ -99,11 +99,11 @@
 #include "signbit.hpp"
 #include "sin.hpp"
 #include "sinh.hpp"
-// #include "sqrt.hpp"
-// #include "square.hpp"
+#include "sqrt.hpp"
+#include "square.hpp"
 // #include "subtract.hpp"
-// #include "tan.hpp"
-// #include "tanh.hpp"
+#include "tan.hpp"
+#include "tanh.hpp"
 // #include "true_divide.hpp"
 // #include "trunc.hpp"
 
@@ -180,11 +180,11 @@ void init_elementwise_functions(py::module_ m)
     init_signbit(m);
     init_sin(m);
     init_sinh(m);
-    // init_sqrt(m);
-    // init_square(m);
+    init_sqrt(m);
+    init_square(m);
     // init_subtract(m);
-    // init_tan(m);
-    // init_tanh(m);
+    init_tan(m);
+    init_tanh(m);
     // init_trunc(m);
 }
 
