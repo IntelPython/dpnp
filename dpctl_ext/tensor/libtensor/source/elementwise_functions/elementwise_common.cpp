@@ -55,8 +55,8 @@
 #include "ceil.hpp"
 #include "conj.hpp"
 // #include "copysign.hpp"
-// #include "cos.hpp"
-// #include "cosh.hpp"
+#include "cos.hpp"
+#include "cosh.hpp"
 // #include "equal.hpp"
 // #include "exp.hpp"
 // #include "exp2.hpp"
@@ -135,8 +135,8 @@ void init_elementwise_functions(py::module_ m)
     init_ceil(m);
     init_conj(m);
     // init_copysign(m);
-    // init_cos(m);
-    // init_cosh(m);
+    init_cos(m);
+    init_cosh(m);
     // init_divide(m);
     // init_equal(m);
     // init_exp(m);
