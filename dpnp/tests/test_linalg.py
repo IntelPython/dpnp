@@ -2964,14 +2964,6 @@ class TestLuBatched:
     def test_modes_consistency_batched(self, dtype):
         a_np = self._make_nonsingular_nd_np((3, 4, 4), dtype, "F")
         a_dp = dpnp.array(a_np, order="F")
-        A_cast = a_dp.astype(
-            (
-                dpnp.complex128
-                if dpnp.issubdtype(dtype, dpnp.complexfloating)
-                else dpnp.float64
-            ),
-            copy=False,
-        )
 
         P, L, U = dpnp.scipy.linalg.lu(a_dp)
         PL, U2 = dpnp.scipy.linalg.lu(a_dp, permute_l=True)
