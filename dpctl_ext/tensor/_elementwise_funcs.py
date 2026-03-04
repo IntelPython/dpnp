@@ -636,6 +636,64 @@ log1p = UnaryElementwiseFunc(
 )
 del _log1p_docstring
 
+# U22: ==== LOG2        (x)
+_log2_docstring_ = r"""
+log2(x, /, \*, out=None, order='K')
+
+Computes the base-2 logarithm for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise base-2 logarithm of `x`.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+log2 = UnaryElementwiseFunc(
+    "log2", ti._log2_result_type, ti._log2, _log2_docstring_
+)
+del _log2_docstring_
+
+# U23: ==== LOG10       (x)
+_log10_docstring_ = r"""
+log10(x, /, \*, out=None, order='K')
+
+Computes the base-10 logarithm for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: `"K"`.
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise base-10 logarithm of `x`.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+log10 = UnaryElementwiseFunc(
+    "log10", ti._log10_result_type, ti._log10, _log10_docstring_
+)
+del _log10_docstring_
+
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""
 angle(x, /, \*, out=None, order='K')

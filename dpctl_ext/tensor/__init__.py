@@ -106,6 +106,8 @@ from ._elementwise_funcs import (
     isnan,
     log,
     log1p,
+    log2,
+    log10,
 )
 from ._reduction import (
     argmax,
@@ -187,6 +189,8 @@ __all__ = [
     "log",
     "logsumexp",
     "log1p",
+    "log2",
+    "log10",
     "max",
     "meshgrid",
     "min",

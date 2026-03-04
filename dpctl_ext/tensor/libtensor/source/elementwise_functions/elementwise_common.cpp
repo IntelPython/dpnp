@@ -73,9 +73,9 @@
 // #include "less.hpp"
 // #include "less_equal.hpp"
 #include "log.hpp"
-// #include "log10.hpp"
+#include "log10.hpp"
 #include "log1p.hpp"
-// #include "log2.hpp"
+#include "log2.hpp"
 // #include "logaddexp.hpp"
 // #include "logical_and.hpp"
 // #include "logical_not.hpp"
@@ -154,9 +154,9 @@ void init_elementwise_functions(py::module_ m)
     // init_less(m);
     // init_less_equal(m);
     init_log(m);
-    // init_log10(m);s
+    init_log10(m);
     init_log1p(m);
-    // init_log2(m);
+    init_log2(m);
     // init_logaddexp(m);
     // init_logical_and(m);
     // init_logical_not(m);

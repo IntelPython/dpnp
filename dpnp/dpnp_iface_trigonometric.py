@@ -1495,8 +1495,8 @@ array([-15.,  nan])
 
 log10 = DPNPUnaryFunc(
     "log10",
-    ti._log10_result_type,
-    ti._log10,
+    ti_ext._log10_result_type,
+    ti_ext._log10,
     _LOG10_DOCSTRING,
     mkl_fn_to_call="_mkl_log10_to_call",
     mkl_impl_fn="_log10",
@@ -1660,8 +1660,8 @@ array([ 0.+2.26618007j,  0.+0.j        ,  1.+0.j        ,  2.+2.26618007j])
 
 log2 = DPNPUnaryFunc(
     "log2",
-    ti._log2_result_type,
-    ti._log2,
+    ti_ext._log2_result_type,
+    ti_ext._log2,
     _LOG2_DOCSTRING,
     mkl_fn_to_call="_mkl_log2_to_call",
     mkl_impl_fn="_log2",
