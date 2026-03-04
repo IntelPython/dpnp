@@ -59,7 +59,6 @@ from dpctl.tensor._type_utils import _acceptance_fn_divide
 
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
-from dpnp.exceptions import ExecutionPlacementError
 
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPI0,
@@ -85,6 +84,7 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
+from .exceptions import ExecutionPlacementError
 
 
 def _get_max_min(dtype):

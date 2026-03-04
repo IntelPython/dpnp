@@ -56,7 +56,6 @@ import dpnp
 
 # pylint: disable=no-name-in-module
 import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
-from dpnp.exceptions import ExecutionPlacementError
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
@@ -64,6 +63,7 @@ from .dpnp_algo import (
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import call_origin, get_usm_allocations
+from .exceptions import ExecutionPlacementError
 
 
 def _ravel_multi_index_checks(multi_index, dims, order):

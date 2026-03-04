@@ -41,9 +41,9 @@ import dpctl.tensor as dpt
 import dpctl.tensor._type_utils as dtu
 
 import dpnp
-from dpnp.exceptions import AxisError
 
 from . import memory as dpm
+from .exceptions import AxisError
 
 
 def _get_unwrapped_index_key(key):
