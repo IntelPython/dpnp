@@ -32,7 +32,6 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
@@ -42,10 +41,8 @@
 
 #include "dpnp4pybind11.hpp"
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "kernels/accumulators.hpp"
-#include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"

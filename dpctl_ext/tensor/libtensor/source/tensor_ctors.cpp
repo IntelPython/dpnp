@@ -58,7 +58,6 @@
 #include "kernels/dpctl_tensor_types.hpp"
 // #include "linear_sequences.hpp"
 // #include "repeat.hpp"
-#include "simplify_iteration_space.hpp"
 #include "triul_ctor.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/strided_iters.hpp"
