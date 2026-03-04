@@ -48,12 +48,12 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 from dpctl.tensor._numpy_helper import (
-    AxisError,
     normalize_axis_index,
     normalize_axis_tuple,
 )
 
 import dpnp
+from dpnp.exceptions import AxisError
 
 from .dpnp_array import dpnp_array
 

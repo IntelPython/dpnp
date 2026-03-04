@@ -1,6 +1,5 @@
 import numpy
 import pytest
-from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import (
     assert_allclose,
     assert_equal,
@@ -8,6 +7,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.exceptions import AxisError
 
 from .helper import (
     get_all_dtypes,

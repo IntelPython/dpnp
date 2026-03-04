@@ -4,7 +4,6 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from dpctl.tensor._numpy_helper import AxisError
 from dpctl.tensor._type_utils import _to_device_supported_dtype
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
@@ -17,6 +16,7 @@ from numpy.testing import (
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
+from dpnp.exceptions import AxisError
 
 from .helper import (
     get_abs_array,

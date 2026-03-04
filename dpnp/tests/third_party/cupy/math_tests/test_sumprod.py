@@ -2,9 +2,9 @@ import math
 
 import numpy
 import pytest
-from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
+from dpnp.exceptions import AxisError
 from dpnp.tests.helper import (
     has_support_aspect16,
     has_support_aspect64,

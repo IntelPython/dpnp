@@ -1,9 +1,9 @@
 import numpy
 import pytest
-from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
+from dpnp.exceptions import AxisError
 
 from .helper import (
     assert_dtype_allclose,
