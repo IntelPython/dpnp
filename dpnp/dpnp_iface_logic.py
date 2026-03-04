@@ -1969,8 +1969,8 @@ array([False, False, False,  True,  True])
 
 logical_not = DPNPUnaryFunc(
     "logical_not",
-    ti._logical_not_result_type,
-    ti._logical_not,
+    ti_ext._logical_not_result_type,
+    ti_ext._logical_not,
     _LOGICAL_NOT_DOCSTRING,
 )
 

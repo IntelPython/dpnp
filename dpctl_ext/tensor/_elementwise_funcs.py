@@ -31,6 +31,9 @@
 import dpctl_ext.tensor._tensor_elementwise_impl as ti
 
 from ._elementwise_common import UnaryElementwiseFunc
+from ._type_utils import (
+    _acceptance_fn_negative,
+)
 
 # U01: ==== ABS    (x)
 _abs_docstring_ = r"""
@@ -693,6 +696,91 @@ log10 = UnaryElementwiseFunc(
     "log10", ti._log10_result_type, ti._log10, _log10_docstring_
 )
 del _log10_docstring_
+
+# U24: ==== LOGICAL_NOT (x)
+_logical_not_docstring = r"""
+logical_not(x, /, \*, out=None, order='K')
+
+Computes the logical NOT for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise logical NOT results.
+"""
+
+logical_not = UnaryElementwiseFunc(
+    "logical_not",
+    ti._logical_not_result_type,
+    ti._logical_not,
+    _logical_not_docstring,
+)
+del _logical_not_docstring
+
+# U25: ==== NEGATIVE    (x)
+_negative_docstring_ = r"""
+negative(x, /, \*, out=None, order='K')
+
+Computes the numerical negative for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the negative of `x`.
+"""
+
+negative = UnaryElementwiseFunc(
+    "negative",
+    ti._negative_result_type,
+    ti._negative,
+    _negative_docstring_,
+    acceptance_fn=_acceptance_fn_negative,
+)
+del _negative_docstring_
+
+# U26: ==== POSITIVE    (x)
+_positive_docstring_ = r"""
+positive(x, /, \*, out=None, order='K')
+
+Computes the numerical positive for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the positive of `x`.
+"""
+
+positive = UnaryElementwiseFunc(
+    "positive", ti._positive_result_type, ti._positive, _positive_docstring_
+)
+del _positive_docstring_
 
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""

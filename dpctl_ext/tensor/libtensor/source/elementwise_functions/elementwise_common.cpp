@@ -78,16 +78,16 @@
 #include "log2.hpp"
 // #include "logaddexp.hpp"
 // #include "logical_and.hpp"
-// #include "logical_not.hpp"
+#include "logical_not.hpp"
 // #include "logical_or.hpp"
 // #include "logical_xor.hpp"
 // #include "maximum.hpp"
 // #include "minimum.hpp"
 // #include "multiply.hpp"
-// #include "negative.hpp"
+#include "negative.hpp"
 // #include "nextafter.hpp"
 // #include "not_equal.hpp"
-// #include "positive.hpp"
+#include "positive.hpp"
 // #include "pow.hpp"
 // #include "proj.hpp"
 // #include "real.hpp"
@@ -159,16 +159,16 @@ void init_elementwise_functions(py::module_ m)
     init_log2(m);
     // init_logaddexp(m);
     // init_logical_and(m);
-    // init_logical_not(m);
+    init_logical_not(m);
     // init_logical_or(m);
     // init_logical_xor(m);
     // init_maximum(m);
     // init_minimum(m);
     // init_multiply(m);
     // init_nextafter(m);
-    // init_negative(m);
+    init_negative(m);
     // init_not_equal(m);
-    // init_positive(m);
+    init_positive(m);
     // init_pow(m);
     // init_proj(m);
     // init_real(m);
