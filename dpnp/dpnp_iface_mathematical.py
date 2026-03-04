@@ -5229,8 +5229,8 @@ array([-1.0, -1.0, -0.0, 0.0, 1.0, 1.0, 2.0])
 
 trunc = DPNPUnaryFunc(
     "trunc",
-    ti._trunc_result_type,
-    ti._trunc,
+    ti_ext._trunc_result_type,
+    ti_ext._trunc,
     _TRUNC_DOCSTRING,
     mkl_fn_to_call="_mkl_trunc_to_call",
     mkl_impl_fn="_trunc",

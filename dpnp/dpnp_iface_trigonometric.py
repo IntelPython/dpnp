@@ -718,8 +718,8 @@ array([1., 2., 3.])
 
 cbrt = DPNPUnaryFunc(
     "cbrt",
-    ti._cbrt_result_type,
-    ti._cbrt,
+    ti_ext._cbrt_result_type,
+    ti_ext._cbrt,
     _CBRT_DOCSTRING,
     mkl_fn_to_call="_mkl_cbrt_to_call",
     mkl_impl_fn="_cbrt",
@@ -1187,8 +1187,8 @@ array([1., 2., 4.])
 
 exp2 = DPNPUnaryFunc(
     "exp2",
-    ti._exp2_result_type,
-    ti._exp2,
+    ti_ext._exp2_result_type,
+    ti_ext._exp2,
     _EXP2_DOCSTRING,
     mkl_fn_to_call="_mkl_exp2_to_call",
     mkl_impl_fn="_exp2",
@@ -2107,8 +2107,8 @@ array([1.0, 0.5, 0.3003003])
 
 reciprocal = DPNPUnaryFunc(
     "reciprocal",
-    ti._reciprocal_result_type,
-    ti._reciprocal,
+    ti_ext._reciprocal_result_type,
+    ti_ext._reciprocal,
     _RECIPROCAL_DOCSTRING,
     mkl_fn_to_call="_mkl_inv_to_call",
     mkl_impl_fn="_inv",
@@ -2252,8 +2252,8 @@ array([1.        , 0.35355338, 0.19245009])
 
 rsqrt = DPNPUnaryFunc(
     "rsqrt",
-    ti._rsqrt_result_type,
-    ti._rsqrt,
+    ti_ext._rsqrt_result_type,
+    ti_ext._rsqrt,
     _RSQRT_DOCSTRING,
 )
 
