@@ -66,9 +66,9 @@
 // #include "greater.hpp"
 // #include "greater_equal.hpp"
 // #include "hypot.hpp"
-// #include "imag.hpp"
-// #include "isfinite.hpp"
-// #include "isinf.hpp"
+#include "imag.hpp"
+#include "isfinite.hpp"
+#include "isinf.hpp"
 // #include "isnan.hpp"
 // #include "less.hpp"
 // #include "less_equal.hpp"
@@ -147,9 +147,9 @@ void init_elementwise_functions(py::module_ m)
     // init_greater(m);
     // init_greater_equal(m);
     // init_hypot(m);
-    // init_imag(m);
-    // init_isfinite(m);
-    // init_isinf(m);
+    init_imag(m);
+    init_isfinite(m);
+    init_isinf(m);
     // init_isnan(m);
     // init_less(m);
     // init_less_equal(m);

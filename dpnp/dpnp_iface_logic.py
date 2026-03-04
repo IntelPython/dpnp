@@ -51,6 +51,7 @@ import numpy
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
+import dpctl_ext.tensor._tensor_elementwise_impl as ti_ext
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
@@ -1094,8 +1095,8 @@ array([False,  True, False])
 
 isfinite = DPNPUnaryFunc(
     "isfinite",
-    ti._isfinite_result_type,
-    ti._isfinite,
+    ti_ext._isfinite_result_type,
+    ti_ext._isfinite,
     _ISFINITE_DOCSTRING,
 )
 
@@ -1337,8 +1338,8 @@ array([ True, False,  True])
 
 isinf = DPNPUnaryFunc(
     "isinf",
-    ti._isinf_result_type,
-    ti._isinf,
+    ti_ext._isinf_result_type,
+    ti_ext._isinf,
     _ISINF_DOCSTRING,
 )
 

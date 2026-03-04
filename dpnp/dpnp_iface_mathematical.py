@@ -2941,8 +2941,8 @@ array(1.)
 
 imag = DPNPImag(
     "imag",
-    ti._imag_result_type,
-    ti._imag,
+    ti_ext._imag_result_type,
+    ti_ext._imag,
     _IMAG_DOCSTRING,
 )
 

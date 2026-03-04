@@ -100,6 +100,9 @@ from ._elementwise_funcs import (
     exp,
     expm1,
     floor,
+    imag,
+    isfinite,
+    isinf,
 )
 from ._reduction import (
     argmax,
@@ -171,6 +174,9 @@ __all__ = [
     "full",
     "full_like",
     "iinfo",
+    "imag",
+    "isfinite",
+    "isinf",
     "isdtype",
     "isin",
     "linspace",

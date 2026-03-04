@@ -464,6 +464,94 @@ floor = UnaryElementwiseFunc(
 )
 del _floor_docstring
 
+# U16: ==== IMAG        (x)
+_imag_docstring = r"""
+imag(x, /, \*, out=None, order='K')
+
+Computes imaginary part of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise imaginary component of input.
+        If the input is a real-valued data type, the returned array has
+        the same data type. If the input is a complex floating-point
+        data type, the returned array has a floating-point data type
+        with the same floating-point precision as complex input.
+"""
+
+imag = UnaryElementwiseFunc(
+    "imag", ti._imag_result_type, ti._imag, _imag_docstring
+)
+del _imag_docstring
+
+# U17: ==== ISFINITE    (x)
+_isfinite_docstring_ = r"""
+isfinite(x, /, \*, out=None, order='K')
+
+Test if each element of input array is a finite number.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array which is True where `x` is not positive infinity,
+        negative infinity, or NaN, False otherwise.
+        The data type of the returned array is `bool`.
+"""
+
+isfinite = UnaryElementwiseFunc(
+    "isfinite", ti._isfinite_result_type, ti._isfinite, _isfinite_docstring_
+)
+del _isfinite_docstring_
+
+# U18: ==== ISINF       (x)
+_isinf_docstring_ = r"""
+isinf(x, /, \*, out=None, order='K')
+
+Test if each element of input array is an infinity.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array which is True where `x` is positive or negative infinity,
+        False otherwise. The data type of the returned array is `bool`.
+"""
+
+isinf = UnaryElementwiseFunc(
+    "isinf", ti._isinf_result_type, ti._isinf, _isinf_docstring_
+)
+del _isinf_docstring_
+
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""
 angle(x, /, \*, out=None, order='K')

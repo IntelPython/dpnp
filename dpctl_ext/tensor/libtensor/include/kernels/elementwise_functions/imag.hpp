@@ -29,21 +29,18 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of EXP(x) function.
+/// This file defines kernels for elementwise evaluation of IMAG(x) function.
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <cmath>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 #include <type_traits>
 #include <vector>
 
 #include <sycl/sycl.hpp>
 
-#include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -52,21 +49,24 @@
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::exp
+namespace dpctl::tensor::kernels::imag
 {
 
 using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
+using dpctl::tensor::type_utils::is_complex_v;
 
 template <typename argT, typename resT>
-struct ExpFunctor
+struct ImagFunctor
 {
+
     // is function constant for given argT
-    using is_constant = typename std::false_type;
+    using is_constant =
+        typename std::is_same<is_complex<argT>, std::false_type>;
     // constant value, if constant
-    // constexpr resT constant_value = resT{};
+    static constexpr resT constant_value = resT{0};
     // is function defined for sycl::vec
     using supports_vec = typename std::false_type;
     // do both argTy and resTy support sugroup store/load operation
@@ -75,59 +75,12 @@ struct ExpFunctor
 
     resT operator()(const argT &in) const
     {
-        if constexpr (is_complex<argT>::value) {
-            using realT = typename argT::value_type;
-
-            static constexpr realT q_nan =
-                std::numeric_limits<realT>::quiet_NaN();
-
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
-            if (std::isfinite(x)) {
-                if (std::isfinite(y)) {
-                    return exprm_ns::exp(
-                        exprm_ns::complex<realT>(in)); // exp(in);
-                }
-                else {
-                    return resT{q_nan, q_nan};
-                }
-            }
-            else if (std::isnan(x)) {
-                /* x is nan */
-                if (y == realT(0)) {
-                    return resT{in};
-                }
-                else {
-                    return resT{x, q_nan};
-                }
-            }
-            else {
-                if (!sycl::signbit(x)) { /* x is +inf */
-                    if (y == realT(0)) {
-                        return resT{x, y};
-                    }
-                    else if (std::isfinite(y)) {
-                        return resT{x * sycl::cos(y), x * sycl::sin(y)};
-                    }
-                    else {
-                        /* x = +inf, y = +-inf || nan */
-                        return resT{x, q_nan};
-                    }
-                }
-                else { /* x is -inf */
-                    if (std::isfinite(y)) {
-                        realT exp_x = sycl::exp(x);
-                        return resT{exp_x * sycl::cos(y), exp_x * sycl::sin(y)};
-                    }
-                    else {
-                        /* x = -inf, y = +-inf || nan */
-                        return resT{0, 0};
-                    }
-                }
-            }
+        if constexpr (is_complex_v<argT>) {
+            return std::imag(in);
         }
         else {
-            return sycl::exp(in);
+            static_assert(std::is_same_v<resT, argT>);
+            return constant_value;
         }
     }
 };
@@ -137,27 +90,36 @@ template <typename argTy,
           std::uint8_t vec_sz = 4u,
           std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
-using ExpContigFunctor =
+using ImagContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,
                                            resTy,
-                                           ExpFunctor<argTy, resTy>,
+                                           ImagFunctor<argTy, resTy>,
                                            vec_sz,
                                            n_vecs,
                                            enable_sg_loadstore>;
 
 template <typename argTy, typename resTy, typename IndexerT>
-using ExpStridedFunctor = elementwise_common::
-    UnaryStridedFunctor<argTy, resTy, IndexerT, ExpFunctor<argTy, resTy>>;
+using ImagStridedFunctor = elementwise_common::
+    UnaryStridedFunctor<argTy, resTy, IndexerT, ImagFunctor<argTy, resTy>>;
 
 template <typename T>
-struct ExpOutputType
+struct ImagOutputType
 {
     using value_type = typename std::disjunction<
+        td_ns::TypeMapResultEntry<T, bool>,
+        td_ns::TypeMapResultEntry<T, std::uint8_t>,
+        td_ns::TypeMapResultEntry<T, std::uint16_t>,
+        td_ns::TypeMapResultEntry<T, std::uint32_t>,
+        td_ns::TypeMapResultEntry<T, std::uint64_t>,
+        td_ns::TypeMapResultEntry<T, std::int8_t>,
+        td_ns::TypeMapResultEntry<T, std::int16_t>,
+        td_ns::TypeMapResultEntry<T, std::int32_t>,
+        td_ns::TypeMapResultEntry<T, std::int64_t>,
         td_ns::TypeMapResultEntry<T, sycl::half>,
         td_ns::TypeMapResultEntry<T, float>,
         td_ns::TypeMapResultEntry<T, double>,
-        td_ns::TypeMapResultEntry<T, std::complex<float>>,
-        td_ns::TypeMapResultEntry<T, std::complex<double>>,
+        td_ns::TypeMapResultEntry<T, std::complex<float>, float>,
+        td_ns::TypeMapResultEntry<T, std::complex<double>, double>,
         td_ns::DefaultResultEntry<void>>::result_type;
 
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
@@ -172,7 +134,7 @@ using vsu_ns::ContigHyperparameterSetDefault;
 using vsu_ns::UnaryContigHyperparameterSetEntry;
 
 template <typename argTy>
-struct ExpContigHyperparameterSet
+struct ImagContigHyperparameterSet
 {
     using value_type =
         typename std::disjunction<ContigHyperparameterSetDefault<4u, 2u>>;
@@ -184,86 +146,87 @@ struct ExpContigHyperparameterSet
 } // end of namespace hyperparam_detail
 
 template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
-class exp_contig_kernel;
+class imag_contig_kernel;
 
 template <typename argTy>
-sycl::event exp_contig_impl(sycl::queue &exec_q,
-                            std::size_t nelems,
-                            const char *arg_p,
-                            char *res_p,
-                            const std::vector<sycl::event> &depends = {})
+sycl::event imag_contig_impl(sycl::queue &exec_q,
+                             std::size_t nelems,
+                             const char *arg_p,
+                             char *res_p,
+                             const std::vector<sycl::event> &depends = {})
 {
-    using ExpHS = hyperparam_detail::ExpContigHyperparameterSet<argTy>;
-    static constexpr std::uint8_t vec_sz = ExpHS::vec_sz;
-    static constexpr std::uint8_t n_vecs = ExpHS::n_vecs;
+    using ImagHS = hyperparam_detail::ImagContigHyperparameterSet<argTy>;
+    static constexpr std::uint8_t vec_sz = ImagHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = ImagHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
-        argTy, ExpOutputType, ExpContigFunctor, exp_contig_kernel, vec_sz,
+        argTy, ImagOutputType, ImagContigFunctor, imag_contig_kernel, vec_sz,
         n_vecs>(exec_q, nelems, arg_p, res_p, depends);
 }
 
 template <typename fnT, typename T>
-struct ExpContigFactory
+struct ImagContigFactory
 {
     fnT get()
     {
-        if constexpr (!ExpOutputType<T>::is_defined) {
+        if constexpr (!ImagOutputType<T>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = exp_contig_impl<T>;
+            fnT fn = imag_contig_impl<T>;
             return fn;
         }
     }
 };
 
 template <typename fnT, typename T>
-struct ExpTypeMapFactory
+struct ImagTypeMapFactory
 {
-    /*! @brief get typeid for output type of sycl::exp(T x) */
+    /*! @brief get typeid for output type of std::imag(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        using rT = typename ExpOutputType<T>::value_type;
+        using rT = typename ImagOutputType<T>::value_type;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
 
 template <typename T1, typename T2, typename T3>
-class exp_strided_kernel;
+class imag_strided_kernel;
 
 template <typename argTy>
-sycl::event exp_strided_impl(sycl::queue &exec_q,
-                             std::size_t nelems,
-                             int nd,
-                             const ssize_t *shape_and_strides,
-                             const char *arg_p,
-                             ssize_t arg_offset,
-                             char *res_p,
-                             ssize_t res_offset,
-                             const std::vector<sycl::event> &depends,
-                             const std::vector<sycl::event> &additional_depends)
+sycl::event
+    imag_strided_impl(sycl::queue &exec_q,
+                      std::size_t nelems,
+                      int nd,
+                      const ssize_t *shape_and_strides,
+                      const char *arg_p,
+                      ssize_t arg_offset,
+                      char *res_p,
+                      ssize_t res_offset,
+                      const std::vector<sycl::event> &depends,
+                      const std::vector<sycl::event> &additional_depends)
 {
     return elementwise_common::unary_strided_impl<
-        argTy, ExpOutputType, ExpStridedFunctor, exp_strided_kernel>(
+        argTy, ImagOutputType, ImagStridedFunctor, imag_strided_kernel>(
         exec_q, nelems, nd, shape_and_strides, arg_p, arg_offset, res_p,
         res_offset, depends, additional_depends);
 }
 
 template <typename fnT, typename T>
-struct ExpStridedFactory
+struct ImagStridedFactory
 {
     fnT get()
     {
-        if constexpr (!ExpOutputType<T>::is_defined) {
+        if constexpr (!ImagOutputType<T>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
-            fnT fn = exp_strided_impl<T>;
+            fnT fn = imag_strided_impl<T>;
             return fn;
         }
     }
 };
 
-} // namespace dpctl::tensor::kernels::exp
+} // namespace dpctl::tensor::kernels::imag

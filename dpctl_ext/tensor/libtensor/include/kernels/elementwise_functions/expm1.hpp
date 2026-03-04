@@ -26,16 +26,20 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 //
+//===---------------------------------------------------------------------===//
+///
 /// \file
 /// This file defines kernels for elementwise evaluation of EXPM1(x) function.
 //===---------------------------------------------------------------------===//
 
 #pragma once
 #include <cmath>
+#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <type_traits>
+#include <vector>
 
 #include <sycl/sycl.hpp>
 
@@ -44,7 +48,6 @@
 #include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 
-#include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
