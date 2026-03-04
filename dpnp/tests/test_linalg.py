@@ -2683,7 +2683,7 @@ class TestLu:
         U_np = dpnp.asnumpy(U)
         A_rec = L_np[p_np] @ U_np
         A_cast = a_dp.astype(L.dtype, copy=False)
-        assert_allclose(A_rec, dpnp.asnumpy(A_cast), rtol=1e-6, atol=1e-6)
+        assert dpnp.allclose(A_rec, A_cast, rtol=1e-6, atol=1e-6)
 
     @pytest.mark.parametrize("in_dtype", get_float_complex_dtypes())
     def test_p_matrix_dtype(self, in_dtype):
