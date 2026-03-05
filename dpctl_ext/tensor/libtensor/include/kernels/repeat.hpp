@@ -33,7 +33,6 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -42,7 +41,6 @@
 
 #include "dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
-#include "utils/type_utils.hpp"
 
 namespace dpctl::tensor::kernels::repeat
 {

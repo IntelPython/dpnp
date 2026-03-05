@@ -35,14 +35,13 @@ from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_elementwise_impl as tei
 import dpctl_ext.tensor._tensor_impl as ti
-from dpctl_ext.tensor._copy_utils import (
+
+from ._copy_utils import (
     _empty_like_orderK,
     _empty_like_pair_orderK,
     _empty_like_triple_orderK,
 )
-from dpctl_ext.tensor._manipulation_functions import _broadcast_shape_impl
-from dpctl_ext.tensor._type_utils import _can_cast
-
+from ._manipulation_functions import _broadcast_shape_impl
 from ._scalar_utils import (
     _get_dtype,
     _get_queue_usm_type,
@@ -50,6 +49,7 @@ from ._scalar_utils import (
     _validate_dtype,
 )
 from ._type_utils import (
+    _can_cast,
     _resolve_one_strong_one_weak_types,
     _resolve_one_strong_two_weak_types,
 )
