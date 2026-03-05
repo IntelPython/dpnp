@@ -2370,7 +2370,7 @@ def matrix_transpose(x, /):
             f"but it is {usm_x.ndim}"
         )
 
-    usm_res = dpt.matrix_transpose(usm_x)
+    usm_res = dpt_ext.matrix_transpose(usm_x)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 

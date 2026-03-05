@@ -26,8 +26,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl
-import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._numpy_helper import (
@@ -40,6 +38,7 @@ from dpctl.utils import ExecutionPlacementError
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
@@ -696,7 +695,7 @@ def _validate_out_array(out, exec_q):
     """Validate out is supported array and has correct queue."""
     if out is not None:
         dpnp.check_supported_arrays_type(out)
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
+        if dpu.get_execution_queue((exec_q, out.sycl_queue)) is None:
             raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
