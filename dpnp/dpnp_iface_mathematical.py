@@ -3921,8 +3921,8 @@ array([ True,  True])
 
 nextafter = DPNPBinaryFunc(
     "nextafter",
-    ti._nextafter_result_type,
-    ti._nextafter,
+    ti_ext._nextafter_result_type,
+    ti_ext._nextafter,
     _NEXTAFTER_DOCSTRING,
     mkl_fn_to_call="_mkl_nextafter_to_call",
     mkl_impl_fn="_nextafter",
@@ -4087,12 +4087,12 @@ array([nan, nan])
 
 power = DPNPBinaryFunc(
     "power",
-    ti._pow_result_type,
-    ti._pow,
+    ti_ext._pow_result_type,
+    ti_ext._pow,
     _POWER_DOCSTRING,
     mkl_fn_to_call="_mkl_pow_to_call",
     mkl_impl_fn="_pow",
-    binary_inplace_fn=ti._pow_inplace,
+    binary_inplace_fn=ti_ext._pow_inplace,
 )
 
 pow = power  # pow is an alias for power

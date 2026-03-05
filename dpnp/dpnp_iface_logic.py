@@ -43,15 +43,13 @@ it contains:
 # pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
 
-
-import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as dpu
 import numpy
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_elementwise_impl as ti_ext
+import dpctl_ext.tensor._tensor_elementwise_impl as ti
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
@@ -661,8 +659,8 @@ array([ True,  True, False])
 
 equal = DPNPBinaryFunc(
     "equal",
-    ti_ext._equal_result_type,
-    ti_ext._equal,
+    ti._equal_result_type,
+    ti._equal,
     _EQUAL_DOCSTRING,
 )
 
@@ -737,8 +735,8 @@ array([ True, False])
 
 greater = DPNPBinaryFunc(
     "greater",
-    ti_ext._greater_result_type,
-    ti_ext._greater,
+    ti._greater_result_type,
+    ti._greater,
     _GREATER_DOCSTRING,
 )
 
@@ -814,8 +812,8 @@ array([ True,  True, False])
 
 greater_equal = DPNPBinaryFunc(
     "greater_equal",
-    ti_ext._greater_equal_result_type,
-    ti_ext._greater_equal,
+    ti._greater_equal_result_type,
+    ti._greater_equal,
     _GREATER_EQUAL_DOCSTRING,
 )
 
@@ -1095,8 +1093,8 @@ array([False,  True, False])
 
 isfinite = DPNPUnaryFunc(
     "isfinite",
-    ti_ext._isfinite_result_type,
-    ti_ext._isfinite,
+    ti._isfinite_result_type,
+    ti._isfinite,
     _ISFINITE_DOCSTRING,
 )
 
@@ -1338,8 +1336,8 @@ array([ True, False,  True])
 
 isinf = DPNPUnaryFunc(
     "isinf",
-    ti_ext._isinf_result_type,
-    ti_ext._isinf,
+    ti._isinf_result_type,
+    ti._isinf,
     _ISINF_DOCSTRING,
 )
 
@@ -1396,8 +1394,8 @@ array([False, False,  True])
 
 isnan = DPNPUnaryFunc(
     "isnan",
-    ti_ext._isnan_result_type,
-    ti_ext._isnan,
+    ti._isnan_result_type,
+    ti._isnan,
     _ISNAN_DOCSTRING,
 )
 
@@ -1750,8 +1748,8 @@ array([ True, False])
 
 less = DPNPBinaryFunc(
     "less",
-    ti_ext._less_result_type,
-    ti_ext._less,
+    ti._less_result_type,
+    ti._less,
     _LESS_DOCSTRING,
 )
 
@@ -1826,8 +1824,8 @@ array([False,  True,  True])
 
 less_equal = DPNPBinaryFunc(
     "less_equal",
-    ti_ext._less_equal_result_type,
-    ti_ext._less_equal,
+    ti._less_equal_result_type,
+    ti._less_equal,
     _LESS_EQUAL_DOCSTRING,
 )
 
@@ -1904,8 +1902,8 @@ array([False, False])
 
 logical_and = DPNPBinaryFunc(
     "logical_and",
-    ti_ext._logical_and_result_type,
-    ti_ext._logical_and,
+    ti._logical_and_result_type,
+    ti._logical_and,
     _LOGICAL_AND_DOCSTRING,
 )
 
@@ -1969,8 +1967,8 @@ array([False, False, False,  True,  True])
 
 logical_not = DPNPUnaryFunc(
     "logical_not",
-    ti_ext._logical_not_result_type,
-    ti_ext._logical_not,
+    ti._logical_not_result_type,
+    ti._logical_not,
     _LOGICAL_NOT_DOCSTRING,
 )
 
@@ -2047,8 +2045,8 @@ array([ True, False])
 
 logical_or = DPNPBinaryFunc(
     "logical_or",
-    ti_ext._logical_or_result_type,
-    ti_ext._logical_or,
+    ti._logical_or_result_type,
+    ti._logical_or,
     _LOGICAL_OR_DOCSTRING,
 )
 
@@ -2123,8 +2121,8 @@ array([[ True, False],
 
 logical_xor = DPNPBinaryFunc(
     "logical_xor",
-    ti_ext._logical_xor_result_type,
-    ti_ext._logical_xor,
+    ti._logical_xor_result_type,
+    ti._logical_xor,
     _LOGICAL_XOR_DOCSTRING,
 )
 

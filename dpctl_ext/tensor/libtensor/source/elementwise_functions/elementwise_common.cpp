@@ -85,10 +85,10 @@
 #include "minimum.hpp"
 #include "multiply.hpp"
 #include "negative.hpp"
-// #include "nextafter.hpp"
-// #include "not_equal.hpp"
+#include "nextafter.hpp"
+#include "not_equal.hpp"
 #include "positive.hpp"
-// #include "pow.hpp"
+#include "pow.hpp"
 #include "proj.hpp"
 #include "real.hpp"
 #include "reciprocal.hpp"
@@ -165,11 +165,11 @@ void init_elementwise_functions(py::module_ m)
     init_maximum(m);
     init_minimum(m);
     init_multiply(m);
-    // init_nextafter(m);
+    init_nextafter(m);
     init_negative(m);
-    // init_not_equal(m);
+    init_not_equal(m);
     init_positive(m);
-    // init_pow(m);
+    init_pow(m);
     init_proj(m);
     init_real(m);
     init_reciprocal(m);
