@@ -34,7 +34,6 @@
 //===----------------------------------------------------------------------===//
 
 #include <algorithm>
-#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -47,9 +46,7 @@
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
-#include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "kernels/integer_advanced_indexing.hpp"
 #include "utils/memory_overlap.hpp"

@@ -31,15 +31,16 @@ import operator
 import dpctl.tensor as dpt
 import dpctl.utils
 import numpy as np
-from dpctl.tensor._tensor_impl import (
-    _copy_usm_ndarray_for_reshape,
-    _ravel_multi_index,
-    _unravel_index,
-)
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
+
+from ._tensor_impl import (
+    _copy_usm_ndarray_for_reshape,
+    _ravel_multi_index,
+    _unravel_index,
+)
 
 __doc__ = "Implementation module for :func:`dpctl.tensor.reshape`."
 

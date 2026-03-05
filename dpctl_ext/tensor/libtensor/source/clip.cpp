@@ -33,18 +33,16 @@
 /// dpctl.tensor.clip
 //===---------------------------------------------------------------------===//
 
-#include <complex>
+#include <cassert>
 #include <cstddef>
-#include <cstdint>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
-#include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "clip.hpp"
 #include "kernels/clip.hpp"
@@ -218,7 +216,7 @@ std::pair<sycl::event, sycl::event>
     py::ssize_t max_offset(0);
     py::ssize_t dst_offset(0);
 
-    dpctl::tensor::py_internal::simplify_iteration_space_4(
+    simplify_iteration_space_4(
         nd, src_shape, src_strides, min_strides, max_strides, dst_strides,
         // outputs
         simplified_shape, simplified_src_strides, simplified_min_strides,
