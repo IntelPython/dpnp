@@ -2,12 +2,14 @@ import copy
 import tempfile
 
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_array_equal, assert_raises
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt
 import dpnp
 import dpnp.linalg
 from dpnp.dpnp_array import dpnp_array

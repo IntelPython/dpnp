@@ -11,6 +11,9 @@ from numpy.testing import (
     assert_raises_regex,
 )
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 
 # TODO: revert to `from dpctl.tensor...`
@@ -669,15 +672,15 @@ class TestEdiff1d:
         "to_begin, to_end",
         [
             (-20, 20),
-            (dpt.asarray([-20, -30]), dpt.asarray([20, 15])),
-            (dpt.asarray([[-20, -30]]), dpt.asarray([[20, 15]])),
+            (dpt_ext.asarray([-20, -30]), dpt_ext.asarray([20, 15])),
+            (dpt_ext.asarray([[-20, -30]]), dpt_ext.asarray([[20, 15]])),
             ([1, 2], [3, 4]),
             ((1, 2), (3, 4)),
         ],
     )
     def test_usm_ndarray(self, to_begin, to_end):
         a = numpy.array([[1, 2, 0]])
-        dpt_a = dpt.asarray(a)
+        dpt_a = dpt_ext.asarray(a)
 
         if isinstance(to_begin, dpt.usm_ndarray):
             np_to_begin = dpt.asnumpy(to_begin)
@@ -1578,7 +1581,7 @@ class TestProd:
         assert_allclose(result, expected)
 
         # output is usm_ndarray
-        dpt_out = dpt.empty(expected.shape, dtype=expected.dtype)
+        dpt_out = dpt_ext.empty(expected.shape, dtype=expected.dtype)
         result = dpnp.prod(ia, axis=0, out=dpt_out)
         assert dpt_out is result.get_array()
         assert_allclose(result, expected)
@@ -2631,7 +2634,7 @@ class TestRoundingFuncs:
     def test_out_usm_ndarray(self, func, dt):
         a = generate_random_numpy_array(10, dt)
         out = numpy.empty(a.shape, dtype=dt)
-        ia, usm_out = dpnp.array(a), dpt.asarray(out)
+        ia, usm_out = dpnp.array(a), dpt_ext.asarray(out)
 
         expected = getattr(numpy, func)(a, out=out)
         result = getattr(dpnp, func)(ia, out=usm_out)

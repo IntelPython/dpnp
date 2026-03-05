@@ -191,7 +191,7 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
     if is_supported_array_type(a):
         return get_usm_ndarray(a)
 
-    return dpt.asarray(
+    return dpt_ext.asarray(
         a, dtype=dtype, device=device, usm_type=usm_type, sycl_queue=sycl_queue
     )
 

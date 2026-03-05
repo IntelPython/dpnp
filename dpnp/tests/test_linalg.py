@@ -1,7 +1,6 @@
 import warnings
 
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.utils import ExecutionPlacementError
@@ -13,6 +12,9 @@ from numpy.testing import (
     assert_raises_regex,
 )
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt
 import dpnp
 
 # TODO: revert to `from dpctl.tensor...`

@@ -141,9 +141,9 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
             ti._array_overlap(out, chc) for chc in chcs
         ):
             # Allocate a temporary buffer to avoid memory overlapping.
-            out = dpt.empty_like(out)
+            out = dpt_ext.empty_like(out)
     else:
-        out = dpt.empty(
+        out = dpt_ext.empty(
             inds.shape, dtype=chcs[0].dtype, usm_type=usm_type, sycl_queue=q
         )
 
@@ -260,7 +260,7 @@ def choose(a, choices, out=None, mode="wrap"):
                 choices,
             )
         )
-    arrs_broadcast = dpt.broadcast_arrays(inds, *choices)
+    arrs_broadcast = dpt_ext.broadcast_arrays(inds, *choices)
     inds = arrs_broadcast[0]
     choices = tuple(arrs_broadcast[1:])
 
@@ -301,9 +301,11 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
 
         if ti._array_overlap(x, out):
             # Allocate a temporary buffer to avoid memory overlapping.
-            out = dpt.empty_like(out)
+            out = dpt_ext.empty_like(out)
     else:
-        out = dpt.empty(res_sh, dtype=x.dtype, usm_type=usm_type, sycl_queue=q)
+        out = dpt_ext.empty(
+            res_sh, dtype=x.dtype, usm_type=usm_type, sycl_queue=q
+        )
 
     _manager = dpu.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
@@ -1803,7 +1805,7 @@ def put_along_axis(a, ind, values, axis, mode="wrap"):
     if dpnp.is_supported_array_type(values):
         usm_vals = dpnp.get_usm_ndarray(values)
     else:
-        usm_vals = dpt.asarray(
+        usm_vals = dpt_ext.asarray(
             values, usm_type=a.usm_type, sycl_queue=a.sycl_queue
         )
 
@@ -2151,7 +2153,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
 
     usm_a = dpnp.get_usm_ndarray(a)
     if not dpnp.is_supported_array_type(indices):
-        usm_ind = dpt.asarray(
+        usm_ind = dpt_ext.asarray(
             indices, usm_type=a.usm_type, sycl_queue=a.sycl_queue
         )
     else:

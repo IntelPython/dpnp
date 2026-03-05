@@ -53,7 +53,7 @@ def _as_usm_ndarray(a, usm_type, sycl_queue):
 
     if isinstance(a, dpnp_array):
         a = a.get_array()
-    return dpt.asarray(a, usm_type=usm_type, sycl_queue=sycl_queue)
+    return dpt_ext.asarray(a, usm_type=usm_type, sycl_queue=sycl_queue)
 
 
 def _check_has_zero_val(a):
@@ -196,7 +196,7 @@ def dpnp_linspace(
 
     if dpnp.isscalar(start) and dpnp.isscalar(stop):
         # Call linspace() function for scalars.
-        usm_res = dpt.linspace(
+        usm_res = dpt_ext.linspace(
             start,
             stop,
             num,
@@ -213,19 +213,19 @@ def dpnp_linspace(
             else:
                 step = dpnp.nan
     else:
-        usm_start = dpt.asarray(
+        usm_start = dpt_ext.asarray(
             start,
             dtype=dt,
             usm_type=_usm_type,
             sycl_queue=sycl_queue_normalized,
         )
-        usm_stop = dpt.asarray(
+        usm_stop = dpt_ext.asarray(
             stop, dtype=dt, usm_type=_usm_type, sycl_queue=sycl_queue_normalized
         )
 
         delta = usm_stop - usm_start
 
-        usm_res = dpt.arange(
+        usm_res = dpt_ext.arange(
             0,
             stop=num,
             step=1,
@@ -256,7 +256,7 @@ def dpnp_linspace(
             usm_res[-1, ...] = usm_stop
 
     if axis != 0:
-        usm_res = dpt.moveaxis(usm_res, 0, axis)
+        usm_res = dpt_ext.moveaxis(usm_res, 0, axis)
 
     if dpnp.issubdtype(dtype, dpnp.integer):
         dpt.floor(usm_res, out=usm_res)
@@ -266,7 +266,7 @@ def dpnp_linspace(
 
     if retstep is True:
         if dpnp.isscalar(step):
-            step = dpt.asarray(
+            step = dpt_ext.asarray(
                 step, usm_type=res.usm_type, sycl_queue=res.sycl_queue
             )
         return res, dpnp_array._create_from_usm_ndarray(step)

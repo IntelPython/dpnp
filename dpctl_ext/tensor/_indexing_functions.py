@@ -57,7 +57,7 @@ def _get_indexing_mode(name):
 
 
 def _range(sh_i, i, nd, q, usm_t, dt):
-    ind = dpt.arange(sh_i, dtype=dt, usm_type=usm_t, sycl_queue=q)
+    ind = dpt_ext.arange(sh_i, dtype=dt, usm_type=usm_t, sycl_queue=q)
     ind.shape = tuple(sh_i if i == j else 1 for j in range(nd))
     return ind
 
@@ -177,7 +177,7 @@ def place(arr, mask, vals):
         raise dpctl.utils.ExecutionPlacementError
     if arr.shape != mask.shape or vals.ndim != 1:
         raise ValueError("Array sizes are not as required")
-    cumsum = dpt.empty(mask.size, dtype="i8", sycl_queue=exec_q)
+    cumsum = dpt_ext.empty(mask.size, dtype="i8", sycl_queue=exec_q)
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     nz_count = ti.mask_positions(
@@ -190,7 +190,7 @@ def place(arr, mask, vals):
     if vals.dtype == arr.dtype:
         rhs = vals
     else:
-        rhs = dpt.astype(vals, arr.dtype)
+        rhs = dpt_ext.astype(vals, arr.dtype)
     hev, pl_ev = ti._place(
         dst=arr,
         cumsum=cumsum,
@@ -329,7 +329,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         val_shape = indices.shape
 
     if not isinstance(vals, dpt.usm_ndarray):
-        vals = dpt.asarray(
+        vals = dpt_ext.asarray(
             vals, dtype=x.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
         )
     # choose to throw here for consistency with `place`
@@ -341,7 +341,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         rhs = vals
     else:
         rhs = dpt_ext.astype(vals, x.dtype)
-    rhs = dpt.broadcast_to(rhs, val_shape)
+    rhs = dpt_ext.broadcast_to(rhs, val_shape)
 
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
@@ -540,9 +540,9 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
                 "Input and output allocation queues are not compatible"
             )
         if ti._array_overlap(x, out):
-            out = dpt.empty_like(out)
+            out = dpt_ext.empty_like(out)
     else:
-        out = dpt.empty(
+        out = dpt_ext.empty(
             res_shape, dtype=dt, usm_type=res_usm_type, sycl_queue=exec_q
         )
 

@@ -9,6 +9,9 @@ from numpy.testing import (
     assert_raises_regex,
 )
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 
 from .helper import (
@@ -407,7 +410,7 @@ class TestItem:
 class TestUsmNdarrayProtocol:
     def test_basic(self):
         a = dpnp.arange(256, dtype=dpnp.int64)
-        usm_a = dpt.asarray(a)
+        usm_a = dpt_ext.asarray(a)
 
         assert a.sycl_queue == usm_a.sycl_queue
         assert a.usm_type == usm_a.usm_type

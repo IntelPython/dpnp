@@ -2,7 +2,6 @@ import tempfile
 from math import prod
 
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from numpy.testing import (
@@ -15,7 +14,7 @@ from numpy.testing import (
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpnp
 
 from .helper import (
@@ -972,7 +971,7 @@ def test_ones_like(array, dtype, order):
     ],
 )
 def test_dpctl_tensor_input(func, args):
-    x0 = dpt_ext.reshape(dpt.arange(9), (3, 3))
+    x0 = dpt.reshape(dpt.arange(9), (3, 3))
     new_args = [eval(val, {"x0": x0}) for val in args]
     X = getattr(dpt, func)(*new_args)
     Y = getattr(dpnp, func)(*new_args)

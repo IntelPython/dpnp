@@ -1,6 +1,5 @@
 import itertools
 
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from numpy.testing import (
@@ -9,6 +8,9 @@ from numpy.testing import (
     assert_raises,
 )
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt
 import dpnp
 
 # TODO: revert to `from dpctl.tensor...`

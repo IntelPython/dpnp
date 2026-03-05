@@ -2,11 +2,13 @@ import copy
 import tempfile
 from math import prod
 
-import dpctl.tensor as dpt
 import dpctl.utils as du
 import numpy
 import pytest
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt
 import dpnp
 from dpnp.dpnp_utils import get_usm_allocations
 

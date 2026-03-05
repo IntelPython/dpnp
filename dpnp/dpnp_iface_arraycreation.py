@@ -3131,7 +3131,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
         output[1] = dpt_ext.reshape(output[1], (-1, 1) + s0[2:])
 
     if not sparse:
-        output = dpt.broadcast_arrays(*output)
+        output = dpt_ext.broadcast_arrays(*output)
 
     if copy:
         output = [dpt_ext.copy(x) for x in output]
@@ -3696,7 +3696,7 @@ def tri(
     if usm_type is None:
         usm_type = "device"
 
-    m = dpt.ones(
+    m = dpt_ext.ones(
         (N, M),
         dtype=_dtype,
         device=device,
@@ -3912,7 +3912,7 @@ def vander(
 
     if dpnp.is_supported_array_type(x):
         x = dpnp.get_usm_ndarray(x)
-    usm_x = dpt.asarray(
+    usm_x = dpt_ext.asarray(
         x, device=device, usm_type=usm_type, sycl_queue=sycl_queue
     )
 
@@ -3935,7 +3935,7 @@ def vander(
     tmp = m[:, ::-1] if not increasing else m
     dpnp.power(
         dpt_ext.reshape(usm_x, (-1, 1)),
-        dpt.arange(
+        dpt_ext.arange(
             N, dtype=_dtype, usm_type=x_usm_type, sycl_queue=x_sycl_queue
         ),
         out=tmp,

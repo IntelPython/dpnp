@@ -376,7 +376,7 @@ def searchsorted(a, v, side="left", sorter=None):
 
     usm_a = dpnp.get_usm_ndarray(a)
     if dpnp.isscalar(v):
-        usm_v = dpt.asarray(v, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
+        usm_v = dpt_ext.asarray(v, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
     else:
         usm_v = dpnp.get_usm_ndarray(v)
 

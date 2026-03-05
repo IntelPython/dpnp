@@ -375,7 +375,7 @@ def _unique_1d(
         ):
             if dpnp.issubdtype(usm_a.dtype, dpnp.complexfloating):
                 # for complex all NaNs are considered equivalent
-                true_val = dpt.asarray(
+                true_val = dpt_ext.asarray(
                     True, sycl_queue=usm_a.sycl_queue, usm_type=usm_a.usm_type
                 )
                 return dpt.searchsorted(dpt.isnan(usm_a), true_val, side="left")
@@ -1093,7 +1093,9 @@ def broadcast_arrays(*args, subok=False):
     if len(args) == 0:
         return []
 
-    usm_arrays = dpt.broadcast_arrays(*[dpnp.get_usm_ndarray(a) for a in args])
+    usm_arrays = dpt_ext.broadcast_arrays(
+        *[dpnp.get_usm_ndarray(a) for a in args]
+    )
     return [dpnp_array._create_from_usm_ndarray(a) for a in usm_arrays]
 
 
@@ -1178,7 +1180,7 @@ def broadcast_to(array, /, shape, subok=False):
         raise NotImplementedError(f"subok={subok} is currently not supported")
 
     usm_array = dpnp.get_usm_ndarray(array)
-    new_array = dpt.broadcast_to(usm_array, shape)
+    new_array = dpt_ext.broadcast_to(usm_array, shape)
     return dpnp_array._create_from_usm_ndarray(new_array)
 
 
@@ -1416,7 +1418,7 @@ def concatenate(
         )
 
     usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
-    usm_res = dpt.concat(usm_arrays, axis=axis)
+    usm_res = dpt_ext.concat(usm_arrays, axis=axis)
 
     res = dpnp_array._create_from_usm_ndarray(usm_res)
     if dtype is not None:
@@ -1521,7 +1523,7 @@ def copyto(dst, src, casting="same_kind", where=True):
                 f"but got {where.dtype}"
             )
 
-        dst_usm, src_usm, mask_usm = dpt.broadcast_arrays(
+        dst_usm, src_usm, mask_usm = dpt_ext.broadcast_arrays(
             dpnp.get_usm_ndarray(dst),
             dpnp.get_usm_ndarray(src),
             dpnp.get_usm_ndarray(where),
@@ -1849,7 +1851,7 @@ def expand_dims(a, axis):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.expand_dims(usm_a, axis=axis)
+    usm_res = dpt_ext.expand_dims(usm_a, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1920,7 +1922,7 @@ def flip(m, axis=None):
     """
 
     m_usm = dpnp.get_usm_ndarray(m)
-    return dpnp_array._create_from_usm_ndarray(dpt.flip(m_usm, axis=axis))
+    return dpnp_array._create_from_usm_ndarray(dpt_ext.flip(m_usm, axis=axis))
 
 
 def fliplr(m):
@@ -2408,7 +2410,7 @@ def moveaxis(a, source, destination):
 
     usm_array = dpnp.get_usm_ndarray(a)
     return dpnp_array._create_from_usm_ndarray(
-        dpt.moveaxis(usm_array, source, destination)
+        dpt_ext.moveaxis(usm_array, source, destination)
     )
 
 
@@ -3663,7 +3665,7 @@ def squeeze(a, /, axis=None):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.squeeze(usm_a, axis=axis)
+    usm_res = dpt_ext.squeeze(usm_a, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -3751,7 +3753,7 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
         )
 
     usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
-    usm_res = dpt.stack(usm_arrays, axis=axis)
+    usm_res = dpt_ext.stack(usm_arrays, axis=axis)
 
     res = dpnp_array._create_from_usm_ndarray(usm_res)
     if dtype is not None:
@@ -3812,7 +3814,7 @@ def swapaxes(a, axis1, axis2):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.swapaxes(usm_a, axis1=axis1, axis2=axis2)
+    usm_res = dpt_ext.swapaxes(usm_a, axis1=axis1, axis2=axis2)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -3892,7 +3894,7 @@ def tile(A, reps):
     """
 
     usm_a = dpnp.get_usm_ndarray(A)
-    usm_res = dpt.tile(usm_a, reps)
+    usm_res = dpt_ext.tile(usm_a, reps)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -4522,7 +4524,7 @@ def unstack(x, /, *, axis=0):
     if usm_x.ndim == 0:
         raise ValueError("Input array must be at least 1-d.")
 
-    res = dpt.unstack(usm_x, axis=axis)
+    res = dpt_ext.unstack(usm_x, axis=axis)
     return tuple(dpnp_array._create_from_usm_ndarray(a) for a in res)
 
 

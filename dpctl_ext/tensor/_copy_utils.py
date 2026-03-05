@@ -91,7 +91,7 @@ def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
         )
     else:
         Xusm_dtype = dt
-    Xusm = dpt.empty(
+    Xusm = dpt_ext.empty(
         Xnp.shape, dtype=Xusm_dtype, usm_type=usm_type, sycl_queue=sycl_queue
     )
     _copy_from_numpy_into(Xusm, Xnp)
@@ -159,7 +159,7 @@ def _extract_impl(ary, ary_mask, axis=0):
     elif isinstance(ary_mask, np.ndarray):
         dst_usm_type = ary.usm_type
         exec_q = ary.sycl_queue
-        ary_mask = dpt.asarray(
+        ary_mask = dpt_ext.asarray(
             ary_mask, usm_type=dst_usm_type, sycl_queue=exec_q
         )
     else:
@@ -176,7 +176,7 @@ def _extract_impl(ary, ary_mask, axis=0):
         )
     mask_nelems = ary_mask.size
     cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
-    cumsum = dpt.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
+    cumsum = dpt_ext.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
     exec_q = cumsum.sycl_queue
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
@@ -184,7 +184,7 @@ def _extract_impl(ary, ary_mask, axis=0):
         ary_mask, cumsum, sycl_queue=exec_q, depends=dep_evs
     )
     dst_shape = ary.shape[:pp] + (mask_count,) + ary.shape[pp + mask_nd :]
-    dst = dpt.empty(
+    dst = dpt_ext.empty(
         dst_shape, dtype=ary.dtype, usm_type=dst_usm_type, device=ary.device
     )
     if dst.size == 0:
@@ -247,7 +247,7 @@ def _nonzero_impl(ary):
     usm_type = ary.usm_type
     mask_nelems = ary.size
     cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
-    cumsum = dpt.empty(
+    cumsum = dpt_ext.empty(
         mask_nelems, dtype=cumsum_dt, sycl_queue=exec_q, order="C"
     )
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
@@ -256,7 +256,7 @@ def _nonzero_impl(ary):
         ary, cumsum, sycl_queue=exec_q, depends=dep_evs
     )
     indexes_dt = ti.default_device_index_type(exec_q.sycl_device)
-    indexes = dpt.empty(
+    indexes = dpt_ext.empty(
         (ary.ndim, mask_count),
         dtype=indexes_dt,
         usm_type=usm_type,
@@ -284,7 +284,7 @@ def _prepare_indices_arrays(inds, q, usm_type):
             lambda ind: (
                 ind
                 if isinstance(ind, dpt.usm_ndarray)
-                else dpt.asarray(ind, usm_type=usm_type, sycl_queue=q)
+                else dpt_ext.asarray(ind, usm_type=usm_type, sycl_queue=q)
             ),
             inds,
         )
@@ -299,14 +299,14 @@ def _prepare_indices_arrays(inds, q, usm_type):
     inds = tuple(
         map(
             lambda ind: (
-                ind if ind.dtype == ind_dt else dpt.astype(ind, ind_dt)
+                ind if ind.dtype == ind_dt else dpt_ext.astype(ind, ind_dt)
             ),
             inds,
         )
     )
 
     # broadcast
-    inds = dpt.broadcast_arrays(*inds)
+    inds = dpt_ext.broadcast_arrays(*inds)
 
     return inds
 
@@ -332,7 +332,7 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
 
     if exec_q is not None:
         if not isinstance(vals, dpt.usm_ndarray):
-            vals = dpt.asarray(
+            vals = dpt_ext.asarray(
                 vals,
                 dtype=ary.dtype,
                 usm_type=coerced_usm_type,
@@ -368,7 +368,7 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
         rhs = vals
     else:
         rhs = dpt_ext.astype(vals, ary.dtype)
-    rhs = dpt.broadcast_to(rhs, expected_vals_shape)
+    rhs = dpt_ext.broadcast_to(rhs, expected_vals_shape)
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_ev = _manager.submitted_events
     hev, put_ev = ti._put(
@@ -418,7 +418,7 @@ def _take_multi_index(ary, inds, p, mode=0):
     if 0 in ary_sh[p:p_end] and ind0.size != 0:
         raise IndexError("cannot take non-empty indices from an empty axis")
     res_shape = ary_sh[:p] + ind0.shape + ary_sh[p_end:]
-    res = dpt.empty(
+    res = dpt_ext.empty(
         res_shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
@@ -681,7 +681,9 @@ def _make_empty_like_orderK(x, dt, usm_type, dev):
     inv_perm = sorted(range(x.ndim), key=lambda i: perm[i])
     sh = x.shape
     sh_sorted = tuple(sh[i] for i in perm)
-    R = dpt.empty(sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C")
+    R = dpt_ext.empty(
+        sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C"
+    )
     if min(st) < 0:
         st_sorted = [st[i] for i in perm]
         sl = tuple(
@@ -693,7 +695,7 @@ def _make_empty_like_orderK(x, dt, usm_type, dev):
             for i in range(x.ndim)
         )
         R = R[sl]
-    return dpt.permute_dims(R, inv_perm)
+    return dpt_ext.permute_dims(R, inv_perm)
 
 
 def _empty_like_orderK(x, dt, usm_type=None, dev=None):
@@ -712,11 +714,11 @@ def _empty_like_orderK(x, dt, usm_type=None, dev=None):
         dev = x.device
     fl = x.flags
     if fl["C"] or x.size <= 1:
-        return dpt.empty_like(
+        return dpt_ext.empty_like(
             x, dtype=dt, usm_type=usm_type, device=dev, order="C"
         )
     elif fl["F"]:
-        return dpt.empty_like(
+        return dpt_ext.empty_like(
             x, dtype=dt, usm_type=usm_type, device=dev, order="F"
         )
     return _make_empty_like_orderK(x, dt, usm_type, dev)
@@ -734,11 +736,11 @@ def _from_numpy_empty_like_orderK(x, dt, usm_type, dev):
         raise TypeError(f"Expected numpy.ndarray, got {type(x)}")
     fl = x.flags
     if fl["C"] or x.size <= 1:
-        return dpt.empty(
+        return dpt_ext.empty(
             x.shape, dtype=dt, usm_type=usm_type, device=dev, order="C"
         )
     elif fl["F"]:
-        return dpt.empty(
+        return dpt_ext.empty(
             x.shape, dtype=dt, usm_type=usm_type, device=dev, order="F"
         )
     return _make_empty_like_orderK(x, dt, usm_type, dev)
@@ -758,11 +760,11 @@ def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
     fl1 = X1.flags
     fl2 = X2.flags
     if fl1["C"] or fl2["C"]:
-        return dpt.empty(
+        return dpt_ext.empty(
             res_shape, dtype=dt, usm_type=usm_type, device=dev, order="C"
         )
     if fl1["F"] and fl2["F"]:
-        return dpt.empty(
+        return dpt_ext.empty(
             res_shape, dtype=dt, usm_type=usm_type, device=dev, order="F"
         )
     st1 = list(X1.strides)
@@ -785,7 +787,9 @@ def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
     st2_sorted = [st2[i] for i in perm]
     sh = res_shape
     sh_sorted = tuple(sh[i] for i in perm)
-    R = dpt.empty(sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C")
+    R = dpt_ext.empty(
+        sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C"
+    )
     if max(min(st1_sorted), min(st2_sorted)) < 0:
         sl = tuple(
             (
@@ -796,7 +800,7 @@ def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
             for i in range(nd1)
         )
         R = R[sl]
-    return dpt.permute_dims(R, inv_perm)
+    return dpt_ext.permute_dims(R, inv_perm)
 
 
 def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
@@ -823,11 +827,11 @@ def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
     fl2 = X2.flags
     fl3 = X3.flags
     if fl1["C"] or fl2["C"] or fl3["C"]:
-        return dpt.empty(
+        return dpt_ext.empty(
             res_shape, dtype=dt, usm_type=usm_type, device=dev, order="C"
         )
     if fl1["F"] and fl2["F"] and fl3["F"]:
-        return dpt.empty(
+        return dpt_ext.empty(
             res_shape, dtype=dt, usm_type=usm_type, device=dev, order="F"
         )
     st1 = list(X1.strides)
@@ -855,7 +859,9 @@ def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
     st3_sorted = [st3[i] for i in perm]
     sh = res_shape
     sh_sorted = tuple(sh[i] for i in perm)
-    R = dpt.empty(sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C")
+    R = dpt_ext.empty(
+        sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C"
+    )
     if max(min(st1_sorted), min(st2_sorted), min(st3_sorted)) < 0:
         sl = tuple(
             (
@@ -870,7 +876,7 @@ def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
             for i in range(nd1)
         )
         R = R[sl]
-    return dpt.permute_dims(R, inv_perm)
+    return dpt_ext.permute_dims(R, inv_perm)
 
 
 def copy(usm_ary, /, *, order="K"):

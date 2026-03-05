@@ -1,10 +1,12 @@
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt
 import dpnp
 from dpnp.dpnp_utils import map_dtype_to_device
 
