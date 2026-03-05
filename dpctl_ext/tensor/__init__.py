@@ -70,6 +70,7 @@ from ._data_types import (
     uint32,
     uint64,
 )
+from ._device import Device
 from ._elementwise_funcs import (
     abs,
     acos,
@@ -202,6 +203,7 @@ from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 from ._utility_functions import all, any, diff
 
 __all__ = [
+    "Device",
     # data types
     "bool",
     "dtype",
