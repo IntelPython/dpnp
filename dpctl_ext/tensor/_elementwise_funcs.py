@@ -246,6 +246,41 @@ atan = UnaryElementwiseFunc(
 )
 del _atan_docstring
 
+# B02: ===== ATAN2 (x1, x2)
+_atan2_docstring_ = r"""
+atan2(x1, x2, /, \*, out=None, order='K')
+
+Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the
+input array `x2`. Each element-wise result is expressed in radians.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued floating-point
+        data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued
+        floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the inverse tangent of the quotient `x1`/`x2`.
+        The returned array must have a real-valued floating-point data type
+        determined by Type Promotion Rules.
+"""
+
+atan2 = BinaryElementwiseFunc(
+    "atan2", ti._atan2_result_type, ti._atan2, _atan2_docstring_
+)
+del _atan2_docstring_
+
 # U07: ===== ATANH (x)
 _atanh_docstring = r"""
 atanh(x, /, \*, out=None, order='K')
@@ -274,6 +309,43 @@ atanh = UnaryElementwiseFunc(
     "atanh", ti._atanh_result_type, ti._atanh, _atanh_docstring
 )
 del _atanh_docstring
+
+# B03: ===== BITWISE_AND           (x1, x2)
+_bitwise_and_docstring_ = r"""
+bitwise_and(x1, x2, /, \*, out=None, order='K')
+
+Computes the bitwise AND of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have integer or boolean data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have integer or boolean data
+        type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+bitwise_and = BinaryElementwiseFunc(
+    "bitwise_and",
+    ti._bitwise_and_result_type,
+    ti._bitwise_and,
+    _bitwise_and_docstring_,
+    binary_inplace_fn=ti._bitwise_and_inplace,
+)
+del _bitwise_and_docstring_
 
 # U08: ===== BITWISE_INVERT        (x)
 _bitwise_invert_docstring = r"""

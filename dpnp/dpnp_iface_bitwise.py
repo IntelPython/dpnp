@@ -207,8 +207,8 @@ array([12,  1])
 
 bitwise_and = DPNPBinaryFunc(
     "bitwise_and",
-    ti._bitwise_and_result_type,
-    ti._bitwise_and,
+    ti_ext._bitwise_and_result_type,
+    ti_ext._bitwise_and,
     _BITWISE_AND_DOCSTRING,
     binary_inplace_fn=ti._bitwise_and_inplace,
 )

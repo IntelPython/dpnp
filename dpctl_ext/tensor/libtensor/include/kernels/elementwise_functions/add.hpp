@@ -45,12 +45,12 @@
 #include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
-#include "utils/type_dispatch_building.hpp"
-#include "utils/type_utils.hpp"
-
 #include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 #include "kernels/elementwise_functions/common_inplace.hpp"
+
+#include "utils/type_dispatch_building.hpp"
+#include "utils/type_utils.hpp"
 
 namespace dpctl::tensor::kernels::add
 {
