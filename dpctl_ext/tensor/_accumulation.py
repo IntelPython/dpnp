@@ -35,13 +35,13 @@ from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_accumulation_impl as tai
 import dpctl_ext.tensor._tensor_impl as ti
-from dpctl_ext.tensor._type_utils import (
+
+from ._numpy_helper import normalize_axis_index
+from ._type_utils import (
     _default_accumulation_dtype,
     _default_accumulation_dtype_fp_types,
     _to_device_supported_dtype,
 )
-
-from ._numpy_helper import normalize_axis_index
 
 
 def _accumulate_common(

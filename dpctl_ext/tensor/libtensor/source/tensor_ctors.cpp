@@ -72,9 +72,6 @@ static_assert(std::is_same_v<py::ssize_t, dpctl::tensor::ssize_t>);
 namespace
 {
 
-using dpctl::tensor::c_contiguous_strides;
-using dpctl::tensor::f_contiguous_strides;
-
 using dpctl::tensor::overlap::MemoryOverlap;
 using dpctl::tensor::overlap::SameLogicalTensors;
 

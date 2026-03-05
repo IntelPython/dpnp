@@ -188,11 +188,10 @@ std::pair<sycl::event, sycl::event> copy_usm_ndarray_into_usm_ndarray(
     const py::ssize_t *shape = src_shape;
 
     // nd, simplified_* and *_offset are modified by reference
-    dpctl::tensor::py_internal::simplify_iteration_space(
-        nd, shape, src_strides, dst_strides,
-        // output
-        simplified_shape, simplified_src_strides, simplified_dst_strides,
-        src_offset, dst_offset);
+    simplify_iteration_space(nd, shape, src_strides, dst_strides,
+                             // output
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
 
     if (nd < 2) {
         if (nd == 1) {

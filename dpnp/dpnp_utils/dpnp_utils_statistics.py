@@ -30,10 +30,13 @@ import warnings
 
 import dpctl
 import dpctl.tensor as dpt
-from dpctl.tensor._numpy_helper import normalize_axis_tuple
 from dpctl.utils import ExecutionPlacementError
 
 import dpnp
+
+# TODO: revert to `from dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+from dpctl_ext.tensor._numpy_helper import normalize_axis_tuple
 from dpnp.dpnp_array import dpnp_array
 
 __all__ = ["dpnp_cov", "dpnp_median"]
