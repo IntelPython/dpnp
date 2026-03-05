@@ -34,9 +34,9 @@ from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
-from dpctl_ext.tensor._manipulation_functions import _broadcast_shape_impl
 
 from ._copy_utils import _empty_like_orderK, _empty_like_triple_orderK
+from ._manipulation_functions import _broadcast_shape_impl
 from ._scalar_utils import (
     _get_dtype,
     _get_queue_usm_type,

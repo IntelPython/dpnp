@@ -45,7 +45,6 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import normalize_axis_index
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
@@ -54,6 +53,7 @@ import dpnp
 
 # pylint: disable=no-name-in-module
 import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
+from dpctl_ext.tensor._numpy_helper import normalize_axis_index
 from dpnp.dpnp_utils.dpnp_utils_common import (
     result_type_for_device,
     to_supported_dtypes,

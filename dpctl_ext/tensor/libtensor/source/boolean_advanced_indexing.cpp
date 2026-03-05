@@ -336,21 +336,19 @@ std::pair<sycl::event, sycl::event>
         shT masked_src_shape;
         shT ortho_src_strides;
         shT masked_src_strides;
-        dpctl::tensor::py_internal::split_iteration_space(
-            src_shape_vec, src_strides_vec, axis_start, axis_end,
-            ortho_src_shape,
-            masked_src_shape, // 4 vectors modified
-            ortho_src_strides, masked_src_strides);
+        split_iteration_space(src_shape_vec, src_strides_vec, axis_start,
+                              axis_end, ortho_src_shape,
+                              masked_src_shape, // 4 vectors modified
+                              ortho_src_strides, masked_src_strides);
 
         shT ortho_dst_shape;
         shT masked_dst_shape;
         shT ortho_dst_strides;
         shT masked_dst_strides;
-        dpctl::tensor::py_internal::split_iteration_space(
-            dst_shape_vec, dst_strides_vec, axis_start, axis_start + 1,
-            ortho_dst_shape,
-            masked_dst_shape, // 4 vectors modified
-            ortho_dst_strides, masked_dst_strides);
+        split_iteration_space(dst_shape_vec, dst_strides_vec, axis_start,
+                              axis_start + 1, ortho_dst_shape,
+                              masked_dst_shape, // 4 vectors modified
+                              ortho_dst_strides, masked_dst_strides);
 
         assert(ortho_src_shape.size() == static_cast<std::size_t>(ortho_nd));
         assert(ortho_dst_shape.size() == static_cast<std::size_t>(ortho_nd));
@@ -366,7 +364,7 @@ std::pair<sycl::event, sycl::event>
         py::ssize_t ortho_src_offset(0);
         py::ssize_t ortho_dst_offset(0);
 
-        dpctl::tensor::py_internal::simplify_iteration_space(
+        simplify_iteration_space(
             ortho_nd, _shape, ortho_src_strides, ortho_dst_strides,
             // output
             simplified_ortho_shape, simplified_ortho_src_strides,
@@ -646,21 +644,19 @@ std::pair<sycl::event, sycl::event>
         shT masked_dst_shape;
         shT ortho_dst_strides;
         shT masked_dst_strides;
-        dpctl::tensor::py_internal::split_iteration_space(
-            dst_shape_vec, dst_strides_vec, axis_start, axis_end,
-            ortho_dst_shape,
-            masked_dst_shape, // 4 vectors modified
-            ortho_dst_strides, masked_dst_strides);
+        split_iteration_space(dst_shape_vec, dst_strides_vec, axis_start,
+                              axis_end, ortho_dst_shape,
+                              masked_dst_shape, // 4 vectors modified
+                              ortho_dst_strides, masked_dst_strides);
 
         shT ortho_rhs_shape;
         shT masked_rhs_shape;
         shT ortho_rhs_strides;
         shT masked_rhs_strides;
-        dpctl::tensor::py_internal::split_iteration_space(
-            rhs_shape_vec, rhs_strides_vec, axis_start, axis_start + 1,
-            ortho_rhs_shape,
-            masked_rhs_shape, // 4 vectors modified
-            ortho_rhs_strides, masked_rhs_strides);
+        split_iteration_space(rhs_shape_vec, rhs_strides_vec, axis_start,
+                              axis_start + 1, ortho_rhs_shape,
+                              masked_rhs_shape, // 4 vectors modified
+                              ortho_rhs_strides, masked_rhs_strides);
 
         assert(ortho_dst_shape.size() == static_cast<std::size_t>(ortho_nd));
         assert(ortho_rhs_shape.size() == static_cast<std::size_t>(ortho_nd));
@@ -676,7 +672,7 @@ std::pair<sycl::event, sycl::event>
         py::ssize_t ortho_dst_offset(0);
         py::ssize_t ortho_rhs_offset(0);
 
-        dpctl::tensor::py_internal::simplify_iteration_space(
+        simplify_iteration_space(
             ortho_nd, _shape, ortho_dst_strides, ortho_rhs_strides,
             simplified_ortho_shape, simplified_ortho_dst_strides,
             simplified_ortho_rhs_strides, ortho_dst_offset, ortho_rhs_offset);
