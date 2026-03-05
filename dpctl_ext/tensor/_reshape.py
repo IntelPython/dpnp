@@ -36,9 +36,7 @@ import numpy as np
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 
-# TODO: revert to `from dpctl.tensor._tensor_impl...`
-# when dpnp fully migrates dpctl/tensor
-from dpctl_ext.tensor._tensor_impl import (
+from ._tensor_impl import (
     _copy_usm_ndarray_for_reshape,
     _ravel_multi_index,
     _unravel_index,
