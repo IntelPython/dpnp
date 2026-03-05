@@ -39,7 +39,6 @@
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
-#include <pybind11/pybind11.h>
 
 namespace dpctl::tensor::py_internal
 {
