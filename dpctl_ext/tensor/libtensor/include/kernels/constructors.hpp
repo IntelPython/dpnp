@@ -33,9 +33,10 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
+
 #include <array>
-#include <complex>
 #include <cstddef>
+#include <type_traits>
 #include <vector>
 
 #include <sycl/sycl.hpp>
@@ -130,7 +131,7 @@ sycl::event lin_space_step_impl(sycl::queue &exec_q,
 }
 
 // Constructor to populate tensor with linear sequence defined by
-// start and and data
+// start and data
 
 template <typename Ty, typename wTy>
 class LinearSequenceAffineFunctor
@@ -191,7 +192,7 @@ public:
  *
  * @param exec_q  Sycl queue to which kernel is submitted for execution.
  * @param nelems  Length of the sequence.
- * @param start_v Stating value of the sequence.
+ * @param start_v Starting value of the sequence.
  * @param end_v   End-value of the sequence.
  * @param include_endpoint  Whether the end-value is included in the sequence.
  * @param array_data Kernel accessible USM pointer to the start of array to be

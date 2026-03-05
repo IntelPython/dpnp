@@ -197,11 +197,10 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *shape = src_shape_ptr;
 
     // nd, simplified_* and *_offset are modified by reference
-    dpctl::tensor::py_internal::simplify_iteration_space(
-        nd, shape, src_strides, dst_strides,
-        // output
-        simplified_shape, simplified_src_strides, simplified_dst_strides,
-        src_offset, dst_offset);
+    simplify_iteration_space(nd, shape, src_strides, dst_strides,
+                             // output
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
 
     if (nd == 1 && simplified_src_strides[0] == 1 &&
         simplified_dst_strides[0] == 1) {
