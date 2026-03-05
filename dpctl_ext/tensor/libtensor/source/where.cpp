@@ -33,6 +33,7 @@
 /// dpctl.tensor.where
 //===---------------------------------------------------------------------===//
 
+#include <cassert>
 #include <cstddef>
 #include <tuple>
 #include <utility>
