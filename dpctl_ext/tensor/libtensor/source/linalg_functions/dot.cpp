@@ -32,6 +32,7 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
+#include <cassert>
 #include <cstddef>
 #include <exception>
 #include <stdexcept>
@@ -57,11 +58,7 @@
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 namespace td_ns = dpctl::tensor::type_dispatch;
@@ -112,77 +109,64 @@ static gemm_batch_contig_impl_fn_ptr_t
 
 void init_dot_dispatch_tables(void)
 {
-    using dpctl::tensor::py_internal::DotTypeMapFactory;
     td_ns::DispatchTableBuilder<int, DotTypeMapFactory, td_ns::num_types> dtb1;
     dtb1.populate_dispatch_table(dot_output_id_table);
 
-    using dpctl::tensor::py_internal::GemmBatchAtomicFactory;
     td_ns::DispatchTableBuilder<gemm_batch_impl_fn_ptr_t,
                                 GemmBatchAtomicFactory, td_ns::num_types>
         dtb2;
     dtb2.populate_dispatch_table(gemm_batch_atomic_dispatch_table);
 
-    using dpctl::tensor::py_internal::GemmBatchContigAtomicFactory;
     td_ns::DispatchTableBuilder<gemm_batch_contig_impl_fn_ptr_t,
                                 GemmBatchContigAtomicFactory, td_ns::num_types>
         dtb3;
     dtb3.populate_dispatch_table(gemm_batch_contig_atomic_dispatch_table);
 
-    using dpctl::tensor::py_internal::GemmAtomicFactory;
     td_ns::DispatchTableBuilder<gemm_impl_fn_ptr_t, GemmAtomicFactory,
                                 td_ns::num_types>
         dtb4;
     dtb4.populate_dispatch_table(gemm_atomic_dispatch_table);
 
-    using dpctl::tensor::py_internal::GemmContigAtomicFactory;
     td_ns::DispatchTableBuilder<gemm_contig_impl_fn_ptr_t,
                                 GemmContigAtomicFactory, td_ns::num_types>
         dtb5;
     dtb5.populate_dispatch_table(gemm_contig_atomic_dispatch_table);
 
-    using dpctl::tensor::py_internal::GemmBatchTempsFactory;
     td_ns::DispatchTableBuilder<gemm_batch_impl_fn_ptr_t, GemmBatchTempsFactory,
                                 td_ns::num_types>
         dtb6;
     dtb6.populate_dispatch_table(gemm_batch_temps_dispatch_table);
 
-    using dpctl::tensor::py_internal::GemmBatchContigTempsFactory;
     td_ns::DispatchTableBuilder<gemm_batch_contig_impl_fn_ptr_t,
                                 GemmBatchContigTempsFactory, td_ns::num_types>
         dtb7;
     dtb7.populate_dispatch_table(gemm_batch_contig_temps_dispatch_table);
 
-    using dpctl::tensor::py_internal::GemmTempsFactory;
     td_ns::DispatchTableBuilder<gemm_impl_fn_ptr_t, GemmTempsFactory,
                                 td_ns::num_types>
         dtb8;
     dtb8.populate_dispatch_table(gemm_temps_dispatch_table);
 
-    using dpctl::tensor::py_internal::GemmContigTempsFactory;
     td_ns::DispatchTableBuilder<gemm_contig_impl_fn_ptr_t,
                                 GemmContigTempsFactory, td_ns::num_types>
         dtb9;
     dtb9.populate_dispatch_table(gemm_contig_temps_dispatch_table);
 
-    using dpctl::tensor::py_internal::DotProductAtomicFactory;
     td_ns::DispatchTableBuilder<dot_product_impl_fn_ptr_t,
                                 DotProductAtomicFactory, td_ns::num_types>
         dtb10;
     dtb10.populate_dispatch_table(dot_product_dispatch_table);
 
-    using dpctl::tensor::py_internal::DotProductNoAtomicFactory;
     td_ns::DispatchTableBuilder<dot_product_impl_fn_ptr_t,
                                 DotProductNoAtomicFactory, td_ns::num_types>
         dtb11;
     dtb11.populate_dispatch_table(dot_product_temps_dispatch_table);
 
-    using dpctl::tensor::py_internal::DotProductContigAtomicFactory;
     td_ns::DispatchTableBuilder<dot_product_contig_impl_fn_ptr_t,
                                 DotProductContigAtomicFactory, td_ns::num_types>
         dtb12;
     dtb12.populate_dispatch_table(dot_product_contig_dispatch_table);
 
-    using dpctl::tensor::py_internal::DotProductContigNoAtomicFactory;
     td_ns::DispatchTableBuilder<dot_product_contig_impl_fn_ptr_t,
                                 DotProductContigNoAtomicFactory,
                                 td_ns::num_types>
@@ -368,9 +352,6 @@ std::pair<sycl::event, sycl::event>
                                       dot_ev);
             }
         }
-        using dpctl::tensor::py_internal::simplify_iteration_space;
-        using dpctl::tensor::py_internal::simplify_iteration_space_3;
-
         int inner_nd = inner_dims;
         const py::ssize_t *inner_shape_ptr = x1_shape_ptr + batch_dims;
         using shT = std::vector<py::ssize_t>;
@@ -628,7 +609,7 @@ std::pair<sycl::event, sycl::event>
             shT outer_inner_x1_shape;
             shT batch_x1_strides;
             shT outer_inner_x1_strides;
-            dpctl::tensor::py_internal::split_iteration_space(
+            split_iteration_space(
                 x1_shape_vec, x1_strides_vec, batch_dims,
                 batch_dims + x1_outer_inner_dims,
                 // 4 vectors modified
@@ -639,7 +620,7 @@ std::pair<sycl::event, sycl::event>
             shT outer_inner_x2_shape;
             shT batch_x2_strides;
             shT outer_inner_x2_strides;
-            dpctl::tensor::py_internal::split_iteration_space(
+            split_iteration_space(
                 x2_shape_vec, x2_strides_vec, batch_dims,
                 batch_dims + x2_outer_inner_dims,
                 // 4 vectors modified
@@ -650,7 +631,7 @@ std::pair<sycl::event, sycl::event>
             shT outer_inner_dst_shape;
             shT batch_dst_strides;
             shT outer_inner_dst_strides;
-            dpctl::tensor::py_internal::split_iteration_space(
+            split_iteration_space(
                 dst_shape_vec, dst_strides_vec, batch_dims,
                 batch_dims + dst_outer_inner_dims,
                 // 4 vectors modified
@@ -668,7 +649,6 @@ std::pair<sycl::event, sycl::event>
 
             const py::ssize_t *shape = x1_shape_ptr;
 
-            using dpctl::tensor::py_internal::simplify_iteration_space_3;
             simplify_iteration_space_3(
                 batch_dims, shape, batch_x1_strides, batch_x2_strides,
                 batch_dst_strides,
@@ -830,10 +810,8 @@ py::object py_dot_result_type(const py::dtype &input1_dtype,
         return py::cast<py::object>(res);
     }
     else {
-        using dpctl::tensor::py_internal::type_utils::_dtype_from_typenum;
-
         auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
-        auto dt = _dtype_from_typenum(dst_typenum_t);
+        auto dt = type_utils::_dtype_from_typenum(dst_typenum_t);
 
         return py::cast<py::object>(dt);
     }
@@ -841,26 +819,19 @@ py::object py_dot_result_type(const py::dtype &input1_dtype,
 
 void init_dot(py::module_ m)
 {
-    using dpctl::tensor::py_internal::init_dot_atomic_support_vector;
     init_dot_atomic_support_vector();
-    using dpctl::tensor::py_internal::init_dot_dispatch_tables;
     init_dot_dispatch_tables();
 
-    using dpctl::tensor::py_internal::py_dot;
     m.def("_dot", &py_dot, "", py::arg("x1"), py::arg("x2"),
           py::arg("batch_dims"), py::arg("x1_outer_dims"),
           py::arg("x2_outer_dims"), py::arg("inner_dims"), py::arg("dst"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    using dpctl::tensor::py_internal::dot_output_id_table;
     auto dot_result_type_pyapi = [&](const py::dtype &dtype1,
                                      const py::dtype &dtype2) {
-        using dpctl::tensor::py_internal::py_dot_result_type;
         return py_dot_result_type(dtype1, dtype2, dot_output_id_table);
     };
     m.def("_dot_result_type", dot_result_type_pyapi, "");
 }
 
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal 
