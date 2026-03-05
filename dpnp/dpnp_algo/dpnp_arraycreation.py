@@ -243,7 +243,7 @@ def dpnp_linspace(
             # Needed a special handling for denormal numbers (when step == 0),
             # see numpy#5437 for more details.
             # Note, dpt.where() is used to avoid a synchronization branch.
-            usm_res = dpt.where(
+            usm_res = dpt_ext.where(
                 step == 0, (usm_res / step_num) * delta, usm_res * step
             )
         else:
