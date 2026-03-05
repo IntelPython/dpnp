@@ -95,23 +95,19 @@ def lu(
 
     Returns
     -------
-    **(If ``permute_l`` is ``False``)**
+    The tuple ``(p, l, u)`` is returned if ``permute_l`` is ``False``
+    (default), else the tuple ``(pl, u)`` is returned, where:
 
     p : (..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray
-        If `p_indices` is ``False`` (default), the permutation matrix.
-        The permutation matrix always has a real dtype (``float32`` or
-        ``float64``) even when `a` is complex, since it only contains
-        0s and 1s.
+        Permutation matrix or permutation indices.
+        If `p_indices` is ``False`` (default), a permutation matrix.
+        The permutation matrix always has a real-valued floating-point dtype
+        even when `a` is complex, since it only contains 0s and 1s.
         If `p_indices` is ``True``, a 1-D (or batched) array of row
         permutation indices such that ``A = L[p] @ U``.
     l : (..., M, K) dpnp.ndarray
         Lower triangular or trapezoidal matrix with unit diagonal.
         ``K = min(M, N)``.
-    u : (..., K, N) dpnp.ndarray
-        Upper triangular or trapezoidal matrix.
-
-    **(If ``permute_l`` is ``True``)**
-
     pl : (..., M, K) dpnp.ndarray
         Permuted ``L`` matrix: ``pl = P @ L``.
         ``K = min(M, N)``.
@@ -273,7 +269,7 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
     lu, piv : {tuple of dpnp.ndarrays or usm_ndarrays}
         LU factorization of matrix `a` (..., M, M) together with pivot indices.
     b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}
-        Right-hand side
+        Right-hand side.
     trans : {0, 1, 2} , optional
         Type of system to solve:
 
