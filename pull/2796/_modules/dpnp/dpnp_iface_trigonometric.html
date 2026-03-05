@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.20.0dev3+174.g3a0e7d02746 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.20.0dev3+170.gb4a2644d183 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6f73b63f"></script>
+      <script src="../../_static/documentation_options.js?v=f7342218"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -803,8 +803,8 @@
 
 <span class="n">cbrt</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;cbrt&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_cbrt_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_cbrt</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_cbrt_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_cbrt</span><span class="p">,</span>
     <span class="n">_CBRT_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_cbrt_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_cbrt&quot;</span><span class="p">,</span>
@@ -1275,8 +1275,8 @@
 
 <span class="n">exp2</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;exp2&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_exp2_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_exp2</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_exp2_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_exp2</span><span class="p">,</span>
     <span class="n">_EXP2_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_exp2_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_exp2&quot;</span><span class="p">,</span>
@@ -2198,8 +2198,8 @@
 
 <span class="n">reciprocal</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;reciprocal&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_reciprocal_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_reciprocal</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_reciprocal_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_reciprocal</span><span class="p">,</span>
     <span class="n">_RECIPROCAL_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_inv_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_inv&quot;</span><span class="p">,</span>
@@ -2346,8 +2346,8 @@
 
 <span class="n">rsqrt</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;rsqrt&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_rsqrt_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_rsqrt</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_rsqrt_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_rsqrt</span><span class="p">,</span>
     <span class="n">_RSQRT_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -2403,8 +2403,8 @@
 
 <span class="n">sin</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;sin&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_sin_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_sin</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sin_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sin</span><span class="p">,</span>
     <span class="n">_SIN_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sin_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sin&quot;</span><span class="p">,</span>
@@ -2466,8 +2466,8 @@
 
 <span class="n">sinh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;sinh&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_sinh_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_sinh</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sinh_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sinh</span><span class="p">,</span>
     <span class="n">_SINH_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sinh_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sinh&quot;</span><span class="p">,</span>
@@ -2543,8 +2543,8 @@
 
 <span class="n">sqrt</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;sqrt&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_sqrt_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_sqrt</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sqrt_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sqrt</span><span class="p">,</span>
     <span class="n">_SQRT_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sqrt_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sqrt&quot;</span><span class="p">,</span>
@@ -2602,8 +2602,8 @@
 
 <span class="n">square</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;square&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_square_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_square</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_square_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_square</span><span class="p">,</span>
     <span class="n">_SQUARE_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sqr_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sqr&quot;</span><span class="p">,</span>
@@ -2661,8 +2661,8 @@
 
 <span class="n">tan</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;tan&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_tan_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_tan</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_tan_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_tan</span><span class="p">,</span>
     <span class="n">_TAN_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_tan_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_tan&quot;</span><span class="p">,</span>
@@ -2726,8 +2726,8 @@
 
 <span class="n">tanh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;tanh&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_tanh_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_tanh</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_tanh_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_tanh</span><span class="p">,</span>
     <span class="n">_TANH_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_tanh_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_tanh&quot;</span><span class="p">,</span>

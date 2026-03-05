@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev3+174.g3a0e7d02746 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev3+170.gb4a2644d183 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6f73b63f"></script>
+      <script src="../../_static/documentation_options.js?v=f7342218"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -4374,8 +4374,8 @@
 
 <span class="n">proj</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;proj&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_proj_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_proj</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_proj_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_proj</span><span class="p">,</span>
     <span class="n">_PROJ_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -4437,8 +4437,8 @@
 
 <span class="n">real</span> <span class="o">=</span> <span class="n">DPNPReal</span><span class="p">(</span>
     <span class="s2">&quot;real&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_real_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_real</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_real_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_real</span><span class="p">,</span>
     <span class="n">_REAL_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -4723,8 +4723,8 @@
 
 <span class="nb">round</span> <span class="o">=</span> <span class="n">DPNPRound</span><span class="p">(</span>
     <span class="s2">&quot;round&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_round_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_round</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_round_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_round</span><span class="p">,</span>
     <span class="n">_ROUND_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_round_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_round&quot;</span><span class="p">,</span>
@@ -4795,8 +4795,8 @@
 
 <span class="n">sign</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;sign&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_sign_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_sign</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sign_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_sign</span><span class="p">,</span>
     <span class="n">_SIGN_DOCSTRING</span><span class="p">,</span>
     <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_sign</span><span class="p">,</span>
 <span class="p">)</span>
@@ -4857,8 +4857,8 @@
 
 <span class="n">signbit</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;signbit&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_signbit_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_signbit</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_signbit_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_signbit</span><span class="p">,</span>
     <span class="n">_SIGNBIT_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -5362,8 +5362,8 @@
 
 <span class="n">trunc</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;trunc&quot;</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_trunc_result_type</span><span class="p">,</span>
-    <span class="n">ti_ext</span><span class="o">.</span><span class="n">_trunc</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_trunc_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_trunc</span><span class="p">,</span>
     <span class="n">_TRUNC_DOCSTRING</span><span class="p">,</span>
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_trunc_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_trunc&quot;</span><span class="p">,</span>
