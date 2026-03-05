@@ -27,16 +27,16 @@
 # *****************************************************************************
 
 
-from dpctl.tensor._search_functions import where
-
-from dpctl_ext.tensor._copy_utils import (
+from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
+from ._clip import clip
+from ._copy_utils import (
     asnumpy,
     astype,
     copy,
     from_numpy,
     to_numpy,
 )
-from dpctl_ext.tensor._ctors import (
+from ._ctors import (
     arange,
     asarray,
     empty,
@@ -53,42 +53,6 @@ from dpctl_ext.tensor._ctors import (
     zeros,
     zeros_like,
 )
-from dpctl_ext.tensor._indexing_functions import (
-    extract,
-    nonzero,
-    place,
-    put,
-    put_along_axis,
-    take,
-    take_along_axis,
-)
-from dpctl_ext.tensor._linear_algebra_functions import (
-    matmul,
-    matrix_transpose,
-    tensordot,
-    vecdot,
-)
-from dpctl_ext.tensor._manipulation_functions import (
-    broadcast_arrays,
-    broadcast_to,
-    concat,
-    expand_dims,
-    flip,
-    moveaxis,
-    permute_dims,
-    repeat,
-    roll,
-    squeeze,
-    stack,
-    swapaxes,
-    tile,
-    unstack,
-)
-from dpctl_ext.tensor._reshape import reshape
-from dpctl_ext.tensor._utility_functions import all, any, diff
-
-from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
-from ._clip import clip
 from ._elementwise_funcs import (
     abs,
     acos,
@@ -150,6 +114,37 @@ from ._elementwise_funcs import (
     tanh,
     trunc,
 )
+from ._indexing_functions import (
+    extract,
+    nonzero,
+    place,
+    put,
+    put_along_axis,
+    take,
+    take_along_axis,
+)
+from ._linear_algebra_functions import (
+    matmul,
+    matrix_transpose,
+    tensordot,
+    vecdot,
+)
+from ._manipulation_functions import (
+    broadcast_arrays,
+    broadcast_to,
+    concat,
+    expand_dims,
+    flip,
+    moveaxis,
+    permute_dims,
+    repeat,
+    roll,
+    squeeze,
+    stack,
+    swapaxes,
+    tile,
+    unstack,
+)
 from ._reduction import (
     argmax,
     argmin,
@@ -161,6 +156,8 @@ from ._reduction import (
     reduce_hypot,
     sum,
 )
+from ._reshape import reshape
+from ._search_functions import where
 from ._searchsorted import searchsorted
 from ._set_functions import (
     isin,
@@ -171,6 +168,7 @@ from ._set_functions import (
 )
 from ._sorting import argsort, sort, top_k
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
+from ._utility_functions import all, any, diff
 
 __all__ = [
     "abs",

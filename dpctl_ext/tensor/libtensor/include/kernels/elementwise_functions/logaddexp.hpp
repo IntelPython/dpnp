@@ -47,7 +47,6 @@
 #include "vec_size_util.hpp"
 
 #include "utils/math_utils.hpp"
-#include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
