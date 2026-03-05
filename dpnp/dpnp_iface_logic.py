@@ -661,8 +661,8 @@ array([ True,  True, False])
 
 equal = DPNPBinaryFunc(
     "equal",
-    ti._equal_result_type,
-    ti._equal,
+    ti_ext._equal_result_type,
+    ti_ext._equal,
     _EQUAL_DOCSTRING,
 )
 

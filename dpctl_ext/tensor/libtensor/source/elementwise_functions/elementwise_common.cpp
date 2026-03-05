@@ -57,12 +57,12 @@
 // #include "copysign.hpp"
 #include "cos.hpp"
 #include "cosh.hpp"
-// #include "equal.hpp"
+#include "equal.hpp"
 #include "exp.hpp"
 #include "exp2.hpp"
 #include "expm1.hpp"
 #include "floor.hpp"
-// #include "floor_divide.hpp"
+#include "floor_divide.hpp"
 // #include "greater.hpp"
 // #include "greater_equal.hpp"
 // #include "hypot.hpp"
@@ -104,7 +104,7 @@
 // #include "subtract.hpp"
 #include "tan.hpp"
 #include "tanh.hpp"
-// #include "true_divide.hpp"
+#include "true_divide.hpp"
 #include "trunc.hpp"
 
 namespace dpctl::tensor::py_internal
@@ -137,13 +137,13 @@ void init_elementwise_functions(py::module_ m)
     // init_copysign(m);
     init_cos(m);
     init_cosh(m);
-    // init_divide(m);
-    // init_equal(m);
+    init_divide(m);
+    init_equal(m);
     init_exp(m);
     init_exp2(m);
     init_expm1(m);
     init_floor(m);
-    // init_floor_divide(m);
+    init_floor_divide(m);
     // init_greater(m);
     // init_greater_equal(m);
     // init_hypot(m);
