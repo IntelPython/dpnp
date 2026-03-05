@@ -322,7 +322,6 @@ void init_cumulative_prod(py::module_ m)
     auto cumprod_pyapi = [&](const arrayT &src, int trailing_dims_to_accumulate,
                              const arrayT &dst, sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
-        using dpctl::tensor::py_internal::py_accumulate_over_axis;
         return py_accumulate_over_axis(
             src, trailing_dims_to_accumulate, dst, exec_q, depends,
             cumprod_strided_dispatch_table, cumprod_1d_contig_dispatch_table);
@@ -336,8 +335,6 @@ void init_cumulative_prod(py::module_ m)
     auto cumprod_include_initial_pyapi =
         [&](const arrayT &src, const arrayT &dst, sycl::queue &exec_q,
             const event_vecT &depends = {}) {
-            using dpctl::tensor::py_internal::
-                py_accumulate_final_axis_include_initial;
             return py_accumulate_final_axis_include_initial(
                 src, dst, exec_q, depends,
                 cumprod_include_initial_strided_dispatch_table,

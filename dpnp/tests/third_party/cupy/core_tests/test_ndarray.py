@@ -6,12 +6,15 @@ import unittest
 import dpctl
 import numpy
 import pytest
-from dpctl.tensor._numpy_helper import AxisError
 
 # from cupy_backends.cuda.api import driver
 # from cupy_backends.cuda.api import runtime
 # from cupy_backends.cuda import stream as stream_module
 import dpnp as cupy
+
+# TODO: revert to `from dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+from dpctl_ext.tensor._numpy_helper import AxisError
 
 # from cupy import _util
 # from cupy import _core
