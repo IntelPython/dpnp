@@ -63,9 +63,9 @@
 #include "expm1.hpp"
 #include "floor.hpp"
 #include "floor_divide.hpp"
-// #include "greater.hpp"
-// #include "greater_equal.hpp"
-// #include "hypot.hpp"
+#include "greater.hpp"
+#include "greater_equal.hpp"
+#include "hypot.hpp"
 #include "imag.hpp"
 #include "isfinite.hpp"
 #include "isinf.hpp"
@@ -144,9 +144,9 @@ void init_elementwise_functions(py::module_ m)
     init_expm1(m);
     init_floor(m);
     init_floor_divide(m);
-    // init_greater(m);
-    // init_greater_equal(m);
-    // init_hypot(m);
+    init_greater(m);
+    init_greater_equal(m);
+    init_hypot(m);
     init_imag(m);
     init_isfinite(m);
     init_isinf(m);

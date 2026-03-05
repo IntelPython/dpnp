@@ -1340,8 +1340,8 @@ array([[ 5.,  5.,  5.],
 
 hypot = DPNPBinaryFunc(
     "hypot",
-    ti._hypot_result_type,
-    ti._hypot,
+    ti_ext._hypot_result_type,
+    ti_ext._hypot,
     _HYPOT_DOCSTRING,
     mkl_fn_to_call="_mkl_hypot_to_call",
     mkl_impl_fn="_hypot",

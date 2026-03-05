@@ -737,8 +737,8 @@ array([ True, False])
 
 greater = DPNPBinaryFunc(
     "greater",
-    ti._greater_result_type,
-    ti._greater,
+    ti_ext._greater_result_type,
+    ti_ext._greater,
     _GREATER_DOCSTRING,
 )
 
@@ -814,8 +814,8 @@ array([ True,  True, False])
 
 greater_equal = DPNPBinaryFunc(
     "greater_equal",
-    ti._greater_equal_result_type,
-    ti._greater_equal,
+    ti_ext._greater_equal_result_type,
+    ti_ext._greater_equal,
     _GREATER_EQUAL_DOCSTRING,
 )
 
