@@ -138,10 +138,10 @@ def lu(
 
     See Also
     --------
-    :obj:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix
-                                         (compact representation).
-    :obj:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using
-                                        the LU factorization of a matrix.
+    :func:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix
+                                          (compact representation).
+    :func:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using
+                                         the LU factorization of a matrix.
 
     Examples
     --------
@@ -240,8 +240,8 @@ def lu_factor(a, overwrite_a=False, check_finite=True):
 
     See Also
     --------
-    :obj:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using
-                                        the LU factorization of `a` matrix.
+    :func:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using
+                                         the LU factorization of `a` matrix.
 
     Examples
     --------
@@ -309,7 +309,7 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
 
     See Also
     --------
-    :obj:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix.
+    :func:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix.
 
     Examples
     --------
