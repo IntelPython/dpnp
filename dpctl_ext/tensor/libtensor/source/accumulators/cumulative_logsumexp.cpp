@@ -311,7 +311,6 @@ void init_cumulative_logsumexp(py::module_ m)
                                   int trailing_dims_to_accumulate,
                                   const arrayT &dst, sycl::queue &exec_q,
                                   const event_vecT &depends = {}) {
-        using dpctl::tensor::py_internal::py_accumulate_over_axis;
         return py_accumulate_over_axis(src, trailing_dims_to_accumulate, dst,
                                        exec_q, depends,
                                        cumlogsumexp_strided_dispatch_table,
@@ -326,8 +325,6 @@ void init_cumulative_logsumexp(py::module_ m)
     auto cumlogsumexp_include_initial_pyapi =
         [&](const arrayT &src, const arrayT &dst, sycl::queue &exec_q,
             const event_vecT &depends = {}) {
-            using dpctl::tensor::py_internal::
-                py_accumulate_final_axis_include_initial;
             return py_accumulate_final_axis_include_initial(
                 src, dst, exec_q, depends,
                 cumlogsumexp_include_initial_strided_dispatch_table,
