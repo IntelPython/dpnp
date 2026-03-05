@@ -28,6 +28,7 @@
 
 
 from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
+from ._array_api import __array_api_version__, __array_namespace_info__
 from ._clip import clip
 from ._constants import e, inf, nan, newaxis, pi
 from ._copy_utils import (
@@ -380,4 +381,6 @@ __all__ = [
     "where",
     "zeros",
     "zeros_like",
+    "__array_api_version__",
+    "__array_namespace_info__",
 ]
