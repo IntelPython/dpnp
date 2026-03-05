@@ -39,11 +39,11 @@ import warnings
 
 import dpctl.tensor as dpt
 import dpctl.tensor._type_utils as dtu
-from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp
 
 from . import memory as dpm
+from .exceptions import AxisError
 
 
 def _get_unwrapped_index_key(key):

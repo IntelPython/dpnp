@@ -63,6 +63,7 @@ from .dpnp_algo import (
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import call_origin, get_usm_allocations
+from .exceptions import ExecutionPlacementError
 
 
 def _ravel_multi_index_checks(multi_index, dims, order):
@@ -129,7 +130,7 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
             )
 
         if dpu.get_execution_queue((q, out.sycl_queue)) is None:
-            raise dpu.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 
@@ -291,7 +292,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
             )
 
         if dpu.get_execution_queue((q, out.sycl_queue)) is None:
-            raise dpu.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 

@@ -31,10 +31,10 @@ import warnings
 import dpctl
 import dpctl.tensor as dpt
 from dpctl.tensor._numpy_helper import normalize_axis_tuple
-from dpctl.utils import ExecutionPlacementError
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
+from dpnp.exceptions import ExecutionPlacementError
 
 __all__ = ["dpnp_cov", "dpnp_median"]
 

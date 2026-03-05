@@ -55,6 +55,7 @@ from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
 from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
+from .exceptions import ExecutionPlacementError
 
 
 def _isclose_scalar_tol(a, b, rtol, atol, equal_nan):
@@ -1267,7 +1268,7 @@ def isin(
             )
             is None
         ):
-            raise dpu.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 "Input arrays have incompatible allocation queues"
             )
         usm_element = dpnp.get_usm_ndarray(element)

@@ -49,10 +49,10 @@ from dpctl.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
 )
-from dpctl.utils import ExecutionPlacementError
 
 import dpnp
 import dpnp.backend.extensions.fft._fft_impl as fi
+from dpnp.exceptions import ExecutionPlacementError
 
 from ..dpnp_array import dpnp_array
 from ..dpnp_utils import map_dtype_to_device

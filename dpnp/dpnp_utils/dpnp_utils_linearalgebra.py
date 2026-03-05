@@ -32,16 +32,15 @@ import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._numpy_helper import (
-    AxisError,
     normalize_axis_index,
     normalize_axis_tuple,
 )
-from dpctl.utils import ExecutionPlacementError
 
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
+from dpnp.exceptions import AxisError, ExecutionPlacementError
 
 __all__ = [
     "dpnp_cross",
