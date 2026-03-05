@@ -27,8 +27,6 @@
 # *****************************************************************************
 
 
-from dpctl.tensor._search_functions import where
-
 from dpctl_ext.tensor._copy_utils import (
     asnumpy,
     astype,
@@ -172,6 +170,7 @@ from ._reduction import (
     reduce_hypot,
     sum,
 )
+from ._search_functions import where
 from ._searchsorted import searchsorted
 from ._set_functions import (
     isin,
