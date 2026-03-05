@@ -54,7 +54,7 @@
 #include "cbrt.hpp"
 #include "ceil.hpp"
 #include "conj.hpp"
-// #include "copysign.hpp"
+#include "copysign.hpp"
 #include "cos.hpp"
 #include "cosh.hpp"
 #include "equal.hpp"
@@ -92,7 +92,7 @@
 #include "proj.hpp"
 #include "real.hpp"
 #include "reciprocal.hpp"
-// #include "remainder.hpp"
+#include "remainder.hpp"
 #include "round.hpp"
 #include "rsqrt.hpp"
 #include "sign.hpp"
@@ -101,7 +101,7 @@
 #include "sinh.hpp"
 #include "sqrt.hpp"
 #include "square.hpp"
-// #include "subtract.hpp"
+#include "subtract.hpp"
 #include "tan.hpp"
 #include "tanh.hpp"
 #include "true_divide.hpp"
@@ -134,7 +134,7 @@ void init_elementwise_functions(py::module_ m)
     init_cbrt(m);
     init_ceil(m);
     init_conj(m);
-    // init_copysign(m);
+    init_copysign(m);
     init_cos(m);
     init_cosh(m);
     init_divide(m);
@@ -173,7 +173,7 @@ void init_elementwise_functions(py::module_ m)
     init_proj(m);
     init_real(m);
     init_reciprocal(m);
-    // init_remainder(m);
+    init_remainder(m);
     init_round(m);
     init_rsqrt(m);
     init_sign(m);
@@ -182,7 +182,7 @@ void init_elementwise_functions(py::module_ m)
     init_sinh(m);
     init_sqrt(m);
     init_square(m);
-    // init_subtract(m);
+    init_subtract(m);
     init_tan(m);
     init_tanh(m);
     init_trunc(m);

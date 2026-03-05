@@ -35,6 +35,7 @@ from ._type_utils import (
     _acceptance_fn_divide,
     _acceptance_fn_negative,
     _acceptance_fn_reciprocal,
+    _acceptance_fn_subtract,
     _resolve_weak_types_all_py_ints,
 )
 
@@ -1660,6 +1661,43 @@ real = UnaryElementwiseFunc(
 )
 del _real_docstring
 
+# B22: ==== REMAINDER   (x1, x2)
+_remainder_docstring_ = r"""
+remainder(x1, x2, /, \*, out=None, order='K')
+
+Calculates the remainder of division for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+
+This function is equivalent to the Python modulus operator.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise remainders. Each remainder has the
+        same sign as respective element `x2_i`. The data type of the returned
+        array is determined by the Type Promotion Rules.
+"""
+remainder = BinaryElementwiseFunc(
+    "remainder",
+    ti._remainder_result_type,
+    ti._remainder,
+    _remainder_docstring_,
+    binary_inplace_fn=ti._remainder_inplace,
+)
+del _remainder_docstring_
+
 # U28: ==== ROUND       (x)
 _round_docstring = r"""
 round(x, /, \*, out=None, order='K')
@@ -1834,6 +1872,41 @@ sqrt = UnaryElementwiseFunc(
     "sqrt", ti._sqrt_result_type, ti._sqrt, _sqrt_docstring_
 )
 del _sqrt_docstring_
+
+# B23: ==== SUBTRACT    (x1, x2)
+_subtract_docstring_ = r"""
+subtract(x1, x2, /, \*, out=None, order='K')
+
+Calculates the difference between each element `x1_i` of the input
+array `x1` and the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a numeric data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise differences. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+subtract = BinaryElementwiseFunc(
+    "subtract",
+    ti._subtract_result_type,
+    ti._subtract,
+    _subtract_docstring_,
+    binary_inplace_fn=ti._subtract_inplace,
+    acceptance_fn=_acceptance_fn_subtract,
+)
+del _subtract_docstring_
 
 # U34: ==== TAN         (x)
 _tan_docstring = r"""
@@ -2010,6 +2083,41 @@ exp2 = UnaryElementwiseFunc(
     "exp2", ti._exp2_result_type, ti._exp2, _exp2_docstring_
 )
 del _exp2_docstring_
+
+# B25: ==== COPYSIGN    (x1, x2)
+_copysign_docstring_ = r"""
+copysign(x1, x2, /, \*, out=None, order='K')
+
+Composes a floating-point value with the magnitude of `x1_i` and the sign of
+`x2_i` for each element of input arrays `x1` and `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued floating-point data
+        type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued floating-point
+        data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+copysign = BinaryElementwiseFunc(
+    "copysign",
+    ti._copysign_result_type,
+    ti._copysign,
+    _copysign_docstring_,
+)
+del _copysign_docstring_
 
 # U39: ==== RSQRT        (x)
 _rsqrt_docstring_ = r"""
