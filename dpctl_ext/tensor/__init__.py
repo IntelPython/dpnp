@@ -177,6 +177,13 @@ from ._manipulation_functions import (
     tile,
     unstack,
 )
+from ._print import (
+    get_print_options,
+    print_options,
+    set_print_options,
+    usm_ndarray_repr,
+    usm_ndarray_str,
+)
 from ._reduction import (
     argmax,
     argmin,
@@ -289,6 +296,7 @@ __all__ = [
     "from_numpy",
     "full",
     "full_like",
+    "get_print_options",
     "greater",
     "greater_equal",
     "hypot",
@@ -332,6 +340,7 @@ __all__ = [
     "place",
     "positive",
     "pow",
+    "print_options",
     "prod",
     "proj",
     "put",
@@ -347,6 +356,7 @@ __all__ = [
     "round",
     "rsqrt",
     "searchsorted",
+    "set_print_options",
     "sign",
     "signbit",
     "sin",
@@ -376,6 +386,8 @@ __all__ = [
     "unique_inverse",
     "unique_values",
     "unstack",
+    "usm_ndarray_repr",
+    "usm_ndarray_str",
     "var",
     "vecdot",
     "where",
