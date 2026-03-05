@@ -29,6 +29,7 @@
 
 from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._clip import clip
+from ._constants import e, inf, nan, newaxis, pi
 from ._copy_utils import (
     asnumpy,
     astype,
@@ -220,6 +221,12 @@ __all__ = [
     "float64",
     "complex64",
     "complex128",
+    # constants
+    "e",
+    "inf",
+    "nan",
+    "newaxis",
+    "pi",
     # functions
     "abs",
     "acos",
