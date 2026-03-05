@@ -53,6 +53,23 @@ from ._ctors import (
     zeros,
     zeros_like,
 )
+from ._data_types import (
+    bool,
+    complex64,
+    complex128,
+    dtype,
+    float16,
+    float32,
+    float64,
+    int8,
+    int16,
+    int32,
+    int64,
+    uint8,
+    uint16,
+    uint32,
+    uint64,
+)
 from ._elementwise_funcs import (
     abs,
     acos,
@@ -185,6 +202,23 @@ from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 from ._utility_functions import all, any, diff
 
 __all__ = [
+    # data types
+    "bool",
+    "dtype",
+    "int8",
+    "uint8",
+    "int16",
+    "uint16",
+    "int32",
+    "uint32",
+    "int64",
+    "uint64",
+    "float16",
+    "float32",
+    "float64",
+    "complex64",
+    "complex128",
+    # functions
     "abs",
     "acos",
     "acosh",
