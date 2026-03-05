@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.scipy.linalg._decomp_lu &mdash; Data Parallel Extension for NumPy 0.20.0dev3+16.g8c8fc8cb8b3 documentation</title>
+  <title>dpnp.scipy.linalg._decomp_lu &mdash; Data Parallel Extension for NumPy 0.20.0dev3+16.g9d83353feb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=ac069f45"></script>
+      <script src="../../../../_static/documentation_options.js?v=42384bb6"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -182,28 +182,25 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    When ``permute_l`` is ``False``, the function returns:</span>
+<span class="sd">    (p, l, u) | (pl, u) :</span>
+<span class="sd">        The tuple ``(p, l, u)`` is returned if ``permute_l`` is ``False``</span>
+<span class="sd">        (default), else the tuple ``(pl, u)`` is returned, where:</span>
 
-<span class="sd">    p : (..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray</span>
-<span class="sd">        If `p_indices` is ``False`` (default), the permutation matrix.</span>
-<span class="sd">        The permutation matrix always has a real dtype (``float32`` or</span>
-<span class="sd">        ``float64``) even when `a` is complex, since it only contains</span>
-<span class="sd">        0s and 1s.</span>
-<span class="sd">        If `p_indices` is ``True``, a 1-D (or batched) array of row</span>
-<span class="sd">        permutation indices such that ``A = L[p] @ U``.</span>
-<span class="sd">    l : (..., M, K) dpnp.ndarray</span>
-<span class="sd">        Lower triangular or trapezoidal matrix with unit diagonal.</span>
-<span class="sd">        ``K = min(M, N)``.</span>
-<span class="sd">    u : (..., K, N) dpnp.ndarray</span>
-<span class="sd">        Upper triangular or trapezoidal matrix.</span>
-
-<span class="sd">    When ``permute_l`` is ``True``, the function returns:</span>
-
-<span class="sd">    pl : (..., M, K) dpnp.ndarray</span>
-<span class="sd">        Permuted ``L`` matrix: ``pl = P @ L``.</span>
-<span class="sd">        ``K = min(M, N)``.</span>
-<span class="sd">    u : (..., K, N) dpnp.ndarray</span>
-<span class="sd">        Upper triangular or trapezoidal matrix.</span>
+<span class="sd">        p : (..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray</span>
+<span class="sd">            If `p_indices` is ``False`` (default), the permutation matrix.</span>
+<span class="sd">            The permutation matrix always has a real dtype (``float32`` or</span>
+<span class="sd">            ``float64``) even when `a` is complex, since it only contains</span>
+<span class="sd">            0s and 1s.</span>
+<span class="sd">            If `p_indices` is ``True``, a 1-D (or batched) array of row</span>
+<span class="sd">            permutation indices such that ``A = L[p] @ U``.</span>
+<span class="sd">        l : (..., M, K) dpnp.ndarray</span>
+<span class="sd">            Lower triangular or trapezoidal matrix with unit diagonal.</span>
+<span class="sd">            ``K = min(M, N)``.</span>
+<span class="sd">        pl : (..., M, K) dpnp.ndarray</span>
+<span class="sd">            Permuted ``L`` matrix: ``pl = P @ L``.</span>
+<span class="sd">            ``K = min(M, N)``.</span>
+<span class="sd">        u : (..., K, N) dpnp.ndarray</span>
+<span class="sd">            Upper triangular or trapezoidal matrix.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
