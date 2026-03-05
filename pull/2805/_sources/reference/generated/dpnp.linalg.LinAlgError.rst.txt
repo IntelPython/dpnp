@@ -1,0 +1,10 @@
+﻿
+
+dpnp.linalg.LinAlgError
+=======================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autoexception:: LinAlgError

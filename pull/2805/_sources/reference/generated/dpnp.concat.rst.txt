@@ -1,0 +1,10 @@
+﻿
+
+dpnp.concat
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: concat
