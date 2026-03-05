@@ -32,7 +32,6 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===---------------------------------------------------------------------===//
 
-#include <complex>
 #include <cstddef>
 #include <utility>
 #include <vector>
@@ -46,7 +45,6 @@
 #include "kernels/constructors.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
-#include "utils/type_utils.hpp"
 
 #include "linear_sequences.hpp"
 
