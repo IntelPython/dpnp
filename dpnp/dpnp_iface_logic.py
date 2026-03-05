@@ -1904,8 +1904,8 @@ array([False, False])
 
 logical_and = DPNPBinaryFunc(
     "logical_and",
-    ti._logical_and_result_type,
-    ti._logical_and,
+    ti_ext._logical_and_result_type,
+    ti_ext._logical_and,
     _LOGICAL_AND_DOCSTRING,
 )
 
@@ -2047,8 +2047,8 @@ array([ True, False])
 
 logical_or = DPNPBinaryFunc(
     "logical_or",
-    ti._logical_or_result_type,
-    ti._logical_or,
+    ti_ext._logical_or_result_type,
+    ti_ext._logical_or,
     _LOGICAL_OR_DOCSTRING,
 )
 
@@ -2123,8 +2123,8 @@ array([[ True, False],
 
 logical_xor = DPNPBinaryFunc(
     "logical_xor",
-    ti._logical_xor_result_type,
-    ti._logical_xor,
+    ti_ext._logical_xor_result_type,
+    ti_ext._logical_xor,
     _LOGICAL_XOR_DOCSTRING,
 )
 

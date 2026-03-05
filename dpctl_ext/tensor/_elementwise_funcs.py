@@ -1243,6 +1243,102 @@ logaddexp = BinaryElementwiseFunc(
 )
 del _logaddexp_docstring_
 
+# B16: ==== LOGICAL_AND (x1, x2)
+_logical_and_docstring_ = r"""
+logical_and(x1, x2, /, \*, out=None, order='K')
+
+Computes the logical AND for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise logical AND results.
+"""
+logical_and = BinaryElementwiseFunc(
+    "logical_and",
+    ti._logical_and_result_type,
+    ti._logical_and,
+    _logical_and_docstring_,
+)
+del _logical_and_docstring_
+
+# B17: ==== LOGICAL_OR  (x1, x2)
+_logical_or_docstring_ = r"""
+logical_or(x1, x2, /, \*, out=None, order='K')
+
+Computes the logical OR for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise logical OR results.
+"""
+logical_or = BinaryElementwiseFunc(
+    "logical_or",
+    ti._logical_or_result_type,
+    ti._logical_or,
+    _logical_or_docstring_,
+)
+del _logical_or_docstring_
+
+# B18: ==== LOGICAL_XOR (x1, x2)
+_logical_xor_docstring_ = r"""
+logical_xor(x1, x2, /, \*, out=None, order='K')
+
+Computes the logical XOR for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise logical XOR results.
+"""
+logical_xor = BinaryElementwiseFunc(
+    "logical_xor",
+    ti._logical_xor_result_type,
+    ti._logical_xor,
+    _logical_xor_docstring_,
+)
+del _logical_xor_docstring_
+
 # U24: ==== LOGICAL_NOT (x)
 _logical_not_docstring = r"""
 logical_not(x, /, \*, out=None, order='K')
