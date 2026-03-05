@@ -130,8 +130,8 @@ def lu(
     permutation matrix is still needed then it can be constructed by
     ``dpnp.eye(M)[P, :]``.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function synchronizes in order to validate array elements
     when ``check_finite=True``, and also synchronizes to compute the
     permutation from LAPACK pivot indices.
@@ -233,8 +233,8 @@ def lu_factor(a, overwrite_a=False, check_finite=True):
         row i of matrix was interchanged with row piv[i].
         Where ``K = min(M, N)``.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function synchronizes in order to validate array elements
     when ``check_finite=True``.
 
@@ -302,8 +302,8 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
     x : {(M,), (..., M, K)} dpnp.ndarray
         Solution to the system
 
-    Warning
-    -------
+    Warnings
+    --------
     This function synchronizes in order to validate array elements
     when ``check_finite=True``.
 

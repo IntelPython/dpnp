@@ -306,8 +306,8 @@ def bincount(x, weights=None, minlength=0):
 
     For full documentation refer to :obj:`numpy.bincount`.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function synchronizes in order to calculate binning edges.
     This may harm performance in some applications.
 
@@ -504,8 +504,8 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     For full documentation refer to :obj:`numpy.histogram`.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function may synchronize in order to check a monotonically increasing
     array of bin edges. This may harm performance in some applications.
 
@@ -675,8 +675,8 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
 
     For full documentation refer to :obj:`numpy.histogram_bin_edges`.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function may synchronize in order to check a monotonically increasing
     array of bin edges. This may harm performance in some applications.
 
@@ -767,8 +767,8 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
 
     For full documentation refer to :obj:`numpy.histogram2d`.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function may synchronize in order to check a monotonically increasing
     array of bin edges. This may harm performance in some applications.
 
@@ -1100,8 +1100,8 @@ def histogramdd(sample, bins=10, range=None, density=None, weights=None):
 
     For full documentation refer to :obj:`numpy.histogramdd`.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function may synchronize in order to check a monotonically increasing
     array of bin edges. This may harm performance in some applications.
 
