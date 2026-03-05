@@ -30,7 +30,7 @@
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor._tensor_elementwise_impl as ti
 
-from ._elementwise_common import UnaryElementwiseFunc
+from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
 from ._type_utils import (
     _acceptance_fn_negative,
     _acceptance_fn_reciprocal,
@@ -123,6 +123,41 @@ acosh = UnaryElementwiseFunc(
     "acosh", ti._acosh_result_type, ti._acosh, _acosh_docstring
 )
 del _acosh_docstring
+
+# B01: ===== ADD   (x1, x2)
+
+_add_docstring_ = r"""
+add(x1, x2, /, \*, out=None, order='K')
+
+Calculates the sum for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise sums. The data type of the
+        returned array is determined by the Type Promotion Rules.
+"""
+add = BinaryElementwiseFunc(
+    "add",
+    ti._add_result_type,
+    ti._add,
+    _add_docstring_,
+    binary_inplace_fn=ti._add_inplace,
+)
+del _add_docstring_
 
 # U04: ===== ASIN  (x)
 _asin_docstring = r"""
