@@ -2,9 +2,12 @@ import math
 
 import numpy
 import pytest
-from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
+
+# TODO: revert to `from dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+from dpctl_ext.tensor._numpy_helper import AxisError
 from dpnp.tests.helper import has_support_aspect16, has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 

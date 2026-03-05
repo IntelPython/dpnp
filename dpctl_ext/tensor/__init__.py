@@ -27,16 +27,16 @@
 # *****************************************************************************
 
 
-from dpctl.tensor._search_functions import where
-
-from dpctl_ext.tensor._copy_utils import (
+from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
+from ._clip import clip
+from ._copy_utils import (
     asnumpy,
     astype,
     copy,
     from_numpy,
     to_numpy,
 )
-from dpctl_ext.tensor._ctors import (
+from ._ctors import (
     arange,
     asarray,
     empty,
@@ -53,7 +53,7 @@ from dpctl_ext.tensor._ctors import (
     zeros,
     zeros_like,
 )
-from dpctl_ext.tensor._indexing_functions import (
+from ._indexing_functions import (
     extract,
     nonzero,
     place,
@@ -62,7 +62,7 @@ from dpctl_ext.tensor._indexing_functions import (
     take,
     take_along_axis,
 )
-from dpctl_ext.tensor._manipulation_functions import (
+from ._manipulation_functions import (
     broadcast_arrays,
     broadcast_to,
     concat,
@@ -78,10 +78,8 @@ from dpctl_ext.tensor._manipulation_functions import (
     tile,
     unstack,
 )
-from dpctl_ext.tensor._reshape import reshape
-
-from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
-from ._clip import clip
+from ._reshape import reshape
+from ._search_functions import where
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [

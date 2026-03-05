@@ -1,9 +1,12 @@
 import numpy
 import pytest
-from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
+
+# TODO: revert to `from dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+from dpctl_ext.tensor._numpy_helper import AxisError
 
 from .helper import (
     assert_dtype_allclose,
