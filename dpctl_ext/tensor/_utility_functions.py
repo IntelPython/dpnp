@@ -489,7 +489,7 @@ def diff(x, /, *, axis=-1, n=1, prepend=None, append=None):
         slice(None) if i != axis else slice(None, -1) for i in range(x_nd)
     )
 
-    diff_op = dpt.not_equal if x.dtype == dpt.bool else dpt.subtract
+    diff_op = dpt_ext.not_equal if x.dtype == dpt.bool else dpt_ext.subtract
     if n > 1:
         arr_tmp0 = diff_op(arr[sl0], arr[sl1])
         arr_tmp1 = diff_op(arr_tmp0[sl0], arr_tmp0[sl1])
