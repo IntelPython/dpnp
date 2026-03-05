@@ -28,12 +28,12 @@
 
 import dpctl
 import dpctl.tensor as dpt
-import dpctl.tensor._tensor_elementwise_impl as tei
 from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor._tensor_elementwise_impl as tei
 import dpctl_ext.tensor._tensor_impl as ti
 from dpctl_ext.tensor._copy_utils import (
     _empty_like_orderK,
