@@ -81,9 +81,9 @@
 #include "logical_not.hpp"
 #include "logical_or.hpp"
 #include "logical_xor.hpp"
-// #include "maximum.hpp"
-// #include "minimum.hpp"
-// #include "multiply.hpp"
+#include "maximum.hpp"
+#include "minimum.hpp"
+#include "multiply.hpp"
 #include "negative.hpp"
 // #include "nextafter.hpp"
 // #include "not_equal.hpp"
@@ -162,9 +162,9 @@ void init_elementwise_functions(py::module_ m)
     init_logical_not(m);
     init_logical_or(m);
     init_logical_xor(m);
-    // init_maximum(m);
-    // init_minimum(m);
-    // init_multiply(m);
+    init_maximum(m);
+    init_minimum(m);
+    init_multiply(m);
     // init_nextafter(m);
     init_negative(m);
     // init_not_equal(m);

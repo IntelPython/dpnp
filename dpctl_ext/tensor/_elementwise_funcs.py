@@ -1368,6 +1368,106 @@ logical_not = UnaryElementwiseFunc(
 )
 del _logical_not_docstring
 
+# B26: ==== MAXIMUM    (x1, x2)
+_maximum_docstring_ = r"""
+maximum(x1, x2, /, \*, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise maxima.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise maxima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+maximum = BinaryElementwiseFunc(
+    "maximum",
+    ti._maximum_result_type,
+    ti._maximum,
+    _maximum_docstring_,
+)
+del _maximum_docstring_
+
+# B27: ==== MINIMUM    (x1, x2)
+_minimum_docstring_ = r"""
+minimum(x1, x2, /, \*, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise minima.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise minima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+minimum = BinaryElementwiseFunc(
+    "minimum",
+    ti._minimum_result_type,
+    ti._minimum,
+    _minimum_docstring_,
+)
+del _minimum_docstring_
+
+# B19: ==== MULTIPLY    (x1, x2)
+_multiply_docstring_ = r"""
+multiply(x1, x2, /, \*, out=None, order='K')
+
+Calculates the product for each element `x1_i` of the input array `x1` with the
+respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise products. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+multiply = BinaryElementwiseFunc(
+    "multiply",
+    ti._multiply_result_type,
+    ti._multiply,
+    _multiply_docstring_,
+    binary_inplace_fn=ti._multiply_inplace,
+)
+del _multiply_docstring_
+
 # U25: ==== NEGATIVE    (x)
 _negative_docstring_ = r"""
 negative(x, /, \*, out=None, order='K')

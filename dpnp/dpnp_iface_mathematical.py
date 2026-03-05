@@ -3353,8 +3353,8 @@ array(inf)
 
 maximum = DPNPBinaryFuncOutKw(
     "maximum",
-    ti._maximum_result_type,
-    ti._maximum,
+    ti_ext._maximum_result_type,
+    ti_ext._maximum,
     _MAXIMUM_DOCSTRING,
 )
 
@@ -3453,8 +3453,8 @@ array(-inf)
 
 minimum = DPNPBinaryFuncOutKw(
     "minimum",
-    ti._minimum_result_type,
-    ti._minimum,
+    ti_ext._minimum_result_type,
+    ti_ext._minimum,
     _MINIMUM_DOCSTRING,
 )
 
@@ -3610,12 +3610,12 @@ array([[  0.,   1.,   4.],
 
 multiply = DPNPBinaryFunc(
     "multiply",
-    ti._multiply_result_type,
-    ti._multiply,
+    ti_ext._multiply_result_type,
+    ti_ext._multiply,
     _MULTIPLY_DOCSTRING,
     mkl_fn_to_call="_mkl_mul_to_call",
     mkl_impl_fn="_mul",
-    binary_inplace_fn=ti._multiply_inplace,
+    binary_inplace_fn=ti_ext._multiply_inplace,
 )
 
 
