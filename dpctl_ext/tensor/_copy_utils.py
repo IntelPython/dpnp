@@ -299,7 +299,7 @@ def _prepare_indices_arrays(inds, q, usm_type):
     inds = tuple(
         map(
             lambda ind: (
-                ind if ind.dtype == ind_dt else dpt.astype(ind, ind_dt)
+                ind if ind.dtype == ind_dt else dpt_ext.astype(ind, ind_dt)
             ),
             inds,
         )

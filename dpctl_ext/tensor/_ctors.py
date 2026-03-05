@@ -1441,7 +1441,7 @@ def linspace(
     )
     _manager.add_event_pair(hev, la_ev)
 
-    return res if int_dt is None else dpt.astype(res, int_dt)
+    return res if int_dt is None else dpt_ext.astype(res, int_dt)
 
 
 def meshgrid(*arrays, indexing="xy"):
