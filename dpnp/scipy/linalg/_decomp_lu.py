@@ -77,11 +77,11 @@ def lu(
         Perform the multiplication ``P @ L`` (Default: do not permute).
 
         Default: ``False``.
-    overwrite_a : {None, bool}, optional
+    overwrite_a : bool, optional
         Whether to overwrite data in `a` (may increase performance).
 
         Default: ``False``.
-    check_finite : {None, bool}, optional
+    check_finite : bool, optional
         Whether to check that the input matrix contains only finite numbers.
         Disabling may give a performance gain, but may result in problems
         (crashes, non-termination) if the inputs do contain infinities or NaNs.
@@ -211,11 +211,11 @@ def lu_factor(a, overwrite_a=False, check_finite=True):
     ----------
     a : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Input array to decompose.
-    overwrite_a : {None, bool}, optional
+    overwrite_a : bool, optional
         Whether to overwrite data in `a` (may increase performance).
 
         Default: ``False``.
-    check_finite : {None, bool}, optional
+    check_finite : bool, optional
         Whether to check that the input matrix contains only finite numbers.
         Disabling may give a performance gain, but may result in problems
         (crashes, non-termination) if the inputs do contain infinities or NaNs.
@@ -286,11 +286,11 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
         =====  =================
 
         Default: ``0``.
-    overwrite_b : {None, bool}, optional
+    overwrite_b : bool, optional
         Whether to overwrite data in `b` (may increase performance).
 
         Default: ``False``.
-    check_finite : {None, bool}, optional
+    check_finite : bool, optional
         Whether to check that the input matrix contains only finite numbers.
         Disabling may give a performance gain, but may result in problems
         (crashes, non-termination) if the inputs do contain infinities or NaNs.
