@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.scipy.linalg.lu &mdash; Data Parallel Extension for NumPy 0.20.0dev3+16.g9d83353feb documentation</title>
+  <title>dpnp.scipy.linalg.lu &mdash; Data Parallel Extension for NumPy 0.20.0dev3+16.gf942eb6f288 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=42384bb6"></script>
+      <script src="../../_static/documentation_options.js?v=4998bdfe"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -142,28 +142,23 @@ instead of a permutation matrix.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p>The tuple <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">l,</span> <span class="pre">u)</span></code> is returned if <code class="docutils literal notranslate"><span class="pre">permute_l</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>
-(default), else the tuple <code class="docutils literal notranslate"><span class="pre">(pl,</span> <span class="pre">u)</span></code> is returned, where:</p>
-<dl class="simple">
-<dt>p<span class="classifier">(..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray</span></dt><dd><p>If <cite>p_indices</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), the permutation matrix.
-The permutation matrix always has a real dtype (<code class="docutils literal notranslate"><span class="pre">float32</span></code> or
-<code class="docutils literal notranslate"><span class="pre">float64</span></code>) even when <cite>a</cite> is complex, since it only contains
-0s and 1s.
+(default), else the tuple <code class="docutils literal notranslate"><span class="pre">(pl,</span> <span class="pre">u)</span></code> is returned, where</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>p</strong> (<em>(..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray</em>) -- Permutation matrix or permutation indices.
+If <cite>p_indices</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), a permutation matrix.
+The permutation matrix always has a real-valued floating-point dtype
+even when <cite>a</cite> is complex, since it only contains 0s and 1s.
 If <cite>p_indices</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, a 1-D (or batched) array of row
-permutation indices such that <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">L[p]</span> <span class="pre">&#64;</span> <span class="pre">U</span></code>.</p>
-</dd>
-<dt>l<span class="classifier">(..., M, K) dpnp.ndarray</span></dt><dd><p>Lower triangular or trapezoidal matrix with unit diagonal.
-<code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">min(M,</span> <span class="pre">N)</span></code>.</p>
-</dd>
-<dt>pl<span class="classifier">(..., M, K) dpnp.ndarray</span></dt><dd><p>Permuted <code class="docutils literal notranslate"><span class="pre">L</span></code> matrix: <code class="docutils literal notranslate"><span class="pre">pl</span> <span class="pre">=</span> <span class="pre">P</span> <span class="pre">&#64;</span> <span class="pre">L</span></code>.
-<code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">min(M,</span> <span class="pre">N)</span></code>.</p>
-</dd>
-<dt>u<span class="classifier">(..., K, N) dpnp.ndarray</span></dt><dd><p>Upper triangular or trapezoidal matrix.</p>
-</dd>
-</dl>
+permutation indices such that <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">L[p]</span> <span class="pre">&#64;</span> <span class="pre">U</span></code>.</p></li>
+<li><p><strong>l</strong> (<em>(..., M, K) dpnp.ndarray</em>) -- Lower triangular or trapezoidal matrix with unit diagonal.
+<code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">min(M,</span> <span class="pre">N)</span></code>.</p></li>
+<li><p><strong>pl</strong> (<em>(..., M, K) dpnp.ndarray</em>) -- Permuted <code class="docutils literal notranslate"><span class="pre">L</span></code> matrix: <code class="docutils literal notranslate"><span class="pre">pl</span> <span class="pre">=</span> <span class="pre">P</span> <span class="pre">&#64;</span> <span class="pre">L</span></code>.
+<code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">min(M,</span> <span class="pre">N)</span></code>.</p></li>
+<li><p><strong>u</strong> (<em>(..., K, N) dpnp.ndarray</em>) -- Upper triangular or trapezoidal matrix.</p></li>
+</ul>
+</div></blockquote>
 </p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(p, l, u) | (pl, u)</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
