@@ -2,10 +2,6 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from dpctl.tensor._numpy_helper import (
-    AxisError,
-    normalize_axis_index,
-)
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
@@ -19,6 +15,13 @@ from numpy.testing import (
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 import dpnp
+
+# TODO: revert to `from dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+from dpctl_ext.tensor._numpy_helper import (
+    AxisError,
+    normalize_axis_index,
+)
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import map_dtype_to_device
 

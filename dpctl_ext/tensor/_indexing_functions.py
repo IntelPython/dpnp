@@ -190,7 +190,7 @@ def place(arr, mask, vals):
     if vals.dtype == arr.dtype:
         rhs = vals
     else:
-        rhs = dpt.astype(vals, arr.dtype)
+        rhs = dpt_ext.astype(vals, arr.dtype)
     hev, pl_ev = ti._place(
         dst=arr,
         cumsum=cumsum,

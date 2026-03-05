@@ -42,7 +42,8 @@ from dpctl.tensor._usmarray import _is_object_with_buffer_protocol
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_impl as ti
-from dpctl_ext.tensor._copy_utils import (
+
+from ._copy_utils import (
     _empty_like_orderK,
     _from_numpy_empty_like_orderK,
 )
@@ -1440,7 +1441,7 @@ def linspace(
     )
     _manager.add_event_pair(hev, la_ev)
 
-    return res if int_dt is None else dpt.astype(res, int_dt)
+    return res if int_dt is None else dpt_ext.astype(res, int_dt)
 
 
 def meshgrid(*arrays, indexing="xy"):
