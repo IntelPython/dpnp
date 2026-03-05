@@ -70,8 +70,8 @@
 #include "isfinite.hpp"
 #include "isinf.hpp"
 #include "isnan.hpp"
-// #include "less.hpp"
-// #include "less_equal.hpp"
+#include "less.hpp"
+#include "less_equal.hpp"
 #include "log.hpp"
 #include "log10.hpp"
 #include "log1p.hpp"
@@ -151,8 +151,8 @@ void init_elementwise_functions(py::module_ m)
     init_isfinite(m);
     init_isinf(m);
     init_isnan(m);
-    // init_less(m);
-    // init_less_equal(m);
+    init_less(m);
+    init_less_equal(m);
     init_log(m);
     init_log10(m);
     init_log1p(m);

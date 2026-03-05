@@ -1750,8 +1750,8 @@ array([ True, False])
 
 less = DPNPBinaryFunc(
     "less",
-    ti._less_result_type,
-    ti._less,
+    ti_ext._less_result_type,
+    ti_ext._less,
     _LESS_DOCSTRING,
 )
 
@@ -1826,8 +1826,8 @@ array([False,  True,  True])
 
 less_equal = DPNPBinaryFunc(
     "less_equal",
-    ti._less_equal_result_type,
-    ti._less_equal,
+    ti_ext._less_equal_result_type,
+    ti_ext._less_equal,
     _LESS_EQUAL_DOCSTRING,
 )
 

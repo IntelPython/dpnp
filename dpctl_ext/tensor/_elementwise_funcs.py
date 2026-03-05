@@ -1021,6 +1021,77 @@ isnan = UnaryElementwiseFunc(
 )
 del _isnan_docstring_
 
+# B13: ==== LESS        (x1, x2)
+_less_docstring_ = r"""
+less(x1, x2, /, \*, out=None, order='K')
+
+Computes the less-than test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the result of element-wise less-than comparison.
+        The returned array has a data type of `bool`.
+"""
+
+less = BinaryElementwiseFunc(
+    "less",
+    ti._less_result_type,
+    ti._less,
+    _less_docstring_,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
+)
+del _less_docstring_
+
+
+# B14: ==== LESS_EQUAL  (x1, x2)
+_less_equal_docstring_ = r"""
+less_equal(x1, x2, /, \*, out=None, order='K')
+
+Computes the less-than or equal-to test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the result of element-wise less-than or equal-to
+        comparison. The returned array has a data type of `bool`.
+"""
+
+less_equal = BinaryElementwiseFunc(
+    "less_equal",
+    ti._less_equal_result_type,
+    ti._less_equal,
+    _less_equal_docstring_,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
+)
+del _less_equal_docstring_
+
 # U20: ==== LOG         (x)
 _log_docstring = r"""
 log(x, /, \*, out=None, order='K')
