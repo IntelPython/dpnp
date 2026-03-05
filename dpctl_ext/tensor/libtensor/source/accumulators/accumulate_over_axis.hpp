@@ -35,9 +35,12 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstddef>
-#include <cstdint>
+#include <exception>
+#include <iterator>
 #include <stdexcept>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
