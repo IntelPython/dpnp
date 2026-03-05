@@ -1206,6 +1206,43 @@ log10 = UnaryElementwiseFunc(
 )
 del _log10_docstring_
 
+# B15: ==== LOGADDEXP   (x1, x2)
+_logaddexp_docstring_ = r"""
+logaddexp(x1, x2, /, \*, out=None, order='K')
+
+Calculates the natural logarithm of the sum of exponentials for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the input
+array `x2`.
+
+This function calculates `log(exp(x1) + exp(x2))` more accurately for small
+values of `x`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued floating-point data
+        type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued floating-point
+        data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+logaddexp = BinaryElementwiseFunc(
+    "logaddexp", ti._logaddexp_result_type, ti._logaddexp, _logaddexp_docstring_
+)
+del _logaddexp_docstring_
+
 # U24: ==== LOGICAL_NOT (x)
 _logical_not_docstring = r"""
 logical_not(x, /, \*, out=None, order='K')

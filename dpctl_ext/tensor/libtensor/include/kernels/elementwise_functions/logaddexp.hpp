@@ -49,7 +49,6 @@
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
-#include "utils/type_utils.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
 
@@ -57,10 +56,6 @@ namespace dpctl::tensor::kernels::logaddexp
 {
 using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace tu_ns = dpctl::tensor::type_utils;
-
-using dpctl::tensor::type_utils::is_complex;
-using dpctl::tensor::type_utils::vec_cast;
 
 template <typename argT1, typename argT2, typename resT>
 struct LogAddExpFunctor

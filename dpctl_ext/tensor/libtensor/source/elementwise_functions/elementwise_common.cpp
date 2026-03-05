@@ -76,7 +76,7 @@
 #include "log10.hpp"
 #include "log1p.hpp"
 #include "log2.hpp"
-// #include "logaddexp.hpp"
+#include "logaddexp.hpp"
 // #include "logical_and.hpp"
 #include "logical_not.hpp"
 // #include "logical_or.hpp"
@@ -157,7 +157,7 @@ void init_elementwise_functions(py::module_ m)
     init_log10(m);
     init_log1p(m);
     init_log2(m);
-    // init_logaddexp(m);
+    init_logaddexp(m);
     // init_logical_and(m);
     init_logical_not(m);
     // init_logical_or(m);
