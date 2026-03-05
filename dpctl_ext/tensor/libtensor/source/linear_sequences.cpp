@@ -39,7 +39,7 @@
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
-#include <pybind11/complex.h>
+#include <pybind11/complex.h> // py::cast<std::complex<T>>
 #include <pybind11/pybind11.h>
 
 #include "kernels/constructors.hpp"
