@@ -32,17 +32,18 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
+#include <string>
+#include <tuple>
+#include <utility>
 #include <vector>
 
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "kernels/accumulators.hpp"
 #include "simplify_iteration_space.hpp"
@@ -196,8 +197,8 @@ std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
     int mask_nd = mask.get_ndim();
     int nd = mask_nd;
 
-    dpctl::tensor::py_internal::compact_iteration_space(
-        nd, shape, strides_vector, compact_shape, compact_strides);
+    compact_iteration_space(nd, shape, strides_vector, compact_shape,
+                            compact_strides);
 
     // Strided implementation
     auto strided_fn =
@@ -351,8 +352,8 @@ std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
     int src_nd = src.get_ndim();
     int nd = src_nd;
 
-    dpctl::tensor::py_internal::compact_iteration_space(
-        nd, shape, strides_vector, compact_shape, compact_strides);
+    compact_iteration_space(nd, shape, strides_vector, compact_shape,
+                            compact_strides);
 
     // Strided implementation
     auto strided_fn = cumsum_1d_strided_dispatch_vector[src_typeid];
