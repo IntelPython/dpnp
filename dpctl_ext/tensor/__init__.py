@@ -213,10 +213,13 @@ from ._sorting import argsort, sort, top_k
 from ._statistical_functions import mean, std, var
 from ._testing import allclose
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
+from ._usmarray import DLDeviceType, usm_ndarray
 from ._utility_functions import all, any, diff
 
 __all__ = [
     "Device",
+    "DLDeviceType",
+    "usm_ndarray",
     # data types
     "bool",
     "dtype",
