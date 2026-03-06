@@ -29,13 +29,12 @@
 import math
 import operator
 
-import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import numpy
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpnp
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations, map_dtype_to_device
@@ -53,7 +52,7 @@ def _as_usm_ndarray(a, usm_type, sycl_queue):
 
     if isinstance(a, dpnp_array):
         a = a.get_array()
-    return dpt_ext.asarray(a, usm_type=usm_type, sycl_queue=sycl_queue)
+    return dpt.asarray(a, usm_type=usm_type, sycl_queue=sycl_queue)
 
 
 def _check_has_zero_val(a):
@@ -196,7 +195,7 @@ def dpnp_linspace(
 
     if dpnp.isscalar(start) and dpnp.isscalar(stop):
         # Call linspace() function for scalars.
-        usm_res = dpt_ext.linspace(
+        usm_res = dpt.linspace(
             start,
             stop,
             num,
@@ -213,19 +212,19 @@ def dpnp_linspace(
             else:
                 step = dpnp.nan
     else:
-        usm_start = dpt_ext.asarray(
+        usm_start = dpt.asarray(
             start,
             dtype=dt,
             usm_type=_usm_type,
             sycl_queue=sycl_queue_normalized,
         )
-        usm_stop = dpt_ext.asarray(
+        usm_stop = dpt.asarray(
             stop, dtype=dt, usm_type=_usm_type, sycl_queue=sycl_queue_normalized
         )
 
         delta = usm_stop - usm_start
 
-        usm_res = dpt_ext.arange(
+        usm_res = dpt.arange(
             0,
             stop=num,
             step=1,
@@ -233,9 +232,7 @@ def dpnp_linspace(
             usm_type=_usm_type,
             sycl_queue=sycl_queue_normalized,
         )
-        usm_res = dpt_ext.reshape(
-            usm_res, (-1,) + (1,) * delta.ndim, copy=False
-        )
+        usm_res = dpt.reshape(usm_res, (-1,) + (1,) * delta.ndim, copy=False)
 
         if step_num > 0:
             step = delta / step_num
@@ -243,7 +240,7 @@ def dpnp_linspace(
             # Needed a special handling for denormal numbers (when step == 0),
             # see numpy#5437 for more details.
             # Note, dpt.where() is used to avoid a synchronization branch.
-            usm_res = dpt_ext.where(
+            usm_res = dpt.where(
                 step == 0, (usm_res / step_num) * delta, usm_res * step
             )
         else:
@@ -256,17 +253,17 @@ def dpnp_linspace(
             usm_res[-1, ...] = usm_stop
 
     if axis != 0:
-        usm_res = dpt_ext.moveaxis(usm_res, 0, axis)
+        usm_res = dpt.moveaxis(usm_res, 0, axis)
 
     if dpnp.issubdtype(dtype, dpnp.integer):
         dpt.floor(usm_res, out=usm_res)
 
-    res = dpt_ext.astype(usm_res, dtype, copy=False)
+    res = dpt.astype(usm_res, dtype, copy=False)
     res = dpnp_array._create_from_usm_ndarray(res)
 
     if retstep is True:
         if dpnp.isscalar(step):
-            step = dpt_ext.asarray(
+            step = dpt.asarray(
                 step, usm_type=res.usm_type, sycl_queue=res.sycl_queue
             )
         return res, dpnp_array._create_from_usm_ndarray(step)

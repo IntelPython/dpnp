@@ -29,28 +29,27 @@
 import warnings
 from functools import wraps
 
-import dpctl.tensor as dpt
-import dpctl.tensor._type_utils as dtu
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._elementwise_common import (
-    BinaryElementwiseFunc,
-    UnaryElementwiseFunc,
-)
-from dpctl.tensor._scalar_utils import (
-    _get_dtype,
-    _get_shape,
-    _validate_dtype,
-)
 
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._copy_utils as dtc
 import dpctl_ext.tensor._tensor_impl as dti
+import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
+from dpctl_ext.tensor._elementwise_common import (
+    BinaryElementwiseFunc,
+    UnaryElementwiseFunc,
+)
+from dpctl_ext.tensor._scalar_utils import (
+    _get_dtype,
+    _get_shape,
+    _validate_dtype,
+)
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.dpnp_utils.dpnp_utils_common import (
@@ -213,7 +212,7 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
 
         x_usm = dpnp.get_usm_ndarray(x)
         if dtype is not None:
-            x_usm = dpt_ext.astype(x_usm, dtype, copy=False)
+            x_usm = dpt.astype(x_usm, dtype, copy=False)
 
         out = self._unpack_out_kw(out)
         out_usm = None if out is None else dpnp.get_usm_ndarray(out)
@@ -467,7 +466,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
                     )
 
                 # Allocate a temporary buffer with the required dtype
-                out[i] = dpt_ext.empty_like(res, dtype=res_dt)
+                out[i] = dpt.empty_like(res, dtype=res_dt)
             elif (
                 buf_dt is None
                 and dti._array_overlap(x, res)
@@ -476,7 +475,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
                 # Allocate a temporary buffer to avoid memory overlapping.
                 # Note if `buf_dt` is not None, a temporary copy of `x` will be
                 # created, so the array overlap check isn't needed.
-                out[i] = dpt_ext.empty_like(res)
+                out[i] = dpt.empty_like(res)
 
         _manager = dpu.SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
@@ -486,7 +485,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
             if order == "K":
                 buf = dtc._empty_like_orderK(x, buf_dt)
             else:
-                buf = dpt_ext.empty_like(x, dtype=buf_dt, order=order)
+                buf = dpt.empty_like(x, dtype=buf_dt, order=order)
 
             ht_copy_ev, copy_ev = dti._copy_usm_ndarray_into_usm_ndarray(
                 src=x, dst=buf, sycl_queue=exec_q, depends=dep_evs
@@ -503,7 +502,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
                 if order == "K":
                     out[i] = dtc._empty_like_orderK(x, res_dt)
                 else:
-                    out[i] = dpt_ext.empty_like(x, dtype=res_dt, order=order)
+                    out[i] = dpt.empty_like(x, dtype=res_dt, order=order)
 
         # Call the unary function with input and output arrays
         ht_unary_ev, unary_ev = self.get_implementation_function()(
@@ -713,24 +712,24 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
 
         if dtype is not None:
             if dpnp.isscalar(x1):
-                x1_usm = dpt_ext.asarray(
+                x1_usm = dpt.asarray(
                     x1,
                     dtype=dtype,
                     sycl_queue=x2.sycl_queue,
                     usm_type=x2.usm_type,
                 )
-                x2_usm = dpt_ext.astype(x2_usm, dtype, copy=False)
+                x2_usm = dpt.astype(x2_usm, dtype, copy=False)
             elif dpnp.isscalar(x2):
-                x1_usm = dpt_ext.astype(x1_usm, dtype, copy=False)
-                x2_usm = dpt_ext.asarray(
+                x1_usm = dpt.astype(x1_usm, dtype, copy=False)
+                x2_usm = dpt.asarray(
                     x2,
                     dtype=dtype,
                     sycl_queue=x1.sycl_queue,
                     usm_type=x1.usm_type,
                 )
             else:
-                x1_usm = dpt_ext.astype(x1_usm, dtype, copy=False)
-                x2_usm = dpt_ext.astype(x2_usm, dtype, copy=False)
+                x1_usm = dpt.astype(x1_usm, dtype, copy=False)
+                x2_usm = dpt.astype(x2_usm, dtype, copy=False)
 
         res_usm = super().__call__(x1_usm, x2_usm, out=out_usm, order=order)
 
@@ -1078,7 +1077,7 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                     )
 
                 # Allocate a temporary buffer with the required dtype
-                out[i] = dpt_ext.empty_like(res, dtype=res_dt)
+                out[i] = dpt.empty_like(res, dtype=res_dt)
             else:
                 # If `dt` is not None, a temporary copy of `x` will be created,
                 # so the array overlap check isn't needed.
@@ -1094,7 +1093,7 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                     for x in x_to_check
                 ):
                     # allocate a temporary buffer to avoid memory overlapping
-                    out[i] = dpt_ext.empty_like(res)
+                    out[i] = dpt.empty_like(res)
 
         x1 = dpnp.as_usm_ndarray(x1, dtype=x1_dt, sycl_queue=exec_q)
         x2 = dpnp.as_usm_ndarray(x2, dtype=x2_dt, sycl_queue=exec_q)
@@ -1127,7 +1126,7 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                 if order == "K":
                     buf = dtc._empty_like_orderK(x, buf_dt)
                 else:
-                    buf = dpt_ext.empty_like(x, dtype=buf_dt, order=order)
+                    buf = dpt.empty_like(x, dtype=buf_dt, order=order)
 
                 ht_copy_ev, copy_ev = dti._copy_usm_ndarray_into_usm_ndarray(
                     src=x, dst=buf, sycl_queue=exec_q, depends=dep_evs
@@ -1146,7 +1145,7 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                         x1, x2, res_dt, res_shape, res_usm_type, exec_q
                     )
                 else:
-                    out[i] = dpt_ext.empty(
+                    out[i] = dpt.empty(
                         res_shape,
                         dtype=res_dt,
                         order=order,
@@ -1156,9 +1155,9 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
 
         # Broadcast shapes of input arrays
         if x1.shape != res_shape:
-            x1 = dpt_ext.broadcast_to(x1, res_shape)
+            x1 = dpt.broadcast_to(x1, res_shape)
         if x2.shape != res_shape:
-            x2 = dpt_ext.broadcast_to(x2, res_shape)
+            x2 = dpt.broadcast_to(x2, res_shape)
 
         # Call the binary function with input and output arrays
         ht_binary_ev, binary_ev = self.get_implementation_function()(
@@ -1326,7 +1325,7 @@ class DPNPRound(DPNPUnaryFunc):
                 res_usm = dpt.divide(x_usm, 10**decimals, out=out_usm)
 
             if dtype is not None:
-                res_usm = dpt_ext.astype(res_usm, dtype, copy=False)
+                res_usm = dpt.astype(res_usm, dtype, copy=False)
 
             if out is not None and isinstance(out, dpnp_array):
                 return out

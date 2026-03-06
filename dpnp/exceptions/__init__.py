@@ -32,9 +32,12 @@ from dpctl import (
     SyclQueueCreationError,
 )
 from dpctl.memory import USMAllocationError
-from dpctl.tensor._dlpack import DLPackCreationError
 from dpctl.utils import ExecutionPlacementError
 from numpy.exceptions import AxisError
+
+# TODO: revert to `from dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+from dpctl_ext.tensor._dlpack import DLPackCreationError
 
 __all__ = [
     "AxisError",

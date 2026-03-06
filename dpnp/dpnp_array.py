@@ -37,11 +37,9 @@ elements stored in a USM allocation on a SYCL device.
 
 import warnings
 
-import dpctl.tensor as dpt
-
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 from dpctl_ext.tensor._numpy_helper import AxisError
@@ -777,7 +775,7 @@ class dpnp_array:
 
         """
 
-        return dpt_ext.asnumpy(self._array_obj)
+        return dpt.asnumpy(self._array_obj)
 
     def astype(
         self,
@@ -2283,7 +2281,7 @@ class dpnp_array:
                 # self.transpose(None).shape == self.shape[::-1]
                 axes = tuple((ndim - x - 1) for x in range(ndim))
 
-            usm_res = dpt_ext.permute_dims(self._array_obj, axes)
+            usm_res = dpt.permute_dims(self._array_obj, axes)
         return dpnp_array._create_from_usm_ndarray(usm_res)
 
     def var(

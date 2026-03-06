@@ -45,12 +45,11 @@ import warnings
 from typing import NamedTuple
 
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpnp
 from dpctl_ext.tensor._numpy_helper import (
     AxisError,
@@ -375,27 +374,25 @@ def _unique_1d(
         ):
             if dpnp.issubdtype(usm_a.dtype, dpnp.complexfloating):
                 # for complex all NaNs are considered equivalent
-                true_val = dpt_ext.asarray(
+                true_val = dpt.asarray(
                     True, sycl_queue=usm_a.sycl_queue, usm_type=usm_a.usm_type
                 )
-                return dpt_ext.searchsorted(
-                    dpt.isnan(usm_a), true_val, side="left"
-                )
-            return dpt_ext.searchsorted(usm_a, usm_a[-1], side="left")
+                return dpt.searchsorted(dpt.isnan(usm_a), true_val, side="left")
+            return dpt.searchsorted(usm_a, usm_a[-1], side="left")
         return None
 
     usm_ar = dpnp.get_usm_ndarray(ar)
 
     num_of_flags = (return_index, return_inverse, return_counts).count(True)
     if num_of_flags == 0:
-        usm_res = dpt_ext.unique_values(usm_ar)
+        usm_res = dpt.unique_values(usm_ar)
         usm_res = (usm_res,)  # cast to a tuple to align with other cases
     elif num_of_flags == 1 and return_inverse:
-        usm_res = dpt_ext.unique_inverse(usm_ar)
+        usm_res = dpt.unique_inverse(usm_ar)
     elif num_of_flags == 1 and return_counts:
-        usm_res = dpt_ext.unique_counts(usm_ar)
+        usm_res = dpt.unique_counts(usm_ar)
     else:
-        usm_res = dpt_ext.unique_all(usm_ar)
+        usm_res = dpt.unique_all(usm_ar)
 
     first_nan = None
     if equal_nan:
@@ -417,10 +414,10 @@ def _unique_1d(
         if first_nan is not None:
             # all NaNs are collapsed, so need to replace the indices with
             # the index of the first NaN value in result array of unique values
-            dpt_ext.place(
+            dpt.place(
                 usm_res.inverse_indices,
                 usm_res.inverse_indices > first_nan,
-                dpt_ext.reshape(first_nan, 1),
+                dpt.reshape(first_nan, 1),
             )
 
         result += (usm_res.inverse_indices,)
@@ -428,9 +425,7 @@ def _unique_1d(
         if first_nan is not None:
             # all NaNs are collapsed, so need to put a count of all NaNs
             # at the last index
-            dpt_ext.sum(
-                usm_res.counts[first_nan:], out=usm_res.counts[first_nan]
-            )
+            dpt.sum(usm_res.counts[first_nan:], out=usm_res.counts[first_nan])
             result += (usm_res.counts[: first_nan + 1],)
         else:
             result += (usm_res.counts,)
@@ -1097,9 +1092,7 @@ def broadcast_arrays(*args, subok=False):
     if len(args) == 0:
         return []
 
-    usm_arrays = dpt_ext.broadcast_arrays(
-        *[dpnp.get_usm_ndarray(a) for a in args]
-    )
+    usm_arrays = dpt.broadcast_arrays(*[dpnp.get_usm_ndarray(a) for a in args])
     return [dpnp_array._create_from_usm_ndarray(a) for a in usm_arrays]
 
 
@@ -1184,7 +1177,7 @@ def broadcast_to(array, /, shape, subok=False):
         raise NotImplementedError(f"subok={subok} is currently not supported")
 
     usm_array = dpnp.get_usm_ndarray(array)
-    new_array = dpt_ext.broadcast_to(usm_array, shape)
+    new_array = dpt.broadcast_to(usm_array, shape)
     return dpnp_array._create_from_usm_ndarray(new_array)
 
 
@@ -1276,7 +1269,7 @@ def can_cast(from_, to, casting="safe"):
         if dpnp.is_supported_array_type(from_)
         else dpnp.dtype(from_)
     )
-    return dpt_ext.can_cast(dtype_from, to, casting=casting)
+    return dpt.can_cast(dtype_from, to, casting=casting)
 
 
 def column_stack(tup):
@@ -1422,7 +1415,7 @@ def concatenate(
         )
 
     usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
-    usm_res = dpt_ext.concat(usm_arrays, axis=axis)
+    usm_res = dpt.concat(usm_arrays, axis=axis)
 
     res = dpnp_array._create_from_usm_ndarray(usm_res)
     if dtype is not None:
@@ -1527,7 +1520,7 @@ def copyto(dst, src, casting="same_kind", where=True):
                 f"but got {where.dtype}"
             )
 
-        dst_usm, src_usm, mask_usm = dpt_ext.broadcast_arrays(
+        dst_usm, src_usm, mask_usm = dpt.broadcast_arrays(
             dpnp.get_usm_ndarray(dst),
             dpnp.get_usm_ndarray(src),
             dpnp.get_usm_ndarray(where),
@@ -1855,7 +1848,7 @@ def expand_dims(a, axis):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt_ext.expand_dims(usm_a, axis=axis)
+    usm_res = dpt.expand_dims(usm_a, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1926,7 +1919,7 @@ def flip(m, axis=None):
     """
 
     m_usm = dpnp.get_usm_ndarray(m)
-    return dpnp_array._create_from_usm_ndarray(dpt_ext.flip(m_usm, axis=axis))
+    return dpnp_array._create_from_usm_ndarray(dpt.flip(m_usm, axis=axis))
 
 
 def fliplr(m):
@@ -2370,7 +2363,7 @@ def matrix_transpose(x, /):
             f"but it is {usm_x.ndim}"
         )
 
-    usm_res = dpt_ext.matrix_transpose(usm_x)
+    usm_res = dpt.matrix_transpose(usm_x)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -2414,7 +2407,7 @@ def moveaxis(a, source, destination):
 
     usm_array = dpnp.get_usm_ndarray(a)
     return dpnp_array._create_from_usm_ndarray(
-        dpt_ext.moveaxis(usm_array, source, destination)
+        dpt.moveaxis(usm_array, source, destination)
     )
 
 
@@ -2843,7 +2836,7 @@ def repeat(a, repeats, axis=None):
         a = dpnp.ravel(a)
 
     usm_arr = dpnp.get_usm_ndarray(a)
-    usm_res = dpt_ext.repeat(usm_arr, repeats, axis=axis)
+    usm_res = dpt.repeat(usm_arr, repeats, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -3066,7 +3059,7 @@ def reshape(a, /, shape, order="C", *, copy=None):
         )
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt_ext.reshape(usm_a, shape=shape, order=order, copy=copy)
+    usm_res = dpt.reshape(usm_a, shape=shape, order=order, copy=copy)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -3201,7 +3194,7 @@ def result_type(*arrays_and_dtypes):
         )
         for X in arrays_and_dtypes
     ]
-    return dpt_ext.result_type(*usm_arrays_and_dtypes)
+    return dpt.result_type(*usm_arrays_and_dtypes)
 
 
 def roll(x, shift, axis=None):
@@ -3268,9 +3261,9 @@ def roll(x, shift, axis=None):
         shift = dpnp.asnumpy(shift)
 
     if axis is None:
-        return roll(dpt_ext.reshape(usm_x, -1), shift, 0).reshape(x.shape)
+        return roll(dpt.reshape(usm_x, -1), shift, 0).reshape(x.shape)
 
-    usm_res = dpt_ext.roll(usm_x, shift=shift, axis=axis)
+    usm_res = dpt.roll(usm_x, shift=shift, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -3669,7 +3662,7 @@ def squeeze(a, /, axis=None):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt_ext.squeeze(usm_a, axis=axis)
+    usm_res = dpt.squeeze(usm_a, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -3757,7 +3750,7 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
         )
 
     usm_arrays = [dpnp.get_usm_ndarray(x) for x in arrays]
-    usm_res = dpt_ext.stack(usm_arrays, axis=axis)
+    usm_res = dpt.stack(usm_arrays, axis=axis)
 
     res = dpnp_array._create_from_usm_ndarray(usm_res)
     if dtype is not None:
@@ -3818,7 +3811,7 @@ def swapaxes(a, axis1, axis2):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt_ext.swapaxes(usm_a, axis1=axis1, axis2=axis2)
+    usm_res = dpt.swapaxes(usm_a, axis1=axis1, axis2=axis2)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -3898,7 +3891,7 @@ def tile(A, reps):
     """
 
     usm_a = dpnp.get_usm_ndarray(A)
-    usm_res = dpt_ext.tile(usm_a, reps)
+    usm_res = dpt.tile(usm_a, reps)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -4528,7 +4521,7 @@ def unstack(x, /, *, axis=0):
     if usm_x.ndim == 0:
         raise ValueError("Input array must be at least 1-d.")
 
-    res = dpt_ext.unstack(usm_x, axis=axis)
+    res = dpt.unstack(usm_x, axis=axis)
     return tuple(dpnp_array._create_from_usm_ndarray(a) for a in res)
 
 

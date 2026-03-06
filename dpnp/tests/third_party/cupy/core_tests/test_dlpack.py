@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import dpctl
-import dpctl.tensor._dlpack as dlp
 import numpy
 import pytest
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor._dlpack as dlp
 import dpnp as cupy
 from dpnp.tests.third_party.cupy import testing
 
