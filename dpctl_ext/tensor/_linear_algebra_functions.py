@@ -29,11 +29,11 @@
 import operator
 
 import dpctl
-import dpctl.tensor as dpt
 from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_elementwise_impl as tei
 import dpctl_ext.tensor._tensor_impl as ti
 import dpctl_ext.tensor._tensor_linalg_impl as tli

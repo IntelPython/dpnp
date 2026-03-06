@@ -28,12 +28,11 @@
 
 from typing import NamedTuple, Optional, Union
 
-import dpctl.tensor as dpt
 import dpctl.utils as du
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 from dpctl_ext.tensor._tensor_elementwise_impl import _not_equal, _subtract
 
 from ._copy_utils import _empty_like_orderK
@@ -112,10 +111,10 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
     if x.ndim == 1:
         fx = x
     else:
-        fx = dpt_ext.reshape(x, (x.size,), order="C")
+        fx = dpt.reshape(x, (x.size,), order="C")
     if fx.size == 0:
         return fx
-    s = dpt_ext.empty_like(fx, order="C")
+    s = dpt.empty_like(fx, order="C")
     _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     if fx.flags.c_contiguous:
@@ -128,7 +127,7 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
         )
         _manager.add_event_pair(ht_ev, sort_ev)
     else:
-        tmp = dpt_ext.empty_like(fx, order="C")
+        tmp = dpt.empty_like(fx, order="C")
         ht_ev, copy_ev = _copy_usm_ndarray_into_usm_ndarray(
             src=fx, dst=tmp, sycl_queue=exec_q, depends=dep_evs
         )
@@ -141,7 +140,7 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
             depends=[copy_ev],
         )
         _manager.add_event_pair(ht_ev, sort_ev)
-    unique_mask = dpt_ext.empty(fx.shape, dtype="?", sycl_queue=exec_q)
+    unique_mask = dpt.empty(fx.shape, dtype="?", sycl_queue=exec_q)
     ht_ev, uneq_ev = _not_equal(
         src1=s[:-1],
         src2=s[1:],
@@ -155,14 +154,14 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
         fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
     )
     _manager.add_event_pair(ht_ev, one_ev)
-    cumsum = dpt_ext.empty(s.shape, dtype=dpt.int64, sycl_queue=exec_q)
+    cumsum = dpt.empty(s.shape, dtype=dpt.int64, sycl_queue=exec_q)
     # synchronizing call
     n_uniques = mask_positions(
         unique_mask, cumsum, sycl_queue=exec_q, depends=[one_ev, uneq_ev]
     )
     if n_uniques == fx.size:
         return s
-    unique_vals = dpt_ext.empty(
+    unique_vals = dpt.empty(
         n_uniques, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
     )
     ht_ev, ex_e = _extract(
@@ -206,11 +205,11 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
     if x.ndim == 1:
         fx = x
     else:
-        fx = dpt_ext.reshape(x, (x.size,), order="C")
+        fx = dpt.reshape(x, (x.size,), order="C")
     ind_dt = default_device_index_type(exec_q)
     if fx.size == 0:
-        return UniqueCountsResult(fx, dpt_ext.empty_like(fx, dtype=ind_dt))
-    s = dpt_ext.empty_like(fx, order="C")
+        return UniqueCountsResult(fx, dpt.empty_like(fx, dtype=ind_dt))
+    s = dpt.empty_like(fx, order="C")
 
     _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
@@ -224,7 +223,7 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
         )
         _manager.add_event_pair(ht_ev, sort_ev)
     else:
-        tmp = dpt_ext.empty_like(fx, order="C")
+        tmp = dpt.empty_like(fx, order="C")
         ht_ev, copy_ev = _copy_usm_ndarray_into_usm_ndarray(
             src=fx, dst=tmp, sycl_queue=exec_q, depends=dep_evs
         )
@@ -237,7 +236,7 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
             depends=[copy_ev],
         )
         _manager.add_event_pair(ht_ev, sort_ev)
-    unique_mask = dpt_ext.empty(s.shape, dtype="?", sycl_queue=exec_q)
+    unique_mask = dpt.empty(s.shape, dtype="?", sycl_queue=exec_q)
     ht_ev, uneq_ev = _not_equal(
         src1=s[:-1],
         src2=s[1:],
@@ -251,9 +250,7 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
         fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
     )
     _manager.add_event_pair(ht_ev, one_ev)
-    cumsum = dpt_ext.empty(
-        unique_mask.shape, dtype=dpt.int64, sycl_queue=exec_q
-    )
+    cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64, sycl_queue=exec_q)
     # synchronizing call
     n_uniques = mask_positions(
         unique_mask, cumsum, sycl_queue=exec_q, depends=[one_ev, uneq_ev]
@@ -261,11 +258,11 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
     if n_uniques == fx.size:
         return UniqueCountsResult(
             s,
-            dpt_ext.ones(
+            dpt.ones(
                 n_uniques, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
             ),
         )
-    unique_vals = dpt_ext.empty(
+    unique_vals = dpt.empty(
         n_uniques, dtype=x.dtype, usm_type=x_usm_type, sycl_queue=exec_q
     )
     # populate unique values
@@ -278,10 +275,10 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
         sycl_queue=exec_q,
     )
     _manager.add_event_pair(ht_ev, ex_e)
-    unique_counts = dpt_ext.empty(
+    unique_counts = dpt.empty(
         n_uniques + 1, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
     )
-    idx = dpt_ext.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
+    idx = dpt.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
     # writing into new allocation, no dependency
     ht_ev, id_ev = _linspace_step(start=0, dt=1, dst=idx, sycl_queue=exec_q)
     _manager.add_event_pair(ht_ev, id_ev)
@@ -300,7 +297,7 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
         x.size, dst=unique_counts[-1], sycl_queue=exec_q
     )
     _manager.add_event_pair(ht_ev, set_ev)
-    _counts = dpt_ext.empty_like(unique_counts[1:])
+    _counts = dpt.empty_like(unique_counts[1:])
     ht_ev, sub_ev = _subtract(
         src1=unique_counts[1:],
         src2=unique_counts[:-1],
@@ -342,11 +339,11 @@ def unique_inverse(x):
     if x.ndim == 1:
         fx = x
     else:
-        fx = dpt_ext.reshape(x, (x.size,), order="C")
-    sorting_ids = dpt_ext.empty_like(fx, dtype=ind_dt, order="C")
-    unsorting_ids = dpt_ext.empty_like(sorting_ids, dtype=ind_dt, order="C")
+        fx = dpt.reshape(x, (x.size,), order="C")
+    sorting_ids = dpt.empty_like(fx, dtype=ind_dt, order="C")
+    unsorting_ids = dpt.empty_like(sorting_ids, dtype=ind_dt, order="C")
     if fx.size == 0:
-        return UniqueInverseResult(fx, dpt_ext.reshape(unsorting_ids, x.shape))
+        return UniqueInverseResult(fx, dpt.reshape(unsorting_ids, x.shape))
 
     _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
@@ -360,7 +357,7 @@ def unique_inverse(x):
         )
         _manager.add_event_pair(ht_ev, sort_ev)
     else:
-        tmp = dpt_ext.empty_like(fx, order="C")
+        tmp = dpt.empty_like(fx, order="C")
         ht_ev, copy_ev = _copy_usm_ndarray_into_usm_ndarray(
             src=fx, dst=tmp, sycl_queue=exec_q, depends=dep_evs
         )
@@ -381,7 +378,7 @@ def unique_inverse(x):
         depends=[sort_ev],
     )
     _manager.add_event_pair(ht_ev, argsort_ev)
-    s = dpt_ext.empty_like(fx)
+    s = dpt.empty_like(fx)
     # s = fx[sorting_ids]
     ht_ev, take_ev = _take(
         src=fx,
@@ -393,7 +390,7 @@ def unique_inverse(x):
         depends=[sort_ev],
     )
     _manager.add_event_pair(ht_ev, take_ev)
-    unique_mask = dpt_ext.empty(fx.shape, dtype="?", sycl_queue=exec_q)
+    unique_mask = dpt.empty(fx.shape, dtype="?", sycl_queue=exec_q)
     ht_ev, uneq_ev = _not_equal(
         src1=s[:-1],
         src2=s[1:],
@@ -407,16 +404,14 @@ def unique_inverse(x):
         fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
     )
     _manager.add_event_pair(ht_ev, one_ev)
-    cumsum = dpt_ext.empty(
-        unique_mask.shape, dtype=dpt.int64, sycl_queue=exec_q
-    )
+    cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64, sycl_queue=exec_q)
     # synchronizing call
     n_uniques = mask_positions(
         unique_mask, cumsum, sycl_queue=exec_q, depends=[uneq_ev, one_ev]
     )
     if n_uniques == fx.size:
-        return UniqueInverseResult(s, dpt_ext.reshape(unsorting_ids, x.shape))
-    unique_vals = dpt_ext.empty(
+        return UniqueInverseResult(s, dpt.reshape(unsorting_ids, x.shape))
+    unique_vals = dpt.empty(
         n_uniques, dtype=x.dtype, usm_type=x_usm_type, sycl_queue=exec_q
     )
     ht_ev, uv_ev = _extract(
@@ -428,10 +423,10 @@ def unique_inverse(x):
         sycl_queue=exec_q,
     )
     _manager.add_event_pair(ht_ev, uv_ev)
-    cum_unique_counts = dpt_ext.empty(
+    cum_unique_counts = dpt.empty(
         n_uniques + 1, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
     )
-    idx = dpt_ext.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
+    idx = dpt.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
     ht_ev, id_ev = _linspace_step(start=0, dt=1, dst=idx, sycl_queue=exec_q)
     _manager.add_event_pair(ht_ev, id_ev)
     ht_ev, extr_ev = _extract(
@@ -448,7 +443,7 @@ def unique_inverse(x):
         x.size, dst=cum_unique_counts[-1], sycl_queue=exec_q
     )
     _manager.add_event_pair(ht_ev, set_ev)
-    _counts = dpt_ext.empty_like(cum_unique_counts[1:])
+    _counts = dpt.empty_like(cum_unique_counts[1:])
     ht_ev, sub_ev = _subtract(
         src1=cum_unique_counts[1:],
         src2=cum_unique_counts[:-1],
@@ -458,7 +453,7 @@ def unique_inverse(x):
     )
     _manager.add_event_pair(ht_ev, sub_ev)
 
-    inv = dpt_ext.empty_like(x, dtype=ind_dt, order="C")
+    inv = dpt.empty_like(x, dtype=ind_dt, order="C")
     ht_ev, ssl_ev = _searchsorted_left(
         hay=unique_vals,
         needles=x,
@@ -513,17 +508,17 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
     if x.ndim == 1:
         fx = x
     else:
-        fx = dpt_ext.reshape(x, (x.size,), order="C")
-    sorting_ids = dpt_ext.empty_like(fx, dtype=ind_dt, order="C")
-    unsorting_ids = dpt_ext.empty_like(sorting_ids, dtype=ind_dt, order="C")
+        fx = dpt.reshape(x, (x.size,), order="C")
+    sorting_ids = dpt.empty_like(fx, dtype=ind_dt, order="C")
+    unsorting_ids = dpt.empty_like(sorting_ids, dtype=ind_dt, order="C")
     if fx.size == 0:
         # original array contains no data
         # so it can be safely returned as values
         return UniqueAllResult(
             fx,
             sorting_ids,
-            dpt_ext.reshape(unsorting_ids, x.shape),
-            dpt_ext.empty_like(fx, dtype=ind_dt),
+            dpt.reshape(unsorting_ids, x.shape),
+            dpt.empty_like(fx, dtype=ind_dt),
         )
     _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
@@ -537,7 +532,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         )
         _manager.add_event_pair(ht_ev, sort_ev)
     else:
-        tmp = dpt_ext.empty_like(fx, order="C")
+        tmp = dpt.empty_like(fx, order="C")
         ht_ev, copy_ev = _copy_usm_ndarray_into_usm_ndarray(
             src=fx, dst=tmp, sycl_queue=exec_q, depends=dep_evs
         )
@@ -558,7 +553,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         depends=[sort_ev],
     )
     _manager.add_event_pair(ht_ev, args_ev)
-    s = dpt_ext.empty_like(fx)
+    s = dpt.empty_like(fx)
     # s = fx[sorting_ids]
     ht_ev, take_ev = _take(
         src=fx,
@@ -570,7 +565,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         depends=[sort_ev],
     )
     _manager.add_event_pair(ht_ev, take_ev)
-    unique_mask = dpt_ext.empty(fx.shape, dtype="?", sycl_queue=exec_q)
+    unique_mask = dpt.empty(fx.shape, dtype="?", sycl_queue=exec_q)
     ht_ev, uneq_ev = _not_equal(
         src1=s[:-1],
         src2=s[1:],
@@ -583,24 +578,22 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         fill_value=True, dst=unique_mask[0], sycl_queue=exec_q
     )
     _manager.add_event_pair(ht_ev, one_ev)
-    cumsum = dpt_ext.empty(
-        unique_mask.shape, dtype=dpt.int64, sycl_queue=exec_q
-    )
+    cumsum = dpt.empty(unique_mask.shape, dtype=dpt.int64, sycl_queue=exec_q)
     # synchronizing call
     n_uniques = mask_positions(
         unique_mask, cumsum, sycl_queue=exec_q, depends=[uneq_ev, one_ev]
     )
     if n_uniques == fx.size:
-        _counts = dpt_ext.ones(
+        _counts = dpt.ones(
             n_uniques, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
         )
         return UniqueAllResult(
             s,
             sorting_ids,
-            dpt_ext.reshape(unsorting_ids, x.shape),
+            dpt.reshape(unsorting_ids, x.shape),
             _counts,
         )
-    unique_vals = dpt_ext.empty(
+    unique_vals = dpt.empty(
         n_uniques, dtype=x.dtype, usm_type=x_usm_type, sycl_queue=exec_q
     )
     ht_ev, uv_ev = _extract(
@@ -612,10 +605,10 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         sycl_queue=exec_q,
     )
     _manager.add_event_pair(ht_ev, uv_ev)
-    cum_unique_counts = dpt_ext.empty(
+    cum_unique_counts = dpt.empty(
         n_uniques + 1, dtype=ind_dt, usm_type=x_usm_type, sycl_queue=exec_q
     )
-    idx = dpt_ext.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
+    idx = dpt.empty(x.size, dtype=ind_dt, sycl_queue=exec_q)
     ht_ev, id_ev = _linspace_step(start=0, dt=1, dst=idx, sycl_queue=exec_q)
     _manager.add_event_pair(ht_ev, id_ev)
     ht_ev, extr_ev = _extract(
@@ -632,7 +625,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         x.size, dst=cum_unique_counts[-1], sycl_queue=exec_q
     )
     _manager.add_event_pair(ht_ev, set_ev)
-    _counts = dpt_ext.empty_like(cum_unique_counts[1:])
+    _counts = dpt.empty_like(cum_unique_counts[1:])
     ht_ev, sub_ev = _subtract(
         src1=cum_unique_counts[1:],
         src2=cum_unique_counts[:-1],
@@ -642,7 +635,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
     )
     _manager.add_event_pair(ht_ev, sub_ev)
 
-    inv = dpt_ext.empty_like(x, dtype=ind_dt, order="C")
+    inv = dpt.empty_like(x, dtype=ind_dt, order="C")
     ht_ev, ssl_ev = _searchsorted_left(
         hay=unique_vals,
         needles=x,
@@ -734,26 +727,26 @@ def isin(
     x_sh = _get_shape(x)
     if isinstance(test_elements, dpt.usm_ndarray) and test_elements.size == 0:
         if invert:
-            return dpt_ext.ones(
+            return dpt.ones(
                 x_sh, dtype=dpt.bool, usm_type=res_usm_type, sycl_queue=exec_q
             )
         else:
-            return dpt_ext.zeros(
+            return dpt.zeros(
                 x_sh, dtype=dpt.bool, usm_type=res_usm_type, sycl_queue=exec_q
             )
 
     dt1, dt2 = _resolve_weak_types_all_py_ints(x_dt, test_dt, sycl_dev)
-    dt = _to_device_supported_dtype(dpt_ext.result_type(dt1, dt2), sycl_dev)
+    dt = _to_device_supported_dtype(dpt.result_type(dt1, dt2), sycl_dev)
 
     if not isinstance(x, dpt.usm_ndarray):
-        x_arr = dpt_ext.asarray(
+        x_arr = dpt.asarray(
             x, dtype=dt1, usm_type=res_usm_type, sycl_queue=exec_q
         )
     else:
         x_arr = x
 
     if not isinstance(test_elements, dpt.usm_ndarray):
-        test_arr = dpt_ext.asarray(
+        test_arr = dpt.asarray(
             test_elements, dtype=dt2, usm_type=res_usm_type, sycl_queue=exec_q
         )
     else:
@@ -773,7 +766,7 @@ def isin(
 
     if test_dt != dt:
         # copy into C-contiguous memory, because the array will be flattened
-        test_buf = dpt_ext.empty_like(
+        test_buf = dpt.empty_like(
             test_arr, dtype=dt, order="C", usm_type=res_usm_type
         )
         ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
@@ -783,10 +776,10 @@ def isin(
     else:
         test_buf = test_arr
 
-    test_buf = dpt_ext.reshape(test_buf, -1)
-    test_buf = dpt_ext.sort(test_buf)
+    test_buf = dpt.reshape(test_buf, -1)
+    test_buf = dpt.sort(test_buf)
 
-    dst = dpt_ext.empty_like(
+    dst = dpt.empty_like(
         x_buf, dtype=dpt.bool, usm_type=res_usm_type, order="C"
     )
 

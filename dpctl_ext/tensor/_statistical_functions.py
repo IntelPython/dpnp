@@ -25,12 +25,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 
-import dpctl.tensor as dpt
 import dpctl.utils as du
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_elementwise_impl as tei
 import dpctl_ext.tensor._tensor_impl as ti
 import dpctl_ext.tensor._tensor_reductions_impl as tri
@@ -66,7 +65,7 @@ def _var_impl(x, axis, correction, keepdims):
     _manager = du.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
     if inp_dt != res_dt:
-        buf = dpt_ext.empty_like(x, dtype=res_dt)
+        buf = dpt.empty_like(x, dtype=res_dt)
         ht_e_buf, c_e1 = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x, dst=buf, sycl_queue=q, depends=dep_evs
         )
@@ -74,18 +73,18 @@ def _var_impl(x, axis, correction, keepdims):
     else:
         buf = x
     # calculate mean
-    buf2 = dpt_ext.permute_dims(buf, perm)
+    buf2 = dpt.permute_dims(buf, perm)
     res_shape = buf2.shape[: nd - red_nd]
     # use keepdims=True path for later broadcasting
     if red_nd == 0:
-        mean_ary = dpt_ext.empty_like(buf)
+        mean_ary = dpt.empty_like(buf)
         dep_evs = _manager.submitted_events
         ht_e1, c_e2 = ti._copy_usm_ndarray_into_usm_ndarray(
             src=buf, dst=mean_ary, sycl_queue=q, depends=dep_evs
         )
         _manager.add_event_pair(ht_e1, c_e2)
     else:
-        mean_ary = dpt_ext.empty(
+        mean_ary = dpt.empty(
             res_shape,
             dtype=res_dt,
             usm_type=res_usm_type,
@@ -103,8 +102,8 @@ def _var_impl(x, axis, correction, keepdims):
 
         mean_ary_shape = res_shape + (1,) * red_nd
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
-        mean_ary = dpt_ext.permute_dims(
-            dpt_ext.reshape(mean_ary, mean_ary_shape), inv_perm
+        mean_ary = dpt.permute_dims(
+            dpt.reshape(mean_ary, mean_ary_shape), inv_perm
         )
     # divide in-place to get mean
     mean_ary_shape = mean_ary.shape
@@ -116,9 +115,9 @@ def _var_impl(x, axis, correction, keepdims):
     _manager.add_event_pair(ht_e2, d_e1)
 
     # subtract mean from original array to get deviations
-    dev_ary = dpt_ext.empty_like(buf)
+    dev_ary = dpt.empty_like(buf)
     if mean_ary_shape != buf.shape:
-        mean_ary = dpt_ext.broadcast_to(mean_ary, buf.shape)
+        mean_ary = dpt.broadcast_to(mean_ary, buf.shape)
     ht_e4, su_e = tei._subtract(
         src1=buf, src2=mean_ary, dst=dev_ary, sycl_queue=q, depends=[d_e1]
     )
@@ -130,11 +129,11 @@ def _var_impl(x, axis, correction, keepdims):
     _manager.add_event_pair(ht_e5, sq_e)
 
     # take sum of squared deviations
-    dev_ary2 = dpt_ext.permute_dims(dev_ary, perm)
+    dev_ary2 = dpt.permute_dims(dev_ary, perm)
     if red_nd == 0:
         res = dev_ary
     else:
-        res = dpt_ext.empty(
+        res = dpt.empty(
             res_shape,
             dtype=res_dt,
             usm_type=res_usm_type,
@@ -152,9 +151,7 @@ def _var_impl(x, axis, correction, keepdims):
         if keepdims:
             res_shape = res_shape + (1,) * red_nd
             inv_perm = sorted(range(nd), key=lambda d: perm[d])
-            res = dpt_ext.permute_dims(
-                dpt_ext.reshape(res, res_shape), inv_perm
-            )
+            res = dpt.permute_dims(dpt.reshape(res, res_shape), inv_perm)
     res_shape = res.shape
     # when nelems - correction <= 0, yield nans
     div = max(nelems - correction, 0)
@@ -215,7 +212,7 @@ def mean(x, axis=None, keepdims=False):
             nelems *= x.shape[i]
     sum_nd = len(axis)
     perm = perm + list(axis)
-    arr2 = dpt_ext.permute_dims(x, perm)
+    arr2 = dpt.permute_dims(x, perm)
     res_shape = arr2.shape[: nd - sum_nd]
     q = x.sycl_queue
     inp_dt = x.dtype
@@ -226,12 +223,12 @@ def mean(x, axis=None, keepdims=False):
     )
     res_usm_type = x.usm_type
     if sum_nd == 0:
-        return dpt_ext.astype(x, res_dt, copy=True)
+        return dpt.astype(x, res_dt, copy=True)
 
     _manager = du.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
     if tri._sum_over_axis_dtype_supported(inp_dt, res_dt, res_usm_type, q):
-        res = dpt_ext.empty(
+        res = dpt.empty(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
         )
         ht_e1, r_e = tri._sum_over_axis(
@@ -243,14 +240,14 @@ def mean(x, axis=None, keepdims=False):
         )
         _manager.add_event_pair(ht_e1, r_e)
     else:
-        tmp = dpt_ext.empty(
+        tmp = dpt.empty(
             arr2.shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
         )
         ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
             src=arr2, dst=tmp, sycl_queue=q, depends=dep_evs
         )
         _manager.add_event_pair(ht_e_cpy, cpy_e)
-        res = dpt_ext.empty(
+        res = dpt.empty(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
         )
         ht_e_red, r_e = tri._sum_over_axis(
@@ -265,7 +262,7 @@ def mean(x, axis=None, keepdims=False):
     if keepdims:
         res_shape = res_shape + (1,) * sum_nd
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
-        res = dpt_ext.permute_dims(dpt_ext.reshape(res, res_shape), inv_perm)
+        res = dpt.permute_dims(dpt.reshape(res, res_shape), inv_perm)
 
     dep_evs = _manager.submitted_events
     ht_e2, div_e = tei._divide_by_scalar(

@@ -30,13 +30,12 @@ import itertools
 import operator
 
 import dpctl
-import dpctl.tensor as dpt
 import dpctl.utils as dputils
 import numpy as np
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_impl as ti
 
 from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
@@ -174,7 +173,7 @@ def _concat_axis_None(arrays):
     res_shape = 0
     for array in arrays:
         res_shape += array.size
-    res = dpt_ext.empty(
+    res = dpt.empty(
         res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
@@ -185,7 +184,7 @@ def _concat_axis_None(arrays):
         fill_end = fill_start + array.size
         if array.flags.c_contiguous:
             hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=dpt_ext.reshape(array, -1),
+                src=dpt.reshape(array, -1),
                 dst=res[fill_start:fill_end],
                 sycl_queue=exec_q,
                 depends=deps,
@@ -196,7 +195,7 @@ def _concat_axis_None(arrays):
             # _copy_usm_ndarray_for_reshape requires src and dst to have
             # the same data type
             if not array.dtype == res_dtype:
-                src2_ = dpt_ext.empty_like(src_, dtype=res_dtype)
+                src2_ = dpt.empty_like(src_, dtype=res_dtype)
                 ht_copy_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                     src=src_, dst=src2_, sycl_queue=exec_q, depends=deps
                 )
@@ -334,7 +333,7 @@ def concat(arrays, /, *, axis=0):
         X0_shape[i] if i != axis else res_shape_axis for i in range(X0.ndim)
     )
 
-    res = dpt_ext.empty(
+    res = dpt.empty(
         res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
@@ -402,7 +401,7 @@ def expand_dims(X, /, *, axis=0):
     shape_it = iter(X.shape)
     shape = tuple(1 if ax in axis else next(shape_it) for ax in range(out_ndim))
 
-    return dpt_ext.reshape(X, shape)
+    return dpt.reshape(X, shape)
 
 
 def flip(X, /, *, axis=None):
@@ -485,7 +484,7 @@ def moveaxis(X, source, destination, /):
     for src, dst in sorted(zip(destination, source)):
         ind.insert(src, dst)
 
-    return dpt_ext.permute_dims(X, tuple(ind))
+    return dpt.permute_dims(X, tuple(ind))
 
 
 def permute_dims(X, /, axes):
@@ -602,7 +601,7 @@ def repeat(x, repeats, /, *, axis=None):
             )
         )
         dpctl.utils.validate_usm_type(usm_type, allow_none=False)
-        if not dpt_ext.can_cast(repeats.dtype, dpt.int64, casting="same_kind"):
+        if not dpt.can_cast(repeats.dtype, dpt.int64, casting="same_kind"):
             raise TypeError(
                 f"'repeats' data type {repeats.dtype} cannot be cast to "
                 "'int64' according to the casting rule ''safe.''"
@@ -624,7 +623,7 @@ def repeat(x, repeats, /, *, axis=None):
                     "'repeats' array must be broadcastable to the size of "
                     "the repeated axis"
                 )
-            if not dpt_ext.all(repeats >= 0):
+            if not dpt.all(repeats >= 0):
                 raise ValueError("'repeats' elements must be positive")
 
     elif isinstance(repeats, (tuple, list, range)):
@@ -643,10 +642,10 @@ def repeat(x, repeats, /, *, axis=None):
                     "`repeats` sequence must have the same length as the "
                     "repeated axis"
                 )
-            repeats = dpt_ext.asarray(
+            repeats = dpt.asarray(
                 repeats, dtype=dpt.int64, usm_type=usm_type, sycl_queue=exec_q
             )
-            if not dpt_ext.all(repeats >= 0):
+            if not dpt.all(repeats >= 0):
                 raise ValueError("`repeats` elements must be positive")
     else:
         raise TypeError(
@@ -662,7 +661,7 @@ def repeat(x, repeats, /, *, axis=None):
             res_shape = x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
         else:
             res_shape = (res_axis_size,)
-        res = dpt_ext.empty(
+        res = dpt.empty(
             res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
         )
         if res_axis_size > 0:
@@ -677,7 +676,7 @@ def repeat(x, repeats, /, *, axis=None):
             _manager.add_event_pair(ht_rep_ev, rep_ev)
     else:
         if repeats.dtype != dpt.int64:
-            rep_buf = dpt_ext.empty(
+            rep_buf = dpt.empty(
                 repeats.shape,
                 dtype=dpt.int64,
                 usm_type=usm_type,
@@ -687,7 +686,7 @@ def repeat(x, repeats, /, *, axis=None):
                 src=repeats, dst=rep_buf, sycl_queue=exec_q, depends=dep_evs
             )
             _manager.add_event_pair(ht_copy_ev, copy_ev)
-            cumsum = dpt_ext.empty(
+            cumsum = dpt.empty(
                 (axis_size,),
                 dtype=dpt.int64,
                 usm_type=usm_type,
@@ -703,7 +702,7 @@ def repeat(x, repeats, /, *, axis=None):
                 )
             else:
                 res_shape = (res_axis_size,)
-            res = dpt_ext.empty(
+            res = dpt.empty(
                 res_shape,
                 dtype=x.dtype,
                 usm_type=usm_type,
@@ -720,7 +719,7 @@ def repeat(x, repeats, /, *, axis=None):
                 )
                 _manager.add_event_pair(ht_rep_ev, rep_ev)
         else:
-            cumsum = dpt_ext.empty(
+            cumsum = dpt.empty(
                 (axis_size,),
                 dtype=dpt.int64,
                 usm_type=usm_type,
@@ -735,7 +734,7 @@ def repeat(x, repeats, /, *, axis=None):
                 )
             else:
                 res_shape = (res_axis_size,)
-            res = dpt_ext.empty(
+            res = dpt.empty(
                 res_shape,
                 dtype=x.dtype,
                 usm_type=usm_type,
@@ -792,7 +791,7 @@ def roll(x, /, shift, *, axis=None):
     _manager = dputils.SequentialOrderManager[exec_q]
     if axis is None:
         shift = operator.index(shift)
-        res = dpt_ext.empty(
+        res = dpt.empty(
             x.shape, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
         )
         sz = operator.index(x.size)
@@ -819,7 +818,7 @@ def roll(x, /, shift, *, axis=None):
         n_i = operator.index(shape[ax])
         shifted = shifts[ax] + operator.index(sh)
         shifts[ax] = (shifted % n_i) if n_i > 0 else 0
-    res = dpt_ext.empty(
+    res = dpt.empty(
         x.shape, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
     )
     dep_evs = _manager.submitted_events
@@ -872,7 +871,7 @@ def squeeze(X, /, axis=None):
     if new_shape == X.shape:
         return X
     else:
-        return dpt_ext.reshape(X, new_shape)
+        return dpt.reshape(X, new_shape)
 
 
 def stack(arrays, /, *, axis=0):
@@ -917,7 +916,7 @@ def stack(arrays, /, *, axis=0):
         for i in range(res_ndim)
     )
 
-    res = dpt_ext.empty(
+    res = dpt.empty(
         res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
@@ -971,7 +970,7 @@ def swapaxes(X, axis1, axis2):
     ind = list(range(0, X.ndim))
     ind[axis1] = axis2
     ind[axis2] = axis1
-    return dpt_ext.permute_dims(X, tuple(ind))
+    return dpt.permute_dims(X, tuple(ind))
 
 
 def unstack(X, /, *, axis=0):
@@ -998,7 +997,7 @@ def unstack(X, /, *, axis=0):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
 
     axis = normalize_axis_index(axis, X.ndim)
-    Y = dpt_ext.moveaxis(X, axis, 0)
+    Y = dpt.moveaxis(X, axis, 0)
 
     return tuple(Y[i] for i in range(Y.shape[0]))
 
@@ -1049,11 +1048,11 @@ def tile(x, repetitions, /):
     if rep_dims < x_dims:
         repetitions = (x_dims - rep_dims) * (1,) + repetitions
     elif x_dims < rep_dims:
-        x = dpt_ext.reshape(x, (rep_dims - x_dims) * (1,) + x.shape)
+        x = dpt.reshape(x, (rep_dims - x_dims) * (1,) + x.shape)
     res_shape = tuple(map(lambda sh, rep: sh * rep, x.shape, repetitions))
     # case of empty input
     if x.size == 0:
-        return dpt_ext.empty(
+        return dpt.empty(
             res_shape,
             dtype=x.dtype,
             usm_type=x.usm_type,
@@ -1061,7 +1060,7 @@ def tile(x, repetitions, /):
         )
     in_sh = x.shape
     if res_shape == in_sh:
-        return dpt_ext.copy(x)
+        return dpt.copy(x)
     expanded_sh = []
     broadcast_sh = []
     out_sz = 1
@@ -1082,12 +1081,12 @@ def tile(x, repetitions, /):
     exec_q = x.sycl_queue
     xdt = x.dtype
     xut = x.usm_type
-    res = dpt_ext.empty((out_sz,), dtype=xdt, usm_type=xut, sycl_queue=exec_q)
+    res = dpt.empty((out_sz,), dtype=xdt, usm_type=xut, sycl_queue=exec_q)
     # no need to copy data for empty output
     if out_sz > 0:
-        x = dpt_ext.broadcast_to(
+        x = dpt.broadcast_to(
             # this reshape should never copy
-            dpt_ext.reshape(x, expanded_sh),
+            dpt.reshape(x, expanded_sh),
             broadcast_sh,
         )
         # copy broadcast input into flat array
@@ -1097,4 +1096,4 @@ def tile(x, repetitions, /):
             src=x, dst=res, sycl_queue=exec_q, depends=dep_evs
         )
         _manager.add_event_pair(hev, cp_ev)
-    return dpt_ext.reshape(res, res_shape)
+    return dpt.reshape(res, res_shape)

@@ -27,12 +27,11 @@
 # *****************************************************************************
 
 import dpctl
-import dpctl.tensor as dpt
 from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_impl as ti
 import dpctl_ext.tensor._tensor_reductions_impl as tri
 
@@ -58,7 +57,7 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
             axis = (axis,)
         axis = normalize_axis_tuple(axis, nd, "axis")
         perm = [i for i in range(nd) if i not in axis] + list(axis)
-        x_tmp = dpt_ext.permute_dims(x, perm)
+        x_tmp = dpt.permute_dims(x, perm)
     red_nd = len(axis)
     if any([x_tmp.shape[i] == 0 for i in range(-red_nd, 0)]):
         raise ValueError("reduction cannot be performed over zero-size axes")
@@ -96,12 +95,12 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
                 "Input and output allocation queues are not compatible"
             )
         if keepdims:
-            out = dpt_ext.squeeze(out, axis=axis)
+            out = dpt.squeeze(out, axis=axis)
             orig_out = out
         if ti._array_overlap(x, out):
-            out = dpt_ext.empty_like(out)
+            out = dpt.empty_like(out)
     else:
-        out = dpt_ext.empty(
+        out = dpt.empty(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
         )
 
@@ -138,7 +137,7 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
     if keepdims:
         res_shape = res_shape + (1,) * red_nd
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
-        out = dpt_ext.permute_dims(dpt_ext.reshape(out, res_shape), inv_perm)
+        out = dpt.permute_dims(dpt.reshape(out, res_shape), inv_perm)
     return out
 
 
@@ -164,7 +163,7 @@ def _reduction_over_axis(
             axis = (axis,)
         axis = normalize_axis_tuple(axis, nd, "axis")
         perm = [i for i in range(nd) if i not in axis] + list(axis)
-        arr = dpt_ext.permute_dims(x, perm)
+        arr = dpt.permute_dims(x, perm)
     red_nd = len(axis)
     res_shape = arr.shape[: nd - red_nd]
     q = x.sycl_queue
@@ -212,12 +211,12 @@ def _reduction_over_axis(
                 "Input and output allocation queues are not compatible"
             )
         if keepdims:
-            out = dpt_ext.squeeze(out, axis=axis)
+            out = dpt.squeeze(out, axis=axis)
             orig_out = out
         if ti._array_overlap(x, out) and implemented_types:
-            out = dpt_ext.empty_like(out)
+            out = dpt.empty_like(out)
     else:
-        out = dpt_ext.empty(
+        out = dpt.empty(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
         )
 
@@ -253,7 +252,7 @@ def _reduction_over_axis(
             out = orig_out
     else:
         if _dtype_supported(res_dt, res_dt, res_usm_type, q):
-            tmp = dpt_ext.empty(
+            tmp = dpt.empty(
                 arr.shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
             )
             ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -270,14 +269,14 @@ def _reduction_over_axis(
             _manager.add_event_pair(ht_e_red, red_ev)
         else:
             buf_dt = _default_reduction_type_fn(inp_dt, q)
-            tmp = dpt_ext.empty(
+            tmp = dpt.empty(
                 arr.shape, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
             )
             ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=arr, dst=tmp, sycl_queue=q, depends=dep_evs
             )
             _manager.add_event_pair(ht_e_cpy, cpy_e)
-            tmp_res = dpt_ext.empty(
+            tmp_res = dpt.empty(
                 res_shape, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
             )
             ht_e_red, r_e = _reduction_fn(
@@ -296,7 +295,7 @@ def _reduction_over_axis(
     if keepdims:
         res_shape = res_shape + (1,) * red_nd
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
-        out = dpt_ext.permute_dims(dpt_ext.reshape(out, res_shape), inv_perm)
+        out = dpt.permute_dims(dpt.reshape(out, res_shape), inv_perm)
     return out
 
 
@@ -320,7 +319,7 @@ def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
             )
         axis = normalize_axis_tuple(axis, nd, "axis")
         perm = [i for i in range(nd) if i not in axis] + list(axis)
-        x_tmp = dpt_ext.permute_dims(x, perm)
+        x_tmp = dpt.permute_dims(x, perm)
     axis = normalize_axis_tuple(axis, nd, "axis")
     red_nd = len(axis)
     if any([x_tmp.shape[i] == 0 for i in range(-red_nd, 0)]):
@@ -359,12 +358,12 @@ def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
                 "Input and output allocation queues are not compatible"
             )
         if keepdims:
-            out = dpt_ext.squeeze(out, axis=axis)
+            out = dpt.squeeze(out, axis=axis)
             orig_out = out
         if ti._array_overlap(x, out) and red_nd > 0:
-            out = dpt_ext.empty_like(out)
+            out = dpt.empty_like(out)
     else:
-        out = dpt_ext.empty(
+        out = dpt.empty(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
         )
 
@@ -395,7 +394,7 @@ def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
     if keepdims:
         res_shape = res_shape + (1,) * red_nd
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
-        out = dpt_ext.permute_dims(dpt_ext.reshape(out, res_shape), inv_perm)
+        out = dpt.permute_dims(dpt.reshape(out, res_shape), inv_perm)
     return out
 
 
@@ -506,7 +505,7 @@ def count_nonzero(x, /, *, axis=None, keepdims=False, out=None):
             type.
     """
     if x.dtype != dpt.bool:
-        x = dpt_ext.astype(x, dpt.bool, copy=False)
+        x = dpt.astype(x, dpt.bool, copy=False)
     return sum(
         x,
         axis=axis,

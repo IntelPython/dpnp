@@ -27,12 +27,11 @@
 # *****************************************************************************
 
 import dpctl
-import dpctl.tensor as dpt
 from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_accumulation_impl as tai
 import dpctl_ext.tensor._tensor_impl as ti
 
@@ -82,7 +81,7 @@ def _accumulate_common(
         perm = [i for i in range(nd) if i != axis] + [
             axis,
         ]
-        arr = dpt_ext.permute_dims(x, perm)
+        arr = dpt.permute_dims(x, perm)
     q = x.sycl_queue
     inp_dt = x.dtype
     res_usm_type = x.usm_type
@@ -130,16 +129,16 @@ def _accumulate_common(
             )
         # permute out array dims if necessary
         if a1 != nd:
-            out = dpt_ext.permute_dims(out, perm)
+            out = dpt.permute_dims(out, perm)
             orig_out = out
         if ti._array_overlap(x, out) and implemented_types:
-            out = dpt_ext.empty_like(out)
+            out = dpt.empty_like(out)
     else:
-        out = dpt_ext.empty(
+        out = dpt.empty(
             res_sh, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
         )
         if a1 != nd:
-            out = dpt_ext.permute_dims(out, perm)
+            out = dpt.permute_dims(out, perm)
 
     _manager = SequentialOrderManager[q]
     depends = _manager.submitted_events
@@ -166,7 +165,7 @@ def _accumulate_common(
             out = orig_out
     else:
         if _dtype_supported(res_dt, res_dt):
-            tmp = dpt_ext.empty(
+            tmp = dpt.empty(
                 arr.shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
             )
             ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -191,18 +190,18 @@ def _accumulate_common(
             _manager.add_event_pair(ht_e, acc_ev)
         else:
             buf_dt = _default_accumulation_type_fn(inp_dt, q)
-            tmp = dpt_ext.empty(
+            tmp = dpt.empty(
                 arr.shape, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
             )
             ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=arr, dst=tmp, sycl_queue=q, depends=depends
             )
             _manager.add_event_pair(ht_e_cpy, cpy_e)
-            tmp_res = dpt_ext.empty(
+            tmp_res = dpt.empty(
                 res_sh, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
             )
             if a1 != nd:
-                tmp_res = dpt_ext.permute_dims(tmp_res, perm)
+                tmp_res = dpt.permute_dims(tmp_res, perm)
             if not include_initial:
                 ht_e, acc_ev = _accumulate_fn(
                     src=tmp,
@@ -225,10 +224,10 @@ def _accumulate_common(
             _manager.add_event_pair(ht_e_cpy2, cpy_e2)
 
     if appended_axis:
-        out = dpt_ext.squeeze(out)
+        out = dpt.squeeze(out)
     if a1 != nd:
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
-        out = dpt_ext.permute_dims(out, inv_perm)
+        out = dpt.permute_dims(out, inv_perm)
 
     return out
 
