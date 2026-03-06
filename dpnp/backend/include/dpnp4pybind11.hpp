@@ -28,7 +28,66 @@
 
 #pragma once
 
-#include "dpctl_capi.h"
+// TODO: Enable dpctl_capi.h once dpctl.tensor is removed.
+// Also call `import_dpctl_ext__tensor___usmarray();` right after
+// `import_dpctl()` (line 334) to initialize the dpctl_ext tensor C-API.
+//
+// Now we include dpctl C-API headers explicitly in order to
+// integrate dpctl_ext tensor C-API.
+
+// #include "dpctl_capi.h"
+
+// clang-format off
+// Ordering of includes is important here. dpctl_sycl_types and
+// dpctl_sycl_extension_interface define types used by dpctl's Python
+// C-API headers.
+#include "syclinterface/dpctl_sycl_types.h"
+#include "syclinterface/dpctl_sycl_extension_interface.h"
+#ifdef __cplusplus
+#define CYTHON_EXTERN_C extern "C"
+#else
+#define CYTHON_EXTERN_C
+#endif
+#include "dpctl/_sycl_device.h"
+#include "dpctl/_sycl_device_api.h"
+#include "dpctl/_sycl_context.h"
+#include "dpctl/_sycl_context_api.h"
+#include "dpctl/_sycl_event.h"
+#include "dpctl/_sycl_event_api.h"
+#include "dpctl/_sycl_queue.h"
+#include "dpctl/_sycl_queue_api.h"
+#include "dpctl/memory/_memory.h"
+#include "dpctl/memory/_memory_api.h"
+#include "dpctl/program/_program.h"
+#include "dpctl/program/_program_api.h"
+
+// clang-format on
+
+// TODO: Keep these includes once `dpctl.tensor` is removed from dpctl,
+// but replace the hardcoded relative path with a proper include pathы
+#include "../../../dpctl_ext/include/dpctl_ext/tensor/_usmarray.h"
+#include "../../../dpctl_ext/include/dpctl_ext/tensor/_usmarray_api.h"
+
+/*
+ * Function to import dpctl and make C-API functions available.
+ * C functions can use dpctl's C-API functions without linking to
+ * shared objects defining this symbols, if they call `import_dpctl()`
+ * prior to using those symbols.
+ *
+ * It is declared inline to allow multiple definitions in
+ * different translation units
+ */
+static inline void import_dpctl(void)
+{
+    import_dpctl___sycl_device();
+    import_dpctl___sycl_context();
+    import_dpctl___sycl_event();
+    import_dpctl___sycl_queue();
+    import_dpctl__memory___memory();
+    import_dpctl_ext__tensor___usmarray();
+    import_dpctl__program___program();
+    return;
+}
 
 #include <complex>
 #include <cstddef> // for std::size_t for C++ linkage
@@ -410,8 +469,10 @@ private:
         default_usm_memory_ = std::shared_ptr<py::object>(
             new py::object{py_default_usm_memory}, Deleter{});
 
+        // TODO: revert to `py::module_::import("dpctl.tensor._usmarray");`
+        // when dpnp fully migrates dpctl/tensor
         py::module_ mod_usmarray =
-            py::module_::import("dpctl.tensor._usmarray");
+            py::module_::import("dpctl_ext.tensor._usmarray");
         auto tensor_kl = mod_usmarray.attr("usm_ndarray");
 
         const py::object &py_default_usm_ndarray =
