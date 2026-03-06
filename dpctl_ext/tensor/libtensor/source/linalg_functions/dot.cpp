@@ -609,34 +609,31 @@ std::pair<sycl::event, sycl::event>
             shT outer_inner_x1_shape;
             shT batch_x1_strides;
             shT outer_inner_x1_strides;
-            split_iteration_space(
-                x1_shape_vec, x1_strides_vec, batch_dims,
-                batch_dims + x1_outer_inner_dims,
-                // 4 vectors modified
-                batch_x1_shape, outer_inner_x1_shape, batch_x1_strides,
-                outer_inner_x1_strides);
+            split_iteration_space(x1_shape_vec, x1_strides_vec, batch_dims,
+                                  batch_dims + x1_outer_inner_dims,
+                                  // 4 vectors modified
+                                  batch_x1_shape, outer_inner_x1_shape,
+                                  batch_x1_strides, outer_inner_x1_strides);
 
             shT batch_x2_shape;
             shT outer_inner_x2_shape;
             shT batch_x2_strides;
             shT outer_inner_x2_strides;
-            split_iteration_space(
-                x2_shape_vec, x2_strides_vec, batch_dims,
-                batch_dims + x2_outer_inner_dims,
-                // 4 vectors modified
-                batch_x2_shape, outer_inner_x2_shape, batch_x2_strides,
-                outer_inner_x2_strides);
+            split_iteration_space(x2_shape_vec, x2_strides_vec, batch_dims,
+                                  batch_dims + x2_outer_inner_dims,
+                                  // 4 vectors modified
+                                  batch_x2_shape, outer_inner_x2_shape,
+                                  batch_x2_strides, outer_inner_x2_strides);
 
             shT batch_dst_shape;
             shT outer_inner_dst_shape;
             shT batch_dst_strides;
             shT outer_inner_dst_strides;
-            split_iteration_space(
-                dst_shape_vec, dst_strides_vec, batch_dims,
-                batch_dims + dst_outer_inner_dims,
-                // 4 vectors modified
-                batch_dst_shape, outer_inner_dst_shape, batch_dst_strides,
-                outer_inner_dst_strides);
+            split_iteration_space(dst_shape_vec, dst_strides_vec, batch_dims,
+                                  batch_dims + dst_outer_inner_dims,
+                                  // 4 vectors modified
+                                  batch_dst_shape, outer_inner_dst_shape,
+                                  batch_dst_strides, outer_inner_dst_strides);
 
             using shT = std::vector<py::ssize_t>;
             shT simplified_batch_shape;
@@ -834,4 +831,4 @@ void init_dot(py::module_ m)
     m.def("_dot_result_type", dot_result_type_pyapi, "");
 }
 
-} // namespace dpctl::tensor::py_internal 
+} // namespace dpctl::tensor::py_internal
