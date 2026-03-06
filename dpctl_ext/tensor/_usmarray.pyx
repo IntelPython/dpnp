@@ -37,6 +37,9 @@ import numpy as np
 from dpctl._backend cimport DPCTLSyclUSMRef
 from dpctl._sycl_device_factory cimport _cached_default_device
 
+# TODO: remote it when dpnp fully migrates dpctl/tensor
+import dpctl_ext
+
 from ._data_types import bool as dpt_bool
 from ._device import Device
 from ._print import usm_ndarray_repr, usm_ndarray_str
@@ -1143,7 +1146,9 @@ cdef class usm_ndarray:
         return (
             self.array_namespace_
             if self.array_namespace_ is not None
-            else dpctl.tensor
+            # TODO: revert to `else dpctl.tensor`
+            # when dpnp fully migrates dpctl/tensor
+            else dpctl_ext.tensor
         )
 
     def __bool__(self):
@@ -1199,17 +1204,19 @@ cdef class usm_ndarray:
         raise IndexError("only integer arrays are valid indices")
 
     def __abs__(self):
-        return dpctl.tensor.abs(self)
+        # TODO: revert to `return dpctl.tensor...`
+        # when dpnp fully migrates dpctl/tensor
+        return dpctl_ext.tensor.abs(self)
 
     def __add__(self, other):
         """
         Implementation for operator.add
         """
-        return dpctl.tensor.add(self, other)
+        return dpctl_ext.tensor.add(self, other)
 
     def __and__(self, other):
         "Implementation for operator.and"
-        return dpctl.tensor.bitwise_and(self, other)
+        return dpctl_ext.tensor.bitwise_and(self, other)
 
     def __dlpack__(
         self, *, stream=None, max_version=None, dl_device=None, copy=None
@@ -1368,22 +1375,24 @@ cdef class usm_ndarray:
         )
 
     def __eq__(self, other):
-        return dpctl.tensor.equal(self, other)
+        # TODO: revert to `return dpctl.tensor...`
+        # when dpnp fully migrates dpctl/tensor
+        return dpctl_ext.tensor.equal(self, other)
 
     def __floordiv__(self, other):
-        return dpctl.tensor.floor_divide(self, other)
+        return dpctl_ext.tensor.floor_divide(self, other)
 
     def __ge__(self, other):
-        return dpctl.tensor.greater_equal(self, other)
+        return dpctl_ext.tensor.greater_equal(self, other)
 
     def __gt__(self, other):
-        return dpctl.tensor.greater(self, other)
+        return dpctl_ext.tensor.greater(self, other)
 
     def __invert__(self):
-        return dpctl.tensor.bitwise_invert(self)
+        return dpctl_ext.tensor.bitwise_invert(self)
 
     def __le__(self, other):
-        return dpctl.tensor.less_equal(self, other)
+        return dpctl_ext.tensor.less_equal(self, other)
 
     def __len__(self):
         if (self.nd_):
@@ -1392,37 +1401,37 @@ cdef class usm_ndarray:
             raise TypeError("len() of unsized object")
 
     def __lshift__(self, other):
-        return dpctl.tensor.bitwise_left_shift(self, other)
+        return dpctl_ext.tensor.bitwise_left_shift(self, other)
 
     def __lt__(self, other):
-        return dpctl.tensor.less(self, other)
+        return dpctl_ext.tensor.less(self, other)
 
     def __matmul__(self, other):
-        return dpctl.tensor.matmul(self, other)
+        return dpctl_ext.tensor.matmul(self, other)
 
     def __mod__(self, other):
-        return dpctl.tensor.remainder(self, other)
+        return dpctl_ext.tensor.remainder(self, other)
 
     def __mul__(self, other):
-        return dpctl.tensor.multiply(self, other)
+        return dpctl_ext.tensor.multiply(self, other)
 
     def __ne__(self, other):
-        return dpctl.tensor.not_equal(self, other)
+        return dpctl_ext.tensor.not_equal(self, other)
 
     def __neg__(self):
-        return dpctl.tensor.negative(self)
+        return dpctl_ext.tensor.negative(self)
 
     def __or__(self, other):
-        return dpctl.tensor.bitwise_or(self, other)
+        return dpctl_ext.tensor.bitwise_or(self, other)
 
     def __pos__(self):
-        return dpctl.tensor.positive(self)
+        return dpctl_ext.tensor.positive(self)
 
     def __pow__(self, other):
-        return dpctl.tensor.pow(self, other)
+        return dpctl_ext.tensor.pow(self, other)
 
     def __rshift__(self, other):
-        return dpctl.tensor.bitwise_right_shift(self, other)
+        return dpctl_ext.tensor.bitwise_right_shift(self, other)
 
     def __setitem__(self, key, rhs):
         cdef tuple _meta
@@ -1467,7 +1476,7 @@ cdef class usm_ndarray:
                 _copy_from_usm_ndarray_to_usm_ndarray(Xv, rhs)
             else:
                 if hasattr(rhs, "__sycl_usm_array_interface__"):
-                    from dpctl.tensor import asarray
+                    from dpctl_ext.tensor import asarray
                     try:
                         rhs_ar = asarray(rhs)
                         _copy_from_usm_ndarray_to_usm_ndarray(Xv, rhs_ar)
@@ -1515,91 +1524,93 @@ cdef class usm_ndarray:
         return
 
     def __sub__(self, other):
-        return dpctl.tensor.subtract(self, other)
+        # TODO: revert to `return dpctl.tensor...`
+        # when dpnp fully migrates dpctl/tensor
+        return dpctl_ext.tensor.subtract(self, other)
 
     def __truediv__(self, other):
-        return dpctl.tensor.divide(self, other)
+        return dpctl_ext.tensor.divide(self, other)
 
     def __xor__(self, other):
-        return dpctl.tensor.bitwise_xor(self, other)
+        return dpctl_ext.tensor.bitwise_xor(self, other)
 
     def __radd__(self, other):
-        return dpctl.tensor.add(other, self)
+        return dpctl_ext.tensor.add(other, self)
 
     def __rand__(self, other):
-        return dpctl.tensor.bitwise_and(other, self)
+        return dpctl_ext.tensor.bitwise_and(other, self)
 
     def __rfloordiv__(self, other):
-        return dpctl.tensor.floor_divide(other, self)
+        return dpctl_ext.tensor.floor_divide(other, self)
 
     def __rlshift__(self, other):
-        return dpctl.tensor.bitwise_left_shift(other, self)
+        return dpctl_ext.tensor.bitwise_left_shift(other, self)
 
     def __rmatmul__(self, other):
-        return dpctl.tensor.matmul(other, self)
+        return dpctl_ext.tensor.matmul(other, self)
 
     def __rmod__(self, other):
-        return dpctl.tensor.remainder(other, self)
+        return dpctl_ext.tensor.remainder(other, self)
 
     def __rmul__(self, other):
-        return dpctl.tensor.multiply(other, self)
+        return dpctl_ext.tensor.multiply(other, self)
 
     def __ror__(self, other):
-        return dpctl.tensor.bitwise_or(other, self)
+        return dpctl_ext.tensor.bitwise_or(other, self)
 
     def __rpow__(self, other):
-        return dpctl.tensor.pow(other, self)
+        return dpctl_ext.tensor.pow(other, self)
 
     def __rrshift__(self, other):
-        return dpctl.tensor.bitwise_right_shift(other, self)
+        return dpctl_ext.tensor.bitwise_right_shift(other, self)
 
     def __rsub__(self, other):
-        return dpctl.tensor.subtract(other, self)
+        return dpctl_ext.tensor.subtract(other, self)
 
     def __rtruediv__(self, other):
-        return dpctl.tensor.divide(other, self)
+        return dpctl_ext.tensor.divide(other, self)
 
     def __rxor__(self, other):
-        return dpctl.tensor.bitwise_xor(other, self)
+        return dpctl_ext.tensor.bitwise_xor(other, self)
 
     def __iadd__(self, other):
-        return dpctl.tensor.add._inplace_op(self, other)
+        return dpctl_ext.tensor.add._inplace_op(self, other)
 
     def __iand__(self, other):
-        return dpctl.tensor.bitwise_and._inplace_op(self, other)
+        return dpctl_ext.tensor.bitwise_and._inplace_op(self, other)
 
     def __ifloordiv__(self, other):
-        return dpctl.tensor.floor_divide._inplace_op(self, other)
+        return dpctl_ext.tensor.floor_divide._inplace_op(self, other)
 
     def __ilshift__(self, other):
-        return dpctl.tensor.bitwise_left_shift._inplace_op(self, other)
+        return dpctl_ext.tensor.bitwise_left_shift._inplace_op(self, other)
 
     def __imatmul__(self, other):
-        return dpctl.tensor.matmul(self, other, out=self, dtype=self.dtype)
+        return dpctl_ext.tensor.matmul(self, other, out=self, dtype=self.dtype)
 
     def __imod__(self, other):
-        return dpctl.tensor.remainder._inplace_op(self, other)
+        return dpctl_ext.tensor.remainder._inplace_op(self, other)
 
     def __imul__(self, other):
-        return dpctl.tensor.multiply._inplace_op(self, other)
+        return dpctl_ext.tensor.multiply._inplace_op(self, other)
 
     def __ior__(self, other):
-        return dpctl.tensor.bitwise_or._inplace_op(self, other)
+        return dpctl_ext.tensor.bitwise_or._inplace_op(self, other)
 
     def __ipow__(self, other):
-        return dpctl.tensor.pow._inplace_op(self, other)
+        return dpctl_ext.tensor.pow._inplace_op(self, other)
 
     def __irshift__(self, other):
-        return dpctl.tensor.bitwise_right_shift._inplace_op(self, other)
+        return dpctl_ext.tensor.bitwise_right_shift._inplace_op(self, other)
 
     def __isub__(self, other):
-        return dpctl.tensor.subtract._inplace_op(self, other)
+        return dpctl_ext.tensor.subtract._inplace_op(self, other)
 
     def __itruediv__(self, other):
-        return dpctl.tensor.divide._inplace_op(self, other)
+        return dpctl_ext.tensor.divide._inplace_op(self, other)
 
     def __ixor__(self, other):
-        return dpctl.tensor.bitwise_xor._inplace_op(self, other)
+        return dpctl_ext.tensor.bitwise_xor._inplace_op(self, other)
 
     def __str__(self):
         return usm_ndarray_str(self)
