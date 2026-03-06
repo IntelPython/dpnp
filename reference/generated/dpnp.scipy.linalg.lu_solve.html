@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.scipy.linalg.lu_solve &mdash; Data Parallel Extension for NumPy 0.20.0dev3+11.ga2825a1f629 documentation</title>
+  <title>dpnp.scipy.linalg.lu_solve &mdash; Data Parallel Extension for NumPy 0.20.0dev3+12.g4b644661997 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9aba200e"></script>
+      <script src="../../_static/documentation_options.js?v=24395671"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -117,7 +117,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lu</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> (..., M, M) together with pivot indices.</p></li>
 <li><p><strong>piv</strong> (<em>{tuple</em><em> of </em><em>dpnp.ndarrays</em><em> or </em><em>usm_ndarrays}</em>) -- LU factorization of matrix <cite>a</cite> (..., M, M) together with pivot indices.</p></li>
-<li><p><strong>b</strong> (<em>{</em><em>(</em><em>M</em><em>,</em><em>)</em><em>, </em><em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>K</em><em>)</em><em>} {dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Right-hand side</p></li>
+<li><p><strong>b</strong> (<em>{</em><em>(</em><em>M</em><em>,</em><em>)</em><em>, </em><em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>K</em><em>)</em><em>} {dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Right-hand side.</p></li>
 <li><p><strong>trans</strong> (<em>{0</em><em>, </em><em>1</em><em>, </em><em>2}</em><em> , </em><em>optional</em>) -- <p>Type of system to solve:</p>
 <table class="docutils align-default">
 <thead>
@@ -139,10 +139,10 @@
 </table>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 </p></li>
-<li><p><strong>overwrite_b</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>Whether to overwrite data in <cite>b</cite> (may increase performance).</p>
+<li><p><strong>overwrite_b</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to overwrite data in <cite>b</cite> (may increase performance).</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>
-<li><p><strong>check_finite</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>Whether to check that the input matrix contains only finite numbers.
+<li><p><strong>check_finite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to check that the input matrix contains only finite numbers.
 Disabling may give a performance gain, but may result in problems
 (crashes, non-termination) if the inputs do contain infinities or NaNs.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
@@ -164,7 +164,7 @@ when <code class="docutils literal notranslate"><span class="pre">check_finite=T
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.scipy.linalg.lu_factor.html#dpnp.scipy.linalg.lu_factor" title="dpnp.scipy.linalg.lu_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.scipy.linalg.lu_factor</span></code></a></dt><dd><p>LU factorize a matrix.</p>
+<dt><a class="reference internal" href="dpnp.scipy.linalg.lu_factor.html#dpnp.scipy.linalg.lu_factor" title="dpnp.scipy.linalg.lu_factor"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpnp.scipy.linalg.lu_factor()</span></code></a></dt><dd><p>LU factorize a matrix.</p>
 </dd>
 </dl>
 </div>

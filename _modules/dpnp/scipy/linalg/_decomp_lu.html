@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.scipy.linalg._decomp_lu &mdash; Data Parallel Extension for NumPy 0.20.0dev3+11.ga2825a1f629 documentation</title>
+  <title>dpnp.scipy.linalg._decomp_lu &mdash; Data Parallel Extension for NumPy 0.20.0dev3+12.g4b644661997 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=9aba200e"></script>
+      <script src="../../../../_static/documentation_options.js?v=24395671"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -164,11 +164,11 @@
 <span class="sd">        Perform the multiplication ``P @ L`` (Default: do not permute).</span>
 
 <span class="sd">        Default: ``False``.</span>
-<span class="sd">    overwrite_a : {None, bool}, optional</span>
+<span class="sd">    overwrite_a : bool, optional</span>
 <span class="sd">        Whether to overwrite data in `a` (may increase performance).</span>
 
 <span class="sd">        Default: ``False``.</span>
-<span class="sd">    check_finite : {None, bool}, optional</span>
+<span class="sd">    check_finite : bool, optional</span>
 <span class="sd">        Whether to check that the input matrix contains only finite numbers.</span>
 <span class="sd">        Disabling may give a performance gain, but may result in problems</span>
 <span class="sd">        (crashes, non-termination) if the inputs do contain infinities or NaNs.</span>
@@ -182,23 +182,19 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    **(If ``permute_l`` is ``False``)**</span>
+<span class="sd">    The tuple ``(p, l, u)`` is returned if ``permute_l`` is ``False``</span>
+<span class="sd">    (default), else the tuple ``(pl, u)`` is returned, where:</span>
 
 <span class="sd">    p : (..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray</span>
-<span class="sd">        If `p_indices` is ``False`` (default), the permutation matrix.</span>
-<span class="sd">        The permutation matrix always has a real dtype (``float32`` or</span>
-<span class="sd">        ``float64``) even when `a` is complex, since it only contains</span>
-<span class="sd">        0s and 1s.</span>
+<span class="sd">        Permutation matrix or permutation indices.</span>
+<span class="sd">        If `p_indices` is ``False`` (default), a permutation matrix.</span>
+<span class="sd">        The permutation matrix always has a real-valued floating-point dtype</span>
+<span class="sd">        even when `a` is complex, since it only contains 0s and 1s.</span>
 <span class="sd">        If `p_indices` is ``True``, a 1-D (or batched) array of row</span>
 <span class="sd">        permutation indices such that ``A = L[p] @ U``.</span>
 <span class="sd">    l : (..., M, K) dpnp.ndarray</span>
 <span class="sd">        Lower triangular or trapezoidal matrix with unit diagonal.</span>
 <span class="sd">        ``K = min(M, N)``.</span>
-<span class="sd">    u : (..., K, N) dpnp.ndarray</span>
-<span class="sd">        Upper triangular or trapezoidal matrix.</span>
-
-<span class="sd">    **(If ``permute_l`` is ``True``)**</span>
-
 <span class="sd">    pl : (..., M, K) dpnp.ndarray</span>
 <span class="sd">        Permuted ``L`` matrix: ``pl = P @ L``.</span>
 <span class="sd">        ``K = min(M, N)``.</span>
@@ -217,18 +213,18 @@
 <span class="sd">    permutation matrix is still needed then it can be constructed by</span>
 <span class="sd">    ``dpnp.eye(M)[P, :]``.</span>
 
-<span class="sd">    Warning</span>
-<span class="sd">    -------</span>
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
 <span class="sd">    This function synchronizes in order to validate array elements</span>
 <span class="sd">    when ``check_finite=True``, and also synchronizes to compute the</span>
 <span class="sd">    permutation from LAPACK pivot indices.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix</span>
-<span class="sd">                                         (compact representation).</span>
-<span class="sd">    :obj:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using</span>
-<span class="sd">                                        the LU factorization of a matrix.</span>
+<span class="sd">    :func:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix</span>
+<span class="sd">                                          (compact representation).</span>
+<span class="sd">    :func:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using</span>
+<span class="sd">                                         the LU factorization of a matrix.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -301,11 +297,11 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array to decompose.</span>
-<span class="sd">    overwrite_a : {None, bool}, optional</span>
+<span class="sd">    overwrite_a : bool, optional</span>
 <span class="sd">        Whether to overwrite data in `a` (may increase performance).</span>
 
 <span class="sd">        Default: ``False``.</span>
-<span class="sd">    check_finite : {None, bool}, optional</span>
+<span class="sd">    check_finite : bool, optional</span>
 <span class="sd">        Whether to check that the input matrix contains only finite numbers.</span>
 <span class="sd">        Disabling may give a performance gain, but may result in problems</span>
 <span class="sd">        (crashes, non-termination) if the inputs do contain infinities or NaNs.</span>
@@ -323,15 +319,15 @@
 <span class="sd">        row i of matrix was interchanged with row piv[i].</span>
 <span class="sd">        Where ``K = min(M, N)``.</span>
 
-<span class="sd">    Warning</span>
-<span class="sd">    -------</span>
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
 <span class="sd">    This function synchronizes in order to validate array elements</span>
 <span class="sd">    when ``check_finite=True``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using</span>
-<span class="sd">                                        the LU factorization of `a` matrix.</span>
+<span class="sd">    :func:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using</span>
+<span class="sd">                                         the LU factorization of `a` matrix.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -366,7 +362,7 @@
 <span class="sd">    lu, piv : {tuple of dpnp.ndarrays or usm_ndarrays}</span>
 <span class="sd">        LU factorization of matrix `a` (..., M, M) together with pivot indices.</span>
 <span class="sd">    b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Right-hand side</span>
+<span class="sd">        Right-hand side.</span>
 <span class="sd">    trans : {0, 1, 2} , optional</span>
 <span class="sd">        Type of system to solve:</span>
 
@@ -379,11 +375,11 @@
 <span class="sd">        =====  =================</span>
 
 <span class="sd">        Default: ``0``.</span>
-<span class="sd">    overwrite_b : {None, bool}, optional</span>
+<span class="sd">    overwrite_b : bool, optional</span>
 <span class="sd">        Whether to overwrite data in `b` (may increase performance).</span>
 
 <span class="sd">        Default: ``False``.</span>
-<span class="sd">    check_finite : {None, bool}, optional</span>
+<span class="sd">    check_finite : bool, optional</span>
 <span class="sd">        Whether to check that the input matrix contains only finite numbers.</span>
 <span class="sd">        Disabling may give a performance gain, but may result in problems</span>
 <span class="sd">        (crashes, non-termination) if the inputs do contain infinities or NaNs.</span>
@@ -395,14 +391,14 @@
 <span class="sd">    x : {(M,), (..., M, K)} dpnp.ndarray</span>
 <span class="sd">        Solution to the system</span>
 
-<span class="sd">    Warning</span>
-<span class="sd">    -------</span>
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
 <span class="sd">    This function synchronizes in order to validate array elements</span>
 <span class="sd">    when ``check_finite=True``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix.</span>
+<span class="sd">    :func:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>

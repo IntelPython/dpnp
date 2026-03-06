@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.scipy.linalg.lu &mdash; Data Parallel Extension for NumPy 0.20.0dev3+11.ga2825a1f629 documentation</title>
+  <title>dpnp.scipy.linalg.lu &mdash; Data Parallel Extension for NumPy 0.20.0dev3+12.g4b644661997 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9aba200e"></script>
+      <script src="../../_static/documentation_options.js?v=24395671"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -126,10 +126,10 @@ diagonal elements, and <cite>U</cite> is upper triangular. If <cite>permute_l</c
 <li><p><strong>permute_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Perform the multiplication <code class="docutils literal notranslate"><span class="pre">P</span> <span class="pre">&#64;</span> <span class="pre">L</span></code> (Default: do not permute).</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>
-<li><p><strong>overwrite_a</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>Whether to overwrite data in <cite>a</cite> (may increase performance).</p>
+<li><p><strong>overwrite_a</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to overwrite data in <cite>a</cite> (may increase performance).</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>
-<li><p><strong>check_finite</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>Whether to check that the input matrix contains only finite numbers.
+<li><p><strong>check_finite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to check that the input matrix contains only finite numbers.
 Disabling may give a performance gain, but may result in problems
 (crashes, non-termination) if the inputs do contain infinities or NaNs.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
@@ -141,23 +141,23 @@ instead of a permutation matrix.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>**(If <code class="docutils literal notranslate"><span class="pre">permute_l</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>)**</dt><dd><ul class="simple">
-<li><p><strong>p</strong> (<em>(..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray</em>) -- If <cite>p_indices</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), the permutation matrix.
-The permutation matrix always has a real dtype (<code class="docutils literal notranslate"><span class="pre">float32</span></code> or
-<code class="docutils literal notranslate"><span class="pre">float64</span></code>) even when <cite>a</cite> is complex, since it only contains
-0s and 1s.
+<dd class="field-even"><p><p>The tuple <code class="docutils literal notranslate"><span class="pre">(p,</span> <span class="pre">l,</span> <span class="pre">u)</span></code> is returned if <code class="docutils literal notranslate"><span class="pre">permute_l</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(default), else the tuple <code class="docutils literal notranslate"><span class="pre">(pl,</span> <span class="pre">u)</span></code> is returned, where</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>p</strong> (<em>(..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray</em>) -- Permutation matrix or permutation indices.
+If <cite>p_indices</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), a permutation matrix.
+The permutation matrix always has a real-valued floating-point dtype
+even when <cite>a</cite> is complex, since it only contains 0s and 1s.
 If <cite>p_indices</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, a 1-D (or batched) array of row
 permutation indices such that <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">=</span> <span class="pre">L[p]</span> <span class="pre">&#64;</span> <span class="pre">U</span></code>.</p></li>
 <li><p><strong>l</strong> (<em>(..., M, K) dpnp.ndarray</em>) -- Lower triangular or trapezoidal matrix with unit diagonal.
 <code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">min(M,</span> <span class="pre">N)</span></code>.</p></li>
-<li><p><strong>u</strong> (<em>(..., K, N) dpnp.ndarray</em>) -- Upper triangular or trapezoidal matrix.</p></li>
 <li><p><strong>pl</strong> (<em>(..., M, K) dpnp.ndarray</em>) -- Permuted <code class="docutils literal notranslate"><span class="pre">L</span></code> matrix: <code class="docutils literal notranslate"><span class="pre">pl</span> <span class="pre">=</span> <span class="pre">P</span> <span class="pre">&#64;</span> <span class="pre">L</span></code>.
 <code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">min(M,</span> <span class="pre">N)</span></code>.</p></li>
 <li><p><strong>u</strong> (<em>(..., K, N) dpnp.ndarray</em>) -- Upper triangular or trapezoidal matrix.</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </p>
 </dd>
 </dl>
@@ -179,9 +179,9 @@ permutation from LAPACK pivot indices.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.scipy.linalg.lu_factor.html#dpnp.scipy.linalg.lu_factor" title="dpnp.scipy.linalg.lu_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.scipy.linalg.lu_factor</span></code></a></dt><dd><p>LU factorize a matrix (compact representation).</p>
+<dt><a class="reference internal" href="dpnp.scipy.linalg.lu_factor.html#dpnp.scipy.linalg.lu_factor" title="dpnp.scipy.linalg.lu_factor"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpnp.scipy.linalg.lu_factor()</span></code></a></dt><dd><p>LU factorize a matrix (compact representation).</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.scipy.linalg.lu_solve.html#dpnp.scipy.linalg.lu_solve" title="dpnp.scipy.linalg.lu_solve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.scipy.linalg.lu_solve</span></code></a></dt><dd><p>Solve an equation system using the LU factorization of a matrix.</p>
+<dt><a class="reference internal" href="dpnp.scipy.linalg.lu_solve.html#dpnp.scipy.linalg.lu_solve" title="dpnp.scipy.linalg.lu_solve"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpnp.scipy.linalg.lu_solve()</span></code></a></dt><dd><p>Solve an equation system using the LU factorization of a matrix.</p>
 </dd>
 </dl>
 </div>
