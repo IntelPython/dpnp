@@ -77,11 +77,11 @@ def lu(
         Perform the multiplication ``P @ L`` (Default: do not permute).
 
         Default: ``False``.
-    overwrite_a : {None, bool}, optional
+    overwrite_a : bool, optional
         Whether to overwrite data in `a` (may increase performance).
 
         Default: ``False``.
-    check_finite : {None, bool}, optional
+    check_finite : bool, optional
         Whether to check that the input matrix contains only finite numbers.
         Disabling may give a performance gain, but may result in problems
         (crashes, non-termination) if the inputs do contain infinities or NaNs.
@@ -95,23 +95,19 @@ def lu(
 
     Returns
     -------
-    **(If ``permute_l`` is ``False``)**
+    The tuple ``(p, l, u)`` is returned if ``permute_l`` is ``False``
+    (default), else the tuple ``(pl, u)`` is returned, where:
 
     p : (..., M, M) dpnp.ndarray or (..., M) dpnp.ndarray
-        If `p_indices` is ``False`` (default), the permutation matrix.
-        The permutation matrix always has a real dtype (``float32`` or
-        ``float64``) even when `a` is complex, since it only contains
-        0s and 1s.
+        Permutation matrix or permutation indices.
+        If `p_indices` is ``False`` (default), a permutation matrix.
+        The permutation matrix always has a real-valued floating-point dtype
+        even when `a` is complex, since it only contains 0s and 1s.
         If `p_indices` is ``True``, a 1-D (or batched) array of row
         permutation indices such that ``A = L[p] @ U``.
     l : (..., M, K) dpnp.ndarray
         Lower triangular or trapezoidal matrix with unit diagonal.
         ``K = min(M, N)``.
-    u : (..., K, N) dpnp.ndarray
-        Upper triangular or trapezoidal matrix.
-
-    **(If ``permute_l`` is ``True``)**
-
     pl : (..., M, K) dpnp.ndarray
         Permuted ``L`` matrix: ``pl = P @ L``.
         ``K = min(M, N)``.
@@ -130,18 +126,18 @@ def lu(
     permutation matrix is still needed then it can be constructed by
     ``dpnp.eye(M)[P, :]``.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function synchronizes in order to validate array elements
     when ``check_finite=True``, and also synchronizes to compute the
     permutation from LAPACK pivot indices.
 
     See Also
     --------
-    :obj:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix
-                                         (compact representation).
-    :obj:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using
-                                        the LU factorization of a matrix.
+    :func:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix
+                                          (compact representation).
+    :func:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using
+                                         the LU factorization of a matrix.
 
     Examples
     --------
@@ -211,11 +207,11 @@ def lu_factor(a, overwrite_a=False, check_finite=True):
     ----------
     a : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Input array to decompose.
-    overwrite_a : {None, bool}, optional
+    overwrite_a : bool, optional
         Whether to overwrite data in `a` (may increase performance).
 
         Default: ``False``.
-    check_finite : {None, bool}, optional
+    check_finite : bool, optional
         Whether to check that the input matrix contains only finite numbers.
         Disabling may give a performance gain, but may result in problems
         (crashes, non-termination) if the inputs do contain infinities or NaNs.
@@ -233,15 +229,15 @@ def lu_factor(a, overwrite_a=False, check_finite=True):
         row i of matrix was interchanged with row piv[i].
         Where ``K = min(M, N)``.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function synchronizes in order to validate array elements
     when ``check_finite=True``.
 
     See Also
     --------
-    :obj:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using
-                                        the LU factorization of `a` matrix.
+    :func:`dpnp.scipy.linalg.lu_solve` : Solve an equation system using
+                                         the LU factorization of `a` matrix.
 
     Examples
     --------
@@ -273,7 +269,7 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
     lu, piv : {tuple of dpnp.ndarrays or usm_ndarrays}
         LU factorization of matrix `a` (..., M, M) together with pivot indices.
     b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}
-        Right-hand side
+        Right-hand side.
     trans : {0, 1, 2} , optional
         Type of system to solve:
 
@@ -286,11 +282,11 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
         =====  =================
 
         Default: ``0``.
-    overwrite_b : {None, bool}, optional
+    overwrite_b : bool, optional
         Whether to overwrite data in `b` (may increase performance).
 
         Default: ``False``.
-    check_finite : {None, bool}, optional
+    check_finite : bool, optional
         Whether to check that the input matrix contains only finite numbers.
         Disabling may give a performance gain, but may result in problems
         (crashes, non-termination) if the inputs do contain infinities or NaNs.
@@ -302,14 +298,14 @@ def lu_solve(lu_and_piv, b, trans=0, overwrite_b=False, check_finite=True):
     x : {(M,), (..., M, K)} dpnp.ndarray
         Solution to the system
 
-    Warning
-    -------
+    Warnings
+    --------
     This function synchronizes in order to validate array elements
     when ``check_finite=True``.
 
     See Also
     --------
-    :obj:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix.
+    :func:`dpnp.scipy.linalg.lu_factor` : LU factorize a matrix.
 
     Examples
     --------
