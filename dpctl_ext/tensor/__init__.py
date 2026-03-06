@@ -199,6 +199,12 @@ from ._reduction import (
     reduce_hypot,
     sum,
 )
+
+# isort: off
+# placed here to avoid circular import
+from ._usmarray import DLDeviceType, usm_ndarray
+
+# isort: on
 from ._reshape import reshape
 from ._search_functions import where
 from ._searchsorted import searchsorted
@@ -213,7 +219,6 @@ from ._sorting import argsort, sort, top_k
 from ._statistical_functions import mean, std, var
 from ._testing import allclose
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
-from ._usmarray import DLDeviceType, usm_ndarray
 from ._utility_functions import all, any, diff
 
 __all__ = [
