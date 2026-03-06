@@ -39,13 +39,7 @@
 #include "reductions/reduction_atomic_support.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
-{
-namespace atomic_support
+namespace dpctl::tensor::py_internal::atomic_support
 {
 
 template <typename fnT, typename T>
@@ -63,7 +57,4 @@ struct DotAtomicSupportFactory
     }
 };
 
-} // namespace atomic_support
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal::atomic_support
