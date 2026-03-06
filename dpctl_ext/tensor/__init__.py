@@ -73,6 +73,10 @@ from ._data_types import (
     uint64,
 )
 from ._device import Device
+from ._dldevice_conversions import (
+    dldevice_to_sycl_device,
+    sycl_device_to_dldevice,
+)
 from ._elementwise_funcs import (
     abs,
     acos,
@@ -280,6 +284,7 @@ __all__ = [
     "cumulative_sum",
     "diff",
     "divide",
+    "dldevice_to_sycl_device",
     "empty",
     "empty_like",
     "equal",
@@ -370,6 +375,7 @@ __all__ = [
     "subtract",
     "sum",
     "swapaxes",
+    "sycl_device_to_dldevice",
     "take",
     "take_along_axis",
     "tan",
