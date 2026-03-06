@@ -310,6 +310,110 @@ def _prepare_indices_arrays(inds, q, usm_type):
     return inds
 
 
+def _place_impl(ary, ary_mask, vals, axis=0):
+    """
+    Extract elements of ary by applying mask starting from slot
+    dimension axis.
+    """
+    if not isinstance(ary, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+        )
+    if isinstance(ary_mask, dpt.usm_ndarray):
+        exec_q = dpctl.utils.get_execution_queue(
+            (
+                ary.sycl_queue,
+                ary_mask.sycl_queue,
+            )
+        )
+        coerced_usm_type = dpctl.utils.get_coerced_usm_type(
+            (
+                ary.usm_type,
+                ary_mask.usm_type,
+            )
+        )
+        if exec_q is None:
+            raise dpctl.utils.ExecutionPlacementError(
+                "arrays have different associated queues. "
+                "Use `y.to_device(x.device)` to migrate."
+            )
+    elif isinstance(ary_mask, np.ndarray):
+        exec_q = ary.sycl_queue
+        coerced_usm_type = ary.usm_type
+        ary_mask = dpt.asarray(
+            ary_mask, usm_type=coerced_usm_type, sycl_queue=exec_q
+        )
+    else:
+        raise TypeError(
+            "Expecting type dpctl.tensor.usm_ndarray or numpy.ndarray, got "
+            f"{type(ary_mask)}"
+        )
+    if exec_q is not None:
+        if not isinstance(vals, dpt.usm_ndarray):
+            vals = dpt.asarray(
+                vals,
+                dtype=ary.dtype,
+                usm_type=coerced_usm_type,
+                sycl_queue=exec_q,
+            )
+        else:
+            exec_q = dpctl.utils.get_execution_queue((exec_q, vals.sycl_queue))
+            coerced_usm_type = dpctl.utils.get_coerced_usm_type(
+                (
+                    coerced_usm_type,
+                    vals.usm_type,
+                )
+            )
+    if exec_q is None:
+        raise dpctl.utils.ExecutionPlacementError(
+            "arrays have different associated queues. "
+            "Use `Y.to_device(X.device)` to migrate."
+        )
+    ary_nd = ary.ndim
+    pp = normalize_axis_index(operator.index(axis), ary_nd)
+    mask_nd = ary_mask.ndim
+    if pp < 0 or pp + mask_nd > ary_nd:
+        raise ValueError(
+            "Parameter p is inconsistent with input array dimensions"
+        )
+    mask_nelems = ary_mask.size
+    cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
+    cumsum = dpt.empty(
+        mask_nelems,
+        dtype=cumsum_dt,
+        usm_type=coerced_usm_type,
+        device=ary_mask.device,
+    )
+    exec_q = cumsum.sycl_queue
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    dep_ev = _manager.submitted_events
+    mask_count = ti.mask_positions(
+        ary_mask, cumsum, sycl_queue=exec_q, depends=dep_ev
+    )
+    expected_vals_shape = (
+        ary.shape[:pp] + (mask_count,) + ary.shape[pp + mask_nd :]
+    )
+    if vals.dtype == ary.dtype:
+        rhs = vals
+    else:
+        rhs = dpt.astype(vals, ary.dtype)
+    rhs = dpt.broadcast_to(rhs, expected_vals_shape)
+    if mask_nelems == 0:
+        return
+    dep_ev = _manager.submitted_events
+    hev, pl_ev = ti._place(
+        dst=ary,
+        cumsum=cumsum,
+        axis_start=pp,
+        axis_end=pp + mask_nd,
+        rhs=rhs,
+        sycl_queue=exec_q,
+        depends=dep_ev,
+    )
+    _manager.add_event_pair(hev, pl_ev)
+    return
+
+
 def _put_multi_index(ary, inds, p, vals, mode=0):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
