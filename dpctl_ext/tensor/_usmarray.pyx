@@ -46,11 +46,11 @@ cimport dpctl.memory as c_dpmem
 from cpython.mem cimport PyMem_Free
 from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
-cimport ._dlpack as c_dlpack
+from . cimport _dlpack as c_dlpack
 
 from enum import IntEnum
 
-import ._flags as _flags
+from . import _flags
 from ._dlpack import get_build_dlpack_version
 from ._tensor_impl import default_device_fp_type
 
