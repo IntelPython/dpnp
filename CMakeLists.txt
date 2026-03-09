@@ -344,5 +344,14 @@ if(DEFINED SKBUILD)
     set(_ignore_me ${SKBUILD})
 endif()
 
-add_subdirectory(dpnp)
+# TODO: Replace `${CMAKE_BINARY_DIR}` with a dedicated public include root
+# for dpctl_ext C-API headers
+# Unlike dpctl which exposes C-API from `dpctl/apis/include`,
+# dpctl_ext currently relies on generated headers in the build tree.
+# `${CMAKE_BINARY_DIR}` is a temporary workaround.
+
+add_library(DpctlExtCAPI INTERFACE)
+target_include_directories(DpctlExtCAPI INTERFACE ${CMAKE_BINARY_DIR})
+
 add_subdirectory(dpctl_ext)
+add_subdirectory(dpnp)

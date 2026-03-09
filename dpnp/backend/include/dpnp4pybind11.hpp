@@ -65,8 +65,8 @@
 
 // TODO: Keep these includes once `dpctl.tensor` is removed from dpctl,
 // but replace the hardcoded relative path with a proper include pathы
-#include "../../../dpctl_ext/include/dpctl_ext/tensor/_usmarray.h"
-#include "../../../dpctl_ext/include/dpctl_ext/tensor/_usmarray_api.h"
+#include <dpctl_ext/tensor/_usmarray.h>
+#include <dpctl_ext/tensor/_usmarray_api.h>
 
 /*
  * Function to import dpctl and make C-API functions available.
