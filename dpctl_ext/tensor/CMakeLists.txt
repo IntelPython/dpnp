@@ -63,6 +63,16 @@ set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
 )
+set(_accumulator_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/accumulators_common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/cumulative_logsumexp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/cumulative_prod.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/cumulative_sum.cpp
+)
+set(_tensor_accumulation_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_accumulation.cpp
+    ${_accumulator_sources}
+)
 
 set(_static_lib_trgt simplify_iteration_space)
 
@@ -85,6 +95,12 @@ add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_impl_sources})
 target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
 list(APPEND _py_trgts ${python_module_name})
 
+set(python_module_name _tensor_accumulation_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_accumulation_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_accumulation_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
+list(APPEND _py_trgts ${python_module_name})
+
 set(_clang_prefix "")
 if(WIN32)
     set(_clang_prefix "/clang:")
@@ -97,14 +113,14 @@ set(_no_fast_math_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/where.cpp
 )
-#list(
-#APPEND _no_fast_math_sources
-# ${_elementwise_sources}
-# ${_reduction_sources}
-# ${_sorting_sources}
-# ${_linalg_sources}
-# ${_accumulator_sources}
-#)
+list(
+    APPEND _no_fast_math_sources
+    # ${_elementwise_sources}
+    # ${_reduction_sources}
+    # ${_sorting_sources}
+    # ${_linalg_sources}
+    ${_accumulator_sources}
+)
 
 foreach(_src_fn ${_no_fast_math_sources})
     get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)

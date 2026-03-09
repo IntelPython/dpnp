@@ -27,6 +27,7 @@
 # *****************************************************************************
 
 
+from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._clip import clip
 from ._copy_utils import (
     asnumpy,
@@ -92,6 +93,9 @@ __all__ = [
     "concat",
     "copy",
     "clip",
+    "cumulative_logsumexp",
+    "cumulative_prod",
+    "cumulative_sum",
     "empty",
     "empty_like",
     "extract",
