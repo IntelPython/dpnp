@@ -432,7 +432,6 @@ void init_prod(py::module_ m)
         auto prod_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                               const arrayT &dst, sycl::queue &exec_q,
                               const event_vecT &depends = {}) {
-            using dpctl::tensor::py_internal::py_reduction_over_axis;
             return py_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 prod_over_axis_strided_atomic_dispatch_table,
@@ -450,7 +449,6 @@ void init_prod(py::module_ m)
         auto prod_dtype_supported =
             [&](const py::dtype &input_dtype, const py::dtype &output_dtype,
                 const std::string &dst_usm_type, sycl::queue &q) {
-                using dpctl::tensor::py_internal::py_reduction_dtype_supported;
                 return py_reduction_dtype_supported(
                     input_dtype, output_dtype, dst_usm_type, q,
                     prod_over_axis_strided_atomic_dispatch_table,

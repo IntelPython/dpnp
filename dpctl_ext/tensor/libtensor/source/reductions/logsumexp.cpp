@@ -233,7 +233,6 @@ void init_logsumexp(py::module_ m)
                                    int trailing_dims_to_reduce,
                                    const arrayT &dst, sycl::queue &exec_q,
                                    const event_vecT &depends = {}) {
-            using dpctl::tensor::py_internal::py_tree_reduction_over_axis;
             return py_tree_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 logsumexp_over_axis_strided_temps_dispatch_table,
@@ -246,7 +245,6 @@ void init_logsumexp(py::module_ m)
 
         auto logsumexp_dtype_supported = [&](const py::dtype &input_dtype,
                                              const py::dtype &output_dtype) {
-            using dpctl::tensor::py_internal::py_tree_reduction_dtype_supported;
             return py_tree_reduction_dtype_supported(
                 input_dtype, output_dtype,
                 logsumexp_over_axis_strided_temps_dispatch_table);
