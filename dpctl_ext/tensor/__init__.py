@@ -77,6 +77,7 @@ from ._dldevice_conversions import (
     dldevice_to_sycl_device,
     sycl_device_to_dldevice,
 )
+from ._dlpack import from_dlpack
 from ._elementwise_funcs import (
     abs,
     acos,
@@ -306,6 +307,7 @@ __all__ = [
     "flip",
     "floor",
     "floor_divide",
+    "from_dlpack",
     "from_numpy",
     "full",
     "full_like",
