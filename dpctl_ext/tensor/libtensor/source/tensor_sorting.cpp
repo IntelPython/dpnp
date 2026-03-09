@@ -43,8 +43,6 @@
 #include "sorting/searchsorted.hpp"
 #include "sorting/topk.hpp"
 
-namespace py = pybind11;
-
 PYBIND11_MODULE(_tensor_sorting_impl, m)
 {
     dpctl::tensor::py_internal::init_isin_functions(m);

@@ -293,7 +293,7 @@ void init_topk_dispatch_vectors(void)
 
 void init_topk_functions(py::module_ m)
 {
-    dpctl::tensor::py_internal::init_topk_dispatch_vectors();
+    init_topk_dispatch_vectors();
 
     m.def("_topk", &py_topk, py::arg("src"), py::arg("trailing_dims_to_search"),
           py::arg("k"), py::arg("largest"), py::arg("vals"), py::arg("inds"),
