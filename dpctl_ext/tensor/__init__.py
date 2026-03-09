@@ -80,10 +80,20 @@ from ._manipulation_functions import (
 )
 from ._reshape import reshape
 from ._search_functions import where
+from ._searchsorted import searchsorted
+from ._set_functions import (
+    isin,
+    unique_all,
+    unique_counts,
+    unique_inverse,
+    unique_values,
+)
+from ._sorting import argsort, sort, top_k
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [
     "arange",
+    "argsort",
     "asarray",
     "asnumpy",
     "astype",
@@ -108,6 +118,7 @@ __all__ = [
     "full_like",
     "iinfo",
     "isdtype",
+    "isin",
     "linspace",
     "meshgrid",
     "moveaxis",
@@ -122,15 +133,22 @@ __all__ = [
     "reshape",
     "result_type",
     "roll",
+    "searchsorted",
+    "sort",
     "squeeze",
     "stack",
     "swapaxes",
     "take",
     "take_along_axis",
     "tile",
+    "top_k",
     "to_numpy",
     "tril",
     "triu",
+    "unique_all",
+    "unique_counts",
+    "unique_inverse",
+    "unique_values",
     "unstack",
     "where",
     "zeros",

@@ -378,22 +378,24 @@ def _unique_1d(
                 true_val = dpt_ext.asarray(
                     True, sycl_queue=usm_a.sycl_queue, usm_type=usm_a.usm_type
                 )
-                return dpt.searchsorted(dpt.isnan(usm_a), true_val, side="left")
-            return dpt.searchsorted(usm_a, usm_a[-1], side="left")
+                return dpt_ext.searchsorted(
+                    dpt.isnan(usm_a), true_val, side="left"
+                )
+            return dpt_ext.searchsorted(usm_a, usm_a[-1], side="left")
         return None
 
     usm_ar = dpnp.get_usm_ndarray(ar)
 
     num_of_flags = (return_index, return_inverse, return_counts).count(True)
     if num_of_flags == 0:
-        usm_res = dpt.unique_values(usm_ar)
+        usm_res = dpt_ext.unique_values(usm_ar)
         usm_res = (usm_res,)  # cast to a tuple to align with other cases
     elif num_of_flags == 1 and return_inverse:
-        usm_res = dpt.unique_inverse(usm_ar)
+        usm_res = dpt_ext.unique_inverse(usm_ar)
     elif num_of_flags == 1 and return_counts:
-        usm_res = dpt.unique_counts(usm_ar)
+        usm_res = dpt_ext.unique_counts(usm_ar)
     else:
-        usm_res = dpt.unique_all(usm_ar)
+        usm_res = dpt_ext.unique_all(usm_ar)
 
     first_nan = None
     if equal_nan:

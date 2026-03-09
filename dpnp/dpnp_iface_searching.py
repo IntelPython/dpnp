@@ -382,7 +382,7 @@ def searchsorted(a, v, side="left", sorter=None):
 
     usm_sorter = None if sorter is None else dpnp.get_usm_ndarray(sorter)
     return dpnp_array._create_from_usm_ndarray(
-        dpt.searchsorted(usm_a, usm_v, side=side, sorter=usm_sorter)
+        dpt_ext.searchsorted(usm_a, usm_v, side=side, sorter=usm_sorter)
     )
 
 

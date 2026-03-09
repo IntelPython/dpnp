@@ -49,6 +49,9 @@ import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as dpu
 import numpy
 
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
@@ -1273,7 +1276,7 @@ def isin(
         usm_element = dpnp.get_usm_ndarray(element)
         usm_test = dpnp.get_usm_ndarray(test_elements)
     return dpnp_array._create_from_usm_ndarray(
-        dpt.isin(
+        dpt_ext.isin(
             usm_element,
             usm_test,
             invert=invert,
