@@ -33,6 +33,9 @@
 /// extension.
 //===----------------------------------------------------------------------===//
 
+#include <utility>
+#include <vector>
+
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
