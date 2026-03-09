@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev2+23.gea76b088ae1 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev4+2.g8d8c1e007e9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ca8db2c4"></script>
+      <script src="../../_static/documentation_options.js?v=1817823c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -169,6 +169,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_cross</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_reduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionPlacementError</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_max_min</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
@@ -358,7 +359,7 @@
         <span class="n">usm_type</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">usm_type</span><span class="p">])</span>
         <span class="c1"># check that arrays have the same allocation queue</span>
         <span class="k">if</span> <span class="n">dpu</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">([</span><span class="n">ary_sycl_queue</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">dpu</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;ary and </span><span class="si">{</span><span class="n">arg_name</span><span class="si">}</span><span class="s2"> must be allocated on the same SYCL queue&quot;</span>
             <span class="p">)</span>
 
