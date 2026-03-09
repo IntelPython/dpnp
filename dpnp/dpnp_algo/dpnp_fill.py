@@ -38,6 +38,7 @@ from dpctl.tensor._tensor_impl import (
 )
 
 import dpnp
+from dpnp.exceptions import ExecutionPlacementError
 
 
 def dpnp_fill(arr, val):
@@ -50,7 +51,7 @@ def dpnp_fill(arr, val):
         if val.shape != ():
             raise ValueError("`val` must be a scalar or 0D-array")
         if dpu.get_execution_queue((exec_q, val.sycl_queue)) is None:
-            raise dpu.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 "Input arrays have incompatible queues."
             )
         a_val = dpt.astype(val, arr.dtype)

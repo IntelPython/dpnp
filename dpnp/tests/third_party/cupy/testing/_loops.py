@@ -10,9 +10,9 @@ from typing import Tuple, Type
 import numpy
 import pytest
 from dpctl import select_default_device
-from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
+from dpnp.exceptions import AxisError
 from dpnp.tests import config
 from dpnp.tests.third_party.cupy.testing import _array, _parameterized
 from dpnp.tests.third_party.cupy.testing._pytest_impl import is_available

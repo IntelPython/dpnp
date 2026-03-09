@@ -1,9 +1,9 @@
 import dpctl
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_array_equal
 
 import dpnp
+from dpnp.exceptions import ExecutionPlacementError
 
 
 @pytest.mark.parametrize(

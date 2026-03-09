@@ -49,7 +49,7 @@ import dpctl.utils as dpu
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
 from dpnp.dpnp_utils import get_usm_allocations
-from dpnp.linalg.dpnp_utils_linalg import _common_type
+from dpnp.linalg.dpnp_utils_linalg import _common_type, _real_type
 
 
 def _align_lu_solve_broadcast(lu, b):
@@ -81,6 +81,48 @@ def _align_lu_solve_broadcast(lu, b):
         b = dpnp.broadcast_to(b, b_bshape)
 
     return lu, b
+
+
+def _apply_permutation_to_rows(mat, perm_indices):
+    """
+    Apply a permutation to the rows (axis=-2) of a matrix.
+
+    Returns ``out`` such that
+    ``out[..., i, :] = mat[..., perm_indices[..., i], :]``.
+
+    For 2-D inputs this is equivalent to ``mat[perm_indices]`` (a single
+    device gather).  For batched inputs :func:`dpnp.take_along_axis` is
+    used so the operation stays entirely on the device.
+
+    Parameters
+    ----------
+    mat : dpnp.ndarray, shape (..., M, N)
+        Matrix whose rows are to be permuted.
+    perm_indices : dpnp.ndarray, shape (..., M)
+        Permutation indices (dtype int64).
+
+    Returns
+    -------
+    out : dpnp.ndarray, shape (..., M, N)
+        Row-permuted matrix.
+    """
+
+    if perm_indices.ndim == 1:
+        # 2-D case: simple fancy indexing, single kernel launch.
+        return mat[perm_indices]
+
+    # Batched case: ensure *mat* has the same batch dimensions as
+    # *perm_indices*. This is needed, for example, when permuting
+    # a shared identity matrix across a batch.
+    target_shape = perm_indices.shape[:-1] + mat.shape[-2:]
+    if mat.shape != target_shape:
+        mat = dpnp.broadcast_to(mat, target_shape)
+
+    # Expand (..., M) → (..., M, 1), then broadcast to the full shape
+    # of *mat* so take_along_axis can gather along axis -2.
+    idx = dpnp.expand_dims(perm_indices, axis=-1)
+    idx = dpnp.broadcast_to(idx, target_shape).copy()
+    return dpnp.take_along_axis(mat, idx, axis=-2)
 
 
 def _batched_lu_factor_scipy(a, res_type):  # pylint: disable=too-many-locals
@@ -338,6 +380,71 @@ def _map_trans_to_mkl(trans):
     raise ValueError("`trans` must be 0 (N), 1 (T), or 2 (C)")
 
 
+def _pivots_to_permutation(piv, m):
+    """
+    Convert 0-based LAPACK pivot indices (sequential row swaps)
+    to a permutation array.
+
+    The returned permutation ``perm`` satisfies ``A[perm] = L @ U``
+    (i.e. the forward row-permutation produced by LAPACK).
+
+    The computation is performed entirely on the device.  A host-side
+    Python loop of ``K = min(M, N)`` iterations drives the sequential
+    swap logic, but each iteration only launches device kernels
+    (:func:`dpnp.take_along_axis` for gather,
+    :func:`dpnp.put_along_axis` for scatter); **no data is transferred
+    between host and device**.
+
+    .. note::
+
+        A future custom SYCL kernel could fuse all ``K`` swap steps
+        into a single launch to eliminate per-step kernel overhead.
+
+    Parameters
+    ----------
+    piv : dpnp.ndarray, shape (..., K)
+        0-based pivot indices as returned by :obj:`dpnp_lu_factor`.
+    m : int
+        Number of rows of the original matrix.
+
+    Returns
+    -------
+    perm : dpnp.ndarray, shape (..., M), dtype int64
+        Permutation indices.
+    """
+
+    batch_shape = piv.shape[:-1]
+    k = piv.shape[-1]
+
+    # Initialise the identity permutation on the device.
+    perm = dpnp.broadcast_to(
+        dpnp.arange(
+            m,
+            dtype=dpnp.int64,
+            usm_type=piv.usm_type,
+            sycl_queue=piv.sycl_queue,
+        ),
+        (*batch_shape, m),
+    ).copy()
+
+    # Apply sequential row swaps entirely on the device.
+    # Each iteration launches a small number of device kernels (gather +
+    # slice-assign + scatter) but never transfers data to the host.
+    for i in range(k):
+        # Pivot target for step *i*: shape (..., 1)
+        j = piv[..., i : i + 1]
+
+        # Gather the two values to be swapped.
+        val_i = perm[..., i : i + 1].copy()  # slice (free)
+        val_j = dpnp.take_along_axis(perm, j, axis=-1)  # gather
+
+        # Perform the swap.
+        perm[..., i : i + 1] = val_j  # slice assign
+        dpnp.put_along_axis(perm, j, val_i, axis=-1)  # scatter
+
+    return perm
+
+
 def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
     """
     dpnp_lu_factor(a, overwrite_a=False, check_finite=True)
@@ -430,6 +537,152 @@ def dpnp_lu_factor(a, overwrite_a=False, check_finite=True):
     # Return a tuple containing the factorized matrix 'a_h',
     # pivot indices 'ipiv_h'
     return (a_h, ipiv_h)
+
+
+def _assemble_lu_output(
+    low,
+    up,
+    inv_perm,
+    permute_l,
+    p_indices,
+    m,
+    real_type,
+    a_usm_type,
+    a_sycl_queue,
+):
+    """Select and build the correct dpnp_lu return value."""
+    if permute_l:
+        return _apply_permutation_to_rows(low, inv_perm), up
+    if p_indices:
+        return inv_perm, low, up
+    eye_m = dpnp.eye(
+        m, dtype=real_type, usm_type=a_usm_type, sycl_queue=a_sycl_queue
+    )
+    return (
+        _apply_permutation_to_rows(eye_m, inv_perm),
+        low,
+        up,
+    )  # perm_matrix, L, U
+
+
+def dpnp_lu(
+    a,
+    overwrite_a=False,
+    check_finite=True,
+    p_indices=False,
+    permute_l=False,
+):
+    """
+    dpnp_lu(a, overwrite_a=False, check_finite=True, p_indices=False,
+            permute_l=False)
+
+    Compute pivoted LU decomposition and return separate P, L, U matrices
+    (SciPy-compatible behavior).
+
+    This function mimics the behavior of `scipy.linalg.lu` including
+    support for `permute_l`, `p_indices`, `overwrite_a`, and `check_finite`.
+
+    """
+
+    a_sycl_queue = a.sycl_queue
+    a_usm_type = a.usm_type
+    m, n = a.shape[-2:]
+    k = min(m, n)
+    batch_shape = a.shape[:-2]
+
+    res_type = _common_type(a)
+
+    # The permutation matrix P uses a real dtype (SciPy convention):
+    # P only contains 0s and 1s, so complex storage would be wasteful.
+    real_type = _real_type(res_type)
+
+    # ---- Fast path: scalar (1x1) matrices ----
+    # For 1x1 input, P = I, L = I, U = A.  This avoids invoking LAPACK
+    # entirely (matches SciPy's scalar fast path).
+    if m == 1 and n == 1:
+        if check_finite:
+            if not dpnp.isfinite(a).all():
+                raise ValueError("array must not contain infs or NaNs")
+
+        low = dpnp.ones_like(a, dtype=res_type)
+        up = dpnp.astype(a, res_type, copy=not overwrite_a)
+        inv_perm = dpnp.zeros_like(a, shape=(*batch_shape, 1), dtype=dpnp.int64)
+
+        return _assemble_lu_output(
+            low,
+            up,
+            inv_perm,
+            permute_l,
+            p_indices,
+            m,
+            real_type,
+            a_usm_type,
+            a_sycl_queue,
+        )
+
+    # ---- Fast path: empty arrays ----
+    if a.size == 0:
+        low = dpnp.empty_like(a, shape=(*batch_shape, m, k), dtype=res_type)
+        up = dpnp.empty_like(a, shape=(*batch_shape, k, n), dtype=res_type)
+        inv_perm = dpnp.empty_like(a, shape=(*batch_shape, m), dtype=dpnp.int64)
+        return _assemble_lu_output(
+            low,
+            up,
+            inv_perm,
+            permute_l,
+            p_indices,
+            m,
+            real_type,
+            a_usm_type,
+            a_sycl_queue,
+        )
+
+    # ---- General case: LAPACK factorization ----
+    lu_compact, piv = dpnp_lu_factor(
+        a, overwrite_a=overwrite_a, check_finite=check_finite
+    )
+
+    # ---- Extract L: lower-triangular with unit diagonal ----
+    # L has shape (..., M, K).
+    low = dpnp.tril(lu_compact[..., :, :k], k=-1)
+    low += dpnp.eye(
+        m,
+        k,
+        dtype=lu_compact.dtype,
+        usm_type=a_usm_type,
+        sycl_queue=a_sycl_queue,
+    )
+
+    # ---- Extract U: upper-triangular ----
+    # U has shape (..., K, N).
+    up = dpnp.triu(lu_compact[..., :k, :])
+
+    # ---- Convert pivot indices → row permutation ----
+    # ``perm`` (forward): A[perm] = L @ U.
+    # This is the only step that requires a host transfer because the
+    # sequential swap semantics of LAPACK pivots cannot be parallelised.
+    # Only the small pivot array (min(M, N) elements per slice) is
+    # transferred; all subsequent work stays on the device.
+    perm = _pivots_to_permutation(piv, m)
+
+    # ``inv_perm`` (inverse): A = L[inv_perm] @ U.
+    # This is SciPy's ``p_indices`` convention.
+    # ``dpnp.argsort`` is an efficient on-device O(M log M) operation
+    # that avoids a second host round-trip.
+    inv_perm = dpnp.argsort(perm, axis=-1).astype(dpnp.int64)
+
+    # ---- Assemble output (SciPy convention) ----
+    return _assemble_lu_output(
+        low,
+        up,
+        inv_perm,
+        permute_l,
+        p_indices,
+        m,
+        real_type,
+        a_usm_type,
+        a_sycl_queue,
+    )
 
 
 def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):

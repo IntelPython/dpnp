@@ -2,12 +2,12 @@ from math import prod
 
 import numpy
 import pytest
-from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import (
     assert_equal,
 )
 
 import dpnp
+from dpnp.exceptions import AxisError
 
 from .helper import (
     get_all_dtypes,

@@ -84,6 +84,7 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
+from .exceptions import ExecutionPlacementError
 
 
 def _get_max_min(dtype):
@@ -273,7 +274,7 @@ def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
         usm_type = dpu.get_coerced_usm_type([usm_type, arg.usm_type])
         # check that arrays have the same allocation queue
         if dpu.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
-            raise dpu.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 f"ary and {arg_name} must be allocated on the same SYCL queue"
             )
 

@@ -122,15 +122,15 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
 
     For full documentation refer to :obj:`numpy.nanargmax`.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function synchronizes in order to test for all-NaN slices in the array.
     This may harm performance in some applications. To avoid synchronization,
     the user is recommended to filter NaNs themselves and use `dpnp.argmax`
     on the filtered array.
 
-    Warning
-    -------
+    Warnings
+    --------
     The results cannot be trusted if a slice contains only NaNs
     and -Infs.
 
@@ -206,15 +206,15 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
 
     For full documentation refer to :obj:`numpy.nanargmin`.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function synchronizes in order to test for all-NaN slices in the array.
     This may harm performance in some applications. To avoid synchronization,
     the user is recommended to filter NaNs themselves and use `dpnp.argmax`
     on the filtered array.
 
-    Warning
-    -------
+    Warnings
+    --------
     The results cannot be trusted if a slice contains only NaNs
     and -Infs.
 

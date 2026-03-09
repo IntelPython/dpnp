@@ -2,7 +2,6 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
@@ -13,6 +12,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
     assert_dtype_allclose,

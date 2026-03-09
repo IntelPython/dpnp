@@ -48,7 +48,6 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 from dpctl.tensor._numpy_helper import (
-    AxisError,
     normalize_axis_index,
     normalize_axis_tuple,
 )
@@ -60,6 +59,7 @@ from .dpnp_array import dpnp_array
 # pylint: disable=no-name-in-module
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_pad import dpnp_pad
+from .exceptions import AxisError
 
 
 class InsertDeleteParams(NamedTuple):
@@ -829,8 +829,8 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     out : dpnp.ndarray
         The input `a` as a float ndarray.
 
-    Warning
-    -------
+    Warnings
+    --------
     This function is deprecated in favor of :obj:`dpnp.asarray` and
     will be removed in a future release.
 
@@ -3099,8 +3099,8 @@ def resize(a, new_shape):
     be used. In most other cases either indexing (to reduce the size) or
     padding (to increase the size) may be a more appropriate solution.
 
-    Warning
-    -------
+    Warnings
+    --------
     This functionality does **not** consider axes separately, i.e. it does not
     apply interpolation/extrapolation.
     It fills the return array with the required number of elements, iterating

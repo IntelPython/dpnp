@@ -5,13 +5,13 @@ import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_array_equal, assert_raises
 
 import dpnp
 import dpnp.linalg
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
+from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
     generate_random_numpy_array,
@@ -1086,7 +1086,7 @@ def test_array_creation_from_dpctl(copy, device):
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
 def test_from_dlpack(arr_dtype, shape, device):
-    X = dpnp.empty(shape=shape, dtype=arr_dtype, device=device)
+    X = dpnp.ones(shape=shape, dtype=arr_dtype, device=device)
     Y = dpnp.from_dlpack(X)
     assert_array_equal(X, Y)
     assert X.__dlpack_device__() == Y.__dlpack_device__()
@@ -1101,7 +1101,7 @@ def test_from_dlpack(arr_dtype, shape, device):
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
 def test_from_dlpack_with_dpt(arr_dtype, device):
-    X = dpctl.tensor.empty((64,), dtype=arr_dtype, device=device)
+    X = dpt.ones((64,), dtype=arr_dtype, device=device)
     Y = dpnp.from_dlpack(X)
     assert_array_equal(X, Y)
     assert isinstance(Y, dpnp.dpnp_array.dpnp_array)
@@ -1661,6 +1661,18 @@ class TestLinAlgebra:
     def test_lu_factor(self, data, device):
         a = dpnp.array(data, device=device)
         result = dpnp.scipy.linalg.lu_factor(a)
+
+        for param in result:
+            param_queue = param.sycl_queue
+            assert_sycl_queue_equal(param_queue, a.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "data",
+        [[[1.0, 2.0], [3.0, 5.0]], [[]], [[[1.0, 2.0], [3.0, 5.0]]], [[[]]]],
+    )
+    def test_lu(self, data, device):
+        a = dpnp.array(data, device=device)
+        result = dpnp.scipy.linalg.lu(a)
 
         for param in result:
             param_queue = param.sycl_queue

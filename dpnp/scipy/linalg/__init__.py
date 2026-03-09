@@ -35,9 +35,10 @@ to provide efficient low-level implementations of standard algorithms.
 
 """
 
-from ._decomp_lu import lu_factor, lu_solve
+from ._decomp_lu import lu, lu_factor, lu_solve
 
 __all__ = [
+    "lu",
     "lu_factor",
     "lu_solve",
 ]
