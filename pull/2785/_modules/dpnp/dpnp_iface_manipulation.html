@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.20.0dev3+11.g90f82bc31f6 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.20.0dev4+9.g7418829b9a4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ce07ca78"></script>
+      <script src="../../_static/documentation_options.js?v=690394a1"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -133,7 +133,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AxisError</span><span class="p">,</span>
     <span class="n">normalize_axis_index</span><span class="p">,</span>
     <span class="n">normalize_axis_tuple</span><span class="p">,</span>
 <span class="p">)</span>
@@ -145,6 +144,7 @@
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_pad</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_pad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisError</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">InsertDeleteParams</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
@@ -925,8 +925,8 @@
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        The input `a` as a float ndarray.</span>
 
-<span class="sd">    Warning</span>
-<span class="sd">    -------</span>
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
 <span class="sd">    This function is deprecated in favor of :obj:`dpnp.asarray` and</span>
 <span class="sd">    will be removed in a future release.</span>
 
@@ -3282,8 +3282,8 @@
 <span class="sd">    be used. In most other cases either indexing (to reduce the size) or</span>
 <span class="sd">    padding (to increase the size) may be a more appropriate solution.</span>
 
-<span class="sd">    Warning</span>
-<span class="sd">    -------</span>
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
 <span class="sd">    This functionality does **not** consider axes separately, i.e. it does not</span>
 <span class="sd">    apply interpolation/extrapolation.</span>
 <span class="sd">    It fills the return array with the required number of elements, iterating</span>
