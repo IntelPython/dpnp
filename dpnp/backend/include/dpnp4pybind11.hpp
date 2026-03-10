@@ -32,8 +32,8 @@
 
 #include <array>
 #include <complex>
-#include <cstdint>
 #include <cstddef> // for std::size_t for C++ linkage
+#include <cstdint>
 #include <memory>
 #include <stddef.h> // for size_t for C linkage
 #include <stdexcept>
