@@ -1,0 +1,10 @@
+﻿
+
+dpnp.round
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: round
