@@ -33,6 +33,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <array>
+#include <cassert>
 #include <cstddef>
 #include <sycl/sycl.hpp>
 #include <tuple>
