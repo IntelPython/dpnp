@@ -78,6 +78,17 @@ from ._manipulation_functions import (
     tile,
     unstack,
 )
+from ._reduction import (
+    argmax,
+    argmin,
+    count_nonzero,
+    logsumexp,
+    max,
+    min,
+    prod,
+    reduce_hypot,
+    sum,
+)
 from ._reshape import reshape
 from ._search_functions import where
 from ._searchsorted import searchsorted
@@ -90,9 +101,14 @@ from ._set_functions import (
 )
 from ._sorting import argsort, sort, top_k
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
+from ._utility_functions import all, any, diff
 
 __all__ = [
+    "all",
+    "any",
     "arange",
+    "argmax",
+    "argmin",
     "argsort",
     "asarray",
     "asnumpy",
@@ -102,10 +118,12 @@ __all__ = [
     "can_cast",
     "concat",
     "copy",
+    "count_nonzero",
     "clip",
     "cumulative_logsumexp",
     "cumulative_prod",
     "cumulative_sum",
+    "diff",
     "empty",
     "empty_like",
     "extract",
@@ -120,15 +138,20 @@ __all__ = [
     "isdtype",
     "isin",
     "linspace",
+    "logsumexp",
+    "max",
     "meshgrid",
+    "min",
     "moveaxis",
     "permute_dims",
     "nonzero",
     "ones",
     "ones_like",
     "place",
+    "prod",
     "put",
     "put_along_axis",
+    "reduce_hypot",
     "repeat",
     "reshape",
     "result_type",
@@ -137,6 +160,7 @@ __all__ = [
     "sort",
     "squeeze",
     "stack",
+    "sum",
     "swapaxes",
     "take",
     "take_along_axis",

@@ -39,8 +39,9 @@ it contains:
 
 """
 
-import dpctl.tensor as dpt
-
+# TODO: revert to `import dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt
 import dpnp
 
 

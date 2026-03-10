@@ -428,7 +428,9 @@ def _unique_1d(
         if first_nan is not None:
             # all NaNs are collapsed, so need to put a count of all NaNs
             # at the last index
-            dpt.sum(usm_res.counts[first_nan:], out=usm_res.counts[first_nan])
+            dpt_ext.sum(
+                usm_res.counts[first_nan:], out=usm_res.counts[first_nan]
+            )
             result += (usm_res.counts[: first_nan + 1],)
         else:
             result += (usm_res.counts,)
