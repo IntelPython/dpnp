@@ -1,6 +1,6 @@
 import numpy
 
-from .helper import has_support_aspect64
+from .helper import factor_to_tol, has_support_aspect64
 
 
 def gram(x, xp):
@@ -38,16 +38,17 @@ def check_qr(a_np, a_xp, mode, xp):
         m, n = a_np.shape[-2], a_np.shape[-1]
         Rraw_xp = get_R_from_raw(h_xp, m, n, xp)
 
+        rtol = atol = factor_to_tol(Rraw_xp.dtype, 100)
+
         # Use reduced QR as a reference:
         # reduced is validated via Q @ R == A
-        exp_res = xp.linalg.qr(a_xp, mode="reduced")
-        exp_r = exp_res.R
-        assert xp.allclose(Rraw_xp, exp_r, atol=1e-4, rtol=1e-4)
+        exp_r = xp.linalg.qr(a_xp, mode="reduced").R
+        assert xp.allclose(Rraw_xp, exp_r, atol=atol, rtol=rtol)
 
         exp_xp = gram(a_xp, xp)
 
         # Compare R^H @ R == A^H @ A
-        assert xp.allclose(gram(Rraw_xp, xp), exp_xp, atol=1e-4, rtol=1e-4)
+        assert xp.allclose(gram(Rraw_xp, xp), exp_xp, atol=atol, rtol=rtol)
 
         assert tau_xp.shape == tau_np.shape
         if not has_support_aspect64(tau_xp.sycl_device):
@@ -60,11 +61,12 @@ def check_qr(a_np, a_xp, mode, xp):
 
         # Use reduced QR as a reference:
         # reduced is validated via Q @ R == A
-        exp_res = xp.linalg.qr(a_xp, mode="reduced")
-        exp_r = exp_res.R
-        assert xp.allclose(r_xp, exp_r, atol=1e-4, rtol=1e-4)
+        exp_r = xp.linalg.qr(a_xp, mode="reduced").R
+        rtol = atol = factor_to_tol(exp_r.dtype, 100)
+
+        assert xp.allclose(r_xp, exp_r, atol=atol, rtol=rtol)
 
         exp_xp = gram(a_xp, xp)
 
         # Compare R^H @ R == A^H @ A
-        assert xp.allclose(gram(r_xp, xp), exp_xp, atol=1e-4, rtol=1e-4)
+        assert xp.allclose(gram(r_xp, xp), exp_xp, atol=atol, rtol=rtol)

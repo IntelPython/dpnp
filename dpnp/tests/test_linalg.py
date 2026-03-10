@@ -3613,7 +3613,7 @@ class TestQr:
     )
     @pytest.mark.parametrize("mode", ["complete", "reduced", "r", "raw"])
     def test_qr(self, dtype, shape, mode):
-        a = generate_random_numpy_array(shape, dtype, seed_value=None)
+        a = generate_random_numpy_array(shape, dtype, seed_value=81)
         ia = dpnp.array(a, dtype=dtype)
 
         check_qr(a, ia, mode, dpnp)
