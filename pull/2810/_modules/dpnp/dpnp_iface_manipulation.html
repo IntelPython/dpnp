@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.20.0dev3+18.g0b9d3b05a4e documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.20.0dev3+20.gf243da7f89e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1c0351c1"></script>
+      <script src="../../_static/documentation_options.js?v=a1fc2c1d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -513,7 +513,9 @@
         <span class="k">if</span> <span class="n">first_nan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># all NaNs are collapsed, so need to put a count of all NaNs</span>
             <span class="c1"># at the last index</span>
-            <span class="n">dpt</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">usm_res</span><span class="o">.</span><span class="n">counts</span><span class="p">[</span><span class="n">first_nan</span><span class="p">:],</span> <span class="n">out</span><span class="o">=</span><span class="n">usm_res</span><span class="o">.</span><span class="n">counts</span><span class="p">[</span><span class="n">first_nan</span><span class="p">])</span>
+            <span class="n">dpt_ext</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">usm_res</span><span class="o">.</span><span class="n">counts</span><span class="p">[</span><span class="n">first_nan</span><span class="p">:],</span> <span class="n">out</span><span class="o">=</span><span class="n">usm_res</span><span class="o">.</span><span class="n">counts</span><span class="p">[</span><span class="n">first_nan</span><span class="p">]</span>
+            <span class="p">)</span>
             <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="n">usm_res</span><span class="o">.</span><span class="n">counts</span><span class="p">[:</span> <span class="n">first_nan</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="n">usm_res</span><span class="o">.</span><span class="n">counts</span><span class="p">,)</span>

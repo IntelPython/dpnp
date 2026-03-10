@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.20.0dev3+18.g0b9d3b05a4e documentation</title>
+  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.20.0dev3+20.gf243da7f89e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1c0351c1"></script>
+      <script src="../../_static/documentation_options.js?v=a1fc2c1d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -124,12 +124,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
-
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="c1"># TODO: revert to `import dpctl.tensor...`</span>
 <span class="c1"># when dpnp fully migrates dpctl/tensor</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl_ext.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt_ext</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl_ext.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl_ext.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
@@ -472,13 +470,13 @@
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-        <span class="n">usm_v</span> <span class="o">=</span> <span class="n">dpt_ext</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
+        <span class="n">usm_v</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">usm_v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
     <span class="n">usm_sorter</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">sorter</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">sorter</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span>
-        <span class="n">dpt_ext</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_v</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">,</span> <span class="n">sorter</span><span class="o">=</span><span class="n">usm_sorter</span><span class="p">)</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_v</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">,</span> <span class="n">sorter</span><span class="o">=</span><span class="n">usm_sorter</span><span class="p">)</span>
     <span class="p">)</span></div>
 
 
@@ -573,9 +571,7 @@
     <span class="n">usm_condition</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
 
     <span class="n">usm_out</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
-    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt_ext</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-        <span class="n">usm_condition</span><span class="p">,</span> <span class="n">usm_x</span><span class="p">,</span> <span class="n">usm_y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">usm_out</span>
-    <span class="p">)</span>
+    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">usm_condition</span><span class="p">,</span> <span class="n">usm_x</span><span class="p">,</span> <span class="n">usm_y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">usm_out</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span></div>
 
 </pre></div>
