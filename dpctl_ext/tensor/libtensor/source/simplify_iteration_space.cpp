@@ -32,13 +32,17 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
-#include "simplify_iteration_space.hpp"
-#include "utils/strided_iters.hpp"
+
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <iterator>
-#include <pybind11/pybind11.h>
 #include <vector>
+
+#include <pybind11/pybind11.h>
+
+#include "simplify_iteration_space.hpp"
+#include "utils/strided_iters.hpp"
 
 namespace dpctl::tensor::py_internal
 {
