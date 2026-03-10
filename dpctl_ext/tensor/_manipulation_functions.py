@@ -624,7 +624,7 @@ def repeat(x, repeats, /, *, axis=None):
                     "'repeats' array must be broadcastable to the size of "
                     "the repeated axis"
                 )
-            if not dpt.all(repeats >= 0):
+            if not dpt_ext.all(repeats >= 0):
                 raise ValueError("'repeats' elements must be positive")
 
     elif isinstance(repeats, (tuple, list, range)):
@@ -646,7 +646,7 @@ def repeat(x, repeats, /, *, axis=None):
             repeats = dpt_ext.asarray(
                 repeats, dtype=dpt.int64, usm_type=usm_type, sycl_queue=exec_q
             )
-            if not dpt.all(repeats >= 0):
+            if not dpt_ext.all(repeats >= 0):
                 raise ValueError("`repeats` elements must be positive")
     else:
         raise TypeError(

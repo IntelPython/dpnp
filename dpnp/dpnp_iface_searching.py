@@ -39,12 +39,10 @@ it contains:
 
 """
 
-import dpctl.tensor as dpt
-
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_impl as dti
 import dpnp
 
@@ -376,13 +374,13 @@ def searchsorted(a, v, side="left", sorter=None):
 
     usm_a = dpnp.get_usm_ndarray(a)
     if dpnp.isscalar(v):
-        usm_v = dpt_ext.asarray(v, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
+        usm_v = dpt.asarray(v, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
     else:
         usm_v = dpnp.get_usm_ndarray(v)
 
     usm_sorter = None if sorter is None else dpnp.get_usm_ndarray(sorter)
     return dpnp_array._create_from_usm_ndarray(
-        dpt_ext.searchsorted(usm_a, usm_v, side=side, sorter=usm_sorter)
+        dpt.searchsorted(usm_a, usm_v, side=side, sorter=usm_sorter)
     )
 
 
@@ -474,7 +472,5 @@ def where(condition, x=None, y=None, /, *, order="K", out=None):
     usm_condition = dpnp.get_usm_ndarray(condition)
 
     usm_out = None if out is None else dpnp.get_usm_ndarray(out)
-    usm_res = dpt_ext.where(
-        usm_condition, usm_x, usm_y, order=order, out=usm_out
-    )
+    usm_res = dpt.where(usm_condition, usm_x, usm_y, order=order, out=usm_out)
     return dpnp.get_result_array(usm_res, out)
