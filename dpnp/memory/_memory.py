@@ -98,7 +98,7 @@ def create_data(x):
     usm_data = x.usm_data
 
     if isinstance(usm_data, tuple(dispatch.values())):
-        # usm_data is already an instance of MemoryUSM class
+        # usm_data is already an instance of MemoryUSM<type> class
         cls = usm_data.__class__
     elif (cls := dispatch.get(type(usm_data))) is not None:
         pass  # cls is set
