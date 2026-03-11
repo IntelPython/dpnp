@@ -719,22 +719,18 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
         offset = -offset
 
     a_shape = a.shape
-    a_straides = a.strides
+    a_strides = a.strides
     n, m = a_shape[-2:]
-    st_n, st_m = a_straides[-2:]
+    st_n, st_m = a_strides[-2:]
 
-    # Compute shape, strides and offset of the resulting diagonal array
-    # based on the input offset
-    out_strides = a_straides[:-2] + (st_n + st_m,)
-    if offset == 0:
-        out_shape = a_shape[:-2] + (min(n, m),)
-        out_offset = 0
-    elif 0 < offset < m:
-        out_shape = a_shape[:-2] + (min(n, m - offset),)
-        out_offset = st_m // a.itemsize * offset
-    else:
-        out_shape = a_shape[:-2] + (0,)
-        out_offset = 0
+    # Compute the diagonal array as a view:
+    # - stride: sum of row and column strides (diag advances in both dimensions)
+    # - shape: determined by diagonal size using max(0, min(n, m - offset))
+    # - offset: starting position in buffer for non-zero offsets
+    diag_size = max(0, min(n, m - offset))
+    out_shape = a_shape[:-2] + (diag_size,)
+    out_strides = a_strides[:-2] + (st_n + st_m,)
+    out_offset = st_m // a.itemsize * offset
 
     return dpnp_array(
         out_shape, buffer=a, strides=out_strides, offset=out_offset
