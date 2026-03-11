@@ -37,7 +37,6 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <span>
 #include <vector>
 
 #include <sycl/sycl.hpp>
@@ -78,10 +77,8 @@ sycl::event iota_impl(sycl::queue &exec_q,
             }
 
             if (offset + n_wi * max_sgSize < nelems) {
-                static constexpr auto group_ls_props = syclexp::properties{
-                    syclexp::data_placement_striped
-                    // , syclexp::full_group
-                };
+                static constexpr auto group_ls_props =
+                    syclexp::properties{syclexp::data_placement_striped};
 
                 auto out_multi_ptr = sycl::address_space_cast<
                     sycl::access::address_space::global_space,

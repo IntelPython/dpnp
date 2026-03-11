@@ -391,7 +391,6 @@ void init_max(py::module_ m)
         auto max_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                              const arrayT &dst, sycl::queue &exec_q,
                              const event_vecT &depends = {}) {
-            using dpctl::tensor::py_internal::py_reduction_over_axis;
             return py_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 max_over_axis_strided_atomic_dispatch_table,

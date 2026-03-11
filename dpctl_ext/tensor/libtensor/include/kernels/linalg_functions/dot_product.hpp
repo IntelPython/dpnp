@@ -47,11 +47,7 @@
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace kernels
+namespace dpctl::tensor::kernels
 {
 
 using dpctl::tensor::ssize_t;
@@ -1402,6 +1398,4 @@ sycl::event
     }
 }
 
-} // namespace kernels
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::kernels
