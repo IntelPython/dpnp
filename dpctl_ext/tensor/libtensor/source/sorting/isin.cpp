@@ -35,6 +35,7 @@
 
 #include <cstddef>
 #include <stdexcept>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -46,6 +47,7 @@
 
 #include "kernels/sorting/isin.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
@@ -254,7 +256,7 @@ std::pair<sycl::event, sycl::event>
         simplified_dst_strides.push_back(0);
     }
     else {
-        dpctl::tensor::py_internal::simplify_iteration_space(
+        simplify_iteration_space(
             // modified by reference
             simplified_nd,
             // read-only inputs
@@ -313,9 +315,8 @@ std::pair<sycl::event, sycl::event>
 
 void init_isin_functions(py::module_ m)
 {
-    dpctl::tensor::py_internal::detail::init_isin_dispatch_vector();
+    detail::init_isin_dispatch_vector();
 
-    using dpctl::tensor::py_internal::py_isin;
     m.def("_isin", &py_isin, py::arg("needles"), py::arg("hay"), py::arg("dst"),
           py::arg("sycl_queue"), py::arg("invert"),
           py::arg("depends") = py::list());

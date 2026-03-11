@@ -34,12 +34,14 @@
 
 #pragma once
 
+#include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <stdexcept>
 #include <vector>
 
-#include <sycl/ext/oneapi/sub_group_mask.hpp>
 #include <sycl/sycl.hpp>
 
 #include "kernels/sorting/merge_sort.hpp"

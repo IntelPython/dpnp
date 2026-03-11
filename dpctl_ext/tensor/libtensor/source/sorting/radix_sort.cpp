@@ -34,7 +34,6 @@
 //===----------------------------------------------------------------------===//
 
 #include <cstddef>
-#include <cstdint>
 #include <exception>
 #include <utility>
 #include <vector>
@@ -62,6 +61,7 @@ namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace impl_ns = dpctl::tensor::kernels::radix_sort_details;
 
+using dpctl::tensor::ssize_t;
 using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
 static sort_contig_fn_ptr_t
     ascending_radix_sort_contig_dispatch_vector[td_ns::num_types];
@@ -152,7 +152,7 @@ bool py_radix_sort_defined(int typenum)
 
 void init_radix_sort_functions(py::module_ m)
 {
-    dpctl::tensor::py_internal::init_radix_sort_dispatch_vectors();
+    init_radix_sort_dispatch_vectors();
 
     auto py_radix_sort_ascending = [](const dpctl::tensor::usm_ndarray &src,
                                       const int trailing_dims_to_sort,
@@ -160,10 +160,8 @@ void init_radix_sort_functions(py::module_ m)
                                       sycl::queue &exec_q,
                                       const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
-        return dpctl::tensor::py_internal::py_sort(
-            src, trailing_dims_to_sort, dst, exec_q, depends,
-            dpctl::tensor::py_internal::
-                ascending_radix_sort_contig_dispatch_vector);
+        return py_sort(src, trailing_dims_to_sort, dst, exec_q, depends,
+                       ascending_radix_sort_contig_dispatch_vector);
     };
     m.def("_radix_sort_ascending", py_radix_sort_ascending, py::arg("src"),
           py::arg("trailing_dims_to_sort"), py::arg("dst"),
@@ -175,10 +173,8 @@ void init_radix_sort_functions(py::module_ m)
                                        sycl::queue &exec_q,
                                        const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
-        return dpctl::tensor::py_internal::py_sort(
-            src, trailing_dims_to_sort, dst, exec_q, depends,
-            dpctl::tensor::py_internal::
-                descending_radix_sort_contig_dispatch_vector);
+        return py_sort(src, trailing_dims_to_sort, dst, exec_q, depends,
+                       descending_radix_sort_contig_dispatch_vector);
     };
     m.def("_radix_sort_descending", py_radix_sort_descending, py::arg("src"),
           py::arg("trailing_dims_to_sort"), py::arg("dst"),
