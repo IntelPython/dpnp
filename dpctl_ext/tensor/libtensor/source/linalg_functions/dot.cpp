@@ -57,6 +57,8 @@
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
+#include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 
 namespace dpctl::tensor::py_internal
 {
