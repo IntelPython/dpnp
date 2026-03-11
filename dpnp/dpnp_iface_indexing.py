@@ -725,17 +725,15 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
 
     # Compute shape, strides and offset of the resulting diagonal array
     # based on the input offset
+    out_strides = a_straides[:-2] + (st_n + st_m,)
     if offset == 0:
         out_shape = a_shape[:-2] + (min(n, m),)
-        out_strides = a_straides[:-2] + (st_n + st_m,)
         out_offset = 0
     elif 0 < offset < m:
         out_shape = a_shape[:-2] + (min(n, m - offset),)
-        out_strides = a_straides[:-2] + (st_n + st_m,)
         out_offset = st_m // a.itemsize * offset
     else:
         out_shape = a_shape[:-2] + (0,)
-        out_strides = a_straides[:-2] + (a.itemsize,)
         out_offset = 0
 
     return dpnp_array(
