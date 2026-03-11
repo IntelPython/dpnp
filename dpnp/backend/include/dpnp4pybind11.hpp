@@ -30,11 +30,14 @@
 
 #include "dpctl_capi.h"
 
+#include <array>
 #include <complex>
 #include <cstddef> // for std::size_t for C++ linkage
+#include <cstdint>
 #include <memory>
 #include <stddef.h> // for size_t for C linkage
 #include <stdexcept>
+#include <type_traits>
 #include <utility>
 #include <vector>
 

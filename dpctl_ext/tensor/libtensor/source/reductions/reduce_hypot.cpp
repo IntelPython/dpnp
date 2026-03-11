@@ -40,13 +40,14 @@
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 #include "kernels/reductions.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 
-#include "reduction_atomic_support.hpp"
 #include "reduction_over_axis.hpp"
 
 namespace dpctl::tensor::py_internal
@@ -229,7 +230,6 @@ void init_reduce_hypot(py::module_ m)
         auto hypot_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                                const arrayT &dst, sycl::queue &exec_q,
                                const event_vecT &depends = {}) {
-            using dpctl::tensor::py_internal::py_tree_reduction_over_axis;
             return py_tree_reduction_over_axis(
                 src, trailing_dims_to_reduce, dst, exec_q, depends,
                 hypot_over_axis_strided_temps_dispatch_table,
@@ -242,7 +242,6 @@ void init_reduce_hypot(py::module_ m)
 
         auto hypot_dtype_supported = [&](const py::dtype &input_dtype,
                                          const py::dtype &output_dtype) {
-            using dpctl::tensor::py_internal::py_tree_reduction_dtype_supported;
             return py_tree_reduction_dtype_supported(
                 input_dtype, output_dtype,
                 hypot_over_axis_strided_temps_dispatch_table);
