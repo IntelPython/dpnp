@@ -41,11 +41,7 @@
 #include "kernels/linalg_functions/gemm.hpp"
 #include "utils/type_dispatch_building.hpp"
 
-namespace dpctl
-{
-namespace tensor
-{
-namespace py_internal
+namespace dpctl::tensor::py_internal
 {
 
 namespace td_ns = dpctl::tensor::type_dispatch;
@@ -405,6 +401,4 @@ struct DotProductContigNoAtomicFactory
     }
 };
 
-} // namespace py_internal
-} // namespace tensor
-} // namespace dpctl
+} // namespace dpctl::tensor::py_internal

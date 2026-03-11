@@ -35,6 +35,8 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <stdexcept>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -47,6 +49,7 @@
 
 #include "kernels/sorting/searchsorted.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/rich_comparisons.hpp"
 #include "utils/sycl_alloc_utils.hpp"
@@ -369,7 +372,7 @@ std::pair<sycl::event, sycl::event>
         simplified_positions_strides.push_back(0);
     }
     else {
-        dpctl::tensor::py_internal::simplify_iteration_space(
+        simplify_iteration_space(
             // modified by reference
             simplified_nd,
             // read-only inputs
@@ -462,10 +465,7 @@ std::pair<sycl::event, sycl::event>
 
 void init_searchsorted_functions(py::module_ m)
 {
-    dpctl::tensor::py_internal::detail::init_searchsorted_dispatch_table();
-
-    using dpctl::tensor::py_internal::py_searchsorted_left;
-    using dpctl::tensor::py_internal::py_searchsorted_right;
+    detail::init_searchsorted_dispatch_table();
 
     m.def("_searchsorted_left", &py_searchsorted_left, py::arg("hay"),
           py::arg("needles"), py::arg("positions"), py::arg("sycl_queue"),

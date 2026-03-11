@@ -45,6 +45,7 @@
 #include "add.hpp"
 #include "elementwise_functions.hpp"
 #include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 
 #include "kernels/elementwise_functions/add.hpp"
 #include "kernels/elementwise_functions/common.hpp"

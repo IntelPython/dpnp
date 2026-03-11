@@ -50,11 +50,10 @@
 #include "kernels/elementwise_functions/atanh.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 
-namespace py = pybind11;
-
 namespace dpctl::tensor::py_internal
 {
 
+namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
@@ -65,7 +64,6 @@ using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 namespace impl
 {
 
-namespace py = pybind11;
 namespace atanh_fn_ns = dpctl::tensor::kernels::atanh;
 
 static unary_contig_impl_fn_ptr_t
