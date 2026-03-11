@@ -49,6 +49,7 @@
 #include <pybind11/pybind11.h>
 
 #include "elementwise_functions_type_utils.hpp"
+#include "kernels/alignment.hpp"
 #include "kernels/dpctl_tensor_types.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
@@ -64,6 +65,9 @@ namespace dpctl::tensor::py_internal
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+
+using dpctl::tensor::kernels::alignment_utils::is_aligned;
+using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
 /*! @brief Template implementing Python API for unary elementwise functions */
 template <typename output_typesT,
@@ -428,7 +432,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     int nd = dst_nd;
     const py::ssize_t *shape = src1_shape;
 
-    dpctl::tensor::py_internal::simplify_iteration_space_3(
+    simplify_iteration_space_3(
         nd, shape, src1_strides, src2_strides, dst_strides,
         // outputs
         simplified_shape, simplified_src1_strides, simplified_src2_strides,
@@ -597,7 +601,7 @@ py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
         return py::cast<py::object>(res);
     }
     else {
-        using dpctl::tensor::py_internal::type_utils::_dtype_from_typenum;
+        using type_utils::_dtype_from_typenum;
 
         auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
         auto dt = _dtype_from_typenum(dst_typenum_t);
@@ -724,11 +728,10 @@ std::pair<sycl::event, sycl::event>
     int nd = lhs_nd;
     const py::ssize_t *shape = rhs_shape;
 
-    dpctl::tensor::py_internal::simplify_iteration_space(
-        nd, shape, rhs_strides, lhs_strides,
-        // outputs
-        simplified_shape, simplified_rhs_strides, simplified_lhs_strides,
-        rhs_offset, lhs_offset);
+    simplify_iteration_space(nd, shape, rhs_strides, lhs_strides,
+                             // outputs
+                             simplified_shape, simplified_rhs_strides,
+                             simplified_lhs_strides, rhs_offset, lhs_offset);
 
     std::vector<sycl::event> host_tasks{};
     if (nd < 3) {
