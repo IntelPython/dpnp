@@ -374,11 +374,10 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *shape = src_shape;
 
     std::vector<sycl::event> host_tasks{};
-    dpctl::tensor::py_internal::simplify_iteration_space(
-        nd, shape, src_strides, dst_strides,
-        // outputs
-        simplified_shape, simplified_src_strides, simplified_dst_strides,
-        src_offset, dst_offset);
+    simplify_iteration_space(nd, shape, src_strides, dst_strides,
+                             // outputs
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
 
     if (nd == 0) {
         // handle 0d array as 1d array with 1 element

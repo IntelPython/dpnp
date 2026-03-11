@@ -53,6 +53,7 @@
 namespace dpctl::tensor::py_internal
 {
 
+namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
