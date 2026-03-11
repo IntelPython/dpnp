@@ -32,6 +32,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <complex>
 #include <cstdint>
 #include <type_traits>

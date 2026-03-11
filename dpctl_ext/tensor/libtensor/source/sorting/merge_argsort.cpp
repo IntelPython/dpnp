@@ -35,6 +35,8 @@
 
 #include <cstdint>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 #include <sycl/sycl.hpp>
 
@@ -121,7 +123,7 @@ void init_merge_argsort_dispatch_tables(void)
 
 void init_merge_argsort_functions(py::module_ m)
 {
-    dpctl::tensor::py_internal::init_merge_argsort_dispatch_tables();
+    init_merge_argsort_dispatch_tables();
 
     auto py_argsort_ascending = [](const dpctl::tensor::usm_ndarray &src,
                                    const int trailing_dims_to_sort,
@@ -129,10 +131,8 @@ void init_merge_argsort_functions(py::module_ m)
                                    sycl::queue &exec_q,
                                    const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
-        return dpctl::tensor::py_internal::py_argsort(
-            src, trailing_dims_to_sort, dst, exec_q, depends,
-            dpctl::tensor::py_internal::
-                ascending_argsort_contig_dispatch_table);
+        return py_argsort(src, trailing_dims_to_sort, dst, exec_q, depends,
+                          ascending_argsort_contig_dispatch_table);
     };
     m.def("_argsort_ascending", py_argsort_ascending, py::arg("src"),
           py::arg("trailing_dims_to_sort"), py::arg("dst"),
@@ -144,10 +144,8 @@ void init_merge_argsort_functions(py::module_ m)
                                     sycl::queue &exec_q,
                                     const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
-        return dpctl::tensor::py_internal::py_argsort(
-            src, trailing_dims_to_sort, dst, exec_q, depends,
-            dpctl::tensor::py_internal::
-                descending_argsort_contig_dispatch_table);
+        return py_argsort(src, trailing_dims_to_sort, dst, exec_q, depends,
+                          descending_argsort_contig_dispatch_table);
     };
     m.def("_argsort_descending", py_argsort_descending, py::arg("src"),
           py::arg("trailing_dims_to_sort"), py::arg("dst"),

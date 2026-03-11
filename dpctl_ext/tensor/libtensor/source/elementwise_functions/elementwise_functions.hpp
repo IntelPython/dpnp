@@ -35,7 +35,6 @@
 
 #pragma once
 
-#include <algorithm>
 #include <cstddef>
 #include <stdexcept>
 #include <string>
@@ -50,7 +49,6 @@
 #include <pybind11/pybind11.h>
 
 #include "elementwise_functions_type_utils.hpp"
-#include "kernels/alignment.hpp"
 #include "kernels/dpctl_tensor_types.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
@@ -66,9 +64,6 @@ namespace dpctl::tensor::py_internal
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
-
-using dpctl::tensor::kernels::alignment_utils::is_aligned;
-using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
 /*! @brief Template implementing Python API for unary elementwise functions */
 template <typename output_typesT,
@@ -188,11 +183,10 @@ std::pair<sycl::event, sycl::event>
     int nd = src_nd;
     const py::ssize_t *shape = src_shape;
 
-    dpctl::tensor::py_internal::simplify_iteration_space(
-        nd, shape, src_strides, dst_strides,
-        // output
-        simplified_shape, simplified_src_strides, simplified_dst_strides,
-        src_offset, dst_offset);
+    simplify_iteration_space(nd, shape, src_strides, dst_strides,
+                             // output
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
 
     if (nd == 1 && simplified_src_strides[0] == 1 &&
         simplified_dst_strides[0] == 1) {
@@ -270,7 +264,7 @@ py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
         throw py::value_error(e.what());
     }
 
-    using dpctl::tensor::py_internal::type_utils::_result_typeid;
+    using type_utils::_result_typeid;
     int dst_typeid = _result_typeid(src_typeid, output_types);
 
     if (dst_typeid < 0) {
@@ -278,7 +272,7 @@ py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
         return py::cast<py::object>(res);
     }
     else {
-        using dpctl::tensor::py_internal::type_utils::_dtype_from_typenum;
+        using type_utils::_dtype_from_typenum;
 
         auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
         auto dt = _dtype_from_typenum(dst_typenum_t);

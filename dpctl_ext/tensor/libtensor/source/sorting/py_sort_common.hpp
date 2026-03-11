@@ -44,7 +44,6 @@
 
 #include "dpnp4pybind11.hpp"
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"

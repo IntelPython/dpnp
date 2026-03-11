@@ -37,9 +37,10 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstdint>
 #include <exception>
+#include <iterator>
 #include <stdexcept>
+#include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -49,7 +50,6 @@
 #include "dpnp4pybind11.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "kernels/reductions.hpp"
 #include "simplify_iteration_space.hpp"
@@ -324,9 +324,6 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
                                   reduction_over_axis_contig_ev);
         }
     }
-
-    using dpctl::tensor::py_internal::simplify_iteration_space;
-    using dpctl::tensor::py_internal::simplify_iteration_space_1;
 
     // TODO: not used anywhere
     auto const &src_shape_vecs = src.get_shape_vector();
@@ -637,9 +634,6 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
         }
     }
 
-    using dpctl::tensor::py_internal::simplify_iteration_space;
-    using dpctl::tensor::py_internal::simplify_iteration_space_1;
-
     auto const &src_shape_vecs = src.get_shape_vector();
     auto const &src_strides_vecs = src.get_strides_vector();
     auto const &dst_strides_vecs = dst.get_strides_vector();
@@ -911,8 +905,6 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                                   reduction_over_axis_contig_ev);
         }
     }
-
-    using dpctl::tensor::py_internal::simplify_iteration_space;
 
     auto const &src_shape_vecs = src.get_shape_vector();
     auto const &src_strides_vecs = src.get_strides_vector();
@@ -1205,7 +1197,6 @@ std::pair<sycl::event, sycl::event>
     shT simplified_red_src_strides;
     py::ssize_t red_src_offset(0);
 
-    using dpctl::tensor::py_internal::simplify_iteration_space_1;
     simplify_iteration_space_1(
         simplified_red_nd, src_shape_ptr + dst_nd, red_src_strides,
         // output
@@ -1231,7 +1222,6 @@ std::pair<sycl::event, sycl::event>
         simplified_iter_dst_strides.push_back(0);
     }
     else {
-        using dpctl::tensor::py_internal::simplify_iteration_space;
         simplify_iteration_space(
             iter_nd, src_shape_ptr, iter_src_strides, iter_dst_strides,
             // output
