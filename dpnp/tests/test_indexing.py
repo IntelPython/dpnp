@@ -118,7 +118,7 @@ class TestDiagonal:
         assert_raises(ValueError, a.diagonal, axis1=1, axis2=1)
         assert_raises(ValueError, a.diagonal, axis1=1, axis2=-1)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shape, offset",
         [
@@ -129,14 +129,49 @@ class TestDiagonal:
             ((3, 3, 4), 5),  # 3D array, offset >= m
         ],
     )
-    def test_empty_strides(self, dtype, shape, offset):
-        a = generate_random_numpy_array(shape=shape, dtype=dtype)
+    def test_empty_strides(self, dt, shape, offset):
+        a = generate_random_numpy_array(shape=shape, dtype=dt)
         ia = dpnp.array(a)
 
         expected = numpy.diagonal(a, offset)
         result = dpnp.diagonal(ia, offset)
 
         # Check both shape and strides match NumPy
+        assert expected.shape == result.shape
+        assert expected.strides == result.strides
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_view(self, dt):
+        a = generate_random_numpy_array(shape=(3, 4), dtype=dt)
+        a = dpnp.array(a)
+        ia = a.copy()
+
+        diag = dpnp.diagonal(a)
+        diag[1] = 17  # modify a diagonal element
+        ia[1, 1] = 17  # do the same in original copy of the array
+
+        assert (a == ia).all()
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "slice_spec, offset",
+        [
+            ((slice(None), slice(None, None, 2)), 0),  # skip columns
+            ((slice(None, None, 2), slice(None)), 1),  # skip rows
+            ((slice(None, None, 2), slice(None, None, 2)), 0),  # skip both
+        ],
+    )
+    def test_noncontiguous(self, dt, slice_spec, offset):
+        a = generate_random_numpy_array(shape=(4, 6), dtype=dt)
+        a_sliced = a[slice_spec]
+        ia = dpnp.array(a)
+        ia_sliced = ia[slice_spec]
+
+        expected = numpy.diagonal(a_sliced, offset=offset)
+        result = dpnp.diagonal(ia_sliced, offset=offset)
+
+        # Check strides match for non-contiguous arrays
         assert expected.shape == result.shape
         assert expected.strides == result.strides
         assert_array_equal(expected, result)
