@@ -36,9 +36,10 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include <sycl/sycl.hpp>
 #include <type_traits>
 #include <vector>
+
+#include <sycl/sycl.hpp>
 
 #include "vec_size_util.hpp"
 
