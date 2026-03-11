@@ -88,6 +88,22 @@ find_package(oneDPL REQUIRED PATHS ${path_to_cmake_dir})
 
 include(GNUInstallDirs)
 
+if(NOT DEFINED ENV{MKL_ENABLE_INSTRUCTIONS})
+    set(_UNSET_ENV_VAR_MKL_ENABLE_INSTRUCTIONS YES)
+    set(ENV{MKL_ENABLE_INSTRUCTIONS} "SSE4_2")
+endif()
+
+set(_PYTHON_PREFIX "Python")
+execute_process(COMMAND ${${_PYTHON_PREFIX}_EXECUTABLE} -c
+                        "import sys; import numpy; sys.stdout.write(numpy.get_include())"
+                RESULT_VARIABLE _${_PYTHON_PREFIX}_RESULT
+                OUTPUT_VARIABLE _${_PYTHON_PREFIX}_NumPy_PATH
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+message(STATUS "NumPy detection result: ${_${_PYTHON_PREFIX}_RESULT}")
+message(STATUS "NumPy include path: ${_${_PYTHON_PREFIX}_NumPy_PATH}")
+
 # find Python before enabling pybind11
 find_package(Python 3.10...<3.15 REQUIRED COMPONENTS Development.Module NumPy)
 
