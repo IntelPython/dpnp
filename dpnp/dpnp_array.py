@@ -644,6 +644,136 @@ class dpnp_array:
         res._array_obj._set_namespace(dpnp)
         return res
 
+    def _create_view(self, array_class, shape, dtype, strides):
+        """
+        Create a view of an array with the specified class.
+
+        The method handles subclass instantiation by creating a usm_ndarray
+        view and then wrapping it in the appropriate class.
+
+        Parameters
+        ----------
+        array_class : type
+            The class to instantiate (dpnp_array or a subclass).
+        shape : tuple
+            Shape of the view.
+        dtype : dtype
+            Data type of the view (can be None to keep source's dtype).
+        strides : tuple
+            Strides of the view.
+
+        Returns
+        -------
+        view : array_class instance
+            A view of the array as the specified class.
+
+        """
+
+        if dtype is None:
+            dtype = self.dtype
+
+        # create the underlying usm_ndarray view
+        usm_view = dpt.usm_ndarray(
+            shape,
+            dtype=dtype,
+            buffer=self._array_obj,
+            strides=tuple(s // dpnp.dtype(dtype).itemsize for s in strides),
+        )
+
+        # wrap the view into the appropriate class
+        if array_class is dpnp_array:
+            res = dpnp_array._create_from_usm_ndarray(usm_view)
+        else:
+            # for subclasses, create using __new__ and set up manually
+            res = array_class.__new__(array_class)
+            res._array_obj = usm_view
+            res._array_obj._set_namespace(dpnp)
+
+            if hasattr(res, "__array_finalize__"):
+                res.__array_finalize__(self)
+
+        return res
+
+    def _view_impl(self, dtype=None, array_class=None):
+        """
+        Internal implementation of view method to avoid an issue where
+        `type` parameter in ndarray.view method shadowing builtin type.
+
+        """
+
+        # check if dtype is actually a type
+        if dtype is not None:
+            if isinstance(dtype, type) and issubclass(dtype, dpnp_array):
+                if array_class is not None:
+                    raise ValueError("Cannot specify output type twice")
+                array_class = dtype
+                dtype = None
+
+        # validate array_class parameter
+        if not (
+            array_class is None
+            or isinstance(array_class, type)
+            and issubclass(array_class, dpnp_array)
+        ):
+            raise ValueError("Type must be a sub-type of ndarray type")
+
+        if array_class is None:
+            # it's a view on dpnp.ndarray
+            array_class = self.__class__
+
+        old_sh = self.shape
+        old_strides = self.strides
+
+        if dtype is None:
+            return self._create_view(array_class, old_sh, None, old_strides)
+
+        new_dt = dpnp.dtype(dtype)
+        new_dt = dtu._to_device_supported_dtype(new_dt, self.sycl_device)
+
+        new_itemsz = new_dt.itemsize
+        old_itemsz = self.dtype.itemsize
+        if new_itemsz == old_itemsz:
+            return self._create_view(array_class, old_sh, new_dt, old_strides)
+
+        ndim = self.ndim
+        if ndim == 0:
+            raise ValueError(
+                "Changing the dtype of a 0d array is only supported "
+                "if the itemsize is unchanged"
+            )
+
+        # resize on last axis only
+        axis = ndim - 1
+        if (
+            old_sh[axis] != 1
+            and self.size != 0
+            and old_strides[axis] != old_itemsz
+        ):
+            raise ValueError(
+                "To change to a dtype of a different size, "
+                "the last axis must be contiguous"
+            )
+
+        # normalize strides whenever itemsize changes
+        new_strides = tuple(
+            old_strides[i] if i != axis else new_itemsz for i in range(ndim)
+        )
+
+        new_dim = old_sh[axis] * old_itemsz
+        if new_dim % new_itemsz != 0:
+            raise ValueError(
+                "When changing to a larger dtype, its size must be a divisor "
+                "of the total size in bytes of the last axis of the array"
+            )
+
+        # normalize shape whenever itemsize changes
+        new_sh = tuple(
+            old_sh[i] if i != axis else new_dim // new_itemsz
+            for i in range(ndim)
+        )
+
+        return self._create_view(array_class, new_sh, new_dt, new_strides)
+
     def all(self, axis=None, *, out=None, keepdims=False, where=True):
         """
         Return ``True`` if all elements evaluate to ``True``.
@@ -2322,10 +2452,18 @@ class dpnp_array:
 
         Parameters
         ----------
-        dtype : {None, str, dtype object}, optional
+        dtype : {None, str, dtype object, type}, optional
             The desired data type of the returned view, e.g. :obj:`dpnp.float32`
-            or :obj:`dpnp.int16`. By default, it results in the view having the
-            same data type.
+            or :obj:`dpnp.int16`. Omitting it results in the view having the
+            same data type. Can also be a subclass of :class:`dpnp.ndarray` to
+            create a view of that type (this is equivalent to setting the `type`
+            parameter).
+
+            Default: ``None``.
+        type : {None, type}, optional
+            Type of the returned view, e.g. a subclass of :class:`dpnp.ndarray`.
+            If specified, the returned array will be an instance of `type`.
+            Omitting it results in type preservation.
 
             Default: ``None``.
 
@@ -2339,11 +2477,6 @@ class dpnp_array:
         reinterpretation of the bytes of memory.
 
         Only the last axis has to be contiguous.
-
-        Limitations
-        -----------
-        Parameter `type` is supported only with default value ``None``.
-        Otherwise, the function raises ``NotImplementedError`` exception.
 
         Examples
         --------
@@ -2368,73 +2501,17 @@ class dpnp_array:
             [[2312, 2826],
                 [5396, 5910]]], dtype=int16)
 
+        Creating a view with a custom ndarray subclass:
+
+        >>> class MyArray(np.ndarray):
+        ...     pass
+        >>> x = np.array([1, 2, 3])
+        >>> y = x.view(MyArray)
+        >>> type(y)
+        <class 'MyArray'>
+
         """
-
-        if type is not None:
-            raise NotImplementedError(
-                "Keyword argument `type` is supported only with "
-                f"default value ``None``, but got {type}."
-            )
-
-        old_sh = self.shape
-        old_strides = self.strides
-
-        if dtype is None:
-            return dpnp_array(old_sh, buffer=self, strides=old_strides)
-
-        new_dt = dpnp.dtype(dtype)
-        new_dt = dtu._to_device_supported_dtype(new_dt, self.sycl_device)
-
-        new_itemsz = new_dt.itemsize
-        old_itemsz = self.dtype.itemsize
-        if new_itemsz == old_itemsz:
-            return dpnp_array(
-                old_sh, dtype=new_dt, buffer=self, strides=old_strides
-            )
-
-        ndim = self.ndim
-        if ndim == 0:
-            raise ValueError(
-                "Changing the dtype of a 0d array is only supported "
-                "if the itemsize is unchanged"
-            )
-
-        # resize on last axis only
-        axis = ndim - 1
-        if (
-            old_sh[axis] != 1
-            and self.size != 0
-            and old_strides[axis] != old_itemsz
-        ):
-            raise ValueError(
-                "To change to a dtype of a different size, "
-                "the last axis must be contiguous"
-            )
-
-        # normalize strides whenever itemsize changes
-        new_strides = tuple(
-            old_strides[i] if i != axis else new_itemsz for i in range(ndim)
-        )
-
-        new_dim = old_sh[axis] * old_itemsz
-        if new_dim % new_itemsz != 0:
-            raise ValueError(
-                "When changing to a larger dtype, its size must be a divisor "
-                "of the total size in bytes of the last axis of the array"
-            )
-
-        # normalize shape whenever itemsize changes
-        new_sh = tuple(
-            old_sh[i] if i != axis else new_dim // new_itemsz
-            for i in range(ndim)
-        )
-
-        return dpnp_array(
-            new_sh,
-            dtype=new_dt,
-            buffer=self,
-            strides=new_strides,
-        )
+        return self._view_impl(dtype=dtype, array_class=type)
 
     @property
     def usm_type(self):
