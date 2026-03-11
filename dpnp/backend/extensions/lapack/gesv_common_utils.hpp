@@ -64,8 +64,7 @@ inline void common_gesv_checks(sycl::queue &exec_q,
     }
 
     if (dependent_vals_nd < min_dependent_vals_ndim ||
-        dependent_vals_nd > max_dependent_vals_ndim)
-    {
+        dependent_vals_nd > max_dependent_vals_ndim) {
         throw py::value_error("The dependent values array has ndim=" +
                               std::to_string(dependent_vals_nd) + ", but a " +
                               std::to_string(min_dependent_vals_ndim) +
@@ -95,8 +94,7 @@ inline void common_gesv_checks(sycl::queue &exec_q,
 
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {coeff_matrix, dependent_vals}))
-    {
+                                             {coeff_matrix, dependent_vals})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues.");
     }

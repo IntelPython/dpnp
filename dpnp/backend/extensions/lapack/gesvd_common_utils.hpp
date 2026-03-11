@@ -122,8 +122,7 @@ inline void common_gesvd_checks(sycl::queue &exec_q,
 
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {a_array, out_s, out_u, out_vt}))
-    {
+                                             {a_array, out_s, out_u, out_vt})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues.");
     }
@@ -131,8 +130,7 @@ inline void common_gesvd_checks(sycl::queue &exec_q,
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     if (overlap(a_array, out_s) || overlap(a_array, out_u) ||
         overlap(a_array, out_vt) || overlap(out_s, out_u) ||
-        overlap(out_s, out_vt) || overlap(out_u, out_vt))
-    {
+        overlap(out_s, out_vt) || overlap(out_u, out_vt)) {
         throw py::value_error("Arrays have overlapping segments of memory");
     }
 
