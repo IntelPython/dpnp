@@ -32,7 +32,6 @@
 /// This file defines kernels for elementwise evaluation of ANGLE(x) function.
 //===---------------------------------------------------------------------===//
 
-#include <cmath>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
@@ -47,7 +46,6 @@
 #include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 
-#include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 

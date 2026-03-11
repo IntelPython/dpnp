@@ -344,7 +344,6 @@ void init_cumulative_sum(py::module_ m)
 
     auto cumsum_dtype_supported = [&](const py::dtype &input_dtype,
                                       const py::dtype &output_dtype) {
-        using dpctl::tensor::py_internal::py_accumulate_dtype_supported;
         return py_accumulate_dtype_supported(input_dtype, output_dtype,
                                              cumsum_strided_dispatch_table);
     };

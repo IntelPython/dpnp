@@ -37,8 +37,6 @@
 
 #include "reductions/reduction_common.hpp"
 
-namespace py = pybind11;
-
 PYBIND11_MODULE(_tensor_reductions_impl, m)
 {
     dpctl::tensor::py_internal::init_reduction_functions(m);
