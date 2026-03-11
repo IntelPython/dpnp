@@ -466,7 +466,6 @@ class C_np(numpy.ndarray):
         self.info = getattr(obj, "info", None)
 
 
-@pytest.mark.skip("subclass array is not supported")
 class TestSubclassArrayView:
 
     def test_view_casting(self):
