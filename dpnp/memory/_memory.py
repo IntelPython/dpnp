@@ -98,13 +98,14 @@ def create_data(x):
     usm_data = x.usm_data
 
     if isinstance(usm_data, tuple(dispatch.values())):
-        return usm_data
+        cls = usm_data.__class__
+    else:
+        cls = dispatch.get(type(usm_data), None)
+        if cls is None:
+            raise TypeError(f"Expected USM memory, but got {type(usm_data)}")
 
-    cls = dispatch.get(type(usm_data), None)
-    if cls:
-        data = cls(usm_data)
-        # `ptr` is expecting to point at the start of the array's data,
-        # while `usm_data._pointer` is a pointer at the start of memory buffer
-        data.ptr = x._pointer
-        return data
-    raise TypeError(f"Expected USM memory, but got {type(usm_data)}")
+    data = cls(usm_data)
+    # `ptr` is expecting to point at the start of the array's data,
+    # while `usm_data._pointer` is a pointer at the start of memory buffer
+    data.ptr = x._pointer
+    return data
