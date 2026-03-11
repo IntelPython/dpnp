@@ -37,6 +37,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
+#include <vector>
 
 #include <sycl/sycl.hpp>
 
@@ -47,6 +48,7 @@
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 
 namespace dpctl::tensor::kernels::less_equal
