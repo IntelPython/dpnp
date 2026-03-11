@@ -45,7 +45,7 @@ class TestCreateData:
 
     def test_slices_2d(self):
         # Create 2D array and verify slices have different pointers
-        a = dpnp.arange(12, dtype=float).reshape(3, 4)
+        a = dpnp.arange(12, dtype=dpnp.float32).reshape(3, 4)
 
         # Each row should have a different pointer
         row0_ptr = a[0].data.ptr
