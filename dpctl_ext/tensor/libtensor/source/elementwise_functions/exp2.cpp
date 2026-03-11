@@ -45,6 +45,7 @@
 #include "elementwise_functions.hpp"
 #include "exp2.hpp"
 #include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 
 #include "kernels/elementwise_functions/common.hpp"
 #include "kernels/elementwise_functions/exp2.hpp"

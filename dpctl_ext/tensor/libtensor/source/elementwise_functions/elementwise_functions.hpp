@@ -35,7 +35,6 @@
 
 #pragma once
 
-#include <algorithm>
 #include <cstddef>
 #include <stdexcept>
 #include <string>
@@ -188,11 +187,10 @@ std::pair<sycl::event, sycl::event>
     int nd = src_nd;
     const py::ssize_t *shape = src_shape;
 
-    dpctl::tensor::py_internal::simplify_iteration_space(
-        nd, shape, src_strides, dst_strides,
-        // output
-        simplified_shape, simplified_src_strides, simplified_dst_strides,
-        src_offset, dst_offset);
+    simplify_iteration_space(nd, shape, src_strides, dst_strides,
+                             // output
+                             simplified_shape, simplified_src_strides,
+                             simplified_dst_strides, src_offset, dst_offset);
 
     if (nd == 1 && simplified_src_strides[0] == 1 &&
         simplified_dst_strides[0] == 1) {
@@ -270,7 +268,7 @@ py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
         throw py::value_error(e.what());
     }
 
-    using dpctl::tensor::py_internal::type_utils::_result_typeid;
+    using type_utils::_result_typeid;
     int dst_typeid = _result_typeid(src_typeid, output_types);
 
     if (dst_typeid < 0) {
@@ -278,7 +276,7 @@ py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
         return py::cast<py::object>(res);
     }
     else {
-        using dpctl::tensor::py_internal::type_utils::_dtype_from_typenum;
+        using type_utils::_dtype_from_typenum;
 
         auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
         auto dt = _dtype_from_typenum(dst_typenum_t);
@@ -434,7 +432,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     int nd = dst_nd;
     const py::ssize_t *shape = src1_shape;
 
-    dpctl::tensor::py_internal::simplify_iteration_space_3(
+    simplify_iteration_space_3(
         nd, shape, src1_strides, src2_strides, dst_strides,
         // outputs
         simplified_shape, simplified_src1_strides, simplified_src2_strides,
@@ -603,7 +601,7 @@ py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
         return py::cast<py::object>(res);
     }
     else {
-        using dpctl::tensor::py_internal::type_utils::_dtype_from_typenum;
+        using type_utils::_dtype_from_typenum;
 
         auto dst_typenum_t = static_cast<td_ns::typenum_t>(dst_typeid);
         auto dt = _dtype_from_typenum(dst_typenum_t);
@@ -730,11 +728,10 @@ std::pair<sycl::event, sycl::event>
     int nd = lhs_nd;
     const py::ssize_t *shape = rhs_shape;
 
-    dpctl::tensor::py_internal::simplify_iteration_space(
-        nd, shape, rhs_strides, lhs_strides,
-        // outputs
-        simplified_shape, simplified_rhs_strides, simplified_lhs_strides,
-        rhs_offset, lhs_offset);
+    simplify_iteration_space(nd, shape, rhs_strides, lhs_strides,
+                             // outputs
+                             simplified_shape, simplified_rhs_strides,
+                             simplified_lhs_strides, rhs_offset, lhs_offset);
 
     std::vector<sycl::event> host_tasks{};
     if (nd < 3) {

@@ -34,6 +34,7 @@ from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt_ext
 import dpctl_ext.tensor._tensor_elementwise_impl as tei
 import dpctl_ext.tensor._tensor_impl as ti
 import dpctl_ext.tensor._tensor_linalg_impl as tli
@@ -180,8 +181,8 @@ def tensordot(x1, x2, axes=2):
         axes2 = normalize_axis_tuple(axes2, x2_nd)
         perm1 = [i for i in range(x1_nd) if i not in axes1] + list(axes1)
         perm2 = list(axes2) + [i for i in range(x2_nd) if i not in axes2]
-        arr1 = dpt.permute_dims(x1, perm1)
-        arr2 = dpt.permute_dims(x2, perm2)
+        arr1 = dpt_ext.permute_dims(x1, perm1)
+        arr2 = dpt_ext.permute_dims(x2, perm2)
     arr1_outer_nd = arr1.ndim - n_axes1
     arr2_outer_nd = arr2.ndim - n_axes2
     res_shape = arr1.shape[:arr1_outer_nd] + arr2.shape[n_axes2:]
@@ -206,7 +207,7 @@ def tensordot(x1, x2, axes=2):
 
     _manager = SequentialOrderManager[exec_q]
     if buf1_dt is None and buf2_dt is None:
-        out = dpt.empty(
+        out = dpt_ext.empty(
             res_shape,
             dtype=res_dt,
             usm_type=res_usm_type,
@@ -237,7 +238,7 @@ def tensordot(x1, x2, axes=2):
             src=arr2, dst=buf2, sycl_queue=exec_q, depends=dep_evs
         )
         _manager.add_event_pair(ht_copy_ev, copy_ev)
-        out = dpt.empty(
+        out = dpt_ext.empty(
             res_shape,
             dtype=res_dt,
             usm_type=res_usm_type,
@@ -266,7 +267,7 @@ def tensordot(x1, x2, axes=2):
             src=arr1, dst=buf1, sycl_queue=exec_q, depends=dep_evs
         )
         _manager.add_event_pair(ht_copy_ev, copy_ev)
-        out = dpt.empty(
+        out = dpt_ext.empty(
             res_shape,
             dtype=res_dt,
             usm_type=res_usm_type,
@@ -299,7 +300,7 @@ def tensordot(x1, x2, axes=2):
         src=arr2, dst=buf2, sycl_queue=exec_q, depends=deps_ev
     )
     _manager.add_event_pair(ht_copy2_ev, copy2_ev)
-    out = dpt.empty(
+    out = dpt_ext.empty(
         res_shape,
         dtype=res_dt,
         usm_type=res_usm_type,
@@ -434,12 +435,12 @@ def vecdot(x1, x2, axis=-1):
             _manager.add_event_pair(ht_conj_ev, conj_ev)
             x1 = x1_tmp
         if x1.shape != broadcast_sh:
-            x1 = dpt.broadcast_to(x1, broadcast_sh)
+            x1 = dpt_ext.broadcast_to(x1, broadcast_sh)
         if x2.shape != broadcast_sh:
-            x2 = dpt.broadcast_to(x2, broadcast_sh)
-        x1 = dpt.moveaxis(x1, contracted_axis, -1)
-        x2 = dpt.moveaxis(x2, contracted_axis, -1)
-        out = dpt.empty(
+            x2 = dpt_ext.broadcast_to(x2, broadcast_sh)
+        x1 = dpt_ext.moveaxis(x1, contracted_axis, -1)
+        x2 = dpt_ext.moveaxis(x2, contracted_axis, -1)
+        out = dpt_ext.empty(
             res_sh,
             dtype=res_dt,
             usm_type=res_usm_type,
@@ -459,7 +460,7 @@ def vecdot(x1, x2, axis=-1):
             depends=dep_evs,
         )
         _manager.add_event_pair(ht_dot_ev, dot_ev)
-        return dpt.reshape(out, res_sh)
+        return dpt_ext.reshape(out, res_sh)
 
     elif buf1_dt is None:
         if x1.dtype.kind == "c":
@@ -477,12 +478,12 @@ def vecdot(x1, x2, axis=-1):
         )
         _manager.add_event_pair(ht_copy_ev, copy_ev)
         if x1.shape != broadcast_sh:
-            x1 = dpt.broadcast_to(x1, broadcast_sh)
+            x1 = dpt_ext.broadcast_to(x1, broadcast_sh)
         if buf2.shape != broadcast_sh:
-            buf2 = dpt.broadcast_to(buf2, broadcast_sh)
-        x1 = dpt.moveaxis(x1, contracted_axis, -1)
-        buf2 = dpt.moveaxis(buf2, contracted_axis, -1)
-        out = dpt.empty(
+            buf2 = dpt_ext.broadcast_to(buf2, broadcast_sh)
+        x1 = dpt_ext.moveaxis(x1, contracted_axis, -1)
+        buf2 = dpt_ext.moveaxis(buf2, contracted_axis, -1)
+        out = dpt_ext.empty(
             res_sh,
             dtype=res_dt,
             usm_type=res_usm_type,
@@ -501,7 +502,7 @@ def vecdot(x1, x2, axis=-1):
             depends=[copy_ev],
         )
         _manager.add_event_pair(ht_dot_ev, dot_ev)
-        return dpt.reshape(out, res_sh)
+        return dpt_ext.reshape(out, res_sh)
 
     elif buf2_dt is None:
         buf1 = _empty_like_orderK(x1, buf1_dt)
@@ -516,12 +517,12 @@ def vecdot(x1, x2, axis=-1):
             )
             _manager.add_event_pair(ht_conj_ev, conj_ev)
         if buf1.shape != broadcast_sh:
-            buf1 = dpt.broadcast_to(buf1, broadcast_sh)
+            buf1 = dpt_ext.broadcast_to(buf1, broadcast_sh)
         if x2.shape != broadcast_sh:
-            x2 = dpt.broadcast_to(x2, broadcast_sh)
-        buf1 = dpt.moveaxis(buf1, contracted_axis, -1)
-        x2 = dpt.moveaxis(x2, contracted_axis, -1)
-        out = dpt.empty(
+            x2 = dpt_ext.broadcast_to(x2, broadcast_sh)
+        buf1 = dpt_ext.moveaxis(buf1, contracted_axis, -1)
+        x2 = dpt_ext.moveaxis(x2, contracted_axis, -1)
+        out = dpt_ext.empty(
             res_sh,
             dtype=res_dt,
             usm_type=res_usm_type,
@@ -541,7 +542,7 @@ def vecdot(x1, x2, axis=-1):
             depends=deps_ev,
         )
         _manager.add_event_pair(ht_dot_ev, dot_ev)
-        return dpt.reshape(out, res_sh)
+        return dpt_ext.reshape(out, res_sh)
 
     buf1 = _empty_like_orderK(x1, buf1_dt)
     deps_ev = _manager.submitted_events
@@ -560,12 +561,12 @@ def vecdot(x1, x2, axis=-1):
     )
     _manager.add_event_pair(ht_copy2_ev, copy2_ev)
     if buf1.shape != broadcast_sh:
-        buf1 = dpt.broadcast_to(buf1, broadcast_sh)
+        buf1 = dpt_ext.broadcast_to(buf1, broadcast_sh)
     if buf2.shape != broadcast_sh:
-        buf2 = dpt.broadcast_to(buf2, broadcast_sh)
-    buf1 = dpt.moveaxis(buf1, contracted_axis, -1)
-    buf2 = dpt.moveaxis(buf2, contracted_axis, -1)
-    out = dpt.empty(
+        buf2 = dpt_ext.broadcast_to(buf2, broadcast_sh)
+    buf1 = dpt_ext.moveaxis(buf1, contracted_axis, -1)
+    buf2 = dpt_ext.moveaxis(buf2, contracted_axis, -1)
+    out = dpt_ext.empty(
         res_sh,
         dtype=res_dt,
         usm_type=res_usm_type,
@@ -732,7 +733,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
         res_dt = _to_device_supported_dtype(res_dt, sycl_dev)
         buf1_dt, buf2_dt = None, None
         if x1_dtype != res_dt:
-            if dpt.can_cast(x1_dtype, res_dt, casting="same_kind"):
+            if dpt_ext.can_cast(x1_dtype, res_dt, casting="same_kind"):
                 buf1_dt = res_dt
             else:
                 raise ValueError(
@@ -742,7 +743,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                     "''same_kind''."
                 )
         if x2_dtype != res_dt:
-            if dpt.can_cast(x2_dtype, res_dt, casting="same_kind"):
+            if dpt_ext.can_cast(x2_dtype, res_dt, casting="same_kind"):
                 buf2_dt = res_dt
             else:
                 raise ValueError(
@@ -774,7 +775,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             )
 
         if appended_axes:
-            out = dpt.expand_dims(out, axis=appended_axes)
+            out = dpt_ext.expand_dims(out, axis=appended_axes)
             orig_out = out
 
         if res_dt != out.dtype:
@@ -788,12 +789,12 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             )
 
         if ti._array_overlap(x1, out) and buf1_dt is None:
-            out = dpt.empty_like(out)
+            out = dpt_ext.empty_like(out)
 
         if ti._array_overlap(x2, out) and buf2_dt is None:
             # should not reach if out is reallocated
             # after being checked against x1
-            out = dpt.empty_like(out)
+            out = dpt_ext.empty_like(out)
 
     if order == "A":
         order = (
@@ -816,7 +817,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                     x1, x2, res_dt, res_shape, res_usm_type, exec_q
                 )
             else:
-                out = dpt.empty(
+                out = dpt_ext.empty(
                     res_shape,
                     dtype=res_dt,
                     usm_type=res_usm_type,
@@ -824,9 +825,9 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                     order=order,
                 )
         if x1.shape != x1_broadcast_shape:
-            x1 = dpt.broadcast_to(x1, x1_broadcast_shape)
+            x1 = dpt_ext.broadcast_to(x1, x1_broadcast_shape)
         if x2.shape != x2_broadcast_shape:
-            x2 = dpt.broadcast_to(x2, x2_broadcast_shape)
+            x2 = dpt_ext.broadcast_to(x2, x2_broadcast_shape)
         deps_evs = _manager.submitted_events
         ht_dot_ev, dot_ev = tli._dot(
             x1=x1,
@@ -851,13 +852,13 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
             out = orig_out
         if appended_axes:
-            out = dpt.squeeze(out, tuple(appended_axes))
+            out = dpt_ext.squeeze(out, tuple(appended_axes))
         return out
     elif buf1_dt is None:
         if order == "K":
             buf2 = _empty_like_orderK(x2, buf2_dt)
         else:
-            buf2 = dpt.empty_like(x2, dtype=buf2_dt, order=order)
+            buf2 = dpt_ext.empty_like(x2, dtype=buf2_dt, order=order)
         deps_evs = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x2, dst=buf2, sycl_queue=exec_q, depends=deps_evs
@@ -869,7 +870,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                     x1, buf2, res_dt, res_shape, res_usm_type, exec_q
                 )
             else:
-                out = dpt.empty(
+                out = dpt_ext.empty(
                     res_shape,
                     dtype=res_dt,
                     usm_type=res_usm_type,
@@ -878,9 +879,9 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 )
 
         if x1.shape != x1_broadcast_shape:
-            x1 = dpt.broadcast_to(x1, x1_broadcast_shape)
+            x1 = dpt_ext.broadcast_to(x1, x1_broadcast_shape)
         if buf2.shape != x2_broadcast_shape:
-            buf2 = dpt.broadcast_to(buf2, x2_broadcast_shape)
+            buf2 = dpt_ext.broadcast_to(buf2, x2_broadcast_shape)
         ht_dot_ev, dot_ev = tli._dot(
             x1=x1,
             x2=buf2,
@@ -904,14 +905,14 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
             out = orig_out
         if appended_axes:
-            out = dpt.squeeze(out, tuple(appended_axes))
+            out = dpt_ext.squeeze(out, tuple(appended_axes))
         return out
 
     elif buf2_dt is None:
         if order == "K":
             buf1 = _empty_like_orderK(x1, buf1_dt)
         else:
-            buf1 = dpt.empty_like(x1, dtype=buf1_dt, order=order)
+            buf1 = dpt_ext.empty_like(x1, dtype=buf1_dt, order=order)
         deps_ev = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x1, dst=buf1, sycl_queue=exec_q, depends=deps_ev
@@ -923,7 +924,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                     buf1, x2, res_dt, res_shape, res_usm_type, exec_q
                 )
             else:
-                out = dpt.empty(
+                out = dpt_ext.empty(
                     res_shape,
                     dtype=res_dt,
                     usm_type=res_usm_type,
@@ -932,9 +933,9 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 )
 
         if buf1.shape != x1_broadcast_shape:
-            buf1 = dpt.broadcast_to(buf1, x1_broadcast_shape)
+            buf1 = dpt_ext.broadcast_to(buf1, x1_broadcast_shape)
         if x2.shape != x2_broadcast_shape:
-            x2 = dpt.broadcast_to(x2, x2_broadcast_shape)
+            x2 = dpt_ext.broadcast_to(x2, x2_broadcast_shape)
         ht_dot_ev, dot_ev = tli._dot(
             x1=buf1,
             x2=x2,
@@ -958,7 +959,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
             out = orig_out
         if appended_axes:
-            out = dpt.squeeze(out, tuple(appended_axes))
+            out = dpt_ext.squeeze(out, tuple(appended_axes))
         return out
 
     if order == "K":
@@ -969,7 +970,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
     if order == "K":
         buf1 = _empty_like_orderK(x1, buf1_dt)
     else:
-        buf1 = dpt.empty_like(x1, dtype=buf1_dt, order=order)
+        buf1 = dpt_ext.empty_like(x1, dtype=buf1_dt, order=order)
     deps_ev = _manager.submitted_events
     ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=x1, dst=buf1, sycl_queue=exec_q, depends=deps_ev
@@ -978,7 +979,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
     if order == "K":
         buf2 = _empty_like_orderK(x2, buf2_dt)
     else:
-        buf2 = dpt.empty_like(x2, dtype=buf2_dt, order=order)
+        buf2 = dpt_ext.empty_like(x2, dtype=buf2_dt, order=order)
     ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=x2, dst=buf2, sycl_queue=exec_q, depends=deps_ev
     )
@@ -989,7 +990,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 buf1, buf2, res_dt, res_shape, res_usm_type, exec_q
             )
         else:
-            out = dpt.empty(
+            out = dpt_ext.empty(
                 res_shape,
                 dtype=res_dt,
                 usm_type=res_usm_type,
@@ -998,9 +999,9 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             )
 
     if buf1.shape != x1_broadcast_shape:
-        buf1 = dpt.broadcast_to(buf1, x1_broadcast_shape)
+        buf1 = dpt_ext.broadcast_to(buf1, x1_broadcast_shape)
     if buf2.shape != x2_broadcast_shape:
-        buf2 = dpt.broadcast_to(buf2, x2_broadcast_shape)
+        buf2 = dpt_ext.broadcast_to(buf2, x2_broadcast_shape)
     ht_, dot_ev = tli._dot(
         x1=buf1,
         x2=buf2,
@@ -1014,5 +1015,5 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
     )
     _manager.add_event_pair(ht_, dot_ev)
     if appended_axes:
-        out = dpt.squeeze(out, tuple(appended_axes))
+        out = dpt_ext.squeeze(out, tuple(appended_axes))
     return out
