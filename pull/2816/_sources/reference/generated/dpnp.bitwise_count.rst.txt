@@ -1,0 +1,10 @@
+﻿
+
+dpnp.bitwise\_count
+===================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: bitwise_count
