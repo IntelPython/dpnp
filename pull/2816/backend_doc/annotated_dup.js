@@ -26,11 +26,6 @@ var annotated_dup =
           [ "ScaleType< prec, mkl_dft::domain::REAL, false >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01false_01_4.html", null ],
           [ "ScaleType< prec, mkl_dft::domain::REAL, true >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01true_01_4.html", null ]
         ] ],
-        [ "indexing", null, [
-          [ "strides_detail", null, [
-            [ "NthStrideOffsetUnpacked", "structdpnp_1_1extensions_1_1indexing_1_1strides__detail_1_1_nth_stride_offset_unpacked.html", null ]
-          ] ]
-        ] ],
         [ "lapack", null, [
           [ "helper", null, [
             [ "value_type_of", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of.html", null ],
@@ -88,6 +83,9 @@ var annotated_dup =
           [ "BitwiseCountFunctor", "structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html", null ]
         ] ],
         [ "choose", null, [
+          [ "strides", null, [
+            [ "NthStrideOffsetUnpacked", "structdpnp_1_1kernels_1_1choose_1_1strides_1_1_nth_stride_offset_unpacked.html", null ]
+          ] ],
           [ "ChooseFunctor", "classdpnp_1_1kernels_1_1choose_1_1_choose_functor.html", null ]
         ] ],
         [ "degrees", null, [
