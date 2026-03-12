@@ -42,7 +42,11 @@
 #include "utils/strided_iters.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpnp::extensions::indexing::strides_detail
+#include "kernels/indexing/choose.hpp"
+
+namespace dpnp::extensions::indexing
+{
+namespace strides_detail
 {
 
 struct NthStrideOffsetUnpacked
@@ -78,59 +82,12 @@ private:
 
 static_assert(sycl::is_device_copyable_v<NthStrideOffsetUnpacked>);
 
-} // namespace dpnp::extensions::indexing::strides_detail
+} // namespace strides_detail
 
-namespace dpnp::extensions::indexing::kernels
+namespace kernels
 {
 
-template <typename ProjectorT,
-          typename IndOutIndexerT,
-          typename ChoicesIndexerT,
-          typename IndT,
-          typename T>
-class ChooseFunctor
-{
-private:
-    const IndT *ind = nullptr;
-    T *dst = nullptr;
-    char **chcs = nullptr;
-    dpctl::tensor::ssize_t n_chcs;
-    const IndOutIndexerT ind_out_indexer;
-    const ChoicesIndexerT chcs_indexer;
-
-public:
-    ChooseFunctor(const IndT *ind_,
-                  T *dst_,
-                  char **chcs_,
-                  dpctl::tensor::ssize_t n_chcs_,
-                  const IndOutIndexerT &ind_out_indexer_,
-                  const ChoicesIndexerT &chcs_indexer_)
-        : ind(ind_), dst(dst_), chcs(chcs_), n_chcs(n_chcs_),
-          ind_out_indexer(ind_out_indexer_), chcs_indexer(chcs_indexer_)
-    {
-    }
-
-    void operator()(sycl::id<1> id) const
-    {
-        const ProjectorT proj{};
-
-        dpctl::tensor::ssize_t i = id[0];
-
-        auto ind_dst_offsets = ind_out_indexer(i);
-        dpctl::tensor::ssize_t ind_offset = ind_dst_offsets.get_first_offset();
-        dpctl::tensor::ssize_t dst_offset = ind_dst_offsets.get_second_offset();
-
-        IndT chc_idx = ind[ind_offset];
-        // proj produces an index in the range of n_chcs
-        dpctl::tensor::ssize_t projected_idx = proj(n_chcs, chc_idx);
-
-        dpctl::tensor::ssize_t chc_offset = chcs_indexer(i, projected_idx);
-
-        T *chc = reinterpret_cast<T *>(chcs[projected_idx]);
-
-        dst[dst_offset] = chc[chc_offset];
-    }
-};
+using dpnp::kernels::choose::ChooseFunctor;
 
 typedef sycl::event (*choose_fn_ptr_t)(sycl::queue &,
                                        size_t,
@@ -188,4 +145,5 @@ sycl::event choose_impl(sycl::queue &q,
     return choose_ev;
 }
 
-} // namespace dpnp::extensions::indexing::kernels
+} // namespace kernels
+} // namespace dpnp::extensions::indexing
