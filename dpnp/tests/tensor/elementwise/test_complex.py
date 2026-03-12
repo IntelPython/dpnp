@@ -112,9 +112,12 @@ def test_complex_usm_type(np_call, dpt_call, usm_type):
     assert Y.sycl_queue == X.sycl_queue
     assert Y.flags.c_contiguous
 
-    expected_Y = np.empty(input_shape, dtype=arg_dt)
-    expected_Y[..., 0::2] = np_call(np.complex64(np.pi / 6 + 1j * np.pi / 3))
-    expected_Y[..., 1::2] = np_call(np.complex64(np.pi / 3 + 1j * np.pi / 6))
+    X_np = np.empty(input_shape, dtype=arg_dt)
+    X_np[..., 0::2] = np.complex64(np.pi / 6 + 1j * np.pi / 3)
+    X_np[..., 1::2] = np.complex64(np.pi / 3 + 1j * np.pi / 6)
+
+    expected_Y = np_call(X_np)
+
     tol = 8 * dpt.finfo(Y.dtype).resolution
 
     assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
