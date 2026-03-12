@@ -31,6 +31,7 @@
 #include <sycl/sycl.hpp>
 
 #include "kernels/dpctl_tensor_types.hpp"
+#include "utils/strided_iters.hpp"
 
 namespace dpnp::kernels::choose
 {
@@ -84,4 +85,42 @@ public:
         dst[dst_offset] = chc[chc_offset];
     }
 };
+
+namespace strides
+{
+using dpctl::tensor::strides::CIndexer_vector;
+
+struct NthStrideOffsetUnpacked
+{
+    NthStrideOffsetUnpacked(int common_nd,
+                            ssize_t const *_offsets,
+                            ssize_t const *_shape,
+                            ssize_t const *_strides)
+        : _ind(common_nd), nd(common_nd), offsets(_offsets), shape(_shape),
+          strides(_strides)
+    {
+    }
+
+    template <typename nT>
+    size_t operator()(ssize_t gid, nT n) const
+    {
+        ssize_t relative_offset(0);
+        _ind.get_displacement<const ssize_t *, const ssize_t *>(
+            gid, shape, strides + (n * nd), relative_offset);
+
+        return relative_offset + offsets[n];
+    }
+
+private:
+    CIndexer_vector<ssize_t> _ind;
+
+    int nd;
+    ssize_t const *offsets;
+    ssize_t const *shape;
+    ssize_t const *strides;
+};
+
+static_assert(sycl::is_device_copyable_v<NthStrideOffsetUnpacked>);
+
+} // namespace strides
 } // namespace dpnp::kernels::choose
