@@ -147,7 +147,7 @@ def test_boolean_reductions_nan_inf(func):
         :, dpt.newaxis
     ]
     res = func(x, axis=1)
-    assert_equal(dpt.asnumpy(res), True)
+    assert_array_equal(dpt.asnumpy(res), np.array([True, True, True]))
 
 
 @pytest.mark.parametrize("func", [dpt.all, dpt.any])
