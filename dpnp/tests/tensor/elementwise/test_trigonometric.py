@@ -123,7 +123,7 @@ def test_trig_complex_contig(np_call, dpt_call, dtype):
     X = dpt.repeat(dpt.asarray(Xnp, dtype=dtype, sycl_queue=q), n_rep)
     Y = dpt_call(X)
 
-    expected = np.repeat(np_call(Xnp), n_rep)
+    expected = np.repeat(np_call(Xnp.astype(dtype)), n_rep)
 
     tol = 50 * dpt.finfo(dtype).resolution
     assert_allclose(dpt.asnumpy(Y), expected, atol=tol, rtol=tol)
