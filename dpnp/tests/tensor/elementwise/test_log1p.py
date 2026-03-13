@@ -143,7 +143,7 @@ def test_log1p_special_cases():
         dtype="f4",
         sycl_queue=q,
     )
-    res = np.asarray([np.nan, np.nan, -np.inf, -0.0, 0.0, np.inf])
+    res = np.asarray([np.nan, np.nan, -np.inf, -0.0, 0.0, np.inf], dtype="f4")
 
     tol = dpt.finfo(X.dtype).resolution
     with np.errstate(divide="ignore", invalid="ignore"):
