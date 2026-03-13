@@ -113,17 +113,14 @@ def test_hyper_complex_contig(np_call, dpt_call, dtype):
     X = dpt.asarray(np.repeat(Xnp, n_rep), dtype=dtype, sycl_queue=q)
     Y = dpt_call(X)
 
+    expected = np.repeat(np_call(Xnp), n_rep).astype(dtype)
     tol = 50 * dpt.finfo(dtype).resolution
-    assert_allclose(
-        dpt.asnumpy(Y), np.repeat(np_call(Xnp), n_rep), atol=tol, rtol=tol
-    )
+    assert_allclose(dpt.asnumpy(Y), expected, atol=tol, rtol=tol)
 
     Z = dpt.empty_like(X, dtype=dtype)
     dpt_call(X, out=Z)
 
-    assert_allclose(
-        dpt.asnumpy(Z), np.repeat(np_call(Xnp), n_rep), atol=tol, rtol=tol
-    )
+    assert_allclose(dpt.asnumpy(Z), expected, atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
