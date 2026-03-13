@@ -56,6 +56,8 @@ skbuild.setup(
             "dpnp_backend_c.dll",
             "tests/*.*",
             "tests/testing/*.py",
+            "tests/tensor/*.py",
+            "tests/tensor/*/*.py",
             "tests/third_party/cupy/*.py",
             "tests/third_party/cupy/*/*.py",
             "tests/third_party/cupyx/*.py",
