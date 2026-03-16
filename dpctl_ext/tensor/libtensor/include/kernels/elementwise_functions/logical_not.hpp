@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of ISNAN(x)
+/// This file defines kernels for elementwise evaluation of LOGICAL_NOT(x)
 /// function that tests whether a tensor element is a NaN.
 //===---------------------------------------------------------------------===//
 
