@@ -27,6 +27,39 @@ class TestCreateData:
         with pytest.raises(TypeError):
             dpm.create_data(d)
 
+    def test_dpctl_view(self):
+        a = dpt.arange(10)
+        view = a[3:]
+
+        data = dpm.create_data(view)
+        assert data.ptr == view._pointer
+
+    def test_dpctl_different_views(self):
+        a = dpt.reshape(dpt.arange(12), (3, 4))
+
+        data0 = dpm.create_data(a[0])
+        data1 = dpm.create_data(a[1])
+
+        # Verify independent wrapper objects
+        assert data0 is not data1
+
+        # Verify correct pointers
+        assert data0.ptr == a[0]._pointer
+        assert data1.ptr == a[1]._pointer
+        assert data0.ptr != data1.ptr
+
+    def test_repeated_calls(self):
+        a = dpt.arange(20)
+        view = a[5:15]
+
+        # Multiple calls should return independent objects with same ptr
+        data1 = dpm.create_data(view)
+        data2 = dpm.create_data(view)
+
+        assert data1 is not data2, "Should create independent wrapper objects"
+        assert data1.ptr == data2.ptr, "Both should point to same location"
+        assert data1.ptr == view._pointer
+
 
 class TestNdarray:
     def test_ndarray_from_data(self):
