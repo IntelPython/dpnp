@@ -56,9 +56,10 @@
 
 namespace dpnp::extensions::indexing
 {
+namespace py = pybind11;
+
 namespace impl
 {
-namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::ssize_t;

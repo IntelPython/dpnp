@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2025, Intel Corporation
+// Copyright (c) 2026, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,12 +28,10 @@
 
 #pragma once
 
-#include "common.hpp"
 #include <sycl/sycl.hpp>
 
-namespace dpnp::extensions::window::kernels
+namespace dpnp::kernels::blackman
 {
-
 template <typename T>
 class BlackmanFunctor
 {
@@ -53,19 +51,4 @@ public:
                  T(0.08) * sycl::cospi(T(2) * alpha);
     }
 };
-
-template <typename fnT, typename T>
-struct BlackmanFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_floating_point_v<T>) {
-            return window_impl<T, BlackmanFunctor>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-} // namespace dpnp::extensions::window::kernels
+} // namespace dpnp::kernels::blackman

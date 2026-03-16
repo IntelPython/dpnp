@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2025, Intel Corporation
+// Copyright (c) 2026, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -19,7 +19,7 @@
 // ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
 // LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
 // CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, RES, OR PROFITS; OR BUSINESS
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
@@ -28,43 +28,35 @@
 
 #pragma once
 
-#include "common.hpp"
 #include <sycl/sycl.hpp>
 
-namespace dpnp::extensions::window::kernels
-{
+#include "kernels/elementwise_functions/i0.hpp"
 
+namespace dpnp::kernels::kaiser
+{
 template <typename T>
-class BartlettFunctor
+class KaiserFunctor
 {
 private:
     T *res = nullptr;
     const std::size_t N;
+    const T beta;
 
 public:
-    BartlettFunctor(T *res, const std::size_t N) : res(res), N(N) {}
+    KaiserFunctor(T *res, const std::size_t N, const T beta)
+        : res(res), N(N), beta(beta)
+    {
+    }
 
     void operator()(sycl::id<1> id) const
     {
+        using dpnp::kernels::i0::cyl_bessel_i0;
+
         const auto i = id.get(0);
-
         const T alpha = (N - 1) / T(2);
-        res[i] = T(1) - sycl::fabs(i - alpha) / alpha;
+        const T tmp = (i - alpha) / alpha;
+        res[i] = cyl_bessel_i0(beta * sycl::sqrt(1 - tmp * tmp)) /
+                 cyl_bessel_i0(beta);
     }
 };
-
-template <typename fnT, typename T>
-struct BartlettFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_floating_point_v<T>) {
-            return window_impl<T, BartlettFunctor>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-} // namespace dpnp::extensions::window::kernels
+} // namespace dpnp::kernels::kaiser

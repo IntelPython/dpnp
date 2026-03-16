@@ -29,6 +29,8 @@
 #include "kaiser.hpp"
 #include "common.hpp"
 
+#include "kernels/window/kaiser.hpp"
+
 // utils extension header
 #include "ext/common.hpp"
 
@@ -39,13 +41,10 @@
 
 #include <sycl/sycl.hpp>
 
-#include "kernels/elementwise_functions/i0.hpp"
-
 namespace dpnp::extensions::window
 {
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-
-using ext::common::init_dispatch_vector;
+namespace py = pybind11;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 typedef sycl::event (*kaiser_fn_ptr_t)(sycl::queue &,
                                        char *,
@@ -53,34 +52,10 @@ typedef sycl::event (*kaiser_fn_ptr_t)(sycl::queue &,
                                        const py::object &,
                                        const std::vector<sycl::event> &);
 
-static kaiser_fn_ptr_t kaiser_dispatch_vector[dpctl_td_ns::num_types];
+static kaiser_fn_ptr_t kaiser_dispatch_vector[td_ns::num_types];
 
-template <typename T>
-class KaiserFunctor
+namespace impl
 {
-private:
-    T *res = nullptr;
-    const std::size_t N;
-    const T beta;
-
-public:
-    KaiserFunctor(T *res, const std::size_t N, const T beta)
-        : res(res), N(N), beta(beta)
-    {
-    }
-
-    void operator()(sycl::id<1> id) const
-    {
-        using dpnp::kernels::i0::cyl_bessel_i0;
-
-        const auto i = id.get(0);
-        const T alpha = (N - 1) / T(2);
-        const T tmp = (i - alpha) / alpha;
-        res[i] = cyl_bessel_i0(beta * sycl::sqrt(1 - tmp * tmp)) /
-                 cyl_bessel_i0(beta);
-    }
-};
-
 template <typename T>
 sycl::event kaiser_impl(sycl::queue &exec_q,
                         char *result,
@@ -96,7 +71,7 @@ sycl::event kaiser_impl(sycl::queue &exec_q,
     sycl::event kaiser_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using KaiserKernel = KaiserFunctor<T>;
+        using KaiserKernel = dpnp::kernels::kaiser::KaiserFunctor<T>;
         cgh.parallel_for<KaiserKernel>(sycl::range<1>(nelems),
                                        KaiserKernel(res, nelems, beta));
     });
@@ -138,11 +113,12 @@ std::pair<sycl::event, sycl::event>
 
     return std::make_pair(args_ev, kaiser_ev);
 }
+} // namespace impl
 
 void init_kaiser_dispatch_vectors()
 {
-    init_dispatch_vector<kaiser_fn_ptr_t, KaiserFactory>(
+    using ext::common::init_dispatch_vector;
+    init_dispatch_vector<kaiser_fn_ptr_t, impl::KaiserFactory>(
         kaiser_dispatch_vector);
 }
-
 } // namespace dpnp::extensions::window

@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2025, Intel Corporation
+// Copyright (c) 2026, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,18 +30,23 @@
 
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
-#include <pybind11/pybind11.h>
-
-namespace dpnp::extensions::window
+namespace dpnp::kernels::hamming
 {
-namespace py = pybind11;
+template <typename T>
+class HammingFunctor
+{
+private:
+    T *res = nullptr;
+    const std::size_t N;
 
-extern std::pair<sycl::event, sycl::event>
-    py_kaiser(sycl::queue &exec_q,
-              const py::object &beta,
-              const dpctl::tensor::usm_ndarray &result,
-              const std::vector<sycl::event> &depends);
+public:
+    HammingFunctor(T *res, const std::size_t N) : res(res), N(N) {}
 
-extern void init_kaiser_dispatch_vectors(void);
-} // namespace dpnp::extensions::window
+    void operator()(sycl::id<1> id) const
+    {
+        const auto i = id.get(0);
+
+        res[i] = T(0.54) - T(0.46) * sycl::cospi(T(2) * i / (N - 1));
+    }
+};
+} // namespace dpnp::kernels::hamming

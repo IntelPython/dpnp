@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2025, Intel Corporation
+// Copyright (c) 2026, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,42 +28,26 @@
 
 #pragma once
 
-#include "common.hpp"
 #include <sycl/sycl.hpp>
 
-namespace dpnp::extensions::window::kernels
+namespace dpnp::kernels::hanning
 {
-
 template <typename T>
-class HammingFunctor
+class HanningFunctor
 {
 private:
     T *res = nullptr;
     const std::size_t N;
 
 public:
-    HammingFunctor(T *res, const std::size_t N) : res(res), N(N) {}
+    HanningFunctor(T *res, const std::size_t N) : res(res), N(N) {}
 
     void operator()(sycl::id<1> id) const
     {
         const auto i = id.get(0);
 
-        res[i] = T(0.54) - T(0.46) * sycl::cospi(T(2) * i / (N - 1));
+        const T alpha = (N - 1) / T(2);
+        res[i] = T(1) - sycl::fabs(i - alpha) / alpha;
     }
 };
-
-template <typename fnT, typename T>
-struct HammingFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_floating_point_v<T>) {
-            return window_impl<T, HammingFunctor>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-} // namespace dpnp::extensions::window::kernels
+} // namespace dpnp::kernels::hanning

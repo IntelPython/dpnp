@@ -51,28 +51,19 @@
 #include "ext/common.hpp"
 #include "ext/validation_utils.hpp"
 
+namespace dpnp::extensions::ufunc
+{
 namespace py = pybind11;
+
+namespace impl
+{
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace type_utils = dpctl::tensor::type_utils;
 
-using ext::common::value_type_of;
-using ext::validation::array_names;
+template <typename T>
+using value_type_of_t = typename ext::common::value_type_of<T>::type;
 
 using ext::common::dtype_from_typenum;
-using ext::validation::check_has_dtype;
-using ext::validation::check_num_dims;
-using ext::validation::check_same_dtype;
-using ext::validation::check_same_size;
-using ext::validation::common_checks;
-
-namespace dpnp::extensions::ufunc
-{
-namespace impl
-{
-using ext::common::init_dispatch_vector;
-
-template <typename T>
-using value_type_of_t = typename value_type_of<T>::type;
 
 typedef sycl::event (*interpolate_fn_ptr_t)(sycl::queue &,
                                             const void *,      // x
@@ -163,6 +154,13 @@ struct InterpolateFactory
 
 namespace detail
 {
+using ext::validation::array_names;
+using ext::validation::check_has_dtype;
+using ext::validation::check_num_dims;
+using ext::validation::check_same_dtype;
+using ext::validation::check_same_size;
+using ext::validation::common_checks;
+
 void validate(const dpctl::tensor::usm_ndarray &x,
               const dpctl::tensor::usm_ndarray &idx,
               const dpctl::tensor::usm_ndarray &xp,
@@ -258,6 +256,7 @@ std::pair<sycl::event, sycl::event>
 
 static void init_interpolate_dispatch_vectors()
 {
+    using ext::common::init_dispatch_vector;
     init_dispatch_vector<interpolate_fn_ptr_t, impl::InterpolateFactory>(
         interpolate_dispatch_vector);
 }
