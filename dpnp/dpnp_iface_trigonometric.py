@@ -47,6 +47,7 @@ import dpctl.tensor._tensor_elementwise_impl as ti
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
+import dpctl_ext.tensor._tensor_elementwise_impl as ti_ext
 import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
@@ -138,8 +139,8 @@ array([0.0,  3.14159265])
 
 acos = DPNPUnaryFunc(
     "acos",
-    ti._acos_result_type,
-    ti._acos,
+    ti_ext._acos_result_type,
+    ti_ext._acos,
     _ACOS_DOCSTRING,
     mkl_fn_to_call="_mkl_acos_to_call",
     mkl_impl_fn="_acos",
@@ -224,8 +225,8 @@ array([0.0, 1.65745445, 2.99322285])
 
 acosh = DPNPUnaryFunc(
     "acosh",
-    ti._acosh_result_type,
-    ti._acosh,
+    ti_ext._acosh_result_type,
+    ti_ext._acosh,
     _ACOSH_DOCSTRING,
     mkl_fn_to_call="_mkl_acosh_to_call",
     mkl_impl_fn="_acosh",
@@ -310,8 +311,8 @@ array([0.0, 1.5707963267948966, -1.5707963267948966])
 
 asin = DPNPUnaryFunc(
     "asin",
-    ti._asin_result_type,
-    ti._asin,
+    ti_ext._asin_result_type,
+    ti_ext._asin,
     _ASIN_DOCSTRING,
     mkl_fn_to_call="_mkl_asin_to_call",
     mkl_impl_fn="_asin",
@@ -394,8 +395,8 @@ array([1.72538256, 2.99822295])
 
 asinh = DPNPUnaryFunc(
     "asinh",
-    ti._asinh_result_type,
-    ti._asinh,
+    ti_ext._asinh_result_type,
+    ti_ext._asinh,
     _ASINH_DOCSTRING,
     mkl_fn_to_call="_mkl_asinh_to_call",
     mkl_impl_fn="_asinh",
@@ -480,8 +481,8 @@ array([0.0, 0.78539816])
 
 atan = DPNPUnaryFunc(
     "atan",
-    ti._atan_result_type,
-    ti._atan,
+    ti_ext._atan_result_type,
+    ti_ext._atan,
     _ATAN_DOCSTRING,
     mkl_fn_to_call="_mkl_atan_to_call",
     mkl_impl_fn="_atan",
@@ -655,8 +656,8 @@ array([0.0, -0.54930614])
 
 atanh = DPNPUnaryFunc(
     "atanh",
-    ti._atanh_result_type,
-    ti._atanh,
+    ti_ext._atanh_result_type,
+    ti_ext._atanh,
     _ATANH_DOCSTRING,
     mkl_fn_to_call="_mkl_atanh_to_call",
     mkl_impl_fn="_atanh",
