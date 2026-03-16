@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of POSITIVE(x)
+/// This file defines kernels for elementwise evaluation of NEGATIVE(x)
 /// function that returns x.
 //===---------------------------------------------------------------------===//
 
