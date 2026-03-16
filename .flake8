@@ -58,6 +58,7 @@ exclude =
     conda.recipe,
     dpnp/tests/*.py,
     tests_external/*.py,
+    dpctl_ext/tests/*.py,
 
 # Print detailed statistic if any issue detected
 count = True
