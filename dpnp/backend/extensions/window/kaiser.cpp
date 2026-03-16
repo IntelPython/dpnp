@@ -26,6 +26,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <sycl/sycl.hpp>
+
 #include "kaiser.hpp"
 #include "common.hpp"
 
@@ -35,11 +37,8 @@
 #include "ext/common.hpp"
 
 // dpctl tensor headers
-#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
-
-#include <sycl/sycl.hpp>
 
 namespace dpnp::extensions::window
 {

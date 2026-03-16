@@ -28,6 +28,13 @@
 
 #pragma once
 
+#include <cstddef>
+#include <stdexcept>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
 #include <sycl/sycl.hpp>
 
 #include "dpctl4pybind11.hpp"
