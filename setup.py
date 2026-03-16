@@ -56,13 +56,16 @@ skbuild.setup(
             "dpnp_backend_c.dll",
             "tests/*.*",
             "tests/testing/*.py",
-            "tests/tensor/*.py",
-            "tests/tensor/*/*.py",
             "tests/third_party/cupy/*.py",
             "tests/third_party/cupy/*/*.py",
             "tests/third_party/cupyx/*.py",
             "tests/third_party/cupyx/*/*.py",
-        ]
+        ],
+        # TODO: replace with dpctl
+        "dpctl_ext": [
+            "tests/tensor/*.py",
+            "tests/tensor/*/*.py",
+        ],
     },
     include_package_data=False,
 )
