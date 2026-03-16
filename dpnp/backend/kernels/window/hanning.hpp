@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include <sycl/sycl.hpp>
 
 namespace dpnp::kernels::hanning
@@ -46,8 +48,7 @@ public:
     {
         const auto i = id.get(0);
 
-        const T alpha = (N - 1) / T(2);
-        res[i] = T(1) - sycl::fabs(i - alpha) / alpha;
+        res[i] = T(0.5) - T(0.5) * sycl::cospi(T(2) * i / (N - 1));
     }
 };
 } // namespace dpnp::kernels::hanning

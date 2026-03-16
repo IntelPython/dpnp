@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include <sycl/sycl.hpp>
 
 namespace dpnp::kernels::hamming
