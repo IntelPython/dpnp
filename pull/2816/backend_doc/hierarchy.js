@@ -93,6 +93,7 @@ var hierarchy =
     [ "ext::common::TableBuilder2< FnT, SupportedTypes, Func >::impl< _FnT, T1, T2 >", "structext_1_1common_1_1_table_builder2_1_1impl.html", null ],
     [ "ext::common::TableBuilder< FnT, SupportedTypes, Func >::impl< _FnT, T >", "structext_1_1common_1_1_table_builder_1_1impl.html", null ],
     [ "ext::common::int_pair_hash", "structext_1_1common_1_1int__pair__hash.html", null ],
+    [ "dpnp::kernels::interpolate::InterpolateFunctor< TCoord, TValue, TIdx >", "classdpnp_1_1kernels_1_1interpolate_1_1_interpolate_functor.html", null ],
     [ "dpnp::kernels::isclose::IsCloseContigScalarFunctor< T, scT, resTy, vec_sz, n_vecs, enable_sg_loadstore >", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_contig_scalar_functor.html", null ],
     [ "dpnp::kernels::isclose::IsCloseStridedScalarFunctor< T, scT, resTy, ThreeOffsets_IndexerT >", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_strided_scalar_functor.html", null ],
     [ "ext::common::IsNan< T >", "structext_1_1common_1_1_is_nan.html", null ],

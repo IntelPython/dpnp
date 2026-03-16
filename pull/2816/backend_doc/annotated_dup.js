@@ -126,6 +126,9 @@ var annotated_dup =
         [ "i0", "namespacedpnp_1_1kernels_1_1i0.html", [
           [ "I0Functor", "structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html", null ]
         ] ],
+        [ "interpolate", null, [
+          [ "InterpolateFunctor", "classdpnp_1_1kernels_1_1interpolate_1_1_interpolate_functor.html", null ]
+        ] ],
         [ "isclose", null, [
           [ "IsCloseContigScalarFunctor", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_contig_scalar_functor.html", null ],
           [ "IsCloseStridedScalarFunctor", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_strided_scalar_functor.html", null ]
