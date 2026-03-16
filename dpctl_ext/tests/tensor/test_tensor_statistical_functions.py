@@ -32,7 +32,8 @@ import pytest
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
 from dpctl_ext.tensor._tensor_impl import default_device_fp_type
-from dpnp.tests.tensor.helper import (
+
+from .helper import (
     get_queue_or_skip,
     skip_if_dtype_not_supported,
 )

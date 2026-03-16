@@ -34,7 +34,8 @@ import pytest
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._type_utils as tu
-from dpnp.tests.tensor.elementwise.utils import (
+
+from .utils import (
     _all_dtypes,
     _map_to_device_dtype,
 )

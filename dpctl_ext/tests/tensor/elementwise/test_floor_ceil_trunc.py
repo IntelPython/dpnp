@@ -36,14 +36,15 @@ from numpy.testing import assert_allclose, assert_array_equal
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
-from dpnp.tests.tensor.elementwise.utils import (
+
+from ..helper import (
+    get_queue_or_skip,
+    skip_if_dtype_not_supported,
+)
+from .utils import (
     _map_to_device_dtype,
     _no_complex_dtypes,
     _real_value_dtypes,
-)
-from dpnp.tests.tensor.helper import (
-    get_queue_or_skip,
-    skip_if_dtype_not_supported,
 )
 
 _all_funcs = [(np.floor, dpt.floor), (np.ceil, dpt.ceil), (np.trunc, dpt.trunc)]

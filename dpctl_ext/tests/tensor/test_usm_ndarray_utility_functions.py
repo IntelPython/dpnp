@@ -36,7 +36,8 @@ from numpy.testing import assert_array_equal, assert_equal
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
 from dpctl_ext.tensor._numpy_helper import AxisError
-from dpnp.tests.tensor.helper import (
+
+from .helper import (
     get_queue_or_skip,
     skip_if_dtype_not_supported,
 )

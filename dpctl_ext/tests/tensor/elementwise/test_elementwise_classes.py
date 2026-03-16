@@ -31,7 +31,8 @@ import pytest
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
-from dpnp.tests.tensor.helper import get_queue_or_skip
+
+from ..helper import get_queue_or_skip
 
 unary_fn = dpt.negative
 binary_fn = dpt.divide

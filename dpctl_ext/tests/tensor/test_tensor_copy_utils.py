@@ -33,7 +33,8 @@ import pytest
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._copy_utils as cu
-from dpnp.tests.tensor.helper import get_queue_or_skip
+
+from .helper import get_queue_or_skip
 
 
 def test_copy_utils_empty_like_orderK():

@@ -40,7 +40,8 @@ from numpy.testing import assert_raises_regex
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
 from dpctl_ext.tensor import Device
-from dpnp.tests.tensor.helper import (
+
+from .helper import (
     get_queue_or_skip,
     skip_if_dtype_not_supported,
 )

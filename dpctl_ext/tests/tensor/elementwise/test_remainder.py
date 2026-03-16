@@ -36,14 +36,15 @@ import pytest
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
 from dpctl_ext.tensor._type_utils import _can_cast
-from dpnp.tests.tensor.elementwise.utils import (
+
+from ..helper import (
+    get_queue_or_skip,
+    skip_if_dtype_not_supported,
+)
+from .utils import (
     _compare_dtypes,
     _no_complex_dtypes,
     _usm_types,
-)
-from dpnp.tests.tensor.helper import (
-    get_queue_or_skip,
-    skip_if_dtype_not_supported,
 )
 
 

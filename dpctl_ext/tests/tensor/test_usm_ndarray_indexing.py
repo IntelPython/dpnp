@@ -37,7 +37,8 @@ from numpy.testing import assert_array_equal
 import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_impl as ti
 from dpctl_ext.tensor._copy_utils import _take_multi_index
-from dpnp.tests.tensor.helper import (
+
+from .helper import (
     get_queue_or_skip,
     skip_if_dtype_not_supported,
 )

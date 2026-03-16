@@ -38,16 +38,17 @@ from dpctl.utils import SequentialOrderManager
 import dpctl_ext.tensor as dpt
 from dpctl_ext.tensor._tensor_elementwise_impl import _divide_by_scalar
 from dpctl_ext.tensor._type_utils import _can_cast
-from dpnp.tests.tensor.elementwise.utils import (
+
+from ..helper import (
+    get_queue_or_skip,
+    skip_if_dtype_not_supported,
+)
+from .utils import (
     _all_dtypes,
     _compare_dtypes,
     _complex_fp_dtypes,
     _real_fp_dtypes,
     _usm_types,
-)
-from dpnp.tests.tensor.helper import (
-    get_queue_or_skip,
-    skip_if_dtype_not_supported,
 )
 
 

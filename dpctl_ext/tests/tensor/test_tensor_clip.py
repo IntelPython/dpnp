@@ -41,7 +41,8 @@ from dpctl_ext.tensor._type_utils import (
     _strong_dtype_num_kind,
     _weak_type_num_kind,
 )
-from dpnp.tests.tensor.helper import (
+
+from .helper import (
     get_queue_or_skip,
     skip_if_dtype_not_supported,
 )

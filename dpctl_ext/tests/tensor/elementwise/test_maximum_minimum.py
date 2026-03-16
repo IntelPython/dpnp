@@ -37,14 +37,15 @@ from numpy.testing import assert_array_equal
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
-from dpnp.tests.tensor.elementwise.utils import (
+
+from ..helper import (
+    get_queue_or_skip,
+    skip_if_dtype_not_supported,
+)
+from .utils import (
     _all_dtypes,
     _compare_dtypes,
     _usm_types,
-)
-from dpnp.tests.tensor.helper import (
-    get_queue_or_skip,
-    skip_if_dtype_not_supported,
 )
 
 

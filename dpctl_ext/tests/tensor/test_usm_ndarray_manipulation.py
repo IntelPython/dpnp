@@ -38,7 +38,8 @@ from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
 from dpctl_ext.tensor._numpy_helper import AxisError
-from dpnp.tests.tensor.helper import get_queue_or_skip
+
+from .helper import get_queue_or_skip
 
 
 def test_permute_dims_incorrect_type():

@@ -38,7 +38,8 @@ import pytest
 import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._dlpack as _dlp
 import dpctl_ext.tensor._usmarray as dpt_arr
-from dpnp.tests.tensor.helper import (
+
+from .helper import (
     get_queue_or_skip,
     skip_if_dtype_not_supported,
 )
