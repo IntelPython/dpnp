@@ -28,67 +28,79 @@
 
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
+
 #include <sycl/sycl.hpp>
-#include <vector>
 
 #include "ext/common.hpp"
 
-using ext::common::IsNan;
-
 namespace dpnp::kernels::interpolate
 {
+using ext::common::IsNan;
+
 template <typename TCoord, typename TValue, typename TIdx = std::int64_t>
-sycl::event interpolate_impl(sycl::queue &q,
-                             const TCoord *x,
-                             const TIdx *idx,
-                             const TCoord *xp,
-                             const TValue *fp,
-                             const TValue *left,
-                             const TValue *right,
-                             TValue *out,
-                             const std::size_t n,
-                             const std::size_t xp_size,
-                             const std::vector<sycl::event> &depends)
+class InterpolateFunctor
 {
+private:
+    const TCoord *x = nullptr;
+    const TIdx *idx = nullptr;
+    const TCoord *xp = nullptr;
+    const TValue *fp = nullptr;
+    const TValue *left = nullptr;
+    const TValue *right = nullptr;
+    TValue *out = nullptr;
+    const std::size_t xp_size;
+
+public:
+    InterpolateFunctor(const TCoord *x_,
+                       const TIdx *idx_,
+                       const TCoord *xp_,
+                       const TValue *fp_,
+                       const TValue *left_,
+                       const TValue *right_,
+                       TValue *out_,
+                       const std::size_t xp_size_)
+        : x(x_), idx(idx_), xp(xp_), fp(fp_), left(left_), right(right_),
+          out(out_), xp_size(xp_size_)
+    {
+    }
+
     // Selected over the work-group version
     // due to simpler execution and slightly better performance.
-    return q.submit([&](sycl::handler &h) {
-        h.depends_on(depends);
-        h.parallel_for(sycl::range<1>(n), [=](sycl::id<1> i) {
-            TValue left_val = left ? *left : fp[0];
-            TValue right_val = right ? *right : fp[xp_size - 1];
+    void operator()(sycl::id<1> id) const
+    {
+        TValue left_val = left ? *left : fp[0];
+        TValue right_val = right ? *right : fp[xp_size - 1];
 
-            TCoord x_val = x[i];
-            TIdx x_idx = idx[i] - 1;
+        TCoord x_val = x[id];
+        TIdx x_idx = idx[id] - 1;
 
-            if (IsNan<TCoord>::isnan(x_val)) {
-                out[i] = x_val;
-            }
-            else if (x_idx < 0) {
-                out[i] = left_val;
-            }
-            else if (x_val == xp[xp_size - 1]) {
-                out[i] = fp[xp_size - 1];
-            }
-            else if (x_idx >= static_cast<TIdx>(xp_size - 1)) {
-                out[i] = right_val;
-            }
-            else {
-                TValue slope =
-                    (fp[x_idx + 1] - fp[x_idx]) / (xp[x_idx + 1] - xp[x_idx]);
-                TValue res = slope * (x_val - xp[x_idx]) + fp[x_idx];
+        if (IsNan<TCoord>::isnan(x_val)) {
+            out[id] = x_val;
+        }
+        else if (x_idx < 0) {
+            out[id] = left_val;
+        }
+        else if (x_val == xp[xp_size - 1]) {
+            out[id] = fp[xp_size - 1];
+        }
+        else if (x_idx >= static_cast<TIdx>(xp_size - 1)) {
+            out[id] = right_val;
+        }
+        else {
+            TValue slope =
+                (fp[x_idx + 1] - fp[x_idx]) / (xp[x_idx + 1] - xp[x_idx]);
+            TValue res = slope * (x_val - xp[x_idx]) + fp[x_idx];
 
-                if (IsNan<TValue>::isnan(res)) {
-                    res = slope * (x_val - xp[x_idx + 1]) + fp[x_idx + 1];
-                    if (IsNan<TValue>::isnan(res) &&
-                        (fp[x_idx] == fp[x_idx + 1])) {
-                        res = fp[x_idx];
-                    }
+            if (IsNan<TValue>::isnan(res)) {
+                res = slope * (x_val - xp[x_idx + 1]) + fp[x_idx + 1];
+                if (IsNan<TValue>::isnan(res) && (fp[x_idx] == fp[x_idx + 1])) {
+                    res = fp[x_idx];
                 }
-                out[i] = res;
             }
-        });
-    });
-}
-
+            out[id] = res;
+        }
+    }
+};
 } // namespace dpnp::kernels::interpolate
