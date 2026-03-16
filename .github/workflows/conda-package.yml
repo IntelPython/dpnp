@@ -247,6 +247,26 @@ jobs:
               python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
             fi
 
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure != 'true'
+        run: |
+          python -m pytest -n auto -ra --pyargs dpctl_ext.tests
+
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure == 'true'
+        id: run_tests_dpctl_ext_linux
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        with:
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          retry_on: any
+          command: |
+            . $CONDA/etc/profile.d/conda.sh
+            . $CONDA/etc/profile.d/mamba.sh
+            mamba activate ${{ env.test-env-name }}
+
+            python -m pytest -n auto -ra --pyargs dpctl_ext.tests
+
   test_windows:
     name: Test
 
@@ -405,6 +425,24 @@ jobs:
             } else {
               python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
             }
+
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure != 'true'
+        shell: pwsh
+        run: |
+          python -m pytest -n auto -ra --pyargs dpctl_ext.tests
+
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure == 'true'
+        id: run_tests_dpctl_ext_win
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        with:
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          retry_on: any
+          shell: pwsh
+          command: |
+            python -m pytest -n auto -ra --pyargs dpctl_ext.tests
 
   upload:
     name: Upload
