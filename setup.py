@@ -63,6 +63,7 @@ skbuild.setup(
         ],
         # TODO: replace with dpctl
         "dpctl_ext": [
+            "tests/*.py",
             "tests/tensor/*.py",
             "tests/tensor/*/*.py",
         ],
