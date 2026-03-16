@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include <sycl/sycl.hpp>
 
 #include "kernels/dpctl_tensor_types.hpp"

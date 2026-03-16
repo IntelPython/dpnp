@@ -30,6 +30,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <stdexcept>
+#include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -46,12 +48,15 @@
 // dpctl tensor headers
 #include "utils/indexing_utils.hpp"
 #include "utils/memory_overlap.hpp"
-#include "utils/offset_utils.hpp" //
+#include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
+#include "utils/type_utils.hpp"
 
 namespace dpnp::extensions::indexing
+{
+namespace impl
 {
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
@@ -504,16 +509,16 @@ void init_choose_dispatch_tables(void)
     init_dispatch_table<choose_fn_ptr_t, ChooseWrapFactory>(
         choose_wrap_dispatch_table);
 }
+} // namespace impl
 
 void init_choose(py::module_ m)
 {
-    dpnp::extensions::indexing::init_choose_dispatch_tables();
+    impl::init_choose_dispatch_tables();
 
-    m.def("_choose", &py_choose, "", py::arg("src"), py::arg("chcs"),
+    m.def("_choose", &impl::py_choose, "", py::arg("src"), py::arg("chcs"),
           py::arg("dst"), py::arg("mode"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
     return;
 }
-
 } // namespace dpnp::extensions::indexing
