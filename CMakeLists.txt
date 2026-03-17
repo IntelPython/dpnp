@@ -344,14 +344,20 @@ if(DEFINED SKBUILD)
     set(_ignore_me ${SKBUILD})
 endif()
 
-# TODO: Replace `${CMAKE_BINARY_DIR}` with a dedicated public include root
-# for dpctl_ext C-API headers
-# Unlike dpctl which exposes C-API from `dpctl/apis/include`,
-# dpctl_ext currently relies on generated headers in the build tree.
-# `${CMAKE_BINARY_DIR}` is a temporary workaround.
+# DpctlExtCAPI: Interface library for dpctl_ext C-API
+# Provides access to:
+# 1. Public C-API headers from dpctl_ext/apis/include
+# 2. Generated Cython headers from the build directory
+#
+# This follows the same pattern as dpctl's DpctlCAPI interface library
 
 add_library(DpctlExtCAPI INTERFACE)
-target_include_directories(DpctlExtCAPI INTERFACE ${CMAKE_BINARY_DIR})
+target_include_directories(
+    DpctlExtCAPI
+    INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/dpctl_ext/apis/include
+        ${CMAKE_BINARY_DIR} # For generated Cython headers
+)
 
 add_subdirectory(dpctl_ext)
 add_subdirectory(dpnp)

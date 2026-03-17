@@ -63,10 +63,9 @@
 
 // clang-format on
 
-// TODO: Keep these includes once `dpctl.tensor` is removed from dpctl,
-// but replace the hardcoded relative path with a proper include pathы
-#include <dpctl_ext/tensor/_usmarray.h>
-#include <dpctl_ext/tensor/_usmarray_api.h>
+// Include dpctl_ext C-API (provides access to usm_ndarray types)
+// This uses the public API header from dpctl_ext/apis/include
+#include "dpctl_ext_capi.h"
 
 /*
  * Function to import dpctl and make C-API functions available.
