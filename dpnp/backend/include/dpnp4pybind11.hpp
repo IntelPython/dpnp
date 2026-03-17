@@ -28,65 +28,17 @@
 
 #pragma once
 
-// TODO: Enable dpctl_capi.h once dpctl.tensor is removed.
-// Also call `import_dpctl_ext__tensor___usmarray();` right after
-// `import_dpctl()` (line 334) to initialize the dpctl_ext tensor C-API.
+// Include dpctl_ext C-API (provides unified access to both dpctl and dpctl_ext)
+// This includes:
+// - dpctl C-API (from external dpctl package - SYCL interface)
+// - dpctl_ext C-API (tensor interface: usm_ndarray)
 //
-// Now we include dpctl C-API headers explicitly in order to
-// integrate dpctl_ext tensor C-API.
-
-// #include "dpctl_capi.h"
-
-// clang-format off
-// Ordering of includes is important here. dpctl_sycl_types and
-// dpctl_sycl_extension_interface define types used by dpctl's Python
-// C-API headers.
-#include "syclinterface/dpctl_sycl_types.h"
-#include "syclinterface/dpctl_sycl_extension_interface.h"
-#ifdef __cplusplus
-#define CYTHON_EXTERN_C extern "C"
-#else
-#define CYTHON_EXTERN_C
-#endif
-#include "dpctl/_sycl_device.h"
-#include "dpctl/_sycl_device_api.h"
-#include "dpctl/_sycl_context.h"
-#include "dpctl/_sycl_context_api.h"
-#include "dpctl/_sycl_event.h"
-#include "dpctl/_sycl_event_api.h"
-#include "dpctl/_sycl_queue.h"
-#include "dpctl/_sycl_queue_api.h"
-#include "dpctl/memory/_memory.h"
-#include "dpctl/memory/_memory_api.h"
-#include "dpctl/program/_program.h"
-#include "dpctl/program/_program_api.h"
-
-// clang-format on
-
-// Include dpctl_ext C-API (provides access to usm_ndarray types)
-// This uses the public API header from dpctl_ext/apis/include
+// TODO: When dpctl_ext is renamed to dpctl.tensor:
+//   - Update include: "dpctl_ext_capi.h" → "dpctl/tensor/tensor_capi.h"
+//     (Use tensor_capi.h, NOT dpctl_capi.h, to avoid conflict with external
+//     dpctl)
+//   - Update import calls: import_dpctl_ext() → import_dpctl_tensor()
 #include "dpctl_ext_capi.h"
-
-/*
- * Function to import dpctl and make C-API functions available.
- * C functions can use dpctl's C-API functions without linking to
- * shared objects defining this symbols, if they call `import_dpctl()`
- * prior to using those symbols.
- *
- * It is declared inline to allow multiple definitions in
- * different translation units
- */
-static inline void import_dpctl(void)
-{
-    import_dpctl___sycl_device();
-    import_dpctl___sycl_context();
-    import_dpctl___sycl_event();
-    import_dpctl___sycl_queue();
-    import_dpctl__memory___memory();
-    import_dpctl_ext__tensor___usmarray();
-    import_dpctl__program___program();
-    return;
-}
 
 #include <array>
 #include <complex>
@@ -341,7 +293,8 @@ private:
         // e.g. SyclDevice_GetDeviceRef, etc.
         // pointers to Python types, i.e. PySyclDeviceType, etc.
         // and exported constants, i.e. USM_ARRAY_C_CONTIGUOUS, etc.
-        import_dpctl();
+        // TODO: rename once dpctl_ext is renamed
+        import_dpctl_ext(); // Imports both dpctl and dpctl_ext C-APIs
 
         // Python type objects for classes implemented by dpctl
         this->Py_SyclDeviceType_ = &Py_SyclDeviceType;
