@@ -347,17 +347,12 @@ endif()
 # DpctlExtCAPI: Interface library for dpctl_ext C-API
 # Provides access to:
 # 1. Public C-API headers from dpctl_ext/apis/include
-# 2. Generated Cython headers from a specific build subdirectory
-
-# Set the specific directory for generated Cython headers
-set(DPCTL_EXT_GENERATED_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR})
+# 2. Generated Cython headers via per-target header interface libraries
 
 add_library(DpctlExtCAPI INTERFACE)
 target_include_directories(
     DpctlExtCAPI
-    INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/dpctl_ext/apis/include
-        ${DPCTL_EXT_GENERATED_INCLUDE_DIR}
+    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/dpctl_ext/apis/include
 )
 
 add_subdirectory(dpctl_ext)

@@ -66,8 +66,8 @@
 
 // Include the generated Cython C-API headers for usm_ndarray
 // These headers are generated during build and placed in the build directory
-#include <dpctl_ext/tensor/_usmarray.h>
-#include <dpctl_ext/tensor/_usmarray_api.h>
+#include "dpctl_ext/tensor/_usmarray.h"
+#include "dpctl_ext/tensor/_usmarray_api.h"
 
 /*
  * Function to import dpctl_ext C-API and make it available.
