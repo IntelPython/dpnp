@@ -28,9 +28,15 @@
 
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <type_traits>
+
 #include <sycl/sycl.hpp>
 
 #include "ext/common.hpp"
+#include "kernels/statistics/histogram.hpp"
 
 namespace dpctl::tensor
 {
@@ -278,9 +284,6 @@ bool check_in_bounds(const dT &val, const dT &min, const dT &max)
 }
 
 template <typename T, typename HistImpl, typename Edges, typename Weights>
-class histogram_kernel;
-
-template <typename T, typename HistImpl, typename Edges, typename Weights>
 void submit_histogram(const T *in,
                       const size_t size,
                       const size_t dims,
@@ -291,41 +294,12 @@ void submit_histogram(const T *in,
                       sycl::nd_range<1> nd_range,
                       sycl::handler &cgh)
 {
-    cgh.parallel_for<histogram_kernel<T, HistImpl, Edges, Weights>>(
-        nd_range, [=](sycl::nd_item<1> item) {
-            auto id = item.get_group_linear_id();
-            auto lid = item.get_local_linear_id();
-            auto group = item.get_group();
-            auto local_size = item.get_local_range(0);
+    using HistogramKernel =
+        dpnp::kernels::histogram::HistogramFunctor<T, HistImpl, Edges, Weights>;
 
-            hist.init(item);
-            edges.init(item);
-
-            if constexpr (HistImpl::sync_after_init || Edges::sync_after_init) {
-                sycl::group_barrier(group, sycl::memory_scope::work_group);
-            }
-
-            auto bounds = edges.get_bounds();
-
-            for (uint32_t i = 0; i < WorkPI; ++i) {
-                auto data_idx = id * WorkPI * local_size + i * local_size + lid;
-                if (data_idx < size) {
-                    auto *d = &in[data_idx * dims];
-
-                    if (edges.in_bounds(d, bounds)) {
-                        auto bin = edges.get_bin(item, d, bounds);
-                        auto weight = weights.get(data_idx);
-                        hist.add(item, bin, weight);
-                    }
-                }
-            }
-
-            if constexpr (HistImpl::sync_before_finalize) {
-                sycl::group_barrier(group, sycl::memory_scope::work_group);
-            }
-
-            hist.finalize(item);
-        });
+    cgh.parallel_for<HistogramKernel>(
+        nd_range,
+        HistogramKernel(in, size, dims, WorkPI, hist, edges, weights));
 }
 
 void validate(const usm_ndarray &sample,
