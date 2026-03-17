@@ -28,8 +28,8 @@
 
 #include <sycl/sycl.hpp>
 
-#include "kaiser.hpp"
 #include "common.hpp"
+#include "kaiser.hpp"
 
 #include "kernels/window/kaiser.hpp"
 
@@ -91,6 +91,7 @@ struct KaiserFactory
         }
     }
 };
+} // namespace impl
 
 std::pair<sycl::event, sycl::event>
     py_kaiser(sycl::queue &exec_q,
@@ -112,7 +113,6 @@ std::pair<sycl::event, sycl::event>
 
     return std::make_pair(args_ev, kaiser_ev);
 }
-} // namespace impl
 
 void init_kaiser_dispatch_vectors()
 {
