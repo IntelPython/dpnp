@@ -30,7 +30,7 @@
 ///
 /// \file
 /// This file defines kernels for elementwise evaluation of POSITIVE(x)
-/// function that returns x.
+/// function that returns +x.
 //===---------------------------------------------------------------------===//
 
 #pragma once
