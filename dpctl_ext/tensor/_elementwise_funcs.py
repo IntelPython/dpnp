@@ -31,6 +31,9 @@
 import dpctl_ext.tensor._tensor_elementwise_impl as ti
 
 from ._elementwise_common import UnaryElementwiseFunc
+from ._type_utils import (
+    _acceptance_fn_negative,
+)
 
 # U01: ==== ABS    (x)
 _abs_docstring_ = r"""
@@ -323,6 +326,461 @@ conj = UnaryElementwiseFunc(
     "conj", ti._conj_result_type, ti._conj, _conj_docstring
 )
 del _conj_docstring
+
+# U11: ==== COS           (x)
+_cos_docstring = r"""
+cos(x, /, \*, out=None, order='K')
+
+Computes cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise cosine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+cos = UnaryElementwiseFunc("cos", ti._cos_result_type, ti._cos, _cos_docstring)
+del _cos_docstring
+
+# U12: ==== COSH          (x)
+_cosh_docstring = r"""
+cosh(x, /, \*, out=None, order='K')
+
+Computes hyperbolic cosine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise hyperbolic cosine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+cosh = UnaryElementwiseFunc(
+    "cosh", ti._cosh_result_type, ti._cosh, _cosh_docstring
+)
+del _cosh_docstring
+
+# U13: ==== EXP           (x)
+_exp_docstring = r"""
+exp(x, /, \*, out=None, order='K')
+
+Computes the exponential for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise exponential of `x`.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+exp = UnaryElementwiseFunc("exp", ti._exp_result_type, ti._exp, _exp_docstring)
+del _exp_docstring
+
+# U14: ==== EXPM1         (x)
+_expm1_docstring = r"""
+expm1(x, /, \*, out=None, order='K')
+
+Computes the exponential minus 1 for each element `x_i` of input array `x`.
+
+This function calculates `exp(x) - 1.0` more accurately for small values of `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise `exp(x) - 1` results.
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
+"""
+
+expm1 = UnaryElementwiseFunc(
+    "expm1", ti._expm1_result_type, ti._expm1, _expm1_docstring
+)
+del _expm1_docstring
+
+# U15: ==== FLOOR         (x)
+_floor_docstring = r"""
+floor(x, /, \*, out=None, order='K')
+
+Returns the floor for each element `x_i` for input array `x`.
+
+The floor of `x_i` is the largest integer `n`, such that `n <= x_i`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a boolean or real-valued data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise floor.
+"""
+
+floor = UnaryElementwiseFunc(
+    "floor", ti._floor_result_type, ti._floor, _floor_docstring
+)
+del _floor_docstring
+
+# U16: ==== IMAG        (x)
+_imag_docstring = r"""
+imag(x, /, \*, out=None, order='K')
+
+Computes imaginary part of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise imaginary component of input.
+        If the input is a real-valued data type, the returned array has
+        the same data type. If the input is a complex floating-point
+        data type, the returned array has a floating-point data type
+        with the same floating-point precision as complex input.
+"""
+
+imag = UnaryElementwiseFunc(
+    "imag", ti._imag_result_type, ti._imag, _imag_docstring
+)
+del _imag_docstring
+
+# U17: ==== ISFINITE    (x)
+_isfinite_docstring_ = r"""
+isfinite(x, /, \*, out=None, order='K')
+
+Test if each element of input array is a finite number.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array which is True where `x` is not positive infinity,
+        negative infinity, or NaN, False otherwise.
+        The data type of the returned array is `bool`.
+"""
+
+isfinite = UnaryElementwiseFunc(
+    "isfinite", ti._isfinite_result_type, ti._isfinite, _isfinite_docstring_
+)
+del _isfinite_docstring_
+
+# U18: ==== ISINF       (x)
+_isinf_docstring_ = r"""
+isinf(x, /, \*, out=None, order='K')
+
+Test if each element of input array is an infinity.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array which is True where `x` is positive or negative infinity,
+        False otherwise. The data type of the returned array is `bool`.
+"""
+
+isinf = UnaryElementwiseFunc(
+    "isinf", ti._isinf_result_type, ti._isinf, _isinf_docstring_
+)
+del _isinf_docstring_
+
+# U19: ==== ISNAN       (x)
+_isnan_docstring_ = r"""
+isnan(x, /, \*, out=None, order='K')
+
+Test if each element of an input array is a NaN.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array which is True where x is NaN, False otherwise.
+        The data type of the returned array is `bool`.
+"""
+
+isnan = UnaryElementwiseFunc(
+    "isnan", ti._isnan_result_type, ti._isnan, _isnan_docstring_
+)
+del _isnan_docstring_
+
+# U20: ==== LOG         (x)
+_log_docstring = r"""
+log(x, /, \*, out=None, order='K')
+
+Computes the natural logarithm for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise natural logarithm values.
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
+"""
+
+log = UnaryElementwiseFunc("log", ti._log_result_type, ti._log, _log_docstring)
+del _log_docstring
+
+# U21: ==== LOG1P       (x)
+_log1p_docstring = r"""
+log1p(x, /, \*, out=None, order='K')
+
+Computes the natural logarithm of (1 + `x`) for each element `x_i` of input
+array `x`.
+
+This function calculates `log(1 + x)` more accurately for small values of `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise `log(1 + x)` results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+log1p = UnaryElementwiseFunc(
+    "log1p", ti._log1p_result_type, ti._log1p, _log1p_docstring
+)
+del _log1p_docstring
+
+# U22: ==== LOG2        (x)
+_log2_docstring_ = r"""
+log2(x, /, \*, out=None, order='K')
+
+Computes the base-2 logarithm for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise base-2 logarithm of `x`.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+log2 = UnaryElementwiseFunc(
+    "log2", ti._log2_result_type, ti._log2, _log2_docstring_
+)
+del _log2_docstring_
+
+# U23: ==== LOG10       (x)
+_log10_docstring_ = r"""
+log10(x, /, \*, out=None, order='K')
+
+Computes the base-10 logarithm for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: `"K"`.
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise base-10 logarithm of `x`.
+        The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+
+log10 = UnaryElementwiseFunc(
+    "log10", ti._log10_result_type, ti._log10, _log10_docstring_
+)
+del _log10_docstring_
+
+# U24: ==== LOGICAL_NOT (x)
+_logical_not_docstring = r"""
+logical_not(x, /, \*, out=None, order='K')
+
+Computes the logical NOT for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise logical NOT results.
+"""
+
+logical_not = UnaryElementwiseFunc(
+    "logical_not",
+    ti._logical_not_result_type,
+    ti._logical_not,
+    _logical_not_docstring,
+)
+del _logical_not_docstring
+
+# U25: ==== NEGATIVE    (x)
+_negative_docstring_ = r"""
+negative(x, /, \*, out=None, order='K')
+
+Computes the numerical negative for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the negative of `x`.
+"""
+
+negative = UnaryElementwiseFunc(
+    "negative",
+    ti._negative_result_type,
+    ti._negative,
+    _negative_docstring_,
+    acceptance_fn=_acceptance_fn_negative,
+)
+del _negative_docstring_
+
+# U26: ==== POSITIVE    (x)
+_positive_docstring_ = r"""
+positive(x, /, \*, out=None, order='K')
+
+Computes the numerical positive for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the positive of `x`.
+"""
+
+positive = UnaryElementwiseFunc(
+    "positive", ti._positive_result_type, ti._positive, _positive_docstring_
+)
+del _positive_docstring_
 
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""

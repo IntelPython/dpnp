@@ -55,39 +55,39 @@
 #include "ceil.hpp"
 #include "conj.hpp"
 // #include "copysign.hpp"
-// #include "cos.hpp"
-// #include "cosh.hpp"
+#include "cos.hpp"
+#include "cosh.hpp"
 // #include "equal.hpp"
-// #include "exp.hpp"
+#include "exp.hpp"
 // #include "exp2.hpp"
-// #include "expm1.hpp"
-// #include "floor.hpp"
+#include "expm1.hpp"
+#include "floor.hpp"
 // #include "floor_divide.hpp"
 // #include "greater.hpp"
 // #include "greater_equal.hpp"
 // #include "hypot.hpp"
-// #include "imag.hpp"
-// #include "isfinite.hpp"
-// #include "isinf.hpp"
-// #include "isnan.hpp"
+#include "imag.hpp"
+#include "isfinite.hpp"
+#include "isinf.hpp"
+#include "isnan.hpp"
 // #include "less.hpp"
 // #include "less_equal.hpp"
-// #include "log.hpp"
-// #include "log10.hpp"
-// #include "log1p.hpp"
-// #include "log2.hpp"
+#include "log.hpp"
+#include "log10.hpp"
+#include "log1p.hpp"
+#include "log2.hpp"
 // #include "logaddexp.hpp"
 // #include "logical_and.hpp"
-// #include "logical_not.hpp"
+#include "logical_not.hpp"
 // #include "logical_or.hpp"
 // #include "logical_xor.hpp"
 // #include "maximum.hpp"
 // #include "minimum.hpp"
 // #include "multiply.hpp"
-// #include "negative.hpp"
+#include "negative.hpp"
 // #include "nextafter.hpp"
 // #include "not_equal.hpp"
-// #include "positive.hpp"
+#include "positive.hpp"
 // #include "pow.hpp"
 // #include "proj.hpp"
 // #include "real.hpp"
@@ -135,40 +135,40 @@ void init_elementwise_functions(py::module_ m)
     init_ceil(m);
     init_conj(m);
     // init_copysign(m);
-    // init_cos(m);
-    // init_cosh(m);
+    init_cos(m);
+    init_cosh(m);
     // init_divide(m);
     // init_equal(m);
-    // init_exp(m);
+    init_exp(m);
     // init_exp2(m);
-    // init_expm1(m);
-    // init_floor(m);
+    init_expm1(m);
+    init_floor(m);
     // init_floor_divide(m);
     // init_greater(m);
     // init_greater_equal(m);
     // init_hypot(m);
-    // init_imag(m);
-    // init_isfinite(m);
-    // init_isinf(m);
-    // init_isnan(m);
+    init_imag(m);
+    init_isfinite(m);
+    init_isinf(m);
+    init_isnan(m);
     // init_less(m);
     // init_less_equal(m);
-    // init_log(m);
-    // init_log10(m);
-    // init_log1p(m);
-    // init_log2(m);
+    init_log(m);
+    init_log10(m);
+    init_log1p(m);
+    init_log2(m);
     // init_logaddexp(m);
     // init_logical_and(m);
-    // init_logical_not(m);
+    init_logical_not(m);
     // init_logical_or(m);
     // init_logical_xor(m);
     // init_maximum(m);
     // init_minimum(m);
     // init_multiply(m);
     // init_nextafter(m);
-    // init_negative(m);
+    init_negative(m);
     // init_not_equal(m);
-    // init_positive(m);
+    init_positive(m);
     // init_pow(m);
     // init_proj(m);
     // init_real(m);

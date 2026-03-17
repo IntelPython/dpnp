@@ -777,8 +777,8 @@ array([ 1.000000e+00, -4.371139e-08, -1.000000e+00])
 
 cos = DPNPUnaryFunc(
     "cos",
-    ti._cos_result_type,
-    ti._cos,
+    ti_ext._cos_result_type,
+    ti_ext._cos,
     _COS_DOCSTRING,
     mkl_fn_to_call="_mkl_cos_to_call",
     mkl_impl_fn="_cos",
@@ -841,8 +841,8 @@ array([1.0, 2.5091786, 11.591953])
 
 cosh = DPNPUnaryFunc(
     "cosh",
-    ti._cosh_result_type,
-    ti._cosh,
+    ti_ext._cosh_result_type,
+    ti_ext._cosh,
     _COSH_DOCSTRING,
     mkl_fn_to_call="_mkl_cosh_to_call",
     mkl_impl_fn="_cosh",
@@ -1127,8 +1127,8 @@ array([1.0, 2.718281828, 7.389056099])
 
 exp = DPNPUnaryFunc(
     "exp",
-    ti._exp_result_type,
-    ti._exp,
+    ti_ext._exp_result_type,
+    ti_ext._exp,
     _EXP_DOCSTRING,
     mkl_fn_to_call="_mkl_exp_to_call",
     mkl_impl_fn="_exp",
@@ -1259,8 +1259,8 @@ array(1.000000082740371e-10)
 
 expm1 = DPNPUnaryFunc(
     "expm1",
-    ti._expm1_result_type,
-    ti._expm1,
+    ti_ext._expm1_result_type,
+    ti_ext._expm1,
     _EXPM1_DOCSTRING,
     mkl_fn_to_call="_mkl_expm1_to_call",
     mkl_impl_fn="_expm1",
@@ -1416,8 +1416,8 @@ array([  0.,   1.,   2., -inf])
 
 log = DPNPUnaryFunc(
     "log",
-    ti._log_result_type,
-    ti._log,
+    ti_ext._log_result_type,
+    ti_ext._log,
     _LOG_DOCSTRING,
     mkl_fn_to_call="_mkl_ln_to_call",
     mkl_impl_fn="_ln",
@@ -1495,8 +1495,8 @@ array([-15.,  nan])
 
 log10 = DPNPUnaryFunc(
     "log10",
-    ti._log10_result_type,
-    ti._log10,
+    ti_ext._log10_result_type,
+    ti_ext._log10,
     _LOG10_DOCSTRING,
     mkl_fn_to_call="_mkl_log10_to_call",
     mkl_impl_fn="_log10",
@@ -1580,8 +1580,8 @@ array(0.0)
 
 log1p = DPNPUnaryFunc(
     "log1p",
-    ti._log1p_result_type,
-    ti._log1p,
+    ti_ext._log1p_result_type,
+    ti_ext._log1p,
     _LOG1P_DOCSTRING,
     mkl_fn_to_call="_mkl_log1p_to_call",
     mkl_impl_fn="_log1p",
@@ -1660,8 +1660,8 @@ array([ 0.+2.26618007j,  0.+0.j        ,  1.+0.j        ,  2.+2.26618007j])
 
 log2 = DPNPUnaryFunc(
     "log2",
-    ti._log2_result_type,
-    ti._log2,
+    ti_ext._log2_result_type,
+    ti_ext._log2,
     _LOG2_DOCSTRING,
     mkl_fn_to_call="_mkl_log2_to_call",
     mkl_impl_fn="_log2",

@@ -2057,8 +2057,8 @@ array([-2.0, -2.0, -1.0, 0.0, 1.0, 1.0, 2.0])
 
 floor = DPNPUnaryFunc(
     "floor",
-    ti._floor_result_type,
-    ti._floor,
+    ti_ext._floor_result_type,
+    ti_ext._floor,
     _FLOOR_DOCSTRING,
     mkl_fn_to_call="_mkl_floor_to_call",
     mkl_impl_fn="_floor",
@@ -2941,8 +2941,8 @@ array(1.)
 
 imag = DPNPImag(
     "imag",
-    ti._imag_result_type,
-    ti._imag,
+    ti_ext._imag_result_type,
+    ti_ext._imag,
     _IMAG_DOCSTRING,
 )
 
@@ -3852,8 +3852,8 @@ array([-1.,  1.])
 
 negative = DPNPUnaryFunc(
     "negative",
-    ti._negative_result_type,
-    ti._negative,
+    ti_ext._negative_result_type,
+    ti_ext._negative,
     _NEGATIVE_DOCSTRING,
     acceptance_fn=acceptance_fn_negative,
 )
@@ -3988,8 +3988,8 @@ array([ 1., -1.])
 
 positive = DPNPUnaryFunc(
     "positive",
-    ti._positive_result_type,
-    ti._positive,
+    ti_ext._positive_result_type,
+    ti_ext._positive,
     _POSITIVE_DOCSTRING,
     acceptance_fn=acceptance_fn_positive,
 )
