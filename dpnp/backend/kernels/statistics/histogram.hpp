@@ -76,7 +76,7 @@ public:
 
         auto bounds = edges.get_bounds();
 
-        for (uint32_t i = 0; i < WorkPI; ++i) {
+        for (std::uint32_t i = 0; i < WorkPI; ++i) {
             auto data_idx = id * WorkPI * local_size + i * local_size + lid;
             if (data_idx < size) {
                 auto *d = &in[data_idx * dims];

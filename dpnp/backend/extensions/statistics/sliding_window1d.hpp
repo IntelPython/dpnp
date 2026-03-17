@@ -42,7 +42,7 @@ namespace statistics::sliding_window1d
 {
 using dpctl::tensor::usm_ndarray;
 
-template <typename T, uint32_t Size>
+template <typename T, std::uint32_t Size>
 class _RegistryDataStorage
 {
 public:
@@ -140,7 +140,7 @@ protected:
     ncT data[Size];
 };
 
-template <typename T, uint32_t Size = 1>
+template <typename T, std::uint32_t Size = 1>
 struct RegistryData : public _RegistryDataStorage<T, Size>
 {
     using SizeT = typename _RegistryDataStorage<T, Size>::SizeT;
@@ -332,7 +332,7 @@ struct RegistryData : public _RegistryDataStorage<T, Size>
     T *store(T *const data) { return store(data, true); }
 };
 
-template <typename T, uint32_t Size>
+template <typename T, std::uint32_t Size>
 struct RegistryWindow : public RegistryData<T, Size>
 {
     using SizeT = typename RegistryData<T, Size>::SizeT;
@@ -345,7 +345,7 @@ struct RegistryWindow : public RegistryData<T, Size>
         static_assert(std::is_integral_v<shT>,
                       "shift must be of an integral type");
 
-        uint32_t shift_r = this->size_x() - shift;
+        std::uint32_t shift_r = this->size_x() - shift;
         for (SizeT i = 0; i < Size; ++i) {
             this->data[i] = this->shift_left(i, shift);
             auto border =
@@ -365,7 +365,7 @@ struct RegistryWindow : public RegistryData<T, Size>
     }
 };
 
-template <typename T, typename SizeT = size_t>
+template <typename T, typename SizeT = std::size_t>
 class Span
 {
 public:
@@ -387,13 +387,13 @@ protected:
     const SizeT size_;
 };
 
-template <typename T, typename SizeT = size_t>
+template <typename T, typename SizeT = std::size_t>
 Span<T, SizeT> make_span(T *const data, const SizeT size)
 {
     return Span<T, SizeT>(data, size);
 }
 
-template <typename T, typename SizeT = size_t>
+template <typename T, typename SizeT = std::size_t>
 class PaddedSpan : public Span<T, SizeT>
 {
 public:
@@ -413,14 +413,14 @@ protected:
     const SizeT pad_;
 };
 
-template <typename T, typename SizeT = size_t>
+template <typename T, typename SizeT = std::size_t>
 PaddedSpan<T, SizeT>
     make_padded_span(T *const data, const SizeT size, const SizeT offset)
 {
     return PaddedSpan<T, SizeT>(data, size, offset);
 }
 
-template <uint32_t WorkPI,
+template <std::uint32_t WorkPI,
           typename T,
           typename SizeT,
           typename Op,
@@ -442,7 +442,7 @@ void submit_sliding_window1d(const PaddedSpan<const T, SizeT> &a,
         nd_range, SlidingWindow1dKernel(a, v, op, red, out));
 }
 
-template <uint32_t WorkPI,
+template <std::uint32_t WorkPI,
           typename T,
           typename SizeT,
           typename Op,
@@ -467,6 +467,6 @@ void submit_sliding_window1d_small_kernel(const PaddedSpan<const T, SizeT> &a,
 void validate(const usm_ndarray &a,
               const usm_ndarray &v,
               const usm_ndarray &out,
-              const size_t l_pad,
-              const size_t r_pad);
+              const std::size_t l_pad,
+              const std::size_t r_pad);
 } // namespace statistics::sliding_window1d
