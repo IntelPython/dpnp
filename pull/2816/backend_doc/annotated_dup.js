@@ -126,6 +126,9 @@ var annotated_dup =
         [ "heaviside", null, [
           [ "HeavisideFunctor", "structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html", null ]
         ] ],
+        [ "histogram", null, [
+          [ "HistogramFunctor", "classdpnp_1_1kernels_1_1histogram_1_1_histogram_functor.html", null ]
+        ] ],
         [ "i0", "namespacedpnp_1_1kernels_1_1i0.html", [
           [ "I0Functor", "structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html", null ]
         ] ],
@@ -161,6 +164,10 @@ var annotated_dup =
         [ "sinc", null, [
           [ "SincFunctor", "structdpnp_1_1kernels_1_1sinc_1_1_sinc_functor.html", null ]
         ] ],
+        [ "sliding_window1d", null, [
+          [ "SlidingWindow1dFunctor", "classdpnp_1_1kernels_1_1sliding__window1d_1_1_sliding_window1d_functor.html", null ],
+          [ "SlidingWindow1dSmallFunctor", "classdpnp_1_1kernels_1_1sliding__window1d_1_1_sliding_window1d_small_functor.html", null ]
+        ] ],
         [ "spacing", null, [
           [ "SpacingFunctor", "structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html", null ]
         ] ]
@@ -190,10 +197,9 @@ var annotated_dup =
         [ "CachedData", "structstatistics_1_1histogram_1_1_cached_data.html", null ],
         [ "HistGlobalMemory", "structstatistics_1_1histogram_1_1_hist_global_memory.html", null ],
         [ "HistLocalType", "structstatistics_1_1histogram_1_1_hist_local_type.html", null ],
-        [ "HistLocalType< int64_t >", "structstatistics_1_1histogram_1_1_hist_local_type_3_01int64__t_01_4.html", null ],
-        [ "HistLocalType< uint64_t >", "structstatistics_1_1histogram_1_1_hist_local_type_3_01uint64__t_01_4.html", null ],
+        [ "HistLocalType< std::int64_t >", "structstatistics_1_1histogram_1_1_hist_local_type_3_01std_1_1int64__t_01_4.html", null ],
+        [ "HistLocalType< std::uint64_t >", "structstatistics_1_1histogram_1_1_hist_local_type_3_01std_1_1uint64__t_01_4.html", null ],
         [ "Histogram", "structstatistics_1_1histogram_1_1_histogram.html", null ],
-        [ "histogram_kernel", "classstatistics_1_1histogram_1_1histogram__kernel.html", null ],
         [ "Histogramdd", "structstatistics_1_1histogram_1_1_histogramdd.html", null ],
         [ "HistWithLocalCopies", "structstatistics_1_1histogram_1_1_hist_with_local_copies.html", null ],
         [ "NoWeights", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
@@ -205,8 +211,6 @@ var annotated_dup =
         [ "PaddedSpan", "classstatistics_1_1sliding__window1d_1_1_padded_span.html", null ],
         [ "RegistryData", "structstatistics_1_1sliding__window1d_1_1_registry_data.html", null ],
         [ "RegistryWindow", "structstatistics_1_1sliding__window1d_1_1_registry_window.html", null ],
-        [ "sliding_window1d_kernel", "classstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel.html", null ],
-        [ "sliding_window1d_small_kernel", "classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html", null ],
         [ "SlidingDotProduct1d", "structstatistics_1_1sliding__window1d_1_1_sliding_dot_product1d.html", null ],
         [ "Span", "classstatistics_1_1sliding__window1d_1_1_span.html", null ]
       ] ]
