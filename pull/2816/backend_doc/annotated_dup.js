@@ -66,21 +66,18 @@ var annotated_dup =
           ] ]
         ] ],
         [ "window", null, [
-          [ "kernels", null, [
-            [ "BartlettFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_factory.html", null ],
-            [ "BartlettFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_functor.html", null ],
-            [ "BlackmanFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html", null ],
-            [ "BlackmanFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_functor.html", null ],
-            [ "HammingFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_factory.html", null ],
-            [ "HammingFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html", null ],
-            [ "HanningFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_factory.html", null ],
-            [ "HanningFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_functor.html", null ]
-          ] ]
+          [ "Factory", "structdpnp_1_1extensions_1_1window_1_1_factory.html", null ]
         ] ]
       ] ],
       [ "kernels", null, [
+        [ "bartlett", null, [
+          [ "BartlettFunctor", "classdpnp_1_1kernels_1_1bartlett_1_1_bartlett_functor.html", null ]
+        ] ],
         [ "bitwise_count", null, [
           [ "BitwiseCountFunctor", "structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html", null ]
+        ] ],
+        [ "blackman", null, [
+          [ "BlackmanFunctor", "classdpnp_1_1kernels_1_1blackman_1_1_blackman_functor.html", null ]
         ] ],
         [ "choose", null, [
           [ "strides", null, [
@@ -120,6 +117,12 @@ var annotated_dup =
         [ "gcd", null, [
           [ "GcdFunctor", "structdpnp_1_1kernels_1_1gcd_1_1_gcd_functor.html", null ]
         ] ],
+        [ "hamming", null, [
+          [ "HammingFunctor", "classdpnp_1_1kernels_1_1hamming_1_1_hamming_functor.html", null ]
+        ] ],
+        [ "hanning", null, [
+          [ "HanningFunctor", "classdpnp_1_1kernels_1_1hanning_1_1_hanning_functor.html", null ]
+        ] ],
         [ "heaviside", null, [
           [ "HeavisideFunctor", "structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html", null ]
         ] ],
@@ -132,6 +135,9 @@ var annotated_dup =
         [ "isclose", null, [
           [ "IsCloseContigScalarFunctor", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_contig_scalar_functor.html", null ],
           [ "IsCloseStridedScalarFunctor", "structdpnp_1_1kernels_1_1isclose_1_1_is_close_strided_scalar_functor.html", null ]
+        ] ],
+        [ "kaiser", null, [
+          [ "KaiserFunctor", "classdpnp_1_1kernels_1_1kaiser_1_1_kaiser_functor.html", null ]
         ] ],
         [ "lcm", null, [
           [ "LcmFunctor", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ]
