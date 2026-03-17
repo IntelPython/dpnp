@@ -35,22 +35,18 @@
 
 #include <sycl/sycl.hpp>
 
+#include "dpctl4pybind11.hpp"
+
 #include "ext/common.hpp"
 #include "kernels/statistics/histogram.hpp"
 
-namespace dpctl::tensor
+namespace statistics::histogram
 {
-class usm_ndarray;
-}
-
 using dpctl::tensor::usm_ndarray;
 
 using ext::common::AtomicOp;
 using ext::common::IsNan;
 using ext::common::Less;
-
-namespace statistics::histogram
-{
 
 template <typename T, int Dims>
 struct CachedData
