@@ -30,7 +30,7 @@
 ///
 /// \file
 /// This file defines kernels for elementwise evaluation of SQRT(x)
-/// function that compute a square root.
+/// function that computes a square root.
 //===---------------------------------------------------------------------===//
 
 #pragma once
