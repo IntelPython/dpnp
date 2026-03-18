@@ -88,8 +88,8 @@ repos:
         additional_dependencies:
             - flake8-docstrings==1.7.0
             - flake8-bugbear==24.12.12
--   repo: https://github.com/pocc/pre-commit-hooks
-    rev: v1.3.5
+-   repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v22.1.0
     hooks:
     -   id: clang-format
         args: ["-i"]
@@ -114,7 +114,8 @@ repos:
             "-sn", # Don't display the score
             "--disable=import-error",
             "--disable=redefined-builtin",
-            "--disable=unused-wildcard-import"
+            "--disable=unused-wildcard-import",
+            "--disable=c-extension-no-member"
             ]
         files: '^dpnp/(dpnp_iface.*|fft|linalg|scipy|dpnp_array)'
 -   repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
