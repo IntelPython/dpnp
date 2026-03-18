@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@3155a141048f8f89c06b4cdae32e7853e97536bc # 0.13.0
+        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
         with:
           access_token: ${{ github.token }}
 
@@ -224,7 +224,7 @@ jobs:
         if: env.GH_EVENT_OPEN_PR_UPSTREAM == 'true'
         env:
           PR_NUM: ${{ github.event.number }}
-        uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2.8.2
+        uses: mshick/add-pr-comment@ffd016c7e151d97d69d21a843022fd4cd5b96fe5 # v3.9.0.8.3.9.0
         with:
           message-id: url_to_docs
           message: |
@@ -268,7 +268,7 @@ jobs:
           git push tokened_docs gh-pages
 
       - name: Modify the comment with URL to official documentation
-        uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2.8.2
+        uses: mshick/add-pr-comment@ffd016c7e151d97d69d21a843022fd4cd5b96fe5 # v3.9.0.8.3.9.0
         with:
           message-id: url_to_docs
           find: |

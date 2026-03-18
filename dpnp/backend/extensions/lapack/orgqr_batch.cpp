@@ -100,15 +100,15 @@ static sycl::event orgqr_batch_impl(sycl::queue &exec_q,
 
         orgqr_batch_event = mkl_lapack::orgqr_batch(
             exec_q,
-            m, // The number of rows in each matrix in the batch; (0 ≤ m).
-               // It must be a non-negative integer.
-            n, // The number of columns in each matrix in the batch; (0 ≤ n).
-               // It must be a non-negative integer.
-            k, // The number of elementary reflectors
-               // whose product defines the matrices Qi; (0 ≤ k ≤ n).
-            a, // Pointer to the batch of matrices, each of size (m x n).
-            lda,      // The leading dimension of each matrix in the batch.
-                      // For row major layout, lda ≥ max(1, m).
+            m,   // The number of rows in each matrix in the batch; (0 ≤ m).
+                 // It must be a non-negative integer.
+            n,   // The number of columns in each matrix in the batch; (0 ≤ n).
+                 // It must be a non-negative integer.
+            k,   // The number of elementary reflectors
+                 // whose product defines the matrices Qi; (0 ≤ k ≤ n).
+            a,   // Pointer to the batch of matrices, each of size (m x n).
+            lda, // The leading dimension of each matrix in the batch.
+                 // For row major layout, lda ≥ max(1, m).
             stride_a, // Stride between consecutive matrices in the batch.
             tau, // Pointer to the array of scalar factors of the elementary
                  // reflectors for each matrix in the batch.

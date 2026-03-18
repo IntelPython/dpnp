@@ -128,8 +128,7 @@ public:
     {
         if constexpr (both_types_are_same<
                           dpnp_remove_cvref_t<_Xp>, dpnp_remove_cvref_t<_Yp>,
-                          std::complex<float>, std::complex<double>>)
-        {
+                          std::complex<float>, std::complex<double>>) {
             bool ret = false;
             _Xp a = std::forward<_Xp>(__x);
             _Yp b = std::forward<_Yp>(__y);
