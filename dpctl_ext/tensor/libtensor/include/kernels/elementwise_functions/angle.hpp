@@ -32,6 +32,7 @@
 /// This file defines kernels for elementwise evaluation of ANGLE(x) function.
 //===---------------------------------------------------------------------===//
 
+#pragma once
 #include <complex>
 #include <cstddef>
 #include <cstdint>

@@ -33,6 +33,7 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
+#include <cmath>
 #include <complex>
 #include <cstddef>
 #include <cstdint>

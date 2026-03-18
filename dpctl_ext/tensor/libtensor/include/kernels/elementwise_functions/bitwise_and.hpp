@@ -54,7 +54,6 @@ namespace dpctl::tensor::kernels::bitwise_and
 
 using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace tu_ns = dpctl::tensor::type_utils;
 
 template <typename argT1, typename argT2, typename resT>
 struct BitwiseAndFunctor
@@ -67,8 +66,6 @@ struct BitwiseAndFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        using tu_ns::convert_impl;
-
         if constexpr (std::is_same_v<resT, bool>) {
             return in1 && in2;
         }
@@ -296,8 +293,6 @@ struct BitwiseAndInplaceFunctor
 
     void operator()(resT &res, const argT &in) const
     {
-        using tu_ns::convert_impl;
-
         if constexpr (std::is_same_v<resT, bool>) {
             res = res && in;
         }

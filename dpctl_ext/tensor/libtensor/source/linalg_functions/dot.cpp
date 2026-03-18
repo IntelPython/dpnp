@@ -32,10 +32,13 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <exception>
+#include <iterator>
 #include <stdexcept>
+#include <string>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>

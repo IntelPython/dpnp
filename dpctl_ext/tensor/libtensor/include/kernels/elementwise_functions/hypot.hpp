@@ -43,7 +43,6 @@
 
 #include "vec_size_util.hpp"
 
-#include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
