@@ -37,7 +37,7 @@ jobs:
       actions: write
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    timeout-minutes: 80
 
     defaults:
       run:
