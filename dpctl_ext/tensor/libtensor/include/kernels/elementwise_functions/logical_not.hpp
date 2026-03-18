@@ -29,12 +29,13 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of ISNAN(x)
-/// function that tests whether a tensor element is a NaN.
+/// This file defines kernels for elementwise evaluation of LOGICAL_NOT(x)
+/// function.
 //===---------------------------------------------------------------------===//
 
 #pragma once
 #include <cstddef>
+#include <cstdint>
 #include <type_traits>
 #include <vector>
 

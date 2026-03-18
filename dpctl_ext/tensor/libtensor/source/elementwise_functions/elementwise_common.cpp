@@ -158,11 +158,7 @@ void init_elementwise_functions(py::module_ m)
     init_log1p(m);
     init_log2(m);
     init_logaddexp(m);
-    // init_logical_and(m);
     init_logical_not(m);
-    // init_logical_or(m);
-    // init_logical_xor(m);
-    // init_maximum(m);
     // init_minimum(m);
     // init_multiply(m);
     // init_nextafter(m);

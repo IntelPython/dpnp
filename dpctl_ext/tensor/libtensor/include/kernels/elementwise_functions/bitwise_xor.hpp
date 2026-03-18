@@ -54,7 +54,6 @@ namespace dpctl::tensor::kernels::bitwise_xor
 
 using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace tu_ns = dpctl::tensor::type_utils;
 
 template <typename argT1, typename argT2, typename resT>
 struct BitwiseXorFunctor
@@ -297,8 +296,6 @@ struct BitwiseXorInplaceFunctor
 
     void operator()(resT &res, const argT &in) const
     {
-        using tu_ns::convert_impl;
-
         if constexpr (std::is_same_v<resT, bool>) {
             res = (res != in);
         }
