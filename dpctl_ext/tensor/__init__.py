@@ -107,6 +107,12 @@ from ._indexing_functions import (
     take,
     take_along_axis,
 )
+from ._linear_algebra_functions import (
+    matmul,
+    matrix_transpose,
+    tensordot,
+    vecdot,
+)
 from ._manipulation_functions import (
     broadcast_arrays,
     broadcast_to,
@@ -216,6 +222,8 @@ __all__ = [
     "min",
     "moveaxis",
     "permute_dims",
+    "matmul",
+    "matrix_transpose",
     "negative",
     "nonzero",
     "ones",
@@ -251,6 +259,7 @@ __all__ = [
     "take_along_axis",
     "tan",
     "tanh",
+    "tensordot",
     "tile",
     "top_k",
     "to_numpy",
@@ -262,6 +271,7 @@ __all__ = [
     "unique_inverse",
     "unique_values",
     "unstack",
+    "vecdot",
     "where",
     "zeros",
     "zeros_like",
