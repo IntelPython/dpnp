@@ -54,6 +54,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "kernels/elementwise_functions/common.hpp"
