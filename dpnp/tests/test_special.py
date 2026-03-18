@@ -106,6 +106,9 @@ class TestConsistency:
             atol=self.tol,
         )
 
+    @pytest.mark.usefixtures(
+        "suppress_overflow_encountered_in_cast_numpy_warnings"
+    )
     def test_erfcx(self, inverse):
         self._check_variant_func(
             inverse,
