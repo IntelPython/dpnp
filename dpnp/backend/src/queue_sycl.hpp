@@ -30,10 +30,10 @@
 #ifndef QUEUE_SYCL_H // Cython compatibility
 #define QUEUE_SYCL_H
 
-//#pragma clang diagnostic push
-//#pragma clang diagnostic ignored "-Wpass-failed"
+// #pragma clang diagnostic push
+// #pragma clang diagnostic ignored "-Wpass-failed"
 #include <sycl/sycl.hpp>
-//#pragma clang diagnostic pop
+// #pragma clang diagnostic pop
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -115,8 +115,8 @@ private:
                      ? sycl::property_list{sycl::property::queue::
                                                enable_profiling()}
                      : sycl::property_list{}},
-          rng_mt19937_engine_{queue_, default_seed}, rng_mcg59_engine_{
-                                                         queue_, default_seed}
+          rng_mt19937_engine_{queue_, default_seed},
+          rng_mcg59_engine_{queue_, default_seed}
     {
     }
 

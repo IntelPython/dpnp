@@ -161,8 +161,8 @@ struct HeevdBatchContigFactory
 {
     fnT get()
     {
-        if constexpr (types::HeevdTypePairSupportFactory<T, RealT>::is_defined)
-        {
+        if constexpr (types::HeevdTypePairSupportFactory<T,
+                                                         RealT>::is_defined) {
             return heevd_batch_impl<T, RealT>;
         }
         else {

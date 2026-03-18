@@ -99,8 +99,7 @@ using SupportedDTypeList2 = std::vector<DTypePair>;
 
 template <typename FnT,
           typename SupportedTypes,
-          template <typename>
-          typename Func>
+          template <typename> typename Func>
 struct TableBuilder
 {
     template <typename _FnT, typename T>
@@ -125,8 +124,7 @@ struct TableBuilder
 
 template <typename FnT,
           typename SupportedTypes,
-          template <typename, typename>
-          typename Func>
+          template <typename, typename> typename Func>
 struct TableBuilder2
 {
     template <typename _FnT, typename T1, typename T2>
@@ -232,8 +230,7 @@ public:
     }
 
     template <typename SupportedTypes,
-              template <typename, typename>
-              typename Func>
+              template <typename, typename> typename Func>
     void populate_dispatch_table()
     {
         using TBulder = typename TableBuilder2<FnT, SupportedTypes, Func>::type;

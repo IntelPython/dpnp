@@ -15,7 +15,9 @@
 
     // List of branches to benchmark. If not provided, defaults to "master"
     // (for git) or "tip" (for mercurial).
-    "branches": ["HEAD"],
+    "branches": [
+        "HEAD"
+    ],
 
     // The DVCS being used.  If not set, it will be automatically
     // determined from "repo" by looking at the protocol in the URL
@@ -35,7 +37,9 @@
 
     // The Pythons you'd like to test against.  If not provided, defaults
     // to the current version of Python used to run `asv`.
-    "pythons": ["3.7"],
+    "pythons": [
+        "3.7"
+    ],
 
     // The matrix of dependencies to test.  Each key is the name of a
     // package (in PyPI) and the values are version numbers.  An empty
@@ -52,7 +56,6 @@
     // The directory (relative to the current directory) to cache the Python
     // environments in.  If not provided, defaults to "env"
     "env_dir": "env",
-
 
     // The directory (relative to the current directory) that raw benchmark
     // results are stored in.  If not provided, defaults to "results".
@@ -79,7 +82,8 @@
     // skipped for the matching benchmark.
     //
     // "regressions_first_commits": {
-    //    "some_benchmark": "352cdf",  // Consider regressions only after this commit
+    //    "some_benchmark": "352cdf",  // Consider regressions only after this
+    //    commit
     //    "another_benchmark": null,   // Skip regression detection altogether
     // }
 }

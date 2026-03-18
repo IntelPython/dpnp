@@ -261,8 +261,7 @@ sycl::event nan_to_num_contig_impl(sycl::queue &exec_q,
         using dpctl::tensor::kernels::alignment_utils::is_aligned;
         using dpctl::tensor::kernels::alignment_utils::required_alignment;
         if (is_aligned<required_alignment>(in_tp) &&
-            is_aligned<required_alignment>(out_tp))
-        {
+            is_aligned<required_alignment>(out_tp)) {
             constexpr bool enable_sg_loadstore = true;
             using NanToNumFunc = NanToNumContigFunctor<T, scT, vec_sz, n_vecs,
                                                        enable_sg_loadstore>;
