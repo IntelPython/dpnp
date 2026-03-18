@@ -35,7 +35,7 @@
 #pragma once
 
 #include <algorithm>
-#include <array
+#include <array>
 #include <cassert>
 #include <complex>
 #include <cstddef>

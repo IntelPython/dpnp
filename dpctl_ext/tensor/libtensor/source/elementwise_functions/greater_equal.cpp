@@ -1,0 +1,146 @@
+//*****************************************************************************
+// Copyright (c) 2026, Intel Corporation
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// - Neither the name of the copyright holder nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+// THE POSSIBILITY OF SUCH DAMAGE.
+//*****************************************************************************
+//
+//===---------------------------------------------------------------------===//
+///
+/// \file
+/// This file defines functions of dpctl.tensor._tensor_elementwise_impl
+/// extension, specifically functions for elementwise operations.
+//===---------------------------------------------------------------------===//
+
+#include <vector>
+
+#include <sycl/sycl.hpp>
+
+#include "dpnp4pybind11.hpp"
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+#include "elementwise_functions.hpp"
+#include "greater_equal.hpp"
+#include "utils/type_dispatch.hpp"
+
+#include "kernels/elementwise_functions/common.hpp"
+#include "kernels/elementwise_functions/greater_equal.hpp"
+
+namespace dpctl::tensor::py_internal
+{
+
+namespace py = pybind11;
+namespace td_ns = dpctl::tensor::type_dispatch;
+
+namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+using ew_cmn_ns::binary_contig_impl_fn_ptr_t;
+using ew_cmn_ns::binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_strided_impl_fn_ptr_t;
+
+// B12: ===== GREATER_EQUAL (x1, x2)
+namespace impl
+{
+namespace greater_equal_fn_ns = dpctl::tensor::kernels::greater_equal;
+
+static binary_contig_impl_fn_ptr_t
+    greater_equal_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int greater_equal_output_id_table[td_ns::num_types][td_ns::num_types];
+
+static binary_strided_impl_fn_ptr_t
+    greater_equal_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+void populate_greater_equal_dispatch_tables(void)
+{
+    using namespace td_ns;
+    namespace fn_ns = greater_equal_fn_ns;
+
+    // which input types are supported, and what is the type of the result
+    using fn_ns::GreaterEqualTypeMapFactory;
+    DispatchTableBuilder<int, GreaterEqualTypeMapFactory, num_types> dtb1;
+    dtb1.populate_dispatch_table(greater_equal_output_id_table);
+
+    // function pointers for operation on general strided arrays
+    using fn_ns::GreaterEqualStridedFactory;
+    DispatchTableBuilder<binary_strided_impl_fn_ptr_t,
+                         GreaterEqualStridedFactory, num_types>
+        dtb2;
+    dtb2.populate_dispatch_table(greater_equal_strided_dispatch_table);
+
+    // function pointers for operation on contiguous inputs and output
+    using fn_ns::GreaterEqualContigFactory;
+    DispatchTableBuilder<binary_contig_impl_fn_ptr_t, GreaterEqualContigFactory,
+                         num_types>
+        dtb3;
+    dtb3.populate_dispatch_table(greater_equal_contig_dispatch_table);
+};
+
+} // namespace impl
+
+void init_greater_equal(py::module_ m)
+{
+    using arrayT = dpctl::tensor::usm_ndarray;
+    using event_vecT = std::vector<sycl::event>;
+    {
+        impl::populate_greater_equal_dispatch_tables();
+        using impl::greater_equal_contig_dispatch_table;
+        using impl::greater_equal_output_id_table;
+        using impl::greater_equal_strided_dispatch_table;
+
+        auto greater_equal_pyapi = [&](const arrayT &src1, const arrayT &src2,
+                                       const arrayT &dst, sycl::queue &exec_q,
+                                       const event_vecT &depends = {}) {
+            return py_binary_ufunc(
+                src1, src2, dst, exec_q, depends, greater_equal_output_id_table,
+                // function pointers to handle operation on contiguous arrays
+                // (pointers may be nullptr)
+                greater_equal_contig_dispatch_table,
+                // function pointers to handle operation on strided arrays (most
+                // general case)
+                greater_equal_strided_dispatch_table,
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of c-contig matrix and
+                // c-contig row with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+        };
+        auto greater_equal_result_type_pyapi = [&](const py::dtype &dtype1,
+                                                   const py::dtype &dtype2) {
+            return py_binary_ufunc_result_type(dtype1, dtype2,
+                                               greater_equal_output_id_table);
+        };
+        m.def("_greater_equal", greater_equal_pyapi, "", py::arg("src1"),
+              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+        m.def("_greater_equal_result_type", greater_equal_result_type_pyapi,
+              "");
+    }
+}
+
+} // namespace dpctl::tensor::py_internal

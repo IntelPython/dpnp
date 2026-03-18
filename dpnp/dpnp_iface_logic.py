@@ -661,8 +661,8 @@ array([ True,  True, False])
 
 equal = DPNPBinaryFunc(
     "equal",
-    ti._equal_result_type,
-    ti._equal,
+    ti_ext._equal_result_type,
+    ti_ext._equal,
     _EQUAL_DOCSTRING,
 )
 
@@ -737,8 +737,8 @@ array([ True, False])
 
 greater = DPNPBinaryFunc(
     "greater",
-    ti._greater_result_type,
-    ti._greater,
+    ti_ext._greater_result_type,
+    ti_ext._greater,
     _GREATER_DOCSTRING,
 )
 
@@ -814,8 +814,8 @@ array([ True,  True, False])
 
 greater_equal = DPNPBinaryFunc(
     "greater_equal",
-    ti._greater_equal_result_type,
-    ti._greater_equal,
+    ti_ext._greater_equal_result_type,
+    ti_ext._greater_equal,
     _GREATER_EQUAL_DOCSTRING,
 )
 
@@ -1750,8 +1750,8 @@ array([ True, False])
 
 less = DPNPBinaryFunc(
     "less",
-    ti._less_result_type,
-    ti._less,
+    ti_ext._less_result_type,
+    ti_ext._less,
     _LESS_DOCSTRING,
 )
 
@@ -1826,8 +1826,8 @@ array([False,  True,  True])
 
 less_equal = DPNPBinaryFunc(
     "less_equal",
-    ti._less_equal_result_type,
-    ti._less_equal,
+    ti_ext._less_equal_result_type,
+    ti_ext._less_equal,
     _LESS_EQUAL_DOCSTRING,
 )
 

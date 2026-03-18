@@ -1558,12 +1558,12 @@ array([[0. , 0.5, 1. ],
 
 divide = DPNPBinaryFunc(
     "divide",
-    ti._divide_result_type,
-    ti._divide,
+    ti_ext._divide_result_type,
+    ti_ext._divide,
     _DIVIDE_DOCSTRING,
     mkl_fn_to_call="_mkl_div_to_call",
     mkl_impl_fn="_div",
-    binary_inplace_fn=ti._divide_inplace,
+    binary_inplace_fn=ti_ext._divide_inplace,
     acceptance_fn=dtu._acceptance_fn_divide,
 )
 
@@ -2139,10 +2139,10 @@ array([0., 0., 1., 1.])
 
 floor_divide = DPNPBinaryFunc(
     "floor_divide",
-    ti._floor_divide_result_type,
-    ti._floor_divide,
+    ti_ext._floor_divide_result_type,
+    ti_ext._floor_divide,
     _FLOOR_DIVIDE_DOCSTRING,
-    binary_inplace_fn=ti._floor_divide_inplace,
+    binary_inplace_fn=ti_ext._floor_divide_inplace,
 )
 
 

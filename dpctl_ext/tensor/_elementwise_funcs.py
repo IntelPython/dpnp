@@ -32,8 +32,10 @@ import dpctl_ext.tensor._tensor_elementwise_impl as ti
 
 from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
 from ._type_utils import (
+    _acceptance_fn_divide,
     _acceptance_fn_negative,
     _acceptance_fn_reciprocal,
+    _resolve_weak_types_all_py_ints,
 )
 
 # U01: ==== ABS    (x)
@@ -637,6 +639,78 @@ cosh = UnaryElementwiseFunc(
 )
 del _cosh_docstring
 
+# B08: ==== DIVIDE        (x1, x2)
+_divide_docstring_ = r"""
+divide(x1, x2, /, \*, out=None, order='K')
+
+Calculates the ratio for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a floating-point data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the result of element-wise division. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+divide = BinaryElementwiseFunc(
+    "divide",
+    ti._divide_result_type,
+    ti._divide,
+    _divide_docstring_,
+    binary_inplace_fn=ti._divide_inplace,
+    acceptance_fn=_acceptance_fn_divide,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
+)
+del _divide_docstring_
+
+# B09: ==== EQUAL         (x1, x2)
+_equal_docstring_ = r"""
+equal(x1, x2, /, \*, out=None, order='K')
+
+Calculates equality test results for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the result of element-wise equality comparison.
+        The returned array has a data type of `bool`.
+"""
+
+equal = BinaryElementwiseFunc(
+    "equal",
+    ti._equal_result_type,
+    ti._equal,
+    _equal_docstring_,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
+)
+del _equal_docstring_
+
 # U13: ==== EXP           (x)
 _exp_docstring = r"""
 exp(x, /, \*, out=None, order='K')
@@ -663,6 +737,114 @@ Returns:
 
 exp = UnaryElementwiseFunc("exp", ti._exp_result_type, ti._exp, _exp_docstring)
 del _exp_docstring
+
+# B10: ==== FLOOR_DIVIDE  (x1, x2)
+_floor_divide_docstring_ = r"""
+floor_divide(x1, x2, /, \*, out=None, order='K')
+
+Calculates the ratio for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2` to the greatest
+integer-value number that is not greater than the division result.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the result of element-wise floor of division.
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
+"""
+
+floor_divide = BinaryElementwiseFunc(
+    "floor_divide",
+    ti._floor_divide_result_type,
+    ti._floor_divide,
+    _floor_divide_docstring_,
+    binary_inplace_fn=ti._floor_divide_inplace,
+)
+del _floor_divide_docstring_
+
+# B11: ==== GREATER       (x1, x2)
+_greater_docstring_ = r"""
+greater(x1, x2, /, \*, out=None, order='K')
+
+Computes the greater-than test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the result of element-wise greater-than comparison.
+        The returned array has a data type of `bool`.
+"""
+
+greater = BinaryElementwiseFunc(
+    "greater",
+    ti._greater_result_type,
+    ti._greater,
+    _greater_docstring_,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
+)
+del _greater_docstring_
+
+# B12: ==== GREATER_EQUAL (x1, x2)
+_greater_equal_docstring_ = r"""
+greater_equal(x1, x2, /, \*, out=None, order='K')
+
+Computes the greater-than or equal-to test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the result of element-wise greater-than or equal-to
+        comparison.
+        The returned array has a data type of `bool`.
+"""
+
+greater_equal = BinaryElementwiseFunc(
+    "greater_equal",
+    ti._greater_equal_result_type,
+    ti._greater_equal,
+    _greater_equal_docstring_,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
+)
+del _greater_equal_docstring_
 
 # U14: ==== EXPM1         (x)
 _expm1_docstring = r"""
@@ -839,6 +1021,77 @@ isnan = UnaryElementwiseFunc(
 )
 del _isnan_docstring_
 
+# B13: ==== LESS        (x1, x2)
+_less_docstring_ = r"""
+less(x1, x2, /, \*, out=None, order='K')
+
+Computes the less-than test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the result of element-wise less-than comparison.
+        The returned array has a data type of `bool`.
+"""
+
+less = BinaryElementwiseFunc(
+    "less",
+    ti._less_result_type,
+    ti._less,
+    _less_docstring_,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
+)
+del _less_docstring_
+
+
+# B14: ==== LESS_EQUAL  (x1, x2)
+_less_equal_docstring_ = r"""
+less_equal(x1, x2, /, \*, out=None, order='K')
+
+Computes the less-than or equal-to test results for each element `x1_i` of
+the input array `x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the result of element-wise less-than or equal-to
+        comparison. The returned array has a data type of `bool`.
+"""
+
+less_equal = BinaryElementwiseFunc(
+    "less_equal",
+    ti._less_equal_result_type,
+    ti._less_equal,
+    _less_equal_docstring_,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
+)
+del _less_equal_docstring_
+
 # U20: ==== LOG         (x)
 _log_docstring = r"""
 log(x, /, \*, out=None, order='K')
@@ -952,6 +1205,43 @@ log10 = UnaryElementwiseFunc(
     "log10", ti._log10_result_type, ti._log10, _log10_docstring_
 )
 del _log10_docstring_
+
+# B15: ==== LOGADDEXP   (x1, x2)
+_logaddexp_docstring_ = r"""
+logaddexp(x1, x2, /, \*, out=None, order='K')
+
+Calculates the natural logarithm of the sum of exponentials for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the input
+array `x2`.
+
+This function calculates `log(exp(x1) + exp(x2))` more accurately for small
+values of `x`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued floating-point data
+        type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued floating-point
+        data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+logaddexp = BinaryElementwiseFunc(
+    "logaddexp", ti._logaddexp_result_type, ti._logaddexp, _logaddexp_docstring_
+)
+del _logaddexp_docstring_
 
 # U24: ==== LOGICAL_NOT (x)
 _logical_not_docstring = r"""
@@ -1328,6 +1618,39 @@ trunc = UnaryElementwiseFunc(
     "trunc", ti._trunc_result_type, ti._trunc, _trunc_docstring
 )
 del _trunc_docstring
+
+# B24: ==== HYPOT        (x1, x2)
+_hypot_docstring_ = r"""
+hypot(x1, x2, /, \*, out=None, order='K')
+
+Computes the square root of the sum of squares for each element `x1_i` of the
+input array `x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued floating-point data
+        type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued floating-point
+        data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise hypotenuse. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+hypot = BinaryElementwiseFunc(
+    "hypot", ti._hypot_result_type, ti._hypot, _hypot_docstring_
+)
+del _hypot_docstring_
 
 # U37: ==== CBRT        (x)
 _cbrt_docstring_ = r"""
