@@ -35,11 +35,14 @@
 #pragma once
 
 #include <algorithm>
+#include <array
+#include <cassert>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>

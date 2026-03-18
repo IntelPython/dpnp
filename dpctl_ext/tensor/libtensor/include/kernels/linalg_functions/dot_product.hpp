@@ -35,6 +35,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <sycl/sycl.hpp>
 #include <type_traits>
