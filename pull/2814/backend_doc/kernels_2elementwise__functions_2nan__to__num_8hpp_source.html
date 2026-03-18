@@ -367,31 +367,30 @@ $(function(){initNavTree('kernels_2elementwise__functions_2nan__to__num_8hpp_sou
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        <span class="keyword">using </span>dpctl::tensor::kernels::alignment_utils::is_aligned;</div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <span class="keyword">using </span>dpctl::tensor::kernels::alignment_utils::required_alignment;</div>
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        <span class="keywordflow">if</span> (is_aligned&lt;required_alignment&gt;(in_tp) &amp;&amp;</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            is_aligned&lt;required_alignment&gt;(out_tp))</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        {</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> enable_sg_loadstore = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            <span class="keyword">using </span>NanToNumFunc = NanToNumContigFunctor&lt;T, scT, vec_sz, n_vecs,</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>                                                       enable_sg_loadstore&gt;;</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>            cgh.parallel_for&lt;NanToNumFunc&gt;(</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                sycl::nd_range&lt;1&gt;(gws_range, lws_range),</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>                NanToNumFunc(in_tp, out_tp, nelems, nan, posinf, neginf));</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        }</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> disable_sg_loadstore = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            <span class="keyword">using </span>NanToNumFunc = NanToNumContigFunctor&lt;T, scT, vec_sz, n_vecs,</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>                                                       disable_sg_loadstore&gt;;</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>            cgh.parallel_for&lt;NanToNumFunc&gt;(</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                sycl::nd_range&lt;1&gt;(gws_range, lws_range),</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>                NanToNumFunc(in_tp, out_tp, nelems, nan, posinf, neginf));</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        }</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    });</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span> </div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    <span class="keywordflow">return</span> comp_ev;</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>}</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span> </div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>} <span class="comment">// namespace dpnp::kernels::nan_to_num</span></div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            is_aligned&lt;required_alignment&gt;(out_tp)) {</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> enable_sg_loadstore = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>            <span class="keyword">using </span>NanToNumFunc = NanToNumContigFunctor&lt;T, scT, vec_sz, n_vecs,</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                                                       enable_sg_loadstore&gt;;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            cgh.parallel_for&lt;NanToNumFunc&gt;(</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>                sycl::nd_range&lt;1&gt;(gws_range, lws_range),</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                NanToNumFunc(in_tp, out_tp, nelems, nan, posinf, neginf));</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        }</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>            <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> disable_sg_loadstore = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            <span class="keyword">using </span>NanToNumFunc = NanToNumContigFunctor&lt;T, scT, vec_sz, n_vecs,</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>                                                       disable_sg_loadstore&gt;;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>            cgh.parallel_for&lt;NanToNumFunc&gt;(</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                sycl::nd_range&lt;1&gt;(gws_range, lws_range),</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                NanToNumFunc(in_tp, out_tp, nelems, nan, posinf, neginf));</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        }</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    });</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordflow">return</span> comp_ev;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>}</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>} <span class="comment">// namespace dpnp::kernels::nan_to_num</span></div>
 <div class="ttc" id="astructdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor_html"><div class="ttname"><a href="structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html">dpnp::kernels::nan_to_num::NanToNumContigFunctor</a></div><div class="ttdef"><b>Definition</b> <a href="#l00104">nan_to_num.hpp:105</a></div></div>
 <div class="ttc" id="astructdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor_html"><div class="ttname"><a href="structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor.html">dpnp::kernels::nan_to_num::NanToNumFunctor</a></div><div class="ttdef"><b>Definition</b> <a href="#l00056">nan_to_num.hpp:57</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
