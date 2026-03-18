@@ -33,6 +33,7 @@ import dpctl_ext.tensor._tensor_elementwise_impl as ti
 from ._elementwise_common import UnaryElementwiseFunc
 from ._type_utils import (
     _acceptance_fn_negative,
+    _acceptance_fn_reciprocal,
 )
 
 # U01: ==== ABS    (x)
@@ -781,6 +782,473 @@ positive = UnaryElementwiseFunc(
     "positive", ti._positive_result_type, ti._positive, _positive_docstring_
 )
 del _positive_docstring_
+
+# U27: ==== REAL        (x)
+_real_docstring = r"""
+real(x, /, \*, out=None, order='K')
+
+Computes real part of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise real component of input.
+        If the input is a real-valued data type, the returned array has
+        the same data type. If the input is a complex floating-point
+        data type, the returned array has a floating-point data type
+        with the same floating-point precision as complex input.
+"""
+
+real = UnaryElementwiseFunc(
+    "real", ti._real_result_type, ti._real, _real_docstring
+)
+del _real_docstring
+
+# U28: ==== ROUND       (x)
+_round_docstring = r"""
+round(x, /, \*, out=None, order='K')
+
+Rounds each element `x_i` of the input array `x` to
+the nearest integer-valued number.
+
+When two integers are equally close to `x_i`, the result is the nearest even
+integer to `x_i`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise rounded values.
+"""
+
+round = UnaryElementwiseFunc(
+    "round", ti._round_result_type, ti._round, _round_docstring
+)
+del _round_docstring
+
+# U29: ==== SIGN        (x)
+_sign_docstring = r"""
+sign(x, /, \*, out=None, order='K')
+
+Computes an indication of the sign of each element `x_i` of input array `x`
+using the signum function.
+
+The signum function returns `-1` if `x_i` is less than `0`,
+`0` if `x_i` is equal to `0`, and `1` if `x_i` is greater than `0`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a numeric data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise result of the signum function. The
+        data type of the returned array is determined by the Type Promotion
+        Rules.
+"""
+
+sign = UnaryElementwiseFunc(
+    "sign", ti._sign_result_type, ti._sign, _sign_docstring
+)
+del _sign_docstring
+
+# U30: ==== SIN         (x)
+_sin_docstring = r"""
+sin(x, /, \*, out=None, order='K')
+
+Computes sine for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a real-valued floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise sine. The data type of the
+        returned array is determined by the Type Promotion Rules.
+"""
+
+sin = UnaryElementwiseFunc("sin", ti._sin_result_type, ti._sin, _sin_docstring)
+del _sin_docstring
+
+# U31: ==== SINH        (x)
+_sinh_docstring = r"""
+sinh(x, /, \*, out=None, order='K')
+
+Computes hyperbolic sine for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise hyperbolic sine. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+sinh = UnaryElementwiseFunc(
+    "sinh", ti._sinh_result_type, ti._sinh, _sinh_docstring
+)
+del _sinh_docstring
+
+# U32: ==== SQUARE      (x)
+_square_docstring_ = r"""
+square(x, /, \*, out=None, order='K')
+
+Squares each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise squares of `x`. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+
+square = UnaryElementwiseFunc(
+    "square", ti._square_result_type, ti._square, _square_docstring_
+)
+del _square_docstring_
+
+# U33: ==== SQRT        (x)
+_sqrt_docstring_ = r"""
+sqrt(x, /, \*, out=None, order='K')
+
+Computes the positive square-root for each element `x_i` of input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise positive square-roots of `x`. The
+        data type of the returned array is determined by the Type Promotion
+        Rules.
+"""
+
+sqrt = UnaryElementwiseFunc(
+    "sqrt", ti._sqrt_result_type, ti._sqrt, _sqrt_docstring_
+)
+del _sqrt_docstring_
+
+# U34: ==== TAN         (x)
+_tan_docstring = r"""
+tan(x, /, \*, out=None, order='K')
+
+Computes tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise tangent. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+tan = UnaryElementwiseFunc("tan", ti._tan_result_type, ti._tan, _tan_docstring)
+del _tan_docstring
+
+# U35: ==== TANH        (x)
+_tanh_docstring = r"""
+tanh(x, /, \*, out=None, order='K')
+
+Computes hyperbolic tangent for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise hyperbolic tangent. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+tanh = UnaryElementwiseFunc(
+    "tanh", ti._tanh_result_type, ti._tanh, _tanh_docstring
+)
+del _tanh_docstring
+
+# U36: ==== TRUNC       (x)
+_trunc_docstring = r"""
+trunc(x, /, \*, out=None, order='K')
+
+Returns the truncated value for each element `x_i` for input array `x`.
+
+The truncated value of the scalar `x` is the nearest integer i which is
+closer to zero than `x` is. In short, the fractional part of the
+signed number `x` is discarded.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a boolean or real-valued data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the result of element-wise division. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+trunc = UnaryElementwiseFunc(
+    "trunc", ti._trunc_result_type, ti._trunc, _trunc_docstring
+)
+del _trunc_docstring
+
+# U37: ==== CBRT        (x)
+_cbrt_docstring_ = r"""
+cbrt(x, /, \*, out=None, order='K')
+
+Computes the cube-root for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a real-valued floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise cube-root.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+cbrt = UnaryElementwiseFunc(
+    "cbrt", ti._cbrt_result_type, ti._cbrt, _cbrt_docstring_
+)
+del _cbrt_docstring_
+
+# U38: ==== EXP2        (x)
+_exp2_docstring_ = r"""
+exp2(x, /, \*, out=None, order='K')
+
+Computes the base-2 exponential for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise base-2 exponentials.
+        The data type of the returned array is determined by
+        the Type Promotion Rules.
+"""
+
+exp2 = UnaryElementwiseFunc(
+    "exp2", ti._exp2_result_type, ti._exp2, _exp2_docstring_
+)
+del _exp2_docstring_
+
+# U39: ==== RSQRT        (x)
+_rsqrt_docstring_ = r"""
+rsqrt(x, /, \*, out=None, order='K')
+
+Computes the reciprocal square-root for each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a real-valued floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise reciprocal square-root.
+        The returned array has a floating-point data type determined by
+        the Type Promotion Rules.
+"""
+
+rsqrt = UnaryElementwiseFunc(
+    "rsqrt", ti._rsqrt_result_type, ti._rsqrt, _rsqrt_docstring_
+)
+del _rsqrt_docstring_
+
+# U40: ==== PROJ        (x)
+_proj_docstring = r"""
+proj(x, /, \*, out=None, order='K')
+
+Computes projection of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a complex data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise projection.
+"""
+
+proj = UnaryElementwiseFunc(
+    "proj", ti._proj_result_type, ti._proj, _proj_docstring
+)
+del _proj_docstring
+
+# U41: ==== SIGNBIT        (x)
+_signbit_docstring = r"""
+signbit(x, /, \*, out=None, order='K')
+
+Computes an indication of whether the sign bit of each element `x_i` of
+input array `x` is set.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a real-valued floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise signbit results. The returned array
+        must have a data type of `bool`.
+"""
+
+signbit = UnaryElementwiseFunc(
+    "signbit", ti._signbit_result_type, ti._signbit, _signbit_docstring
+)
+del _signbit_docstring
+
+# U42: ==== RECIPROCAL        (x)
+_reciprocal_docstring = r"""
+reciprocal(x, /, \*, out=None, order='K')
+
+Computes the reciprocal of each element `x_i` for input array `x`.
+
+Args:
+    x (usm_ndarray):
+        Input array, expected to have a floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise reciprocals.
+        The returned array has a floating-point data type determined
+        by the Type Promotion Rules.
+"""
+
+reciprocal = UnaryElementwiseFunc(
+    "reciprocal",
+    ti._reciprocal_result_type,
+    ti._reciprocal,
+    _reciprocal_docstring,
+    acceptance_fn=_acceptance_fn_reciprocal,
+)
+del _reciprocal_docstring
 
 # U43: ==== ANGLE        (x)
 _angle_docstring = r"""

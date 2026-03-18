@@ -51,7 +51,7 @@
 // #include "bitwise_or.hpp"
 // #include "bitwise_right_shift.hpp"
 // #include "bitwise_xor.hpp"
-// #include "cbrt.hpp"
+#include "cbrt.hpp"
 #include "ceil.hpp"
 #include "conj.hpp"
 // #include "copysign.hpp"
@@ -59,7 +59,7 @@
 #include "cosh.hpp"
 // #include "equal.hpp"
 #include "exp.hpp"
-// #include "exp2.hpp"
+#include "exp2.hpp"
 #include "expm1.hpp"
 #include "floor.hpp"
 // #include "floor_divide.hpp"
@@ -89,23 +89,23 @@
 // #include "not_equal.hpp"
 #include "positive.hpp"
 // #include "pow.hpp"
-// #include "proj.hpp"
-// #include "real.hpp"
-// #include "reciprocal.hpp"
+#include "proj.hpp"
+#include "real.hpp"
+#include "reciprocal.hpp"
 // #include "remainder.hpp"
-// #include "round.hpp"
-// #include "rsqrt.hpp"
-// #include "sign.hpp"
-// #include "signbit.hpp"
-// #include "sin.hpp"
-// #include "sinh.hpp"
-// #include "sqrt.hpp"
-// #include "square.hpp"
+#include "round.hpp"
+#include "rsqrt.hpp"
+#include "sign.hpp"
+#include "signbit.hpp"
+#include "sin.hpp"
+#include "sinh.hpp"
+#include "sqrt.hpp"
+#include "square.hpp"
 // #include "subtract.hpp"
-// #include "tan.hpp"
-// #include "tanh.hpp"
+#include "tan.hpp"
+#include "tanh.hpp"
 // #include "true_divide.hpp"
-// #include "trunc.hpp"
+#include "trunc.hpp"
 
 namespace dpctl::tensor::py_internal
 {
@@ -131,7 +131,7 @@ void init_elementwise_functions(py::module_ m)
     // init_bitwise_or(m);
     // init_bitwise_right_shift(m);
     // init_bitwise_xor(m);
-    // init_cbrt(m);
+    init_cbrt(m);
     init_ceil(m);
     init_conj(m);
     // init_copysign(m);
@@ -140,7 +140,7 @@ void init_elementwise_functions(py::module_ m)
     // init_divide(m);
     // init_equal(m);
     init_exp(m);
-    // init_exp2(m);
+    init_exp2(m);
     init_expm1(m);
     init_floor(m);
     // init_floor_divide(m);
@@ -170,22 +170,22 @@ void init_elementwise_functions(py::module_ m)
     // init_not_equal(m);
     init_positive(m);
     // init_pow(m);
-    // init_proj(m);
-    // init_real(m);
-    // init_reciprocal(m);
+    init_proj(m);
+    init_real(m);
+    init_reciprocal(m);
     // init_remainder(m);
-    // init_round(m);
-    // init_rsqrt(m);
-    // init_sign(m);
-    // init_signbit(m);
-    // init_sin(m);
-    // init_sinh(m);
-    // init_sqrt(m);
-    // init_square(m);
+    init_round(m);
+    init_rsqrt(m);
+    init_sign(m);
+    init_signbit(m);
+    init_sin(m);
+    init_sinh(m);
+    init_sqrt(m);
+    init_square(m);
     // init_subtract(m);
-    // init_tan(m);
-    // init_tanh(m);
-    // init_trunc(m);
+    init_tan(m);
+    init_tanh(m);
+    init_trunc(m);
 }
 
 } // namespace dpctl::tensor::py_internal

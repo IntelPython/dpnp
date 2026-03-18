@@ -718,8 +718,8 @@ array([1., 2., 3.])
 
 cbrt = DPNPUnaryFunc(
     "cbrt",
-    ti._cbrt_result_type,
-    ti._cbrt,
+    ti_ext._cbrt_result_type,
+    ti_ext._cbrt,
     _CBRT_DOCSTRING,
     mkl_fn_to_call="_mkl_cbrt_to_call",
     mkl_impl_fn="_cbrt",
@@ -1187,8 +1187,8 @@ array([1., 2., 4.])
 
 exp2 = DPNPUnaryFunc(
     "exp2",
-    ti._exp2_result_type,
-    ti._exp2,
+    ti_ext._exp2_result_type,
+    ti_ext._exp2,
     _EXP2_DOCSTRING,
     mkl_fn_to_call="_mkl_exp2_to_call",
     mkl_impl_fn="_exp2",
@@ -2107,8 +2107,8 @@ array([1.0, 0.5, 0.3003003])
 
 reciprocal = DPNPUnaryFunc(
     "reciprocal",
-    ti._reciprocal_result_type,
-    ti._reciprocal,
+    ti_ext._reciprocal_result_type,
+    ti_ext._reciprocal,
     _RECIPROCAL_DOCSTRING,
     mkl_fn_to_call="_mkl_inv_to_call",
     mkl_impl_fn="_inv",
@@ -2252,8 +2252,8 @@ array([1.        , 0.35355338, 0.19245009])
 
 rsqrt = DPNPUnaryFunc(
     "rsqrt",
-    ti._rsqrt_result_type,
-    ti._rsqrt,
+    ti_ext._rsqrt_result_type,
+    ti_ext._rsqrt,
     _RSQRT_DOCSTRING,
 )
 
@@ -2309,8 +2309,8 @@ array([ 0.000000e+00,  1.000000e+00, -8.742278e-08])
 
 sin = DPNPUnaryFunc(
     "sin",
-    ti._sin_result_type,
-    ti._sin,
+    ti_ext._sin_result_type,
+    ti_ext._sin,
     _SIN_DOCSTRING,
     mkl_fn_to_call="_mkl_sin_to_call",
     mkl_impl_fn="_sin",
@@ -2372,8 +2372,8 @@ array([0.0, 2.3012989, 11.548739])
 
 sinh = DPNPUnaryFunc(
     "sinh",
-    ti._sinh_result_type,
-    ti._sinh,
+    ti_ext._sinh_result_type,
+    ti_ext._sinh,
     _SINH_DOCSTRING,
     mkl_fn_to_call="_mkl_sinh_to_call",
     mkl_impl_fn="_sinh",
@@ -2449,8 +2449,8 @@ array([ 2., nan, inf])
 
 sqrt = DPNPUnaryFunc(
     "sqrt",
-    ti._sqrt_result_type,
-    ti._sqrt,
+    ti_ext._sqrt_result_type,
+    ti_ext._sqrt,
     _SQRT_DOCSTRING,
     mkl_fn_to_call="_mkl_sqrt_to_call",
     mkl_impl_fn="_sqrt",
@@ -2508,8 +2508,8 @@ array([-1.+0.j,  1.+0.j])
 
 square = DPNPUnaryFunc(
     "square",
-    ti._square_result_type,
-    ti._square,
+    ti_ext._square_result_type,
+    ti_ext._square,
     _SQUARE_DOCSTRING,
     mkl_fn_to_call="_mkl_sqr_to_call",
     mkl_impl_fn="_sqr",
@@ -2567,8 +2567,8 @@ array([1.22460635e-16, 1.63317787e+16, -1.22460635e-16])
 
 tan = DPNPUnaryFunc(
     "tan",
-    ti._tan_result_type,
-    ti._tan,
+    ti_ext._tan_result_type,
+    ti_ext._tan,
     _TAN_DOCSTRING,
     mkl_fn_to_call="_mkl_tan_to_call",
     mkl_impl_fn="_tan",
@@ -2632,8 +2632,8 @@ array([0.0, -0.996272, 0.917152, 0.996272])
 
 tanh = DPNPUnaryFunc(
     "tanh",
-    ti._tanh_result_type,
-    ti._tanh,
+    ti_ext._tanh_result_type,
+    ti_ext._tanh,
     _TANH_DOCSTRING,
     mkl_fn_to_call="_mkl_tanh_to_call",
     mkl_impl_fn="_tanh",

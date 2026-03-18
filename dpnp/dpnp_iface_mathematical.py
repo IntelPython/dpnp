@@ -4250,8 +4250,8 @@ array([inf+0.j, inf-0.j, inf-0.j])
 
 proj = DPNPUnaryFunc(
     "proj",
-    ti._proj_result_type,
-    ti._proj,
+    ti_ext._proj_result_type,
+    ti_ext._proj,
     _PROJ_DOCSTRING,
 )
 
@@ -4313,8 +4313,8 @@ array(1.)
 
 real = DPNPReal(
     "real",
-    ti._real_result_type,
-    ti._real,
+    ti_ext._real_result_type,
+    ti_ext._real,
     _REAL_DOCSTRING,
 )
 
@@ -4596,8 +4596,8 @@ array([ 0,  0,  0, 10])
 
 round = DPNPRound(
     "round",
-    ti._round_result_type,
-    ti._round,
+    ti_ext._round_result_type,
+    ti_ext._round,
     _ROUND_DOCSTRING,
     mkl_fn_to_call="_mkl_round_to_call",
     mkl_impl_fn="_round",
@@ -4668,8 +4668,8 @@ array([1+0j])
 
 sign = DPNPUnaryFunc(
     "sign",
-    ti._sign_result_type,
-    ti._sign,
+    ti_ext._sign_result_type,
+    ti_ext._sign,
     _SIGN_DOCSTRING,
     acceptance_fn=acceptance_fn_sign,
 )
@@ -4730,8 +4730,8 @@ array([False,  True, False])
 
 signbit = DPNPUnaryFunc(
     "signbit",
-    ti._signbit_result_type,
-    ti._signbit,
+    ti_ext._signbit_result_type,
+    ti_ext._signbit,
     _SIGNBIT_DOCSTRING,
 )
 
@@ -5229,8 +5229,8 @@ array([-1.0, -1.0, -0.0, 0.0, 1.0, 1.0, 2.0])
 
 trunc = DPNPUnaryFunc(
     "trunc",
-    ti._trunc_result_type,
-    ti._trunc,
+    ti_ext._trunc_result_type,
+    ti_ext._trunc,
     _TRUNC_DOCSTRING,
     mkl_fn_to_call="_mkl_trunc_to_call",
     mkl_impl_fn="_trunc",
