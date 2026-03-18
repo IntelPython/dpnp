@@ -33,10 +33,12 @@
 /// extension, specifically functions for elementwise operations.
 //===---------------------------------------------------------------------===//
 
+#include <algorithm>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
+#include <string>
 #include <utility> // for std::ignore
 #include <vector>
 
