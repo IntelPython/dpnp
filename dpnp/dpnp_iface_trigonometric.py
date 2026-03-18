@@ -572,8 +572,8 @@ array([-135.,  -45.,   45.,  135.])
 
 atan2 = DPNPBinaryFunc(
     "atan2",
-    ti._atan2_result_type,
-    ti._atan2,
+    ti_ext._atan2_result_type,
+    ti_ext._atan2,
     _ATAN2_DOCSTRING,
     mkl_fn_to_call="_mkl_atan2_to_call",
     mkl_impl_fn="_atan2",

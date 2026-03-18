@@ -31,6 +31,7 @@
 #include "dpctl_capi.h"
 
 #include <array>
+#include <cassert>
 #include <complex>
 #include <cstddef> // for std::size_t for C++ linkage
 #include <cstdint>

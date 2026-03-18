@@ -30,6 +30,7 @@
 
 #include <cstddef>
 #include <exception>
+#include <iterator>
 #include <stdexcept>
 #include <utility>
 #include <vector>

@@ -469,8 +469,8 @@ array([[  0.,   2.,   4.],
 
 add = DPNPBinaryFunc(
     "add",
-    ti._add_result_type,
-    ti._add,
+    ti_ext._add_result_type,
+    ti_ext._add,
     _ADD_DOCSTRING,
     mkl_fn_to_call="_mkl_add_to_call",
     mkl_impl_fn="_add",

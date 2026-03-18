@@ -30,7 +30,7 @@
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor._tensor_elementwise_impl as ti
 
-from ._elementwise_common import UnaryElementwiseFunc
+from ._elementwise_common import BinaryElementwiseFunc, UnaryElementwiseFunc
 from ._type_utils import (
     _acceptance_fn_negative,
     _acceptance_fn_reciprocal,
@@ -124,6 +124,41 @@ acosh = UnaryElementwiseFunc(
 )
 del _acosh_docstring
 
+# B01: ===== ADD   (x1, x2)
+
+_add_docstring_ = r"""
+add(x1, x2, /, \*, out=None, order='K')
+
+Calculates the sum for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise sums. The data type of the
+        returned array is determined by the Type Promotion Rules.
+"""
+add = BinaryElementwiseFunc(
+    "add",
+    ti._add_result_type,
+    ti._add,
+    _add_docstring_,
+    binary_inplace_fn=ti._add_inplace,
+)
+del _add_docstring_
+
 # U04: ===== ASIN  (x)
 _asin_docstring = r"""
 asin(x, /, \*, out=None, order='K')
@@ -211,6 +246,41 @@ atan = UnaryElementwiseFunc(
 )
 del _atan_docstring
 
+# B02: ===== ATAN2 (x1, x2)
+_atan2_docstring_ = r"""
+atan2(x1, x2, /, \*, out=None, order='K')
+
+Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element
+`x1_i` of the input array `x1` with the respective element `x2_i` of the
+input array `x2`. Each element-wise result is expressed in radians.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued floating-point
+        data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued
+        floating-point data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the inverse tangent of the quotient `x1`/`x2`.
+        The returned array must have a real-valued floating-point data type
+        determined by Type Promotion Rules.
+"""
+
+atan2 = BinaryElementwiseFunc(
+    "atan2", ti._atan2_result_type, ti._atan2, _atan2_docstring_
+)
+del _atan2_docstring_
+
 # U07: ===== ATANH (x)
 _atanh_docstring = r"""
 atanh(x, /, \*, out=None, order='K')
@@ -239,6 +309,80 @@ atanh = UnaryElementwiseFunc(
     "atanh", ti._atanh_result_type, ti._atanh, _atanh_docstring
 )
 del _atanh_docstring
+
+# B03: ===== BITWISE_AND           (x1, x2)
+_bitwise_and_docstring_ = r"""
+bitwise_and(x1, x2, /, \*, out=None, order='K')
+
+Computes the bitwise AND of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have integer or boolean data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have integer or boolean data
+        type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+bitwise_and = BinaryElementwiseFunc(
+    "bitwise_and",
+    ti._bitwise_and_result_type,
+    ti._bitwise_and,
+    _bitwise_and_docstring_,
+    binary_inplace_fn=ti._bitwise_and_inplace,
+)
+del _bitwise_and_docstring_
+
+# B04: ===== BITWISE_LEFT_SHIFT    (x1, x2)
+_bitwise_left_shift_docstring_ = r"""
+bitwise_left_shift(x1, x2, /, \*, out=None, order='K')
+
+Shifts the bits of each element `x1_i` of the input array x1 to the left by
+appending `x2_i` (i.e., the respective element in the input array `x2`) zeros to
+the right of `x1_i`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have integer data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have integer data type.
+        Each element must be greater than or equal to 0.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+bitwise_left_shift = BinaryElementwiseFunc(
+    "bitwise_left_shift",
+    ti._bitwise_left_shift_result_type,
+    ti._bitwise_left_shift,
+    _bitwise_left_shift_docstring_,
+    binary_inplace_fn=ti._bitwise_left_shift_inplace,
+)
+del _bitwise_left_shift_docstring_
 
 # U08: ===== BITWISE_INVERT        (x)
 _bitwise_invert_docstring = r"""
@@ -271,6 +415,117 @@ bitwise_invert = UnaryElementwiseFunc(
     _bitwise_invert_docstring,
 )
 del _bitwise_invert_docstring
+
+# B05: ===== BITWISE_OR            (x1, x2)
+_bitwise_or_docstring_ = r"""
+bitwise_or(x1, x2, /, \*, out=None, order='K')
+
+Computes the bitwise OR of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have integer or boolean data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have integer or boolean data
+        type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+bitwise_or = BinaryElementwiseFunc(
+    "bitwise_or",
+    ti._bitwise_or_result_type,
+    ti._bitwise_or,
+    _bitwise_or_docstring_,
+    binary_inplace_fn=ti._bitwise_or_inplace,
+)
+del _bitwise_or_docstring_
+
+# B06: ===== BITWISE_RIGHT_SHIFT   (x1, x2)
+_bitwise_right_shift_docstring_ = r"""
+bitwise_right_shift(x1, x2, /, \*, out=None, order='K')
+
+Shifts the bits of each element `x1_i` of the input array `x1` to the right
+according to the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have integer data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have integer data type.
+        Each element must be greater than or equal to 0.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+bitwise_right_shift = BinaryElementwiseFunc(
+    "bitwise_right_shift",
+    ti._bitwise_right_shift_result_type,
+    ti._bitwise_right_shift,
+    _bitwise_right_shift_docstring_,
+    binary_inplace_fn=ti._bitwise_right_shift_inplace,
+)
+del _bitwise_right_shift_docstring_
+
+
+# B07: ===== BITWISE_XOR           (x1, x2)
+_bitwise_xor_docstring_ = r"""
+bitwise_xor(x1, x2, /, \*, out=None, order='K')
+
+Computes the bitwise XOR of the underlying binary representation of each
+element `x1_i` of the input array `x1` with the respective element `x2_i`
+of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have integer or boolean data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have integer or boolean data
+        type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+
+bitwise_xor = BinaryElementwiseFunc(
+    "bitwise_xor",
+    ti._bitwise_xor_result_type,
+    ti._bitwise_xor,
+    _bitwise_xor_docstring_,
+    binary_inplace_fn=ti._bitwise_xor_inplace,
+)
+del _bitwise_xor_docstring_
 
 # U09: ==== CEIL          (x)
 _ceil_docstring = r"""
