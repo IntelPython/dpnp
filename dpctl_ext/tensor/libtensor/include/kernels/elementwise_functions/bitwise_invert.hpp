@@ -47,16 +47,12 @@
 #include "kernels/elementwise_functions/common.hpp"
 
 #include "utils/type_dispatch_building.hpp"
-#include "utils/type_utils.hpp"
 
 namespace dpctl::tensor::kernels::bitwise_invert
 {
 
 using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
-namespace tu_ns = dpctl::tensor::type_utils;
-
-using dpctl::tensor::type_utils::vec_cast;
 
 template <typename argT, typename resT>
 struct BitwiseInvertFunctor

@@ -34,6 +34,7 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
+#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
@@ -48,7 +49,6 @@
 #include "kernels/elementwise_functions/common.hpp"
 #include "kernels/elementwise_functions/common_inplace.hpp"
 
-#include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 

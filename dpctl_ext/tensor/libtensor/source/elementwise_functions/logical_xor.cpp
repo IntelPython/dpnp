@@ -45,6 +45,7 @@
 #include "elementwise_functions.hpp"
 #include "logical_xor.hpp"
 #include "utils/type_dispatch.hpp"
+#include "utils/type_dispatch_building.hpp"
 
 #include "kernels/elementwise_functions/common.hpp"
 #include "kernels/elementwise_functions/logical_xor.hpp"
