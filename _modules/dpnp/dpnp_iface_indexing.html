@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.20.0dev4+9.g54d2109bb47 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.20.0dev4+10.gdb486b9be59 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ff8426a5"></script>
+      <script src="../../_static/documentation_options.js?v=1e51fd67"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -818,24 +818,18 @@
         <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="n">offset</span>
 
     <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">a_straides</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">strides</span>
+    <span class="n">a_strides</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">strides</span>
     <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
-    <span class="n">st_n</span><span class="p">,</span> <span class="n">st_m</span> <span class="o">=</span> <span class="n">a_straides</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="n">st_n</span><span class="p">,</span> <span class="n">st_m</span> <span class="o">=</span> <span class="n">a_strides</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
 
-    <span class="c1"># Compute shape, strides and offset of the resulting diagonal array</span>
-    <span class="c1"># based on the input offset</span>
-    <span class="k">if</span> <span class="n">offset</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">out_shape</span> <span class="o">=</span> <span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">),)</span>
-        <span class="n">out_strides</span> <span class="o">=</span> <span class="n">a_straides</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">st_n</span> <span class="o">+</span> <span class="n">st_m</span><span class="p">,)</span>
-        <span class="n">out_offset</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">elif</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">:</span>
-        <span class="n">out_shape</span> <span class="o">=</span> <span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">-</span> <span class="n">offset</span><span class="p">),)</span>
-        <span class="n">out_strides</span> <span class="o">=</span> <span class="n">a_straides</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">st_n</span> <span class="o">+</span> <span class="n">st_m</span><span class="p">,)</span>
-        <span class="n">out_offset</span> <span class="o">=</span> <span class="n">st_m</span> <span class="o">//</span> <span class="n">a</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">*</span> <span class="n">offset</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">out_shape</span> <span class="o">=</span> <span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
-        <span class="n">out_strides</span> <span class="o">=</span> <span class="n">a_straides</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">itemsize</span><span class="p">,)</span>
-        <span class="n">out_offset</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Compute the diagonal array as a view:</span>
+    <span class="c1"># - stride: sum of row and column strides (diag advances in both dimensions)</span>
+    <span class="c1"># - shape: determined by diagonal size using max(0, min(n, m - offset))</span>
+    <span class="c1"># - offset: starting position in buffer for non-zero offsets</span>
+    <span class="n">diag_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">-</span> <span class="n">offset</span><span class="p">))</span>
+    <span class="n">out_shape</span> <span class="o">=</span> <span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">diag_size</span><span class="p">,)</span>
+    <span class="n">out_strides</span> <span class="o">=</span> <span class="n">a_strides</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">st_n</span> <span class="o">+</span> <span class="n">st_m</span><span class="p">,)</span>
+    <span class="n">out_offset</span> <span class="o">=</span> <span class="n">st_m</span> <span class="o">//</span> <span class="n">a</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">*</span> <span class="n">offset</span>
 
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span>
         <span class="n">out_shape</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">out_strides</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">out_offset</span>
