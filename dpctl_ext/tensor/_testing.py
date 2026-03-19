@@ -39,10 +39,10 @@ from ._type_utils import _to_device_supported_dtype
 
 
 def _allclose_complex_fp(z1, z2, atol, rtol, equal_nan):
-    z1r = dpt.real(z1)
-    z1i = dpt.imag(z1)
-    z2r = dpt.real(z2)
-    z2i = dpt.imag(z2)
+    z1r = dpt_ext.real(z1)
+    z1i = dpt_ext.imag(z1)
+    z2r = dpt_ext.real(z2)
+    z2i = dpt_ext.imag(z2)
     if equal_nan:
         check1 = dpt_ext.all(
             dpt_ext.isnan(z1r) == dpt_ext.isnan(z2r)
