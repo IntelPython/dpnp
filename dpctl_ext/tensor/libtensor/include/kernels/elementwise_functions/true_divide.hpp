@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of DIVIDE(x1, x2)
+/// This file defines kernels for elementwise evaluation of TRUE_DIVIDE(x1, x2)
 /// function.
 //===---------------------------------------------------------------------===//
 
