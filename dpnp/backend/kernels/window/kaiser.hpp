@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2025, Intel Corporation
+// Copyright (c) 2026, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,20 +28,37 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
-#include <pybind11/pybind11.h>
+#include "kernels/elementwise_functions/i0.hpp"
 
-namespace dpnp::extensions::window
+namespace dpnp::kernels::kaiser
 {
-namespace py = pybind11;
+template <typename T>
+class KaiserFunctor
+{
+private:
+    T *res = nullptr;
+    const std::size_t N;
+    const T beta;
 
-extern std::pair<sycl::event, sycl::event>
-    py_kaiser(sycl::queue &exec_q,
-              const py::object &beta,
-              const dpctl::tensor::usm_ndarray &result,
-              const std::vector<sycl::event> &depends);
+public:
+    KaiserFunctor(T *res, const std::size_t N, const T beta)
+        : res(res), N(N), beta(beta)
+    {
+    }
 
-extern void init_kaiser_dispatch_vectors(void);
-} // namespace dpnp::extensions::window
+    void operator()(sycl::id<1> id) const
+    {
+        using dpnp::kernels::i0::cyl_bessel_i0;
+
+        const auto i = id.get(0);
+        const T alpha = (N - 1) / T(2);
+        const T tmp = (i - alpha) / alpha;
+        res[i] = cyl_bessel_i0(beta * sycl::sqrt(1 - tmp * tmp)) /
+                 cyl_bessel_i0(beta);
+    }
+};
+} // namespace dpnp::kernels::kaiser

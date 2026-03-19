@@ -28,11 +28,18 @@
 
 #pragma once
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <cstddef>
+#include <stdexcept>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
 #include <sycl/sycl.hpp>
 
 #include "dpctl4pybind11.hpp"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 // dpctl tensor headers
 #include "utils/output_validation.hpp"
@@ -41,10 +48,8 @@
 
 namespace dpnp::extensions::window
 {
-
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-
 namespace py = pybind11;
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 typedef sycl::event (*window_fn_ptr_t)(sycl::queue &,
                                        char *,
@@ -71,6 +76,20 @@ sycl::event window_impl(sycl::queue &exec_q,
 
     return window_ev;
 }
+
+template <typename fnT, typename T, template <typename> typename FunctorT>
+struct Factory
+{
+    fnT get()
+    {
+        if constexpr (std::is_floating_point_v<T>) {
+            return window_impl<T, FunctorT>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
 
 template <typename funcPtrT>
 std::tuple<size_t, char *, funcPtrT>
@@ -101,7 +120,7 @@ std::tuple<size_t, char *, funcPtrT>
     }
 
     const int result_typenum = result.get_typenum();
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = td_ns::usm_ndarray_types();
     const int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
     funcPtrT fn = window_dispatch_vector[result_type_id];
 
