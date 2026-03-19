@@ -208,8 +208,7 @@ std::pair<sycl::event, sycl::event>
 
     // check compatibility of execution queue and allocation queue
     if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {a_array, b_array, ipiv_array}))
-    {
+                                             {a_array, b_array, ipiv_array})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }

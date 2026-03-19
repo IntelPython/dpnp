@@ -102,8 +102,7 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
     std::int64_t vt_size = 0;
 
     if (jobu == oneapi::mkl::jobsvd::somevec ||
-        jobu == oneapi::mkl::jobsvd::vectorsina)
-    {
+        jobu == oneapi::mkl::jobsvd::vectorsina) {
         u_size = m * k;
         vt_size = k * n;
     }
@@ -238,8 +237,7 @@ std::pair<sycl::event, sycl::event>
     // Ensure `batch_size`, `m` and 'n' are non-zero, otherwise return empty
     // events
     if (gesvd_utils::check_zeros_shape_gesvd(a_array, out_s, out_u, out_vt,
-                                             jobu_val, jobvt_val))
-    {
+                                             jobu_val, jobvt_val)) {
         // nothing to do
         return std::make_pair(sycl::event(), sycl::event());
     }
@@ -293,8 +291,8 @@ struct GesvdBatchContigFactory
 {
     fnT get()
     {
-        if constexpr (types::GesvdTypePairSupportFactory<T, RealT>::is_defined)
-        {
+        if constexpr (types::GesvdTypePairSupportFactory<T,
+                                                         RealT>::is_defined) {
             return gesvd_batch_impl<T, RealT>;
         }
         else {

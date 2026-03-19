@@ -171,8 +171,7 @@ std::pair<sycl::event, sycl::event>
     // Ensure `m` and 'n' are non-zero, otherwise return empty
     // events
     if (gesvd_utils::check_zeros_shape_gesvd(a_array, out_s, out_u, out_vt,
-                                             jobu_val, jobvt_val))
-    {
+                                             jobu_val, jobvt_val)) {
         // nothing to do
         return std::make_pair(sycl::event(), sycl::event());
     }
@@ -223,8 +222,8 @@ struct GesvdContigFactory
 {
     fnT get()
     {
-        if constexpr (types::GesvdTypePairSupportFactory<T, RealT>::is_defined)
-        {
+        if constexpr (types::GesvdTypePairSupportFactory<T,
+                                                         RealT>::is_defined) {
             return gesvd_impl<T, RealT>;
         }
         else {
