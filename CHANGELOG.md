@@ -77,6 +77,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Resolved an issue where `dpnp` always returns the base allocation pointer, when the view start is expected [#2651](https://github.com/IntelPython/dpnp/pull/2651)
 * Fixed an issue causing an exception in `dpnp.geomspace` and `dpnp.logspace` when called with explicit `device` keyword but any input array is allocated on another device [#2723](https://github.com/IntelPython/dpnp/pull/2723)
 * Fixed `.data.ptr` property on array views to correctly return the pointer to the view's data location instead of the base allocation pointer [#2812](https://github.com/IntelPython/dpnp/pull/2812)
+* Resolved an issue with strides calculation in `dpnp.diagonal` to return correct values for empty diagonals [#2814](https://github.com/IntelPython/dpnp/pull/2814)
 
 ### Security
 
