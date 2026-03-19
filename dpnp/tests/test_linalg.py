@@ -24,6 +24,7 @@ from .helper import (
     has_support_aspect64,
     numpy_version,
 )
+from .qr_helper import check_qr
 from .third_party.cupy import testing
 
 
@@ -3584,7 +3585,7 @@ class TestNorm:
 
 
 class TestQr:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
         "shape",
         [
@@ -3610,60 +3611,27 @@ class TestQr:
             "(2, 2, 4)",
         ],
     )
-    @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
+    @pytest.mark.parametrize("mode", ["complete", "reduced", "r", "raw"])
     def test_qr(self, dtype, shape, mode):
         a = generate_random_numpy_array(shape, dtype, seed_value=81)
-        ia = dpnp.array(a)
+        ia = dpnp.array(a, dtype=dtype)
 
-        if mode == "r":
-            np_r = numpy.linalg.qr(a, mode)
-            dpnp_r = dpnp.linalg.qr(ia, mode)
-        else:
-            np_q, np_r = numpy.linalg.qr(a, mode)
+        check_qr(a, ia, mode, dpnp)
 
-            # check decomposition
-            if mode in ("complete", "reduced"):
-                result = dpnp.linalg.qr(ia, mode)
-                dpnp_q, dpnp_r = result.Q, result.R
-                assert dpnp.allclose(
-                    dpnp.matmul(dpnp_q, dpnp_r), ia, atol=1e-05
-                )
-            else:  # mode=="raw"
-                dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
-                assert_dtype_allclose(dpnp_q, np_q, factor=24)
-
-        if mode in ("raw", "r"):
-            assert_dtype_allclose(dpnp_r, np_r, factor=24)
-
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
         "shape",
         [(32, 32), (8, 16, 16)],
         ids=["(32, 32)", "(8, 16, 16)"],
     )
-    @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
+    @pytest.mark.parametrize("mode", ["complete", "reduced", "r", "raw"])
     def test_qr_large(self, dtype, shape, mode):
         a = generate_random_numpy_array(shape, dtype, seed_value=81)
         ia = dpnp.array(a)
 
-        if mode == "r":
-            np_r = numpy.linalg.qr(a, mode)
-            dpnp_r = dpnp.linalg.qr(ia, mode)
-        else:
-            np_q, np_r = numpy.linalg.qr(a, mode)
+        check_qr(a, ia, mode, dpnp)
 
-            # check decomposition
-            if mode in ("complete", "reduced"):
-                result = dpnp.linalg.qr(ia, mode)
-                dpnp_q, dpnp_r = result.Q, result.R
-                assert dpnp.allclose(dpnp.matmul(dpnp_q, dpnp_r), ia, atol=1e-5)
-            else:  # mode=="raw"
-                dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
-                assert_allclose(dpnp_q, np_q, atol=1e-4)
-        if mode in ("raw", "r"):
-            assert_allclose(dpnp_r, np_r, atol=1e-4)
-
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
         "shape",
         [(0, 0), (0, 2), (2, 0), (2, 0, 3), (2, 3, 0), (0, 2, 3)],
@@ -3676,65 +3644,22 @@ class TestQr:
             "(0, 2, 3)",
         ],
     )
-    @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
+    @pytest.mark.parametrize("mode", ["complete", "reduced", "r", "raw"])
     def test_qr_empty(self, dtype, shape, mode):
         a = numpy.empty(shape, dtype=dtype)
         ia = dpnp.array(a)
 
-        if mode == "r":
-            np_r = numpy.linalg.qr(a, mode)
-            dpnp_r = dpnp.linalg.qr(ia, mode)
-        else:
-            np_q, np_r = numpy.linalg.qr(a, mode)
+        check_qr(a, ia, mode, dpnp)
 
-            if mode in ("complete", "reduced"):
-                result = dpnp.linalg.qr(ia, mode)
-                dpnp_q, dpnp_r = result.Q, result.R
-            else:
-                dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
-
-            assert_dtype_allclose(dpnp_q, np_q)
-
-        assert_dtype_allclose(dpnp_r, np_r)
-
-    @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
+    @pytest.mark.parametrize("mode", ["complete", "reduced", "r", "raw"])
     def test_qr_strides(self, mode):
         a = generate_random_numpy_array((5, 5))
         ia = dpnp.array(a)
 
         # positive strides
-        if mode == "r":
-            np_r = numpy.linalg.qr(a[::2, ::2], mode)
-            dpnp_r = dpnp.linalg.qr(ia[::2, ::2], mode)
-        else:
-            np_q, np_r = numpy.linalg.qr(a[::2, ::2], mode)
-
-            if mode in ("complete", "reduced"):
-                result = dpnp.linalg.qr(ia[::2, ::2], mode)
-                dpnp_q, dpnp_r = result.Q, result.R
-            else:
-                dpnp_q, dpnp_r = dpnp.linalg.qr(ia[::2, ::2], mode)
-
-            assert_dtype_allclose(dpnp_q, np_q)
-
-        assert_dtype_allclose(dpnp_r, np_r)
-
+        check_qr(a[::2, ::2], ia[::2, ::2], mode, dpnp)
         # negative strides
-        if mode == "r":
-            np_r = numpy.linalg.qr(a[::-2, ::-2], mode)
-            dpnp_r = dpnp.linalg.qr(ia[::-2, ::-2], mode)
-        else:
-            np_q, np_r = numpy.linalg.qr(a[::-2, ::-2], mode)
-
-            if mode in ("complete", "reduced"):
-                result = dpnp.linalg.qr(ia[::-2, ::-2], mode)
-                dpnp_q, dpnp_r = result.Q, result.R
-            else:
-                dpnp_q, dpnp_r = dpnp.linalg.qr(ia[::-2, ::-2], mode)
-
-            assert_dtype_allclose(dpnp_q, np_q)
-
-        assert_dtype_allclose(dpnp_r, np_r)
+        check_qr(a[::-2, ::-2], ia[::-2, ::-2], mode, dpnp)
 
     def test_qr_errors(self):
         a_dp = dpnp.array([[1, 2], [3, 5]], dtype="float32")

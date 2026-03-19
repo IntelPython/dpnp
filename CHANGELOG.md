@@ -53,6 +53,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Changed `dpnp.partition` implementation to reuse `dpnp.sort` where it brings the performance benefit [#2766](https://github.com/IntelPython/dpnp/pull/2766)
 * `dpnp` uses pybind11 3.0.2 [#27734](https://github.com/IntelPython/dpnp/pull/2773)
 * Modified CMake files for the extension to explicitly mark DPC++ compiler and dpctl headers as system ones and so to suppress the build warning generated inside them [#2770](https://github.com/IntelPython/dpnp/pull/2770)
+* Updated QR tests to avoid element-wise comparisons for `raw` and `r` modes [#2785](https://github.com/IntelPython/dpnp/pull/2785)
 
 ### Deprecated
 
