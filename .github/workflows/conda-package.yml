@@ -113,10 +113,31 @@ jobs:
           name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.package-name }}-*.whl
 
+  check_tensor_changes:
+    name: Detect dpctl_ext file changes
+    runs-on: ubuntu-latest
+    outputs:
+      dpctl_ext_changed: ${{ steps.filter.outputs.dpctl_ext }}
+
+    steps:
+      - name: Checkout DPNP repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Check for dpctl_ext changes
+        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
+        id: filter
+        with:
+          filters: |
+            dpctl_ext:
+              - 'dpctl_ext/**'
+
+
   test_linux:
     name: Test
 
-    needs: build
+    needs: [build, check_tensor_changes]
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 100
@@ -248,13 +269,13 @@ jobs:
             fi
 
       - name: Run tensor tests
-        if: env.rerun-tests-on-failure != 'true'
+        if: env.rerun-tests-on-failure != 'true' && needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true'
         run: |
           python -m pytest -n auto -ra --pyargs dpctl_ext.tests
 
       - name: Run tensor tests
-        if: env.rerun-tests-on-failure == 'true'
-        id: run_tests_dpctl_ext_linux
+        if: env.rerun-tests-on-failure == 'true' && needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true'
+        id: run_tensor_tests_linux
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
@@ -270,7 +291,7 @@ jobs:
   test_windows:
     name: Test
 
-    needs: build
+    needs: [build, check_tensor_changes]
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
@@ -427,14 +448,14 @@ jobs:
             }
 
       - name: Run tensor tests
-        if: env.rerun-tests-on-failure != 'true'
+        if: env.rerun-tests-on-failure != 'true' && needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true'
         shell: pwsh
         run: |
           python -m pytest -n auto -ra --pyargs dpctl_ext.tests
 
       - name: Run tensor tests
-        if: env.rerun-tests-on-failure == 'true'
-        id: run_tests_dpctl_ext_win
+        if: env.rerun-tests-on-failure == 'true' && needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true'
+        id: run_tensor_tests_win
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
