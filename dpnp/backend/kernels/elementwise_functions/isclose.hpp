@@ -81,8 +81,7 @@ inline bool isclose(const std::complex<T> a,
     }
 
     if (sycl::isnan(a.real()) && sycl::isnan(a.imag()) &&
-        sycl::isnan(b.real()) && sycl::isnan(b.imag()))
-    {
+        sycl::isnan(b.real()) && sycl::isnan(b.imag())) {
         return equal_nan;
     }
 
@@ -311,8 +310,7 @@ sycl::event
         using dpctl::tensor::kernels::alignment_utils::required_alignment;
         if (is_aligned<required_alignment>(a_tp) &&
             is_aligned<required_alignment>(b_tp) &&
-            is_aligned<required_alignment>(out_tp))
-        {
+            is_aligned<required_alignment>(out_tp)) {
             constexpr bool enable_sg_loadstore = true;
             using IsCloseFunc =
                 IsCloseContigScalarFunctor<T, scT, resTy, vec_sz, n_vecs,

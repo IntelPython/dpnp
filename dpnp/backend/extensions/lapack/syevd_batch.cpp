@@ -161,8 +161,8 @@ struct SyevdBatchContigFactory
 {
     fnT get()
     {
-        if constexpr (types::SyevdTypePairSupportFactory<T, RealT>::is_defined)
-        {
+        if constexpr (types::SyevdTypePairSupportFactory<T,
+                                                         RealT>::is_defined) {
             return syevd_batch_impl<T, RealT>;
         }
         else {

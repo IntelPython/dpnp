@@ -131,8 +131,7 @@ public:
         else if constexpr (enable_sg_loadstore &&
                            UnaryTwoOutputsOpT::supports_sg_loadstore::value &&
                            UnaryTwoOutputsOpT::supports_vec::value &&
-                           (vec_sz > 1))
-        {
+                           (vec_sz > 1)) {
             auto sg = ndit.get_sub_group();
             const std::uint16_t sgSize = sg.get_max_local_range()[0];
 
@@ -171,8 +170,7 @@ public:
         }
         else if constexpr (enable_sg_loadstore &&
                            UnaryTwoOutputsOpT::supports_sg_loadstore::value &&
-                           std::is_same_v<resT1, argT>)
-        {
+                           std::is_same_v<resT1, argT>) {
             // default: use scalar-value function
 
             auto sg = ndit.get_sub_group();
@@ -214,8 +212,7 @@ public:
             }
         }
         else if constexpr (enable_sg_loadstore &&
-                           UnaryTwoOutputsOpT::supports_sg_loadstore::value)
-        {
+                           UnaryTwoOutputsOpT::supports_sg_loadstore::value) {
             // default: use scalar-value function
 
             auto sg = ndit.get_sub_group();
@@ -359,8 +356,7 @@ public:
 
         if constexpr (enable_sg_loadstore &&
                       BinaryOperatorT::supports_sg_loadstore::value &&
-                      BinaryOperatorT::supports_vec::value && (vec_sz > 1))
-        {
+                      BinaryOperatorT::supports_vec::value && (vec_sz > 1)) {
             auto sg = ndit.get_sub_group();
             std::uint16_t sgSize = sg.get_max_local_range()[0];
 
@@ -405,8 +401,7 @@ public:
             }
         }
         else if constexpr (enable_sg_loadstore &&
-                           BinaryOperatorT::supports_sg_loadstore::value)
-        {
+                           BinaryOperatorT::supports_sg_loadstore::value) {
             auto sg = ndit.get_sub_group();
             const std::uint16_t sgSize = sg.get_max_local_range()[0];
 
@@ -528,21 +523,18 @@ public:
  * dpctl::tensor::kernels::elementwise_common namespace.
  */
 template <typename argTy,
-          template <typename T>
-          class UnaryTwoOutputsType,
+          template <typename T> class UnaryTwoOutputsType,
           template <typename A,
                     typename R1,
                     typename R2,
                     std::uint8_t vs,
                     std::uint8_t nv,
-                    bool enable>
-          class UnaryTwoOutputsContigFunctorT,
+                    bool enable> class UnaryTwoOutputsContigFunctorT,
           template <typename A,
                     typename R1,
                     typename R2,
                     std::uint8_t vs,
-                    std::uint8_t nv>
-          class kernel_name,
+                    std::uint8_t nv> class kernel_name,
           std::uint8_t vec_sz = 4u,
           std::uint8_t n_vecs = 2u>
 sycl::event
@@ -576,8 +568,7 @@ sycl::event
 
         if (is_aligned<required_alignment>(arg_p) &&
             is_aligned<required_alignment>(res1_p) &&
-            is_aligned<required_alignment>(res2_p))
-        {
+            is_aligned<required_alignment>(res2_p)) {
             static constexpr bool enable_sg_loadstore = true;
             using KernelName = BaseKernelName;
             using Impl =
@@ -613,12 +604,15 @@ sycl::event
  * dpctl::tensor::kernels::elementwise_common namespace.
  */
 template <typename argTy,
-          template <typename T>
-          class UnaryTwoOutputsType,
-          template <typename A, typename R1, typename R2, typename I>
-          class UnaryTwoOutputsStridedFunctorT,
-          template <typename A, typename R1, typename R2, typename I>
-          class kernel_name>
+          template <typename T> class UnaryTwoOutputsType,
+          template <typename A,
+                    typename R1,
+                    typename R2,
+                    typename I> class UnaryTwoOutputsStridedFunctorT,
+          template <typename A,
+                    typename R1,
+                    typename R2,
+                    typename I> class kernel_name>
 sycl::event unary_two_outputs_strided_impl(
     sycl::queue &exec_q,
     std::size_t nelems,
@@ -665,27 +659,25 @@ sycl::event unary_two_outputs_strided_impl(
  * @note It extends binary_contig_impl from
  * dpctl::tensor::kernels::elementwise_common namespace.
  */
-template <typename argTy1,
-          typename argTy2,
-          template <typename T1, typename T2>
-          class BinaryTwoOutputsType,
-          template <typename T1,
-                    typename T2,
-                    typename T3,
-                    typename T4,
-                    std::uint8_t vs,
-                    std::uint8_t nv,
-                    bool enable_sg_loadstore>
-          class BinaryTwoOutputsContigFunctorT,
-          template <typename T1,
-                    typename T2,
-                    typename T3,
-                    typename T4,
-                    std::uint8_t vs,
-                    std::uint8_t nv>
-          class kernel_name,
-          std::uint8_t vec_sz = 4u,
-          std::uint8_t n_vecs = 2u>
+template <
+    typename argTy1,
+    typename argTy2,
+    template <typename T1, typename T2> class BinaryTwoOutputsType,
+    template <typename T1,
+              typename T2,
+              typename T3,
+              typename T4,
+              std::uint8_t vs,
+              std::uint8_t nv,
+              bool enable_sg_loadstore> class BinaryTwoOutputsContigFunctorT,
+    template <typename T1,
+              typename T2,
+              typename T3,
+              typename T4,
+              std::uint8_t vs,
+              std::uint8_t nv> class kernel_name,
+    std::uint8_t vec_sz = 4u,
+    std::uint8_t n_vecs = 2u>
 sycl::event
     binary_two_outputs_contig_impl(sycl::queue &exec_q,
                                    std::size_t nelems,
@@ -726,8 +718,7 @@ sycl::event
         if (is_aligned<required_alignment>(arg1_tp) &&
             is_aligned<required_alignment>(arg2_tp) &&
             is_aligned<required_alignment>(res1_tp) &&
-            is_aligned<required_alignment>(res2_tp))
-        {
+            is_aligned<required_alignment>(res2_tp)) {
             static constexpr bool enable_sg_loadstore = true;
             using KernelName = BaseKernelName;
             using Impl = BinaryTwoOutputsContigFunctorT<argTy1, argTy2, resTy1,
@@ -761,15 +752,19 @@ sycl::event
  * @note It extends binary_strided_impl from
  * dpctl::tensor::kernels::elementwise_common namespace.
  */
-template <
-    typename argTy1,
-    typename argTy2,
-    template <typename T1, typename T2>
-    class BinaryTwoOutputsType,
-    template <typename T1, typename T2, typename T3, typename T4, typename IndT>
-    class BinaryTwoOutputsStridedFunctorT,
-    template <typename T1, typename T2, typename T3, typename T4, typename IndT>
-    class kernel_name>
+template <typename argTy1,
+          typename argTy2,
+          template <typename T1, typename T2> class BinaryTwoOutputsType,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename IndT> class BinaryTwoOutputsStridedFunctorT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename IndT> class kernel_name>
 sycl::event binary_two_outputs_strided_impl(
     sycl::queue &exec_q,
     std::size_t nelems,

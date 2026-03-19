@@ -18,6 +18,7 @@ from dpnp.dpnp_array import dpnp_array
 from dpnp.exceptions import AxisError, ExecutionPlacementError
 
 from .helper import (
+    generate_random_numpy_array,
     get_abs_array,
     get_all_dtypes,
     get_array,
@@ -44,7 +45,9 @@ def _add_keepdims(func):
 
 
 class TestDiagonal:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
     @pytest.mark.parametrize("offset", [-3, -1, 0, 1, 3])
     @pytest.mark.parametrize(
         "shape",
@@ -58,7 +61,7 @@ class TestDiagonal:
             "(2, 2, 2, 3)",
         ],
     )
-    def test_diagonal_offset(self, shape, dtype, offset):
+    def test_offset(self, shape, dtype, offset):
         a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
         a_dp = dpnp.array(a)
         expected = numpy.diagonal(a, offset)
@@ -74,7 +77,7 @@ class TestDiagonal:
             ((4, 3, 5, 2), [(0, 1), (1, 2), (2, 3), (0, 3)]),
         ],
     )
-    def test_diagonal_axes(self, shape, axis_pairs, dtype):
+    def test_axes(self, shape, axis_pairs, dtype):
         a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
         a_dp = dpnp.array(a)
         for axis1, axis2 in axis_pairs:
@@ -91,7 +94,7 @@ class TestDiagonal:
         result = dpnp.linalg.diagonal(a_dp, offset=offset)
         assert_array_equal(expected, result)
 
-    def test_diagonal_errors(self):
+    def test_errors(self):
         a = dpnp.arange(12).reshape(3, 4)
 
         # unsupported type
@@ -114,6 +117,64 @@ class TestDiagonal:
         # same axes
         assert_raises(ValueError, a.diagonal, axis1=1, axis2=1)
         assert_raises(ValueError, a.diagonal, axis1=1, axis2=-1)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "shape, offset",
+        [
+            ((2, 5), 5),  # offset >= m
+            ((2, 5), 10),  # offset >> m
+            ((4, 5), 6),  # offset >= m
+            ((2, 5), -5),  # negative offset >= n
+            ((3, 3, 4), 5),  # 3D array, offset >= m
+        ],
+    )
+    def test_empty_strides(self, dt, shape, offset):
+        a = generate_random_numpy_array(shape=shape, dtype=dt)
+        ia = dpnp.array(a)
+
+        expected = numpy.diagonal(a, offset)
+        result = dpnp.diagonal(ia, offset)
+
+        # Check both shape and strides match NumPy
+        assert expected.shape == result.shape
+        assert expected.strides == result.strides
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_view(self, dt):
+        a = generate_random_numpy_array(shape=(3, 4), dtype=dt)
+        a = dpnp.array(a)
+        ia = a.copy()
+
+        diag = dpnp.diagonal(a)
+        diag[1] = 17  # modify a diagonal element
+        ia[1, 1] = 17  # do the same in original copy of the array
+
+        assert (a == ia).all()
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "slice_spec, offset",
+        [
+            ((slice(None), slice(None, None, 2)), 0),  # skip columns
+            ((slice(None, None, 2), slice(None)), 1),  # skip rows
+            ((slice(None, None, 2), slice(None, None, 2)), 0),  # skip both
+        ],
+    )
+    def test_noncontiguous(self, dt, slice_spec, offset):
+        a = generate_random_numpy_array(shape=(4, 6), dtype=dt)
+        a_sliced = a[slice_spec]
+        ia = dpnp.array(a)
+        ia_sliced = ia[slice_spec]
+
+        expected = numpy.diagonal(a_sliced, offset=offset)
+        result = dpnp.diagonal(ia_sliced, offset=offset)
+
+        # Check strides match for non-contiguous arrays
+        assert expected.shape == result.shape
+        assert expected.strides == result.strides
+        assert_array_equal(expected, result)
 
 
 class TestExtins:

@@ -97,8 +97,7 @@ std::pair<sycl::event, sycl::event>
 
     if (!dpctl::utils::queues_are_compatible(
             exec_q,
-            {vectorX.get_queue(), vectorY.get_queue(), result.get_queue()}))
-    {
+            {vectorX.get_queue(), vectorY.get_queue(), result.get_queue()})) {
         throw py::value_error(
             "USM allocations are not compatible with the execution queue.");
     }
@@ -120,8 +119,8 @@ std::pair<sycl::event, sycl::event>
     const int vectorY_typenum = vectorY.get_typenum();
     const int result_typenum = result.get_typenum();
 
-    if (result_typenum != vectorX_typenum || result_typenum != vectorY_typenum)
-    {
+    if (result_typenum != vectorX_typenum ||
+        result_typenum != vectorY_typenum) {
         throw py::value_error("Given arrays must be of the same type.");
     }
 

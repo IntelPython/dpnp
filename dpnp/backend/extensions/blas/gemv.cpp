@@ -169,8 +169,7 @@ std::pair<sycl::event, sycl::event>
 
     if (!dpctl::utils::queues_are_compatible(
             exec_q,
-            {matrixA.get_queue(), vectorX.get_queue(), vectorY.get_queue()}))
-    {
+            {matrixA.get_queue(), vectorX.get_queue(), vectorY.get_queue()})) {
         throw py::value_error(
             "USM allocations are not compatible with the execution queue.");
     }

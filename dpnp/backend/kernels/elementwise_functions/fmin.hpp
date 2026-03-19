@@ -55,8 +55,7 @@ struct FminFunctor
             return in1 <= in2 ? in1 : in2;
         }
         else if constexpr (tu_ns::is_complex<argT1>::value &&
-                           tu_ns::is_complex<argT2>::value)
-        {
+                           tu_ns::is_complex<argT2>::value) {
             static_assert(std::is_same_v<argT1, argT2>);
 
             using realT = typename argT1::value_type;
@@ -64,8 +63,7 @@ struct FminFunctor
             const realT in2i = std::imag(in2);
 
             if (sycl::isnan(in2r) || sycl::isnan(in2i) ||
-                mu_ns::less_equal_complex<argT1>(in1, in2))
-            {
+                mu_ns::less_equal_complex<argT1>(in1, in2)) {
                 return in1;
             }
             return in2;

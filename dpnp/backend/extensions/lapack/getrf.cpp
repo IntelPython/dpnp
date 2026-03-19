@@ -91,14 +91,14 @@ static sycl::event getrf_impl(sycl::queue &exec_q,
 
         getrf_event = mkl_lapack::getrf(
             exec_q,
-            m,    // The number of rows in the input matrix A (0 ≤ m).
-                  // It must be a non-negative integer.
-            n,    // The number of columns in the input matrix A (0 ≤ n).
-                  // It must be a non-negative integer.
-            a,    // Pointer to the input matrix A (m x n).
-            lda,  // The leading dimension of matrix A.
-                  // It must be at least max(1, m).
-            ipiv, // Pointer to the output array of pivot indices.
+            m,          // The number of rows in the input matrix A (0 ≤ m).
+                        // It must be a non-negative integer.
+            n,          // The number of columns in the input matrix A (0 ≤ n).
+                        // It must be a non-negative integer.
+            a,          // Pointer to the input matrix A (m x n).
+            lda,        // The leading dimension of matrix A.
+                        // It must be at least max(1, m).
+            ipiv,       // Pointer to the output array of pivot indices.
             scratchpad, // Pointer to scratchpad memory to be used by MKL
                         // routine for storing intermediate results.
             scratchpad_size, depends);
