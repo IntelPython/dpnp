@@ -175,9 +175,11 @@ public:
 
 #if INTEL_MKL_VERSION >= 20250000
         std::cerr << "  - API: NEW (passing vector object)" << std::endl;
+        std::cerr.flush(); // Force output to be visible in pytest
         descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides);
 #else
         std::cerr << "  - API: OLD (passing data pointer)" << std::endl;
+        std::cerr.flush(); // Force output to be visible in pytest
         descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides.data());
 #endif // INTEL_MKL_VERSION
     }
@@ -233,9 +235,11 @@ public:
 
 #if INTEL_MKL_VERSION >= 20250000
         std::cerr << "  - API: NEW (passing vector object)" << std::endl;
+        std::cerr.flush(); // Force output to be visible in pytest
         descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides);
 #else
         std::cerr << "  - API: OLD (passing data pointer)" << std::endl;
+        std::cerr.flush(); // Force output to be visible in pytest
         descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides.data());
 #endif // INTEL_MKL_VERSION
     }
