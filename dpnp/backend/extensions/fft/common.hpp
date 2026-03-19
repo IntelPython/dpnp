@@ -28,11 +28,27 @@
 
 #pragma once
 
+#include <cxxabi.h>
+#include <iostream>
 #include <stdexcept>
+#include <type_traits>
+#include <typeinfo>
 
 #include <oneapi/mkl.hpp>
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
+
+// Compile-time tracing: Show which API version is being used
+#ifdef INTEL_MKL_VERSION
+#pragma message("INTEL_MKL_VERSION is defined: " __DATE__)
+#if INTEL_MKL_VERSION >= 20250000
+#pragma message("Using NEW MKL API (>= 2025.0): vector-based interface")
+#else
+#pragma message("Using OLD MKL API (< 2025.0): pointer-based interface")
+#endif
+#else
+#pragma message("WARNING: INTEL_MKL_VERSION is not defined!")
+#endif
 
 namespace dpnp::extensions::fft
 {
@@ -130,9 +146,28 @@ public:
             throw py::value_error(
                 "Strides length does not match descriptor's dimension");
         }
+
+        // Runtime tracing: log type information
+        int status;
+        char *demangled =
+            abi::__cxa_demangle(typeid(valT).name(), nullptr, nullptr, &status);
+        std::cerr << "[TRACE] set_fwd_strides:" << std::endl;
+        std::cerr << "  - INTEL_MKL_VERSION: " << INTEL_MKL_VERSION
+                  << std::endl;
+        std::cerr << "  - valT type: "
+                  << (status == 0 ? demangled : typeid(valT).name())
+                  << std::endl;
+        std::cerr << "  - valT::value_type == std::int64_t: "
+                  << std::is_same_v<typename valT::value_type,
+                                    std::int64_t> << std::endl;
+        if (demangled)
+            free(demangled);
+
 #if INTEL_MKL_VERSION >= 20250000
+        std::cerr << "  - API: NEW (passing vector object)" << std::endl;
         descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides);
 #else
+        std::cerr << "  - API: OLD (passing data pointer)" << std::endl;
         descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides.data());
 #endif // INTEL_MKL_VERSION
     }
@@ -162,9 +197,29 @@ public:
             throw py::value_error(
                 "Strides length does not match descriptor's dimension");
         }
+
+        // Runtime tracing: log type information
+        int status;
+        char *demangled =
+            abi::__cxa_demangle(typeid(valT).name(), nullptr, nullptr, &status);
+        std::cerr << "[TRACE] set_bwd_strides:" << std::endl;
+        std::cerr << "  - INTEL_MKL_VERSION: " << INTEL_MKL_VERSION
+                  << std::endl;
+        std::cerr << "  - valT type: "
+                  << (status == 0 ? demangled : typeid(valT).name())
+                  << std::endl;
+        std::cerr
+            << "  - valT::value_type == std::int64_t: "
+            << std::is_same<typename valT::value_type, std::int64_t>::value
+            << std::endl;
+        if (demangled)
+            free(demangled);
+
 #if INTEL_MKL_VERSION >= 20250000
+        std::cerr << "  - API: NEW (passing vector object)" << std::endl;
         descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides);
 #else
+        std::cerr << "  - API: OLD (passing data pointer)" << std::endl;
         descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides.data());
 #endif // INTEL_MKL_VERSION
     }
