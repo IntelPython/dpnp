@@ -94,15 +94,23 @@ if(NOT DEFINED ENV{MKL_ENABLE_INSTRUCTIONS})
 endif()
 
 set(_PYTHON_PREFIX "Python")
-execute_process(COMMAND ${${_PYTHON_PREFIX}_EXECUTABLE} -c
-                        "import sys; import numpy; sys.stdout.write(numpy.get_include())"
-                RESULT_VARIABLE _${_PYTHON_PREFIX}_RESULT
-                OUTPUT_VARIABLE _${_PYTHON_PREFIX}_NumPy_PATH
-                ERROR_QUIET
-                OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(
+    COMMAND
+        ${${_PYTHON_PREFIX}_EXECUTABLE} -c
+        "import sys; import numpy; sys.stdout.write(numpy.get_include())"
+    RESULT_VARIABLE _${_PYTHON_PREFIX}_RESULT
+    OUTPUT_VARIABLE _${_PYTHON_PREFIX}_NumPy_PATH
+    ERROR_VARIABLE _${_PYTHON_PREFIX}_NumPy_ERROR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_STRIP_TRAILING_WHITESPACE
+)
 
 message(STATUS "NumPy detection result: ${_${_PYTHON_PREFIX}_RESULT}")
 message(STATUS "NumPy include path: ${_${_PYTHON_PREFIX}_NumPy_PATH}")
+if(_${_PYTHON_PREFIX}_NumPy_ERROR)
+    message(STATUS "NumPy detection stderr output:")
+    message(STATUS "${_${_PYTHON_PREFIX}_NumPy_ERROR}")
+endif()
 
 # find Python before enabling pybind11
 find_package(Python 3.10...<3.15 REQUIRED COMPONENTS Development.Module NumPy)
