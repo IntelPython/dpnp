@@ -39,6 +39,8 @@ it contains:
 
 """
 
+# pylint: disable=no-name-in-module
+
 import math
 
 import dpctl.utils as dpu
@@ -49,8 +51,6 @@ import numpy
 import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_elementwise_impl as ti
 import dpnp
-
-# pylint: disable=no-name-in-module
 import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
 from dpctl_ext.tensor._numpy_helper import normalize_axis_index
 from dpnp.dpnp_utils.dpnp_utils_common import (

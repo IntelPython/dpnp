@@ -34,8 +34,6 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include "reductions/reduction_atomic_support.hpp"
 #include "utils/type_utils.hpp"
 

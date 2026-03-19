@@ -159,9 +159,11 @@ function(build_dpctl_ext _trgt _src _dest)
     # TODO: create separate folder inside build folder that contains only
     #   headers related to this target and appropriate folder structure to
     #   eliminate shadow dependencies
-    get_filename_component(_generated_src_dir_dir ${_generated_src_dir} DIRECTORY)
+    # Go up two levels to build root for "dpctl_ext/tensor/_usmarray.h" resolution
+    get_filename_component(_parent_dir ${_generated_src_dir} DIRECTORY)
+    get_filename_component(_build_root ${_parent_dir} DIRECTORY)
     # TODO: do not set directory if we did not generate header
-    target_include_directories(${_trgt} INTERFACE ${_generated_src_dir_dir})
+    target_include_directories(${_trgt} INTERFACE ${_build_root})
     set(_rpath_value "$ORIGIN")
     if(BUILD_DPCTL_EXT_RELATIVE_PATH)
         set(_rpath_value "${_rpath_value}/${BUILD_DPCTL_EXT_RELATIVE_PATH}")
@@ -196,5 +198,13 @@ function(build_dpctl_ext _trgt _src _dest)
     get_target_property(_trgt_headers_dir ${_trgt} INTERFACE_INCLUDE_DIRECTORIES)
     target_include_directories(${_trgt_headers} INTERFACE ${_trgt_headers_dir})
 endfunction()
+
+# Install dpctl_ext C-API headers (similar to dpctl's C-API installation)
+install(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/apis/include/
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl_ext/include
+    FILES_MATCHING
+    REGEX "\\.h(pp)?$"
+)
 
 add_subdirectory(tensor)
