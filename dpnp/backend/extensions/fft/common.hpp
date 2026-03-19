@@ -28,11 +28,15 @@
 
 #pragma once
 
-#include <cxxabi.h>
 #include <iostream>
 #include <stdexcept>
 #include <type_traits>
 #include <typeinfo>
+
+// cxxabi.h is only available on GCC/Clang, not on MSVC
+#ifdef __GNUC__
+#include <cxxabi.h>
+#endif
 
 #include <oneapi/mkl.hpp>
 #include <pybind11/pybind11.h>
@@ -148,20 +152,26 @@ public:
         }
 
         // Runtime tracing: log type information
-        int status;
-        char *demangled =
-            abi::__cxa_demangle(typeid(valT).name(), nullptr, nullptr, &status);
         std::cerr << "[TRACE] set_fwd_strides:" << std::endl;
         std::cerr << "  - INTEL_MKL_VERSION: " << INTEL_MKL_VERSION
                   << std::endl;
+#ifdef __GNUC__
+        // Demangle type name on GCC/Clang
+        int status;
+        char *demangled =
+            abi::__cxa_demangle(typeid(valT).name(), nullptr, nullptr, &status);
         std::cerr << "  - valT type: "
                   << (status == 0 ? demangled : typeid(valT).name())
                   << std::endl;
+        if (demangled)
+            free(demangled);
+#else
+        // On MSVC, just print mangled name
+        std::cerr << "  - valT type: " << typeid(valT).name() << std::endl;
+#endif
         std::cerr << "  - valT::value_type == std::int64_t: "
                   << std::is_same_v<typename valT::value_type,
                                     std::int64_t> << std::endl;
-        if (demangled)
-            free(demangled);
 
 #if INTEL_MKL_VERSION >= 20250000
         std::cerr << "  - API: NEW (passing vector object)" << std::endl;
@@ -199,21 +209,27 @@ public:
         }
 
         // Runtime tracing: log type information
-        int status;
-        char *demangled =
-            abi::__cxa_demangle(typeid(valT).name(), nullptr, nullptr, &status);
         std::cerr << "[TRACE] set_bwd_strides:" << std::endl;
         std::cerr << "  - INTEL_MKL_VERSION: " << INTEL_MKL_VERSION
                   << std::endl;
+#ifdef __GNUC__
+        // Demangle type name on GCC/Clang
+        int status;
+        char *demangled =
+            abi::__cxa_demangle(typeid(valT).name(), nullptr, nullptr, &status);
         std::cerr << "  - valT type: "
                   << (status == 0 ? demangled : typeid(valT).name())
                   << std::endl;
+        if (demangled)
+            free(demangled);
+#else
+        // On MSVC, just print mangled name
+        std::cerr << "  - valT type: " << typeid(valT).name() << std::endl;
+#endif
         std::cerr
             << "  - valT::value_type == std::int64_t: "
             << std::is_same<typename valT::value_type, std::int64_t>::value
             << std::endl;
-        if (demangled)
-            free(demangled);
 
 #if INTEL_MKL_VERSION >= 20250000
         std::cerr << "  - API: NEW (passing vector object)" << std::endl;
