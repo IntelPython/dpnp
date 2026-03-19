@@ -506,7 +506,7 @@ def count_nonzero(x, /, *, axis=None, keepdims=False, out=None):
             type.
     """
     if x.dtype != dpt.bool:
-        x = dpt.astype(x, dpt.bool, copy=False)
+        x = dpt_ext.astype(x, dpt.bool, copy=False)
     return sum(
         x,
         axis=axis,

@@ -30,11 +30,11 @@ from typing import NamedTuple, Optional, Union
 
 import dpctl.tensor as dpt
 import dpctl.utils as du
-from dpctl.tensor._tensor_elementwise_impl import _not_equal, _subtract
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt_ext
+from dpctl_ext.tensor._tensor_elementwise_impl import _not_equal, _subtract
 
 from ._copy_utils import _empty_like_orderK
 from ._scalar_utils import (

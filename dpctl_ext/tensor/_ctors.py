@@ -361,7 +361,7 @@ def _copy_through_host_walker(seq_o, usm_res):
             )
             is None
         ):
-            usm_res[...] = dpt.asnumpy(seq_o).copy()
+            usm_res[...] = dpt_ext.asnumpy(seq_o).copy()
             return
         else:
             usm_res[...] = seq_o

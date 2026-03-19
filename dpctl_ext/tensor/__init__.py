@@ -179,6 +179,8 @@ from ._set_functions import (
     unique_values,
 )
 from ._sorting import argsort, sort, top_k
+from ._statistical_functions import mean, std, var
+from ._testing import allclose
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 from ._utility_functions import all, any, diff
 
@@ -188,6 +190,7 @@ __all__ = [
     "acosh",
     "add",
     "all",
+    "allclose",
     "angle",
     "any",
     "arange",
@@ -267,6 +270,7 @@ __all__ = [
     "log10",
     "max",
     "maximum",
+    "mean",
     "meshgrid",
     "min",
     "minimum",
@@ -308,6 +312,7 @@ __all__ = [
     "square",
     "squeeze",
     "stack",
+    "std",
     "subtract",
     "sum",
     "swapaxes",
@@ -327,6 +332,7 @@ __all__ = [
     "unique_inverse",
     "unique_values",
     "unstack",
+    "var",
     "vecdot",
     "where",
     "zeros",
