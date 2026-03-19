@@ -25,6 +25,8 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
+//
+//===---------------------------------------------------------------------===//
 ///
 /// \file
 /// This file defines kernels for elementwise evaluation of MAXIMUM(x1, x2)
@@ -52,6 +54,7 @@
 
 namespace dpctl::tensor::kernels::maximum
 {
+
 using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;

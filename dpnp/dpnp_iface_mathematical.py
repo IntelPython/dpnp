@@ -47,14 +47,13 @@ it contains:
 import builtins
 import warnings
 
-import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as dpu
 import numpy
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_elementwise_impl as ti_ext
+import dpctl_ext.tensor._tensor_elementwise_impl as ti
 import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
@@ -385,8 +384,8 @@ array(1.5620499351813308)
 
 abs = DPNPUnaryFunc(
     "abs",
-    ti_ext._abs_result_type,
-    ti_ext._abs,
+    ti._abs_result_type,
+    ti._abs,
     _ABS_DOCSTRING,
     mkl_fn_to_call="_mkl_abs_to_call",
     mkl_impl_fn="_abs",
@@ -469,8 +468,8 @@ array([[  0.,   2.,   4.],
 
 add = DPNPBinaryFunc(
     "add",
-    ti_ext._add_result_type,
-    ti_ext._add,
+    ti._add_result_type,
+    ti._add,
     _ADD_DOCSTRING,
     mkl_fn_to_call="_mkl_add_to_call",
     mkl_impl_fn="_add",
@@ -541,8 +540,8 @@ array([ 0., 90., 45.])
 
 angle = DPNPAngle(
     "angle",
-    ti_ext._angle_result_type,
-    ti_ext._angle,
+    ti._angle_result_type,
+    ti._angle,
     _ANGLE_DOCSTRING,
     mkl_fn_to_call="_mkl_arg_to_call",
     mkl_impl_fn="_arg",
@@ -647,8 +646,8 @@ array([-1.0, -1.0, -0.0, 1.0, 2.0, 2.0, 2.0])
 
 ceil = DPNPUnaryFunc(
     "ceil",
-    ti_ext._ceil_result_type,
-    ti_ext._ceil,
+    ti._ceil_result_type,
+    ti._ceil,
     _CEIL_DOCSTRING,
     mkl_fn_to_call="_mkl_ceil_to_call",
     mkl_impl_fn="_ceil",
@@ -782,8 +781,8 @@ array([[ 1.-1.j,  0.-0.j],
 
 conj = DPNPUnaryFunc(
     "conj",
-    ti_ext._conj_result_type,
-    ti_ext._conj,
+    ti._conj_result_type,
+    ti._conj,
     _CONJ_DOCSTRING,
     mkl_fn_to_call="_mkl_conj_to_call",
     mkl_impl_fn="_conj",
@@ -1558,12 +1557,12 @@ array([[0. , 0.5, 1. ],
 
 divide = DPNPBinaryFunc(
     "divide",
-    ti_ext._divide_result_type,
-    ti_ext._divide,
+    ti._divide_result_type,
+    ti._divide,
     _DIVIDE_DOCSTRING,
     mkl_fn_to_call="_mkl_div_to_call",
     mkl_impl_fn="_div",
-    binary_inplace_fn=ti_ext._divide_inplace,
+    binary_inplace_fn=ti._divide_inplace,
     acceptance_fn=dtu._acceptance_fn_divide,
 )
 
@@ -2057,8 +2056,8 @@ array([-2.0, -2.0, -1.0, 0.0, 1.0, 1.0, 2.0])
 
 floor = DPNPUnaryFunc(
     "floor",
-    ti_ext._floor_result_type,
-    ti_ext._floor,
+    ti._floor_result_type,
+    ti._floor,
     _FLOOR_DOCSTRING,
     mkl_fn_to_call="_mkl_floor_to_call",
     mkl_impl_fn="_floor",
@@ -2139,10 +2138,10 @@ array([0., 0., 1., 1.])
 
 floor_divide = DPNPBinaryFunc(
     "floor_divide",
-    ti_ext._floor_divide_result_type,
-    ti_ext._floor_divide,
+    ti._floor_divide_result_type,
+    ti._floor_divide,
     _FLOOR_DIVIDE_DOCSTRING,
-    binary_inplace_fn=ti_ext._floor_divide_inplace,
+    binary_inplace_fn=ti._floor_divide_inplace,
 )
 
 
@@ -2941,8 +2940,8 @@ array(1.)
 
 imag = DPNPImag(
     "imag",
-    ti_ext._imag_result_type,
-    ti_ext._imag,
+    ti._imag_result_type,
+    ti._imag,
     _IMAG_DOCSTRING,
 )
 
@@ -3852,8 +3851,8 @@ array([-1.,  1.])
 
 negative = DPNPUnaryFunc(
     "negative",
-    ti_ext._negative_result_type,
-    ti_ext._negative,
+    ti._negative_result_type,
+    ti._negative,
     _NEGATIVE_DOCSTRING,
     acceptance_fn=acceptance_fn_negative,
 )
@@ -3988,8 +3987,8 @@ array([ 1., -1.])
 
 positive = DPNPUnaryFunc(
     "positive",
-    ti_ext._positive_result_type,
-    ti_ext._positive,
+    ti._positive_result_type,
+    ti._positive,
     _POSITIVE_DOCSTRING,
     acceptance_fn=acceptance_fn_positive,
 )
@@ -4250,8 +4249,8 @@ array([inf+0.j, inf-0.j, inf-0.j])
 
 proj = DPNPUnaryFunc(
     "proj",
-    ti_ext._proj_result_type,
-    ti_ext._proj,
+    ti._proj_result_type,
+    ti._proj,
     _PROJ_DOCSTRING,
 )
 
@@ -4313,8 +4312,8 @@ array(1.)
 
 real = DPNPReal(
     "real",
-    ti_ext._real_result_type,
-    ti_ext._real,
+    ti._real_result_type,
+    ti._real,
     _REAL_DOCSTRING,
 )
 
@@ -4596,8 +4595,8 @@ array([ 0,  0,  0, 10])
 
 round = DPNPRound(
     "round",
-    ti_ext._round_result_type,
-    ti_ext._round,
+    ti._round_result_type,
+    ti._round,
     _ROUND_DOCSTRING,
     mkl_fn_to_call="_mkl_round_to_call",
     mkl_impl_fn="_round",
@@ -4668,8 +4667,8 @@ array([1+0j])
 
 sign = DPNPUnaryFunc(
     "sign",
-    ti_ext._sign_result_type,
-    ti_ext._sign,
+    ti._sign_result_type,
+    ti._sign,
     _SIGN_DOCSTRING,
     acceptance_fn=acceptance_fn_sign,
 )
@@ -4730,8 +4729,8 @@ array([False,  True, False])
 
 signbit = DPNPUnaryFunc(
     "signbit",
-    ti_ext._signbit_result_type,
-    ti_ext._signbit,
+    ti._signbit_result_type,
+    ti._signbit,
     _SIGNBIT_DOCSTRING,
 )
 
@@ -5229,8 +5228,8 @@ array([-1.0, -1.0, -0.0, 0.0, 1.0, 1.0, 2.0])
 
 trunc = DPNPUnaryFunc(
     "trunc",
-    ti_ext._trunc_result_type,
-    ti_ext._trunc,
+    ti._trunc_result_type,
+    ti._trunc,
     _TRUNC_DOCSTRING,
     mkl_fn_to_call="_mkl_trunc_to_call",
     mkl_impl_fn="_trunc",

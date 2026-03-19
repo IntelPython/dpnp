@@ -54,7 +54,7 @@
 #include "cbrt.hpp"
 #include "ceil.hpp"
 #include "conj.hpp"
-// #include "copysign.hpp"
+#include "copysign.hpp"
 #include "cos.hpp"
 #include "cosh.hpp"
 #include "equal.hpp"
@@ -77,22 +77,22 @@
 #include "log1p.hpp"
 #include "log2.hpp"
 #include "logaddexp.hpp"
-// #include "logical_and.hpp"
+#include "logical_and.hpp"
 #include "logical_not.hpp"
-// #include "logical_or.hpp"
-// #include "logical_xor.hpp"
-// #include "maximum.hpp"
-// #include "minimum.hpp"
-// #include "multiply.hpp"
+#include "logical_or.hpp"
+#include "logical_xor.hpp"
+#include "maximum.hpp"
+#include "minimum.hpp"
+#include "multiply.hpp"
 #include "negative.hpp"
-// #include "nextafter.hpp"
-// #include "not_equal.hpp"
+#include "nextafter.hpp"
+#include "not_equal.hpp"
 #include "positive.hpp"
-// #include "pow.hpp"
+#include "pow.hpp"
 #include "proj.hpp"
 #include "real.hpp"
 #include "reciprocal.hpp"
-// #include "remainder.hpp"
+#include "remainder.hpp"
 #include "round.hpp"
 #include "rsqrt.hpp"
 #include "sign.hpp"
@@ -101,7 +101,7 @@
 #include "sinh.hpp"
 #include "sqrt.hpp"
 #include "square.hpp"
-// #include "subtract.hpp"
+#include "subtract.hpp"
 #include "tan.hpp"
 #include "tanh.hpp"
 #include "true_divide.hpp"
@@ -134,7 +134,7 @@ void init_elementwise_functions(py::module_ m)
     init_cbrt(m);
     init_ceil(m);
     init_conj(m);
-    // init_copysign(m);
+    init_copysign(m);
     init_cos(m);
     init_cosh(m);
     init_divide(m);
@@ -158,21 +158,22 @@ void init_elementwise_functions(py::module_ m)
     init_log1p(m);
     init_log2(m);
     init_logaddexp(m);
-    // init_logical_and(m);
+    init_logical_and(m);
     init_logical_not(m);
-    // init_logical_or(m);
-    // init_logical_xor(m);
-    // init_minimum(m);
-    // init_multiply(m);
-    // init_nextafter(m);
+    init_logical_or(m);
+    init_logical_xor(m);
+    init_maximum(m);
+    init_minimum(m);
+    init_multiply(m);
+    init_nextafter(m);
     init_negative(m);
-    // init_not_equal(m);
+    init_not_equal(m);
     init_positive(m);
-    // init_pow(m);
+    init_pow(m);
     init_proj(m);
     init_real(m);
     init_reciprocal(m);
-    // init_remainder(m);
+    init_remainder(m);
     init_round(m);
     init_rsqrt(m);
     init_sign(m);
@@ -181,7 +182,7 @@ void init_elementwise_functions(py::module_ m)
     init_sinh(m);
     init_sqrt(m);
     init_square(m);
-    // init_subtract(m);
+    init_subtract(m);
     init_tan(m);
     init_tanh(m);
     init_trunc(m);

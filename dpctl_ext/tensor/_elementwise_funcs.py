@@ -35,6 +35,7 @@ from ._type_utils import (
     _acceptance_fn_divide,
     _acceptance_fn_negative,
     _acceptance_fn_reciprocal,
+    _acceptance_fn_subtract,
     _resolve_weak_types_all_py_ints,
 )
 
@@ -1243,6 +1244,102 @@ logaddexp = BinaryElementwiseFunc(
 )
 del _logaddexp_docstring_
 
+# B16: ==== LOGICAL_AND (x1, x2)
+_logical_and_docstring_ = r"""
+logical_and(x1, x2, /, \*, out=None, order='K')
+
+Computes the logical AND for each element `x1_i` of the input array `x1` with
+the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise logical AND results.
+"""
+logical_and = BinaryElementwiseFunc(
+    "logical_and",
+    ti._logical_and_result_type,
+    ti._logical_and,
+    _logical_and_docstring_,
+)
+del _logical_and_docstring_
+
+# B17: ==== LOGICAL_OR  (x1, x2)
+_logical_or_docstring_ = r"""
+logical_or(x1, x2, /, \*, out=None, order='K')
+
+Computes the logical OR for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise logical OR results.
+"""
+logical_or = BinaryElementwiseFunc(
+    "logical_or",
+    ti._logical_or_result_type,
+    ti._logical_or,
+    _logical_or_docstring_,
+)
+del _logical_or_docstring_
+
+# B18: ==== LOGICAL_XOR (x1, x2)
+_logical_xor_docstring_ = r"""
+logical_xor(x1, x2, /, \*, out=None, order='K')
+
+Computes the logical XOR for each element `x1_i` of the input array `x1`
+with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise logical XOR results.
+"""
+logical_xor = BinaryElementwiseFunc(
+    "logical_xor",
+    ti._logical_xor_result_type,
+    ti._logical_xor,
+    _logical_xor_docstring_,
+)
+del _logical_xor_docstring_
+
 # U24: ==== LOGICAL_NOT (x)
 _logical_not_docstring = r"""
 logical_not(x, /, \*, out=None, order='K')
@@ -1271,6 +1368,106 @@ logical_not = UnaryElementwiseFunc(
     _logical_not_docstring,
 )
 del _logical_not_docstring
+
+# B26: ==== MAXIMUM    (x1, x2)
+_maximum_docstring_ = r"""
+maximum(x1, x2, /, \*, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise maxima.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise maxima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+maximum = BinaryElementwiseFunc(
+    "maximum",
+    ti._maximum_result_type,
+    ti._maximum,
+    _maximum_docstring_,
+)
+del _maximum_docstring_
+
+# B27: ==== MINIMUM    (x1, x2)
+_minimum_docstring_ = r"""
+minimum(x1, x2, /, \*, out=None, order='K')
+
+Compares two input arrays `x1` and `x2` and returns a new array containing the
+element-wise minima.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise minima. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+minimum = BinaryElementwiseFunc(
+    "minimum",
+    ti._minimum_result_type,
+    ti._minimum,
+    _minimum_docstring_,
+)
+del _minimum_docstring_
+
+# B19: ==== MULTIPLY    (x1, x2)
+_multiply_docstring_ = r"""
+multiply(x1, x2, /, \*, out=None, order='K')
+
+Calculates the product for each element `x1_i` of the input array `x1` with the
+respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array. May have any data type.
+    x2 (usm_ndarray):
+        Second input array. May have any data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise products. The data type of
+        the returned array is determined by the Type Promotion Rules.
+"""
+multiply = BinaryElementwiseFunc(
+    "multiply",
+    ti._multiply_result_type,
+    ti._multiply,
+    _multiply_docstring_,
+    binary_inplace_fn=ti._multiply_inplace,
+)
+del _multiply_docstring_
 
 # U25: ==== NEGATIVE    (x)
 _negative_docstring_ = r"""
@@ -1302,6 +1499,77 @@ negative = UnaryElementwiseFunc(
 )
 del _negative_docstring_
 
+# B28: ==== NEXTAFTER    (x1, x2)
+_nextafter_docstring_ = r"""
+nextafter(x1, x2, /, \*, out=None, order='K')
+
+Calculates the next floating-point value after element `x1_i` of the input
+array `x1` toward the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued floating-point data
+        type.
+    x2 (usm_ndarray):
+        Second input array, expected to have a real-valued floating-point data
+        type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise next representable values of `x1`
+        in the direction of `x2`. The data type of the returned array is
+        determined by the Type Promotion Rules.
+"""
+nextafter = BinaryElementwiseFunc(
+    "nextafter",
+    ti._nextafter_result_type,
+    ti._nextafter,
+    _nextafter_docstring_,
+)
+del _nextafter_docstring_
+
+# B20: ==== NOT_EQUAL   (x1, x2)
+_not_equal_docstring_ = r"""
+not_equal(x1, x2, /, \*, out=None, order='K')
+
+Calculates inequality test results for each element `x1_i` of the
+input array `x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array.
+    x2 (usm_ndarray):
+        Second input array.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the result of element-wise inequality comparison.
+        The returned array has a data type of `bool`.
+"""
+
+not_equal = BinaryElementwiseFunc(
+    "not_equal",
+    ti._not_equal_result_type,
+    ti._not_equal,
+    _not_equal_docstring_,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
+)
+del _not_equal_docstring_
+
 # U26: ==== POSITIVE    (x)
 _positive_docstring_ = r"""
 positive(x, /, \*, out=None, order='K')
@@ -1327,6 +1595,40 @@ positive = UnaryElementwiseFunc(
     "positive", ti._positive_result_type, ti._positive, _positive_docstring_
 )
 del _positive_docstring_
+
+# B21: ==== POW         (x1, x2)
+_pow_docstring_ = r"""
+pow(x1, x2, /, \*, out=None, order='K')
+
+Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a numeric data type.
+    out (usm_ndarray):
+        Output array to populate. Array must have the correct
+        shape and the expected data type.
+    order ("C","F","A","K", optional): memory layout of the new
+        output array, if parameter `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the bases in `x1` raised to the exponents in `x2`
+        element-wise. The data type of the returned array is determined by the
+        Type Promotion Rules.
+"""
+pow = BinaryElementwiseFunc(
+    "pow",
+    ti._pow_result_type,
+    ti._pow,
+    _pow_docstring_,
+    binary_inplace_fn=ti._pow_inplace,
+)
+del _pow_docstring_
 
 # U27: ==== REAL        (x)
 _real_docstring = r"""
@@ -1358,6 +1660,43 @@ real = UnaryElementwiseFunc(
     "real", ti._real_result_type, ti._real, _real_docstring
 )
 del _real_docstring
+
+# B22: ==== REMAINDER   (x1, x2)
+_remainder_docstring_ = r"""
+remainder(x1, x2, /, \*, out=None, order='K')
+
+Calculates the remainder of division for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+
+This function is equivalent to the Python modulus operator.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise remainders. Each remainder has the
+        same sign as respective element `x2_i`. The data type of the returned
+        array is determined by the Type Promotion Rules.
+"""
+remainder = BinaryElementwiseFunc(
+    "remainder",
+    ti._remainder_result_type,
+    ti._remainder,
+    _remainder_docstring_,
+    binary_inplace_fn=ti._remainder_inplace,
+)
+del _remainder_docstring_
 
 # U28: ==== ROUND       (x)
 _round_docstring = r"""
@@ -1534,6 +1873,41 @@ sqrt = UnaryElementwiseFunc(
 )
 del _sqrt_docstring_
 
+# B23: ==== SUBTRACT    (x1, x2)
+_subtract_docstring_ = r"""
+subtract(x1, x2, /, \*, out=None, order='K')
+
+Calculates the difference between each element `x1_i` of the input
+array `x1` and the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a numeric data type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a numeric data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise differences. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+subtract = BinaryElementwiseFunc(
+    "subtract",
+    ti._subtract_result_type,
+    ti._subtract,
+    _subtract_docstring_,
+    binary_inplace_fn=ti._subtract_inplace,
+    acceptance_fn=_acceptance_fn_subtract,
+)
+del _subtract_docstring_
+
 # U34: ==== TAN         (x)
 _tan_docstring = r"""
 tan(x, /, \*, out=None, order='K')
@@ -1709,6 +2083,41 @@ exp2 = UnaryElementwiseFunc(
     "exp2", ti._exp2_result_type, ti._exp2, _exp2_docstring_
 )
 del _exp2_docstring_
+
+# B25: ==== COPYSIGN    (x1, x2)
+_copysign_docstring_ = r"""
+copysign(x1, x2, /, \*, out=None, order='K')
+
+Composes a floating-point value with the magnitude of `x1_i` and the sign of
+`x2_i` for each element of input arrays `x1` and `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array, expected to have a real-valued floating-point data
+        type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued floating-point
+        data type.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise results. The data type
+        of the returned array is determined by the Type Promotion Rules.
+"""
+copysign = BinaryElementwiseFunc(
+    "copysign",
+    ti._copysign_result_type,
+    ti._copysign,
+    _copysign_docstring_,
+)
+del _copysign_docstring_
 
 # U39: ==== RSQRT        (x)
 _rsqrt_docstring_ = r"""
