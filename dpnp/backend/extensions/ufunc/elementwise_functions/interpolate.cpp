@@ -142,8 +142,8 @@ struct InterpolateFactory
     fnT get()
     {
         if constexpr (std::is_same_v<
-                          typename InterpolateOutputType<T>::value_type, void>)
-        {
+                          typename InterpolateOutputType<T>::value_type,
+                          void>) {
             return nullptr;
         }
         else {

@@ -96,10 +96,8 @@ template <std::uint32_t WorkPI,
           typename OpT,
           typename RedT,
           typename ResultT,
-          template <typename, std::uint32_t>
-          class RegistryDataT,
-          template <typename, std::uint32_t>
-          class RegistryWindowT>
+          template <typename, std::uint32_t> class RegistryDataT,
+          template <typename, std::uint32_t> class RegistryWindowT>
 class SlidingWindow1dFunctor
 {
 private:
@@ -194,10 +192,8 @@ template <std::uint32_t WorkPI,
           typename OpT,
           typename RedT,
           typename ResultT,
-          template <typename, std::uint32_t>
-          class RegistryDataT,
-          template <typename, std::uint32_t>
-          class RegistryWindowT>
+          template <typename, std::uint32_t> class RegistryDataT,
+          template <typename, std::uint32_t> class RegistryWindowT>
 class SlidingWindow1dSmallFunctor
 {
 private:

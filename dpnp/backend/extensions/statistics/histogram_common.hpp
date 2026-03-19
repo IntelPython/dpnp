@@ -82,10 +82,7 @@ struct CachedData
         }
     }
 
-    std::size_t size() const
-    {
-        return local_data.size();
-    }
+    std::size_t size() const { return local_data.size(); }
 
     T &operator[](const sycl::id<Dims> &id) const { return local_data[id]; }
 
@@ -122,10 +119,7 @@ struct UncachedData
     {
     }
 
-    std::size_t size() const
-    {
-        return _shape.size();
-    }
+    std::size_t size() const { return _shape.size(); }
 
     T &operator[](const sycl::id<Dims> &id) const { return global_data[id]; }
 
@@ -227,10 +221,7 @@ struct HistWithLocalCopies
         }
     }
 
-    std::uint32_t size() const
-    {
-        return local_hist.size();
-    }
+    std::uint32_t size() const { return local_hist.size(); }
 
 private:
     LocalHist local_hist;
@@ -269,10 +260,7 @@ private:
 template <typename T = std::uint32_t>
 struct NoWeights
 {
-    constexpr T get(std::size_t) const
-    {
-        return 1;
-    }
+    constexpr T get(std::size_t) const { return 1; }
 };
 
 template <typename T>
@@ -280,10 +268,7 @@ struct Weights
 {
     Weights(T *weights) { data = weights; }
 
-    T get(std::size_t id) const
-    {
-        return data[id];
-    }
+    T get(std::size_t id) const { return data[id]; }
 
 private:
     T *data = nullptr;
