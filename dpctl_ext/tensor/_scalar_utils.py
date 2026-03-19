@@ -34,9 +34,6 @@ import numpy as np
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
-from dpctl_ext.tensor._usmarray import (
-    _is_object_with_buffer_protocol as _is_buffer,
-)
 
 from ._type_utils import (
     WeakBooleanType,
@@ -45,6 +42,7 @@ from ._type_utils import (
     WeakIntegralType,
     _to_device_supported_dtype,
 )
+from ._usmarray import _is_object_with_buffer_protocol as _is_buffer
 
 
 def _get_queue_usm_type(o):
