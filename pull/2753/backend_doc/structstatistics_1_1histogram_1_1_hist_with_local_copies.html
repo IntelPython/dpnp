@@ -113,19 +113,19 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8339b6ba816cfa79af952c7e83371f16" id="r_a8339b6ba816cfa79af952c7e83371f16"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8339b6ba816cfa79af952c7e83371f16">HistWithLocalCopies</a> (T *global_data, size_t bins_count, int32_t copies_count, sycl::handler &amp;cgh)</td></tr>
-<tr class="separator:a8339b6ba816cfa79af952c7e83371f16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fb0eca4b84388867f447ac7cb82058f" id="r_a9fb0eca4b84388867f447ac7cb82058f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9fb0eca4b84388867f447ac7cb82058f">HistWithLocalCopies</a> (T *global_data, std::size_t bins_count, std::int32_t copies_count, sycl::handler &amp;cgh)</td></tr>
+<tr class="separator:a9fb0eca4b84388867f447ac7cb82058f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a5b425ea8ed6533343c495b858f040d" id="r_a7a5b425ea8ed6533343c495b858f040d"><td class="memTemplParams" colspan="2">template&lt;int _Dims&gt; </td></tr>
 <tr class="memitem:a7a5b425ea8ed6533343c495b858f040d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a7a5b425ea8ed6533343c495b858f040d">init</a> (const sycl::nd_item&lt; _Dims &gt; &amp;item, localT val=0) const</td></tr>
 <tr class="separator:a7a5b425ea8ed6533343c495b858f040d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03ba7a1882dd65339931f03b75e62436" id="r_a03ba7a1882dd65339931f03b75e62436"><td class="memTemplParams" colspan="2">template&lt;int _Dims&gt; </td></tr>
-<tr class="memitem:a03ba7a1882dd65339931f03b75e62436"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a03ba7a1882dd65339931f03b75e62436">add</a> (const sycl::nd_item&lt; _Dims &gt; &amp;item, int32_t bin, localT value) const</td></tr>
-<tr class="separator:a03ba7a1882dd65339931f03b75e62436"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34e37c2bfeabe7808f7a61dcf2315a9e" id="r_a34e37c2bfeabe7808f7a61dcf2315a9e"><td class="memTemplParams" colspan="2">template&lt;int _Dims&gt; </td></tr>
+<tr class="memitem:a34e37c2bfeabe7808f7a61dcf2315a9e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a34e37c2bfeabe7808f7a61dcf2315a9e">add</a> (const sycl::nd_item&lt; _Dims &gt; &amp;item, std::int32_t bin, localT value) const</td></tr>
+<tr class="separator:a34e37c2bfeabe7808f7a61dcf2315a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a830db15486380715c76ca76731f6678a" id="r_a830db15486380715c76ca76731f6678a"><td class="memTemplParams" colspan="2">template&lt;int _Dims&gt; </td></tr>
 <tr class="memitem:a830db15486380715c76ca76731f6678a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a830db15486380715c76ca76731f6678a">finalize</a> (const sycl::nd_item&lt; _Dims &gt; &amp;item) const</td></tr>
 <tr class="separator:a830db15486380715c76ca76731f6678a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af30c235377b40f8f306b92c4b59e9f4c" id="r_af30c235377b40f8f306b92c4b59e9f4c"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af30c235377b40f8f306b92c4b59e9f4c">size</a> () const</td></tr>
-<tr class="separator:af30c235377b40f8f306b92c4b59e9f4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81054bd63b31d47b7b2a19b0fe445a2f" id="r_a81054bd63b31d47b7b2a19b0fe445a2f"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81054bd63b31d47b7b2a19b0fe445a2f">size</a> () const</td></tr>
+<tr class="separator:a81054bd63b31d47b7b2a19b0fe445a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -137,7 +137,7 @@ Static Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T, typename localT = typename HistLocalType&lt;T&gt;::type&gt;<br />
 struct statistics::histogram::HistWithLocalCopies&lt; T, localT &gt;</div>
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00172">172</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00156">156</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="af0c3805736447972799bf3c26523a645" name="af0c3805736447972799bf3c26523a645"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af0c3805736447972799bf3c26523a645">&#9670;&#160;</a></span>LocalHist</h2>
@@ -153,13 +153,13 @@ template&lt;typename T , typename localT  = typename HistLocalType&lt;T&gt;::typ
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00177">177</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00161">161</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a8339b6ba816cfa79af952c7e83371f16" name="a8339b6ba816cfa79af952c7e83371f16"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8339b6ba816cfa79af952c7e83371f16">&#9670;&#160;</a></span>HistWithLocalCopies()</h2>
+<a id="a9fb0eca4b84388867f447ac7cb82058f" name="a9fb0eca4b84388867f447ac7cb82058f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fb0eca4b84388867f447ac7cb82058f">&#9670;&#160;</a></span>HistWithLocalCopies()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -177,12 +177,12 @@ template&lt;typename T , typename localT  = typename HistLocalType&lt;T&gt;::typ
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>bins_count</em></span>, </td>
+          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>bins_count</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int32_t</td>          <td class="paramname"><span class="paramname"><em>copies_count</em></span>, </td>
+          <td class="paramtype">std::int32_t</td>          <td class="paramname"><span class="paramname"><em>copies_count</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -197,13 +197,13 @@ template&lt;typename T , typename localT  = typename HistLocalType&lt;T&gt;::typ
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00179">179</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00163">163</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a03ba7a1882dd65339931f03b75e62436" name="a03ba7a1882dd65339931f03b75e62436"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a03ba7a1882dd65339931f03b75e62436">&#9670;&#160;</a></span>add()</h2>
+<a id="a34e37c2bfeabe7808f7a61dcf2315a9e" name="a34e37c2bfeabe7808f7a61dcf2315a9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34e37c2bfeabe7808f7a61dcf2315a9e">&#9670;&#160;</a></span>add()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -223,7 +223,7 @@ template&lt;int _Dims&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int32_t</td>          <td class="paramname"><span class="paramname"><em>bin</em></span>, </td>
+          <td class="paramtype">std::int32_t</td>          <td class="paramname"><span class="paramname"><em>bin</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -238,7 +238,7 @@ template&lt;int _Dims&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00203">203</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00187">187</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
@@ -269,7 +269,7 @@ template&lt;int _Dims&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00217">217</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00203">203</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
@@ -304,12 +304,12 @@ template&lt;int _Dims&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00189">189</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00173">173</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
-<a id="af30c235377b40f8f306b92c4b59e9f4c" name="af30c235377b40f8f306b92c4b59e9f4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af30c235377b40f8f306b92c4b59e9f4c">&#9670;&#160;</a></span>size()</h2>
+<a id="a81054bd63b31d47b7b2a19b0fe445a2f" name="a81054bd63b31d47b7b2a19b0fe445a2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81054bd63b31d47b7b2a19b0fe445a2f">&#9670;&#160;</a></span>size()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -320,7 +320,7 @@ template&lt;typename T , typename localT  = typename HistLocalType&lt;T&gt;::typ
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">uint32_t <a class="el" href="structstatistics_1_1histogram_1_1_hist_with_local_copies.html">statistics::histogram::HistWithLocalCopies</a>&lt; T, localT &gt;::size </td>
+          <td class="memname">std::uint32_t <a class="el" href="structstatistics_1_1histogram_1_1_hist_with_local_copies.html">statistics::histogram::HistWithLocalCopies</a>&lt; T, localT &gt;::size </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -333,7 +333,7 @@ template&lt;typename T , typename localT  = typename HistLocalType&lt;T&gt;::typ
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00238">238</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00224">224</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
@@ -360,7 +360,7 @@ template&lt;typename T , typename localT  = typename HistLocalType&lt;T&gt;::typ
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00174">174</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00158">158</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
@@ -386,7 +386,7 @@ template&lt;typename T , typename localT  = typename HistLocalType&lt;T&gt;::typ
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00175">175</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00159">159</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
