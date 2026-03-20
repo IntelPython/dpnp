@@ -37,7 +37,7 @@ jobs:
       actions: write
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
+    timeout-minutes: 120
 
     defaults:
       run:
@@ -113,10 +113,31 @@ jobs:
           name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.package-name }}-*.whl
 
+  check_tensor_changes:
+    name: Detect dpctl_ext file changes
+    runs-on: ubuntu-latest
+    outputs:
+      dpctl_ext_changed: ${{ steps.filter.outputs.dpctl_ext }}
+
+    steps:
+      - name: Checkout DPNP repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Check for dpctl_ext changes
+        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
+        id: filter
+        with:
+          filters: |
+            dpctl_ext:
+              - 'dpctl_ext/**'
+
+
   test_linux:
     name: Test
 
-    needs: build
+    needs: [build, check_tensor_changes]
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 100
@@ -248,13 +269,13 @@ jobs:
             fi
 
       - name: Run tensor tests
-        if: env.rerun-tests-on-failure != 'true'
+        if: env.rerun-tests-on-failure != 'true' && needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true'
         run: |
           python -m pytest -n auto -ra --pyargs dpctl_ext.tests
 
       - name: Run tensor tests
-        if: env.rerun-tests-on-failure == 'true'
-        id: run_tests_dpctl_ext_linux
+        if: env.rerun-tests-on-failure == 'true' && needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true'
+        id: run_tensor_tests_linux
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
@@ -270,7 +291,7 @@ jobs:
   test_windows:
     name: Test
 
-    needs: build
+    needs: [build, check_tensor_changes]
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
@@ -427,14 +448,14 @@ jobs:
             }
 
       - name: Run tensor tests
-        if: env.rerun-tests-on-failure != 'true'
+        if: env.rerun-tests-on-failure != 'true' && needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true'
         shell: pwsh
         run: |
           python -m pytest -n auto -ra --pyargs dpctl_ext.tests
 
       - name: Run tensor tests
-        if: env.rerun-tests-on-failure == 'true'
-        id: run_tests_dpctl_ext_win
+        if: env.rerun-tests-on-failure == 'true' && needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true'
+        id: run_tensor_tests_win
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
@@ -527,7 +548,7 @@ jobs:
   array-api-conformity:
     name: Array API conformity
 
-    needs: build
+    needs: [build, check_tensor_changes]
 
     permissions:
       # Needed to add a comment to a pull request's issue
@@ -549,8 +570,10 @@ jobs:
     env:
       array-api-tests-path: '${{ github.workspace }}/array-api-tests/'
       json-report-file: '${{ github.workspace }}/.report.json'
+      json-report-file-tensor: '${{ github.workspace }}/.report-tensor.json'
       dpnp-repo-path: '${{ github.workspace }}/source/'
       array-api-skips-file: '${{ github.workspace }}/source/.github/workflows/array-api-skips.txt'
+      tensor-array-api-skips-file: '${{ github.workspace }}/source/.github/workflows/tensor-array-api-skips.txt'
       create-conda-channel-env: 'source/environments/create_conda_channel.yml'
       python-ver: '3.13' # it has to be aligned with python in create_conda_channel.yml
       conda-env-name: 'array-api-conformity'
@@ -657,7 +680,7 @@ jobs:
           python -c "import dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
-      - name: Run array API conformance tests
+      - name: Run array API conformance tests for dpnp
         run: |
           python -m pytest --json-report --json-report-file=${{ env.json-report-file }} --disable-deadline --skips-file ${{ env.array-api-skips-file }} array_api_tests || true
         env:
@@ -666,7 +689,19 @@ jobs:
           SYCL_CACHE_PERSISTENT: 1
         working-directory: ${{ env.array-api-tests-path }}
 
-      - name: Set GitHub environment variables
+
+      - name: Run array API conformance tests for tensor
+        if: needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true'
+        run: |
+          python -m pytest --json-report --json-report-file=${{ env.json-report-file-tensor }} --disable-deadline --skips-file ${{ env.tensor-array-api-skips-file }} array_api_tests || true
+        env:
+          ARRAY_API_TESTS_MODULE: 'dpctl_ext.tensor'
+          ARRAY_API_TESTS_VERSION: '2024.12'
+          SYCL_CACHE_PERSISTENT: 1
+        working-directory: ${{ env.array-api-tests-path }}
+
+
+      - name: Set GitHub environment variables for dpnp
         run: |
           FILE=${{ env.json-report-file }}
           if test -f "$FILE"; then
@@ -687,16 +722,50 @@ jobs:
             exit 1
           fi
 
-      - name: Output API summary
+      - name: Set GitHub environment variables for tensor
+        if: needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true'
+        run: |
+          FILE=${{ env.json-report-file-tensor }}
+          if test -f "$FILE"; then
+            PASSED_TESTS=$(jq '.summary | .passed // 0' $FILE)
+            FAILED_TESTS=$(jq '.summary | .failed // 0' $FILE)
+            SKIPPED_TESTS=$(jq '.summary | .skipped // 0' $FILE)
+            TENSOR_MESSAGE="Array API standard conformance tests for dpctl_ext.tensor ran successfully.
+            Passed: $PASSED_TESTS
+            Failed: $FAILED_TESTS
+            Skipped: $SKIPPED_TESTS"
+            {
+              echo "TENSOR_MESSAGE<<EOF"
+              echo "$TENSOR_MESSAGE"
+              echo "EOF"
+            } >> "$GITHUB_ENV"
+          else
+            echo "Array API standard conformance tests failed to run for dpctl_ext.tensor."
+            exit 1
+          fi
+
+      - name: Output dpnp API summary
         run: echo "::notice ${{ env.MESSAGE }}"
 
-      - name: Post result to PR
+      - name: Output tensor API summary
+        if: needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true'
+        run: echo "::notice ${{ env.TENSOR_MESSAGE }}"
+
+      - name: Post dpnp result to PR
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork }}
         uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2.8.2
         with:
           message-id: array_api_results
           message: |
             ${{ env.MESSAGE }}
+
+      - name: Post tensor result to PR
+        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && needs.check_tensor_changes.outputs.dpctl_ext_changed == 'true' }}
+        uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2.8.2
+        with:
+          message-id: tensor_array_api_results
+          message: |
+            ${{ env.TENSOR_MESSAGE }}
 
   cleanup_packages:
     name: Clean up anaconda packages
