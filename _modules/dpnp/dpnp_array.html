@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev4+12.gc8c0f88b4f0 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.20.0dev4+14.g7abbee9860b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=883c346e"></script>
+      <script src="../../_static/documentation_options.js?v=dc5dad44"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -730,6 +730,136 @@
         <span class="n">res</span><span class="o">.</span><span class="n">_array_obj</span> <span class="o">=</span> <span class="n">usm_ary</span>
         <span class="n">res</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">_set_namespace</span><span class="p">(</span><span class="n">dpnp</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array_class</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">strides</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a view of an array with the specified class.</span>
+
+<span class="sd">        The method handles subclass instantiation by creating a usm_ndarray</span>
+<span class="sd">        view and then wrapping it in the appropriate class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        array_class : type</span>
+<span class="sd">            The class to instantiate (dpnp_array or a subclass).</span>
+<span class="sd">        shape : tuple</span>
+<span class="sd">            Shape of the view.</span>
+<span class="sd">        dtype : dtype</span>
+<span class="sd">            Data type of the view (can be None to keep source&#39;s dtype).</span>
+<span class="sd">        strides : tuple</span>
+<span class="sd">            Strides of the view.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        view : array_class instance</span>
+<span class="sd">            A view of the array as the specified class.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span>
+
+        <span class="c1"># create the underlying usm_ndarray view</span>
+        <span class="n">usm_view</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
+            <span class="n">shape</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="p">,</span>
+            <span class="n">strides</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">s</span> <span class="o">//</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">itemsize</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strides</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># wrap the view into the appropriate class</span>
+        <span class="k">if</span> <span class="n">array_class</span> <span class="ow">is</span> <span class="n">dpnp_array</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_view</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># for subclasses, create using __new__ and set up manually</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">array_class</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">array_class</span><span class="p">)</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">_array_obj</span> <span class="o">=</span> <span class="n">usm_view</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">_set_namespace</span><span class="p">(</span><span class="n">dpnp</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s2">&quot;__array_finalize__&quot;</span><span class="p">):</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">__array_finalize__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_view_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">array_class</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal implementation of view method to avoid an issue where</span>
+<span class="sd">        `type` parameter in ndarray.view method shadowing builtin type.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># check if dtype is actually a type</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">array_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot specify output type twice&quot;</span><span class="p">)</span>
+                <span class="n">array_class</span> <span class="o">=</span> <span class="n">dtype</span>
+                <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># validate array_class parameter</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="n">array_class</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">array_class</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">array_class</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Type must be a sub-type of ndarray type&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">array_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># it&#39;s a view on dpnp.ndarray</span>
+            <span class="n">array_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+
+        <span class="n">old_sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">old_strides</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span>
+
+        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_view</span><span class="p">(</span><span class="n">array_class</span><span class="p">,</span> <span class="n">old_sh</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">old_strides</span><span class="p">)</span>
+
+        <span class="n">new_dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">new_dt</span> <span class="o">=</span> <span class="n">dtu</span><span class="o">.</span><span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">new_dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+
+        <span class="n">new_itemsz</span> <span class="o">=</span> <span class="n">new_dt</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="n">old_itemsz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
+        <span class="k">if</span> <span class="n">new_itemsz</span> <span class="o">==</span> <span class="n">old_itemsz</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_view</span><span class="p">(</span><span class="n">array_class</span><span class="p">,</span> <span class="n">old_sh</span><span class="p">,</span> <span class="n">new_dt</span><span class="p">,</span> <span class="n">old_strides</span><span class="p">)</span>
+
+        <span class="n">ndim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span>
+        <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Changing the dtype of a 0d array is only supported &quot;</span>
+                <span class="s2">&quot;if the itemsize is unchanged&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># resize on last axis only</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">old_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="n">old_strides</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="n">old_itemsz</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;To change to a dtype of a different size, &quot;</span>
+                <span class="s2">&quot;the last axis must be contiguous&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># normalize strides whenever itemsize changes</span>
+        <span class="n">new_strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">old_strides</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">new_itemsz</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">new_dim</span> <span class="o">=</span> <span class="n">old_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">*</span> <span class="n">old_itemsz</span>
+        <span class="k">if</span> <span class="n">new_dim</span> <span class="o">%</span> <span class="n">new_itemsz</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;When changing to a larger dtype, its size must be a divisor &quot;</span>
+                <span class="s2">&quot;of the total size in bytes of the last axis of the array&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># normalize shape whenever itemsize changes</span>
+        <span class="n">new_sh</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">old_sh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">new_dim</span> <span class="o">//</span> <span class="n">new_itemsz</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_view</span><span class="p">(</span><span class="n">array_class</span><span class="p">,</span> <span class="n">new_sh</span><span class="p">,</span> <span class="n">new_dt</span><span class="p">,</span> <span class="n">new_strides</span><span class="p">)</span>
 
 <div class="viewcode-block" id="dpnp_array.all">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.all.html#dpnp.dpnp_array.dpnp_array.all">[docs]</a>
@@ -2549,10 +2679,18 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        dtype : {None, str, dtype object}, optional</span>
+<span class="sd">        dtype : {None, str, dtype object, type}, optional</span>
 <span class="sd">            The desired data type of the returned view, e.g. :obj:`dpnp.float32`</span>
-<span class="sd">            or :obj:`dpnp.int16`. By default, it results in the view having the</span>
-<span class="sd">            same data type.</span>
+<span class="sd">            or :obj:`dpnp.int16`. Omitting it results in the view having the</span>
+<span class="sd">            same data type. Can also be a subclass of :class:`dpnp.ndarray` to</span>
+<span class="sd">            create a view of that type (this is equivalent to setting the `type`</span>
+<span class="sd">            parameter).</span>
+
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        type : {None, type}, optional</span>
+<span class="sd">            Type of the returned view, e.g. a subclass of :class:`dpnp.ndarray`.</span>
+<span class="sd">            If specified, the returned array will be an instance of `type`.</span>
+<span class="sd">            Omitting it results in type preservation.</span>
 
 <span class="sd">            Default: ``None``.</span>
 
@@ -2566,11 +2704,6 @@
 <span class="sd">        reinterpretation of the bytes of memory.</span>
 
 <span class="sd">        Only the last axis has to be contiguous.</span>
-
-<span class="sd">        Limitations</span>
-<span class="sd">        -----------</span>
-<span class="sd">        Parameter `type` is supported only with default value ``None``.</span>
-<span class="sd">        Otherwise, the function raises ``NotImplementedError`` exception.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -2595,73 +2728,17 @@
 <span class="sd">            [[2312, 2826],</span>
 <span class="sd">                [5396, 5910]]], dtype=int16)</span>
 
+<span class="sd">        Creating a view with a custom ndarray subclass:</span>
+
+<span class="sd">        &gt;&gt;&gt; class MyArray(np.ndarray):</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">        &gt;&gt;&gt; x = np.array([1, 2, 3])</span>
+<span class="sd">        &gt;&gt;&gt; y = x.view(MyArray)</span>
+<span class="sd">        &gt;&gt;&gt; type(y)</span>
+<span class="sd">        &lt;class &#39;MyArray&#39;&gt;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="nb">type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">&quot;Keyword argument `type` is supported only with &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span>
-
-        <span class="n">old_sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">old_strides</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strides</span>
-
-        <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span><span class="n">old_sh</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">old_strides</span><span class="p">)</span>
-
-        <span class="n">new_dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">new_dt</span> <span class="o">=</span> <span class="n">dtu</span><span class="o">.</span><span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">new_dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
-
-        <span class="n">new_itemsz</span> <span class="o">=</span> <span class="n">new_dt</span><span class="o">.</span><span class="n">itemsize</span>
-        <span class="n">old_itemsz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span>
-        <span class="k">if</span> <span class="n">new_itemsz</span> <span class="o">==</span> <span class="n">old_itemsz</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span>
-                <span class="n">old_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">new_dt</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">old_strides</span>
-            <span class="p">)</span>
-
-        <span class="n">ndim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span>
-        <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Changing the dtype of a 0d array is only supported &quot;</span>
-                <span class="s2">&quot;if the itemsize is unchanged&quot;</span>
-            <span class="p">)</span>
-
-        <span class="c1"># resize on last axis only</span>
-        <span class="n">axis</span> <span class="o">=</span> <span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">old_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span>
-            <span class="ow">and</span> <span class="n">old_strides</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="n">old_itemsz</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;To change to a dtype of a different size, &quot;</span>
-                <span class="s2">&quot;the last axis must be contiguous&quot;</span>
-            <span class="p">)</span>
-
-        <span class="c1"># normalize strides whenever itemsize changes</span>
-        <span class="n">new_strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="n">old_strides</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">new_itemsz</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
-        <span class="p">)</span>
-
-        <span class="n">new_dim</span> <span class="o">=</span> <span class="n">old_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">*</span> <span class="n">old_itemsz</span>
-        <span class="k">if</span> <span class="n">new_dim</span> <span class="o">%</span> <span class="n">new_itemsz</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;When changing to a larger dtype, its size must be a divisor &quot;</span>
-                <span class="s2">&quot;of the total size in bytes of the last axis of the array&quot;</span>
-            <span class="p">)</span>
-
-        <span class="c1"># normalize shape whenever itemsize changes</span>
-        <span class="n">new_sh</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="n">old_sh</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">new_dim</span> <span class="o">//</span> <span class="n">new_itemsz</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span>
-            <span class="n">new_sh</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">new_dt</span><span class="p">,</span>
-            <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-            <span class="n">strides</span><span class="o">=</span><span class="n">new_strides</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_view_impl</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">array_class</span><span class="o">=</span><span class="nb">type</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
