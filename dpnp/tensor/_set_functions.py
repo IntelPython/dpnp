@@ -30,9 +30,7 @@ from typing import NamedTuple, Optional, Union
 
 import dpctl.utils as du
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
+import dpnp.tensor as dpt
 
 from ._copy_utils import _empty_like_orderK
 from ._scalar_utils import (

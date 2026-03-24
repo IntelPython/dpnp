@@ -29,11 +29,9 @@
 import dpctl
 from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_impl as ti
-import dpctl_ext.tensor._tensor_reductions_impl as tri
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_impl as ti
+import dpnp.tensor._tensor_reductions_impl as tri
 
 from ._numpy_helper import normalize_axis_tuple
 from ._type_utils import (

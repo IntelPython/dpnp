@@ -1209,9 +1209,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
                 )
                 return from_dlpack_capsule(cpu_caps)
             else:
-                # TODO: revert to `import dpctl.tensor`
-                # when dpnp fully migrates dpctl/tensor
-                import dpctl_ext.tensor as dpt
+                import dpnp.tensor as dpt
                 return dpt.asarray(blob, device=dev)
         elif got_buffer_error:
             # we are here, because dlpack_attr could not deal with requested

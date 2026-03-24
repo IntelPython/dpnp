@@ -41,9 +41,6 @@ from ._tensor_impl import (
 )
 from ._tensor_sorting_impl import _searchsorted_left, _searchsorted_right
 from ._type_utils import isdtype, result_type
-
-# TODO: revert to `from ._usmarray import...`
-# when dpnp fully migrates dpctl/tensor
 from ._usmarray import usm_ndarray
 
 
