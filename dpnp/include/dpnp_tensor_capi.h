@@ -31,7 +31,7 @@
 /// \file
 /// This file provides access to dpctl_ext's C-API, including:
 /// - dpctl C-API (from external dpctl package - SYCL interface)
-/// - dpctl_ext tensor C-API (usm_ndarray)
+/// - dpnp tensor C-API (usm_ndarray)
 //===---------------------------------------------------------------------===//
 
 #pragma once
@@ -66,30 +66,23 @@
 
 // Include the generated Cython C-API headers for usm_ndarray
 // These headers are generated during build and placed in the build directory
-#include "dpctl_ext/tensor/_usmarray.h"
-#include "dpctl_ext/tensor/_usmarray_api.h"
+#include "dpnp/tensor/_usmarray.h"
+#include "dpnp/tensor/_usmarray_api.h"
 
 /*
- * Function to import dpctl_ext C-API and make it available.
+ * Function to import dpnp tensor C-API and make it available.
  * This imports both:
  * - dpctl C-API (from external dpctl package - SYCL interface)
- * - dpctl_ext C-API (tensor interface - usm_ndarray)
+ * - dpnp tensor C-API (tensor interface - usm_ndarray)
  *
- * C functions can use dpctl_ext's C-API functions without linking to
- * shared objects defining these symbols, if they call `import_dpctl_ext()`
+ * C functions can use dpnp tensor's C-API functions without linking to
+ * shared objects defining these symbols, if they call `import_dpnp_tensor()`
  * prior to using those symbols.
  *
  * It is declared inline to allow multiple definitions in
  * different translation units.
- *
- * TODO: When dpctl_ext is renamed to dpctl.tensor:
- *   - Rename this file: dpctl_ext_capi.h → dpctl/tensor/tensor_capi.h
- *     (Use tensor_capi.h, NOT dpctl_capi.h, to avoid conflict with external
- * dpctl)
- *   - Rename this function: import_dpctl_ext() → import_dpctl_tensor()
- *   - Include external dpctl_capi.h and simplify imports to use import_dpctl()
  */
-static inline void import_dpctl_ext(void)
+static inline void import_dpnp_tensor(void)
 {
     // Import dpctl SYCL interface
     // TODO: Once dpctl removes its tensor module and stabilizes dpctl_capi.h,
@@ -100,7 +93,7 @@ static inline void import_dpctl_ext(void)
     import_dpctl___sycl_queue();
     import_dpctl__memory___memory();
     import_dpctl__program___program();
-    // Import dpctl_ext tensor interface
-    import_dpctl_ext__tensor___usmarray();
+    // Import dpnp tensor interface
+    import_dpnp__tensor___usmarray();
     return;
 }
