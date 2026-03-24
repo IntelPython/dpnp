@@ -12,10 +12,7 @@ import pytest
 from dpctl import select_default_device
 
 import dpnp as cupy
-
-# TODO: revert to `from dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-from dpctl_ext.tensor._numpy_helper import AxisError
+from dpnp.tensor._numpy_helper import AxisError
 from dpnp.tests import config
 from dpnp.tests.third_party.cupy.testing import _array, _parameterized
 from dpnp.tests.third_party.cupy.testing._pytest_impl import is_available

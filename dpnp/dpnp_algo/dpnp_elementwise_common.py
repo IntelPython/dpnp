@@ -32,29 +32,28 @@ from functools import wraps
 import dpctl.utils as dpu
 import numpy
 
-# pylint: disable=no-name-in-module
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._copy_utils as dtc
-import dpctl_ext.tensor._tensor_impl as dti
-import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
-from dpctl_ext.tensor._elementwise_common import (
-    BinaryElementwiseFunc,
-    UnaryElementwiseFunc,
-)
-from dpctl_ext.tensor._scalar_utils import (
-    _get_dtype,
-    _get_shape,
-    _validate_dtype,
-)
+
+# pylint: disable=no-name-in-module
+import dpnp.tensor as dpt
+import dpnp.tensor._copy_utils as dtc
+import dpnp.tensor._tensor_impl as dti
+import dpnp.tensor._type_utils as dtu
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.dpnp_utils.dpnp_utils_common import (
     find_buf_dtype_3out,
     find_buf_dtype_4out,
+)
+from dpnp.tensor._elementwise_common import (
+    BinaryElementwiseFunc,
+    UnaryElementwiseFunc,
+)
+from dpnp.tensor._scalar_utils import (
+    _get_dtype,
+    _get_shape,
+    _validate_dtype,
 )
 
 __all__ = [

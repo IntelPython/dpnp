@@ -43,15 +43,12 @@ it contains:
 
 import dpnp
 
-# TODO: revert to `from dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-from dpctl_ext.tensor._numpy_helper import (
+# pylint: disable=no-name-in-module
+from dpnp.dpnp_utils import get_usm_allocations
+from dpnp.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
 )
-
-# pylint: disable=no-name-in-module
-from dpnp.dpnp_utils import get_usm_allocations
 
 
 def apply_along_axis(func1d, axis, arr, *args, **kwargs):

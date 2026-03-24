@@ -42,13 +42,11 @@ it contains:
 # pylint: disable=protected-access
 # pylint: disable=no-name-in-module
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_elementwise_impl as ti
-import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_elementwise_impl as ti
+import dpnp.tensor._type_utils as dtu
 
 from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call

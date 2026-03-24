@@ -41,11 +41,9 @@ it contains:
 
 from collections.abc import Sequence
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import dpnp
-from dpctl_ext.tensor._numpy_helper import normalize_axis_index
+import dpnp.tensor as dpt
+from dpnp.tensor._numpy_helper import normalize_axis_index
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (

@@ -6,10 +6,8 @@ import dpctl.utils as du
 import numpy
 import pytest
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import dpnp
+import dpnp.tensor as dpt
 from dpnp.dpnp_utils import get_usm_allocations
 
 from .helper import generate_random_numpy_array

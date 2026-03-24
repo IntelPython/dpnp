@@ -46,14 +46,13 @@ import dpctl.utils as dpu
 import numpy
 from numpy import prod
 
-# pylint: disable=no-name-in-module
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
-from dpctl_ext.tensor._numpy_helper import normalize_axis_index
+
+# pylint: disable=no-name-in-module
+import dpnp.tensor._tensor_impl as ti
 from dpnp.dpnp_utils import get_usm_allocations
+from dpnp.tensor._numpy_helper import normalize_axis_index
 
 
 # pylint:disable=missing-class-docstring

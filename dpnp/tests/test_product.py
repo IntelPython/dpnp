@@ -5,11 +5,8 @@ from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp
-
-# TODO: revert to `from dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-from dpctl_ext.tensor._numpy_helper import AxisError
 from dpnp.dpnp_utils import map_dtype_to_device
+from dpnp.tensor._numpy_helper import AxisError
 
 from .helper import (
     assert_dtype_allclose,

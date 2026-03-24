@@ -30,20 +30,19 @@ import dpctl.utils as dpu
 import numpy
 from dpctl.utils import ExecutionPlacementError
 
-# pylint: disable=no-name-in-module
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
-from dpctl_ext.tensor._numpy_helper import (
+
+# pylint: disable=no-name-in-module
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_impl as ti
+from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import get_usm_allocations
+from dpnp.tensor._numpy_helper import (
     AxisError,
     normalize_axis_index,
     normalize_axis_tuple,
 )
-from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import get_usm_allocations
 
 __all__ = [
     "dpnp_cross",

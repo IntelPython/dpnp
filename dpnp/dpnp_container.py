@@ -37,10 +37,8 @@ This module contains code and dependency on different containers used in DPNP
 
 import dpctl.utils as dpu
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import dpnp
+import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
 
 __all__ = [

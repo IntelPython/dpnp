@@ -46,12 +46,10 @@ import dpctl.utils as dpu
 import numpy
 from dpctl.utils import ExecutionPlacementError
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.fft._fft_impl as fi
-from dpctl_ext.tensor._numpy_helper import (
+import dpnp.tensor._tensor_impl as ti
+from dpnp.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
 )
