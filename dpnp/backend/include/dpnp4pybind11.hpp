@@ -28,17 +28,11 @@
 
 #pragma once
 
-// Include dpctl_ext C-API (provides unified access to both dpctl and dpctl_ext)
-// This includes:
+// Include dpnp tensor C-API (provides unified access to both dpctl and dpnp
+// tensor) This includes:
 // - dpctl C-API (from external dpctl package - SYCL interface)
-// - dpctl_ext C-API (tensor interface: usm_ndarray)
-//
-// TODO: When dpctl_ext is renamed to dpctl.tensor:
-//   - Update include: "dpctl_ext_capi.h" → "dpctl/tensor/tensor_capi.h"
-//     (Use tensor_capi.h, NOT dpctl_capi.h, to avoid conflict with external
-//     dpctl)
-//   - Update import calls: import_dpctl_ext() → import_dpctl_tensor()
-#include "dpctl_ext_capi.h"
+// - dpnp tensor C-API (tensor interface: usm_ndarray)
+#include "dpnp_tensor_capi.h"
 
 #include <array>
 #include <cassert>
@@ -288,14 +282,13 @@ private:
           default_usm_memory_{}, default_usm_ndarray_{}, as_usm_memory_{}
 
     {
-        // Import Cython-generated C-API for dpctl
+        // Import Cython-generated C-API for dpnp tensor
         // This imports python modules and initializes
         // static variables such as function pointers for C-API,
         // e.g. SyclDevice_GetDeviceRef, etc.
         // pointers to Python types, i.e. PySyclDeviceType, etc.
         // and exported constants, i.e. USM_ARRAY_C_CONTIGUOUS, etc.
-        // TODO: rename once dpctl_ext is renamed
-        import_dpctl_ext(); // Imports both dpctl and dpctl_ext C-APIs
+        import_dpnp_tensor(); // Imports both dpctl and dpnp tensor C-APIs
 
         // Python type objects for classes implemented by dpctl
         this->Py_SyclDeviceType_ = &Py_SyclDeviceType;
@@ -425,10 +418,7 @@ private:
         default_usm_memory_ = std::shared_ptr<py::object>(
             new py::object{py_default_usm_memory}, Deleter{});
 
-        // TODO: revert to `py::module_::import("dpctl.tensor._usmarray");`
-        // when dpnp fully migrates dpctl/tensor
-        py::module_ mod_usmarray =
-            py::module_::import("dpctl_ext.tensor._usmarray");
+        py::module_ mod_usmarray = py::module_::import("dpnp.tensor._usmarray");
         auto tensor_kl = mod_usmarray.attr("usm_ndarray");
 
         const py::object &py_default_usm_ndarray =
