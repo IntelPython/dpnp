@@ -352,8 +352,7 @@ endif()
 add_library(DpctlExtCAPI INTERFACE)
 target_include_directories(
     DpctlExtCAPI
-    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/dpctl_ext/apis/include
+    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/dpnp/include ${CMAKE_BINARY_DIR}/dpnp/tensor
 )
 
-add_subdirectory(dpctl_ext)
 add_subdirectory(dpnp)

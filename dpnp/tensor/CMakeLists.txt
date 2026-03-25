@@ -29,10 +29,23 @@
 
 find_package(Python COMPONENTS Development.Module)
 
+# Tensor-specific debug flags (preserved from dpctl_ext)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+    if(WIN32)
+        add_compile_options(-Xsycl-target-frontend=spir64 "-g0")
+    elseif(UNIX)
+        string(REPLACE "-g1" "-g" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+        string(REPLACE "-g1" "-g" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    endif()
+endif()
+
+# Suppress unused parameter warnings
+add_compile_options(-Wno-unused-parameter)
+
 file(GLOB _cython_sources *.pyx)
 foreach(_cy_file ${_cython_sources})
     get_filename_component(_trgt ${_cy_file} NAME_WLE)
-    build_dpctl_ext(${_trgt} ${_cy_file} "dpctl_ext/tensor" RELATIVE_PATH "..")
+    build_dpctl_ext(${_trgt} ${_cy_file} "dpnp/tensor" RELATIVE_PATH "..")
     target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
     # target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)
     target_link_libraries(DpctlExtCAPI INTERFACE ${_trgt}_headers)
@@ -354,6 +367,5 @@ foreach(python_module_name ${_py_trgts})
             PROPERTIES INSTALL_RPATH "$ORIGIN/../../../.."
         )
     endif()
-    # TODO: revert to `DESTINATION "dpctl/tensor"`
-    install(TARGETS ${python_module_name} DESTINATION "dpctl_ext/tensor")
+    install(TARGETS ${python_module_name} DESTINATION "dpnp/tensor")
 endforeach()
