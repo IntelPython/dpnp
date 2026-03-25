@@ -29,7 +29,7 @@
 
 find_package(Python COMPONENTS Development.Module)
 
-# Tensor-specific debug flags (preserved from dpctl_ext)
+# Tensor-specific debug flags
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
     if(WIN32)
         add_compile_options(-Xsycl-target-frontend=spir64 "-g0")
@@ -45,7 +45,7 @@ add_compile_options(-Wno-unused-parameter)
 file(GLOB _cython_sources *.pyx)
 foreach(_cy_file ${_cython_sources})
     get_filename_component(_trgt ${_cy_file} NAME_WLE)
-    build_dpctl_ext(${_trgt} ${_cy_file} "dpnp/tensor" RELATIVE_PATH "..")
+    build_dpnp_tensor_ext(${_trgt} ${_cy_file} "dpnp/tensor" RELATIVE_PATH "..")
     target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_link_libraries(DpnpTensorCAPI INTERFACE ${_trgt}_headers)
 endforeach()
@@ -318,8 +318,7 @@ foreach(python_module_name ${_py_trgts})
         ${python_module_name}
         PRIVATE -fsycl-device-code-split=per_kernel
     )
-    # TODO: expand DPCTL_OFFLOAD_COMPRESS to the whole dpnp level
-    if(DPCTL_OFFLOAD_COMPRESS)
+    if(DPNP_TENSOR_OFFLOAD_COMPRESS)
         target_link_options(${python_module_name} PRIVATE --offload-compress)
     endif()
 
@@ -332,8 +331,8 @@ foreach(python_module_name ${_py_trgts})
             ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/
     )
     target_link_options(${python_module_name} PRIVATE ${_linker_options})
-    if(DPCTL_GENERATE_COVERAGE)
-        if(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS)
+    if(DPNP_GENERATE_COVERAGE)
+        if(DPNP_TENSOR_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS)
             target_compile_options(
                 ${python_module_name}
                 PRIVATE -fprofile-instr-generate -fcoverage-mapping

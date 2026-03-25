@@ -86,32 +86,32 @@ function(build_dpnp_cython_ext _trgt _src _dest)
     install(TARGETS ${_trgt} LIBRARY DESTINATION ${_dest})
 endfunction()
 
-function(build_dpctl_ext _trgt _src _dest)
+function(build_dpnp_tensor_ext _trgt _src _dest)
     set(options SYCL)
-    cmake_parse_arguments(BUILD_DPCTL_EXT "${options}" "RELATIVE_PATH" "" ${ARGN})
+    cmake_parse_arguments(BUILD_DPNP_TENSOR "${options}" "RELATIVE_PATH" "" ${ARGN})
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
     set(_cythonize_trgt "${_trgt}_cythonize_pyx")
     python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
-    if(BUILD_DPCTL_EXT_SYCL)
+    if(BUILD_DPNP_SYCL)
         add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
         target_compile_options(${_trgt} PRIVATE -fno-sycl-id-queries-fit-in-int)
         target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=per_kernel)
-        if(DPCTL_OFFLOAD_COMPRESS)
+        if(DPNP_TENSOR_OFFLOAD_COMPRESS)
             target_link_options(${_trgt} PRIVATE --offload-compress)
         endif()
-        if(_dpctl_sycl_targets)
+        if(_dpnp_sycl_targets)
             # make fat binary
             target_compile_options(
                 ${_trgt}
-                PRIVATE ${_dpctl_sycl_target_compile_options}
+                PRIVATE ${_dpnp_sycl_target_compile_options}
             )
-            target_link_options(${_trgt} PRIVATE ${_dpctl_sycl_target_link_options})
+            target_link_options(${_trgt} PRIVATE ${_dpnp_sycl_target_link_options})
         endif()
     endif()
     target_link_libraries(${_trgt} PRIVATE Python::NumPy)
-    if(DPCTL_GENERATE_COVERAGE)
+    if(DPNP_GENERATE_COVERAGE)
         target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
-        if(BUILD_DPCTL_EXT_SYCL)
+        if(BUILD_DPNP_TENSOR_SYCL)
             target_compile_options(${_trgt} PRIVATE -fno-sycl-use-footer)
         endif()
     endif()
@@ -129,16 +129,16 @@ function(build_dpctl_ext _trgt _src _dest)
     # TODO: create separate folder inside build folder that contains only
     #   headers related to this target and appropriate folder structure to
     #   eliminate shadow dependencies
-    # Go up two levels to build root for "dpctl_ext/tensor/_usmarray.h" resolution
+    # Go up two levels to build root for "dpnp/tensor/_usmarray.h" resolution
     get_filename_component(_parent_dir ${_generated_src_dir} DIRECTORY)
     get_filename_component(_build_root ${_parent_dir} DIRECTORY)
     # TODO: do not set directory if we did not generate header
     target_include_directories(${_trgt} INTERFACE ${_build_root})
     set(_rpath_value "$ORIGIN")
-    if(BUILD_DPCTL_EXT_RELATIVE_PATH)
-        set(_rpath_value "${_rpath_value}/${BUILD_DPCTL_EXT_RELATIVE_PATH}")
+    if(BUILD_DPNP_TENSOR_RELATIVE_PATH)
+        set(_rpath_value "${_rpath_value}/${BUILD_DPNP_TENSOR_RELATIVE_PATH}")
     endif()
-    if(DPCTL_WITH_REDIST)
+    if(DPNP_WITH_REDIST)
         set(_rpath_value "${_rpath_value}:${_rpath_value}/../../..")
     endif()
     set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH ${_rpath_value})
@@ -154,7 +154,7 @@ function(build_dpctl_ext _trgt _src _dest)
         DESTINATION ${CMAKE_INSTALL_PREFIX}/dpnp/include/${_dest}
         OPTIONAL
     )
-    if(DPCTL_GENERATE_COVERAGE)
+    if(DPNP_GENERATE_COVERAGE)
         get_filename_component(_original_src_dir ${_src} DIRECTORY)
         file(RELATIVE_PATH _rel_dir ${CMAKE_SOURCE_DIR} ${_original_src_dir})
         install(FILES ${_generated_src} DESTINATION ${CMAKE_INSTALL_PREFIX}/${_rel_dir})
@@ -183,6 +183,7 @@ install(
 )
 
 add_subdirectory(tensor)
+
 add_subdirectory(backend)
 add_subdirectory(backend/extensions/blas)
 add_subdirectory(backend/extensions/fft)

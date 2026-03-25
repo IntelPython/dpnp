@@ -37,10 +37,21 @@ project(
 )
 
 option(DPNP_GENERATE_COVERAGE "Enable build DPNP with coverage instrumentation" OFF)
+option(
+    DPNP_TENSOR_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS
+    "Build dpnp tensor pybind11 offloading extensions with coverage instrumentation"
+    OFF
+)
 option(DPNP_BACKEND_TESTS "Enable building of DPNP backend test suite" OFF)
 option(
     DPNP_WITH_REDIST
     "Build DPNP assuming DPC++ redistributable is installed into Python prefix"
+    OFF
+)
+option(
+    DPNP_TENSOR_OFFLOAD_COMPRESS
+    "Build using offload section compression feature of DPC++ to reduce \
+size of shared object with offloading sections"
     OFF
 )
 
@@ -352,7 +363,7 @@ endif()
 add_library(DpnpTensorCAPI INTERFACE)
 target_include_directories(
     DpnpTensorCAPI
-    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/dpnp/include ${CMAKE_BINARY_DIR}/dpnp/tensor
+    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/dpnp/include
 )
 
 add_subdirectory(dpnp)

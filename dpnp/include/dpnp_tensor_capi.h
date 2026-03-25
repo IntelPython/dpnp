@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file provides access to dpctl_ext's C-API, including:
+/// This file provides access to dpnp tensor's C-API, including:
 /// - dpctl C-API (from external dpctl package - SYCL interface)
 /// - dpnp tensor C-API (usm_ndarray)
 //===---------------------------------------------------------------------===//
