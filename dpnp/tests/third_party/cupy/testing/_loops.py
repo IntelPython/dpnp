@@ -592,12 +592,17 @@ def numpy_cupy_allclose(
     #             "must be supplied as float."
     #         )
 
-    def check_func(c, n, **test_kwargs):
+    def check_func(cupy_result, numpy_result, **test_kwargs):
         rtol1, atol1 = _resolve_tolerance(
-            type_check, c, rtol, atol, **test_kwargs
+            type_check, cupy_result, rtol, atol, **test_kwargs
         )
         _array.assert_allclose(
-            c, n, rtol1, atol1, err_msg=err_msg, verbose=verbose
+            cupy_result,
+            numpy_result,
+            rtol1,
+            atol1,
+            err_msg=err_msg,
+            verbose=verbose,
         )
 
     return _make_decorator(
@@ -652,8 +657,10 @@ def numpy_cupy_array_almost_equal(
     .. seealso:: :func:`cupy.testing.assert_array_almost_equal`
     """
 
-    def check_func(x, y, **test_kwargs):
-        _array.assert_array_almost_equal(x, y, decimal, err_msg, verbose)
+    def check_func(cupy_result, numpy_result, **test_kwargs):
+        _array.assert_array_almost_equal(
+            cupy_result, numpy_result, decimal, err_msg, verbose
+        )
 
     return _make_decorator(
         check_func, name, type_check, False, accept_error, sp_name, scipy_name
@@ -695,8 +702,8 @@ def numpy_cupy_array_almost_equal_nulp(
     .. seealso:: :func:`cupy.testing.assert_array_almost_equal_nulp`
     """
 
-    def check_func(x, y, **test_kwargs):
-        _array.assert_array_almost_equal_nulp(x, y, nulp)
+    def check_func(cupy_result, numpy_result, **test_kwargs):
+        _array.assert_array_almost_equal_nulp(cupy_result, numpy_result, nulp)
 
     return _make_decorator(
         check_func,
@@ -749,8 +756,8 @@ def numpy_cupy_array_max_ulp(
 
     """
 
-    def check_func(x, y, **test_kwargs):
-        _array.assert_array_max_ulp(x, y, maxulp, dtype)
+    def check_func(cupy_result, numpy_result, **test_kwargs):
+        _array.assert_array_max_ulp(cupy_result, numpy_result, maxulp, dtype)
 
     return _make_decorator(
         check_func, name, type_check, False, accept_error, sp_name, scipy_name
@@ -798,9 +805,13 @@ def numpy_cupy_array_equal(
     .. seealso:: :func:`cupy.testing.assert_array_equal`
     """
 
-    def check_func(x, y, **test_kwargs):
+    def check_func(cupy_result, numpy_result, **test_kwargs):
         _array.assert_array_equal(
-            x, y, err_msg, verbose, strides_check=strides_check
+            cupy_result,
+            numpy_result,
+            err_msg,
+            verbose,
+            strides_check=strides_check,
         )
 
     return _make_decorator(
@@ -837,8 +848,8 @@ def numpy_cupy_array_list_equal(
         DeprecationWarning,
     )
 
-    def check_func(x, y, **test_kwargs):
-        _array.assert_array_equal(x, y, err_msg, verbose)
+    def check_func(cupy_result, numpy_result, **test_kwargs):
+        _array.assert_array_equal(cupy_result, numpy_result, err_msg, verbose)
 
     return _make_decorator(
         check_func, name, False, False, False, sp_name, scipy_name
@@ -882,8 +893,8 @@ def numpy_cupy_array_less(
     .. seealso:: :func:`cupy.testing.assert_array_less`
     """
 
-    def check_func(x, y, **test_kwargs):
-        _array.assert_array_less(x, y, err_msg, verbose)
+    def check_func(cupy_result, numpy_result, **test_kwargs):
+        _array.assert_array_less(cupy_result, numpy_result, err_msg, verbose)
 
     return _make_decorator(
         check_func, name, type_check, False, accept_error, sp_name, scipy_name
