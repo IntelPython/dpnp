@@ -7,10 +7,14 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestHyperbolic(unittest.TestCase):
+    # rtol=1e-2 is used to pass the test when dtype is int8/unint8
+    # for such a case, output dtype is float16
+    _rtol_dict = {numpy.float16: 1e-2, "default": 1e-7}
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
-        atol={numpy.float16: 1e-3, "default": 1e-5},
+        rtol=_rtol_dict,
+        atol=1e-5,
         type_check=has_support_aspect64(),
     )
     def check_unary(self, name, xp, dtype):
@@ -18,7 +22,7 @@ class TestHyperbolic(unittest.TestCase):
         return getattr(xp, name)(a)
 
     @testing.for_dtypes(["e", "f", "d"])
-    @testing.numpy_cupy_allclose(atol={numpy.float16: 1e-3, "default": 1e-5})
+    @testing.numpy_cupy_allclose(rtol=_rtol_dict, atol=1e-5)
     def check_unary_unit(self, name, xp, dtype):
         a = xp.array([0.2, 0.4, 0.6, 0.8], dtype=dtype)
         return getattr(xp, name)(a)
@@ -36,7 +40,7 @@ class TestHyperbolic(unittest.TestCase):
         self.check_unary("arcsinh")
 
     @testing.for_dtypes(["e", "f", "d"])
-    @testing.numpy_cupy_allclose(atol={numpy.float16: 1e-3, "default": 1e-5})
+    @testing.numpy_cupy_allclose(rtol=_rtol_dict, atol=1e-5)
     def test_arccosh(self, xp, dtype):
         a = xp.array([1, 2, 3], dtype=dtype)
         return xp.arccosh(a)
