@@ -199,12 +199,4 @@ function(build_dpctl_ext _trgt _src _dest)
     target_include_directories(${_trgt_headers} INTERFACE ${_trgt_headers_dir})
 endfunction()
 
-# Install dpctl_ext C-API headers (similar to dpctl's C-API installation)
-install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/apis/include/
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl_ext/include
-    FILES_MATCHING
-    REGEX "\\.h(pp)?$"
-)
-
 add_subdirectory(tensor)
