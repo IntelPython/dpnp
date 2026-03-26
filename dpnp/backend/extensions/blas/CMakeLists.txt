@@ -39,7 +39,8 @@ set(_module_src
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 
-target_link_libraries(${python_module_name} PRIVATE DpctlExtCAPI)
+# Ensure Cython modules build first so _usmarray.h exists
+add_dependencies(${python_module_name} _usmarray)
 
 if(_dpnp_sycl_targets)
     # make fat binary
@@ -71,6 +72,7 @@ target_include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/../common
         ${CMAKE_SOURCE_DIR}/dpnp/backend/include
         ${CMAKE_SOURCE_DIR}/dpctl_ext/tensor/libtensor/include
+        ${CMAKE_BINARY_DIR} # For generated Cython headers
 )
 
 # treat below headers as system to suppress the warnings there during the build
