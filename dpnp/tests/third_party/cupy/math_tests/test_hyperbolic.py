@@ -7,7 +7,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestHyperbolic(unittest.TestCase):
-    # rtol=1e-2 is used to pass the test when dtype is int8/unint8
+    # rtol=1e-2 is used to pass the test when dtype is int8/uint8
     # for such a case, output dtype is float16
     _rtol_dict = {numpy.float16: 1e-2, "default": 1e-7}
 
