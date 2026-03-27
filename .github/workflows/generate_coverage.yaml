@@ -11,7 +11,7 @@ jobs:
     name: Generate coverage and push to Coveralls.io
 
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 180
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -122,11 +122,6 @@ jobs:
         with:
           docker-images: false
 
-      - name: Show memory before swap
-        run: |
-          free -h
-          swapon --show || true
-
       - name: Create swap
         run: |
           sudo fallocate -l 10G /swapfile
@@ -134,19 +129,14 @@ jobs:
           sudo mkswap /swapfile
           sudo swapon /swapfile
 
-      - name: Show memory after swap
-        run: |
-          free -h
-          swapon --show
-
       - name: Build dpnp with coverage
         env:
-          CMAKE_BUILD_PARALLEL_LEVEL: 1
+          CMAKE_BUILD_PARALLEL_LEVEL: 2
         id: build_coverage
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           shell: bash
-          timeout_minutes: 120
+          timeout_minutes: 150
           max_attempts: 5
           retry_on: error
           command: |
