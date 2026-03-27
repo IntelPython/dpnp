@@ -11,7 +11,7 @@ jobs:
     name: Generate coverage and push to Coveralls.io
 
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 150
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -146,7 +146,7 @@ jobs:
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           shell: bash
-          timeout_minutes: 90
+          timeout_minutes: 120
           max_attempts: 5
           retry_on: error
           command: |
