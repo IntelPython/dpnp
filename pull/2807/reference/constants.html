@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Constants &mdash; Data Parallel Extension for NumPy 0.20.0dev3+290.ge095805f67c documentation</title>
+  <title>Constants &mdash; Data Parallel Extension for NumPy 0.20.0dev3+292.gd84ee6b3f0b documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=809de73f"></script>
+      <script src="../_static/documentation_options.js?v=ace887af"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -59,7 +59,6 @@
 <li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal functions</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines (NumPy)</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Constants</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#dpnp.DLDeviceType"><code class="docutils literal notranslate"><span class="pre">DLDeviceType</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dpnp.e"><code class="docutils literal notranslate"><span class="pre">e</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dpnp.euler_gamma"><code class="docutils literal notranslate"><span class="pre">euler_gamma</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dpnp.inf"><code class="docutils literal notranslate"><span class="pre">inf</span></code></a></li>
@@ -133,49 +132,6 @@
 <p><a class="reference external" href="https://numpy.org/doc/stable/reference/constants.html">NumPy API Reference: Constants</a></p>
 </div>
 <p>DPNP includes several constants:</p>
-<dl class="py data">
-<dt class="sig sig-object py" id="dpnp.DLDeviceType">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">DLDeviceType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;enum</span> <span class="pre">'DLDeviceType'&gt;</span></em><a class="headerlink" href="#dpnp.DLDeviceType" title="Link to this definition"></a></dt>
-<dd><p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></a> for the types of DLDevices supported by the DLPack
-protocol.</p>
-<blockquote>
-<div><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">kDLCPU</span></code>:</dt><dd><p>CPU (host) device</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDA</span></code>:</dt><dd><p>CUDA GPU device</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDAHost</span></code>:</dt><dd><p>Pinned CUDA CPU memory by cudaMallocHost</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLOpenCL</span></code>:</dt><dd><p>OpenCL device</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLVulkan</span></code>:</dt><dd><p>Vulkan buffer</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLMetal</span></code>:</dt><dd><p>Metal for Apple GPU</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLVPI</span></code>:</dt><dd><p>Verilog simulator buffer</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLROCM</span></code>:</dt><dd><p>ROCm GPU device</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLROCMHost</span></code>:</dt><dd><p>Pinned ROCm CPU memory allocated by hipMallocHost</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLExtDev</span></code>:</dt><dd><p>Reserved extension device type used to test new devices</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDAManaged</span></code>:</dt><dd><p>CUDA managed/unified memory allocated by cudaMallocManaged</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLOneAPI</span></code>:</dt><dd><p>Unified shared memory allocated on a oneAPI non-partitioned device</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLWebGPU</span></code>:</dt><dd><p>Device support for WebGPU standard</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLHexagon</span></code>:</dt><dd><p>Qualcomm Hexagon DSP</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLMAIA</span></code>:</dt><dd><p>Microsoft MAIA device</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">kDLTrn</span></code>:</dt><dd><p>AWS Trainium device</p>
-</dd>
-</dl>
-</div></blockquote>
-</dd></dl>
-
 <dl class="py data">
 <dt class="sig sig-object py" id="dpnp.e">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">e</span></span><a class="headerlink" href="#dpnp.e" title="Link to this definition"></a></dt>
