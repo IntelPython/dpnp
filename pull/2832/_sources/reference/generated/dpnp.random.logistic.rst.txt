@@ -1,0 +1,10 @@
+﻿
+
+dpnp.random.logistic
+====================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: logistic
