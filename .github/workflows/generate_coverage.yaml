@@ -11,7 +11,7 @@ jobs:
     name: Generate coverage and push to Coveralls.io
 
     runs-on: ubuntu-latest
-    timeout-minutes: 400
+    timeout-minutes: 150
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -117,36 +117,20 @@ jobs:
           mamba info
           mamba list
 
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        with:
-          docker-images: false
-
-      - name: Create swap
-        run: |
-          sudo fallocate -l 12G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-
       - name: Build dpnp with coverage
-        env:
-          CMAKE_BUILD_PARALLEL_LEVEL: 1
         id: build_coverage
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           shell: bash
-          timeout_minutes: 350
+          timeout_minutes: 120
           max_attempts: 5
           retry_on: error
           command: |
             . $CONDA/etc/profile.d/conda.sh
             conda activate coverage
             [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
-            free -h
             git clean -fxd
             python scripts/gen_coverage.py
-            free -h
 
       - name: Total number of coverage attempts
         run: |
