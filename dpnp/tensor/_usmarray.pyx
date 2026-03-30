@@ -465,7 +465,7 @@ cdef class usm_ndarray:
 
             .. code-block:: python
 
-                from dpctl import tensor
+                from dpctl_ext import tensor
 
                 x = tensor.ones((3, 10, 7))
                 y = tensor.flip(x[:, 1::2], axis=1)
@@ -659,7 +659,7 @@ cdef class usm_ndarray:
 
             .. code-block:: python
 
-                from dpctl import tensor
+                from dpctl_ext import tensor
 
                 x = tensor.arange(899)
                 x.shape = (29, 31)
@@ -764,7 +764,7 @@ cdef class usm_ndarray:
 
             .. code-block:: python
 
-                from dpctl import tensor
+                from dpctl_ext import tensor
 
                 x = tensor.zeros((20, 30))
                 xv = x[10:, :15]
@@ -877,7 +877,7 @@ cdef class usm_ndarray:
 
             .. code-block:: python
 
-                >>> from dpctl import tensor
+                >>> from dpctl_ext import tensor
                 >>> x = tensor.ones(10)
                 >>> x.device
                 Device(level_zero:gpu:0)
@@ -928,7 +928,7 @@ cdef class usm_ndarray:
 
             .. code-block:: python
 
-                from dpctl import tensor
+                from dpctl_ext import tensor
 
                 # Create complex array from
                 # arrays of real and imaginary parts
@@ -957,7 +957,7 @@ cdef class usm_ndarray:
 
             .. code-block:: python
 
-                from dpctl import tensor
+                from dpctl_ext import tensor
 
                 # Reset imaginary part of complex array
 
@@ -1049,7 +1049,7 @@ cdef class usm_ndarray:
             .. code-block:: python
 
                 import dpctl
-                import dpctl.tensor as dpt
+                import dpctl_ext.tensor as dpt
 
                 x = dpt.full(10**6, 2, dtype="int64")
                 q_prof = dpctl.SyclQueue(
