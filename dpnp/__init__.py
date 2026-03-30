@@ -60,6 +60,7 @@ if sys.platform == "win32":  # pragma: no cover
                 [os.getenv("PATH", ""), dll_path]
             )
 
+from dpctl_ext.tensor import __array_api_version__, DLDeviceType
 
 from .dpnp_array import dpnp_array as ndarray
 from .dpnp_array_api_info import __array_namespace_info__
