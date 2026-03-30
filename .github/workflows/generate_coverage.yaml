@@ -11,7 +11,7 @@ jobs:
     name: Generate coverage and push to Coveralls.io
 
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 210
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -124,7 +124,7 @@ jobs:
 
       - name: Create swap
         run: |
-          sudo fallocate -l 10G /swapfile
+          sudo fallocate -l 12G /swapfile
           sudo chmod 600 /swapfile
           sudo mkswap /swapfile
           sudo swapon /swapfile
@@ -136,7 +136,7 @@ jobs:
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           shell: bash
-          timeout_minutes: 150
+          timeout_minutes: 180
           max_attempts: 5
           retry_on: error
           command: |
