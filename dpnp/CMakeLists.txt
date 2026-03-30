@@ -182,7 +182,10 @@ install(
     REGEX "\\.h(pp)?$"
 )
 
-add_subdirectory(tensor)
+# Skip tensor build for coverage to reduce memory usage on Public CI
+if(NOT DPNP_SKIP_TENSOR_BUILD)
+    add_subdirectory(tensor)
+endif()
 
 add_subdirectory(backend)
 add_subdirectory(backend/extensions/blas)

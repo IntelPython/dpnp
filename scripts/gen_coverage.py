@@ -175,6 +175,7 @@ def main():
         verbose=args.verbose,
     )
     cmake_args.append("-DDPNP_GENERATE_COVERAGE=ON")
+    cmake_args.append("-DDPNP_SKIP_TENSOR_BUILD=ON")
 
     env = os.environ.copy()
 
