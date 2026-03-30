@@ -60,6 +60,8 @@ if sys.platform == "win32":  # pragma: no cover
                 [os.getenv("PATH", ""), dll_path]
             )
 
+# TODO: revert to `from dpctl.tensor...`
+# when dpnp fully migrates dpctl/tensor
 from dpctl_ext.tensor import __array_api_version__, DLDeviceType
 
 from .dpnp_array import dpnp_array as ndarray
