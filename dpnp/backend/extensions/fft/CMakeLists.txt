@@ -33,6 +33,8 @@ set(_module_src ${CMAKE_CURRENT_SOURCE_DIR}/fft_py.cpp)
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 
+target_link_libraries(${python_module_name} PRIVATE DpctlExtCAPI)
+
 if(_dpnp_sycl_targets)
     # make fat binary
     target_compile_options(

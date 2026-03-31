@@ -29,6 +29,15 @@
 
 find_package(Python COMPONENTS Development.Module)
 
+file(GLOB _cython_sources *.pyx)
+foreach(_cy_file ${_cython_sources})
+    get_filename_component(_trgt ${_cy_file} NAME_WLE)
+    build_dpctl_ext(${_trgt} ${_cy_file} "dpctl_ext/tensor" RELATIVE_PATH "..")
+    target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    # target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)
+    target_link_libraries(DpctlExtCAPI INTERFACE ${_trgt}_headers)
+endforeach()
+
 if(WIN32)
     if(${CMAKE_VERSION} VERSION_LESS "3.27")
         # this is a work-around for target_link_options inserting option after -link option, cause
@@ -338,6 +347,7 @@ foreach(python_module_name ${_py_trgts})
     #   dpctl4pybind11.hpp. It will allow to simplify dependency tree
     # NOTE: dpctl C-API is resolved at runtime via Python
     # target_link_libraries(${python_module_name} PRIVATE DpctlCAPI)
+    target_link_libraries(${python_module_name} PRIVATE DpctlExtCAPI)
     if(DPNP_WITH_REDIST)
         set_target_properties(
             ${python_module_name}

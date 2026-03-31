@@ -45,17 +45,16 @@ it contains:
 import os
 
 import dpctl
-import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._device import normalize_queue_device
 
 # pylint: disable=no-name-in-module
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
+from dpctl_ext.tensor._device import normalize_queue_device
 
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
@@ -137,7 +136,7 @@ def asnumpy(a, order="C"):
         return a.asnumpy()
 
     if isinstance(a, dpt.usm_ndarray):
-        return dpt_ext.asnumpy(a)
+        return dpt.asnumpy(a)
 
     return numpy.asarray(a, order=order)
 
@@ -191,7 +190,7 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
     if is_supported_array_type(a):
         return get_usm_ndarray(a)
 
-    return dpt_ext.asarray(
+    return dpt.asarray(
         a, dtype=dtype, device=device, usm_type=usm_type, sycl_queue=sycl_queue
     )
 

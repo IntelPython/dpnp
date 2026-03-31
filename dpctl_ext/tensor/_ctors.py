@@ -31,22 +31,21 @@ from numbers import Number
 
 import dpctl
 import dpctl.memory as dpm
-import dpctl.tensor as dpt
 import dpctl.utils
 import numpy as np
-from dpctl.tensor._data_types import _get_dtype
-from dpctl.tensor._device import normalize_queue_device
-from dpctl.tensor._usmarray import _is_object_with_buffer_protocol
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_impl as ti
 
 from ._copy_utils import (
     _empty_like_orderK,
     _from_numpy_empty_like_orderK,
 )
+from ._data_types import _get_dtype
+from ._device import normalize_queue_device
+from ._usmarray import _is_object_with_buffer_protocol
 
 __doc__ = "Implementation of creation functions in :module:`dpctl.tensor`"
 
@@ -182,7 +181,7 @@ def _asarray_from_seq(
     if order in "KA":
         order = "C"
     if isinstance(exec_q, dpctl.SyclQueue):
-        res = dpt_ext.empty(
+        res = dpt.empty(
             seq_shape,
             dtype=dtype,
             usm_type=usm_type,
@@ -193,7 +192,7 @@ def _asarray_from_seq(
         _device_copy_walker(seq_obj, res, _manager)
         return res
     else:
-        res = dpt_ext.empty(
+        res = dpt.empty(
             seq_shape,
             dtype=dtype,
             usm_type=usm_type,
@@ -312,7 +311,7 @@ def _asarray_from_usm_ndarray(
         )
         _manager.add_event_pair(hev, cpy_ev)
     else:
-        tmp = dpt_ext.asnumpy(usm_ndary)
+        tmp = dpt.asnumpy(usm_ndary)
         res[...] = tmp
     return res
 
@@ -361,7 +360,7 @@ def _copy_through_host_walker(seq_o, usm_res):
             )
             is None
         ):
-            usm_res[...] = dpt_ext.asnumpy(seq_o).copy()
+            usm_res[...] = dpt.asnumpy(seq_o).copy()
             return
         else:
             usm_res[...] = seq_o
@@ -381,7 +380,7 @@ def _copy_through_host_walker(seq_o, usm_res):
             )
             is None
         ):
-            usm_res[...] = dpt_ext.asnumpy(usm_ar).copy()
+            usm_res[...] = dpt.asnumpy(usm_ar).copy()
         else:
             usm_res[...] = usm_ar
         return
@@ -1092,7 +1091,7 @@ def eye(
     n_cols = n_rows if n_cols is None else operator.index(n_cols)
     k = operator.index(k)
     if k >= n_cols or -k >= n_rows:
-        return dpt_ext.zeros(
+        return dpt.zeros(
             (n_rows, n_cols),
             dtype=dtype,
             order=order,
@@ -1194,14 +1193,14 @@ def full(
             sycl_queue = normalize_queue_device(
                 sycl_queue=sycl_queue, device=device
             )
-        X = dpt_ext.asarray(
+        X = dpt.asarray(
             fill_value,
             dtype=dtype,
             order=order,
             usm_type=usm_type,
             sycl_queue=sycl_queue,
         )
-        return dpt_ext.copy(dpt_ext.broadcast_to(X, shape), order=order)
+        return dpt.copy(dpt.broadcast_to(X, shape), order=order)
     else:
         _validate_fill_value(fill_value)
 
@@ -1301,14 +1300,14 @@ def full_like(
     if order == "K":
         _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
         if isinstance(fill_value, (dpt.usm_ndarray, np.ndarray, tuple, list)):
-            X = dpt_ext.asarray(
+            X = dpt.asarray(
                 fill_value,
                 dtype=dtype,
                 order=order,
                 usm_type=usm_type,
                 sycl_queue=sycl_queue,
             )
-            X = dpt_ext.broadcast_to(X, sh)
+            X = dpt.broadcast_to(X, sh)
             res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
             _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
             # order copy after tasks populating X
@@ -1434,14 +1433,14 @@ def linspace(
         start = float(start)
         stop = float(stop)
 
-    res = dpt_ext.empty(num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue)
+    res = dpt.empty(num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue)
     _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
     hev, la_ev = ti._linspace_affine(
         start, stop, dst=res, include_endpoint=endpoint, sycl_queue=sycl_queue
     )
     _manager.add_event_pair(hev, la_ev)
 
-    return res if int_dt is None else dpt_ext.astype(res, int_dt)
+    return res if int_dt is None else dpt.astype(res, int_dt)
 
 
 def meshgrid(*arrays, indexing="xy"):
@@ -1506,15 +1505,15 @@ def meshgrid(*arrays, indexing="xy"):
 
     res = []
     if n > 1 and indexing == "xy":
-        res.append(dpt_ext.reshape(arrays[0], (1, -1) + sh[2:], copy=True))
-        res.append(dpt_ext.reshape(arrays[1], sh, copy=True))
+        res.append(dpt.reshape(arrays[0], (1, -1) + sh[2:], copy=True))
+        res.append(dpt.reshape(arrays[1], sh, copy=True))
         arrays, sh = arrays[2:], sh[-2:] + sh[:-2]
 
     for array in arrays:
-        res.append(dpt_ext.reshape(array, sh, copy=True))
+        res.append(dpt.reshape(array, sh, copy=True))
         sh = sh[-1:] + sh[:-1]
 
-    output = dpt_ext.broadcast_arrays(*res)
+    output = dpt.broadcast_arrays(*res)
 
     return output
 
@@ -1707,7 +1706,7 @@ def tril(x, /, *, k=0):
 
     q = x.sycl_queue
     if k >= shape[nd - 1] - 1:
-        res = dpt_ext.empty(
+        res = dpt.empty(
             x.shape,
             dtype=x.dtype,
             order=order,
@@ -1721,7 +1720,7 @@ def tril(x, /, *, k=0):
         )
         _manager.add_event_pair(hev, cpy_ev)
     elif k < -shape[nd - 2]:
-        res = dpt_ext.zeros(
+        res = dpt.zeros(
             x.shape,
             dtype=x.dtype,
             order=order,
@@ -1729,7 +1728,7 @@ def tril(x, /, *, k=0):
             sycl_queue=q,
         )
     else:
-        res = dpt_ext.empty(
+        res = dpt.empty(
             x.shape,
             dtype=x.dtype,
             order=order,
@@ -1785,7 +1784,7 @@ def triu(x, /, *, k=0):
 
     q = x.sycl_queue
     if k > shape[nd - 1]:
-        res = dpt_ext.zeros(
+        res = dpt.zeros(
             x.shape,
             dtype=x.dtype,
             order=order,
@@ -1793,7 +1792,7 @@ def triu(x, /, *, k=0):
             sycl_queue=q,
         )
     elif k <= -shape[nd - 2] + 1:
-        res = dpt_ext.empty(
+        res = dpt.empty(
             x.shape,
             dtype=x.dtype,
             order=order,
@@ -1807,7 +1806,7 @@ def triu(x, /, *, k=0):
         )
         _manager.add_event_pair(hev, cpy_ev)
     else:
-        res = dpt_ext.empty(
+        res = dpt.empty(
             x.shape,
             dtype=x.dtype,
             order=order,

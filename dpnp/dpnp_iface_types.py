@@ -37,12 +37,11 @@ This module provides public type interface file for the library
 import functools
 
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpnp
 
 from .dpnp_array import dpnp_array
@@ -214,7 +213,7 @@ def finfo(dtype):
     """
     if isinstance(dtype, dpnp_array):
         dtype = dtype.dtype
-    return dpt_ext.finfo(dtype)
+    return dpt.finfo(dtype)
 
 
 # pylint: disable=redefined-outer-name
@@ -247,7 +246,7 @@ def iinfo(dtype):
 
     if isinstance(dtype, dpnp_array):
         dtype = dtype.dtype
-    return dpt_ext.iinfo(dtype)
+    return dpt.iinfo(dtype)
 
 
 def isdtype(dtype, kind):
@@ -301,7 +300,7 @@ def isdtype(dtype, kind):
     elif isinstance(kind, tuple):
         kind = tuple(dpt.dtype(k) if isinstance(k, type) else k for k in kind)
 
-    return dpt_ext.isdtype(dtype, kind)
+    return dpt.isdtype(dtype, kind)
 
 
 def issubdtype(arg1, arg2):

@@ -32,10 +32,6 @@ from typing import Literal, Union
 import dpctl
 import dpctl.utils as du
 
-# TODO: revert to `from ._usmarray import...`
-# when dpnp fully migrates dpctl/tensor
-from dpctl.tensor._usmarray import usm_ndarray
-
 from ._copy_utils import _empty_like_orderK
 from ._ctors import empty
 from ._tensor_impl import _copy_usm_ndarray_into_usm_ndarray as ti_copy
@@ -45,6 +41,10 @@ from ._tensor_impl import (
 )
 from ._tensor_sorting_impl import _searchsorted_left, _searchsorted_right
 from ._type_utils import isdtype, result_type
+
+# TODO: revert to `from ._usmarray import...`
+# when dpnp fully migrates dpctl/tensor
+from ._usmarray import usm_ndarray
 
 
 def searchsorted(

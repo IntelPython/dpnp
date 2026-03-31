@@ -28,7 +28,9 @@
 
 
 from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
+from ._array_api import __array_api_version__, __array_namespace_info__
 from ._clip import clip
+from ._constants import e, inf, nan, newaxis, pi
 from ._copy_utils import (
     asnumpy,
     astype,
@@ -53,6 +55,29 @@ from ._ctors import (
     zeros,
     zeros_like,
 )
+from ._data_types import (
+    bool,
+    complex64,
+    complex128,
+    dtype,
+    float16,
+    float32,
+    float64,
+    int8,
+    int16,
+    int32,
+    int64,
+    uint8,
+    uint16,
+    uint32,
+    uint64,
+)
+from ._device import Device
+from ._dldevice_conversions import (
+    dldevice_to_sycl_device,
+    sycl_device_to_dldevice,
+)
+from ._dlpack import from_dlpack
 from ._elementwise_funcs import (
     abs,
     acos,
@@ -157,6 +182,13 @@ from ._manipulation_functions import (
     tile,
     unstack,
 )
+from ._print import (
+    get_print_options,
+    print_options,
+    set_print_options,
+    usm_ndarray_repr,
+    usm_ndarray_str,
+)
 from ._reduction import (
     argmax,
     argmin,
@@ -168,6 +200,12 @@ from ._reduction import (
     reduce_hypot,
     sum,
 )
+
+# isort: off
+# placed here to avoid circular import
+from ._usmarray import DLDeviceType, usm_ndarray
+
+# isort: on
 from ._reshape import reshape
 from ._search_functions import where
 from ._searchsorted import searchsorted
@@ -185,6 +223,32 @@ from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 from ._utility_functions import all, any, diff
 
 __all__ = [
+    "Device",
+    "DLDeviceType",
+    "usm_ndarray",
+    # data types
+    "bool",
+    "dtype",
+    "int8",
+    "uint8",
+    "int16",
+    "uint16",
+    "int32",
+    "uint32",
+    "int64",
+    "uint64",
+    "float16",
+    "float32",
+    "float64",
+    "complex64",
+    "complex128",
+    # constants
+    "e",
+    "inf",
+    "nan",
+    "newaxis",
+    "pi",
+    # functions
     "abs",
     "acos",
     "acosh",
@@ -229,6 +293,7 @@ __all__ = [
     "cumulative_sum",
     "diff",
     "divide",
+    "dldevice_to_sycl_device",
     "empty",
     "empty_like",
     "equal",
@@ -242,9 +307,11 @@ __all__ = [
     "flip",
     "floor",
     "floor_divide",
+    "from_dlpack",
     "from_numpy",
     "full",
     "full_like",
+    "get_print_options",
     "greater",
     "greater_equal",
     "hypot",
@@ -288,6 +355,7 @@ __all__ = [
     "place",
     "positive",
     "pow",
+    "print_options",
     "prod",
     "proj",
     "put",
@@ -303,6 +371,7 @@ __all__ = [
     "round",
     "rsqrt",
     "searchsorted",
+    "set_print_options",
     "sign",
     "signbit",
     "sin",
@@ -316,6 +385,7 @@ __all__ = [
     "subtract",
     "sum",
     "swapaxes",
+    "sycl_device_to_dldevice",
     "take",
     "take_along_axis",
     "tan",
@@ -332,9 +402,13 @@ __all__ = [
     "unique_inverse",
     "unique_values",
     "unstack",
+    "usm_ndarray_repr",
+    "usm_ndarray_str",
     "var",
     "vecdot",
     "where",
     "zeros",
     "zeros_like",
+    "__array_api_version__",
+    "__array_namespace_info__",
 ]

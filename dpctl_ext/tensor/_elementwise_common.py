@@ -27,12 +27,11 @@
 # *****************************************************************************
 
 import dpctl
-import dpctl.tensor as dpt
 from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_impl as ti
 
 from ._copy_utils import _empty_like_orderK, _empty_like_pair_orderK
@@ -233,7 +232,7 @@ class UnaryElementwiseFunc:
                 # Allocate a temporary buffer to avoid memory overlapping.
                 # Note if `buf_dt` is not None, a temporary copy of `x` will be
                 # created, so the array overlap check isn't needed.
-                out = dpt_ext.empty_like(out)
+                out = dpt.empty_like(out)
 
             if (
                 dpctl.utils.get_execution_queue((x.sycl_queue, out.sycl_queue))
@@ -252,7 +251,7 @@ class UnaryElementwiseFunc:
                 else:
                     if order == "A":
                         order = "F" if x.flags.f_contiguous else "C"
-                    out = dpt_ext.empty_like(x, dtype=res_dt, order=order)
+                    out = dpt.empty_like(x, dtype=res_dt, order=order)
 
             dep_evs = _manager.submitted_events
             ht_unary_ev, unary_ev = self.unary_fn_(
@@ -275,7 +274,7 @@ class UnaryElementwiseFunc:
         else:
             if order == "A":
                 order = "F" if x.flags.f_contiguous else "C"
-            buf = dpt_ext.empty_like(x, dtype=buf_dt, order=order)
+            buf = dpt.empty_like(x, dtype=buf_dt, order=order)
 
         dep_evs = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -286,7 +285,7 @@ class UnaryElementwiseFunc:
             if order == "K":
                 out = _empty_like_orderK(buf, res_dt)
             else:
-                out = dpt_ext.empty_like(buf, dtype=res_dt, order=order)
+                out = dpt.empty_like(buf, dtype=res_dt, order=order)
 
         ht, uf_ev = self.unary_fn_(
             buf, out, sycl_queue=exec_q, depends=[copy_ev]
@@ -597,7 +596,7 @@ class BinaryElementwiseFunc:
             if isinstance(o1, dpt.usm_ndarray):
                 if ti._array_overlap(o1, out) and buf1_dt is None:
                     if not ti._same_logical_tensors(o1, out):
-                        out = dpt_ext.empty_like(out)
+                        out = dpt.empty_like(out)
                     elif self.binary_inplace_fn_ is not None:
                         # if there is a dedicated in-place kernel
                         # it can be called here, otherwise continues
@@ -610,12 +609,12 @@ class BinaryElementwiseFunc:
                             ):
                                 buf2_dt = o2_dtype
                         else:
-                            src2 = dpt_ext.asarray(
+                            src2 = dpt.asarray(
                                 o2, dtype=o2_dtype, sycl_queue=exec_q
                             )
                         if buf2_dt is None:
                             if src2.shape != res_shape:
-                                src2 = dpt_ext.broadcast_to(src2, res_shape)
+                                src2 = dpt.broadcast_to(src2, res_shape)
                             dep_evs = _manager.submitted_events
                             ht_, comp_ev = self.binary_inplace_fn_(
                                 lhs=o1,
@@ -625,7 +624,7 @@ class BinaryElementwiseFunc:
                             )
                             _manager.add_event_pair(ht_, comp_ev)
                         else:
-                            buf2 = dpt_ext.empty_like(src2, dtype=buf2_dt)
+                            buf2 = dpt.empty_like(src2, dtype=buf2_dt)
                             dep_evs = _manager.submitted_events
                             (
                                 ht_copy_ev,
@@ -638,7 +637,7 @@ class BinaryElementwiseFunc:
                             )
                             _manager.add_event_pair(ht_copy_ev, copy_ev)
 
-                            buf2 = dpt_ext.broadcast_to(buf2, res_shape)
+                            buf2 = dpt.broadcast_to(buf2, res_shape)
                             ht_, bf_ev = self.binary_inplace_fn_(
                                 lhs=o1,
                                 rhs=buf2,
@@ -657,16 +656,16 @@ class BinaryElementwiseFunc:
                 ):
                     # should not reach if out is reallocated
                     # after being checked against o1
-                    out = dpt_ext.empty_like(out)
+                    out = dpt.empty_like(out)
 
         if isinstance(o1, dpt.usm_ndarray):
             src1 = o1
         else:
-            src1 = dpt_ext.asarray(o1, dtype=o1_dtype, sycl_queue=exec_q)
+            src1 = dpt.asarray(o1, dtype=o1_dtype, sycl_queue=exec_q)
         if isinstance(o2, dpt.usm_ndarray):
             src2 = o2
         else:
-            src2 = dpt_ext.asarray(o2, dtype=o2_dtype, sycl_queue=exec_q)
+            src2 = dpt.asarray(o2, dtype=o2_dtype, sycl_queue=exec_q)
 
         if order == "A":
             order = (
@@ -688,7 +687,7 @@ class BinaryElementwiseFunc:
                         src1, src2, res_dt, res_shape, res_usm_type, exec_q
                     )
                 else:
-                    out = dpt_ext.empty(
+                    out = dpt.empty(
                         res_shape,
                         dtype=res_dt,
                         usm_type=res_usm_type,
@@ -696,9 +695,9 @@ class BinaryElementwiseFunc:
                         order=order,
                     )
             if src1.shape != res_shape:
-                src1 = dpt_ext.broadcast_to(src1, res_shape)
+                src1 = dpt.broadcast_to(src1, res_shape)
             if src2.shape != res_shape:
-                src2 = dpt_ext.broadcast_to(src2, res_shape)
+                src2 = dpt.broadcast_to(src2, res_shape)
             deps_ev = _manager.submitted_events
             ht_binary_ev, binary_ev = self.binary_fn_(
                 src1=src1,
@@ -723,7 +722,7 @@ class BinaryElementwiseFunc:
             if order == "K":
                 buf2 = _empty_like_orderK(src2, buf2_dt)
             else:
-                buf2 = dpt_ext.empty_like(src2, dtype=buf2_dt, order=order)
+                buf2 = dpt.empty_like(src2, dtype=buf2_dt, order=order)
             dep_evs = _manager.submitted_events
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=src2, dst=buf2, sycl_queue=exec_q, depends=dep_evs
@@ -735,7 +734,7 @@ class BinaryElementwiseFunc:
                         src1, buf2, res_dt, res_shape, res_usm_type, exec_q
                     )
                 else:
-                    out = dpt_ext.empty(
+                    out = dpt.empty(
                         res_shape,
                         dtype=res_dt,
                         usm_type=res_usm_type,
@@ -744,8 +743,8 @@ class BinaryElementwiseFunc:
                     )
 
             if src1.shape != res_shape:
-                src1 = dpt_ext.broadcast_to(src1, res_shape)
-            buf2 = dpt_ext.broadcast_to(buf2, res_shape)
+                src1 = dpt.broadcast_to(src1, res_shape)
+            buf2 = dpt.broadcast_to(buf2, res_shape)
             ht_binary_ev, binary_ev = self.binary_fn_(
                 src1=src1,
                 src2=buf2,
@@ -769,7 +768,7 @@ class BinaryElementwiseFunc:
             if order == "K":
                 buf1 = _empty_like_orderK(src1, buf1_dt)
             else:
-                buf1 = dpt_ext.empty_like(src1, dtype=buf1_dt, order=order)
+                buf1 = dpt.empty_like(src1, dtype=buf1_dt, order=order)
             dep_evs = _manager.submitted_events
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=src1, dst=buf1, sycl_queue=exec_q, depends=dep_evs
@@ -781,7 +780,7 @@ class BinaryElementwiseFunc:
                         buf1, src2, res_dt, res_shape, res_usm_type, exec_q
                     )
                 else:
-                    out = dpt_ext.empty(
+                    out = dpt.empty(
                         res_shape,
                         dtype=res_dt,
                         usm_type=res_usm_type,
@@ -789,9 +788,9 @@ class BinaryElementwiseFunc:
                         order=order,
                     )
 
-            buf1 = dpt_ext.broadcast_to(buf1, res_shape)
+            buf1 = dpt.broadcast_to(buf1, res_shape)
             if src2.shape != res_shape:
-                src2 = dpt_ext.broadcast_to(src2, res_shape)
+                src2 = dpt.broadcast_to(src2, res_shape)
             ht_binary_ev, binary_ev = self.binary_fn_(
                 src1=buf1,
                 src2=src2,
@@ -820,7 +819,7 @@ class BinaryElementwiseFunc:
         if order == "K":
             buf1 = _empty_like_orderK(src1, buf1_dt)
         else:
-            buf1 = dpt_ext.empty_like(src1, dtype=buf1_dt, order=order)
+            buf1 = dpt.empty_like(src1, dtype=buf1_dt, order=order)
         dep_evs = _manager.submitted_events
         ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=src1, dst=buf1, sycl_queue=exec_q, depends=dep_evs
@@ -829,7 +828,7 @@ class BinaryElementwiseFunc:
         if order == "K":
             buf2 = _empty_like_orderK(src2, buf2_dt)
         else:
-            buf2 = dpt_ext.empty_like(src2, dtype=buf2_dt, order=order)
+            buf2 = dpt.empty_like(src2, dtype=buf2_dt, order=order)
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=src2, dst=buf2, sycl_queue=exec_q, depends=dep_evs
         )
@@ -840,7 +839,7 @@ class BinaryElementwiseFunc:
                     buf1, buf2, res_dt, res_shape, res_usm_type, exec_q
                 )
             else:
-                out = dpt_ext.empty(
+                out = dpt.empty(
                     res_shape,
                     dtype=res_dt,
                     usm_type=res_usm_type,
@@ -848,8 +847,8 @@ class BinaryElementwiseFunc:
                     order=order,
                 )
 
-        buf1 = dpt_ext.broadcast_to(buf1, res_shape)
-        buf2 = dpt_ext.broadcast_to(buf2, res_shape)
+        buf1 = dpt.broadcast_to(buf1, res_shape)
+        buf2 = dpt.broadcast_to(buf2, res_shape)
         ht_, bf_ev = self.binary_fn_(
             src1=buf1,
             src2=buf2,
@@ -960,10 +959,10 @@ class BinaryElementwiseFunc:
             ):
                 buf_dt = o2_dtype
         else:
-            src2 = dpt_ext.asarray(o2, dtype=o2_dtype, sycl_queue=exec_q)
+            src2 = dpt.asarray(o2, dtype=o2_dtype, sycl_queue=exec_q)
         if buf_dt is None:
             if src2.shape != res_shape:
-                src2 = dpt_ext.broadcast_to(src2, res_shape)
+                src2 = dpt.broadcast_to(src2, res_shape)
             dep_evs = _manager.submitted_events
             ht_, comp_ev = self.binary_inplace_fn_(
                 lhs=o1,
@@ -973,7 +972,7 @@ class BinaryElementwiseFunc:
             )
             _manager.add_event_pair(ht_, comp_ev)
         else:
-            buf = dpt_ext.empty_like(src2, dtype=buf_dt)
+            buf = dpt.empty_like(src2, dtype=buf_dt)
             dep_evs = _manager.submitted_events
             (
                 ht_copy_ev,
@@ -986,7 +985,7 @@ class BinaryElementwiseFunc:
             )
             _manager.add_event_pair(ht_copy_ev, copy_ev)
 
-            buf = dpt_ext.broadcast_to(buf, res_shape)
+            buf = dpt.broadcast_to(buf, res_shape)
             ht_, bf_ev = self.binary_inplace_fn_(
                 lhs=o1,
                 rhs=buf,

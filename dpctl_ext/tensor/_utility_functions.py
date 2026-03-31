@@ -29,12 +29,11 @@
 import builtins
 import operator
 
-import dpctl.tensor as dpt
 import dpctl.utils as du
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_impl as ti
 import dpctl_ext.tensor._tensor_reductions_impl as tri
 
@@ -60,7 +59,7 @@ def _boolean_reduction(x, axis, keepdims, func):
         red_nd = nd
         # case of a scalar
         if red_nd == 0:
-            return dpt_ext.astype(x, dpt.bool)
+            return dpt.astype(x, dpt.bool)
         x_tmp = x
         res_shape = ()
         perm = list(range(nd))
@@ -72,9 +71,9 @@ def _boolean_reduction(x, axis, keepdims, func):
         red_nd = len(axis)
         # check for axis=()
         if red_nd == 0:
-            return dpt_ext.astype(x, dpt.bool)
+            return dpt.astype(x, dpt.bool)
         perm = [i for i in range(nd) if i not in axis] + list(axis)
-        x_tmp = dpt_ext.permute_dims(x, perm)
+        x_tmp = dpt.permute_dims(x, perm)
         res_shape = x_tmp.shape[: nd - red_nd]
 
     exec_q = x.sycl_queue
@@ -85,7 +84,7 @@ def _boolean_reduction(x, axis, keepdims, func):
     # always allocate the temporary as
     # int32 and usm-device  to ensure that atomic updates
     # are supported
-    res_tmp = dpt_ext.empty(
+    res_tmp = dpt.empty(
         res_shape,
         dtype=dpt.int32,
         usm_type="device",
@@ -101,7 +100,7 @@ def _boolean_reduction(x, axis, keepdims, func):
     _manager.add_event_pair(hev0, ev0)
 
     # copy to boolean result array
-    res = dpt_ext.empty(
+    res = dpt.empty(
         res_shape,
         dtype=dpt.bool,
         usm_type=res_usm_type,
@@ -115,7 +114,7 @@ def _boolean_reduction(x, axis, keepdims, func):
     if keepdims:
         res_shape = res_shape + (1,) * red_nd
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
-        res = dpt_ext.permute_dims(dpt_ext.reshape(res, res_shape), inv_perm)
+        res = dpt.permute_dims(dpt.reshape(res, res_shape), inv_perm)
     return res
 
 
@@ -292,7 +291,7 @@ def _concat_diff_input(arr, axis, prepend, append):
         if isinstance(prepend, dpt.usm_ndarray):
             a_prepend = prepend
         else:
-            a_prepend = dpt_ext.asarray(
+            a_prepend = dpt.asarray(
                 prepend,
                 dtype=prepend_dtype,
                 usm_type=coerced_usm_type,
@@ -301,7 +300,7 @@ def _concat_diff_input(arr, axis, prepend, append):
         if isinstance(append, dpt.usm_ndarray):
             a_append = append
         else:
-            a_append = dpt_ext.asarray(
+            a_append = dpt.asarray(
                 append,
                 dtype=append_dtype,
                 usm_type=coerced_usm_type,
@@ -309,11 +308,11 @@ def _concat_diff_input(arr, axis, prepend, append):
             )
         if not prepend_shape:
             prepend_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
-            a_prepend = dpt_ext.broadcast_to(a_prepend, prepend_shape)
+            a_prepend = dpt.broadcast_to(a_prepend, prepend_shape)
         if not append_shape:
             append_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
-            a_append = dpt_ext.broadcast_to(a_append, append_shape)
-        return dpt_ext.concat((a_prepend, arr, a_append), axis=axis)
+            a_append = dpt.broadcast_to(a_append, append_shape)
+        return dpt.concat((a_prepend, arr, a_append), axis=axis)
     elif prepend is not None:
         q1, x_usm_type = arr.sycl_queue, arr.usm_type
         q2, prepend_usm_type = _get_queue_usm_type(prepend)
@@ -361,7 +360,7 @@ def _concat_diff_input(arr, axis, prepend, append):
         if isinstance(prepend, dpt.usm_ndarray):
             a_prepend = prepend
         else:
-            a_prepend = dpt_ext.asarray(
+            a_prepend = dpt.asarray(
                 prepend,
                 dtype=prepend_dtype,
                 usm_type=coerced_usm_type,
@@ -369,8 +368,8 @@ def _concat_diff_input(arr, axis, prepend, append):
             )
         if not prepend_shape:
             prepend_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
-            a_prepend = dpt_ext.broadcast_to(a_prepend, prepend_shape)
-        return dpt_ext.concat((a_prepend, arr), axis=axis)
+            a_prepend = dpt.broadcast_to(a_prepend, prepend_shape)
+        return dpt.concat((a_prepend, arr), axis=axis)
     elif append is not None:
         q1, x_usm_type = arr.sycl_queue, arr.usm_type
         q2, append_usm_type = _get_queue_usm_type(append)
@@ -416,7 +415,7 @@ def _concat_diff_input(arr, axis, prepend, append):
         if isinstance(append, dpt.usm_ndarray):
             a_append = append
         else:
-            a_append = dpt_ext.asarray(
+            a_append = dpt.asarray(
                 append,
                 dtype=append_dtype,
                 usm_type=coerced_usm_type,
@@ -424,8 +423,8 @@ def _concat_diff_input(arr, axis, prepend, append):
             )
         if not append_shape:
             append_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
-            a_append = dpt_ext.broadcast_to(a_append, append_shape)
-        return dpt_ext.concat((arr, a_append), axis=axis)
+            a_append = dpt.broadcast_to(a_append, append_shape)
+        return dpt.concat((arr, a_append), axis=axis)
     else:
         arr1 = arr
     return arr1
@@ -489,7 +488,7 @@ def diff(x, /, *, axis=-1, n=1, prepend=None, append=None):
         slice(None) if i != axis else slice(None, -1) for i in range(x_nd)
     )
 
-    diff_op = dpt_ext.not_equal if x.dtype == dpt.bool else dpt_ext.subtract
+    diff_op = dpt.not_equal if x.dtype == dpt.bool else dpt.subtract
     if n > 1:
         arr_tmp0 = diff_op(arr[sl0], arr[sl1])
         arr_tmp1 = diff_op(arr_tmp0[sl0], arr_tmp0[sl1])

@@ -28,12 +28,11 @@
 
 from __future__ import annotations
 
-import dpctl.tensor as dpt
 import numpy as np
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_impl as ti
 
 
@@ -450,7 +449,7 @@ def _resolve_weak_types_all_py_ints(o1_dtype, o2_dtype, dev):
                 o1_dtype, WeakIntegralType
             ):
                 o1_val = o1_dtype.get()
-                o2_iinfo = dpt_ext.iinfo(o2_dtype)
+                o2_iinfo = dpt.iinfo(o2_dtype)
                 if (o1_val < o2_iinfo.min) or (o1_val > o2_iinfo.max):
                     return dpt.dtype(np.min_scalar_type(o1_val)), o2_dtype
             return o2_dtype, o2_dtype
@@ -473,7 +472,7 @@ def _resolve_weak_types_all_py_ints(o1_dtype, o2_dtype, dev):
                 o2_dtype, WeakIntegralType
             ):
                 o2_val = o2_dtype.get()
-                o1_iinfo = dpt_ext.iinfo(o1_dtype)
+                o1_iinfo = dpt.iinfo(o1_dtype)
                 if (o2_val < o1_iinfo.min) or (o2_val > o1_iinfo.max):
                     return o1_dtype, dpt.dtype(np.min_scalar_type(o2_val))
             return o1_dtype, o1_dtype
@@ -936,8 +935,8 @@ def _default_accumulation_dtype(inp_dt, q):
             res_dt = inp_dt
     elif inp_kind in "u":
         res_dt = dpt.dtype(ti.default_device_uint_type(q))
-        res_ii = dpt_ext.iinfo(res_dt)
-        inp_ii = dpt_ext.iinfo(inp_dt)
+        res_ii = dpt.iinfo(res_dt)
+        inp_ii = dpt.iinfo(inp_dt)
         if inp_ii.min >= res_ii.min and inp_ii.max <= res_ii.max:
             pass
         else:
@@ -956,7 +955,7 @@ def _default_accumulation_dtype_fp_types(inp_dt, q):
     inp_kind = inp_dt.kind
     if inp_kind in "biu":
         res_dt = dpt.dtype(ti.default_device_fp_type(q))
-        can_cast_v = dpt_ext.can_cast(inp_dt, res_dt)
+        can_cast_v = dpt.can_cast(inp_dt, res_dt)
         if not can_cast_v:
             _fp64 = q.sycl_device.has_aspect_fp64
             res_dt = dpt.float64 if _fp64 else dpt.float32

@@ -26,100 +26,91 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl.tensor as dpt
 import dpctl.utils as du
 import numpy as np
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 
 from ._manipulation_functions import _broadcast_shape_impl
 from ._type_utils import _to_device_supported_dtype
 
 
 def _allclose_complex_fp(z1, z2, atol, rtol, equal_nan):
-    z1r = dpt_ext.real(z1)
-    z1i = dpt_ext.imag(z1)
-    z2r = dpt_ext.real(z2)
-    z2i = dpt_ext.imag(z2)
+    z1r = dpt.real(z1)
+    z1i = dpt.imag(z1)
+    z2r = dpt.real(z2)
+    z2i = dpt.imag(z2)
     if equal_nan:
-        check1 = dpt_ext.all(
-            dpt_ext.isnan(z1r) == dpt_ext.isnan(z2r)
-        ) and dpt_ext.all(dpt_ext.isnan(z1i) == dpt_ext.isnan(z2i))
+        check1 = dpt.all(dpt.isnan(z1r) == dpt.isnan(z2r)) and dpt.all(
+            dpt.isnan(z1i) == dpt.isnan(z2i)
+        )
     else:
         check1 = (
-            dpt_ext.logical_not(dpt_ext.any(dpt_ext.isnan(z1r)))
-            and dpt_ext.logical_not(dpt_ext.any(dpt_ext.isnan(z1i)))
+            dpt.logical_not(dpt.any(dpt.isnan(z1r)))
+            and dpt.logical_not(dpt.any(dpt.isnan(z1i)))
         ) and (
-            dpt_ext.logical_not(dpt_ext.any(dpt_ext.isnan(z2r)))
-            and dpt_ext.logical_not(dpt_ext.any(dpt_ext.isnan(z2i)))
+            dpt.logical_not(dpt.any(dpt.isnan(z2r)))
+            and dpt.logical_not(dpt.any(dpt.isnan(z2i)))
         )
     if not check1:
         return check1
-    mr = dpt_ext.isinf(z1r)
-    mi = dpt_ext.isinf(z1i)
-    check2 = dpt_ext.all(mr == dpt_ext.isinf(z2r)) and dpt_ext.all(
-        mi == dpt_ext.isinf(z2i)
-    )
+    mr = dpt.isinf(z1r)
+    mi = dpt.isinf(z1i)
+    check2 = dpt.all(mr == dpt.isinf(z2r)) and dpt.all(mi == dpt.isinf(z2i))
     if not check2:
         return check2
-    check3 = dpt_ext.all(z1r[mr] == z2r[mr]) and dpt_ext.all(z1i[mi] == z2i[mi])
+    check3 = dpt.all(z1r[mr] == z2r[mr]) and dpt.all(z1i[mi] == z2i[mi])
     if not check3:
         return check3
-    mr = dpt_ext.isfinite(z1r)
-    mi = dpt_ext.isfinite(z1i)
+    mr = dpt.isfinite(z1r)
+    mi = dpt.isfinite(z1i)
     mv1 = z1r[mr]
     mv2 = z2r[mr]
-    check4 = dpt_ext.all(
-        dpt_ext.abs(mv1 - mv2)
-        < dpt_ext.maximum(
-            atol, rtol * dpt_ext.maximum(dpt_ext.abs(mv1), dpt_ext.abs(mv2))
-        )
+    check4 = dpt.all(
+        dpt.abs(mv1 - mv2)
+        < dpt.maximum(atol, rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2)))
     )
     if not check4:
         return check4
     mv1 = z1i[mi]
     mv2 = z2i[mi]
-    check5 = dpt_ext.all(
-        dpt_ext.abs(mv1 - mv2)
-        <= dpt_ext.maximum(
-            atol, rtol * dpt_ext.maximum(dpt_ext.abs(mv1), dpt_ext.abs(mv2))
-        )
+    check5 = dpt.all(
+        dpt.abs(mv1 - mv2)
+        <= dpt.maximum(atol, rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2)))
     )
     return check5
 
 
 def _allclose_real_fp(r1, r2, atol, rtol, equal_nan):
     if equal_nan:
-        check1 = dpt_ext.all(dpt_ext.isnan(r1) == dpt_ext.isnan(r2))
+        check1 = dpt.all(dpt.isnan(r1) == dpt.isnan(r2))
     else:
-        check1 = dpt_ext.logical_not(
-            dpt_ext.any(dpt_ext.isnan(r1))
-        ) and dpt_ext.logical_not(dpt_ext.any(dpt_ext.isnan(r2)))
+        check1 = dpt.logical_not(dpt.any(dpt.isnan(r1))) and dpt.logical_not(
+            dpt.any(dpt.isnan(r2))
+        )
     if not check1:
         return check1
-    mr = dpt_ext.isinf(r1)
-    check2 = dpt_ext.all(mr == dpt_ext.isinf(r2))
+    mr = dpt.isinf(r1)
+    check2 = dpt.all(mr == dpt.isinf(r2))
     if not check2:
         return check2
-    check3 = dpt_ext.all(r1[mr] == r2[mr])
+    check3 = dpt.all(r1[mr] == r2[mr])
     if not check3:
         return check3
-    m = dpt_ext.isfinite(r1)
+    m = dpt.isfinite(r1)
     mv1 = r1[m]
     mv2 = r2[m]
-    check4 = dpt_ext.all(
-        dpt_ext.abs(mv1 - mv2)
-        <= dpt_ext.maximum(
-            atol, rtol * dpt_ext.maximum(dpt_ext.abs(mv1), dpt_ext.abs(mv2))
-        )
+    check4 = dpt.all(
+        dpt.abs(mv1 - mv2)
+        <= dpt.maximum(atol, rtol * dpt.maximum(dpt.abs(mv1), dpt.abs(mv2)))
     )
     return check4
 
 
 def _allclose_others(r1, r2):
-    return dpt_ext.all(r1 == r2)
+    return dpt.all(r1 == r2)
 
 
 def allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False):
@@ -160,11 +151,11 @@ def allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False):
     else:
         res_dt = np.promote_types(b1.dtype, b2.dtype)
         res_dt = _to_device_supported_dtype(res_dt, exec_q.sycl_device)
-        b1 = dpt_ext.astype(b1, res_dt)
-        b2 = dpt_ext.astype(b2, res_dt)
+        b1 = dpt.astype(b1, res_dt)
+        b2 = dpt.astype(b2, res_dt)
 
-    b1 = dpt_ext.broadcast_to(b1, res_sh)
-    b2 = dpt_ext.broadcast_to(b2, res_sh)
+    b1 = dpt.broadcast_to(b1, res_sh)
+    b2 = dpt.broadcast_to(b2, res_sh)
 
     k = b1.dtype.kind
     if k == "c":

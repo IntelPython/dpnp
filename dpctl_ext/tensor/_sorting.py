@@ -29,12 +29,11 @@
 import operator
 from typing import NamedTuple
 
-import dpctl.tensor as dpt
 import dpctl.utils as du
 
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt_ext
+import dpctl_ext.tensor as dpt
 import dpctl_ext.tensor._tensor_impl as ti
 
 from ._numpy_helper import normalize_axis_index
@@ -98,7 +97,7 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
     nd = x.ndim
     if nd == 0:
         axis = normalize_axis_index(axis, ndim=1, msg_prefix="axis")
-        return dpt_ext.copy(x, order="C")
+        return dpt.copy(x, order="C")
     else:
         axis = normalize_axis_index(axis, ndim=nd, msg_prefix="axis")
     a1 = axis + 1
@@ -109,7 +108,7 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
         perm = [i for i in range(nd) if i != axis] + [
             axis,
         ]
-        arr = dpt_ext.permute_dims(x, perm)
+        arr = dpt.permute_dims(x, perm)
     if kind is None:
         kind = "stable"
     if not isinstance(kind, str) or kind not in [
@@ -138,7 +137,7 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
     _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     if arr.flags.c_contiguous:
-        res = dpt_ext.empty_like(arr, order="C")
+        res = dpt.empty_like(arr, order="C")
         ht_ev, impl_ev = impl_fn(
             src=arr,
             trailing_dims_to_sort=1,
@@ -148,12 +147,12 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
         )
         _manager.add_event_pair(ht_ev, impl_ev)
     else:
-        tmp = dpt_ext.empty_like(arr, order="C")
+        tmp = dpt.empty_like(arr, order="C")
         ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=arr, dst=tmp, sycl_queue=exec_q, depends=dep_evs
         )
         _manager.add_event_pair(ht_ev, copy_ev)
-        res = dpt_ext.empty_like(arr, order="C")
+        res = dpt.empty_like(arr, order="C")
         ht_ev, impl_ev = impl_fn(
             src=tmp,
             trailing_dims_to_sort=1,
@@ -164,7 +163,7 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
         _manager.add_event_pair(ht_ev, impl_ev)
     if a1 != nd:
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
-        res = dpt_ext.permute_dims(res, inv_perm)
+        res = dpt.permute_dims(res, inv_perm)
     return res
 
 
@@ -214,7 +213,7 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
     nd = x.ndim
     if nd == 0:
         axis = normalize_axis_index(axis, ndim=1, msg_prefix="axis")
-        return dpt_ext.zeros_like(
+        return dpt.zeros_like(
             x, dtype=ti.default_device_index_type(x.sycl_queue), order="C"
         )
     else:
@@ -227,7 +226,7 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
         perm = [i for i in range(nd) if i != axis] + [
             axis,
         ]
-        arr = dpt_ext.permute_dims(x, perm)
+        arr = dpt.permute_dims(x, perm)
     if kind is None:
         kind = "stable"
     if not isinstance(kind, str) or kind not in [
@@ -257,7 +256,7 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
     dep_evs = _manager.submitted_events
     index_dt = ti.default_device_index_type(exec_q)
     if arr.flags.c_contiguous:
-        res = dpt_ext.empty_like(arr, dtype=index_dt, order="C")
+        res = dpt.empty_like(arr, dtype=index_dt, order="C")
         ht_ev, impl_ev = impl_fn(
             src=arr,
             trailing_dims_to_sort=1,
@@ -267,12 +266,12 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
         )
         _manager.add_event_pair(ht_ev, impl_ev)
     else:
-        tmp = dpt_ext.empty_like(arr, order="C")
+        tmp = dpt.empty_like(arr, order="C")
         ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=arr, dst=tmp, sycl_queue=exec_q, depends=dep_evs
         )
         _manager.add_event_pair(ht_ev, copy_ev)
-        res = dpt_ext.empty_like(arr, dtype=index_dt, order="C")
+        res = dpt.empty_like(arr, dtype=index_dt, order="C")
         ht_ev, impl_ev = impl_fn(
             src=tmp,
             trailing_dims_to_sort=1,
@@ -283,7 +282,7 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
         _manager.add_event_pair(ht_ev, impl_ev)
     if a1 != nd:
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
-        res = dpt_ext.permute_dims(res, inv_perm)
+        res = dpt.permute_dims(res, inv_perm)
     return res
 
 
@@ -354,8 +353,8 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
             if k > 1:
                 raise ValueError(f"`k`={k} is out of bounds 1")
             return TopKResult(
-                dpt_ext.copy(x, order="C"),
-                dpt_ext.zeros_like(
+                dpt.copy(x, order="C"),
+                dpt.zeros_like(
                     x, dtype=ti.default_device_index_type(x.sycl_queue)
                 ),
             )
@@ -373,7 +372,7 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
             perm = [i for i in range(nd) if i != axis] + [
                 axis,
             ]
-            arr = dpt_ext.permute_dims(x, perm)
+            arr = dpt.permute_dims(x, perm)
         n_search_dims = 1
         res_sh = arr.shape[: nd - 1] + (k,)
 
@@ -386,14 +385,14 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
 
     res_usm_type = arr.usm_type
     if arr.flags.c_contiguous:
-        vals = dpt_ext.empty(
+        vals = dpt.empty(
             res_sh,
             dtype=arr.dtype,
             usm_type=res_usm_type,
             order="C",
             sycl_queue=exec_q,
         )
-        inds = dpt_ext.empty(
+        inds = dpt.empty(
             res_sh,
             dtype=ti.default_device_index_type(exec_q),
             usm_type=res_usm_type,
@@ -412,19 +411,19 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
         )
         _manager.add_event_pair(ht_ev, impl_ev)
     else:
-        tmp = dpt_ext.empty_like(arr, order="C")
+        tmp = dpt.empty_like(arr, order="C")
         ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=arr, dst=tmp, sycl_queue=exec_q, depends=dep_evs
         )
         _manager.add_event_pair(ht_ev, copy_ev)
-        vals = dpt_ext.empty(
+        vals = dpt.empty(
             res_sh,
             dtype=arr.dtype,
             usm_type=res_usm_type,
             order="C",
             sycl_queue=exec_q,
         )
-        inds = dpt_ext.empty(
+        inds = dpt.empty(
             res_sh,
             dtype=ti.default_device_index_type(exec_q),
             usm_type=res_usm_type,
@@ -444,7 +443,7 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
         _manager.add_event_pair(ht_ev, impl_ev)
     if axis is not None and a1 != nd:
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
-        vals = dpt_ext.permute_dims(vals, inv_perm)
-        inds = dpt_ext.permute_dims(inds, inv_perm)
+        vals = dpt.permute_dims(vals, inv_perm)
+        inds = dpt.permute_dims(inds, inv_perm)
 
     return TopKResult(vals, inds)

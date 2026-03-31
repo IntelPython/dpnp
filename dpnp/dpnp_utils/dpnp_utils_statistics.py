@@ -29,13 +29,12 @@
 import warnings
 
 import dpctl
-import dpctl.tensor as dpt
 from dpctl.utils import ExecutionPlacementError
-
-import dpnp
 
 # TODO: revert to `from dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
+import dpctl_ext.tensor as dpt
+import dpnp
 from dpctl_ext.tensor._numpy_helper import normalize_axis_tuple
 from dpnp.dpnp_array import dpnp_array
 
