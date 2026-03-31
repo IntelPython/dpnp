@@ -1086,7 +1086,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
         .. code-block:: python
 
             import dpctl
-            import dpctl_ext.tensor as dpt
+            import dpnp.tensor as dpt
 
             class Container:
                 "Helper class implementing `__dlpack__` protocol"
