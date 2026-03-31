@@ -52,7 +52,8 @@
 #include "dpctl/program/_program.h"
 #include "dpctl/program/_program_api.h"
 
-// Include generated Cython headers for usm_ndarray struct definition and C-API
+// Include generated Cython headers for usm_ndarray
+// (struct definition and constants only)
 #include "dpnp/tensor/_usmarray.h"
 #include "dpnp/tensor/_usmarray_api.h"
 
