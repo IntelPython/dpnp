@@ -117,9 +117,11 @@ jobs:
           mamba info
           mamba list
 
-      - name: Build dpnp tensor with coverage (Step 1)
+      - name: Build dpnp tensor with coverage
         id: build_tensor
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        env:
+          SYCL_CACHE_PERSISTENT: 1
         with:
           shell: bash
           timeout_minutes: 60
@@ -135,6 +137,8 @@ jobs:
       - name: Build dpnp with coverage (skip tensor)
         id: build_skip_tensor
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        env:
+          SYCL_CACHE_PERSISTENT: 1
         with:
           shell: bash
           timeout_minutes: 60
