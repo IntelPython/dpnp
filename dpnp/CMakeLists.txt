@@ -174,14 +174,6 @@ function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
     target_link_libraries(${_trgt} PRIVATE dpnp_backend_library)
 endfunction()
 
-# Install dpnp C-API headers
-install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpnp/include
-    FILES_MATCHING
-    REGEX "\\.h(pp)?$"
-)
-
 # Skip tensor build for coverage to reduce memory usage on Public CI
 if(NOT DPNP_SKIP_TENSOR_BUILD)
     add_subdirectory(tensor)
