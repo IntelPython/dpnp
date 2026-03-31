@@ -63,7 +63,6 @@ set_target_properties(
 target_include_directories(
     ${python_module_name}
     PRIVATE
-        ${CMAKE_BINARY_DIR} # For generated Cython headers
         ${CMAKE_SOURCE_DIR}/dpnp/backend/include
         ${CMAKE_SOURCE_DIR}/dpctl_ext/tensor/libtensor/include
 )

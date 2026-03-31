@@ -55,7 +55,6 @@ set(_module_src
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
-target_link_libraries(${python_module_name} PRIVATE DpctlExtCAPI)
 
 # Ensure Cython modules build first so _usmarray.h exists
 add_dependencies(${python_module_name} _usmarray)
@@ -87,14 +86,6 @@ set_target_properties(
 target_include_directories(
     ${python_module_name}
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../common
-        ${CMAKE_BINARY_DIR} # For generated Cython headers
-)
-
-target_include_directories(
-    ${python_module_name}
-    PRIVATE
-        ${CMAKE_BINARY_DIR} # For generated Cython headers
         ${CMAKE_CURRENT_SOURCE_DIR}/../../
         ${CMAKE_CURRENT_SOURCE_DIR}/../common
         ${CMAKE_SOURCE_DIR}/dpnp/backend/include
