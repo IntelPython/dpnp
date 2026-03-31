@@ -355,15 +355,4 @@ if(DEFINED SKBUILD)
     set(_ignore_me ${SKBUILD})
 endif()
 
-# DpnpTensorCAPI: Interface library for dpnp tensor C-API
-# Provides access to:
-# 1. Public C-API headers from dpnp/include
-# 2. Generated Cython headers via per-target header interface libraries
-
-add_library(DpnpTensorCAPI INTERFACE)
-target_include_directories(
-    DpnpTensorCAPI
-    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/dpnp/include
-)
-
 add_subdirectory(dpnp)

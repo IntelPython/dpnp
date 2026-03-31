@@ -47,7 +47,6 @@ foreach(_cy_file ${_cython_sources})
     get_filename_component(_trgt ${_cy_file} NAME_WLE)
     build_dpnp_tensor_ext(${_trgt} ${_cy_file} "dpnp/tensor" RELATIVE_PATH "..")
     target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-    target_link_libraries(DpnpTensorCAPI INTERFACE ${_trgt}_headers)
 endforeach()
 
 if(WIN32)
@@ -329,6 +328,7 @@ foreach(python_module_name ${_py_trgts})
             ${Dpctl_INCLUDE_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
             ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/
+            ${CMAKE_BINARY_DIR} # For generated Cython headers
     )
     target_link_options(${python_module_name} PRIVATE ${_linker_options})
     if(DPNP_GENERATE_COVERAGE)
@@ -354,10 +354,8 @@ foreach(python_module_name ${_py_trgts})
             PRIVATE ${_dpnp_sycl_target_link_options}
         )
     endif()
-    # TODO: update source so they reference individual libraries instead of
-    #   dpnp4pybind11.hpp. It will allow to simplify dependency tree
-    # NOTE: dpnp tensor C-API is resolved at runtime via Python
-    target_link_libraries(${python_module_name} PRIVATE DpnpTensorCAPI)
+    # Ensure Cython modules build first so _usmarray.h exists
+    add_dependencies(${python_module_name} _usmarray)
     if(DPNP_WITH_REDIST)
         set_target_properties(
             ${python_module_name}
