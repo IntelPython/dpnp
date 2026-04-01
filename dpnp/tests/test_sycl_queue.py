@@ -63,7 +63,9 @@ def get_all_dev_dtypes(no_float16=True, no_none=True):
 
     device_dtype_pairs = []
     for device in valid_dev:
-        dtypes = get_all_dtypes(no_float16=no_float16, no_none=no_none, device=device)
+        dtypes = get_all_dtypes(
+            no_float16=no_float16, no_none=no_none, device=device
+        )
         for dtype in dtypes:
             device_dtype_pairs.append((device, dtype))
     return device_dtype_pairs
