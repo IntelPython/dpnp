@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array.dpnp_array.view &mdash; Data Parallel Extension for NumPy 0.20.0dev4+15.g14d64970427 documentation</title>
+  <title>dpnp.dpnp_array.dpnp_array.view &mdash; Data Parallel Extension for NumPy 0.20.0dev5+5.gf0754434a20 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=964e4b24"></script>
+      <script src="../../_static/documentation_options.js?v=5eb9689c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -93,11 +93,20 @@
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.view.html#numpy.ndarray.view" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.view</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>The desired data type of the returned view, e.g. <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code>
-or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int16</span></code>. By default, it results in the view having the
-same data type.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>dtype object</em><em>, </em><em>type}</em><em>, </em><em>optional</em>) -- <p>The desired data type of the returned view, e.g. <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float32</span></code>
+or <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int16</span></code>. Omitting it results in the view having the
+same data type. Can also be a subclass of <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> to
+create a view of that type (this is equivalent to setting the <cite>type</cite>
+parameter).</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p>
+</p></li>
+<li><p><strong>type</strong> (<em>{None</em><em>, </em><em>type}</em><em>, </em><em>optional</em>) -- <p>Type of the returned view, e.g. a subclass of <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+If specified, the returned array will be an instance of <cite>type</cite>.
+Omitting it results in type preservation.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -107,9 +116,6 @@ opposite to NumPy where they have different meaning.</p>
 the array's memory with a different data type. This can cause a
 reinterpretation of the bytes of memory.</p>
 <p>Only the last axis has to be contiguous.</p>
-<p class="rubric">Limitations</p>
-<p>Parameter <cite>type</cite> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Otherwise, the function raises <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
@@ -131,6 +137,15 @@ contiguous last axis, even if the rest of the axes are not C-contiguous:</p>
 
 <span class="go">    [[2312, 2826],</span>
 <span class="go">        [5396, 5910]]], dtype=int16)</span>
+</pre></div>
+</div>
+<p>Creating a view with a custom ndarray subclass:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">MyArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">MyArray</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="go">&lt;class &#39;MyArray&#39;&gt;</span>
 </pre></div>
 </div>
 </dd></dl>
