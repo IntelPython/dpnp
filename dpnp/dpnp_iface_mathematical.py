@@ -2710,7 +2710,7 @@ def gradient(f, *varargs, axis=None, edge_order=1):
         # First check if f is a dpnp integer type; if so, convert f to default
         # float type to avoid modular arithmetic when computing changes in f.
         otype = dpnp.default_float_type(sycl_queue=f.sycl_queue)
-        if dpnp.issubdtype(otype, dpnp.integer):
+        if dpnp.issubdtype(f.dtype, dpnp.integer):
             f = f.astype(otype)
 
     for axis_, ax_dx in zip(axes, dx):
