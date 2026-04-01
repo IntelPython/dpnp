@@ -313,10 +313,15 @@ foreach(python_module_name ${_py_trgts})
         ${python_module_name}
         PRIVATE -fno-sycl-id-queries-fit-in-int
     )
-    target_link_options(
-        ${python_module_name}
-        PRIVATE -fsycl-device-code-split=per_kernel
-    )
+    # For coverage builds, disable device code splitting to reduce memory
+    if(DPNP_GENERATE_COVERAGE)
+        target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=off)
+    else()
+        target_link_options(
+            ${python_module_name}
+            PRIVATE -fsycl-device-code-split=per_kernel
+        )
+    endif()
     if(DPNP_TENSOR_OFFLOAD_COMPRESS)
         target_link_options(${python_module_name} PRIVATE --offload-compress)
     endif()
