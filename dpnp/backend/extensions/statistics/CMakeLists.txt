@@ -42,7 +42,10 @@ pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 
 # Ensure Cython modules build first so _usmarray.h exists
-add_dependencies(${python_module_name} _usmarray)
+# Only add dependency if tensor module is being built (not in SKIP_TENSOR mode)
+if(TARGET _usmarray)
+    add_dependencies(${python_module_name} _usmarray)
+endif()
 
 if(_dpnp_sycl_targets)
     # make fat binary
