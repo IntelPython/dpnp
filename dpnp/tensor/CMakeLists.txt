@@ -313,9 +313,12 @@ foreach(python_module_name ${_py_trgts})
         ${python_module_name}
         PRIVATE -fno-sycl-id-queries-fit-in-int
     )
-    # For coverage builds, disable device code splitting to reduce memory
+    # For coverage builds, use per_source instead of per_kernel to reduce memory
     if(DPNP_GENERATE_COVERAGE)
-        target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=off)
+        target_link_options(
+            ${python_module_name}
+            PRIVATE -fsycl-device-code-split=per_source
+        )
     else()
         target_link_options(
             ${python_module_name}

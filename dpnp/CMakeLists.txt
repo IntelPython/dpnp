@@ -95,9 +95,9 @@ function(build_dpnp_tensor_ext _trgt _src _dest)
     if(BUILD_DPNP_SYCL)
         add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
         target_compile_options(${_trgt} PRIVATE -fno-sycl-id-queries-fit-in-int)
-        # For coverage builds, disable device code splitting to reduce memory
+        # For coverage builds, use per_source instead of per_kernel to reduce memory
         if(DPNP_GENERATE_COVERAGE)
-            target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=off)
+            target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=per_source)
         else()
             target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=per_kernel)
         endif()
