@@ -532,7 +532,7 @@ cdef class dpnp_descriptor:
         return self.origin_pyobj
 
     def get_array(self):
-        if isinstance(self.origin_pyobj, dpctl.tensor.usm_ndarray):
+        if isinstance(self.origin_pyobj, dpnp.tensor.usm_ndarray):
             return self.origin_pyobj
         if isinstance(self.origin_pyobj, dpnp_array):
             return self.origin_pyobj.get_array()
