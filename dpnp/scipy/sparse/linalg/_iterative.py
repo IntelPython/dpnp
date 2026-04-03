@@ -28,6 +28,7 @@
 
 from __future__ import annotations
 
+import inspect
 from typing import Callable, Optional, Tuple
 
 import dpnp as _dpnp
@@ -58,6 +59,15 @@ def _has_scipy() -> bool:
         return True
     except Exception:
         return False
+
+
+def _scipy_tol_kwarg(sla_func) -> str:
+    """Return 'rtol' if the SciPy function accepts it (SciPy >= 1.12), else 'tol'."""
+    try:
+        sig = inspect.signature(sla_func)
+        return "rtol" if "rtol" in sig.parameters else "tol"
+    except (ValueError, TypeError):
+        return "tol"
 
 
 def _cpu_cg(A, b, x0, tol, maxiter, M, callback, atol):
@@ -94,15 +104,17 @@ def _cpu_cg(A, b, x0, tol, maxiter, M, callback, atol):
     b_np = _np.asarray(_dpnp.asarray(b).reshape(-1))
     x0_np = None if x0 is None else _np.asarray(_dpnp.asarray(x0).reshape(-1))
 
+    # SciPy >= 1.12 renamed tol -> rtol; detect at call time to avoid DeprecationWarning.
+    tol_kw = _scipy_tol_kwarg(_sla.cg)
     x_host, info = _sla.cg(
         A_sci,
         b_np,
         x0=x0_np,
-        tol=tol,
+        **{tol_kw: tol},
         maxiter=maxiter,
         M=M_sci,
         callback=callback,
-        atol=atol,
+        atol=0.0 if atol is None else atol,
     )
 
     x_dp = _dpnp.asarray(x_host)
@@ -143,17 +155,26 @@ def _cpu_gmres(A, b, x0, tol, restart, maxiter, M, callback, atol, callback_type
     b_np = _np.asarray(_dpnp.asarray(b).reshape(-1))
     x0_np = None if x0 is None else _np.asarray(_dpnp.asarray(x0).reshape(-1))
 
+    # SciPy >= 1.12 renamed tol -> rtol; detect at call time.
+    tol_kw = _scipy_tol_kwarg(_sla.gmres)
+
+    # callback_type was added in SciPy 1.9; only pass it when supported.
+    gmres_sig = inspect.signature(_sla.gmres)
+    extra_kw = {}
+    if "callback_type" in gmres_sig.parameters and callback_type is not None:
+        extra_kw["callback_type"] = callback_type
+
     x_host, info = _sla.gmres(
         A_sci,
         b_np,
         x0=x0_np,
-        tol=tol,
+        **{tol_kw: tol},
         restart=restart,
         maxiter=maxiter,
         M=M_sci,
         callback=callback,
-        atol=atol,
-        callback_type=callback_type,
+        atol=0.0 if atol is None else atol,
+        **extra_kw,
     )
 
     x_dp = _dpnp.asarray(x_host)
