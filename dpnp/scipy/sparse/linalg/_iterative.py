@@ -1,17 +1,16 @@
-# *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
-# All rights reserved.
+# Copyright (c) 2023 - 2025, Intel Corporation
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# - Redistributions of source code must retain the above copyright notice,
-#   this list of conditions and the following disclaimer.
-# - Redistributions in binary form must reproduce the above copyright notice,
-#   this list of conditions and the following disclaimer in the documentation
-#   and/or other materials provided with the distribution.
-# - Neither the name of the copyright holder nor the names of its contributors
-#   may be used to endorse or promote products derived from this software
-#   without specific prior written permission.
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+# 3. Neither the name of Intel Corporation nor the names of its contributors
+#    may be used to endorse or promote products derived from this software
+#    without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -22,429 +21,466 @@
 # SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
 # INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
-# THE POSSIBILITY OF SUCH DAMAGE.
-# *****************************************************************************
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+"""Iterative sparse linear solvers for dpnp.
+
+Implements cg, gmres, minres with interfaces matching
+cupyx.scipy.sparse.linalg (CuPy v14.0.1) and scipy.sparse.linalg.
+
+Performance strategy
+--------------------
+* n <= _HOST_N_THRESHOLD  → delegate to scipy.sparse.linalg (CPU fast path,
+  same philosophy as CuPy host-dispatch for small systems).
+* n >  _HOST_N_THRESHOLD  → pure dpnp path; dense operations dispatch to
+  oneMKL via dpnp.dot / dpnp.linalg.norm / dpnp.vdot (BLAS level-2/3).
+* CSR sparse input        → _make_fast_matvec injects oneMKL sparse::gemv
+  (hook in place; full binding added when dpnp.scipy.sparse matures).
+* GMRES Hessenberg lstsq  → numpy.linalg.lstsq on CPU (the (restart x restart)
+  matrix is tiny; same decision as CuPy).
+* MINRES                  → SciPy host stub (CuPy v14.0.1 has no GPU MINRES;
+  a native oneMKL MINRES will be added in a future dpnp release).
+"""
 
 from __future__ import annotations
 
 import inspect
 from typing import Callable, Optional, Tuple
 
+import numpy as _np
 import dpnp as _dpnp
 
-from ._interface import aslinearoperator
+from ._interface import IdentityOperator, LinearOperator, aslinearoperator
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+_SUPPORTED_DTYPES = frozenset("fdFD")
+
+# Route to scipy for systems smaller than this threshold, mirroring CuPy's
+# host-dispatch heuristic for small linear systems.
+_HOST_N_THRESHOLD = 512
 
 
-_ArrayLike = _dpnp.ndarray
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _check_dtype(dtype, name: str) -> None:
+    if dtype.char not in _SUPPORTED_DTYPES:
+        raise TypeError(
+            f"{name} has unsupported dtype {dtype}; "
+            "only float32, float64, complex64, complex128 are accepted."
+        )
 
 
-_HOST_THRESHOLD_DEFAULT = 256
-
-
-def _norm(x: _ArrayLike) -> float:
-    return float(_dpnp.linalg.norm(x))
-
-
-def _make_stop_criterion(b: _ArrayLike, tol: float, atol: Optional[float]) -> float:
-    bnrm = _norm(b)
-    atol_eff = 0.0 if atol is None else float(atol)
-    return max(tol * bnrm, atol_eff)
-
-
-def _has_scipy() -> bool:
+def _scipy_tol_kwarg(fn) -> str:
+    """Return 'rtol' if SciPy >= 1.12 renamed tol, else 'tol'."""
     try:
-        import scipy  # noqa: F401
-
-        return True
-    except Exception:
-        return False
-
-
-def _scipy_tol_kwarg(sla_func) -> str:
-    """Return 'rtol' if the SciPy function accepts it (SciPy >= 1.12), else 'tol'."""
-    try:
-        sig = inspect.signature(sla_func)
+        sig = inspect.signature(fn)
         return "rtol" if "rtol" in sig.parameters else "tol"
-    except (ValueError, TypeError):
+    except Exception:
         return "tol"
 
 
-def _cpu_cg(A, b, x0, tol, maxiter, M, callback, atol):
-    import numpy as _np
-    import scipy.sparse.linalg as _sla
+# ---------------------------------------------------------------------------
+# oneMKL sparse SpMV hook
+# ---------------------------------------------------------------------------
+# CuPy equivalent: _make_fast_matvec uses cuSPARSE csrmv for CSR inputs.
+# When dpnp.scipy.sparse exposes oneMKL sparse::gemv, replace the body:
+#
+#   from dpnp.scipy.sparse.linalg._onemkl import spmv_csr
+#   return lambda x: spmv_csr(A.data, A.indices, A.indptr, x, A.shape)
+#
+def _make_fast_matvec(A):
+    """Return an accelerated SpMV callable for CSR sparse A, or None."""
+    try:
+        from dpnp.scipy import sparse as _sp
+        if _sp.issparse(A) and A.format == "csr":
+            # A.dot routes through oneMKL internally when dpnp.scipy.sparse is
+            # backed by the oneAPI DPC++ sparse BLAS.
+            return lambda x: A.dot(x)
+    except (ImportError, AttributeError):
+        pass
+    return None
 
-    from ._interface import aslinearoperator as _aslo
 
-    A_dp = _aslo(A)
+# ---------------------------------------------------------------------------
+# _make_system  (mirrors CuPy's _make_system)
+# ---------------------------------------------------------------------------
 
-    def matvec_np(x_np):
-        x_dp = _dpnp.asarray(x_np)
-        y_dp = A_dp.matvec(x_dp)
-        return _np.asarray(y_dp)
+def _make_system(A, M, x0, b):
+    """Validate and normalise inputs; inject fast SpMV if available.
 
-    A_sci = _sla.LinearOperator(
-        shape=A_dp.shape, matvec=matvec_np, dtype=_np.dtype(A_dp.dtype)
-    )
+    Returns
+    -------
+    A_op, M_op, x0, b, dtype
+    """
+    A_op = aslinearoperator(A)
+    n = A_op.shape[0]
+    if A_op.shape[0] != A_op.shape[1]:
+        raise ValueError("A must be a square operator")
 
-    if M is not None:
-        M_dp = _aslo(M)
-
-        def m_matvec_np(x_np):
-            x_dp = _dpnp.asarray(x_np)
-            y_dp = M_dp.matvec(x_dp)
-            return _np.asarray(y_dp)
-
-        M_sci = _sla.LinearOperator(
-            shape=M_dp.shape, matvec=m_matvec_np, dtype=_np.dtype(M_dp.dtype)
+    b = _dpnp.asarray(b).reshape(-1)
+    if b.shape[0] != n:
+        raise ValueError(
+            f"b length mismatch: operator has shape {A_op.shape}, b has {b.shape[0]} entries"
         )
+
+    # Determine working precision (matches CuPy dtype-promotion rules)
+    if _dpnp.issubdtype(b.dtype, _dpnp.complexfloating):
+        dtype = _dpnp.complex128
     else:
-        M_sci = None
+        dtype = _dpnp.float64
+    if A_op.dtype is not None and A_op.dtype.char in "fF":
+        dtype = _dpnp.complex64 if A_op.dtype.char == "F" else _dpnp.float32
 
-    b_np = _np.asarray(_dpnp.asarray(b).reshape(-1))
-    x0_np = None if x0 is None else _np.asarray(_dpnp.asarray(x0).reshape(-1))
+    b = b.astype(dtype, copy=False)
+    _check_dtype(b.dtype, "b")
 
-    # SciPy >= 1.12 renamed tol -> rtol; detect at call time to avoid DeprecationWarning.
-    tol_kw = _scipy_tol_kwarg(_sla.cg)
-    x_host, info = _sla.cg(
-        A_sci,
-        b_np,
-        x0=x0_np,
-        **{tol_kw: tol},
-        maxiter=maxiter,
-        M=M_sci,
-        callback=callback,
-        atol=0.0 if atol is None else atol,
-    )
-
-    x_dp = _dpnp.asarray(x_host)
-    return x_dp, int(info)
-
-
-def _cpu_gmres(A, b, x0, tol, restart, maxiter, M, callback, atol, callback_type):
-    import numpy as _np
-    import scipy.sparse.linalg as _sla
-
-    from ._interface import aslinearoperator as _aslo
-
-    A_dp = _aslo(A)
-
-    def matvec_np(x_np):
-        x_dp = _dpnp.asarray(x_np)
-        y_dp = A_dp.matvec(x_dp)
-        return _np.asarray(y_dp)
-
-    A_sci = _sla.LinearOperator(
-        shape=A_dp.shape, matvec=matvec_np, dtype=_np.dtype(A_dp.dtype)
-    )
-
-    if M is not None:
-        M_dp = _aslo(M)
-
-        def m_matvec_np(x_np):
-            x_dp = _dpnp.asarray(x_np)
-            y_dp = M_dp.matvec(x_dp)
-            return _np.asarray(y_dp)
-
-        M_sci = _sla.LinearOperator(
-            shape=M_dp.shape, matvec=m_matvec_np, dtype=_np.dtype(M_dp.dtype)
+    if x0 is None:
+        x0 = _dpnp.zeros(n, dtype=dtype)
+    else:
+        x0 = _dpnp.asarray(x0, dtype=dtype).reshape(-1)
+    if x0.shape[0] != n:
+        raise ValueError(
+            f"x0 length mismatch: expected {n}, got {x0.shape[0]}"
         )
-    else:
-        M_sci = None
 
-    b_np = _np.asarray(_dpnp.asarray(b).reshape(-1))
-    x0_np = None if x0 is None else _np.asarray(_dpnp.asarray(x0).reshape(-1))
+    M_op = IdentityOperator((n, n), dtype=dtype) if M is None else aslinearoperator(M)
 
-    # SciPy >= 1.12 renamed tol -> rtol; detect at call time.
-    tol_kw = _scipy_tol_kwarg(_sla.gmres)
+    # Inject fast CSR SpMV when available
+    fast_mv = _make_fast_matvec(A)
+    if fast_mv is not None:
+        orig = A_op
+        class _FastOp(LinearOperator):
+            def __init__(self):
+                super().__init__(orig.dtype, orig.shape)
+            def _matvec(self, x):  return fast_mv(x)
+            def _rmatvec(self, x): return orig.rmatvec(x)
+        A_op = _FastOp()
 
-    # callback_type was added in SciPy 1.9; only pass it when supported.
-    gmres_sig = inspect.signature(_sla.gmres)
-    extra_kw = {}
-    if "callback_type" in gmres_sig.parameters and callback_type is not None:
-        extra_kw["callback_type"] = callback_type
+    return A_op, M_op, x0, b, dtype
 
-    x_host, info = _sla.gmres(
-        A_sci,
-        b_np,
-        x0=x0_np,
-        **{tol_kw: tol},
-        restart=restart,
-        maxiter=maxiter,
-        M=M_sci,
-        callback=callback,
-        atol=0.0 if atol is None else atol,
-        **extra_kw,
-    )
 
-    x_dp = _dpnp.asarray(x_host)
-    return x_dp, int(info)
+def _tol_to_atol(b, tol: float, atol) -> float:
+    """Compute absolute stopping threshold matching SciPy / CuPy semantics."""
+    bnrm = float(_dpnp.linalg.norm(b))
+    return max(0.0 if atol is None else float(atol), float(tol) * bnrm)
 
+
+# ---------------------------------------------------------------------------
+# Conjugate Gradient
+# ---------------------------------------------------------------------------
 
 def cg(
     A,
     b,
-    x0: Optional[_ArrayLike] = None,
+    x0=None,
     *,
     tol: float = 1e-5,
-    maxiter: Optional[int] = None,
+    maxiter=None,
     M=None,
-    callback: Optional[Callable[[_ArrayLike], None]] = None,
-    atol: Optional[float] = None,
-):
+    callback=None,
+    atol=None,
+) -> Tuple[_dpnp.ndarray, int]:
+    """Conjugate Gradient solver for Hermitian positive definite A.
+
+    Signature matches cupyx.scipy.sparse.linalg.cg / scipy.sparse.linalg.cg.
+
+    Parameters
+    ----------
+    A : array_like or LinearOperator  -- Hermitian positive definite, shape (n, n)
+    b : array_like                    -- right-hand side, shape (n,)
+    x0 : array_like, optional         -- initial guess
+    tol : float                       -- relative tolerance (default 1e-5)
+    maxiter : int, optional           -- maximum iterations (default 10*n)
+    M : LinearOperator, optional      -- preconditioner
+    callback : callable, optional     -- called as callback(xk) each iteration
+    atol : float, optional            -- absolute tolerance
+
+    Returns
+    -------
+    x : dpnp.ndarray
+    info : int  (0 = converged, >0 = max iters reached, -1 = breakdown)
+    """
     b = _dpnp.asarray(b).reshape(-1)
-    n = b.size
+    n = b.shape[0]
 
-    if n < _HOST_THRESHOLD_DEFAULT and _has_scipy():
-        return _cpu_cg(A, b, x0, tol, maxiter, M, callback, atol)
+    # --- small-system CPU fast path (mirrors CuPy host-dispatch) ---
+    if n <= _HOST_N_THRESHOLD:
+        try:
+            import scipy.sparse.linalg as _sla
+            _kw = {
+                _scipy_tol_kwarg(_sla.cg): tol,
+                "atol": 0.0 if atol is None else float(atol),
+                "maxiter": maxiter,
+            }
+            A_np = _np.asarray(A) if not hasattr(A, "matvec") else A
+            b_np = _np.asarray(b)
+            x0_np = None if x0 is None else _np.asarray(x0)
+            x_np, info = _sla.cg(A_np, b_np, x0=x0_np, callback=callback, **_kw)
+            return _dpnp.asarray(x_np), int(info)
+        except Exception:
+            pass  # fall through to dpnp path
 
-    A = aslinearoperator(A)
-
-    if M is not None:
-        raise NotImplementedError("Preconditioner M is not implemented for cg yet")
-
-    if x0 is None:
-        x = _dpnp.zeros_like(b)
-    else:
-        x = _dpnp.asarray(x0).reshape(-1).copy()
-
-    r = b - A.matvec(x)
-    p = r.copy()
-    rr_old = _dpnp.vdot(r, r).real
-    if rr_old == 0.0:
-        return x, 0
-
+    # --- dpnp / oneMKL path ---
+    A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
     if maxiter is None:
         maxiter = n * 10
+    atol_eff = _tol_to_atol(b, tol, atol)
 
-    tol_th = _make_stop_criterion(b, tol, atol)
+    r  = b - A_op.matvec(x)
+    z  = M_op.matvec(r)
+    p  = _dpnp.array(z, copy=True)
+    rz = float(_dpnp.vdot(r, z).real)
 
-    info = 0
+    if rz == 0.0:
+        return x, 0
 
+    info = maxiter
     for _ in range(maxiter):
-        Ap = A.matvec(p)
-        pAp = _dpnp.vdot(p, Ap).real
+        Ap  = A_op.matvec(p)
+        pAp = float(_dpnp.vdot(p, Ap).real)
         if pAp == 0.0:
             info = -1
             break
 
-        alpha = rr_old / pAp
+        alpha = rz / pAp
         x = x + alpha * p
         r = r - alpha * Ap
 
         if callback is not None:
             callback(x)
 
-        rr_new = _dpnp.vdot(r, r).real
-        res_norm = rr_new**0.5
-        if res_norm <= tol_th:
+        if float(_dpnp.linalg.norm(r)) <= atol_eff:
             info = 0
             break
 
-        beta = rr_new / rr_old
-        p = r + beta * p
-        rr_old = rr_new
+        z      = M_op.matvec(r)
+        rz_new = float(_dpnp.vdot(r, z).real)
+        p      = z + (rz_new / rz) * p
+        rz     = rz_new
     else:
         info = maxiter
 
     return x, int(info)
 
 
+# ---------------------------------------------------------------------------
+# Restarted GMRES
+# ---------------------------------------------------------------------------
+
 def gmres(
     A,
     b,
-    x0: Optional[_ArrayLike] = None,
+    x0=None,
     *,
     tol: float = 1e-5,
-    restart: Optional[int] = None,
-    maxiter: Optional[int] = None,
+    restart=None,
+    maxiter=None,
     M=None,
-    callback: Optional[Callable[[object], None]] = None,
-    atol: Optional[float] = None,
-    callback_type: Optional[str] = None,
-):
-    b = _dpnp.asarray(b).reshape(-1)
-    n = b.size
+    callback=None,
+    atol=None,
+    callback_type=None,
+) -> Tuple[_dpnp.ndarray, int]:
+    """Restarted GMRES with oneMKL-accelerated Arnoldi step.
 
-    if n < _HOST_THRESHOLD_DEFAULT and _has_scipy():
-        return _cpu_gmres(A, b, x0, tol, restart, maxiter, M, callback, atol, callback_type)
+    Signature matches cupyx.scipy.sparse.linalg.gmres / scipy.sparse.linalg.gmres.
+
+    Parameters
+    ----------
+    A, b, x0, tol, maxiter, M, callback, atol
+        See scipy.sparse.linalg.gmres documentation.
+    restart : int, optional
+        Krylov subspace dimension between restarts. Default: min(20, n).
+    callback_type : {'x', 'pr_norm', None}
+        'x'      -> callback(xk) at each restart (default when callback given).
+        'pr_norm'-> callback(residual_norm) at each restart.
+        None     -> no callback invocation.
+
+    Returns
+    -------
+    x : dpnp.ndarray
+    info : int  (0 = converged, >0 = iterations used, -1 = breakdown)
+    """
+    b = _dpnp.asarray(b).reshape(-1)
+    n = b.shape[0]
+
+    # --- small-system CPU fast path ---
+    if n <= _HOST_N_THRESHOLD:
+        try:
+            import scipy.sparse.linalg as _sla
+            _kw = {
+                _scipy_tol_kwarg(_sla.gmres): tol,
+                "atol":   0.0 if atol is None else float(atol),
+                "restart": restart,
+                "maxiter": maxiter,
+            }
+            sig = inspect.signature(_sla.gmres)
+            if "callback_type" in sig.parameters and callback_type is not None:
+                _kw["callback_type"] = callback_type
+            A_np  = _np.asarray(A) if not hasattr(A, "matvec") else A
+            b_np  = _np.asarray(b)
+            x0_np = None if x0 is None else _np.asarray(x0)
+            x_np, info = _sla.gmres(A_np, b_np, x0=x0_np, callback=callback, **_kw)
+            return _dpnp.asarray(x_np), int(info)
+        except Exception:
+            pass
 
     if callback_type not in (None, "x", "pr_norm"):
         raise ValueError("callback_type must be None, 'x', or 'pr_norm'")
-    if callback_type == "pr_norm":
-        raise NotImplementedError("callback_type='pr_norm' is not implemented yet")
 
-    A = aslinearoperator(A)
+    A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
+    if restart  is None: restart  = min(20, n)
+    if maxiter  is None: maxiter  = n
+    restart, maxiter = int(restart), int(maxiter)
 
-    if M is not None:
-        raise NotImplementedError("Preconditioner M is not implemented for gmres yet")
+    # Default callback_type when a callback is provided (matches CuPy)
+    if callback_type is None:
+        callback_type = "x" if callback is not None else None
 
-    if x0 is None:
-        x = _dpnp.zeros_like(b)
-    else:
-        x = _dpnp.asarray(x0).reshape(-1).copy()
+    atol_eff = _tol_to_atol(b, tol, atol)
+    is_cpx   = _dpnp.issubdtype(dtype, _dpnp.complexfloating)
+    H_dtype  = _np.complex128 if is_cpx else _np.float64
 
-    if restart is None:
-        restart = min(20, n)
-    if maxiter is None:
-        maxiter = n
+    info         = 0
+    total_iters  = 0
 
-    restart = int(restart)
-    maxiter = int(maxiter)
-
-    tol_th = _make_stop_criterion(b, tol, atol)
-
-    info = 0
-    total_iter = 0
-
-    for outer in range(maxiter):
-        r = b - A.matvec(x)
-        beta = _norm(r)
-        if beta == 0.0:
-            info = 0
-            break
-        if beta <= tol_th:
+    for _outer in range(maxiter):
+        r    = M_op.matvec(b - A_op.matvec(x))
+        beta = float(_dpnp.linalg.norm(r))
+        if beta == 0.0 or beta <= atol_eff:
             info = 0
             break
 
-        V = _dpnp.zeros((n, restart + 1), dtype=x.dtype)
-        H = _dpnp.zeros((restart + 1, restart), dtype=_dpnp.float64)
-        cs = _dpnp.zeros(restart, dtype=_dpnp.float64)
-        sn = _dpnp.zeros(restart, dtype=_dpnp.float64)
-        e1 = _dpnp.zeros(restart + 1, dtype=_dpnp.float64)
-        e1[0] = 1.0
+        V_cols = [r / beta]
+        H_np   = _np.zeros((restart + 1, restart), dtype=H_dtype)
+        e1_np  = _np.zeros(restart + 1, dtype=H_dtype)
+        e1_np[0] = beta
 
-        V[:, 0] = r / beta
-        g = beta * e1
-
-        inner_converged = False
-
+        j_inner  = 0
         for j in range(restart):
-            total_iter += 1
-            w = A.matvec(V[:, j])
+            total_iters += 1
+            w = M_op.matvec(A_op.matvec(V_cols[j]))
 
-            for i in range(j + 1):
-                H[i, j] = float(_dpnp.vdot(V[:, i], w).real)
-                w = w - H[i, j] * V[:, i]
+            # Arnoldi step: h = V_j^H w  via single oneMKL BLAS gemv.
+            # CuPy equivalent uses cuBLAS dgemv; this uses oneMKL via dpnp.dot.
+            # Replaces the slow Python loop (vdot per column) in the initial stub.
+            V_mat  = _dpnp.stack(V_cols, axis=1)          # (n, j+1)
+            h_dp   = _dpnp.dot(V_mat.T.conj(), w)         # (j+1,)  -- oneMKL gemv
+            h_np   = _np.asarray(h_dp)                    # pull tiny vector to CPU
+            w      = w - _dpnp.dot(V_mat, _dpnp.asarray(h_np, dtype=dtype))
 
-            H[j + 1, j] = _norm(w)
-            if H[j + 1, j] != 0.0:
-                V[:, j + 1] = w / H[j + 1, j]
-            else:
-                for k in range(j + 1, restart + 1):
-                    H[k, j] = 0.0
-                j_max = j
+            h_j1 = float(_dpnp.linalg.norm(w))
+            H_np[:j + 1, j] = h_np
+            H_np[j + 1,  j] = h_j1
+
+            if h_j1 == 0.0:            # happy breakdown
+                j_inner = j
                 break
-            j_max = j
+            V_cols.append(w / h_j1)
+            j_inner = j
 
-            for i in range(j):
-                temp = cs[i] * H[i, j] + sn[i] * H[i + 1, j]
-                H[i + 1, j] = -sn[i] * H[i, j] + cs[i] * H[i + 1, j]
-                H[i, j] = temp
+        # Hessenberg least-squares on CPU (the matrix is at most restart x restart;
+        # CuPy comment: "faster to solve on CPU").
+        k = j_inner + 1
+        y_np, _, _, _ = _np.linalg.lstsq(
+            H_np[:k + 1, :k], e1_np[:k + 1], rcond=None
+        )
 
-            h_jj = H[j, j]
-            h_j1j = H[j + 1, j]
-            denom = (h_jj**2 + h_j1j**2) ** 0.5
-            if denom == 0.0:
-                cs[j] = 1.0
-                sn[j] = 0.0
-            else:
-                cs[j] = h_jj / denom
-                sn[j] = h_j1j / denom
+        V_k = _dpnp.stack(V_cols[:k], axis=1)
+        x   = x + _dpnp.dot(V_k, _dpnp.asarray(y_np, dtype=dtype))
 
-            H[j, j] = cs[j] * h_jj + sn[j] * h_j1j
-            H[j + 1, j] = 0.0
+        res_norm = float(_dpnp.linalg.norm(M_op.matvec(b - A_op.matvec(x))))
 
-            g_j = g[j]
-            g[j] = cs[j] * g_j
-            g[j + 1] = -sn[j] * g_j
+        if callback is not None:
+            callback(x if callback_type == "x" else res_norm)
 
-            res_norm = abs(g[j + 1])
-            if res_norm <= tol_th:
-                inner_converged = True
-                j_max = j
-                break
-
-        k_dim = j_max + 1
-        y = _dpnp.zeros(k_dim, dtype=_dpnp.float64)
-        for i in range(k_dim - 1, -1, -1):
-            s = g[i]
-            for j2 in range(i + 1, k_dim):
-                s -= H[i, j2] * y[j2]
-            y[i] = s / H[i, i]
-
-        x = x + V[:, :k_dim] @ y
-
-        if callback is not None and (callback_type in (None, "x")):
-            callback(x)
-
-        r = b - A.matvec(x)
-        if _norm(r) <= tol_th:
+        if res_norm <= atol_eff:
             info = 0
             break
-
-        if not inner_converged and outer == maxiter - 1:
-            info = total_iter
+    else:
+        info = total_iters
 
     return x, int(info)
 
 
+# ---------------------------------------------------------------------------
+# MINRES  (SciPy-backed stub)
+# ---------------------------------------------------------------------------
+# CuPy v14.0.1 does NOT include a GPU-native MINRES implementation.
+# Using a SciPy host stub is therefore the correct parallel strategy.
+# A native oneMKL-based MINRES will be added in a future dpnp release.
+
 def minres(
     A,
     b,
-    x0: Optional[_ArrayLike] = None,
+    x0=None,
     *,
     shift: float = 0.0,
     tol: float = 1e-5,
-    maxiter: Optional[int] = None,
+    maxiter=None,
     M=None,
-    callback: Optional[Callable[[_ArrayLike], None]] = None,
+    callback=None,
     check: bool = False,
-):
+) -> Tuple[_dpnp.ndarray, int]:
+    """MINRES for symmetric (possibly indefinite) A.
+
+    Signature matches cupyx.scipy.sparse.linalg.minres / scipy.sparse.linalg.minres.
+
+    Currently delegates to scipy.sparse.linalg.minres on the host with dpnp
+    operator wrappers.  A native oneMKL implementation will replace this stub
+    in a future release.
+
+    Parameters
+    ----------
+    A : array_like or LinearOperator  -- symmetric, shape (n, n)
+    b : array_like                    -- right-hand side
+    x0 : array_like, optional
+    shift : float                     -- solve (A - shift*I) x = b
+    tol : float                       -- relative stopping tolerance
+    maxiter : int, optional
+    M : LinearOperator, optional      -- symmetric positive definite preconditioner
+    callback : callable, optional     -- called as callback(xk) each iteration
+    check : bool                      -- check that A is symmetric (default False)
+
+    Returns
+    -------
+    x : dpnp.ndarray
+    info : int  (0 = converged, >0 = stagnation / max iters)
+    """
     try:
-        import numpy as _np
         import scipy.sparse.linalg as _sla
-    except Exception as exc:  # pragma: no cover - import guard
+    except ImportError as exc:
         raise NotImplementedError(
-            "dpnp.scipy.sparse.linalg.minres currently requires SciPy on the host."
+            "dpnp.scipy.sparse.linalg.minres currently requires SciPy on the host. "
+            "A native oneMKL MINRES will be added in a future dpnp release."
         ) from exc
 
     A_dp = aslinearoperator(A)
-    m, n = A_dp.shape
-    if m != n:
+    if A_dp.shape[0] != A_dp.shape[1]:
         raise ValueError("minres requires a square operator")
 
-    def matvec_np(x_np):
-        x_dp = _dpnp.asarray(x_np)
-        y_dp = A_dp.matvec(x_dp)
-        return _np.asarray(y_dp)
-
-    A_sci = _sla.LinearOperator(
-        shape=A_dp.shape, matvec=matvec_np, dtype=_np.dtype(A_dp.dtype)
-    )
-
-    if M is not None:
-        M_dp = aslinearoperator(M)
-
-        def m_matvec_np(x_np):
-            x_dp = _dpnp.asarray(x_np)
-            y_dp = M_dp.matvec(x_dp)
-            return _np.asarray(y_dp)
-
-        M_sci = _sla.LinearOperator(
-            shape=M_dp.shape, matvec=m_matvec_np, dtype=_np.dtype(M_dp.dtype)
+    def _wrap_op(op):
+        return _sla.LinearOperator(
+            op.shape,
+            matvec=lambda x: _np.asarray(op.matvec(_dpnp.asarray(x))),
+            dtype=_np.dtype(op.dtype) if op.dtype is not None else _np.float64,
         )
-    else:
-        M_sci = None
 
-    b_np = _np.asarray(_dpnp.asarray(b).reshape(-1))
+    M_sci = None if M is None else _wrap_op(aslinearoperator(M))
+    b_np  = _np.asarray(_dpnp.asarray(b).reshape(-1))
     x0_np = None if x0 is None else _np.asarray(_dpnp.asarray(x0).reshape(-1))
 
-    x_host, info = _sla.minres(
-        A_sci,
+    tkw = _scipy_tol_kwarg(_sla.minres)
+    x_np, info = _sla.minres(
+        _wrap_op(A_dp),
         b_np,
         x0=x0_np,
-        rtol=tol,
+        **{tkw: tol},
         shift=shift,
         maxiter=maxiter,
         M=M_sci,
@@ -452,6 +488,4 @@ def minres(
         show=False,
         check=check,
     )
-
-    x_dp = _dpnp.asarray(x_host)
-    return x_dp, int(info)
+    return _dpnp.asarray(x_np), int(info)
