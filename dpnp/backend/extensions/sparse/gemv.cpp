@@ -28,50 +28,82 @@
 
 #include <sstream>
 #include <stdexcept>
-#include <vector>
 
 #include <pybind11/pybind11.h>
 
-// ext/common.hpp — dpctl_td_ns; mirrors every other dpnp extension
+// dpnp extension infrastructure
 #include "ext/common.hpp"
 
-// dpctl tensor validation and utility headers — same set as blas/gemm.cpp
+// dpctl tensor validation and utility headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
 
 #include "gemv.hpp"
+#include "types_matrix.hpp"
 
-// oneMKL sparse BLAS
 namespace mkl_sparse = oneapi::mkl::sparse;
-namespace py = pybind11;
+namespace py         = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
+
+using ext::common::init_dispatch_table;
 
 namespace dpnp::extensions::sparse
 {
 
 // ---------------------------------------------------------------------------
-// Type-dispatched implementation: y = alpha * op(A) * x + beta * y
+// Dispatch table: [value_type_id][index_type_id] -> impl function pointer
+// Mirrors the 2-D table pattern of blas/gemm.cpp.
 // ---------------------------------------------------------------------------
 
-template <typename T, typename intType>
+typedef sycl::event (*gemv_impl_fn_ptr_t)(
+    sycl::queue &,
+    oneapi::mkl::transpose,
+    double,                        // alpha (always passed as double; cast inside)
+    const char *,                  // row_ptr  (typeless)
+    const char *,                  // col_ind  (typeless)
+    const char *,                  // values   (typeless)
+    std::int64_t,                  // num_rows
+    std::int64_t,                  // num_cols
+    std::int64_t,                  // nnz
+    const char *,                  // x        (typeless)
+    double,                        // beta     (always passed as double; cast inside)
+    char *,                        // y        (typeless, writable)
+    const std::vector<sycl::event> &);
+
+static gemv_impl_fn_ptr_t
+    gemv_dispatch_table[dpctl_td_ns::num_types][dpctl_td_ns::num_types];
+
+
+// ---------------------------------------------------------------------------
+// Typed implementation — one instantiation per (Tv, Ti) pair
+// ---------------------------------------------------------------------------
+
+template <typename Tv, typename Ti>
 static sycl::event
-sparse_gemv_impl(sycl::queue &exec_q,
-                 oneapi::mkl::transpose mkl_trans,
-                 T alpha,
-                 intType *row_ptr_ptr,
-                 intType *col_ind_ptr,
-                 T *values_ptr,
-                 std::int64_t num_rows,
-                 std::int64_t num_cols,
-                 std::int64_t nnz,
-                 T *x_ptr,
-                 T beta,
-                 T *y_ptr,
-                 const std::vector<sycl::event> &depends)
+gemv_impl(sycl::queue                      &exec_q,
+          oneapi::mkl::transpose            mkl_trans,
+          double                            alpha_d,
+          const char                       *row_ptr_data,
+          const char                       *col_ind_data,
+          const char                       *values_data,
+          std::int64_t                      num_rows,
+          std::int64_t                      num_cols,
+          std::int64_t                      nnz,
+          const char                       *x_data,
+          double                            beta_d,
+          char                             *y_data,
+          const std::vector<sycl::event>   &depends)
 {
-    // Validate that T is supported on this device (mirrors gemm_impl pattern)
-    type_utils::validate_type_for_device<T>(exec_q);
+    type_utils::validate_type_for_device<Tv>(exec_q);
+
+    const Tv  alpha = static_cast<Tv>(alpha_d);
+    const Tv  beta  = static_cast<Tv>(beta_d);
+    const Ti *row_ptr = reinterpret_cast<const Ti *>(row_ptr_data);
+    const Ti *col_ind = reinterpret_cast<const Ti *>(col_ind_data);
+    const Tv *values  = reinterpret_cast<const Tv *>(values_data);
+    const Tv *x       = reinterpret_cast<const Tv *>(x_data);
+    Tv       *y       = reinterpret_cast<Tv *>(y_data);
 
     std::stringstream error_msg;
     bool is_exception_caught = false;
@@ -86,40 +118,35 @@ sparse_gemv_impl(sycl::queue &exec_q,
             exec_q, handle,
             num_rows, num_cols,
             oneapi::mkl::index_base::zero,
-            row_ptr_ptr, col_ind_ptr, values_ptr,
+            const_cast<Ti *>(row_ptr),
+            const_cast<Ti *>(col_ind),
+            const_cast<Tv *>(values),
             depends);
 
-        // optimize_gemv performs internal analysis — amortises over repeated SpMV
         auto ev_opt = mkl_sparse::optimize_gemv(
             exec_q, mkl_trans, handle, {ev_set});
 
         gemv_ev = mkl_sparse::gemv(
             exec_q, mkl_trans,
             alpha, handle,
-            x_ptr, beta, y_ptr,
+            x, beta, y,
             {ev_opt});
 
-        // async release — waits for gemv_ev internally
         mkl_sparse::release_matrix_handle(exec_q, &handle, {gemv_ev});
 
     } catch (oneapi::mkl::exception const &e) {
-        error_msg
-            << "Unexpected MKL exception caught during sparse_gemv() call:"
-               "\nreason: "
-            << e.what();
+        error_msg << "Unexpected MKL exception caught during sparse_gemv() "
+                     "call:\nreason: " << e.what();
         is_exception_caught = true;
     } catch (sycl::exception const &e) {
-        error_msg
-            << "Unexpected SYCL exception caught during sparse_gemv() call:\n"
-            << e.what();
+        error_msg << "Unexpected SYCL exception caught during sparse_gemv() "
+                     "call:\n" << e.what();
         is_exception_caught = true;
     }
 
     if (is_exception_caught) {
-        // Best-effort handle cleanup before re-raising
-        if (handle != nullptr) {
+        if (handle != nullptr)
             mkl_sparse::release_matrix_handle(exec_q, &handle, {});
-        }
         throw std::runtime_error(error_msg.str());
     }
 
@@ -128,56 +155,51 @@ sparse_gemv_impl(sycl::queue &exec_q,
 
 
 // ---------------------------------------------------------------------------
-// Python-facing function
+// Python-facing entry point
 // ---------------------------------------------------------------------------
 
 std::pair<sycl::event, sycl::event>
-sparse_gemv(sycl::queue &exec_q,
-            const int trans,
-            const double alpha,
-            const dpctl::tensor::usm_ndarray &row_ptr,
-            const dpctl::tensor::usm_ndarray &col_ind,
-            const dpctl::tensor::usm_ndarray &values,
-            const dpctl::tensor::usm_ndarray &x,
-            const double beta,
-            const dpctl::tensor::usm_ndarray &y,
-            const std::int64_t num_rows,
-            const std::int64_t num_cols,
-            const std::int64_t nnz,
-            const std::vector<sycl::event> &depends)
+sparse_gemv(sycl::queue                           &exec_q,
+            const int                              trans,
+            const double                           alpha,
+            const dpctl::tensor::usm_ndarray      &row_ptr,
+            const dpctl::tensor::usm_ndarray      &col_ind,
+            const dpctl::tensor::usm_ndarray      &values,
+            const dpctl::tensor::usm_ndarray      &x,
+            const double                           beta,
+            const dpctl::tensor::usm_ndarray      &y,
+            const std::int64_t                     num_rows,
+            const std::int64_t                     num_cols,
+            const std::int64_t                     nnz,
+            const std::vector<sycl::event>        &depends)
 {
-    // --- 1. ndim checks ---
-    if (x.get_ndim() != 1) {
+    // 1. ndim checks
+    if (x.get_ndim() != 1)
         throw py::value_error("sparse_gemv: x must be a 1-D array.");
-    }
-    if (y.get_ndim() != 1) {
+    if (y.get_ndim() != 1)
         throw py::value_error("sparse_gemv: y must be a 1-D array.");
-    }
 
-    // --- 2. Queue compatibility (all USM arrays must share the same queue) ---
+    // 2. Queue compatibility
     if (!dpctl::utils::queues_are_compatible(
-            exec_q,
-            {row_ptr.get_queue(), col_ind.get_queue(),
-             values.get_queue(),  x.get_queue(), y.get_queue()})) {
+            exec_q, {row_ptr.get_queue(), col_ind.get_queue(),
+                     values.get_queue(), x.get_queue(), y.get_queue()}))
         throw py::value_error(
             "sparse_gemv: USM allocations are not compatible with the "
             "execution queue.");
-    }
 
-    // --- 3. Memory overlap: x and y must not alias ---
+    // 3. Memory overlap: x and y must not alias
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(x, y)) {
+    if (overlap(x, y))
         throw py::value_error(
             "sparse_gemv: input array x and output array y are overlapping "
             "segments of memory.");
-    }
 
-    // --- 4. Output writability and size ---
+    // 4. Output writability and size
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(y);
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
         y, static_cast<std::size_t>(num_rows));
 
-    // --- 5. Map trans integer to oneMKL enum ---
+    // 5. Map trans integer to oneMKL enum
     oneapi::mkl::transpose mkl_trans;
     switch (trans) {
         case 0: mkl_trans = oneapi::mkl::transpose::nontrans;  break;
@@ -188,74 +210,24 @@ sparse_gemv(sycl::queue &exec_q,
                 "sparse_gemv: trans must be 0 (N), 1 (T), or 2 (C)");
     }
 
-    // --- 6. Type dispatch (value type x index type) ---
-    // oneMKL sparse BLAS supports float32 and float64 (no complex yet)
-    int val_typenum = values.get_typenum();
-    int idx_typenum = row_ptr.get_typenum();
+    // 6. Dispatch table lookup — replaces the explicit if/else chain
+    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    const int val_id = array_types.typenum_to_lookup_id(values.get_typenum());
+    const int idx_id = array_types.typenum_to_lookup_id(row_ptr.get_typenum());
 
-    sycl::event gemv_ev;
+    gemv_impl_fn_ptr_t gemv_fn = gemv_dispatch_table[val_id][idx_id];
+    if (gemv_fn == nullptr)
+        throw py::value_error(
+            "sparse_gemv: no implementation for the given value/index dtype "
+            "combination. Supported: float32/float64 with int32/int64 indices.");
 
-    if (val_typenum == UAR_FLOAT) {
-        auto alpha_f = static_cast<float>(alpha);
-        auto beta_f  = static_cast<float>(beta);
+    sycl::event gemv_ev =
+        gemv_fn(exec_q, mkl_trans, alpha,
+                row_ptr.get_data(), col_ind.get_data(), values.get_data(),
+                num_rows, num_cols, nnz,
+                x.get_data(), beta, y.get_data(),
+                depends);
 
-        if (idx_typenum == UAR_INT32) {
-            gemv_ev = sparse_gemv_impl<float, std::int32_t>(
-                exec_q, mkl_trans, alpha_f,
-                row_ptr.get_data<std::int32_t>(),
-                col_ind.get_data<std::int32_t>(),
-                values.get_data<float>(),
-                num_rows, num_cols, nnz,
-                x.get_data<float>(), beta_f,
-                y.get_data<float>(), depends);
-        }
-        else if (idx_typenum == UAR_INT64) {
-            gemv_ev = sparse_gemv_impl<float, std::int64_t>(
-                exec_q, mkl_trans, alpha_f,
-                row_ptr.get_data<std::int64_t>(),
-                col_ind.get_data<std::int64_t>(),
-                values.get_data<float>(),
-                num_rows, num_cols, nnz,
-                x.get_data<float>(), beta_f,
-                y.get_data<float>(), depends);
-        }
-        else {
-            throw std::runtime_error(
-                "sparse_gemv: index dtype must be int32 or int64");
-        }
-    }
-    else if (val_typenum == UAR_DOUBLE) {
-        if (idx_typenum == UAR_INT32) {
-            gemv_ev = sparse_gemv_impl<double, std::int32_t>(
-                exec_q, mkl_trans, alpha,
-                row_ptr.get_data<std::int32_t>(),
-                col_ind.get_data<std::int32_t>(),
-                values.get_data<double>(),
-                num_rows, num_cols, nnz,
-                x.get_data<double>(), beta,
-                y.get_data<double>(), depends);
-        }
-        else if (idx_typenum == UAR_INT64) {
-            gemv_ev = sparse_gemv_impl<double, std::int64_t>(
-                exec_q, mkl_trans, alpha,
-                row_ptr.get_data<std::int64_t>(),
-                col_ind.get_data<std::int64_t>(),
-                values.get_data<double>(),
-                num_rows, num_cols, nnz,
-                x.get_data<double>(), beta,
-                y.get_data<double>(), depends);
-        }
-        else {
-            throw std::runtime_error(
-                "sparse_gemv: index dtype must be int32 or int64");
-        }
-    }
-    else {
-        throw std::runtime_error(
-            "sparse_gemv: value dtype must be float32 or float64");
-    }
-
-    // Keep all input/output USM arrays alive until gemv_ev completes
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {row_ptr, col_ind, values, x, y}, {gemv_ev});
 
@@ -264,15 +236,26 @@ sparse_gemv(sycl::queue &exec_q,
 
 
 // ---------------------------------------------------------------------------
-// Dispatch vector init (placeholder — matches blas convention)
+// Factory and dispatch table initialisation
+// Mirrors blas/gemm.cpp: GemmContigFactory -> GemvContigFactory
 // ---------------------------------------------------------------------------
 
-void init_sparse_gemv_dispatch_vector(void)
+template <typename fnT, typename Tv, typename Ti>
+struct GemvContigFactory
 {
-    // No dispatch table needed for sparse_gemv since we do explicit
-    // type switching in the function body (oneMKL sparse API uses
-    // opaque handles, not templated dispatch tables).
-    // This function exists to match the dpnp extension convention.
+    fnT get()
+    {
+        if constexpr (types::SparseGemvTypePairSupportFactory<Tv, Ti>::is_defined)
+            return gemv_impl<Tv, Ti>;
+        else
+            return nullptr;
+    }
+};
+
+void init_sparse_gemv_dispatch_table(void)
+{
+    init_dispatch_table<gemv_impl_fn_ptr_t, GemvContigFactory>(
+        gemv_dispatch_table);
 }
 
 } // namespace dpnp::extensions::sparse
