@@ -57,7 +57,7 @@ from ._interface import IdentityOperator, LinearOperator, aslinearoperator
 # ---------------------------------------------------------------------------
 # Try to import the compiled _sparse_impl extension (oneMKL sparse::gemv).
 # If the extension has not been built yet the pure-Python / A.dot fallback
-# is used transparently — no import error is raised at module load time.
+# is used transparently - no import error is raised at module load time.
 # ---------------------------------------------------------------------------
 try:
     from dpnp.backend.extensions.sparse import _sparse_impl as _si
@@ -128,17 +128,21 @@ def _make_fast_matvec(A):
     if _HAS_SPARSE_IMPL:
         # --- fast path: oneMKL sparse::gemv via pybind11 ---
         # Pull CSR arrays once; they are already in USM device memory.
-        indptr  = A.indptr          # row_ptr  — int32 or int64 USM array
-        indices = A.indices         # col_ind  — int32 or int64 USM array
-        data    = A.data            # values   — float32 or float64 USM array
+        indptr  = A.indptr          # row_ptr  - int32 or int64 USM array
+        indices = A.indices         # col_ind  - int32 or int64 USM array
+        data    = A.data            # values   - float32 or float64 USM array
         nrows   = int(A.shape[0])
         ncols   = int(A.shape[1])
         nnz     = int(data.shape[0])
+        # Capture the SYCL queue from the matrix data array at closure-creation
+        # time, not from x at call time.  This avoids queue mismatch when x is
+        # constructed on a different (e.g. default CPU) queue.
+        exec_q  = data.sycl_queue
 
         def _csr_spmv(x: _dpnp.ndarray) -> _dpnp.ndarray:
-            y = _dpnp.zeros(nrows, dtype=data.dtype, sycl_queue=x.sycl_queue)
+            y = _dpnp.zeros(nrows, dtype=data.dtype, sycl_queue=exec_q)
             _, ev = _si._sparse_gemv(
-                x.sycl_queue,
+                exec_q,
                 0,            # trans = NoTrans
                 1.0,          # alpha
                 indptr, indices, data,
