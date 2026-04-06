@@ -29,7 +29,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include "sparse_gemv.hpp"
+#include "gemv.hpp"
 
 // oneMKL sparse BLAS
 namespace mkl_sparse = oneapi::mkl::sparse;
@@ -119,7 +119,7 @@ sparse_gemv(sycl::queue &exec_q,
 
     sycl::event gemv_ev;
 
-    // Dispatch on value type × index type
+    // Dispatch on value type x index type
     // oneMKL sparse BLAS supports float32, float64 (no complex yet)
     if (val_typenum == UAR_FLOAT) {
         auto alpha_f = static_cast<float>(alpha);
