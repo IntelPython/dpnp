@@ -68,6 +68,13 @@ _HOST_N_THRESHOLD = 512
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _to_numpy(x):
+    """Convert a dpnp or numpy array to a numpy array safely."""
+    if isinstance(x, _dpnp.ndarray):
+        return x.asnumpy()
+    return _np.asarray(x)
+
+
 def _check_dtype(dtype, name: str) -> None:
     if dtype.char not in _SUPPORTED_DTYPES:
         raise TypeError(
@@ -218,9 +225,9 @@ def cg(
                 "atol": 0.0 if atol is None else float(atol),
                 "maxiter": maxiter,
             }
-            A_np = _np.asarray(A) if not hasattr(A, "matvec") else A
-            b_np = _np.asarray(b)
-            x0_np = None if x0 is None else _np.asarray(x0)
+            A_np  = _to_numpy(A) if not hasattr(A, "matvec") else A
+            b_np  = _to_numpy(b)
+            x0_np = None if x0 is None else _to_numpy(_dpnp.asarray(x0))
             x_np, info = _sla.cg(A_np, b_np, x0=x0_np, callback=callback, **_kw)
             return _dpnp.asarray(x_np), int(info)
         except Exception:
@@ -322,9 +329,9 @@ def gmres(
             sig = inspect.signature(_sla.gmres)
             if "callback_type" in sig.parameters and callback_type is not None:
                 _kw["callback_type"] = callback_type
-            A_np  = _np.asarray(A) if not hasattr(A, "matvec") else A
-            b_np  = _np.asarray(b)
-            x0_np = None if x0 is None else _np.asarray(x0)
+            A_np  = _to_numpy(A) if not hasattr(A, "matvec") else A
+            b_np  = _to_numpy(b)
+            x0_np = None if x0 is None else _to_numpy(_dpnp.asarray(x0))
             x_np, info = _sla.gmres(A_np, b_np, x0=x0_np, callback=callback, **_kw)
             return _dpnp.asarray(x_np), int(info)
         except Exception:
@@ -371,7 +378,7 @@ def gmres(
             # Replaces the slow Python loop (vdot per column) in the initial stub.
             V_mat  = _dpnp.stack(V_cols, axis=1)          # (n, j+1)
             h_dp   = _dpnp.dot(V_mat.T.conj(), w)         # (j+1,)  -- oneMKL gemv
-            h_np   = _np.asarray(h_dp)                    # pull tiny vector to CPU
+            h_np   = h_dp.asnumpy()                        # pull tiny vector to CPU
             w      = w - _dpnp.dot(V_mat, _dpnp.asarray(h_np, dtype=dtype))
 
             h_j1 = float(_dpnp.linalg.norm(w))
@@ -467,13 +474,13 @@ def minres(
     def _wrap_op(op):
         return _sla.LinearOperator(
             op.shape,
-            matvec=lambda x: _np.asarray(op.matvec(_dpnp.asarray(x))),
+            matvec=lambda x: op.matvec(_dpnp.asarray(x)).asnumpy(),
             dtype=_np.dtype(op.dtype) if op.dtype is not None else _np.float64,
         )
 
     M_sci = None if M is None else _wrap_op(aslinearoperator(M))
-    b_np  = _np.asarray(_dpnp.asarray(b).reshape(-1))
-    x0_np = None if x0 is None else _np.asarray(_dpnp.asarray(x0).reshape(-1))
+    b_np  = _dpnp.asarray(b).reshape(-1).asnumpy()
+    x0_np = None if x0 is None else _dpnp.asarray(x0).reshape(-1).asnumpy()
 
     tkw = _scipy_tol_kwarg(_sla.minres)
     x_np, info = _sla.minres(
