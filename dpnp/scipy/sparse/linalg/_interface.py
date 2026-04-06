@@ -105,10 +105,22 @@ class LinearOperator:
         self.shape = shape
 
     def _init_dtype(self):
-        """Infer dtype by running a trial matvec on a zero int8 vector."""
-        if self.dtype is None:
-            v = dpnp.zeros(self.shape[-1])
-            self.dtype = self.matvec(v).dtype
+        """Infer dtype by running a trial matvec on a zero int8 vector.
+
+        Uses int8 (not float64) as the probe dtype so that the matvec lambda
+        will promote int8 to whatever the operator's natural dtype is
+        (e.g. float32 @ int8 -> float32).  This matches SciPy's and CuPy's
+        dtype-inference strategy and avoids the previous bug where
+        dpnp.zeros(n) (float64 default) caused float32 operators to report
+        dtype=float64.
+
+        Short-circuits when self.dtype is already set so that an explicit
+        dtype= kwarg is never overwritten.
+        """
+        if self.dtype is not None:
+            return
+        v = dpnp.zeros(self.shape[-1], dtype=dpnp.int8)
+        self.dtype = self.matvec(v).dtype
 
     # ------------------------------------------------------------------ #
     #  Abstract primitives — subclasses override at least one of these    #
@@ -276,6 +288,8 @@ class _CustomLinearOperator(LinearOperator):
         self.__rmatvec_impl = rmatvec
         self.__rmatmat_impl = rmatmat
         self.__matmat_impl  = matmat
+        # _init_dtype() short-circuits when dtype was explicitly provided,
+        # so the caller's explicit dtype= is never overwritten.
         self._init_dtype()
 
     def _matvec(self, x):
@@ -489,7 +503,7 @@ def aslinearoperator(A) -> LinearOperator:
         matvec  = A.matvec  if hasattr(A, "matvec")  else (lambda x: A @ x)
         rmatvec = A.rmatvec if hasattr(A, "rmatvec") else None
         matmat  = A.matmat  if hasattr(A, "matmat")  else None
-        rmatmat = A.rmatmat if hasattr(A, "rmatmat") else None
+        rmatmat = A.rmatmat if hasattr(A, "rmatmat\") else None
         return LinearOperator(
             (m, n),
             matvec=matvec,
