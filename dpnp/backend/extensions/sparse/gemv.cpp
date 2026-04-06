@@ -26,13 +26,26 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <sstream>
 #include <stdexcept>
 #include <vector>
+
+#include <pybind11/pybind11.h>
+
+// ext/common.hpp — dpctl_td_ns; mirrors every other dpnp extension
+#include "ext/common.hpp"
+
+// dpctl tensor validation and utility headers — same set as blas/gemm.cpp
+#include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
+#include "utils/type_utils.hpp"
 
 #include "gemv.hpp"
 
 // oneMKL sparse BLAS
 namespace mkl_sparse = oneapi::mkl::sparse;
+namespace py = pybind11;
+namespace type_utils = dpctl::tensor::type_utils;
 
 namespace dpnp::extensions::sparse
 {
@@ -57,30 +70,60 @@ sparse_gemv_impl(sycl::queue &exec_q,
                  T *y_ptr,
                  const std::vector<sycl::event> &depends)
 {
+    // Validate that T is supported on this device (mirrors gemm_impl pattern)
+    type_utils::validate_type_for_device<T>(exec_q);
+
+    std::stringstream error_msg;
+    bool is_exception_caught = false;
+
     mkl_sparse::matrix_handle_t handle = nullptr;
-    mkl_sparse::init_matrix_handle(&handle);
+    sycl::event gemv_ev;
 
-    auto ev_set = mkl_sparse::set_csr_data(
-        exec_q, handle,
-        num_rows, num_cols,
-        oneapi::mkl::index_base::zero,
-        row_ptr_ptr, col_ind_ptr, values_ptr,
-        depends);
+    try {
+        mkl_sparse::init_matrix_handle(&handle);
 
-    // optimize_gemv performs internal analysis — amortises over repeated SpMV
-    auto ev_opt = mkl_sparse::optimize_gemv(
-        exec_q, mkl_trans, handle, {ev_set});
+        auto ev_set = mkl_sparse::set_csr_data(
+            exec_q, handle,
+            num_rows, num_cols,
+            oneapi::mkl::index_base::zero,
+            row_ptr_ptr, col_ind_ptr, values_ptr,
+            depends);
 
-    auto ev_gemv = mkl_sparse::gemv(
-        exec_q, mkl_trans,
-        alpha, handle,
-        x_ptr, beta, y_ptr,
-        {ev_opt});
+        // optimize_gemv performs internal analysis — amortises over repeated SpMV
+        auto ev_opt = mkl_sparse::optimize_gemv(
+            exec_q, mkl_trans, handle, {ev_set});
 
-    // async release — waits for ev_gemv internally
-    mkl_sparse::release_matrix_handle(exec_q, &handle, {ev_gemv});
+        gemv_ev = mkl_sparse::gemv(
+            exec_q, mkl_trans,
+            alpha, handle,
+            x_ptr, beta, y_ptr,
+            {ev_opt});
 
-    return ev_gemv;
+        // async release — waits for gemv_ev internally
+        mkl_sparse::release_matrix_handle(exec_q, &handle, {gemv_ev});
+
+    } catch (oneapi::mkl::exception const &e) {
+        error_msg
+            << "Unexpected MKL exception caught during sparse_gemv() call:"
+               "\nreason: "
+            << e.what();
+        is_exception_caught = true;
+    } catch (sycl::exception const &e) {
+        error_msg
+            << "Unexpected SYCL exception caught during sparse_gemv() call:\n"
+            << e.what();
+        is_exception_caught = true;
+    }
+
+    if (is_exception_caught) {
+        // Best-effort handle cleanup before re-raising
+        if (handle != nullptr) {
+            mkl_sparse::release_matrix_handle(exec_q, &handle, {});
+        }
+        throw std::runtime_error(error_msg.str());
+    }
+
+    return gemv_ev;
 }
 
 
@@ -103,24 +146,55 @@ sparse_gemv(sycl::queue &exec_q,
             const std::int64_t nnz,
             const std::vector<sycl::event> &depends)
 {
-    // Map trans integer to oneMKL enum
+    // --- 1. ndim checks ---
+    if (x.get_ndim() != 1) {
+        throw py::value_error("sparse_gemv: x must be a 1-D array.");
+    }
+    if (y.get_ndim() != 1) {
+        throw py::value_error("sparse_gemv: y must be a 1-D array.");
+    }
+
+    // --- 2. Queue compatibility (all USM arrays must share the same queue) ---
+    if (!dpctl::utils::queues_are_compatible(
+            exec_q,
+            {row_ptr.get_queue(), col_ind.get_queue(),
+             values.get_queue(),  x.get_queue(), y.get_queue()})) {
+        throw py::value_error(
+            "sparse_gemv: USM allocations are not compatible with the "
+            "execution queue.");
+    }
+
+    // --- 3. Memory overlap: x and y must not alias ---
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(x, y)) {
+        throw py::value_error(
+            "sparse_gemv: input array x and output array y are overlapping "
+            "segments of memory.");
+    }
+
+    // --- 4. Output writability and size ---
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(y);
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+        y, static_cast<std::size_t>(num_rows));
+
+    // --- 5. Map trans integer to oneMKL enum ---
     oneapi::mkl::transpose mkl_trans;
     switch (trans) {
-        case 0: mkl_trans = oneapi::mkl::transpose::nontrans; break;
-        case 1: mkl_trans = oneapi::mkl::transpose::trans; break;
+        case 0: mkl_trans = oneapi::mkl::transpose::nontrans;  break;
+        case 1: mkl_trans = oneapi::mkl::transpose::trans;     break;
         case 2: mkl_trans = oneapi::mkl::transpose::conjtrans; break;
         default:
             throw std::invalid_argument(
                 "sparse_gemv: trans must be 0 (N), 1 (T), or 2 (C)");
     }
 
+    // --- 6. Type dispatch (value type x index type) ---
+    // oneMKL sparse BLAS supports float32 and float64 (no complex yet)
     int val_typenum = values.get_typenum();
     int idx_typenum = row_ptr.get_typenum();
 
     sycl::event gemv_ev;
 
-    // Dispatch on value type x index type
-    // oneMKL sparse BLAS supports float32, float64 (no complex yet)
     if (val_typenum == UAR_FLOAT) {
         auto alpha_f = static_cast<float>(alpha);
         auto beta_f  = static_cast<float>(beta);
@@ -181,7 +255,11 @@ sparse_gemv(sycl::queue &exec_q,
             "sparse_gemv: value dtype must be float32 or float64");
     }
 
-    return std::make_pair(sycl::event{}, gemv_ev);
+    // Keep all input/output USM arrays alive until gemv_ev completes
+    sycl::event args_ev = dpctl::utils::keep_args_alive(
+        exec_q, {row_ptr, col_ind, values, x, y}, {gemv_ev});
+
+    return std::make_pair(args_ev, gemv_ev);
 }
 
 
