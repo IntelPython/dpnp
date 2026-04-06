@@ -31,15 +31,16 @@ cupyx.scipy.sparse.linalg (CuPy v14.0.1) and scipy.sparse.linalg.
 
 Performance strategy
 --------------------
-* n <= _HOST_N_THRESHOLD  → delegate to scipy.sparse.linalg (CPU fast path,
+* n <= _HOST_N_THRESHOLD  -> delegate to scipy.sparse.linalg (CPU fast path,
   same philosophy as CuPy host-dispatch for small systems).
-* n >  _HOST_N_THRESHOLD  → pure dpnp path; dense operations dispatch to
+* n >  _HOST_N_THRESHOLD  -> pure dpnp path; dense operations dispatch to
   oneMKL via dpnp.dot / dpnp.linalg.norm / dpnp.vdot (BLAS level-2/3).
-* CSR sparse input        → _make_fast_matvec injects oneMKL sparse::gemv
-  (hook in place; full binding added when dpnp.scipy.sparse matures).
-* GMRES Hessenberg lstsq  → numpy.linalg.lstsq on CPU (the (restart x restart)
+* CSR sparse input        -> _make_fast_matvec injects oneMKL sparse::gemv
+  via the _sparse_impl pybind11 extension (dpnp.backend.extensions.sparse).
+  Falls back to A.dot(x) if the extension is not yet built.
+* GMRES Hessenberg lstsq  -> numpy.linalg.lstsq on CPU (the (restart x restart)
   matrix is tiny; same decision as CuPy).
-* MINRES                  → SciPy host stub (CuPy v14.0.1 has no GPU MINRES;
+* MINRES                  -> SciPy host stub (CuPy v14.0.1 has no GPU MINRES;
   a native oneMKL MINRES will be added in a future dpnp release).
 """
 
@@ -52,6 +53,18 @@ import numpy as _np
 import dpnp as _dpnp
 
 from ._interface import IdentityOperator, LinearOperator, aslinearoperator
+
+# ---------------------------------------------------------------------------
+# Try to import the compiled _sparse_impl extension (oneMKL sparse::gemv).
+# If the extension has not been built yet the pure-Python / A.dot fallback
+# is used transparently — no import error is raised at module load time.
+# ---------------------------------------------------------------------------
+try:
+    from dpnp.backend.extensions.sparse import _sparse_impl as _si
+    _HAS_SPARSE_IMPL = True
+except ImportError:
+    _si = None
+    _HAS_SPARSE_IMPL = False
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -94,24 +107,54 @@ def _scipy_tol_kwarg(fn) -> str:
 
 # ---------------------------------------------------------------------------
 # oneMKL sparse SpMV hook
+# Equivalent of _cusparse.spMV_make_fast_matvec for the SYCL/oneMKL backend.
 # ---------------------------------------------------------------------------
-# CuPy equivalent: _make_fast_matvec uses cuSPARSE csrmv for CSR inputs.
-# When dpnp.scipy.sparse exposes oneMKL sparse::gemv, replace the body:
-#
-#   from dpnp.scipy.sparse.linalg._onemkl import spmv_csr
-#   return lambda x: spmv_csr(A.data, A.indices, A.indptr, x, A.shape)
-#
+
 def _make_fast_matvec(A):
-    """Return an accelerated SpMV callable for CSR sparse A, or None."""
+    """Return an accelerated SpMV callable for CSR sparse A, or None.
+
+    Priority order:
+    1. _sparse_impl._sparse_gemv  (oneMKL sparse::gemv, fully async SYCL)
+    2. A.dot                      (dpnp.scipy.sparse CSR dot, fallback)
+    3. None                       (caller will use LinearOperator.matvec)
+    """
     try:
         from dpnp.scipy import sparse as _sp
-        if _sp.issparse(A) and A.format == "csr":
-            # A.dot routes through oneMKL internally when dpnp.scipy.sparse is
-            # backed by the oneAPI DPC++ sparse BLAS.
-            return lambda x: A.dot(x)
+        if not (_sp.issparse(A) and A.format == "csr"):
+            return None
     except (ImportError, AttributeError):
-        pass
-    return None
+        return None
+
+    if _HAS_SPARSE_IMPL:
+        # --- fast path: oneMKL sparse::gemv via pybind11 ---
+        # Pull CSR arrays once; they are already in USM device memory.
+        indptr  = A.indptr          # row_ptr  — int32 or int64 USM array
+        indices = A.indices         # col_ind  — int32 or int64 USM array
+        data    = A.data            # values   — float32 or float64 USM array
+        nrows   = int(A.shape[0])
+        ncols   = int(A.shape[1])
+        nnz     = int(data.shape[0])
+
+        def _csr_spmv(x: _dpnp.ndarray) -> _dpnp.ndarray:
+            y = _dpnp.zeros(nrows, dtype=data.dtype, sycl_queue=x.sycl_queue)
+            _, ev = _si._sparse_gemv(
+                x.sycl_queue,
+                0,            # trans = NoTrans
+                1.0,          # alpha
+                indptr, indices, data,
+                x,
+                0.0,          # beta
+                y,
+                nrows, ncols, nnz,
+                [],           # depends
+            )
+            ev.wait()
+            return y
+
+        return _csr_spmv
+
+    # --- fallback: dpnp.scipy.sparse CSR dot ---
+    return lambda x: A.dot(x)
 
 
 # ---------------------------------------------------------------------------
@@ -373,9 +416,7 @@ def gmres(
             total_iters += 1
             w = M_op.matvec(A_op.matvec(V_cols[j]))
 
-            # Arnoldi step: h = V_j^H w  via single oneMKL BLAS gemv.
-            # CuPy equivalent uses cuBLAS dgemv; this uses oneMKL via dpnp.dot.
-            # Replaces the slow Python loop (vdot per column) in the initial stub.
+            # Arnoldi step: h = V_j^H w via single oneMKL BLAS gemv.
             V_mat  = _dpnp.stack(V_cols, axis=1)          # (n, j+1)
             h_dp   = _dpnp.dot(V_mat.T.conj(), w)         # (j+1,)  -- oneMKL gemv
             h_np   = h_dp.asnumpy()                        # pull tiny vector to CPU
@@ -391,8 +432,7 @@ def gmres(
             V_cols.append(w / h_j1)
             j_inner = j
 
-        # Hessenberg least-squares on CPU (the matrix is at most restart x restart;
-        # CuPy comment: "faster to solve on CPU").
+        # Hessenberg least-squares on CPU (matrix is at most restart x restart)
         k = j_inner + 1
         y_np, _, _, _ = _np.linalg.lstsq(
             H_np[:k + 1, :k], e1_np[:k + 1], rcond=None
