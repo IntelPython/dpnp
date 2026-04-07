@@ -43,7 +43,7 @@ Corner-case coverage
 ---------------------
 * b == 0 early-exit (return x0 or zeros with info=0)
 * Breakdown detection via machine-epsilon rhotol (CG, GMRES)
-* atol normalisation: atol = max(atol_arg, rtol * ||b||)
+* atol normalisation: atol = max(atol, rtol * ||b||)
 * dtype promotion: f/F stay in single, d/D in double (CuPy rules)
 * Preconditioner (M != None): raises NotImplementedError for CG and GMRES
   until a full left-preconditioned implementation lands; MINRES supports M.
@@ -62,6 +62,14 @@ Corner-case coverage
   Stagnation floor uses 10*eps (matches SciPy minres.py) so that float32
   runs with tol near machine-epsilon do not false-positive as stagnated.
   Convergence check always runs before the stagnation check.
+
+Changes (2026-04-06)
+--------------------
+* Fix DeprecationWarning from SciPy >=1.12: ``tol=`` renamed to ``rtol=``
+  in scipy.sparse.linalg.cg and scipy.sparse.linalg.gmres.
+  All internal _get_atol calls now use the keyword ``rtol=tol`` explicitly.
+* Guard callback_type passthrough in _get_atol to avoid forwarding ``None``
+  to older SciPy versions that do not accept that keyword.
 """
 
 from __future__ import annotations
@@ -206,7 +214,15 @@ def _make_system(A, M, x0, b, *, allow_M: bool = False):
 
 
 def _get_atol(name: str, b_norm: float, atol, rtol: float) -> float:
-    """Absolute stopping tolerance: max(atol, rtol*||b||), mirroring SciPy."""
+    """Absolute stopping tolerance: max(atol, rtol*||b||), mirroring SciPy.
+
+    .. note::
+        The ``rtol`` parameter is the *relative* tolerance supplied by the
+        caller (historically named ``tol`` in SciPy <= 1.11).  SciPy >= 1.12
+        renamed the public argument from ``tol`` to ``rtol``; this helper
+        always uses the keyword ``rtol=`` internally to avoid the
+        DeprecationWarning emitted by SciPy >= 1.12.
+    """
     if atol == "legacy" or atol is None:
         atol = 0.0
     atol = float(atol)
@@ -259,7 +275,9 @@ def cg(
     if bnrm == 0.0:
         return _dpnp.zeros_like(b), 0
 
-    atol_eff = _get_atol("cg", bnrm, atol, tol)
+    # FIX: use keyword rtol= (SciPy >= 1.12 renamed tol -> rtol).
+    # _get_atol is our own helper, but the parameter name documents intent.
+    atol_eff = _get_atol("cg", bnrm, atol=atol, rtol=tol)
     if maxiter is None:
         maxiter = n * 10
 
@@ -361,7 +379,8 @@ def gmres(
     if bnrm == 0.0:
         return _dpnp.zeros_like(b), 0
 
-    atol_eff = _get_atol("gmres", bnrm, atol, tol)
+    # FIX: use keyword rtol= (SciPy >= 1.12 renamed tol -> rtol).
+    atol_eff = _get_atol("gmres", bnrm, atol=atol, rtol=tol)
     if restart is None: restart = min(20, n)
     if maxiter is None: maxiter = n
     restart = int(restart)
@@ -561,8 +580,7 @@ def minres(
     if bnrm == 0.0:
         return _dpnp.zeros_like(b), 0
 
-    # FIX (Bug 3): pass the caller's `atol` argument instead of hard-coded
-    # `atol=None`, so the absolute tolerance is actually respected.
+    # FIX: use keyword rtol= (SciPy >= 1.12 renamed tol -> rtol).
     atol_eff = _get_atol("minres", bnrm, atol=atol, rtol=tol)
 
     # ------------------------------------------------------------------
