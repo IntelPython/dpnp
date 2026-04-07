@@ -26,29 +26,35 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <cstdint>
+#include <tuple>
+#include <vector>
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 #include <sycl/sycl.hpp>
+
 #include <dpctl4pybind11.hpp>
 
 #include "gemv.hpp"
 
 namespace py = pybind11;
 
-using dpnp::extensions::sparse::init_sparse_gemv_dispatch_table;
-using dpnp::extensions::sparse::sparse_gemv_init;
+using dpnp::extensions::sparse::init_sparse_gemv_dispatch_tables;
 using dpnp::extensions::sparse::sparse_gemv_compute;
+using dpnp::extensions::sparse::sparse_gemv_init;
 using dpnp::extensions::sparse::sparse_gemv_release;
 
 PYBIND11_MODULE(_sparse_impl, m)
 {
-    init_sparse_gemv_dispatch_table();
+    init_sparse_gemv_dispatch_tables();
 
     // ------------------------------------------------------------------
     // _using_onemath()
-    // Reports whether the module was compiled against the portable OneMath
-    // interface (USE_ONEMATH) rather than direct oneMKL.
+    //
+    // Reports whether the module was compiled against the portable
+    // OneMath interface (USE_ONEMATH) rather than direct oneMKL.
     // ------------------------------------------------------------------
     m.def("_using_onemath", []() -> bool {
 #ifdef USE_ONEMATH
@@ -61,24 +67,32 @@ PYBIND11_MODULE(_sparse_impl, m)
     // ------------------------------------------------------------------
     // _sparse_gemv_init(exec_q, trans, row_ptr, col_ind, values,
     //                   num_rows, num_cols, nnz, depends)
-    //     -> (handle: int, event)
+    //     -> (handle: int, val_type_id: int, event)
     //
     // Calls init_matrix_handle + set_csr_data + optimize_gemv ONCE.
-    // The returned handle is an opaque uintptr_t; pass it back to
-    // _sparse_gemv_compute and _sparse_gemv_release.
+    //
+    // The returned handle is an opaque uintptr_t; val_type_id is the
+    // dpctl typenum lookup id of the matrix value dtype and MUST be
+    // passed back to _sparse_gemv_compute so the C++ layer can verify
+    // that x and y dtype match the handle.
+    //
+    // LIFETIME CONTRACT: the caller must keep row_ptr / col_ind / values
+    // USM allocations alive until _sparse_gemv_release has been called
+    // AND its returned event has completed. The handle does not copy
+    // the CSR arrays.
     // ------------------------------------------------------------------
     m.def(
         "_sparse_gemv_init",
-        [](sycl::queue                                &exec_q,
-           const int                                   trans,
-           const dpctl::tensor::usm_ndarray           &row_ptr,
-           const dpctl::tensor::usm_ndarray           &col_ind,
-           const dpctl::tensor::usm_ndarray           &values,
-           const std::int64_t                          num_rows,
-           const std::int64_t                          num_cols,
-           const std::int64_t                          nnz,
-           const std::vector<sycl::event>             &depends)
-            -> std::pair<std::uintptr_t, sycl::event>
+        [](sycl::queue &exec_q,
+           const int trans,
+           const dpctl::tensor::usm_ndarray &row_ptr,
+           const dpctl::tensor::usm_ndarray &col_ind,
+           const dpctl::tensor::usm_ndarray &values,
+           const std::int64_t num_rows,
+           const std::int64_t num_cols,
+           const std::int64_t nnz,
+           const std::vector<sycl::event> &depends)
+            -> std::tuple<std::uintptr_t, int, sycl::event>
         {
             return sparse_gemv_init(
                 exec_q, trans,
@@ -95,40 +109,50 @@ PYBIND11_MODULE(_sparse_impl, m)
         py::arg("num_cols"),
         py::arg("nnz"),
         py::arg("depends"),
-        "Initialise oneMKL sparse matrix handle (set_csr_data + optimize_gemv). "
-        "Returns (handle_ptr: int, event). Call once per operator."
+        "Initialise oneMKL sparse matrix handle "
+        "(set_csr_data + optimize_gemv). "
+        "Returns (handle_ptr: int, val_type_id: int, event). "
+        "Call once per operator."
     );
 
     // ------------------------------------------------------------------
-    // _sparse_gemv_compute(exec_q, handle, trans, alpha, x, beta, y,
-    //                      num_rows, num_cols, depends)
-    //     -> (args_event, gemv_event)
+    // _sparse_gemv_compute(exec_q, handle, val_type_id, trans, alpha,
+    //                     x, beta, y, num_rows, num_cols, depends)
+    //     -> gemv_event
     //
-    // Fires sparse::gemv using the pre-built handle.
-    // Only the cheap kernel is dispatched; no analysis overhead.
+    // Fires sparse::gemv using a pre-built handle. Verifies x and y
+    // dtype match val_type_id from init, and that shapes agree with
+    // op(A) dimensions (swapped for trans != N).
+    //
+    // Only the cheap MKL kernel is dispatched; no analysis overhead.
+    // No host_task keep-alive is submitted -- pybind11 refcounts the
+    // usm_ndarrays across the call, and sequencing of subsequent work
+    // on the same queue happens automatically.
     // ------------------------------------------------------------------
     m.def(
         "_sparse_gemv_compute",
-        [](sycl::queue                                &exec_q,
-           const std::uintptr_t                        handle_ptr,
-           const int                                   trans,
-           const double                                alpha,
-           const dpctl::tensor::usm_ndarray           &x,
-           const double                                beta,
-           const dpctl::tensor::usm_ndarray           &y,
-           const std::int64_t                          num_rows,
-           const std::int64_t                          num_cols,
-           const std::vector<sycl::event>             &depends)
-            -> std::pair<sycl::event, sycl::event>
+        [](sycl::queue &exec_q,
+           const std::uintptr_t handle_ptr,
+           const int val_type_id,
+           const int trans,
+           const double alpha,
+           const dpctl::tensor::usm_ndarray &x,
+           const double beta,
+           const dpctl::tensor::usm_ndarray &y,
+           const std::int64_t num_rows,
+           const std::int64_t num_cols,
+           const std::vector<sycl::event> &depends)
+            -> sycl::event
         {
             return sparse_gemv_compute(
-                exec_q, handle_ptr, trans, alpha,
+                exec_q, handle_ptr, val_type_id, trans, alpha,
                 x, beta, y,
                 num_rows, num_cols,
                 depends);
         },
         py::arg("exec_q"),
         py::arg("handle"),
+        py::arg("val_type_id"),
         py::arg("trans"),
         py::arg("alpha"),
         py::arg("x"),
@@ -138,7 +162,7 @@ PYBIND11_MODULE(_sparse_impl, m)
         py::arg("num_cols"),
         py::arg("depends"),
         "Execute sparse::gemv using a pre-built handle. "
-        "Returns (args_event, gemv_event)."
+        "Returns the gemv event."
     );
 
     // ------------------------------------------------------------------
@@ -146,13 +170,14 @@ PYBIND11_MODULE(_sparse_impl, m)
     //
     // Releases the matrix_handle allocated by _sparse_gemv_init.
     // Must be called exactly once per handle after all compute calls
-    // referencing it are complete.
+    // referencing it have completed. The returned event depends on the
+    // release, so callers can chain CSR buffer deallocation on it.
     // ------------------------------------------------------------------
     m.def(
         "_sparse_gemv_release",
-        [](sycl::queue                                &exec_q,
-           const std::uintptr_t                        handle_ptr,
-           const std::vector<sycl::event>             &depends)
+        [](sycl::queue &exec_q,
+           const std::uintptr_t handle_ptr,
+           const std::vector<sycl::event> &depends)
             -> sycl::event
         {
             return sparse_gemv_release(exec_q, handle_ptr, depends);

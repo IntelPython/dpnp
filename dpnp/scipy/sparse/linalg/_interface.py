@@ -75,11 +75,6 @@ def _get_dtype(operators, dtypes=None):
             dtypes.append(obj.dtype)
     return dpnp.result_type(*dtypes) if dtypes else None
 
-
-# ---------------------------------------------------------------------------
-# LinearOperator base
-# ---------------------------------------------------------------------------
-
 class LinearOperator:
     """Drop-in replacement for cupyx/scipy LinearOperator backed by dpnp arrays.
 
@@ -116,15 +111,13 @@ class LinearOperator:
         self.shape = shape
 
     def _init_dtype(self):
-        """Infer dtype via a trial matvec on an int8 zero vector (SciPy / CuPy strategy)."""
+        """
+        Infer dtype via a trial matvec on a zero vector.
+        """
         if self.dtype is not None:
             return
-        v = dpnp.zeros(self.shape[-1], dtype=dpnp.int8)
+        v = dpnp.zeros(self.shape[-1], dtype=dpnp.float64)
         self.dtype = self.matvec(v).dtype
-
-    # ------------------------------------------------------------------ #
-    #  Abstract primitives — subclasses override at least one             #
-    # ------------------------------------------------------------------ #
 
     def _matvec(self, x):
         return self.matmat(x.reshape(-1, 1))
@@ -145,10 +138,6 @@ class LinearOperator:
                 [self.rmatvec(col.reshape(-1, 1)) for col in X.T]
             )
         return self.H.matmat(X)
-
-    # ------------------------------------------------------------------ #
-    #  Public multiply methods (shape-checked)                            #
-    # ------------------------------------------------------------------ #
 
     def matvec(self, x):
         M, N = self.shape
@@ -181,10 +170,6 @@ class LinearOperator:
         if X.shape[0] != self.shape[0]:
             raise ValueError(f"dimension mismatch: {self.shape!r} vs {X.shape!r}")
         return self._rmatmat(X)
-
-    # ------------------------------------------------------------------ #
-    #  Operator algebra                                                   #
-    # ------------------------------------------------------------------ #
 
     def dot(self, x):
         if isinstance(x, LinearOperator):
@@ -235,10 +220,6 @@ class LinearOperator:
 
     def __sub__(self, x):
         return self.__add__(-x)
-
-    # ------------------------------------------------------------------ #
-    #  Adjoint / transpose — A.H and A.T both work (SciPy + CuPy parity) #
-    # ------------------------------------------------------------------ #
 
     def _adjoint(self):
         """Return conjugate-transpose operator (override in subclasses)."""
@@ -364,7 +345,6 @@ class _ProductLinearOperator(LinearOperator):
     def _rmatmat(self, X): return self.args[1].rmatmat(self.args[0].rmatmat(X))
     def _adjoint(self):    A, B = self.args; return B.H * A.H
 
-
 class _ScaledLinearOperator(LinearOperator):
     def __init__(self, A, alpha):
         super().__init__(_get_dtype([A], [type(alpha)]), A.shape)
@@ -376,7 +356,6 @@ class _ScaledLinearOperator(LinearOperator):
     def _rmatmat(self, X): return dpnp.conj(self.args[1]) * self.args[0].rmatmat(X)
     def _adjoint(self):    A, alpha = self.args; return A.H * dpnp.conj(alpha)
 
-
 class _PowerLinearOperator(LinearOperator):
     def __init__(self, A, p):
         if A.shape[0] != A.shape[1]:
@@ -387,7 +366,7 @@ class _PowerLinearOperator(LinearOperator):
         self.args = (A, int(p))
 
     def _power(self, f, x):
-        res = dpnp.array(x, copy=True)
+        res = x.copy()
         for _ in range(self.args[1]):
             res = f(res)
         return res
@@ -445,24 +424,18 @@ class IdentityOperator(LinearOperator):
     def _adjoint(self):    return self
     def _transpose(self):  return self
 
-
-# ---------------------------------------------------------------------------
-# aslinearoperator
-# ---------------------------------------------------------------------------
-
 def aslinearoperator(A) -> LinearOperator:
     """Wrap A as a LinearOperator if it is not already one.
 
     Handles (in order):
       1. Already a LinearOperator — returned as-is.
-      2. dpnp.scipy.sparse or scipy.sparse sparse matrix.
-      3. Dense dpnp / numpy ndarray (1-D promoted to column vector).
+      2. dpnp.scipy.sparse sparse matrix.
+      3. Dense 2-D dpnp.ndarray.
       4. Duck-typed objects with .shape and .matvec / @ support.
     """
     if isinstance(A, LinearOperator):
         return A
 
-    # dpnp sparse
     try:
         from dpnp.scipy import sparse as _sp
         if _sp.issparse(A):
@@ -470,31 +443,19 @@ def aslinearoperator(A) -> LinearOperator:
     except (ImportError, AttributeError):
         pass
 
-    # scipy sparse — convert to dense on device
-    try:
-        import scipy.sparse as _ssp
-        if _ssp.issparse(A):
-            return MatrixLinearOperator(dpnp.asarray(A.toarray()))
-    except (ImportError, AttributeError):
-        pass
+    if isinstance(A, dpnp.ndarray):
+        if A.ndim != 2:
+            raise ValueError(
+                f"aslinearoperator: dpnp array must be 2-D, got {A.ndim}-D"
+            )
+        return MatrixLinearOperator(A)
 
-    # dense ndarray (dpnp or numpy)
-    try:
-        arr = dpnp.asarray(A)
-        if arr.ndim == 1:
-            arr = arr.reshape(-1, 1)   # treat 1-D as column vector
-        if arr.ndim == 2:
-            return MatrixLinearOperator(arr)
-    except Exception:
-        pass
-
-    # duck-typed (anything with .shape + matvec or @)
     if hasattr(A, "shape") and len(A.shape) == 2:
-        m, n    = int(A.shape[0]), int(A.shape[1])
-        dtype   = getattr(A, "dtype", None)
-        matvec  = A.matvec  if hasattr(A, "matvec")  else (lambda x: A @ x)
+        m, n = int(A.shape[0]), int(A.shape[1])
+        dtype = getattr(A, "dtype", None)
+        matvec = A.matvec if hasattr(A, "matvec") else (lambda x: A @ x)
         rmatvec = A.rmatvec if hasattr(A, "rmatvec") else None
-        matmat  = A.matmat  if hasattr(A, "matmat")  else None
+        matmat = A.matmat if hasattr(A, "matmat") else None
         rmatmat = A.rmatmat if hasattr(A, "rmatmat") else None
         return LinearOperator(
             (m, n),
@@ -505,4 +466,7 @@ def aslinearoperator(A) -> LinearOperator:
             rmatmat=rmatmat,
         )
 
-    raise TypeError(f"Cannot convert object of type {type(A)!r} to a LinearOperator")
+    raise TypeError(
+        f"Cannot convert object of type {type(A)!r} to a LinearOperator. "
+        "Expected a LinearOperator, dpnp sparse matrix, or 2-D dpnp.ndarray."
+    )
