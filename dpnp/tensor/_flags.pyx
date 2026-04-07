@@ -46,7 +46,7 @@ cdef cpp_bool _check_bit(int flag, int mask):
 
 cdef class Flags:
     """
-    Helper class to query the flags of a :class:`dpctl.tensor.usm_ndarray`
+    Helper class to query the flags of a :class:`dpnp.tensor.usm_ndarray`
     instance, which describe how the instance interfaces with its underlying
     memory.
     """
@@ -61,7 +61,7 @@ cdef class Flags:
     def flags(self):
         """
         Integer representation of the memory layout flags of
-        :class:`dpctl.tensor.usm_ndarray` instance.
+        :class:`dpnp.tensor.usm_ndarray` instance.
         """
         return self.flags_
 
@@ -69,7 +69,7 @@ cdef class Flags:
     def c_contiguous(self):
         """
         True if the memory layout of the
-        :class:`dpctl.tensor.usm_ndarray` instance is C-contiguous.
+        :class:`dpnp.tensor.usm_ndarray` instance is C-contiguous.
         """
         return _check_bit(self.flags_, USM_ARRAY_C_CONTIGUOUS)
 
@@ -77,14 +77,14 @@ cdef class Flags:
     def f_contiguous(self):
         """
         True if the memory layout of the
-        :class:`dpctl.tensor.usm_ndarray` instance is F-contiguous.
+        :class:`dpnp.tensor.usm_ndarray` instance is F-contiguous.
         """
         return _check_bit(self.flags_, USM_ARRAY_F_CONTIGUOUS)
 
     @property
     def writable(self):
         """
-        True if :class:`dpctl.tensor.usm_ndarray` instance is writable.
+        True if :class:`dpnp.tensor.usm_ndarray` instance is writable.
         """
         return _check_bit(self.flags_, USM_ARRAY_WRITABLE)
 
@@ -97,7 +97,7 @@ cdef class Flags:
     @property
     def fc(self):
         """
-        True if the memory layout of the :class:`dpctl.tensor.usm_ndarray`
+        True if the memory layout of the :class:`dpnp.tensor.usm_ndarray`
         instance is C-contiguous and F-contiguous.
         """
         return (
@@ -108,7 +108,7 @@ cdef class Flags:
     @property
     def forc(self):
         """
-        True if the memory layout of the :class:`dpctl.tensor.usm_ndarray`
+        True if the memory layout of the :class:`dpnp.tensor.usm_ndarray`
         instance is C-contiguous or F-contiguous.
         """
         return (
@@ -119,7 +119,7 @@ cdef class Flags:
     @property
     def fnc(self):
         """
-        True if the memory layout of the :class:`dpctl.tensor.usm_ndarray`
+        True if the memory layout of the :class:`dpnp.tensor.usm_ndarray`
         instance is F-contiguous and not C-contiguous.
         """
         return (
@@ -130,7 +130,7 @@ cdef class Flags:
     @property
     def contiguous(self):
         """
-        True if the memory layout of the :class:`dpctl.tensor.usm_ndarray`
+        True if the memory layout of the :class:`dpnp.tensor.usm_ndarray`
         instance is C-contiguous and F-contiguous.
         Equivalent to `forc.`
         """
