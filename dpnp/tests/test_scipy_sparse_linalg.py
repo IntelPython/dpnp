@@ -28,6 +28,11 @@
 
 The test structure and helper usage mirror dpnp/tests/test_linalg.py so that
 the suite fits naturally into the existing CI infrastructure.
+
+Note: dpnp.ndarray deliberately blocks implicit numpy conversion (raises
+TypeError in __array__) to prevent silent dtype=object arrays.  All
+assertions that need a host-side NumPy array must call `arr.asnumpy()`
+explicitly instead of `numpy.asarray(arr)`.
 """
 
 import numpy
@@ -54,6 +59,13 @@ from .helper import (
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _to_numpy(x):
+    """Convert a dpnp array (or plain numpy array) to numpy safely."""
+    if isinstance(x, dpnp.ndarray):
+        return x.asnumpy()
+    return numpy.asarray(x)
+
+
 def _make_spd(n, dtype, rng):
     """Return a symmetric positive-definite matrix of size n."""
     A = rng.standard_normal((n, n)).astype(dtype)
@@ -76,7 +88,7 @@ def _make_nonsym(n, dtype, rng):
 
 def _rel_residual(A_np, x_dp, b_np):
     """Relative residual ||Ax - b|| / ||b||."""
-    x_np = numpy.asarray(x_dp)
+    x_np = _to_numpy(x_dp)
     r = A_np @ x_np - b_np
     b_nrm = numpy.linalg.norm(b_np)
     return numpy.linalg.norm(r) / (b_nrm if b_nrm > 0 else 1.0)
@@ -118,7 +130,7 @@ class TestLinearOperator:
         op = LinearOperator((n, n), matvec=lambda x: A_dp @ x)
         x_dp = dpnp.arange(n, dtype=numpy.float64)
         y_dp = op.matvec(x_dp)
-        assert_allclose(numpy.asarray(y_dp), numpy.asarray(x_dp), rtol=1e-12)
+        assert_allclose(_to_numpy(y_dp), _to_numpy(x_dp), rtol=1e-12)
 
     @pytest.mark.parametrize("dtype", [numpy.float32, numpy.float64])
     def test_matvec_dense(self, dtype):
@@ -132,7 +144,7 @@ class TestLinearOperator:
         op = LinearOperator((n, n), matvec=lambda x: A_dp @ x, dtype=dtype)
         y_dp = op.matvec(x_dp)
         y_ref = A_np @ x_np
-        assert_allclose(numpy.asarray(y_dp), y_ref, rtol=1e-5)
+        assert_allclose(_to_numpy(y_dp), y_ref, rtol=1e-5)
 
     # --- rmatvec ---
 
@@ -151,7 +163,7 @@ class TestLinearOperator:
         )
         y_dp = op.rmatvec(x_dp)
         y_ref = A_np.T @ x_np
-        assert_allclose(numpy.asarray(y_dp), y_ref, rtol=1e-12)
+        assert_allclose(_to_numpy(y_dp), y_ref, rtol=1e-12)
 
     def test_rmatvec_not_defined_raises(self):
         n = 4
@@ -174,7 +186,7 @@ class TestLinearOperator:
         op = LinearOperator((n, n), matvec=lambda x: A_dp @ x)
         Y_dp = op.matmat(X_dp)
         Y_ref = A_np @ X_np
-        assert_allclose(numpy.asarray(Y_dp), Y_ref, rtol=1e-10)
+        assert_allclose(_to_numpy(Y_dp), Y_ref, rtol=1e-10)
 
     def test_matmat_explicit(self):
         rng = numpy.random.default_rng(3)
@@ -190,7 +202,7 @@ class TestLinearOperator:
             matmat=lambda X: A_dp @ X,
         )
         Y_dp = op.matmat(X_dp)
-        assert_allclose(numpy.asarray(Y_dp), A_np @ X_np, rtol=1e-10)
+        assert_allclose(_to_numpy(Y_dp), A_np @ X_np, rtol=1e-10)
 
     # --- __matmul__ / __call__ ---
 
@@ -200,7 +212,7 @@ class TestLinearOperator:
         op = LinearOperator((n, n), matvec=lambda x: A_dp @ x)
         x_dp = dpnp.ones(n)
         y_dp = op @ x_dp
-        assert_allclose(numpy.asarray(y_dp), numpy.full(n, 2.0))
+        assert_allclose(_to_numpy(y_dp), numpy.full(n, 2.0))
 
     def test_matmul_2d(self):
         n, k = 4, 3
@@ -208,14 +220,14 @@ class TestLinearOperator:
         X_dp = dpnp.ones((n, k))
         op = LinearOperator((n, n), matvec=lambda x: A_dp @ x)
         Y_dp = op @ X_dp
-        assert_allclose(numpy.asarray(Y_dp), numpy.ones((n, k)))
+        assert_allclose(_to_numpy(Y_dp), numpy.ones((n, k)))
 
     def test_call_delegates_to_matmul(self):
         n = 4
         A_dp = dpnp.eye(n, dtype=numpy.float64)
         op = LinearOperator((n, n), matvec=lambda x: A_dp @ x)
         x_dp = dpnp.ones(n)
-        assert_allclose(numpy.asarray(op(x_dp)), numpy.asarray(op @ x_dp))
+        assert_allclose(_to_numpy(op(x_dp)), _to_numpy(op @ x_dp))
 
     # --- operator algebra ---
 
@@ -231,8 +243,8 @@ class TestLinearOperator:
         )
         x_dp = dpnp.asarray(rng.standard_normal(n))
         y_H = op.H.matvec(x_dp)
-        y_ref = A_np.T @ numpy.asarray(x_dp)
-        assert_allclose(numpy.asarray(y_H), y_ref, rtol=1e-12)
+        y_ref = A_np.T @ _to_numpy(x_dp)
+        assert_allclose(_to_numpy(y_H), y_ref, rtol=1e-12)
 
     def test_transpose_property_T(self):
         rng = numpy.random.default_rng(5)
@@ -247,8 +259,8 @@ class TestLinearOperator:
         x_dp = dpnp.asarray(rng.standard_normal(n))
         y_T = op.T.matvec(x_dp)
         # For real A, T == H
-        y_ref = A_np.T @ numpy.asarray(x_dp)
-        assert_allclose(numpy.asarray(y_T), y_ref, rtol=1e-12)
+        y_ref = A_np.T @ _to_numpy(x_dp)
+        assert_allclose(_to_numpy(y_T), y_ref, rtol=1e-12)
 
     def test_add_two_operators(self):
         n = 5
@@ -259,7 +271,7 @@ class TestLinearOperator:
         opC = opA + opB
         x_dp = dpnp.ones(n)
         y_dp = opC.matvec(x_dp)
-        assert_allclose(numpy.asarray(y_dp), numpy.full(n, 3.0))
+        assert_allclose(_to_numpy(y_dp), numpy.full(n, 3.0))
 
     def test_scalar_multiply(self):
         n = 4
@@ -268,7 +280,7 @@ class TestLinearOperator:
         op3 = op * 3.0
         x_dp = dpnp.ones(n)
         y_dp = op3.matvec(x_dp)
-        assert_allclose(numpy.asarray(y_dp), numpy.full(n, 3.0))
+        assert_allclose(_to_numpy(y_dp), numpy.full(n, 3.0))
 
     def test_product_operator(self):
         n = 5
@@ -279,7 +291,7 @@ class TestLinearOperator:
         opAB = opA * opB
         x_dp = dpnp.ones(n)
         y_dp = opAB.matvec(x_dp)
-        assert_allclose(numpy.asarray(y_dp), numpy.full(n, 6.0))
+        assert_allclose(_to_numpy(y_dp), numpy.full(n, 6.0))
 
     def test_neg_operator(self):
         n = 4
@@ -288,7 +300,7 @@ class TestLinearOperator:
         neg_op = -op
         x_dp = dpnp.ones(n)
         y_dp = neg_op.matvec(x_dp)
-        assert_allclose(numpy.asarray(y_dp), numpy.full(n, -1.0))
+        assert_allclose(_to_numpy(y_dp), numpy.full(n, -1.0))
 
     def test_power_operator(self):
         n = 4
@@ -298,7 +310,7 @@ class TestLinearOperator:
         x_dp = dpnp.ones(n)
         y_dp = op3.matvec(x_dp)
         # 2^3 * I * [1...] = 8
-        assert_allclose(numpy.asarray(y_dp), numpy.full(n, 8.0))
+        assert_allclose(_to_numpy(y_dp), numpy.full(n, 8.0))
 
     # --- shape / error validation ---
 
@@ -327,7 +339,7 @@ class TestLinearOperator:
         op = aslinearoperator(A_dp)
         x_dp = dpnp.ones(n)
         y_dp = op.matvec(x_dp)
-        assert_allclose(numpy.asarray(y_dp), numpy.ones(n))
+        assert_allclose(_to_numpy(y_dp), numpy.ones(n))
 
     def test_aslinearoperator_from_numpy(self):
         n = 5
@@ -335,7 +347,7 @@ class TestLinearOperator:
         op = aslinearoperator(A_np)
         x_dp = dpnp.ones(n)
         y_dp = op.matvec(x_dp)
-        assert_allclose(numpy.asarray(y_dp), numpy.ones(n))
+        assert_allclose(_to_numpy(y_dp), numpy.ones(n))
 
     def test_aslinearoperator_invalid_raises(self):
         with pytest.raises(TypeError):
@@ -355,8 +367,8 @@ class TestLinearOperator:
         n = 7
         op = IdentityOperator((n, n), dtype=numpy.float64)
         x_dp = dpnp.arange(n, dtype=numpy.float64)
-        assert_array_equal(numpy.asarray(op.matvec(x_dp)), numpy.arange(n))
-        assert_array_equal(numpy.asarray(op.rmatvec(x_dp)), numpy.arange(n))
+        assert_array_equal(_to_numpy(op.matvec(x_dp)), numpy.arange(n))
+        assert_array_equal(_to_numpy(op.rmatvec(x_dp)), numpy.arange(n))
 
     # --- complex dtype ---
 
@@ -371,7 +383,7 @@ class TestLinearOperator:
 
         op = LinearOperator((n, n), matvec=lambda x: A_dp @ x, dtype=dtype)
         y_dp = op.matvec(x_dp)
-        assert_allclose(numpy.asarray(y_dp), A_np @ x_np, rtol=1e-4)
+        assert_allclose(_to_numpy(y_dp), A_np @ x_np, rtol=1e-4)
 
 
 # ---------------------------------------------------------------------------
@@ -406,7 +418,7 @@ class TestCG:
         x_ref = numpy.linalg.solve(A_np, b_np)
         x_dp, info = cg(A_dp, b_dp, tol=1e-10, maxiter=1000)
         assert info == 0
-        assert_allclose(numpy.asarray(x_dp), x_ref, rtol=1e-6)
+        assert_allclose(_to_numpy(x_dp), x_ref, rtol=1e-6)
 
     def test_cg_x0_initial_guess(self):
         rng = numpy.random.default_rng(102)
@@ -417,11 +429,9 @@ class TestCG:
         A_dp = dpnp.asarray(A_np)
         b_dp = dpnp.asarray(b_np)
 
-        # Start from a good initial guess: actual solution
         x_ref = numpy.linalg.solve(A_np, b_np)
         x0_dp = dpnp.asarray(x_ref)
         x_dp, info = cg(A_dp, b_dp, x0=x0_dp, tol=1e-10, maxiter=5)
-        # Should converge immediately or with very few iterations
         assert _rel_residual(A_np, x_dp, b_np) < 1e-8
 
     def test_cg_callback_called(self):
@@ -447,7 +457,7 @@ class TestCG:
         b_dp = dpnp.zeros(n, dtype=numpy.float64)
         x_dp, info = cg(A_dp, b_dp)
         assert info == 0
-        assert_allclose(numpy.asarray(x_dp), numpy.zeros(n), atol=1e-14)
+        assert_allclose(_to_numpy(x_dp), numpy.zeros(n), atol=1e-14)
 
     def test_cg_returns_dpnp_array(self):
         n = 4
@@ -509,7 +519,6 @@ class TestCG:
         A_np = _make_spd(n, dtype, rng)
         b_np = rng.standard_normal(n).astype(dtype)
         x_dp, _ = cg(dpnp.asarray(A_np), dpnp.asarray(b_np), tol=1e-6, maxiter=500)
-        # Result should be float64 (working precision) or at least same family
         assert numpy.issubdtype(x_dp.dtype, numpy.floating)
 
 
@@ -545,7 +554,7 @@ class TestGMRES:
         x_ref = numpy.linalg.solve(A_np, b_np)
         x_dp, info = gmres(A_dp, b_dp, tol=1e-10, maxiter=50, restart=n)
         assert info == 0
-        assert_allclose(numpy.asarray(x_dp), x_ref, rtol=1e-5)
+        assert_allclose(_to_numpy(x_dp), x_ref, rtol=1e-5)
 
     def test_gmres_spd_matches_cg(self):
         """On an SPD system GMRES and CG should agree."""
@@ -559,7 +568,7 @@ class TestGMRES:
 
         x_gmres, _ = gmres(A_dp, b_dp, tol=1e-10, maxiter=100, restart=n)
         x_cg, _ = cg(A_dp, b_dp, tol=1e-10, maxiter=500)
-        assert_allclose(numpy.asarray(x_gmres), numpy.asarray(x_cg), rtol=1e-5)
+        assert_allclose(_to_numpy(x_gmres), _to_numpy(x_cg), rtol=1e-5)
 
     def test_gmres_restart_parameter(self):
         """Restarted GMRES (restart < n) should still converge."""
@@ -611,7 +620,7 @@ class TestGMRES:
         b_dp = dpnp.zeros(n, dtype=numpy.float64)
         x_dp, info = gmres(A_dp, b_dp)
         assert info == 0
-        assert_allclose(numpy.asarray(x_dp), numpy.zeros(n), atol=1e-14)
+        assert_allclose(_to_numpy(x_dp), numpy.zeros(n), atol=1e-14)
 
     def test_gmres_returns_dpnp_array(self):
         n = 4
@@ -706,7 +715,7 @@ class TestGMRES:
         b_dp = dpnp.arange(1, n + 1, dtype=numpy.float64)
         x_dp, info = gmres(A_dp, b_dp, tol=1e-12, maxiter=n, restart=n)
         assert info == 0
-        assert_allclose(numpy.asarray(x_dp), numpy.arange(1, n + 1), rtol=1e-10)
+        assert_allclose(_to_numpy(x_dp), numpy.arange(1, n + 1), rtol=1e-10)
 
 
 # ---------------------------------------------------------------------------
@@ -760,7 +769,7 @@ class TestMINRES:
             dpnp.asarray(A_np), dpnp.asarray(b_np), tol=1e-10
         )
         assert info_dp == 0
-        assert_allclose(numpy.asarray(x_dp), x_scipy, rtol=1e-6)
+        assert_allclose(_to_numpy(x_dp), x_scipy, rtol=1e-6)
 
     def test_minres_x0_initial_guess(self):
         rng = numpy.random.default_rng(303)
@@ -789,7 +798,7 @@ class TestMINRES:
         b_dp = dpnp.zeros(n, dtype=numpy.float64)
         x_dp, info = minres(A_dp, b_dp)
         assert info == 0
-        assert_allclose(numpy.asarray(x_dp), numpy.zeros(n), atol=1e-14)
+        assert_allclose(_to_numpy(x_dp), numpy.zeros(n), atol=1e-14)
 
     def test_minres_non_square_raises(self):
         A_dp = dpnp.ones((4, 6), dtype=numpy.float64)
@@ -806,7 +815,6 @@ class TestMINRES:
         A_dp = dpnp.asarray(A_np)
         b_dp = dpnp.asarray(b_np)
 
-        # shift = 0 should be the default behaviour
         x_dp, info = minres(A_dp, b_dp, tol=1e-8, shift=0.0)
         assert info == 0
         assert _rel_residual(A_np, x_dp, b_np) < 1e-6
@@ -834,7 +842,6 @@ class TestMINRES:
         b_np = rng.standard_normal(n).astype(dtype)
         b_dp = dpnp.asarray(b_np)
 
-        # Use diagonal preconditioner M ≈ diag(A)^{-1}
         diag_A = numpy.diag(A_np)
         M_np = numpy.diag(1.0 / diag_A)
         M_dp = dpnp.asarray(M_np)
@@ -871,9 +878,9 @@ class TestSolverConsistency:
 
         assert info_cg == 0 and info_gm == 0 and info_mr == 0
 
-        assert_allclose(numpy.asarray(x_cg), numpy.asarray(x_gm), rtol=1e-5,
+        assert_allclose(_to_numpy(x_cg), _to_numpy(x_gm), rtol=1e-5,
                         err_msg="CG and GMRES disagree")
-        assert_allclose(numpy.asarray(x_cg), numpy.asarray(x_mr), rtol=1e-5,
+        assert_allclose(_to_numpy(x_cg), _to_numpy(x_mr), rtol=1e-5,
                         err_msg="CG and MINRES disagree")
 
     def test_all_solvers_vs_numpy_direct(self):
@@ -892,7 +899,7 @@ class TestSolverConsistency:
 
         for name, x_dp in [("cg", x_cg), ("gmres", x_gm), ("minres", x_mr)]:
             assert_allclose(
-                numpy.asarray(x_dp), x_ref, rtol=1e-7,
+                _to_numpy(x_dp), x_ref, rtol=1e-7,
                 err_msg=f"{name} deviates from numpy.linalg.solve"
             )
 
