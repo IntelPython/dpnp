@@ -50,6 +50,7 @@ Corner-case coverage
 * GMRES: Givens-rotation Hessenberg QR, allocation-free scalar CPU side;
   all matvec + inner-product work stays on device.
 * GMRES: happy breakdown via h_{j+1,j} == 0
+* GMRES: V basis pre-allocated as (n, restart+1); no per-iteration stack().
 * MINRES: native Paige-Saunders (1975) recurrence — no scipy host round-trip.
   QR step uses the exact two-rotation recurrence from SciPy minres.py:
     oldeps = epsln
@@ -264,7 +265,7 @@ def cg(
 
     rhotol = float(_np.finfo(_np_dtype(dtype)).eps ** 2)
 
-    # FIX: use `x0 is not None` to detect a non-trivial initial guess instead
+    # use `x0 is not None` to detect a non-trivial initial guess instead
     # of `_dpnp.any(x)` which returns a dpnp array and raises AmbiguousTruth.
     r  = b - A_op.matvec(x) if x0 is not None else b.copy()
     z  = M_op.matvec(r)
@@ -377,19 +378,23 @@ def gmres(
     info        = maxiter
 
     for _outer in range(maxiter):
-        # FIX: use x0 is not None for the outer-loop residual too; after the
-        # first restart x has been updated so always compute the residual.
         r    = M_op.matvec(b - A_op.matvec(x))
         beta = float(_dpnp.linalg.norm(r))
         if beta == 0.0 or beta <= atol_eff:
             info = 0
             break
 
-        V_cols = [r / beta]
-        H_np   = _np.zeros((restart + 1, restart), dtype=H_dtype)
-        cs_np  = _np.zeros(restart, dtype=H_dtype)
-        sn_np  = _np.zeros(restart, dtype=H_dtype)
-        g_np   = _np.zeros(restart + 1, dtype=H_dtype)
+        # FIX (Bug 2): Pre-allocate V as (n, restart+1) and fill
+        # column-by-column.  The previous code called
+        # `_dpnp.stack(V_cols, axis=1)` on every inner iteration,
+        # reallocating a growing device matrix at O(j^2*n) total cost.
+        V = _dpnp.zeros((n, restart + 1), dtype=dtype)
+        V[:, 0] = r / beta
+
+        H_np  = _np.zeros((restart + 1, restart), dtype=H_dtype)
+        cs_np = _np.zeros(restart, dtype=H_dtype)
+        sn_np = _np.zeros(restart, dtype=H_dtype)
+        g_np  = _np.zeros(restart + 1, dtype=H_dtype)
         g_np[0] = beta
 
         j_final = 0
@@ -398,25 +403,23 @@ def gmres(
         for j in range(restart):
             total_iters += 1
 
-            w     = M_op.matvec(A_op.matvec(V_cols[j]))
-            V_mat = _dpnp.stack(V_cols, axis=1)
+            w = M_op.matvec(A_op.matvec(V[:, j]))
 
-            # FIX: dpnp arrays have no .conj() method on transpose results;
-            # use the module-level _dpnp.conj() instead.
-            h_dp  = _dpnp.dot(_dpnp.conj(V_mat.T), w)
-            h_np  = _dpnp.asnumpy(h_dp)  # FIX: asnumpy is a module-level fn, not a method
-            w     = w - _dpnp.dot(V_mat, _dpnp.asarray(h_np, dtype=dtype))
+            # Modified Gram-Schmidt orthogonalisation against V[:, :j+1].
+            # h_dp is a (j+1,) device vector; pull to host with .asnumpy().
+            # FIX (Bug 1): use the array method `.asnumpy()` — there is no
+            # module-level `_dpnp.asnumpy()` function in dpnp.
+            h_dp = _dpnp.dot(_dpnp.conj(V[:, :j + 1].T), w)
+            h_np = h_dp.asnumpy()                    # (j+1,) numpy array
+            w    = w - _dpnp.dot(V[:, :j + 1],
+                                 _dpnp.asarray(h_np, dtype=dtype))
 
-            # FIX: float(_dpnp.linalg.norm(...)) — norm returns a 0-d dpnp
-            # array; float() extracts the scalar correctly without .asnumpy().
-            h_j1  = float(_dpnp.linalg.norm(w))
+            h_j1 = float(_dpnp.linalg.norm(w))
 
-            # FIX: always assign h_np directly (it is already the right dtype
-            # for both real and complex cases); avoid the .real strip which
-            # would drop the imaginary component for complex Hessenberg entries.
             H_np[:j + 1, j] = h_np
             H_np[j + 1,  j] = h_j1
 
+            # Apply previous Givens rotations to column j of H
             for i in range(j):
                 tmp             =  cs_np[i] * H_np[i, j] + sn_np[i] * H_np[i + 1, j]
                 H_np[i + 1, j] = -_np.conj(sn_np[i]) * H_np[i, j] + cs_np[i] * H_np[i + 1, j]
@@ -452,9 +455,11 @@ def gmres(
                 happy   = True
                 break
 
-            V_cols.append(w / h_j1)
+            if j + 1 < restart:
+                V[:, j + 1] = w / h_j1
             j_final = j
 
+        # Back-substitution: solve upper-triangular H[:k,:k] y = g[:k]
         k    = j_final + 1
         y_np = _np.zeros(k, dtype=H_dtype)
         for i in range(k - 1, -1, -1):
@@ -466,8 +471,8 @@ def gmres(
             else:
                 y_np[i] /= H_np[i, i]
 
-        V_k = _dpnp.stack(V_cols[:k], axis=1)
-        x   = x + _dpnp.dot(V_k, _dpnp.asarray(y_np, dtype=dtype))
+        # Solution update: x += V[:, :k] @ y
+        x = x + _dpnp.dot(V[:, :k], _dpnp.asarray(y_np, dtype=dtype))
 
         res_norm = float(_dpnp.linalg.norm(M_op.matvec(b - A_op.matvec(x))))
 
@@ -501,6 +506,7 @@ def minres(
     M=None,
     callback: Optional[Callable] = None,
     check: bool = False,
+    atol=None,
 ) -> Tuple[_dpnp.ndarray, int]:
     """MINRES for symmetric (possibly indefinite) A — pure dpnp/oneMKL.
 
@@ -536,6 +542,7 @@ def minres(
     M       : LinearOperator, optional — SPD preconditioner
     callback: callable, optional — callback(xk) after each step
     check   : bool — verify A symmetry before iterating
+    atol    : float, optional — absolute tolerance
 
     Returns
     -------
@@ -554,7 +561,9 @@ def minres(
     if bnrm == 0.0:
         return _dpnp.zeros_like(b), 0
 
-    atol_eff = _get_atol("minres", bnrm, atol=None, rtol=tol)
+    # FIX (Bug 3): pass the caller's `atol` argument instead of hard-coded
+    # `atol=None`, so the absolute tolerance is actually respected.
+    atol_eff = _get_atol("minres", bnrm, atol=atol, rtol=tol)
 
     # ------------------------------------------------------------------
     # Initialise Lanczos: compute beta1 = ||M^{-1/2} r0||_M
@@ -635,7 +644,7 @@ def minres(
         # QR step: correct Paige-Saunders (1975) two-rotation recurrence.
         #
         # Apply the PREVIOUS Givens rotation Q_{k-1} to the current
-        # tridiagonal column.  The column is [dbar, (alpha-shift), beta].
+        # tridiagonal column.  The column is [dbar, alpha, beta].
         # (alpha already incorporates the shift via the Lanczos matvec above
         # so the column below uses plain `alpha`.)
         #
@@ -654,7 +663,7 @@ def minres(
         delta  = cs * dbar + sn * alpha    # apply previous rotation — diagonal
         gbar_k = sn * dbar - cs * alpha    # remaining entry -> new rotation
         epsln  = sn * beta                 # sub-sub-diagonal for next step
-        dbar   = -cs * beta               # carry forward for next step
+        dbar   = -cs * beta                # carry forward for next step
 
         gamma = _np.hypot(gbar_k, beta)
         if gamma == 0.0:
@@ -681,14 +690,14 @@ def minres(
         if callback is not None:
             callback(x)
 
-        # FIX: convergence check MUST come before stagnation check so that
+        # Convergence check MUST come before stagnation check so that
         # a boundary iteration that satisfies both conditions is correctly
         # reported as converged (info=0) rather than stagnated (info=2).
         if rnorm <= atol_eff:
             info = 0
             break
 
-        # FIX: use stag_eps (10*eps) instead of bare eps to prevent
+        # Use stag_eps (10*eps) instead of bare eps to prevent
         # float32 runs with tol near machine-epsilon from false-positive
         # stagnation before the residual norm has had a chance to converge.
         if phi * denom < stag_eps:
