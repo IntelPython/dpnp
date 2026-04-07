@@ -58,7 +58,9 @@ Corner-case coverage
     epsln  = sn * beta
     dbar   = -cs * beta
     gamma  = hypot(gbar_k, beta)      # new rotation eliminates beta
-  betacheck uses fixed floor eps*beta1 (not a decaying product).
+  Stagnation floor uses 10*eps (matches SciPy minres.py) so that float32
+  runs with tol near machine-epsilon do not false-positive as stagnated.
+  Convergence check always runs before the stagnation check.
 """
 
 from __future__ import annotations
@@ -518,6 +520,11 @@ def minres(
       cs     = gbar_k / gamma
       sn     = beta   / gamma
 
+    Stagnation guard uses 10*eps (matches SciPy minres.py) so that float32
+    runs with tol near machine-epsilon do not false-positive as stagnated.
+    The convergence check (rnorm <= atol_eff) always runs before the
+    stagnation check so convergence is never missed on the boundary iteration.
+
     Parameters
     ----------
     A       : array_like or LinearOperator — symmetric/Hermitian (n, n)
@@ -593,6 +600,10 @@ def minres(
     r2 = r1.copy()
     v  = y / beta1
 
+    # Stagnation floor: 10*eps matches SciPy minres.py and prevents
+    # float32 runs near machine-epsilon from false-positive stagnation.
+    stag_eps = 10.0 * eps
+
     info = 1
     for itr in range(1, maxiter + 1):
         # ------------------------------------------------------------------
@@ -615,8 +626,8 @@ def minres(
         if beta < 0.0:
             raise ValueError("minres: preconditioner M is not positive definite")
 
-        # Stagnation: beta collapsed to machine-epsilon * beta1
-        if beta <= eps * beta1:
+        # Lanczos beta-collapse floor: use 10*eps*beta1 (matches SciPy).
+        if beta <= stag_eps * beta1:
             info = 2
             break
 
@@ -670,12 +681,17 @@ def minres(
         if callback is not None:
             callback(x)
 
+        # FIX: convergence check MUST come before stagnation check so that
+        # a boundary iteration that satisfies both conditions is correctly
+        # reported as converged (info=0) rather than stagnated (info=2).
         if rnorm <= atol_eff:
             info = 0
             break
 
-        # Stagnation: step size relative to solution norm
-        if phi * denom < eps:
+        # FIX: use stag_eps (10*eps) instead of bare eps to prevent
+        # float32 runs with tol near machine-epsilon from false-positive
+        # stagnation before the residual norm has had a chance to converge.
+        if phi * denom < stag_eps:
             info = 2
             break
     else:
