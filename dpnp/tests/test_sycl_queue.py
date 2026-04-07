@@ -54,6 +54,23 @@ def assert_sycl_queue_equal(result, expected):
     assert exec_queue is not None
 
 
+def get_all_dev_dtypes(no_float16=True, no_none=True):
+    """
+    Build a list of (device, dtype) combinations for each device's
+    supported dtype.
+
+    """
+
+    device_dtype_pairs = []
+    for device in valid_dev:
+        dtypes = get_all_dtypes(
+            no_float16=no_float16, no_none=no_none, device=device
+        )
+        for dtype in dtypes:
+            device_dtype_pairs.append((device, dtype))
+    return device_dtype_pairs
+
+
 @pytest.mark.parametrize(
     "func, arg, kwargs",
     [
@@ -1082,11 +1099,10 @@ def test_array_creation_from_dpctl(copy, device):
     assert isinstance(result, dpnp_array)
 
 
-@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
+@pytest.mark.parametrize("device, dt", get_all_dev_dtypes())
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
-def test_from_dlpack(arr_dtype, shape, device):
-    X = dpnp.ones(shape=shape, dtype=arr_dtype, device=device)
+def test_from_dlpack(shape, device, dt):
+    X = dpnp.ones(shape=shape, dtype=dt, device=device)
     Y = dpnp.from_dlpack(X)
     assert_array_equal(X, Y)
     assert X.__dlpack_device__() == Y.__dlpack_device__()
@@ -1098,10 +1114,9 @@ def test_from_dlpack(arr_dtype, shape, device):
         assert V.strides == W.strides
 
 
-@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
-def test_from_dlpack_with_dpt(arr_dtype, device):
-    X = dpt.ones((64,), dtype=arr_dtype, device=device)
+@pytest.mark.parametrize("device, dt", get_all_dev_dtypes())
+def test_from_dlpack_with_dpt(device, dt):
+    X = dpt.ones((64,), dtype=dt, device=device)
     Y = dpnp.from_dlpack(X)
     assert_array_equal(X, Y)
     assert isinstance(Y, dpnp.dpnp_array.dpnp_array)
