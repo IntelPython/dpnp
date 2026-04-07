@@ -141,7 +141,9 @@ def _gradient_build_dx(f, axes, *varargs):
             if dpnp.issubdtype(distances.dtype, dpnp.integer):
                 # Convert integer types to default float type to avoid modular
                 # arithmetic in dpnp.diff(distances).
-                distances = distances.astype(dpnp.default_float_type())
+                distances = distances.astype(
+                    dpnp.default_float_type(sycl_queue=f.sycl_queue)
+                )
             diffx = dpnp.diff(distances)
 
             # if distances are constant reduce to the scalar case
@@ -2707,9 +2709,9 @@ def gradient(f, *varargs, axis=None, edge_order=1):
         # All other types convert to floating point.
         # First check if f is a dpnp integer type; if so, convert f to default
         # float type to avoid modular arithmetic when computing changes in f.
-        if dpnp.issubdtype(otype, dpnp.integer):
-            f = f.astype(dpnp.default_float_type())
-        otype = dpnp.default_float_type()
+        otype = dpnp.default_float_type(sycl_queue=f.sycl_queue)
+        if dpnp.issubdtype(f.dtype, dpnp.integer):
+            f = f.astype(otype)
 
     for axis_, ax_dx in zip(axes, dx):
         if f.shape[axis_] < edge_order + 1:
