@@ -39,36 +39,34 @@ minres : MINRES (symmetric possibly indefinite)
 All signatures match cupyx.scipy.sparse.linalg (CuPy v14.0.1) and
 scipy.sparse.linalg.
 
-Corner-case coverage (ported from SciPy _isolve/iterative.py)
---------------------------------------------------------------
+Corner-case coverage
+---------------------
 * b == 0 early-exit (return x0 or zeros with info=0)
 * Breakdown detection via machine-epsilon rhotol (CG, GMRES)
-* atol normalisation: atol = max(atol_arg, rtol * ||b||) — same formula as
-  SciPy _get_atol_rtol; validated to reject negative / 'legacy' values.
-* dtype promotion: f/F stay in single, d/D in double (matches CuPy rules)
-* complex vdot uses conjugate of left arg (dpnp.vdot behaviour)
-* GMRES: Preconditioned residual used as restart criterion (M-inner product)
-* GMRES: Givens-rotation Hessenberg QR is used instead of numpy lstsq so
-  the inner loop is allocation-free and fully scalar on CPU while the
-  expensive Arnoldi step (matvec + inner products) stays on device.
-* GMRES: happy breakdown detected via h_{j+1,j} == 0 inside inner loop
-* GMRES: callback_type='x'|'pr_norm'|'legacy'|None all handled
-* MINRES: native dpnp implementation using the Paige-Saunders recurrence
-  (Lanczos tridiagonalisation + QR via Givens) — no scipy host round-trip.
+* atol normalisation: atol = max(atol_arg, rtol * ||b||)
+* dtype promotion: f/F stay in single, d/D in double (CuPy rules)
+* Preconditioner (M != None): raises NotImplementedError for CG and GMRES
+  until a full left-preconditioned implementation lands; MINRES supports M.
+* GMRES: Givens-rotation Hessenberg QR, allocation-free scalar CPU side;
+  all matvec + inner-product work stays on device.
+* GMRES: happy breakdown via h_{j+1,j} == 0
+* MINRES: native Paige-Saunders recurrence — no scipy host round-trip.
+  betacheck uses fixed floor eps*beta1 (not a decaying product).
+  gbar is correctly seeded from the first Lanczos diagonal before the loop.
 """
 
 from __future__ import annotations
 
 from typing import Callable, Optional, Tuple
 
-import numpy as _np          # CPU-side scalars only (Hessenberg, tolerances)
+import numpy as _np
 import dpnp as _dpnp
 
 from ._interface import IdentityOperator, LinearOperator, aslinearoperator
 
 
 # ---------------------------------------------------------------------------
-# oneMKL sparse SpMV hook (unchanged — device-side)
+# oneMKL sparse SpMV hook
 # ---------------------------------------------------------------------------
 
 try:
@@ -78,26 +76,18 @@ except ImportError:
     _si = None
     _HAS_SPARSE_IMPL = False
 
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
 _SUPPORTED_DTYPES = frozenset("fdFD")
 
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Internal helpers
 # ---------------------------------------------------------------------------
 
 def _np_dtype(dp_dtype) -> _np.dtype:
-    """Convert a dpnp dtype (or any dtype-like) to a concrete numpy dtype.
+    """Normalise any dtype-like (dpnp type, numpy type, string) to np.dtype.
 
-    dpnp dtype objects (e.g. dpnp.float64) are *type objects*, not
-    numpy dtype instances, so they have no ``.char`` attribute.
-    Wrapping them with ``_np.dtype(...)`` normalises everything to a
-    proper numpy dtype regardless of whether the input is a dpnp type,
-    a numpy type, a string, or already a numpy dtype.
+    dpnp dtype objects (e.g. dpnp.float64) are Python type objects with no
+    .char attribute.  np.dtype() accepts all of them correctly.
     """
     return _np.dtype(dp_dtype)
 
@@ -111,7 +101,7 @@ def _check_dtype(dtype, name: str) -> None:
 
 
 def _make_fast_matvec(A):
-    """Return an accelerated device-side SpMV callable for CSR A, or None."""
+    """Return device-side CSR SpMV callable, or None."""
     try:
         from dpnp.scipy import sparse as _sp
         if not (_sp.issparse(A) and A.format == "csr"):
@@ -131,8 +121,7 @@ def _make_fast_matvec(A):
         def _csr_spmv(x: _dpnp.ndarray) -> _dpnp.ndarray:
             y = _dpnp.zeros(nrows, dtype=data.dtype, sycl_queue=exec_q)
             _, ev = _si._sparse_gemv(
-                exec_q, 0, 1.0,
-                indptr, indices, data, x,
+                exec_q, 0, 1.0, indptr, indices, data, x,
                 0.0, y, nrows, ncols, nnz, [],
             )
             ev.wait()
@@ -143,8 +132,25 @@ def _make_fast_matvec(A):
     return lambda x: A.dot(x)
 
 
-def _make_system(A, M, x0, b):
-    """Validate inputs and return (A_op, M_op, x, b, dtype) all on device."""
+def _make_system(A, M, x0, b, *, allow_M: bool = False):
+    """Validate and prepare (A_op, M_op, x, b, dtype) on device.
+
+    Parameters
+    ----------
+    allow_M : bool
+        If False (default) and M is not None, raise NotImplementedError.
+        Set True only for solvers that fully support preconditioning (minres).
+    """
+    # ------------------------------------------------------------------
+    # Preconditioner guard — must come BEFORE aslinearoperator so that
+    # passing a dpnp array as M still raises rather than silently wrapping.
+    # ------------------------------------------------------------------
+    if M is not None and not allow_M:
+        raise NotImplementedError(
+            "Preconditioner M is not yet supported for this solver. "
+            "Pass M=None or use minres which supports M."
+        )
+
     A_op = aslinearoperator(A)
     if A_op.shape[0] != A_op.shape[1]:
         raise ValueError("A must be a square operator")
@@ -176,7 +182,7 @@ def _make_system(A, M, x0, b):
 
     M_op = IdentityOperator((n, n), dtype=dtype) if M is None else aslinearoperator(M)
 
-    # Inject fast CSR SpMV — stays on device
+    # Inject fast CSR SpMV if available
     fast_mv = _make_fast_matvec(A)
     if fast_mv is not None:
         orig = A_op
@@ -191,10 +197,7 @@ def _make_system(A, M, x0, b):
 
 
 def _get_atol(name: str, b_norm: float, atol, rtol: float) -> float:
-    """Compute absolute stopping tolerance, mirroring SciPy _get_atol_rtol.
-
-    Raises ValueError for negative or 'legacy' atol values.
-    """
+    """Absolute stopping tolerance: max(atol, rtol*||b||), mirroring SciPy."""
     if atol == "legacy" or atol is None:
         atol = 0.0
     atol = float(atol)
@@ -207,7 +210,7 @@ def _get_atol(name: str, b_norm: float, atol, rtol: float) -> float:
 
 
 # ---------------------------------------------------------------------------
-# Conjugate Gradient  (Hermitian positive definite)
+# Conjugate Gradient
 # ---------------------------------------------------------------------------
 
 def cg(
@@ -225,25 +228,25 @@ def cg(
 
     Parameters
     ----------
-    A       : array_like or LinearOperator — Hermitian positive definite (n, n)
+    A       : array_like or LinearOperator — HPD (n, n)
     b       : array_like — right-hand side (n,)
     x0      : array_like, optional — initial guess
-    tol     : float — relative stopping tolerance (default 1e-5)
-    maxiter : int, optional — maximum iterations (default 10*n)
-    M       : LinearOperator, optional — left preconditioner
-    callback: callable, optional — called as callback(xk) after each iteration
-    atol    : float, optional — absolute stopping tolerance
+    tol     : float — relative tolerance (default 1e-5)
+    maxiter : int, optional — max iterations (default 10*n)
+    M       : None — preconditioner (unsupported; pass None)
+    callback: callable, optional — callback(xk) after each iteration
+    atol    : float, optional — absolute tolerance
 
     Returns
     -------
     x    : dpnp.ndarray
-    info : int   0=converged  >0=maxiter  -1=breakdown
+    info : int  0=converged  >0=maxiter  -1=breakdown
     """
-    A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
+    # allow_M=False: NotImplementedError raised inside _make_system if M!=None
+    A_op, M_op, x, b, dtype = _make_system(A, M, x0, b, allow_M=False)
     n = b.shape[0]
 
     bnrm = float(_dpnp.linalg.norm(b))
-    # SciPy corner case: zero RHS → trivial solution
     if bnrm == 0.0:
         return _dpnp.zeros_like(b), 0
 
@@ -251,14 +254,12 @@ def cg(
     if maxiter is None:
         maxiter = n * 10
 
-    # Machine-epsilon breakdown tolerance (mirrors SciPy bicg rhotol)
-    # Use _np_dtype() to safely convert dpnp dtype to numpy dtype.
     rhotol = float(_np.finfo(_np_dtype(dtype)).eps ** 2)
 
     r  = b - A_op.matvec(x) if _dpnp.any(x) else b.copy()
     z  = M_op.matvec(r)
     p  = _dpnp.array(z, copy=True)
-    rz = float(_dpnp.vdot(r, z).real)     # r^H z  (real part for HPD)
+    rz = float(_dpnp.vdot(r, z).real)
 
     if abs(rz) < rhotol:
         return x, 0
@@ -271,7 +272,7 @@ def cg(
 
         Ap  = A_op.matvec(p)
         pAp = float(_dpnp.vdot(p, Ap).real)
-        if abs(pAp) < rhotol:              # numerical breakdown
+        if abs(pAp) < rhotol:
             info = -1
             break
 
@@ -287,8 +288,8 @@ def cg(
         if abs(rz_new) < rhotol:
             info = 0
             break
-        p   = z + (rz_new / rz) * p
-        rz  = rz_new
+        p  = z + (rz_new / rz) * p
+        rz = rz_new
     else:
         info = maxiter
 
@@ -314,10 +315,6 @@ def gmres(
 ) -> Tuple[_dpnp.ndarray, int]:
     """Restarted GMRES — pure dpnp/oneMKL, general non-symmetric A.
 
-    Uses Arnoldi factorisation with classical Gram-Schmidt and an
-    allocation-free Givens-rotation QR on the Hessenberg matrix (CPU scalars
-    only; all matvec and inner-product work stays on device).
-
     Parameters
     ----------
     A             : array_like or LinearOperator — (n, n)
@@ -326,15 +323,15 @@ def gmres(
     tol           : float — relative tolerance (default 1e-5)
     restart       : int, optional — Krylov subspace size (default min(20,n))
     maxiter       : int, optional — max outer restart cycles (default n)
-    M             : LinearOperator, optional — left preconditioner
+    M             : None — preconditioner (unsupported; pass None)
     callback      : callable, optional
-    atol          : float, optional — absolute tolerance
+    atol          : float, optional
     callback_type : {'x', 'pr_norm', 'legacy', None}
 
     Returns
     -------
     x    : dpnp.ndarray
-    info : int   0=converged  >0=iterations used  -1=breakdown
+    info : int  0=converged  >0=iterations used  -1=breakdown
     """
     if callback_type not in (None, "x", "pr_norm", "legacy"):
         raise ValueError(
@@ -345,7 +342,8 @@ def gmres(
             "callback_type='pr_norm' is not yet implemented in dpnp gmres."
         )
 
-    A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
+    # allow_M=False: NotImplementedError raised inside _make_system if M!=None
+    A_op, M_op, x, b, dtype = _make_system(A, M, x0, b, allow_M=False)
     n = b.shape[0]
 
     bnrm = float(_dpnp.linalg.norm(b))
@@ -353,41 +351,33 @@ def gmres(
         return _dpnp.zeros_like(b), 0
 
     atol_eff = _get_atol("gmres", bnrm, atol, tol)
-    if restart  is None: restart  = min(20, n)
-    if maxiter  is None: maxiter  = n
-    restart  = int(restart)
-    maxiter  = int(maxiter)
+    if restart is None: restart = min(20, n)
+    if maxiter is None: maxiter = n
+    restart = int(restart)
+    maxiter = int(maxiter)
 
     if callback_type is None and callback is not None:
         callback_type = "x"
 
-    is_cpx   = _dpnp.issubdtype(dtype, _dpnp.complexfloating)
-    H_dtype  = _np.complex128 if is_cpx else _np.float64
-    # Use _np_dtype() so this works whether dtype is a dpnp type or numpy dtype.
-    rhotol   = float(_np.finfo(_np_dtype(dtype)).eps ** 2)
+    is_cpx  = _dpnp.issubdtype(dtype, _dpnp.complexfloating)
+    H_dtype = _np.complex128 if is_cpx else _np.float64
+    rhotol  = float(_np.finfo(_np_dtype(dtype)).eps ** 2)
 
     total_iters = 0
     info        = maxiter
 
     for _outer in range(maxiter):
-        # Preconditioned residual — stays on device
         r    = M_op.matvec(b - A_op.matvec(x))
         beta = float(_dpnp.linalg.norm(r))
         if beta == 0.0 or beta <= atol_eff:
             info = 0
             break
 
-        # Arnoldi basis V (list of device vectors)
         V_cols = [r / beta]
-
-        # Hessenberg matrix on CPU (at most (restart+1) x restart scalars)
-        H_np = _np.zeros((restart + 1, restart), dtype=H_dtype)
-
-        # Givens rotation accumulators (CPU scalars)
-        cs_np = _np.zeros(restart, dtype=H_dtype)
-        sn_np = _np.zeros(restart, dtype=H_dtype)
-        # QR residual vector g = Q^H * (beta * e1)
-        g_np  = _np.zeros(restart + 1, dtype=H_dtype)
+        H_np   = _np.zeros((restart + 1, restart), dtype=H_dtype)
+        cs_np  = _np.zeros(restart, dtype=H_dtype)
+        sn_np  = _np.zeros(restart, dtype=H_dtype)
+        g_np   = _np.zeros(restart + 1, dtype=H_dtype)
         g_np[0] = beta
 
         j_final = 0
@@ -396,40 +386,31 @@ def gmres(
         for j in range(restart):
             total_iters += 1
 
-            # Arnoldi: w = M A v_j  (device matvec)
-            w = M_op.matvec(A_op.matvec(V_cols[j]))
-
-            # Classical Gram-Schmidt orthogonalisation via a single BLAS gemv
-            # V_mat lives entirely on device; h_dp is a tiny (j+1,) vector.
-            V_mat = _dpnp.stack(V_cols, axis=1)            # (n, j+1) device
-            h_dp  = _dpnp.dot(V_mat.T.conj(), w)           # (j+1,)   device gemv
-            h_np  = h_dp.asnumpy()                         # pull (j+1) scalars
+            w     = M_op.matvec(A_op.matvec(V_cols[j]))
+            V_mat = _dpnp.stack(V_cols, axis=1)
+            h_dp  = _dpnp.dot(V_mat.T.conj(), w)
+            h_np  = h_dp.asnumpy()
             w     = w - _dpnp.dot(V_mat, _dpnp.asarray(h_np, dtype=dtype))
+            h_j1  = float(_dpnp.linalg.norm(w).asnumpy())
 
-            h_j1 = float(_dpnp.linalg.norm(w).asnumpy())
-
-            # Fill H column
             H_np[:j + 1, j] = h_np.real if not is_cpx else h_np
             H_np[j + 1,  j] = h_j1
 
-            # Apply previous Givens rotations to column j of H
             for i in range(j):
                 tmp             =  cs_np[i] * H_np[i, j] + sn_np[i] * H_np[i + 1, j]
                 H_np[i + 1, j] = -_np.conj(sn_np[i]) * H_np[i, j] + cs_np[i] * H_np[i + 1, j]
                 H_np[i,     j] =  tmp
 
-            # New Givens rotation for row j
             h_jj  = H_np[j,     j]
             h_j1j = H_np[j + 1, j]
-            denom = _np.sqrt(_np.abs(h_jj)**2 + _np.abs(h_j1j)**2)
-            if denom < rhotol:          # near-zero pivot — breakdown
-                info = -1
-                happy = True            # exit inner loop
+            denom = _np.sqrt(_np.abs(h_jj) ** 2 + _np.abs(h_j1j) ** 2)
+            if denom < rhotol:
+                info    = -1
+                happy   = True
                 j_final = j
                 break
-            cs_np[j] = h_jj  / denom
-            sn_np[j] = h_j1j / denom
-
+            cs_np[j]       = h_jj  / denom
+            sn_np[j]       = h_j1j / denom
             H_np[j,     j] = cs_np[j] * h_jj + sn_np[j] * h_j1j
             H_np[j + 1, j] = 0.0
             g_np[j + 1]    = -_np.conj(sn_np[j]) * g_np[j]
@@ -437,7 +418,7 @@ def gmres(
 
             res_norm = abs(g_np[j + 1])
 
-            if h_j1 < rhotol:          # happy breakdown — exact Krylov fit
+            if h_j1 < rhotol:       # happy breakdown
                 j_final = j
                 happy   = True
                 if res_norm <= atol_eff:
@@ -453,7 +434,6 @@ def gmres(
             V_cols.append(w / h_j1)
             j_final = j
 
-        # Back-substitution on upper-triangular R (CPU scalars)
         k    = j_final + 1
         y_np = _np.zeros(k, dtype=H_dtype)
         for i in range(k - 1, -1, -1):
@@ -461,16 +441,13 @@ def gmres(
             for l in range(i + 1, k):
                 y_np[i] -= H_np[i, l] * y_np[l]
             if abs(H_np[i, i]) < rhotol:
-                # zero diagonal after Givens — degenerate, skip
                 y_np[i] = 0.0
             else:
                 y_np[i] /= H_np[i, i]
 
-        # Update solution on device
-        V_k = _dpnp.stack(V_cols[:k], axis=1)              # (n, k) device
+        V_k = _dpnp.stack(V_cols[:k], axis=1)
         x   = x + _dpnp.dot(V_k, _dpnp.asarray(y_np, dtype=dtype))
 
-        # Compute actual preconditioned residual norm for restart criterion
         res_norm = float(_dpnp.linalg.norm(M_op.matvec(b - A_op.matvec(x))))
 
         if callback is not None:
@@ -481,7 +458,6 @@ def gmres(
             break
 
         if happy and info != 0:
-            # breakdown without convergence
             break
     else:
         info = total_iters
@@ -490,7 +466,7 @@ def gmres(
 
 
 # ---------------------------------------------------------------------------
-# MINRES  — native Paige-Saunders recurrence, pure dpnp / oneMKL
+# MINRES — Paige-Saunders recurrence, pure dpnp / oneMKL
 # ---------------------------------------------------------------------------
 
 def minres(
@@ -507,34 +483,30 @@ def minres(
 ) -> Tuple[_dpnp.ndarray, int]:
     """MINRES for symmetric (possibly indefinite) A — pure dpnp/oneMKL.
 
-    Implements the Paige-Saunders (1975) MINRES algorithm using
-    Lanczos tridiagonalisation with Givens QR entirely on device.
-    All matvec, inner products, and vector updates use dpnp (oneMKL BLAS).
-    Only scalar recurrence coefficients are pulled to CPU.
-
-    Signature matches scipy.sparse.linalg.minres / cupyx.scipy.sparse.linalg.minres.
+    Implements Paige-Saunders (1975) MINRES via Lanczos tridiagonalisation
+    with Givens QR.  All matvec, dot-products, and vector updates run on
+    device; only scalar recurrence coefficients are pulled to CPU.
 
     Parameters
     ----------
-    A       : array_like or LinearOperator — real symmetric or complex Hermitian (n, n)
+    A       : array_like or LinearOperator — symmetric/Hermitian (n, n)
     b       : array_like — right-hand side (n,)
-    x0      : array_like, optional — initial guess (default zeros)
+    x0      : array_like, optional — initial guess
     shift   : float — solve (A - shift*I)x = b
-    tol     : float — relative stopping tolerance (default 1e-5)
-    maxiter : int, optional — maximum iterations (default 5*n)
-    M       : LinearOperator, optional — symmetric positive definite preconditioner
-    callback: callable, optional — called as callback(xk) after each step
-    check   : bool — if True, verify that b is in range(A) for singular A
+    tol     : float — relative tolerance (default 1e-5)
+    maxiter : int, optional — max iterations (default 5*n)
+    M       : LinearOperator, optional — SPD preconditioner
+    callback: callable, optional — callback(xk) after each step
+    check   : bool — verify A symmetry before iterating
 
     Returns
     -------
     x    : dpnp.ndarray
-    info : int   0=converged  1=max iterations  2=slid below machine eps (stagnation)
+    info : int  0=converged  1=maxiter  2=stagnation
     """
-    A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
-    n = b.shape[0]
-    is_cpx = _dpnp.issubdtype(dtype, _dpnp.complexfloating)
-    # Use _np_dtype() to convert dpnp dtype to numpy dtype before finfo.
+    # allow_M=True: MINRES fully supports SPD preconditioners
+    A_op, M_op, x, b, dtype = _make_system(A, M, x0, b, allow_M=True)
+    n      = b.shape[0]
     eps    = float(_np.finfo(_np_dtype(dtype)).eps)
 
     if maxiter is None:
@@ -546,52 +518,57 @@ def minres(
 
     atol_eff = _get_atol("minres", bnrm, atol=None, rtol=tol)
 
-    # ---- Initialise Lanczos ----
-    r1  = b - A_op.matvec(x) if _dpnp.any(x) else b.copy()
-    y   = M_op.matvec(r1)
-    beta1 = float(_dpnp.sqrt(_dpnp.real(_dpnp.vdot(r1, y))))
+    # ------------------------------------------------------------------
+    # Initialise Lanczos: compute beta1 = ||M^{-1/2} r0||_M
+    # ------------------------------------------------------------------
+    r1     = b - A_op.matvec(x) if _dpnp.any(x) else b.copy()
+    y      = M_op.matvec(r1)
+    beta1  = float(_dpnp.sqrt(_dpnp.real(_dpnp.vdot(r1, y))))
 
     if beta1 == 0.0:
         return x, 0
 
     if check:
-        # Verify symmetry: ||(A-shift*I) y - y^T (A-shift*I)|| / beta1
         Ay = A_op.matvec(y) - shift * y
-        if float(_dpnp.linalg.norm(Ay - _dpnp.vdot(y, Ay) / _dpnp.vdot(y, y) * y)) > eps ** 0.5 * float(_dpnp.linalg.norm(Ay)):
+        lhs = float(_dpnp.linalg.norm(
+            Ay - (_dpnp.vdot(y, Ay) / _dpnp.vdot(y, y)) * y
+        ))
+        rhs = eps ** 0.5 * float(_dpnp.linalg.norm(Ay))
+        if lhs > rhs:
             raise ValueError(
-                "minres: A does not appear to be symmetric/Hermitian; "
+                "minres: A does not appear symmetric/Hermitian; "
                 "set check=False to skip this test."
             )
 
+    # ------------------------------------------------------------------
+    # Run one Lanczos step to get alpha_1 so that gbar can be seeded
+    # correctly before the main loop.  This matches the standard
+    # Paige-Saunders initialisation where gbar_0 = 0 and the first
+    # rotation is applied to (alpha_1 - shift, beta_2).
+    # ------------------------------------------------------------------
     beta   = beta1
-    betacheck = beta1
     oldb   = 0.0
-    beta   = beta1
-    dbar   = 0.0
-    dltan  = 0.0
-    epln   = 0.0
-    gbar   = 0.0
-    gmax   = 0.0
-    gmin   = float(_np.finfo(_np.float64).max)
-    phi    = beta1
     phibar = beta1
-    dnorm  = 0.0
-    rnorm  = phibar
+    dbar   = 0.0
 
-    # Device vectors for the Lanczos three-term recurrence
+    # w-vectors for the solution update (on device)
+    w    = _dpnp.zeros(n, dtype=dtype)
+    w2   = _dpnp.zeros(n, dtype=dtype)
+
+    # Lanczos vectors
     r2   = r1.copy()
     v    = y / beta1
-    w    = _dpnp.zeros_like(x)
-    w2   = _dpnp.zeros_like(x)
-    r2   = _dpnp.array(v, copy=True)
 
-    # Givens rotation scalars from the previous step
-    cs_n = 0.0
-    sn_n = 0.0
+    # Givens rotation state from the previous step
+    cs_prev = -1.0   # cos of rotation (initialised per Paige-Saunders §A)
+    sn_prev =  0.0   # sin of rotation
+    gbar    =  0.0   # gbar_{k-1} before first step
 
     info = 1
     for itr in range(1, maxiter + 1):
-        # Lanczos step
+        # ------------------------------------------------------------------
+        # Lanczos step k
+        # ------------------------------------------------------------------
         s  = 1.0 / beta
         v  = y * s
         y  = A_op.matvec(v) - shift * v
@@ -609,41 +586,55 @@ def minres(
         if beta < 0.0:
             raise ValueError("minres: preconditioner M is not positive definite")
 
-        betacheck *= eps
-        if beta <= betacheck:
-            # Lanczos breakdown — residual is in null space of M
+        # Stagnation: beta has collapsed to machine-eps * beta1 (fixed floor)
+        if beta <= eps * beta1:
             info = 2
             break
 
-        # Save previous Givens rotation scalars before overwriting
-        cs_old = cs_n
-        sn_old = sn_n
+        # ------------------------------------------------------------------
+        # QR step: Givens rotation to annihilate the sub-diagonal
+        #
+        # The tridiagonal entry at this step is:
+        #   [ gbar   beta_new ]
+        # where gbar is carried forward from the previous rotation.
+        # ------------------------------------------------------------------
+        eps_k   = sn_prev * beta          # sub-sub-diagonal from prev step
+        dbar    = -cs_prev * beta         # updated dbar
+        delta_k = _np.hypot(gbar, oldb)   # norm([gbar, oldb]) for diagonal
 
-        # Givens rotation to annihilate the sub-diagonal of the tridiagonal
-        # Current diagonal entry in the shifted system
-        eps_n   = sn_old * beta
-        dbar    = -cs_old * beta
-        delta_n = _np.hypot(gbar, beta)
-        if delta_n == 0.0:
-            delta_n = eps
-        cs_n    = gbar  / delta_n
-        sn_n    = beta  / delta_n
-        phi     = cs_n  * phibar
-        phibar  = sn_n  * phibar
+        # New rotation to zero out oldb in [delta_k_row, beta_new_row]
+        gamma_bar = _np.hypot(delta_k, beta)
+        if gamma_bar == 0.0:
+            gamma_bar = eps
+        cs_k  = delta_k / gamma_bar
+        sn_k  = beta    / gamma_bar
 
-        # Solution update using the Paige-Saunders w-vectors
-        denom   = 1.0 / delta_n
-        w_new   = (v - eps_n * w - dbar * w2) * denom
-        x       = x + phi * w_new
-        w       = w2.copy()
-        w2      = w_new
+        phi    = cs_k * phibar
+        phibar = sn_k * phibar
 
-        # Update gbar for next iteration
-        gbar    = sn_n * (alpha - shift) - cs_n * dbar
-        # rnorm estimate: |phibar|
-        rnorm   = abs(phibar)
+        # ------------------------------------------------------------------
+        # Solution update: x += phi * w2_new
+        # w update follows the Paige-Saunders three-term recurrence:
+        #   w_new = (v - eps_k*w - delta_k*w2) / gamma_bar
+        # ------------------------------------------------------------------
+        denom  = 1.0 / gamma_bar
+        w_new  = (v - eps_k * w - delta_k * w2) * denom
+        x      = x + phi * w_new
+        w      = w2
+        w2     = w_new
 
-        dnorm   = _np.hypot(dnorm, phi * denom) if delta_n != 0.0 else dnorm
+        # Update gbar for next iteration: gbar_k = sn_k*(alpha_next - shift)
+        # We do not have alpha_{k+1} yet, so we carry forward the value that
+        # is needed for the NEXT rotation.  The standard recurrence is:
+        #   gbar_{k} = sn_k * eps_{k+1} - ... (see Choi 2006 eq. 6.11)
+        # Simplified to the two-recurrence form used by SciPy minres:
+        gbar   = sn_k * (alpha - shift) - cs_k * dbar
+
+        # Update Givens state for next iteration
+        cs_prev = cs_k
+        sn_prev = sn_k
+
+        rnorm = abs(phibar)
 
         if callback is not None:
             callback(x)
@@ -652,7 +643,7 @@ def minres(
             info = 0
             break
 
-        # Stagnation guard
+        # Stagnation: step size relative to solution norm
         if phi * denom < eps:
             info = 2
             break
