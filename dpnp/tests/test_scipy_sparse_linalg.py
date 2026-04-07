@@ -21,8 +21,8 @@
 # SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
 # INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
-# THE POSSIBILITY OF SUCH DAMAGE.
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 
 """Tests for dpnp.scipy.sparse.linalg: LinearOperator, cg, gmres, minres.
 
@@ -367,8 +367,9 @@ class TestLinearOperator:
         n = 7
         op = IdentityOperator((n, n), dtype=numpy.float64)
         x_dp = dpnp.arange(n, dtype=numpy.float64)
-        assert_array_equal(_to_numpy(op.matvec(x_dp)), numpy.arange(n))
-        assert_array_equal(_to_numpy(op.rmatvec(x_dp)), numpy.arange(n))
+        # Expected arrays must match float64 dtype for strict NumPy >= 2.0 checks.
+        assert_array_equal(_to_numpy(op.matvec(x_dp)), numpy.arange(n, dtype=numpy.float64))
+        assert_array_equal(_to_numpy(op.rmatvec(x_dp)), numpy.arange(n, dtype=numpy.float64))
 
     # --- complex dtype ---
 
@@ -505,6 +506,7 @@ class TestCG:
         assert info != 0
 
     def test_cg_preconditioner_unsupported_raises(self):
+        """M != None must raise NotImplementedError regardless of system size."""
         n = 4
         A_dp = dpnp.eye(n, dtype=numpy.float64)
         b_dp = dpnp.ones(n)
@@ -610,7 +612,8 @@ class TestGMRES:
         def cb(xk):
             calls.append(1)
 
-        _, info = gmres(A_dp, b_dp, tol=1e-8, maxiter=20, callback=cb, restart=n)
+        _, info = gmres(A_dp, b_dp, tol=1e-8, maxiter=20, callback=cb,
+                        callback_type="x", restart=n)
         assert info == 0
         assert len(calls) > 0
 
@@ -672,6 +675,7 @@ class TestGMRES:
         assert info != 0
 
     def test_gmres_preconditioner_unsupported_raises(self):
+        """M != None must raise NotImplementedError regardless of system size."""
         n = 4
         A_dp = dpnp.eye(n, dtype=numpy.float64)
         b_dp = dpnp.ones(n)
@@ -680,6 +684,7 @@ class TestGMRES:
             gmres(A_dp, b_dp, M=M)
 
     def test_gmres_callback_type_pr_norm_raises(self):
+        """callback_type='pr_norm' must raise NotImplementedError for all n."""
         n = 4
         A_dp = dpnp.eye(n, dtype=numpy.float64)
         b_dp = dpnp.ones(n)
@@ -715,7 +720,8 @@ class TestGMRES:
         b_dp = dpnp.arange(1, n + 1, dtype=numpy.float64)
         x_dp, info = gmres(A_dp, b_dp, tol=1e-12, maxiter=n, restart=n)
         assert info == 0
-        assert_allclose(_to_numpy(x_dp), numpy.arange(1, n + 1), rtol=1e-10)
+        # Expected dtype must be float64 to match strict NumPy >= 2.0 checks.
+        assert_allclose(_to_numpy(x_dp), numpy.arange(1, n + 1, dtype=numpy.float64), rtol=1e-10)
 
 
 # ---------------------------------------------------------------------------

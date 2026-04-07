@@ -251,7 +251,7 @@ def cg(
     x0 : array_like, optional         -- initial guess
     tol : float                       -- relative tolerance (default 1e-5)
     maxiter : int, optional           -- maximum iterations (default 10*n)
-    M : LinearOperator, optional      -- preconditioner
+    M : LinearOperator, optional      -- preconditioner (not yet implemented)
     callback : callable, optional     -- called as callback(xk) each iteration
     atol : float, optional            -- absolute tolerance
 
@@ -260,6 +260,13 @@ def cg(
     x : dpnp.ndarray
     info : int  (0 = converged, >0 = max iters reached, -1 = breakdown)
     """
+    # Guard M before any fast-path so the contract is enforced for all n.
+    if M is not None:
+        raise NotImplementedError(
+            "Preconditioner M is not yet supported in dpnp cg. "
+            "Use scipy.sparse.linalg.cg for preconditioned systems."
+        )
+
     b = _dpnp.asarray(b).reshape(-1)
     n = b.shape[0]
 
@@ -350,9 +357,10 @@ def gmres(
         See scipy.sparse.linalg.gmres documentation.
     restart : int, optional
         Krylov subspace dimension between restarts. Default: min(20, n).
-    callback_type : {'x', 'pr_norm', None}
-        'x'      -> callback(xk) at each restart (default when callback given).
-        'pr_norm'-> callback(residual_norm) at each restart.
+    callback_type : {'x', 'pr_norm', 'legacy', None}
+        'x'      -> callback(xk) at each restart.
+        'pr_norm'-> callback(residual_norm) at each restart (not yet implemented).
+        'legacy' -> SciPy legacy behaviour (passed through on host path).
         None     -> no callback invocation.
 
     Returns
@@ -360,6 +368,24 @@ def gmres(
     x : dpnp.ndarray
     info : int  (0 = converged, >0 = iterations used, -1 = breakdown)
     """
+    # Validate callback_type and guard unsupported values before any fast-path
+    # so the contract is enforced for all n, not just n > _HOST_N_THRESHOLD.
+    if callback_type not in (None, "x", "pr_norm", "legacy"):
+        raise ValueError(
+            "callback_type must be None, 'x', 'pr_norm', or 'legacy'"
+        )
+    if callback_type == "pr_norm":
+        raise NotImplementedError(
+            "callback_type='pr_norm' is not yet implemented in dpnp gmres."
+        )
+
+    # Guard M before any fast-path so the contract is enforced for all n.
+    if M is not None:
+        raise NotImplementedError(
+            "Preconditioner M is not yet supported in dpnp gmres. "
+            "Use scipy.sparse.linalg.gmres for preconditioned systems."
+        )
+
     b = _dpnp.asarray(b).reshape(-1)
     n = b.shape[0]
 
@@ -374,8 +400,10 @@ def gmres(
                 "maxiter": maxiter,
             }
             sig = inspect.signature(_sla.gmres)
-            if "callback_type" in sig.parameters and callback_type is not None:
-                _kw["callback_type"] = callback_type
+            if "callback_type" in sig.parameters:
+                # Pass through caller's value, or default to 'legacy' to
+                # suppress SciPy's DeprecationWarning about the missing arg.
+                _kw["callback_type"] = callback_type if callback_type is not None else "legacy"
             A_np  = _to_numpy(A) if not hasattr(A, "matvec") else A
             b_np  = _to_numpy(b)
             x0_np = None if x0 is None else _to_numpy(_dpnp.asarray(x0))
@@ -384,10 +412,7 @@ def gmres(
         except Exception:
             pass
 
-    if callback_type not in (None, "x", "pr_norm"):
-        raise ValueError("callback_type must be None, 'x', or 'pr_norm'")
-
-    A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
+    A_op, M_op, x, b, dtype = _make_system(A, None, x0, b)
     if restart  is None: restart  = min(20, n)
     if maxiter  is None: maxiter  = n
     restart, maxiter = int(restart), int(maxiter)
