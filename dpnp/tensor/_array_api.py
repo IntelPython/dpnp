@@ -124,7 +124,9 @@ class Info:
         -------
         capabilities : dict
             dictionary of ``dpnp.tensor``'s capabilities
+
         """
+
         return self._capabilities.copy()
 
     def default_device(self):
@@ -156,7 +158,9 @@ class Info:
                 - ``"complex floating"``: dtype
                 - ``"integral"``: dtype
                 - ``"indexing"``: dtype
+
         """
+
         device = _get_device_impl(device)
         return {
             "real floating": dpt.dtype(default_device_fp_type(device)),
@@ -214,7 +218,9 @@ class Info:
         dtypes : dict
             a dictionary of the supported data types of the specified
             ``kind``
+
         """
+
         device = _get_device_impl(device)
         _fp64 = device.has_aspect_fp64
         if kind is None:

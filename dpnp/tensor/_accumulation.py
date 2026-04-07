@@ -299,7 +299,9 @@ def cumulative_sum(
 
         where `N` is the size of the axis the cumulative sums are computed
         along.
+
     """
+
     return _accumulate_common(
         x,
         axis,
@@ -384,7 +386,9 @@ def cumulative_prod(
 
         where `N` is the size of the axis the cumulative products are
         computed along.
+
     """
+
     return _accumulate_common(
         x,
         axis,
@@ -467,7 +471,9 @@ def cumulative_logsumexp(
               have the same shape as `x` except the axis along which the
               cumulative logsumexp is calculated, which will have size
               `N+1`
+
     """
+
     return _accumulate_common(
         x,
         axis,
