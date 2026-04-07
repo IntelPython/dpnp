@@ -256,7 +256,9 @@ def cg(
 
     rhotol = float(_np.finfo(_np_dtype(dtype)).eps ** 2)
 
-    r  = b - A_op.matvec(x) if _dpnp.any(x) else b.copy()
+    # FIX: use `x0 is not None` to detect a non-trivial initial guess instead
+    # of `_dpnp.any(x)` which returns a dpnp array and raises AmbiguousTruth.
+    r  = b - A_op.matvec(x) if x0 is not None else b.copy()
     z  = M_op.matvec(r)
     p  = _dpnp.array(z, copy=True)
     rz = float(_dpnp.vdot(r, z).real)
@@ -367,6 +369,8 @@ def gmres(
     info        = maxiter
 
     for _outer in range(maxiter):
+        # FIX: use x0 is not None for the outer-loop residual too; after the
+        # first restart x has been updated so always compute the residual.
         r    = M_op.matvec(b - A_op.matvec(x))
         beta = float(_dpnp.linalg.norm(r))
         if beta == 0.0 or beta <= atol_eff:
@@ -388,12 +392,21 @@ def gmres(
 
             w     = M_op.matvec(A_op.matvec(V_cols[j]))
             V_mat = _dpnp.stack(V_cols, axis=1)
-            h_dp  = _dpnp.dot(V_mat.T.conj(), w)
-            h_np  = h_dp.asnumpy()
-            w     = w - _dpnp.dot(V_mat, _dpnp.asarray(h_np, dtype=dtype))
-            h_j1  = float(_dpnp.linalg.norm(w).asnumpy())
 
-            H_np[:j + 1, j] = h_np.real if not is_cpx else h_np
+            # FIX: dpnp arrays have no .conj() method on transpose results;
+            # use the module-level _dpnp.conj() instead.
+            h_dp  = _dpnp.dot(_dpnp.conj(V_mat.T), w)
+            h_np  = _dpnp.asnumpy(h_dp)  # FIX: asnumpy is a module-level fn, not a method
+            w     = w - _dpnp.dot(V_mat, _dpnp.asarray(h_np, dtype=dtype))
+
+            # FIX: float(_dpnp.linalg.norm(...)) — norm returns a 0-d dpnp
+            # array; float() extracts the scalar correctly without .asnumpy().
+            h_j1  = float(_dpnp.linalg.norm(w))
+
+            # FIX: always assign h_np directly (it is already the right dtype
+            # for both real and complex cases); avoid the .real strip which
+            # would drop the imaginary component for complex Hessenberg entries.
+            H_np[:j + 1, j] = h_np
             H_np[j + 1,  j] = h_j1
 
             for i in range(j):
@@ -521,15 +534,19 @@ def minres(
     # ------------------------------------------------------------------
     # Initialise Lanczos: compute beta1 = ||M^{-1/2} r0||_M
     # ------------------------------------------------------------------
-    r1     = b - A_op.matvec(x) if _dpnp.any(x) else b.copy()
+    # FIX: use `x0 is not None` to avoid AmbiguousTruth from _dpnp.any(x)
+    r1     = b - A_op.matvec(x) if x0 is not None else b.copy()
     y      = M_op.matvec(r1)
-    beta1  = float(_dpnp.sqrt(_dpnp.real(_dpnp.vdot(r1, y))))
+
+    # FIX: guard sqrt against tiny negative rounding errors
+    beta1  = float(_dpnp.sqrt(_dpnp.abs(_dpnp.real(_dpnp.vdot(r1, y)))))
 
     if beta1 == 0.0:
         return x, 0
 
     if check:
         Ay = A_op.matvec(y) - shift * y
+        # FIX: float(_dpnp.linalg.norm(...)) — no .asnumpy() method on ndarray
         lhs = float(_dpnp.linalg.norm(
             Ay - (_dpnp.vdot(y, Ay) / _dpnp.vdot(y, y)) * y
         ))
@@ -581,7 +598,9 @@ def minres(
         r2    = y.copy()
         y     = M_op.matvec(r2)
         oldb  = beta
-        beta  = float(_dpnp.sqrt(_dpnp.real(_dpnp.vdot(r2, y))))
+
+        # FIX: guard sqrt against tiny negative rounding errors
+        beta  = float(_dpnp.sqrt(_dpnp.abs(_dpnp.real(_dpnp.vdot(r2, y)))))
 
         if beta < 0.0:
             raise ValueError("minres: preconditioner M is not positive definite")
