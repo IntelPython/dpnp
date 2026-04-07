@@ -108,15 +108,17 @@ gemv_impl(sycl::queue                      &exec_q,
     std::stringstream error_msg;
     bool is_exception_caught = false;
 
-    mkl_sparse::matrix_handle_t handle = nullptr;
+    mkl_sparse::matrix_handle_t spmat = nullptr;
     sycl::event gemv_ev;
 
     try {
-        mkl_sparse::init_matrix_handle(&handle);
+        mkl_sparse::init_matrix_handle(&spmat);
 
+        // oneMKL 2025-2 API: set_csr_data now requires explicit nnz and uses
+        // `spmat` nomenclature. The old form without nnz is deprecated.
         auto ev_set = mkl_sparse::set_csr_data(
-            exec_q, handle,
-            num_rows, num_cols,
+            exec_q, spmat,
+            num_rows, num_cols, nnz,
             oneapi::mkl::index_base::zero,
             const_cast<Ti *>(row_ptr),
             const_cast<Ti *>(col_ind),
@@ -124,15 +126,15 @@ gemv_impl(sycl::queue                      &exec_q,
             depends);
 
         auto ev_opt = mkl_sparse::optimize_gemv(
-            exec_q, mkl_trans, handle, {ev_set});
+            exec_q, mkl_trans, spmat, {ev_set});
 
         gemv_ev = mkl_sparse::gemv(
             exec_q, mkl_trans,
-            alpha, handle,
+            alpha, spmat,
             x, beta, y,
             {ev_opt});
 
-        mkl_sparse::release_matrix_handle(exec_q, &handle, {gemv_ev});
+        mkl_sparse::release_matrix_handle(exec_q, &spmat, {gemv_ev});
 
     } catch (oneapi::mkl::exception const &e) {
         error_msg << "Unexpected MKL exception caught during sparse_gemv() "
@@ -145,8 +147,8 @@ gemv_impl(sycl::queue                      &exec_q,
     }
 
     if (is_exception_caught) {
-        if (handle != nullptr)
-            mkl_sparse::release_matrix_handle(exec_q, &handle, {});
+        if (spmat != nullptr)
+            mkl_sparse::release_matrix_handle(exec_q, &spmat, {});
         throw std::runtime_error(error_msg.str());
     }
 
@@ -210,7 +212,7 @@ sparse_gemv(sycl::queue                           &exec_q,
                 "sparse_gemv: trans must be 0 (N), 1 (T), or 2 (C)");
     }
 
-    // 6. Dispatch table lookup — replaces the explicit if/else chain
+    // 6. Dispatch table lookup
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     const int val_id = array_types.typenum_to_lookup_id(values.get_typenum());
     const int idx_id = array_types.typenum_to_lookup_id(row_ptr.get_typenum());
@@ -237,7 +239,6 @@ sparse_gemv(sycl::queue                           &exec_q,
 
 // ---------------------------------------------------------------------------
 // Factory and dispatch table initialisation
-// Mirrors blas/gemm.cpp: GemmContigFactory -> GemvContigFactory
 // ---------------------------------------------------------------------------
 
 template <typename fnT, typename Tv, typename Ti>
