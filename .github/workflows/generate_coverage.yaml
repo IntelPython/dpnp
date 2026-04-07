@@ -142,20 +142,6 @@ jobs:
           SYCL_CACHE_PERSISTENT: 1
         with:
           shell: bash
-          timeout_minutes: 60
-          max_attempts: 5
-          retry_on: error
-          command: |
-            . $CONDA/etc/profile.d/conda.sh
-            conda activate coverage
-            [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
-            python scripts/gen_coverage.py --build-step skip-tensor --skip-pytest
-
-      - name: Run coverage tests
-        id: run_tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
-        with:
-          shell: bash
           timeout_minutes: 90
           max_attempts: 5
           retry_on: error
@@ -163,13 +149,12 @@ jobs:
             . $CONDA/etc/profile.d/conda.sh
             conda activate coverage
             [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
-            python scripts/gen_coverage.py --tests-only
+            python scripts/gen_coverage.py --build-step skip-tensor
 
       - name: Total number of coverage attempts
         run: |
           echo "Total tensor build attempts: ${{ steps.build_tensor.outputs.total_attempts }}"
           echo "Total skip-tensor build attempts: ${{ steps.build_skip_tensor.outputs.total_attempts }}"
-          echo "Total test run attempts: ${{ steps.run_tests.outputs.total_attempts }}"
 
       - name: Upload coverage data to coveralls.io
         uses: coverallsapp/github-action@5cbfd81b66ca5d10c19b062c04de0199c215fb6e # v2.3.7

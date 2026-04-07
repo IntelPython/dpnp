@@ -70,12 +70,7 @@ endif()
 #   target_compile_definitions(${_trgt} PRIVATE _WIN=1)
 # endif()
 
-# For coverage builds, use per_source instead of per_kernel to reduce memory
-if(DPNP_GENERATE_COVERAGE)
-    target_link_options(${_trgt} PUBLIC -fsycl-device-code-split=per_source)
-else()
-    target_link_options(${_trgt} PUBLIC -fsycl-device-code-split=per_kernel)
-endif()
+target_link_options(${_trgt} PUBLIC -fsycl-device-code-split=per_kernel)
 
 if(DPNP_GENERATE_COVERAGE)
     target_link_options(${_trgt} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
