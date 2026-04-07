@@ -22,8 +22,8 @@
 // SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
 // INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
-// THE POSSIBILITY OF SUCH DAMAGE.
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
 #pragma once
@@ -36,20 +36,57 @@
 namespace dpnp::extensions::sparse
 {
 
+/**
+ * sparse_gemv_init -- ONE-TIME setup per sparse matrix operator.
+ *
+ * Calls init_matrix_handle + set_csr_data + optimize_gemv.
+ * Returns the opaque matrix_handle_t cast to uintptr_t for safe
+ * Python round-tripping, plus the dependency event from optimize_gemv
+ * (caller must wait on it before calling sparse_gemv_compute).
+ *
+ * Lifetime: the handle owns NO data copies; all CSR arrays must remain
+ * alive (in USM) until sparse_gemv_release is called.
+ */
+extern std::pair<std::uintptr_t, sycl::event>
+sparse_gemv_init(sycl::queue                           &exec_q,
+                 const int                              trans,
+                 const dpctl::tensor::usm_ndarray      &row_ptr,
+                 const dpctl::tensor::usm_ndarray      &col_ind,
+                 const dpctl::tensor::usm_ndarray      &values,
+                 const std::int64_t                     num_rows,
+                 const std::int64_t                     num_cols,
+                 const std::int64_t                     nnz,
+                 const std::vector<sycl::event>        &depends);
+
+/**
+ * sparse_gemv_compute -- PER-ITERATION SpMV.
+ *
+ * Calls only oneapi::mkl::sparse::gemv using the pre-built handle.
+ * alpha and beta are passed as double and cast inside gemv_compute_impl
+ * to the matrix value type.
+ */
 extern std::pair<sycl::event, sycl::event>
-sparse_gemv(sycl::queue &exec_q,
-            const int trans,
-            const double alpha,
-            const dpctl::tensor::usm_ndarray &row_ptr,
-            const dpctl::tensor::usm_ndarray &col_ind,
-            const dpctl::tensor::usm_ndarray &values,
-            const dpctl::tensor::usm_ndarray &x,
-            const double beta,
-            const dpctl::tensor::usm_ndarray &y,
-            const std::int64_t num_rows,
-            const std::int64_t num_cols,
-            const std::int64_t nnz,
-            const std::vector<sycl::event> &depends);
+sparse_gemv_compute(sycl::queue                           &exec_q,
+                    const std::uintptr_t                   handle_ptr,
+                    const int                              trans,
+                    const double                           alpha,
+                    const dpctl::tensor::usm_ndarray      &x,
+                    const double                           beta,
+                    const dpctl::tensor::usm_ndarray      &y,
+                    const std::int64_t                     num_rows,
+                    const std::int64_t                     num_cols,
+                    const std::vector<sycl::event>        &depends);
+
+/**
+ * sparse_gemv_release -- free the matrix_handle created by sparse_gemv_init.
+ *
+ * Must be called exactly once per handle, after all compute calls
+ * that depend on it have completed.
+ */
+extern sycl::event
+sparse_gemv_release(sycl::queue                     &exec_q,
+                    const std::uintptr_t             handle_ptr,
+                    const std::vector<sycl::event>  &depends);
 
 extern void init_sparse_gemv_dispatch_table(void);
 

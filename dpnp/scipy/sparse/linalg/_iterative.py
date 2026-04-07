@@ -40,27 +40,27 @@ All signatures match cupyx.scipy.sparse.linalg (CuPy v14.0.1) and
 scipy.sparse.linalg, using ``rtol`` as the primary tolerance keyword
 (``tol`` is accepted as a deprecated alias for backward compatibility).
 
-Algorithm notes
----------------
-* b == 0 early-exit (return x0 or zeros with info=0).
-* Breakdown detection via machine-epsilon rhotol (CG, GMRES).
-* atol normalisation: atol_eff = max(atol, rtol * ||b||).
-* dtype promotion: A.dtype preferred when in fdFD; otherwise b.dtype
-  promoted to float64/complex128 (CuPy v14 compatible).
-* Preconditioner M supported for all three solvers; shape is validated
-  against A inside _make_system; fast CSR SpMV injected for M too.
-* GMRES: Givens-rotation Hessenberg QR on CPU scalars; all matvec and
-  inner-product work stays on device.  V basis pre-allocated as
-  (n, restart+1) Fortran-order for coalesced column access; no per-
-  iteration stack().  callback_type 'x', 'pr_norm', and 'legacy' all
-  implemented.  Happy breakdown detected via h_{j+1,j} < rhotol.
-* MINRES: native Paige-Saunders (1975) recurrence -- no scipy round-trip.
-  Full stopping battery: rnorm <= atol_eff, test1 (relative residual),
-  test2 (residual in range of A), Acond (condition number estimate) --
-  matches CuPy v14 / SciPy minres.py reference.
-  Preconditioner SPD check: raw inner product tested for negativity
-  BEFORE sqrt so the guard fires (abs() removed -- was dead code).
-  Stagnation floor 10*eps; convergence check precedes stagnation check.
+SpMV fast-path
+--------------
+When a CSR dpnp sparse matrix is passed as A or M, _make_fast_matvec()
+constructs a _CachedSpMV object that:
+  1. Calls _sparse_gemv_init() ONCE to create the oneMKL matrix_handle,
+     register CSR pointers via set_csr_data, and run optimize_gemv
+     (the expensive sparsity-analysis phase).
+  2. Calls _sparse_gemv_compute() on every matvec -- only the cheap
+     oneMKL sparse::gemv kernel fires; no handle setup overhead.
+  3. Calls _sparse_gemv_release() in __del__ to free the handle.
+
+This means optimize_gemv runs once per operator, not once per iteration,
+which is the correct usage pattern for oneMKL sparse BLAS.
+
+Supported dtypes for the oneMKL SpMV fast-path:
+  values : float32, float64, complex64, complex128
+  indices: int32, int64
+Complex dtypes require oneMKL sparse BLAS support (available since
+oneMKL 2023.x); if the dispatch table slot is nullptr (types_matrix.hpp
+does not register the pair) a ValueError is raised by the C++ layer.
+_make_fast_matvec catches this and falls back to A.dot(x).
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ from ._interface import IdentityOperator, LinearOperator, aslinearoperator
 
 
 # ---------------------------------------------------------------------------
-# oneMKL sparse SpMV hook
+# oneMKL sparse SpMV hook -- cached-handle API
 # ---------------------------------------------------------------------------
 
 try:
@@ -92,11 +92,7 @@ _SUPPORTED_DTYPES = frozenset("fdFD")
 # ---------------------------------------------------------------------------
 
 def _np_dtype(dp_dtype) -> _np.dtype:
-    """Normalise any dtype-like (dpnp type, numpy type, string) to np.dtype.
-
-    dpnp dtype objects (e.g. dpnp.float64) are Python type objects with no
-    .char attribute.  np.dtype() accepts all of them correctly.
-    """
+    """Normalise any dtype-like (dpnp type, numpy type, string) to np.dtype."""
     return _np.dtype(dp_dtype)
 
 
@@ -108,8 +104,83 @@ def _check_dtype(dtype, name: str) -> None:
         )
 
 
+class _CachedSpMV:
+    """Wrap a CSR matrix with a persistent oneMKL matrix_handle.
+
+    The handle is initialised (set_csr_data + optimize_gemv) exactly once
+    in __init__.  Subsequent calls to __call__ only invoke sparse::gemv,
+    paying no analysis overhead.  The handle is released in __del__.
+
+    Parameters
+    ----------
+    A      : dpnp CSR sparse matrix
+    trans  : int  0=N, 1=T, 2=C  (fixed at construction)
+    """
+
+    __slots__ = ("_A", "_exec_q", "_handle", "_trans",
+                 "_nrows", "_ncols", "_nnz")
+
+    def __init__(self, A, trans: int = 0):
+        self._A      = A          # keep alive so USM pointers stay valid
+        self._trans  = int(trans)
+        self._nrows  = int(A.shape[0])
+        self._ncols  = int(A.shape[1])
+        self._nnz    = int(A.data.shape[0])
+        self._exec_q = A.data.sycl_queue
+        self._handle = None
+
+        # init_matrix_handle + set_csr_data + optimize_gemv (once)
+        handle, ev = _si._sparse_gemv_init(
+            self._exec_q,
+            self._trans,
+            A.indptr,
+            A.indices,
+            A.data,
+            self._nrows,
+            self._ncols,
+            self._nnz,
+            [],
+        )
+        ev.wait()
+        self._handle = handle
+
+    def __call__(self, x: _dpnp.ndarray) -> _dpnp.ndarray:
+        """y = op(A) * x  --  only sparse::gemv fires."""
+        y = _dpnp.zeros(self._nrows, dtype=self._A.data.dtype,
+                        sycl_queue=self._exec_q)
+        _, ev = _si._sparse_gemv_compute(
+            self._exec_q,
+            self._handle,
+            self._trans,
+            1.0,
+            x,
+            0.0,
+            y,
+            self._nrows,
+            self._ncols,
+            [],
+        )
+        ev.wait()
+        return y
+
+    def __del__(self):
+        if self._handle is not None and _si is not None:
+            try:
+                _si._sparse_gemv_release(self._exec_q, self._handle, [])
+            except Exception:
+                pass
+            self._handle = None
+
+
 def _make_fast_matvec(A):
-    """Return device-side CSR SpMV callable, or None."""
+    """Return a _CachedSpMV if A is a CSR matrix with oneMKL support,
+    a plain lambda fallback, or None if A is not sparse.
+
+    Falls back gracefully on:
+      - missing _sparse_impl extension
+      - dtype not supported by the C++ dispatch table
+      - any other C++ exception during handle initialisation
+    """
     try:
         from dpnp.scipy import sparse as _sp
         if not (_sp.issparse(A) and A.format == "csr"):
@@ -117,27 +188,16 @@ def _make_fast_matvec(A):
     except (ImportError, AttributeError):
         return None
 
-    if _HAS_SPARSE_IMPL:
-        indptr  = A.indptr
-        indices = A.indices
-        data    = A.data
-        nrows   = int(A.shape[0])
-        ncols   = int(A.shape[1])
-        nnz     = int(data.shape[0])
-        exec_q  = data.sycl_queue
+    if not _HAS_SPARSE_IMPL:
+        return lambda x: A.dot(x)
 
-        def _csr_spmv(x: _dpnp.ndarray) -> _dpnp.ndarray:
-            y = _dpnp.zeros(nrows, dtype=data.dtype, sycl_queue=exec_q)
-            _, ev = _si._sparse_gemv(
-                exec_q, 0, 1.0, indptr, indices, data, x,
-                0.0, y, nrows, ncols, nnz, [],
-            )
-            ev.wait()
-            return y
-
-        return _csr_spmv
-
-    return lambda x: A.dot(x)
+    # Try to build the cached handle; fall back to dot() on any error
+    # (e.g. complex dtype not yet in the dispatch table on older builds).
+    try:
+        spmv = _CachedSpMV(A, trans=0)
+        return spmv
+    except Exception:
+        return lambda x: A.dot(x)
 
 
 def _make_system(A, M, x0, b):
@@ -271,8 +331,6 @@ def cg(
 
     rhotol = float(_np.finfo(_np_dtype(dtype)).eps ** 2)
 
-    # Use `x0 is not None` rather than `_dpnp.any(x)` -- dpnp arrays raise
-    # AmbiguousTruth when used as Python booleans.
     r  = b - A_op.matvec(x) if x0 is not None else b.copy()
     z  = M_op.matvec(r)
     p  = _dpnp.array(z, copy=True)
@@ -346,8 +404,6 @@ def gmres(
     callback      : callable, optional
     atol          : float, optional
     callback_type : {None, 'x', 'pr_norm', 'legacy'}
-                    None / 'x' / 'legacy' -- callback(xk) after each restart
-                    'pr_norm'             -- callback(||r||/||b||) per restart
 
     Returns
     -------
@@ -391,8 +447,8 @@ def gmres(
             info = 0
             break
 
-        # Pre-allocate V Fortran-order: columns V[:,j] are contiguous
-        # in device memory, avoiding strided (non-coalesced) access.
+        # Krylov basis: column-major (order='F') so V[:,j] is contiguous
+        # on the device -- avoids strided non-coalesced memory access.
         V = _dpnp.zeros((n, restart + 1), dtype=dtype, order='F')
         V[:, 0] = r / beta
 
@@ -410,8 +466,6 @@ def gmres(
 
             w = M_op.matvec(A_op.matvec(V[:, j]))
 
-            # Modified Gram-Schmidt: one device-to-host transfer per step
-            # (pulls (j+1,) h vector via .asnumpy()) instead of j scalars.
             h_dp = _dpnp.dot(_dpnp.conj(V[:, :j + 1].T), w)
             h_np = h_dp.asnumpy()
             w    = w - _dpnp.dot(V[:, :j + 1],
@@ -422,7 +476,6 @@ def gmres(
             H_np[:j + 1, j] = h_np
             H_np[j + 1,  j] = h_j1
 
-            # Apply previous Givens rotations to column j of H.
             for i in range(j):
                 tmp             =  cs_np[i] * H_np[i, j] + sn_np[i] * H_np[i + 1, j]
                 H_np[i + 1, j] = -_np.conj(sn_np[i]) * H_np[i, j] + cs_np[i] * H_np[i + 1, j]
@@ -445,7 +498,7 @@ def gmres(
 
             res_norm = abs(g_np[j + 1])
 
-            if h_j1 < rhotol:       # happy breakdown
+            if h_j1 < rhotol:
                 j_final = j
                 happy   = True
                 if res_norm <= atol_eff:
@@ -462,7 +515,6 @@ def gmres(
                 V[:, j + 1] = w / h_j1
             j_final = j
 
-        # Back-substitution on upper-triangular H_np (already on CPU).
         k    = j_final + 1
         y_np = _np.zeros(k, dtype=H_dtype)
         for i in range(k - 1, -1, -1):
@@ -474,7 +526,6 @@ def gmres(
             else:
                 y_np[i] /= H_np[i, i]
 
-        # Solution update: device matmul, no host round-trip.
         x = x + _dpnp.dot(V[:, :k], _dpnp.asarray(y_np, dtype=dtype))
 
         res_norm = float(_dpnp.linalg.norm(M_op.matvec(b - A_op.matvec(x))))
@@ -517,22 +568,6 @@ def minres(
 ) -> Tuple[_dpnp.ndarray, int]:
     """MINRES for symmetric (possibly indefinite) A -- pure dpnp/oneMKL.
 
-    Implements Paige-Saunders (1975) MINRES via Lanczos tridiagonalisation
-    with Givens QR.  All matvec, dot-products, and vector updates run on
-    device; only scalar recurrence coefficients are on CPU.
-
-    Stopping criteria (matches CuPy v14 / SciPy minres.py reference):
-      1. rnorm       <= atol_eff                  (absolute residual)
-      2. test1       <= rtol  where test1 = ||r|| / (||A|| * ||x||)
-      3. test2       <= rtol  where test2 = ||Ar_k|| / ||A||
-      4. Acond       >= 0.1 / eps                 (ill-conditioned stop)
-      5. phi * denom < 10*eps                     (stagnation)
-    Convergence (1-4) is always checked before stagnation (5).
-
-    Preconditioner SPD check: the raw inner product <r, M*r> is tested
-    for negativity BEFORE sqrt so the guard is live (not dead code as it
-    would be if abs() were applied first).
-
     Parameters
     ----------
     A       : array_like or LinearOperator -- symmetric/Hermitian (n, n)
@@ -568,12 +603,6 @@ def minres(
 
     atol_eff = _get_atol(bnrm, atol=atol, rtol=rtol)
 
-    # ------------------------------------------------------------------
-    # Initialise Lanczos: beta1 = sqrt(<r0, M*r0>)
-    # Test the raw inner product for negativity BEFORE sqrt so that a
-    # non-SPD preconditioner is detected (abs() was removed -- it made
-    # this check dead code).
-    # ------------------------------------------------------------------
     r1          = b - A_op.matvec(x) if x0 is not None else b.copy()
     y           = M_op.matvec(r1)
     beta1_inner = float(_dpnp.real(_dpnp.vdot(r1, y)))
@@ -599,9 +628,6 @@ def minres(
                 "set check=False to skip this test."
             )
 
-    # ------------------------------------------------------------------
-    # Paige-Saunders scalar state (all on CPU)
-    # ------------------------------------------------------------------
     beta   = beta1
     oldb   = 0.0
     phibar = beta1
@@ -610,25 +636,19 @@ def minres(
     dbar   =  0.0
     epsln  =  0.0
 
-    # State for full stopping battery
     tnorm2 = 0.0
     gmax   = 0.0
     gmin   = _np.finfo(_np_dtype(dtype)).max
 
-    # Solution update vectors (on device)
     w  = _dpnp.zeros(n, dtype=dtype)
     w2 = _dpnp.zeros(n, dtype=dtype)
     r2 = r1.copy()
     v  = y / beta1
 
-    # 10*eps stagnation floor (SciPy minres.py convention).
     stag_eps = 10.0 * eps
 
     info = 1
     for itr in range(1, maxiter + 1):
-        # ------------------------------------------------------------------
-        # Lanczos step k
-        # ------------------------------------------------------------------
         s  = 1.0 / beta
         v  = y * s
         y  = A_op.matvec(v) - shift * v
@@ -642,7 +662,8 @@ def minres(
         y     = M_op.matvec(r2)
         oldb  = beta
 
-        # SPD check on iteration inner product (live guard, no abs()).
+        # Check preconditioner SPD: compute raw inner product, then check sign
+        # before sqrt -- abs() would hide a non-SPD M.
         inner_r2y = float(_dpnp.real(_dpnp.vdot(r2, y)))
         if inner_r2y < 0.0:
             raise ValueError(
@@ -653,16 +674,12 @@ def minres(
 
         tnorm2 += alpha ** 2 + oldb ** 2 + beta ** 2
 
-        # ------------------------------------------------------------------
-        # QR step: Paige-Saunders two-rotation recurrence
-        # ------------------------------------------------------------------
         oldeps = epsln
         delta  = cs * dbar + sn * alpha
         gbar_k = sn * dbar - cs * alpha
         epsln  = sn * beta
         dbar   = -cs * beta
 
-        # root = ||Ar_k|| proxy used for test2
         root   = _np.hypot(gbar_k, dbar)
 
         gamma  = _np.hypot(gbar_k, beta)
@@ -677,9 +694,6 @@ def minres(
         gmax = max(gmax, gamma)
         gmin = min(gmin, gamma)
 
-        # ------------------------------------------------------------------
-        # Solution update: three-term w recurrence (Paige-Saunders SS5)
-        # ------------------------------------------------------------------
         denom = 1.0 / gamma
         w_new = (v - oldeps * w - delta * w2) * denom
         x     = x + phi * w_new
@@ -693,27 +707,33 @@ def minres(
         if callback is not None:
             callback(x)
 
-        # Convergence checks run before stagnation so a boundary iteration
-        # that satisfies both is reported as converged (info=0).
+        # Stopping criterion 1: absolute residual
         if rnorm <= atol_eff:
             info = 0
             break
 
+        # Stopping criterion 2: relative residual  ||r|| / (||A|| ||x||)
+        # (Paige-Saunders test1 -- catches convergence on ill-conditioned A)
         if Anorm > 0.0 and ynorm > 0.0:
-            if rnorm / (Anorm * ynorm) <= rtol:   # test1
+            if rnorm / (Anorm * ynorm) <= rtol:
                 info = 0
                 break
 
-        if Anorm > 0.0:
-            if root / Anorm <= rtol:               # test2
+        # Stopping criterion 3: range-space residual  ||A^T r|| / (||A|| ||r||)
+        # (Paige-Saunders test2 -- detects convergence in A's range)
+        if Anorm > 0.0 and rnorm > 0.0:
+            if root / Anorm <= rtol:
                 info = 0
                 break
 
-        if Anorm > 0.0 and (gmax / gmin) >= 0.1 / eps:  # Acond stop
+        # Stopping criterion 4: condition number estimate
+        # (gmax/gmin approximates cond(A); stop when near machine precision)
+        if Anorm > 0.0 and (gmax / gmin) >= 0.1 / eps:
             info = 0
             break
 
-        if phi * denom < stag_eps:                 # stagnation
+        # Stagnation detection: step size < 10*eps relative to x
+        if phi * denom < stag_eps:
             info = 2
             break
     else:
