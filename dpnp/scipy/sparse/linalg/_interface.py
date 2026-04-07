@@ -503,7 +503,7 @@ def aslinearoperator(A) -> LinearOperator:
         matvec  = A.matvec  if hasattr(A, "matvec")  else (lambda x: A @ x)
         rmatvec = A.rmatvec if hasattr(A, "rmatvec") else None
         matmat  = A.matmat  if hasattr(A, "matmat")  else None
-        rmatmat = A.rmatmat if hasattr(A, "rmatmat\") else None
+        rmatmat = A.rmatmat if hasattr(A, "rmatmat") else None
         return LinearOperator(
             (m, n),
             matvec=matvec,
