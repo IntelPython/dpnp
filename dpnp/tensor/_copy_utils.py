@@ -45,7 +45,7 @@ from ._type_utils import _dtype_supported_by_device_impl
 
 __doc__ = (
     "Implementation module for copy- and cast- operations on "
-    ":class:`dpctl.tensor.usm_ndarray`."
+    ":class:`dpnp.tensor.usm_ndarray`."
 )
 
 int32_t_max = 1 + np.iinfo(np.int32).max
@@ -53,7 +53,7 @@ int32_t_max = 1 + np.iinfo(np.int32).max
 
 def _copy_to_numpy(ary):
     if not isinstance(ary, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(ary)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(ary)}")
     if ary.size == 0:
         # no data needs to be copied for zero sized array
         return np.ndarray(ary.shape, dtype=ary.dtype)
@@ -96,7 +96,7 @@ def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
 
 
 def _copy_from_numpy_into(dst, np_ary):
-    """Copies `np_ary` into `dst` of type :class:`dpctl.tensor.usm_ndarray"""
+    """Copies `np_ary` into `dst` of type :class:`dpnp.tensor.usm_ndarray"""
     if not isinstance(np_ary, np.ndarray):
         raise TypeError(f"Expected numpy.ndarray, got {type(np_ary)}")
     if not isinstance(dst, dpt.usm_ndarray):
@@ -137,9 +137,10 @@ def _extract_impl(ary, ary_mask, axis=0):
     Extract elements of ary by applying mask starting from slot
     dimension axis
     """
+
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+            f"Expecting type dpnp.tensor.usm_ndarray, got {type(ary)}"
         )
     if isinstance(ary_mask, dpt.usm_ndarray):
         dst_usm_type = dpctl.utils.get_coerced_usm_type(
@@ -161,7 +162,7 @@ def _extract_impl(ary, ary_mask, axis=0):
         )
     else:
         raise TypeError(
-            "Expecting type dpctl.tensor.usm_ndarray or numpy.ndarray, got "
+            "Expecting type dpnp.tensor.usm_ndarray or numpy.ndarray, got "
             f"{type(ary_mask)}"
         )
     ary_nd = ary.ndim
@@ -207,6 +208,7 @@ def _get_indices_queue_usm_type(inds, queue, usm_type):
     For each array, the queue and usm type are appended to `queue_list` and
     `usm_type_list`, respectively.
     """
+
     queues = [queue]
     usm_types = [usm_type]
     any_array = False
@@ -238,7 +240,7 @@ def _get_indices_queue_usm_type(inds, queue, usm_type):
 def _nonzero_impl(ary):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+            f"Expecting type dpnp.tensor.usm_ndarray, got {type(ary)}"
         )
     exec_q = ary.sycl_queue
     usm_type = ary.usm_type
@@ -275,6 +277,7 @@ def _prepare_indices_arrays(inds, q, usm_type):
     with the provided usm type. All arrays are then promoted to a common
     integral type (if possible) before being broadcast to a common shape.
     """
+
     # scalar integers -> arrays
     inds = tuple(
         map(
@@ -313,9 +316,10 @@ def _place_impl(ary, ary_mask, vals, axis=0):
     Extract elements of ary by applying mask starting from slot
     dimension axis.
     """
+
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+            f"Expecting type dpnp.tensor.usm_ndarray, got {type(ary)}"
         )
     if isinstance(ary_mask, dpt.usm_ndarray):
         exec_q = dpctl.utils.get_execution_queue(
@@ -343,7 +347,7 @@ def _place_impl(ary, ary_mask, vals, axis=0):
         )
     else:
         raise TypeError(
-            "Expecting type dpctl.tensor.usm_ndarray or numpy.ndarray, got "
+            "Expecting type dpnp.tensor.usm_ndarray or numpy.ndarray, got "
             f"{type(ary_mask)}"
         )
     if exec_q is not None:
@@ -415,7 +419,7 @@ def _place_impl(ary, ary_mask, vals, axis=0):
 def _put_multi_index(ary, inds, p, vals, mode=0):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+            f"Expecting type dpnp.tensor.usm_ndarray, got {type(ary)}"
         )
     ary_nd = ary.ndim
     p = normalize_axis_index(operator.index(p), ary_nd)
@@ -488,7 +492,7 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
 def _take_multi_index(ary, inds, p, mode=0):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+            f"Expecting type dpnp.tensor.usm_ndarray, got {type(ary)}"
         )
     ary_nd = ary.ndim
     p = normalize_axis_index(operator.index(p), ary_nd)
@@ -539,77 +543,94 @@ def _take_multi_index(ary, inds, p, mode=0):
 
 def from_numpy(np_ary, /, *, device=None, usm_type="device", sycl_queue=None):
     """
-    from_numpy(arg, device=None, usm_type="device", sycl_queue=None)
-
-    Creates :class:`dpctl.tensor.usm_ndarray` from instance of
+    Creates :class:`dpnp.tensor.usm_ndarray` from instance of
     :class:`numpy.ndarray`.
 
-    Args:
-        arg:
-            Input convertible to :class:`numpy.ndarray`
-        device (object): array API specification of device where the
-            output array is created. Device can be specified by
-            a filter selector string, an instance of
-            :class:`dpctl.SyclDevice`, an instance of
-            :class:`dpctl.SyclQueue`, or an instance of
-            :class:`dpctl.tensor.Device`. If the value is ``None``,
-            returned array is created on the default-selected device.
-            Default: ``None``
-        usm_type (str): The requested USM allocation type for the
-            output array. Recognized values are ``"device"``,
-            ``"shared"``, or ``"host"``
-        sycl_queue (:class:`dpctl.SyclQueue`, optional):
-            A SYCL queue that determines output array allocation device
-            as well as execution placement of data movement operations.
-            The ``device`` and ``sycl_queue`` arguments
-            are equivalent. Only one of them should be specified. If both
-            are provided, they must be consistent and result in using the
-            same execution queue. Default: ``None``
+    Parameters
+    ----------
+    np_ary : array_like
+        Input convertible to :class:`numpy.ndarray`
+    device : object, optional
+        array API specification of device where the
+        output array is created. Device can be specified by
+        a filter selector string, an instance of
+        :class:`dpctl.SyclDevice`, an instance of
+        :class:`dpctl.SyclQueue`, or an instance of
+        :class:`dpnp.tensor.Device`. If the value is ``None``,
+        returned array is created on the default-selected device.
 
-    The returned array has the same shape, and the same data type kind.
-    If the device does not support the data type of input array, a
-    closest support data type of the same kind may be returned, e.g.
-    input array of type ``float16`` may be upcast to ``float32`` if the
-    target device does not support 16-bit floating point type.
+        Default: ``None``.
+    usm_type : str, optional
+        The requested USM allocation type for the
+        output array. Recognized values are ``"device"``,
+        ``"shared"``, or ``"host"``.
+
+        Default: ``"device"``.
+    sycl_queue : dpctl.SyclQueue, optional
+        A SYCL queue that determines output array allocation device
+        as well as execution placement of data movement operations.
+        The ``device`` and ``sycl_queue`` arguments
+        are equivalent. Only one of them should be specified. If both
+        are provided, they must be consistent and result in using the
+        same execution queue.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        The returned array has the same shape, and the same data type kind.
+        If the device does not support the data type of input array, a
+        closest support data type of the same kind may be returned, e.g.
+        input array of type ``float16`` may be upcast to ``float32`` if the
+        target device does not support 16-bit floating point type.
+
     """
+
     q = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     return _copy_from_numpy(np_ary, usm_type=usm_type, sycl_queue=q)
 
 
 def to_numpy(usm_ary, /):
     """
-    to_numpy(usm_ary)
-
-    Copies content of :class:`dpctl.tensor.usm_ndarray` instance ``usm_ary``
+    Copies content of :class:`dpnp.tensor.usm_ndarray` instance ``usm_ary``
     into :class:`numpy.ndarray` instance of the same shape and same data type.
 
-    Args:
-        usm_ary (usm_ndarray):
-            Input array
-    Returns:
-        :class:`numpy.ndarray`:
-            An instance of :class:`numpy.ndarray` populated with content of
-            ``usm_ary``
+    Parameters
+    ----------
+    usm_ary : usm_ndarray
+        Input array
+
+    Returns
+    -------
+    out : numpy.ndarray
+        An instance of :class:`numpy.ndarray` populated with content of
+        ``usm_ary``
+
     """
+
     return _copy_to_numpy(usm_ary)
 
 
 def asnumpy(usm_ary):
     """
-    asnumpy(usm_ary)
-
-    Copies content of :class:`dpctl.tensor.usm_ndarray` instance ``usm_ary``
+    Copies content of :class:`dpnp.tensor.usm_ndarray` instance ``usm_ary``
     into :class:`numpy.ndarray` instance of the same shape and same data
     type.
 
-    Args:
-        usm_ary (usm_ndarray):
-            Input array
-    Returns:
-        :class:`numpy.ndarray`:
-            An instance of :class:`numpy.ndarray` populated with content
-            of ``usm_ary``
+    Parameters
+    ----------
+    usm_ary : usm_ndarray
+        Input array
+
+    Returns
+    -------
+    out : numpy.ndarray
+        An instance of :class:`numpy.ndarray` populated with content
+        of ``usm_ary``
+
     """
+
     return _copy_to_numpy(usm_ary)
 
 
@@ -705,7 +726,7 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
         )
     ):
         raise TypeError(
-            "Both types are expected to be dpctl.tensor.usm_ndarray, "
+            "Both types are expected to be dpnp.tensor.usm_ndarray, "
             f"got {type(dst)} and {type(src)}."
         )
 
@@ -773,6 +794,7 @@ def _make_empty_like_orderK(x, dt, usm_type, dev):
     Returns empty array with shape and strides like `x`, with dtype `dt`,
     USM type `usm_type`, on device `dev`.
     """
+
     st = list(x.strides)
     perm = sorted(
         range(x.ndim),
@@ -805,6 +827,7 @@ def _empty_like_orderK(x, dt, usm_type=None, dev=None):
     array the returned array will have the same shape and the same
     strides as `x`.
     """
+
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray, got {type(x)}")
     if usm_type is None:
@@ -831,6 +854,7 @@ def _from_numpy_empty_like_orderK(x, dt, usm_type, dev):
     array the returned array will have the same shape and the same
     strides as `x`.
     """
+
     if not isinstance(x, np.ndarray):
         raise TypeError(f"Expected numpy.ndarray, got {type(x)}")
     fl = x.flags
@@ -975,19 +999,25 @@ def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
 
 
 def copy(usm_ary, /, *, order="K"):
-    """copy(ary, order="K")
+    """
+    Creates a copy of given instance of :class:`dpnp.tensor.usm_ndarray`.
 
-    Creates a copy of given instance of :class:`dpctl.tensor.usm_ndarray`.
+    Parameters
+    ----------
+    usm_ary : usm_ndarray
+        Input array
+    order : {"C", "F", "A", "K"}, optional
+        Controls the memory layout of the output array
 
-    Args:
-        ary (usm_ndarray):
-            Input array
-        order (``"C"``, ``"F"``, ``"A"``, ``"K"``, optional):
-            Controls the memory layout of the output array
-    Returns:
-        usm_ndarray:
-            A copy of the input array.
+        Default: ``"K"``.
 
+    Returns
+    -------
+    out : usm_ndarray
+        A copy of the input array.
+
+    Notes
+    -----
     Memory layout of the copy is controlled by ``order`` keyword,
     following NumPy's conventions. The ``order`` keywords can be
     one of the following:
@@ -1005,6 +1035,7 @@ def copy(usm_ary, /, *, order="K"):
           - match the layout of ``usm_ary`` as closely as possible.
 
     """
+
     if len(order) == 0 or order[0] not in "KkAaCcFf":
         raise ValueError(
             "Unrecognized order keyword value, expecting 'K', 'A', 'F', or 'C'."
@@ -1047,44 +1078,56 @@ def copy(usm_ary, /, *, order="K"):
 def astype(
     usm_ary, newdtype, /, *, order="K", casting="unsafe", copy=True, device=None
 ):
-    """astype(array, new_dtype, order="K", casting="unsafe", \
-            copy=True, device=None)
-
-    Returns a copy of the :class:`dpctl.tensor.usm_ndarray`, cast to a
+    """
+    Returns a copy of the :class:`dpnp.tensor.usm_ndarray`, cast to a
     specified type.
 
-    Args:
-        array (usm_ndarray):
-            An input array.
-        new_dtype (dtype):
-            The data type of the resulting array. If `None`, gives default
-            floating point type supported by device where the resulting array
-            will be located.
-        order ({"C", "F", "A", "K"}, optional):
-            Controls memory layout of the resulting array if a copy
-            is returned.
-        casting ({'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional):
-            Controls what kind of data casting may occur. Please see
-            :meth:`numpy.ndarray.astype` for description of casting modes.
-        copy (bool, optional):
-            By default, `astype` always returns a newly allocated array.
-            If this keyword is set to `False`, a view of the input array
-            may be returned when possible.
-        device (object): array API specification of device where the
-            output array is created. Device can be specified by
-            a filter selector string, an instance of
-            :class:`dpctl.SyclDevice`, an instance of
-            :class:`dpctl.SyclQueue`, or an instance of
-            :class:`dpctl.tensor.Device`. If the value is `None`,
-            returned array is created on the same device as `array`.
-            Default: `None`.
+    Parameters
+    ----------
+    usm_ary : usm_ndarray
+        An input array.
+    newdtype : dtype
+        The data type of the resulting array. If `None`, gives default
+        floating point type supported by device where the resulting array
+        will be located.
+    order : {"C", "F", "A", "K"}, optional
+        Controls memory layout of the resulting array if a copy
+        is returned.
 
-    Returns:
-        usm_ndarray:
-            An array with requested data type.
+        Default: ``"K"``.
+    casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
+        Controls what kind of data casting may occur. Please see
+        :meth:`numpy.ndarray.astype` for description of casting modes.
 
+        Default: ``"unsafe"``.
+    copy : bool, optional
+        By default, `astype` always returns a newly allocated array.
+        If this keyword is set to `False`, a view of the input array
+        may be returned when possible.
+
+        Default: ``True``.
+    device : object, optional
+        array API specification of device where the
+        output array is created. Device can be specified by
+        a filter selector string, an instance of
+        :class:`dpctl.SyclDevice`, an instance of
+        :class:`dpctl.SyclQueue`, or an instance of
+        :class:`dpnp.tensor.Device`. If the value is `None`,
+        returned array is created on the same device as `usm_ary`.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array with requested data type.
+
+    Notes
+    -----
     A view can be returned, if possible, when `copy=False` is used.
+
     """
+
     if not isinstance(usm_ary, dpt.usm_ndarray):
         return TypeError(
             f"Expected object of type dpt.usm_ndarray, got {type(usm_ary)}"
