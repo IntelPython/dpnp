@@ -51,6 +51,6 @@ sparse_gemv(sycl::queue &exec_q,
             const std::int64_t nnz,
             const std::vector<sycl::event> &depends);
 
-extern void init_sparse_gemv_dispatch_vector(void);
+extern void init_sparse_gemv_dispatch_table(void);
 
 } // namespace dpnp::extensions::sparse
