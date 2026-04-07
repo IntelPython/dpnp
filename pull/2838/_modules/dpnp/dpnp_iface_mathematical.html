@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev5+5.gfcc6b709e29 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.20.0dev6+3.ga19d6613d97 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4021be69"></script>
+      <script src="../../_static/documentation_options.js?v=f59460c2"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -226,7 +226,9 @@
             <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">distances</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
                 <span class="c1"># Convert integer types to default float type to avoid modular</span>
                 <span class="c1"># arithmetic in dpnp.diff(distances).</span>
-                <span class="n">distances</span> <span class="o">=</span> <span class="n">distances</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">())</span>
+                <span class="n">distances</span> <span class="o">=</span> <span class="n">distances</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                    <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="n">diffx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
 
             <span class="c1"># if distances are constant reduce to the scalar case</span>
@@ -2821,9 +2823,9 @@
         <span class="c1"># All other types convert to floating point.</span>
         <span class="c1"># First check if f is a dpnp integer type; if so, convert f to default</span>
         <span class="c1"># float type to avoid modular arithmetic when computing changes in f.</span>
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">otype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">())</span>
-        <span class="n">otype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">()</span>
+        <span class="n">otype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">otype</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">axis_</span><span class="p">,</span> <span class="n">ax_dx</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">dx</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis_</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">edge_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
