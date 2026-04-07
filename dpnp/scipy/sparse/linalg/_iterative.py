@@ -50,9 +50,15 @@ Corner-case coverage
 * GMRES: Givens-rotation Hessenberg QR, allocation-free scalar CPU side;
   all matvec + inner-product work stays on device.
 * GMRES: happy breakdown via h_{j+1,j} == 0
-* MINRES: native Paige-Saunders recurrence — no scipy host round-trip.
+* MINRES: native Paige-Saunders (1975) recurrence — no scipy host round-trip.
+  QR step uses the exact two-rotation recurrence from SciPy minres.py:
+    oldeps = epsln
+    delta  = cs * dbar + sn * alpha   # apply previous Givens rotation
+    gbar_k = sn * dbar - cs * alpha   # residual for new rotation
+    epsln  = sn * beta
+    dbar   = -cs * beta
+    gamma  = hypot(gbar_k, beta)      # new rotation eliminates beta
   betacheck uses fixed floor eps*beta1 (not a decaying product).
-  gbar is correctly seeded from the first Lanczos diagonal before the loop.
 """
 
 from __future__ import annotations
@@ -500,6 +506,18 @@ def minres(
     with Givens QR.  All matvec, dot-products, and vector updates run on
     device; only scalar recurrence coefficients are pulled to CPU.
 
+    The QR step uses the exact two-rotation recurrence from SciPy minres.py:
+
+      oldeps = epsln
+      delta  = cs * dbar + sn * alpha    # apply previous Givens rotation
+      gbar_k = sn * dbar - cs * alpha    # residual for new rotation
+      epsln  = sn * beta
+      dbar   = -cs * beta
+
+      gamma  = hypot(gbar_k, beta)       # new rotation eliminates beta
+      cs     = gbar_k / gamma
+      sn     = beta   / gamma
+
     Parameters
     ----------
     A       : array_like or LinearOperator — symmetric/Hermitian (n, n)
@@ -534,11 +552,9 @@ def minres(
     # ------------------------------------------------------------------
     # Initialise Lanczos: compute beta1 = ||M^{-1/2} r0||_M
     # ------------------------------------------------------------------
-    # FIX: use `x0 is not None` to avoid AmbiguousTruth from _dpnp.any(x)
     r1     = b - A_op.matvec(x) if x0 is not None else b.copy()
     y      = M_op.matvec(r1)
 
-    # FIX: guard sqrt against tiny negative rounding errors
     beta1  = float(_dpnp.sqrt(_dpnp.abs(_dpnp.real(_dpnp.vdot(r1, y)))))
 
     if beta1 == 0.0:
@@ -546,7 +562,6 @@ def minres(
 
     if check:
         Ay = A_op.matvec(y) - shift * y
-        # FIX: float(_dpnp.linalg.norm(...)) — no .asnumpy() method on ndarray
         lhs = float(_dpnp.linalg.norm(
             Ay - (_dpnp.vdot(y, Ay) / _dpnp.vdot(y, y)) * y
         ))
@@ -558,33 +573,30 @@ def minres(
             )
 
     # ------------------------------------------------------------------
-    # Run one Lanczos step to get alpha_1 so that gbar can be seeded
-    # correctly before the main loop.  This matches the standard
-    # Paige-Saunders initialisation where gbar_0 = 0 and the first
-    # rotation is applied to (alpha_1 - shift, beta_2).
+    # Paige-Saunders state variables (all scalars on CPU)
     # ------------------------------------------------------------------
     beta   = beta1
     oldb   = 0.0
     phibar = beta1
-    dbar   = 0.0
 
-    # w-vectors for the solution update (on device)
-    w    = _dpnp.zeros(n, dtype=dtype)
-    w2   = _dpnp.zeros(n, dtype=dtype)
+    # Givens rotation state carried between iterations (SciPy initialisation)
+    cs   = -1.0   # cos of previous rotation
+    sn   =  0.0   # sin of previous rotation
+    dbar =  0.0   # sub-diagonal entry carried forward
+    epsln = 0.0   # sub-sub-diagonal from two steps ago
+
+    # w-vectors for the three-term solution update (on device)
+    w  = _dpnp.zeros(n, dtype=dtype)
+    w2 = _dpnp.zeros(n, dtype=dtype)
 
     # Lanczos vectors
-    r2   = r1.copy()
-    v    = y / beta1
-
-    # Givens rotation state from the previous step
-    cs_prev = -1.0   # cos of rotation (initialised per Paige-Saunders §A)
-    sn_prev =  0.0   # sin of rotation
-    gbar    =  0.0   # gbar_{k-1} before first step
+    r2 = r1.copy()
+    v  = y / beta1
 
     info = 1
     for itr in range(1, maxiter + 1):
         # ------------------------------------------------------------------
-        # Lanczos step k
+        # Lanczos step k: produces alpha_k, beta_{k+1}, v_k
         # ------------------------------------------------------------------
         s  = 1.0 / beta
         v  = y * s
@@ -598,60 +610,60 @@ def minres(
         r2    = y.copy()
         y     = M_op.matvec(r2)
         oldb  = beta
-
-        # FIX: guard sqrt against tiny negative rounding errors
         beta  = float(_dpnp.sqrt(_dpnp.abs(_dpnp.real(_dpnp.vdot(r2, y)))))
 
         if beta < 0.0:
             raise ValueError("minres: preconditioner M is not positive definite")
 
-        # Stagnation: beta has collapsed to machine-eps * beta1 (fixed floor)
+        # Stagnation: beta collapsed to machine-epsilon * beta1
         if beta <= eps * beta1:
             info = 2
             break
 
         # ------------------------------------------------------------------
-        # QR step: Givens rotation to annihilate the sub-diagonal
+        # QR step: correct Paige-Saunders (1975) two-rotation recurrence.
         #
-        # The tridiagonal entry at this step is:
-        #   [ gbar   beta_new ]
-        # where gbar is carried forward from the previous rotation.
+        # Apply the PREVIOUS Givens rotation Q_{k-1} to the current
+        # tridiagonal column.  The column is [dbar, (alpha-shift), beta].
+        # (alpha already incorporates the shift via the Lanczos matvec above
+        # so the column below uses plain `alpha`.)
+        #
+        # Previous rotation acts on rows (k-1, k):
+        #   delta  = cs_{k-1} * dbar + sn_{k-1} * alpha   <- new diagonal
+        #   gbar_k = sn_{k-1} * dbar - cs_{k-1} * alpha   <- residual
+        #   epsln  = sn_{k-1} * beta                       <- sub-sub-diag
+        #   dbar   = -cs_{k-1} * beta                      <- carry forward
+        #
+        # New rotation Q_k eliminates beta from [gbar_k, beta]:
+        #   gamma = hypot(gbar_k, beta)
+        #   cs_k  = gbar_k / gamma
+        #   sn_k  = beta   / gamma
         # ------------------------------------------------------------------
-        eps_k   = sn_prev * beta          # sub-sub-diagonal from prev step
-        dbar    = -cs_prev * beta         # updated dbar
-        delta_k = _np.hypot(gbar, oldb)   # norm([gbar, oldb]) for diagonal
+        oldeps = epsln
+        delta  = cs * dbar + sn * alpha    # apply previous rotation — diagonal
+        gbar_k = sn * dbar - cs * alpha    # remaining entry -> new rotation
+        epsln  = sn * beta                 # sub-sub-diagonal for next step
+        dbar   = -cs * beta               # carry forward for next step
 
-        # New rotation to zero out oldb in [delta_k_row, beta_new_row]
-        gamma_bar = _np.hypot(delta_k, beta)
-        if gamma_bar == 0.0:
-            gamma_bar = eps
-        cs_k  = delta_k / gamma_bar
-        sn_k  = beta    / gamma_bar
+        gamma = _np.hypot(gbar_k, beta)
+        if gamma == 0.0:
+            gamma = eps
+        cs = gbar_k / gamma               # new cos
+        sn = beta   / gamma               # new sin
 
-        phi    = cs_k * phibar
-        phibar = sn_k * phibar
+        phi    = cs * phibar
+        phibar = sn * phibar
 
         # ------------------------------------------------------------------
-        # Solution update: x += phi * w2_new
-        # w update follows the Paige-Saunders three-term recurrence:
-        #   w_new = (v - eps_k*w - delta_k*w2) / gamma_bar
+        # Solution update: three-term w recurrence (Paige-Saunders §5)
+        #   w_new = (v - oldeps * w_{k-2} - delta * w_{k-1}) / gamma
+        #   x    += phi * w_new
         # ------------------------------------------------------------------
-        denom  = 1.0 / gamma_bar
-        w_new  = (v - eps_k * w - delta_k * w2) * denom
-        x      = x + phi * w_new
-        w      = w2
-        w2     = w_new
-
-        # Update gbar for next iteration: gbar_k = sn_k*(alpha_next - shift)
-        # We do not have alpha_{k+1} yet, so we carry forward the value that
-        # is needed for the NEXT rotation.  The standard recurrence is:
-        #   gbar_{k} = sn_k * eps_{k+1} - ... (see Choi 2006 eq. 6.11)
-        # Simplified to the two-recurrence form used by SciPy minres:
-        gbar   = sn_k * (alpha - shift) - cs_k * dbar
-
-        # Update Givens state for next iteration
-        cs_prev = cs_k
-        sn_prev = sn_k
+        denom = 1.0 / gamma
+        w_new = (v - oldeps * w - delta * w2) * denom
+        x     = x + phi * w_new
+        w     = w2
+        w2    = w_new
 
         rnorm = abs(phibar)
 
