@@ -90,8 +90,20 @@ _SUPPORTED_DTYPES = frozenset("fdFD")
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _np_dtype(dp_dtype) -> _np.dtype:
+    """Convert a dpnp dtype (or any dtype-like) to a concrete numpy dtype.
+
+    dpnp dtype objects (e.g. dpnp.float64) are *type objects*, not
+    numpy dtype instances, so they have no ``.char`` attribute.
+    Wrapping them with ``_np.dtype(...)`` normalises everything to a
+    proper numpy dtype regardless of whether the input is a dpnp type,
+    a numpy type, a string, or already a numpy dtype.
+    """
+    return _np.dtype(dp_dtype)
+
+
 def _check_dtype(dtype, name: str) -> None:
-    if dtype.char not in _SUPPORTED_DTYPES:
+    if _np_dtype(dtype).char not in _SUPPORTED_DTYPES:
         raise TypeError(
             f"{name} has unsupported dtype {dtype}; "
             "only float32, float64, complex64, complex128 are accepted."
@@ -149,8 +161,8 @@ def _make_system(A, M, x0, b):
         dtype = _dpnp.complex128
     else:
         dtype = _dpnp.float64
-    if A_op.dtype is not None and A_op.dtype.char in "fF":
-        dtype = _dpnp.complex64 if A_op.dtype.char == "F" else _dpnp.float32
+    if A_op.dtype is not None and _np_dtype(A_op.dtype).char in "fF":
+        dtype = _dpnp.complex64 if _np_dtype(A_op.dtype).char == "F" else _dpnp.float32
 
     b = b.astype(dtype, copy=False)
     _check_dtype(b.dtype, "b")
@@ -240,7 +252,8 @@ def cg(
         maxiter = n * 10
 
     # Machine-epsilon breakdown tolerance (mirrors SciPy bicg rhotol)
-    rhotol = float(_np.finfo(_np.dtype(dtype.char)).eps ** 2)
+    # Use _np_dtype() to safely convert dpnp dtype to numpy dtype.
+    rhotol = float(_np.finfo(_np_dtype(dtype)).eps ** 2)
 
     r  = b - A_op.matvec(x) if _dpnp.any(x) else b.copy()
     z  = M_op.matvec(r)
@@ -350,7 +363,8 @@ def gmres(
 
     is_cpx   = _dpnp.issubdtype(dtype, _dpnp.complexfloating)
     H_dtype  = _np.complex128 if is_cpx else _np.float64
-    rhotol   = float(_np.finfo(H_dtype).eps ** 2)
+    # Use _np_dtype() so this works whether dtype is a dpnp type or numpy dtype.
+    rhotol   = float(_np.finfo(_np_dtype(dtype)).eps ** 2)
 
     total_iters = 0
     info        = maxiter
@@ -520,7 +534,8 @@ def minres(
     A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
     n = b.shape[0]
     is_cpx = _dpnp.issubdtype(dtype, _dpnp.complexfloating)
-    eps    = float(_np.finfo(_np.dtype(dtype.char)).eps)
+    # Use _np_dtype() to convert dpnp dtype to numpy dtype before finfo.
+    eps    = float(_np.finfo(_np_dtype(dtype)).eps)
 
     if maxiter is None:
         maxiter = 5 * n
@@ -570,6 +585,10 @@ def minres(
     w2   = _dpnp.zeros_like(x)
     r2   = _dpnp.array(v, copy=True)
 
+    # Givens rotation scalars from the previous step
+    cs_n = 0.0
+    sn_n = 0.0
+
     info = 1
     for itr in range(1, maxiter + 1):
         # Lanczos step
@@ -596,53 +615,35 @@ def minres(
             info = 2
             break
 
-        # QR update — Givens rotation plane
-        oldeps  = epln
-        epln    = dltan * (-dbar) if itr > 1 else 0.0
-        dltan   = gbar
-        delta   = dltan * _np.cos(0.0)   # cos(theta)=dltan/sqrt(dltan^2+beta^2)
+        # Save previous Givens rotation scalars before overwriting
+        cs_old = cs_n
+        sn_old = sn_n
 
-        # ---- Symmetric QR on the Lanczos tridiagonal ---
-        # Simplified scalar recurrence (Paige-Saunders §6.4)
-        eps2   = alpha - shift
-        dbar   = _np.hypot(dbar, beta)    # hypothetical: used below in full form
-
-        # Givens rotation to zero out the sub-diagonal
-        eps2sq = float(eps2)
-        betan  = float(beta)
-        gabar  = float(gbar)
-        rhs1   = float(phibar)
-
-        # Full Paige-Saunders Givens step
-        cs_old = 0.0 if itr == 1 else cs_n
-        sn_old = 0.0 if itr == 1 else sn_n
-
-        # Recurrence: eps, delta, gbar from previous Givens
-        eps_n  = sn_old * betan
-        dbar   = -cs_old * betan
-        delta_n = _np.hypot(gbar, betan)
+        # Givens rotation to annihilate the sub-diagonal of the tridiagonal
+        # Current diagonal entry in the shifted system
+        eps_n   = sn_old * beta
+        dbar    = -cs_old * beta
+        delta_n = _np.hypot(gbar, beta)
         if delta_n == 0.0:
             delta_n = eps
-        cs_n   = gbar  / delta_n
-        sn_n   = betan / delta_n
-        phi    = cs_n  * phibar
-        phibar = sn_n  * phibar
+        cs_n    = gbar  / delta_n
+        sn_n    = beta  / delta_n
+        phi     = cs_n  * phibar
+        phibar  = sn_n  * phibar
 
-        denom  = 1.0 / delta_n
-        w2old  = w2.copy()
-        w2     = (v - eps_n * w - delta_n * w2) * denom   # NOT right yet
-        # Correct: w update is w_{k} = (v_k - delta*w_{k-1} - eps*w_{k-2}) / gamma
-        # Redo with right symbols:
-        w_new  = (v - oldeps * w - (delta_n * denom) * w2old)
-        w      = w2old
-        w2     = w_new
+        # Solution update using the Paige-Saunders w-vectors
+        denom   = 1.0 / delta_n
+        w_new   = (v - eps_n * w - dbar * w2) * denom
+        x       = x + phi * w_new
+        w       = w2.copy()
+        w2      = w_new
 
-        x      = x + phi * w2
+        # Update gbar for next iteration
+        gbar    = sn_n * (alpha - shift) - cs_n * dbar
+        # rnorm estimate: |phibar|
+        rnorm   = abs(phibar)
 
-        # Residual norm estimate
-        rnorm  = abs(phibar)
-
-        dnorm  = _np.hypot(dnorm, phi / delta_n) if delta_n != 0.0 else dnorm
+        dnorm   = _np.hypot(dnorm, phi * denom) if delta_n != 0.0 else dnorm
 
         if callback is not None:
             callback(x)
@@ -652,7 +653,7 @@ def minres(
             break
 
         # Stagnation guard
-        if phi / delta_n < eps:
+        if phi * denom < eps:
             info = 2
             break
     else:
