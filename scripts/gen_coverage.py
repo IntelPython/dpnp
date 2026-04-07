@@ -127,6 +127,11 @@ def parse_args():
         "skip-tensor (everything except tensor, assumes tensor headers exist), "
         "or both (default: both)",
     )
+    p.add_argument(
+        "--tests-only",
+        action="store_true",
+        help="Skip build and only run tests with coverage collection",
+    )
 
     return p.parse_args()
 
@@ -163,44 +168,67 @@ def main():
     args = parse_args()
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    c_compiler, cxx_compiler = resolve_compilers(
-        args.oneapi,
-        args.c_compiler,
-        args.cxx_compiler,
-        args.compiler_root,
-    )
-
-    dpctl_cmake_dir = get_dpctl_cmake_dir()
-    print(f"[gen_coverage] Found DPCTL CMake dir: {dpctl_cmake_dir}")
-
-    if args.clean:
-        clean_build_dir(setup_dir)
-
-    cmake_args = make_cmake_args(
-        c_compiler=c_compiler,
-        cxx_compiler=cxx_compiler,
-        dpctl_cmake_dir=dpctl_cmake_dir,
-        verbose=args.verbose,
-    )
-    cmake_args.append("-DDPNP_GENERATE_COVERAGE=ON")
-
     env = os.environ.copy()
 
-    if args.bin_llvm:
-        bin_llvm = args.bin_llvm
+    # If tests-only mode, skip build and jump to test execution
+    if args.tests_only:
+        c_compiler, cxx_compiler = resolve_compilers(
+            args.oneapi,
+            args.c_compiler,
+            args.cxx_compiler,
+            args.compiler_root,
+        )
+        if args.bin_llvm:
+            bin_llvm = args.bin_llvm
+        else:
+            bin_llvm = find_bin_llvm(c_compiler)
+        print(
+            f"[gen_coverage] Path to folder with llvm-cov/llvm-profdata: {bin_llvm}"
+        )
+        if bin_llvm:
+            env["PATH"] = ":".join((env.get("PATH", ""), bin_llvm))
+            env["LLVM_TOOLS_HOME"] = bin_llvm
+
+        print("[gen_coverage] Skipping build (--tests-only mode)")
+        # Jump to test execution below
     else:
-        bin_llvm = find_bin_llvm(c_compiler)
-    print(
-        f"[gen_coverage] Path to folder with llvm-cov/llvm-profdata: {bin_llvm}"
-    )
+        # Normal build mode
+        c_compiler, cxx_compiler = resolve_compilers(
+            args.oneapi,
+            args.c_compiler,
+            args.cxx_compiler,
+            args.compiler_root,
+        )
 
-    if bin_llvm:
-        env["PATH"] = ":".join((env.get("PATH", ""), bin_llvm))
-        env["LLVM_TOOLS_HOME"] = bin_llvm
+        dpctl_cmake_dir = get_dpctl_cmake_dir()
+        print(f"[gen_coverage] Found DPCTL CMake dir: {dpctl_cmake_dir}")
 
-    log_cmake_args(cmake_args, "gen_coverage")
+        if args.clean:
+            clean_build_dir(setup_dir)
 
-    if args.build_step in ["tensor", "both"]:
+        cmake_args = make_cmake_args(
+            c_compiler=c_compiler,
+            cxx_compiler=cxx_compiler,
+            dpctl_cmake_dir=dpctl_cmake_dir,
+            verbose=args.verbose,
+        )
+        cmake_args.append("-DDPNP_GENERATE_COVERAGE=ON")
+
+        if args.bin_llvm:
+            bin_llvm = args.bin_llvm
+        else:
+            bin_llvm = find_bin_llvm(c_compiler)
+        print(
+            f"[gen_coverage] Path to folder with llvm-cov/llvm-profdata: {bin_llvm}"
+        )
+
+        if bin_llvm:
+            env["PATH"] = ":".join((env.get("PATH", ""), bin_llvm))
+            env["LLVM_TOOLS_HOME"] = bin_llvm
+
+        log_cmake_args(cmake_args, "gen_coverage")
+
+    if not args.tests_only and args.build_step in ["tensor", "both"]:
         # Build tensor only to generate Cython headers
         tensor_cmake_args = cmake_args.copy()
         tensor_cmake_args.append("-DDPNP_BUILD_COMPONENTS=TENSOR_ONLY")
@@ -214,7 +242,7 @@ def main():
             build_type="Coverage",
         )
 
-    if args.build_step in ["skip-tensor", "both"]:
+    if not args.tests_only and args.build_step in ["skip-tensor", "both"]:
         # Build everything except tensor (assumes tensor headers already exist)
         skip_tensor_cmake_args = cmake_args.copy()
         skip_tensor_cmake_args.append("-DDPNP_BUILD_COMPONENTS=SKIP_TENSOR")
@@ -229,8 +257,10 @@ def main():
         )
         install_editable(setup_dir, env)
 
-    # Only run tests when we have a complete build (skip-tensor or both)
-    if args.run_pytest and args.build_step in ["skip-tensor", "both"]:
+    # Run tests when: tests-only mode OR (run_pytest AND complete build)
+    if args.tests_only or (
+        args.run_pytest and args.build_step in ["skip-tensor", "both"]
+    ):
         env["LLVM_PROFILE_FILE"] = "dpnp_pytest.profraw"
         pytest_cmd = [
             "pytest",
