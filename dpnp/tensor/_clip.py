@@ -272,39 +272,50 @@ def _clip_none(x, val, out, order, _binary_fn):
 
 
 def clip(x, /, min=None, max=None, out=None, order="K"):
-    """clip(x, min=None, max=None, out=None, order="K")
-
+    """
     Clips to the range [`min_i`, `max_i`] for each element `x_i`
     in `x`.
 
-    Args:
-        x (usm_ndarray): Array containing elements to clip.
-            Must be compatible with `min` and `max` according
-            to broadcasting rules.
-        min ({None, Union[usm_ndarray, bool, int, float, complex]}, optional):
-            Array containing minimum values.
-            Must be compatible with `x` and `max` according
-            to broadcasting rules.
-        max ({None, Union[usm_ndarray, bool, int, float, complex]}, optional):
-            Array containing maximum values.
-            Must be compatible with `x` and `min` according
-            to broadcasting rules.
-        out ({None, usm_ndarray}, optional):
-            Output array to populate.
-            Array must have the correct shape and the expected data type.
-        order ("C","F","A","K", optional):
-            Memory layout of the newly output array, if parameter `out` is
-            `None`.
-            Default: "K".
+    Parameters
+    ----------
+    x : usm_ndarray
+        Array containing elements to clip.
+        Must be compatible with `min` and `max` according
+        to broadcasting rules.
+    min : {None, usm_ndarray, bool, int, float, complex}, optional
+        Array containing minimum values.
+        Must be compatible with `x` and `max` according
+        to broadcasting rules.
 
-    Returns:
-        usm_ndarray:
-            An array with elements clipped to the range [`min`, `max`].
-            The returned array has the same data type as `x`.
+        Default: ``None``.
+    max : {None, usm_ndarray, bool, int, float, complex}, optional
+        Array containing maximum values.
+        Must be compatible with `x` and `min` according
+        to broadcasting rules.
+
+        Default: ``None``.
+    out : {None, usm_ndarray}, optional
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+
+        Default: ``None``.
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is
+        `None`.
+
+        Default: ``"K"``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array with elements clipped to the range [`min`, `max`].
+        The returned array has the same data type as `x`.
+
     """
+
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
-            "Expected `x` to be of dpctl.tensor.usm_ndarray type, got "
+            "Expected `x` to be of dpnp.tensor.usm_ndarray type, got "
             f"{type(x)}"
         )
     if order not in ["K", "C", "F", "A"]:
