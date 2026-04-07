@@ -26,15 +26,14 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <sstream>
 #include <stdexcept>
 
 #include <pybind11/pybind11.h>
 
-// dpnp extension infrastructure
+// utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor validation and utility headers
+// dpctl tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
@@ -42,19 +41,13 @@
 #include "gemv.hpp"
 #include "types_matrix.hpp"
 
+namespace dpnp::extensions::sparse
+{
 namespace mkl_sparse = oneapi::mkl::sparse;
 namespace py         = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
 using ext::common::init_dispatch_table;
-
-namespace dpnp::extensions::sparse
-{
-
-// ---------------------------------------------------------------------------
-// Dispatch table: [value_type_id][index_type_id] -> impl function pointer
-// Mirrors the 2-D table pattern of blas/gemm.cpp.
-// ---------------------------------------------------------------------------
 
 typedef sycl::event (*gemv_impl_fn_ptr_t)(
     sycl::queue &,
@@ -73,11 +66,6 @@ typedef sycl::event (*gemv_impl_fn_ptr_t)(
 
 static gemv_impl_fn_ptr_t
     gemv_dispatch_table[dpctl_td_ns::num_types][dpctl_td_ns::num_types];
-
-
-// ---------------------------------------------------------------------------
-// Typed implementation — one instantiation per (Tv, Ti) pair
-// ---------------------------------------------------------------------------
 
 template <typename Tv, typename Ti>
 static sycl::event
@@ -114,8 +102,6 @@ gemv_impl(sycl::queue                      &exec_q,
     try {
         mkl_sparse::init_matrix_handle(&spmat);
 
-        // oneMKL 2025-2 API: set_csr_data now requires explicit nnz and uses
-        // `spmat` nomenclature. The old form without nnz is deprecated.
         auto ev_set = mkl_sparse::set_csr_data(
             exec_q, spmat,
             num_rows, num_cols, nnz,
@@ -155,11 +141,6 @@ gemv_impl(sycl::queue                      &exec_q,
     return gemv_ev;
 }
 
-
-// ---------------------------------------------------------------------------
-// Python-facing entry point
-// ---------------------------------------------------------------------------
-
 std::pair<sycl::event, sycl::event>
 sparse_gemv(sycl::queue                           &exec_q,
             const int                              trans,
@@ -175,13 +156,11 @@ sparse_gemv(sycl::queue                           &exec_q,
             const std::int64_t                     nnz,
             const std::vector<sycl::event>        &depends)
 {
-    // 1. ndim checks
     if (x.get_ndim() != 1)
         throw py::value_error("sparse_gemv: x must be a 1-D array.");
     if (y.get_ndim() != 1)
         throw py::value_error("sparse_gemv: y must be a 1-D array.");
 
-    // 2. Queue compatibility
     if (!dpctl::utils::queues_are_compatible(
             exec_q, {row_ptr.get_queue(), col_ind.get_queue(),
                      values.get_queue(), x.get_queue(), y.get_queue()}))
@@ -189,19 +168,16 @@ sparse_gemv(sycl::queue                           &exec_q,
             "sparse_gemv: USM allocations are not compatible with the "
             "execution queue.");
 
-    // 3. Memory overlap: x and y must not alias
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
     if (overlap(x, y))
         throw py::value_error(
             "sparse_gemv: input array x and output array y are overlapping "
             "segments of memory.");
 
-    // 4. Output writability and size
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(y);
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
         y, static_cast<std::size_t>(num_rows));
 
-    // 5. Map trans integer to oneMKL enum
     oneapi::mkl::transpose mkl_trans;
     switch (trans) {
         case 0: mkl_trans = oneapi::mkl::transpose::nontrans;  break;
@@ -212,7 +188,6 @@ sparse_gemv(sycl::queue                           &exec_q,
                 "sparse_gemv: trans must be 0 (N), 1 (T), or 2 (C)");
     }
 
-    // 6. Dispatch table lookup
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     const int val_id = array_types.typenum_to_lookup_id(values.get_typenum());
     const int idx_id = array_types.typenum_to_lookup_id(row_ptr.get_typenum());
@@ -236,11 +211,6 @@ sparse_gemv(sycl::queue                           &exec_q,
     return std::make_pair(args_ev, gemv_ev);
 }
 
-
-// ---------------------------------------------------------------------------
-// Factory and dispatch table initialisation
-// ---------------------------------------------------------------------------
-
 template <typename fnT, typename Tv, typename Ti>
 struct GemvContigFactory
 {
@@ -258,5 +228,4 @@ void init_sparse_gemv_dispatch_table(void)
     init_dispatch_table<gemv_impl_fn_ptr_t, GemvContigFactory>(
         gemv_dispatch_table);
 }
-
 } // namespace dpnp::extensions::sparse

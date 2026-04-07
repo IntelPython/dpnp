@@ -37,6 +37,7 @@ pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 
 if(_dpnp_sycl_targets)
+    # make fat binary
     target_compile_options(
         ${python_module_name}
         PRIVATE ${_dpnp_sycl_target_compile_options}
@@ -45,7 +46,9 @@ if(_dpnp_sycl_targets)
 endif()
 
 if(WIN32)
-    if(${CMAKE_VERSION} VERSION_LESS "3.27")
+  if(${CMAKE_VERSION} VERSION_LESS "3.27")
+        # this is a work-around for target_link_options inserting option after -link option, cause
+        # linker to ignore it.
         set(CMAKE_CXX_LINK_FLAGS
             "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel"
         )
@@ -62,13 +65,11 @@ target_include_directories(
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../common
 )
 
+# treat below headers as system to suppress the warnings there during the build
 target_include_directories(
     ${python_module_name}
     SYSTEM
-    PRIVATE
-        ${SYCL_INCLUDE_DIR}
-        ${Dpctl_INCLUDE_DIRS}
-        ${Dpctl_TENSOR_INCLUDE_DIR}
+    PRIVATE ${SYCL_INCLUDE_DIR} ${Dpctl_INCLUDE_DIRS} ${Dpctl_TENSOR_INCLUDE_DIR}
 )
 
 if(WIN32)

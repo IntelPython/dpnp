@@ -26,9 +26,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 //
-// Defines the dpnp.backend._sparse_impl pybind11 extension module.
-// Provides oneMKL sparse BLAS operations on CSR matrices over dpctl USM arrays.
-// Equivalent role to _cusparse for the SYCL/oneMKL backend.
+// This file defines functions of dpnp.backend._sparse_impl extensions
 //
 //*****************************************************************************
 
@@ -42,7 +40,7 @@ namespace py = pybind11;
 
 static void init_dispatch_vectors_tables(void)
 {
-    sparse_ns::init_sparse_gemv_dispatch_vector();
+    sparse_ns::init_sparse_gemv_dispatch_table();
 }
 
 PYBIND11_MODULE(_sparse_impl, m)
@@ -52,13 +50,6 @@ PYBIND11_MODULE(_sparse_impl, m)
     using arrayT     = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
 
-    // ------------------------------------------------------------------
-    // _sparse_gemv — CSR SpMV:  y = alpha * op(A) * x + beta * y
-    //
-    // Equivalent to _cusparse.spMV_make_fast_matvec for the SYCL stack.
-    // Backed by oneMKL sparse::gemv with set_csr_data + optimize_gemv so
-    // matrix-handle analysis is amortised across repeated calls.
-    // ------------------------------------------------------------------
     {
         m.def(
             "_sparse_gemv",
@@ -113,9 +104,6 @@ PYBIND11_MODULE(_sparse_impl, m)
             py::arg("depends") = py::list());
     }
 
-    // ------------------------------------------------------------------
-    // Runtime query: which sparse library backend is active
-    // ------------------------------------------------------------------
     {
         m.def(
             "_using_onemath",

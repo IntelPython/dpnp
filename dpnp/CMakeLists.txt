@@ -100,6 +100,7 @@ add_subdirectory(backend/extensions/statistics)
 add_subdirectory(backend/extensions/ufunc)
 add_subdirectory(backend/extensions/vm)
 add_subdirectory(backend/extensions/window)
+add_subdirectory(backend/extensions/sparse)
 
 add_subdirectory(dpnp_algo)
 add_subdirectory(dpnp_utils)
