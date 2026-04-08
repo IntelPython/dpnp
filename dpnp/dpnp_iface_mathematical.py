@@ -55,10 +55,6 @@ import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_elementwise_impl as ti
 import dpnp.tensor._type_utils as dtu
-from dpnp.tensor._numpy_helper import (
-    normalize_axis_index,
-    normalize_axis_tuple,
-)
 
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPI0,
@@ -84,6 +80,10 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
+from .tensor._numpy_helper import (
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 
 def _get_max_min(dtype):

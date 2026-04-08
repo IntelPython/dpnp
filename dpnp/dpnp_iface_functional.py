@@ -44,8 +44,8 @@ it contains:
 import dpnp
 
 # pylint: disable=no-name-in-module
-from dpnp.dpnp_utils import get_usm_allocations
-from dpnp.tensor._numpy_helper import (
+from .dpnp_utils import get_usm_allocations
+from .tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
 )

@@ -53,7 +53,6 @@ import dpnp
 # pylint: disable=no-name-in-module
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
-from dpnp.tensor._device import normalize_queue_device
 
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
@@ -61,6 +60,7 @@ from .dpnp_utils import (
     map_dtype_to_device,
     use_origin_backend,
 )
+from .tensor._device import normalize_queue_device
 
 
 def are_same_logical_tensors(ar1, ar2):

@@ -28,7 +28,7 @@ dpnp_pytest.*
 example3
 
 *dpnp_backend*
-dpnp/include/
+dpnp/include/dpnp/tensor/*.h
 dpnp/**/*.cpython*.so
 dpnp/**/*.pyd
 *~

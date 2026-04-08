@@ -50,7 +50,7 @@ option(
 )
 option(
     DPNP_TENSOR_OFFLOAD_COMPRESS
-    "Build using offload section compression feature of DPC++ to reduce \
+    "Build dpnp tensor using offload section compression feature of DPC++ to reduce \
 size of shared object with offloading sections"
     OFF
 )
