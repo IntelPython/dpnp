@@ -43,6 +43,7 @@ import dpnp
 import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
 from dpnp.dpnp_array import dpnp_array
+from dpnp.tensor import get_coerced_usm_type, get_execution_queue
 
 cimport cpython
 cimport cython
@@ -153,7 +154,7 @@ def call_origin(function, *args, **kwargs):
         kwargx = convert_item(kwarg)
         kwargs_new[key] = kwargx
 
-    exec_q = dpu.get_execution_queue(alloc_queues)
+    exec_q = get_execution_queue(alloc_queues)
     if exec_q is None:
         exec_q = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue)
     # print(f"DPNP call_origin(): backend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
@@ -221,7 +222,7 @@ def _get_coerced_usm_type(objects):
     elif len(types_in_use) == 1:
         return types_in_use[0]
 
-    common_usm_type = dpu.get_coerced_usm_type(types_in_use)
+    common_usm_type = get_coerced_usm_type(types_in_use)
     if common_usm_type is None:
         raise ValueError("Input arrays must have coerced USM types")
     return common_usm_type
@@ -234,7 +235,7 @@ def _get_common_allocation_queue(objects):
     elif len(queues_in_use) == 1:
         return queues_in_use[0]
 
-    common_queue = dpu.get_execution_queue(queues_in_use)
+    common_queue = get_execution_queue(queues_in_use)
     if common_queue is None:
         raise ValueError("Input arrays must be allocated on the same SYCL queue")
     return common_queue
@@ -401,13 +402,13 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
     array1_obj = x1.get_array()
     array2_obj = x2.get_array()
 
-    common_usm_type = dpctl.utils.get_coerced_usm_type((array1_obj.usm_type, array2_obj.usm_type))
+    common_usm_type = dpnp.tensor.get_coerced_usm_type((array1_obj.usm_type, array2_obj.usm_type))
     if common_usm_type is None:
         raise ValueError(
             "could not recognize common USM type for inputs of USM types {} and {}"
             "".format(array1_obj.usm_type, array2_obj.usm_type))
 
-    common_sycl_queue = dpu.get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
+    common_sycl_queue = get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
     if common_sycl_queue is None:
         raise ValueError(
             "could not recognize common SYCL queue for inputs in SYCL queues {} and {}"

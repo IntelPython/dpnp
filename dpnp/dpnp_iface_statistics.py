@@ -670,7 +670,7 @@ def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad, rdtype):
     a_casted = dpnp.asarray(a, dtype=supported_dtype, order="C")
     v_casted = dpnp.asarray(v, dtype=supported_dtype, order="C")
 
-    usm_type = dpu.get_coerced_usm_type([a_casted.usm_type, v_casted.usm_type])
+    usm_type = dpt.get_coerced_usm_type([a_casted.usm_type, v_casted.usm_type])
     out_size = l_pad + r_pad + a_casted.size - v_casted.size + 1
     # out type is the same as input type
     out = dpnp.empty_like(a_casted, shape=out_size, usm_type=usm_type)

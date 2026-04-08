@@ -32,9 +32,9 @@ from dpctl import (
     SyclQueueCreationError,
 )
 from dpctl.memory import USMAllocationError
-from dpctl.utils import ExecutionPlacementError
 from numpy.exceptions import AxisError
 
+from dpnp.tensor._compute_follows_data import ExecutionPlacementError
 from dpnp.tensor._dlpack import DLPackCreationError
 
 __all__ = [

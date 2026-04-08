@@ -270,10 +270,10 @@ def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
     if not dpnp.is_supported_array_type(arg):
         arg = dpnp.asarray(arg, usm_type=usm_type, sycl_queue=ary_sycl_queue)
     else:
-        usm_type = dpu.get_coerced_usm_type([usm_type, arg.usm_type])
+        usm_type = dpt.get_coerced_usm_type([usm_type, arg.usm_type])
         # check that arrays have the same allocation queue
-        if dpu.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
-            raise dpu.ExecutionPlacementError(
+        if dpt.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
+            raise dpt.ExecutionPlacementError(
                 f"ary and {arg_name} must be allocated on the same SYCL queue"
             )
 
@@ -304,7 +304,7 @@ def _validate_interp_param(param, name, exec_q, usm_type, dtype=None):
                 f"a {name} value must be 0-dimensional, "
                 f"but got {param.ndim}-dim"
             )
-        if dpu.get_execution_queue([exec_q, param.sycl_queue]) is None:
+        if dpt.get_execution_queue([exec_q, param.sycl_queue]) is None:
             raise ValueError(
                 f"input arrays and {name} must be allocated "
                 "on the same SYCL queue"
@@ -2721,7 +2721,7 @@ def gradient(f, *varargs, axis=None, edge_order=1):
         if dpnp.isscalar(ax_dx):
             usm_type = f.usm_type
         else:
-            usm_type = dpu.get_coerced_usm_type([f.usm_type, ax_dx.usm_type])
+            usm_type = dpt.get_coerced_usm_type([f.usm_type, ax_dx.usm_type])
         out = dpnp.empty_like(f, dtype=otype, usm_type=usm_type)
 
         # spacing for the current axis

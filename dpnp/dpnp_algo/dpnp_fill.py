@@ -49,8 +49,8 @@ def dpnp_fill(arr, val):
         val = dpnp.get_usm_ndarray(val)
         if val.shape != ():
             raise ValueError("`val` must be a scalar or 0D-array")
-        if dpu.get_execution_queue((exec_q, val.sycl_queue)) is None:
-            raise dpu.ExecutionPlacementError(
+        if dpt.get_execution_queue((exec_q, val.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input arrays have incompatible queues."
             )
         a_val = dpt.astype(val, arr.dtype)

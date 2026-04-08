@@ -130,8 +130,8 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
                 f"got {out.dtype}"
             )
 
-        if dpu.get_execution_queue((q, out.sycl_queue)) is None:
-            raise dpu.ExecutionPlacementError(
+        if dpt.get_execution_queue((q, out.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 
@@ -292,8 +292,8 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
                 f"Output array of type {x.dtype} is needed, " f"got {out.dtype}"
             )
 
-        if dpu.get_execution_queue((q, out.sycl_queue)) is None:
-            raise dpu.ExecutionPlacementError(
+        if dpt.get_execution_queue((q, out.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 
