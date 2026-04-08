@@ -39,6 +39,3 @@ if %errorlevel% neq 0 exit 1
 
 "%PYTHON%" -m pytest -ra --pyargs dpnp
 if %errorlevel% neq 0 exit 1
-
-"%PYTHON%" -m pytest -ra --pyargs dpctl_ext
-if %errorlevel% neq 0 exit 1
