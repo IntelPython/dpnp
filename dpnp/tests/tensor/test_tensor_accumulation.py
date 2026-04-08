@@ -28,11 +28,10 @@
 
 from random import randrange
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import pytest
 from dpctl.utils import ExecutionPlacementError
+
+import dpnp.tensor as dpt
 
 from .helper import (
     get_queue_or_skip,

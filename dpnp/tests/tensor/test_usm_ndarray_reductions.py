@@ -28,14 +28,13 @@
 
 from random import randrange
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import numpy as np
 import pytest
 from dpctl.utils import ExecutionPlacementError
-from dpctl_ext.tensor._tensor_impl import default_device_index_type
 from numpy.testing import assert_allclose
+
+import dpnp.tensor as dpt
+from dpnp.tensor._tensor_impl import default_device_index_type
 
 from .helper import (
     get_queue_or_skip,

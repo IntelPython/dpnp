@@ -28,5 +28,5 @@
 
 """
 Collection of test and utility files for testing elementwise operations
-over :class:`dpctl.tensor.usm_ndarray`.
+over :class:`dpnp.tensor.usm_ndarray`.
 """

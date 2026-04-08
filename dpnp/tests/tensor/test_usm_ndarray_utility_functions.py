@@ -28,13 +28,12 @@
 
 from random import randrange
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import numpy as np
 import pytest
-from dpctl_ext.tensor._numpy_helper import AxisError
 from numpy.testing import assert_array_equal, assert_equal
+
+import dpnp.tensor as dpt
+from dpnp.tensor._numpy_helper import AxisError
 
 from .helper import (
     get_queue_or_skip,

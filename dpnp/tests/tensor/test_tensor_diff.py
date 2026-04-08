@@ -28,13 +28,12 @@
 
 from math import prod
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import pytest
 from dpctl.utils import ExecutionPlacementError
-from dpctl_ext.tensor._type_utils import _to_device_supported_dtype
 from numpy.testing import assert_raises_regex
+
+import dpnp.tensor as dpt
+from dpnp.tensor._type_utils import _to_device_supported_dtype
 
 from .helper import (
     get_queue_or_skip,

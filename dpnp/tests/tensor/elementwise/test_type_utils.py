@@ -27,13 +27,11 @@
 # *****************************************************************************
 
 import dpctl
-
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._type_utils as tu
 import numpy as np
 import pytest
+
+import dpnp.tensor as dpt
+import dpnp.tensor._type_utils as tu
 
 from .utils import (
     _all_dtypes,

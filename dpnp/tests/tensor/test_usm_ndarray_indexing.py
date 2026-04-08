@@ -27,16 +27,14 @@
 # *****************************************************************************
 
 import dpctl
-
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_impl as ti
 import numpy as np
 import pytest
 from dpctl.utils import ExecutionPlacementError
-from dpctl_ext.tensor._copy_utils import _take_multi_index
 from numpy.testing import assert_array_equal
+
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_impl as ti
+from dpnp.tensor._copy_utils import _take_multi_index
 
 from .helper import (
     get_queue_or_skip,
@@ -1899,7 +1897,7 @@ def check__put_multi_index_validation(fn):
 
 
 def test__copy_utils():
-    import dpctl_ext.tensor._copy_utils as cu
+    import dpnp.tensor._copy_utils as cu
 
     get_queue_or_skip()
 

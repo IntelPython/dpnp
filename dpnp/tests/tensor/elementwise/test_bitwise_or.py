@@ -26,12 +26,11 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import numpy as np
 import pytest
-from dpctl_ext.tensor._type_utils import _can_cast
+
+import dpnp.tensor as dpt
+from dpnp.tensor._type_utils import _can_cast
 
 from ..helper import (
     get_queue_or_skip,

@@ -26,7 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Helper module for dpctl/tests"""
+"""Helper module for tensor tests"""
 
 from ._helper import (
     create_invalid_capsule,

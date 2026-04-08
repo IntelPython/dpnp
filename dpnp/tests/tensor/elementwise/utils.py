@@ -28,9 +28,7 @@
 
 import dpctl
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor._type_utils as tu
+import dpnp.tensor._type_utils as tu
 
 _integral_dtypes = [
     "i1",

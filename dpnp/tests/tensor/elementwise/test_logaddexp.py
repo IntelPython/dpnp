@@ -30,13 +30,11 @@ import ctypes
 import re
 
 import dpctl
-
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
+
+import dpnp.tensor as dpt
 
 from ..helper import (
     get_queue_or_skip,

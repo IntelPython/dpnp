@@ -30,14 +30,12 @@ import collections
 import ctypes
 
 import dpctl
-
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._dlpack as _dlp
-import dpctl_ext.tensor._usmarray as dpt_arr
 import numpy as np
 import pytest
+
+import dpnp.tensor as dpt
+import dpnp.tensor._dlpack as _dlp
+import dpnp.tensor._usmarray as dpt_arr
 
 from .helper import (
     get_queue_or_skip,

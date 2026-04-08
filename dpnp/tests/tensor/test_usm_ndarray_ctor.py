@@ -32,14 +32,12 @@ from math import prod
 
 import dpctl
 import dpctl.memory as dpm
-
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import numpy as np
 import pytest
-from dpctl_ext.tensor import Device
 from numpy.testing import assert_raises_regex
+
+import dpnp.tensor as dpt
+from dpnp.tensor import Device
 
 from .helper import (
     get_queue_or_skip,

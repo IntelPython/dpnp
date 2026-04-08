@@ -29,15 +29,14 @@
 import ctypes
 import itertools
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import numpy as np
 import pytest
 from dpctl.utils import ExecutionPlacementError
-from dpctl_ext.tensor._search_functions import _where_result_type
-from dpctl_ext.tensor._type_utils import _all_data_types
 from numpy.testing import assert_array_equal
+
+import dpnp.tensor as dpt
+from dpnp.tensor._search_functions import _where_result_type
+from dpnp.tensor._type_utils import _all_data_types
 
 from .helper import (
     get_queue_or_skip,

@@ -27,12 +27,10 @@
 # *****************************************************************************
 
 import dpctl
-
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import pytest
-from dpctl_ext.tensor._tensor_impl import (
+
+import dpnp.tensor as dpt
+from dpnp.tensor._tensor_impl import (
     default_device_complex_type,
     default_device_fp_type,
     default_device_index_type,

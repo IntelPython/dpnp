@@ -63,9 +63,7 @@ def get_queue_or_skip(args=()):
 
 
 def skip_if_dtype_not_supported(dt, q_or_dev):
-    # TODO: revert to `import dpctl.tensor...`
-    # when dpnp fully migrates dpctl/tensor
-    import dpctl_ext.tensor as dpt
+    import dpnp.tensor as dpt
 
     dt = dpt.dtype(dt)
     if type(q_or_dev) is dpctl.SyclQueue:
