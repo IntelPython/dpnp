@@ -30,8 +30,8 @@ from __future__ import annotations
 
 """Sparse linear algebra interface for DPNP.
 
-This module provides a subset of :mod:`scipy.sparse.linalg` and
-:mod:`cupyx.scipy.sparse.linalg` functionality on top of DPNP arrays.
+This module provides a subset of :mod:`scipy.sparse.linalg`
+ functionality on top of DPNP arrays.
 
 The initial implementation focuses on the :class:`LinearOperator` interface
 and a small set of Krylov solvers (``cg``, ``gmres``, ``minres``).

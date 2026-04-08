@@ -1,16 +1,17 @@
-# Copyright (c) 2023 - 2025, Intel Corporation
+# *****************************************************************************
+# Copyright (c) 2025, Intel Corporation
+# All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice,
-#    this list of conditions and the following disclaimer.
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-# 3. Neither the name of Intel Corporation nor the names of its contributors
-#    may be used to endorse or promote products derived from this software
-#    without specific prior written permission.
+# - Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
+# - Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+# - Neither the name of the copyright holder nor the names of its contributors
+#   may be used to endorse or promote products derived from this software
+#   without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -21,8 +22,9 @@
 # SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
 # INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+# THE POSSIBILITY OF SUCH DAMAGE.
+# *****************************************************************************
 
 """Iterative sparse linear solvers for dpnp -- pure GPU/SYCL implementation.
 
@@ -35,10 +37,6 @@ Solver coverage
 cg     : Conjugate Gradient (Hermitian positive definite)
 gmres  : Restarted GMRES (general non-symmetric)
 minres : MINRES (symmetric possibly indefinite)
-
-All signatures match cupyx.scipy.sparse.linalg (CuPy v14.0.1) and
-scipy.sparse.linalg, using ``rtol`` as the primary tolerance keyword
-(``tol`` is accepted as a deprecated alias for backward compatibility).
 
 SpMV fast-path
 --------------
@@ -67,8 +65,10 @@ from __future__ import annotations
 
 from typing import Callable, Optional, Tuple
 
-import numpy as _np
-import dpnp as _dpnp
+import numpy
+import dpnp
+import dpnp.backend.extensions.blas._blas_impl as bi
+import dpctl.utils as dpu
 
 from ._interface import IdentityOperator, LinearOperator, aslinearoperator
 
@@ -91,9 +91,9 @@ _SUPPORTED_DTYPES = frozenset("fdFD")
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-def _np_dtype(dp_dtype) -> _np.dtype:
-    """Normalise any dtype-like (dpnp type, numpy type, string) to np.dtype."""
-    return _np.dtype(dp_dtype)
+def _np_dtype(dp_dtype) -> numpy.dtype:
+    """Normalise any dtype-like (dpnp type, numpy type, string) to numpy.dtype."""
+    return numpy.dtype(dp_dtype)
 
 
 def _check_dtype(dtype, name: str) -> None:
@@ -111,18 +111,15 @@ class _CachedSpMV:
     in __init__. Subsequent calls to __call__ only invoke sparse::gemv,
     paying no analysis overhead. The handle is released in __del__.
 
-    Only trans=0 (non-transposed) is exposed, the adjoint path uses a
-    separate _CachedSpMV built against trans=2.
-
     Parameters
     ----------
     A : dpnp CSR sparse matrix
-    trans : int 0=N, 1=T, 2=C (fixed at construction)
+    trans : int  0=N, 1=T, 2=C  (fixed at construction)
     """
 
     __slots__ = ("_A", "_exec_q", "_handle", "_trans",
-             "_nrows", "_ncols", "_nnz", "_out_size", "_dtype",
-             "_val_type_id")
+                 "_nrows", "_ncols", "_nnz", "_out_size", "_in_size",
+                 "_dtype", "_val_type_id")
 
     def __init__(self, A, trans: int = 0):
         self._A = A  # keep alive so USM pointers stay valid
@@ -132,14 +129,24 @@ class _CachedSpMV:
         self._nnz = int(A.data.shape[0])
         self._exec_q = A.data.sycl_queue
         self._dtype = A.data.dtype
-        # Output length depends on transpose mode.
-        self._out_size = self._nrows if self._trans == 0 else self._ncols
+
+        # Output and input lengths depend on transpose mode.
+        # For trans=0 (N): y has nrows, x has ncols.
+        # For trans=1/2 (T/C): y has ncols, x has nrows.
+        if self._trans == 0:
+            self._out_size = self._nrows
+            self._in_size = self._ncols
+        else:
+            self._out_size = self._ncols
+            self._in_size = self._nrows
+
         self._handle = None
+        self._val_type_id = -1
 
         # init_matrix_handle + set_csr_data + optimize_gemv (once).
         # We must wait on optimize_gemv before any compute call can run;
         # this is the only place __init__/__call__ blocks.
-        handle, ev = _si._sparse_gemv_init(
+        handle, val_type_id, ev = _si._sparse_gemv_init(
             self._exec_q,
             self._trans,
             A.indptr,
@@ -152,10 +159,11 @@ class _CachedSpMV:
         )
         ev.wait()
         self._handle = handle
+        self._val_type_id = val_type_id
 
-    def __call__(self, x: _dpnp.ndarray) -> _dpnp.ndarray:
+    def __call__(self, x: dpnp.ndarray) -> dpnp.ndarray:
         """y = op(A) * x -- only sparse::gemv fires, fully async."""
-        y = _dpnp.empty(self._out_size, dtype=self._dtype,
+        y = dpnp.empty(self._out_size, dtype=self._dtype,
                         sycl_queue=self._exec_q)
         # Do NOT wait on the event -- subsequent dpnp ops on the same
         # queue will serialize behind it automatically. Blocking here
@@ -163,6 +171,7 @@ class _CachedSpMV:
         _si._sparse_gemv_compute(
             self._exec_q,
             self._handle,
+            self._val_type_id,
             self._trans,
             1.0,
             x,
@@ -175,12 +184,15 @@ class _CachedSpMV:
         return y
 
     def __del__(self):
-        if self._handle is not None and _si is not None:
+        # Guard against partial construction: _handle may not be set if
+        # __init__ raised before the assignment.
+        handle = getattr(self, "_handle", None)
+        if handle is not None and _si is not None:
             try:
-                _si._sparse_gemv_release(self._exec_q, self._handle, [])
+                _si._sparse_gemv_release(self._exec_q, handle, [])
             except Exception:
                 pass
-        self._handle = None
+            self._handle = None
 
 class _CachedSpMVPair:
     """Holds forward and (lazily built) adjoint cached SpMV handles."""
@@ -198,8 +210,8 @@ class _CachedSpMVPair:
         if self._adjoint is None:
             # Build conjtrans handle on first use. For real dtypes
             # this is equivalent to trans=1.
-            is_cpx = _dpnp.issubdtype(self._A.data.dtype,
-                                      _dpnp.complexfloating)
+            is_cpx = dpnp.issubdtype(self._A.data.dtype,
+                                      dpnp.complexfloating)
             self._adjoint = _CachedSpMV(self._A, trans=2 if is_cpx else 1)
         return self._adjoint(x)
 
@@ -229,7 +241,7 @@ def _make_fast_matvec(A):
     try:
         return _CachedSpMVPair(A)
     except Exception:
-        return None        
+        return None
 
 def _make_system(A, M, x0, b):
     """Validate and prepare (A_op, M_op, x, b, dtype) on device.
@@ -241,11 +253,11 @@ def _make_system(A, M, x0, b):
     {f,d,F,D}; otherwise b.dtype is promoted to float64 (real) or
     complex128 (complex).
     """
-    if not isinstance(b, _dpnp.ndarray):
+    if not isinstance(b, dpnp.ndarray):
         raise TypeError(
             f"b must be a dpnp.ndarray, got {type(b).__name__}"
         )
-    if x0 is not None and not isinstance(x0, _dpnp.ndarray):
+    if x0 is not None and not isinstance(x0, dpnp.ndarray):
         raise TypeError(
             f"x0 must be a dpnp.ndarray or None, got {type(x0).__name__}"
         )
@@ -264,16 +276,16 @@ def _make_system(A, M, x0, b):
     # Dtype promotion: prefer A.dtype; fall back via b.dtype.
     if A_op.dtype is not None and _np_dtype(A_op.dtype).char in _SUPPORTED_DTYPES:
         dtype = A_op.dtype
-    elif _dpnp.issubdtype(b.dtype, _dpnp.complexfloating):
-        dtype = _dpnp.complex128
+    elif dpnp.issubdtype(b.dtype, dpnp.complexfloating):
+        dtype = dpnp.complex128
     else:
-        dtype = _dpnp.float64
+        dtype = dpnp.float64
 
     b = b.astype(dtype, copy=False)
     _check_dtype(b.dtype, "b")
 
     if x0 is None:
-        x = _dpnp.zeros(n, dtype=dtype, sycl_queue=b.sycl_queue)
+        x = dpnp.zeros(n, dtype=dtype, sycl_queue=b.sycl_queue)
     else:
         x = x0.astype(dtype, copy=True).reshape(-1)
         if x.shape[0] != n:
@@ -330,7 +342,7 @@ def _get_atol(b_norm: float, atol, rtol: float) -> float:
 def cg(
     A,
     b,
-    x0: Optional[_dpnp.ndarray] = None,
+    x0: Optional[dpnp.ndarray] = None,
     *,
     rtol: float = 1e-5,
     tol: Optional[float] = None,
@@ -338,7 +350,7 @@ def cg(
     M=None,
     callback: Optional[Callable] = None,
     atol=None,
-) -> Tuple[_dpnp.ndarray, int]:
+) -> Tuple[dpnp.ndarray, int]:
     """Conjugate Gradient -- pure dpnp/oneMKL, Hermitian positive definite A.
 
     Parameters
@@ -363,53 +375,43 @@ def cg(
 
     A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
     n = b.shape[0]
-    queue = b.sycl_queue
 
-    # Real dtype for norms/inner products (residual metrics are real
-    # even in the complex case).
-    real_dtype = _dpnp.real(b[:1]).dtype
+    bnrm = dpnp.linalg.norm(b)
+    bnrm_host = float(bnrm)
+    if bnrm_host == 0.0:
+        return dpnp.zeros_like(b), 0
 
-    bnrm = _dpnp.linalg.norm(b)               # 0-D dpnp
-    # Early-exit on zero RHS still needs one sync — unavoidable.
-    if float(bnrm) == 0.0:
-        return _dpnp.zeros_like(b), 0
-
-    atol_eff_host = _get_atol(float(bnrm), atol=atol, rtol=rtol)
+    atol_eff_host = _get_atol(bnrm_host, atol=atol, rtol=rtol)
 
     if maxiter is None:
         maxiter = n * 10
 
-    rhotol = float(_np.finfo(_np_dtype(dtype)).eps ** 2)
+    rhotol = float(numpy.finfo(_np_dtype(dtype)).eps ** 2)
 
     r = b - A_op.matvec(x) if x0 is not None else b.copy()
     z = M_op.matvec(r)
     p = z.copy()
 
     # rz is kept as a 0-D dpnp array on device.
-    rz = _dpnp.real(_dpnp.vdot(r, z))
+    rz = dpnp.real(dpnp.vdot(r, z))
 
-    # Single sync for the initial breakdown check — cheap once.
-    if float(_dpnp.abs(rz)) < rhotol:
+    # Single sync for the initial breakdown check.
+    if float(dpnp.abs(rz)) < rhotol:
         return x, 0
 
-    # Convergence is checked every `check_every` iterations to amortize
-    # the device->host sync cost. Set to 1 to match SciPy exactly.
-    check_every = 1
     info = maxiter
 
     for k in range(maxiter):
         # Convergence check (sync).
-        if k % check_every == 0:
-            rnorm = _dpnp.linalg.norm(r)
-            if float(rnorm) <= atol_eff_host:
-                info = 0
-                break
+        rnorm = dpnp.linalg.norm(r)
+        if float(rnorm) <= atol_eff_host:
+            info = 0
+            break
 
         Ap = A_op.matvec(p)
-        pAp = _dpnp.real(_dpnp.vdot(p, Ap))   # 0-D on device
+        pAp = dpnp.real(dpnp.vdot(p, Ap))   # 0-D on device
 
-        # Breakdown check — needs a sync because it controls flow.
-        if float(_dpnp.abs(pAp)) < rhotol:
+        if float(dpnp.abs(pAp)) < rhotol:
             info = -1
             break
 
@@ -421,9 +423,9 @@ def cg(
             callback(x)
 
         z = M_op.matvec(r)
-        rz_new = _dpnp.real(_dpnp.vdot(r, z))
+        rz_new = dpnp.real(dpnp.vdot(r, z))
 
-        if float(_dpnp.abs(rz_new)) < rhotol:
+        if float(dpnp.abs(rz_new)) < rhotol:
             info = 0
             break
 
@@ -435,418 +437,492 @@ def cg(
 
     return x, int(info)
 
-# ---------------------------------------------------------------------------
-# Restarted GMRES
-# ---------------------------------------------------------------------------
-
 def gmres(
     A,
     b,
-    x0: Optional[_dpnp.ndarray] = None,
+    x0: Optional[dpnp.ndarray] = None,
     *,
     rtol: float = 1e-5,
-    tol: Optional[float] = None,
+    atol: float = 0.0,
     restart: Optional[int] = None,
     maxiter: Optional[int] = None,
     M=None,
     callback: Optional[Callable] = None,
-    atol=None,
     callback_type: Optional[str] = None,
-) -> Tuple[_dpnp.ndarray, int]:
-    """Restarted GMRES -- pure dpnp/oneMKL, general non-symmetric A.
+) -> Tuple[dpnp.ndarray, int]:
+    """Uses Generalized Minimal RESidual iteration to solve ``Ax = b``.
 
     Parameters
     ----------
-    A             : array_like or LinearOperator -- (n, n)
-    b             : array_like -- right-hand side (n,)
-    x0            : array_like, optional
-    rtol          : float -- relative tolerance (default 1e-5)
-    tol           : float, optional -- deprecated alias for rtol
-    restart       : int, optional -- Krylov subspace size (default min(20,n))
-    maxiter       : int, optional -- max outer restart cycles (default max(n,1))
-    M             : LinearOperator or array_like, optional -- preconditioner
-    callback      : callable, optional
-    atol          : float, optional
-    callback_type : {None, 'x', 'pr_norm', 'legacy'}
+    A : LinearOperator, dpnp sparse matrix, or 2-D dpnp.ndarray
+        The real or complex matrix of the linear system, shape (n, n).
+    b : dpnp.ndarray
+        Right-hand side of the linear system, shape (n,) or (n, 1).
+    x0 : dpnp.ndarray, optional
+        Starting guess for the solution.
+    rtol, atol : float
+        Tolerance for convergence: ``||r|| <= max(atol, rtol*||b||)``.
+    restart : int, optional
+        Number of iterations between restarts (default 20). Larger values
+        increase iteration cost but may be necessary for convergence.
+    maxiter : int, optional
+        Maximum number of iterations (default 10*n).
+    M : LinearOperator, dpnp sparse matrix, or 2-D dpnp.ndarray, optional
+        Preconditioner for ``A``; should approximate the inverse of ``A``.
+    callback : callable, optional
+        User-specified function to call on every restart. Called as
+        ``callback(arg)``, where ``arg`` is selected by ``callback_type``.
+    callback_type : {'x', 'pr_norm'}, optional
+        If 'x', the current solution vector is passed to the callback.
+        If 'pr_norm', the relative (preconditioned) residual norm.
+        Default is 'pr_norm' when a callback is supplied.
 
     Returns
     -------
-    x    : dpnp.ndarray
-    info : int  0=converged  >0=iterations used  -1=breakdown
+    x : dpnp.ndarray
+        The (approximate) solution. Note that this is M @ x in the
+        right-preconditioned formulation, matching CuPy's return value.
+    info : int
+        0 if converged; iteration count if maxiter was reached.
+
+    See Also
+    --------
+    scipy.sparse.linalg.gmres
+    cupyx.scipy.sparse.linalg.gmres
     """
-    if tol is not None:
-        rtol = tol
-
-    if callback_type not in (None, "x", "pr_norm", "legacy"):
-        raise ValueError(
-            "callback_type must be None, 'x', 'pr_norm', or 'legacy'"
-        )
-    if callback is not None and callback_type is None:
-        callback_type = "x"
-
     A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
-    n = b.shape[0]
+    matvec = A_op.matvec
+    psolve = M_op.matvec
+
+    n = A_op.shape[0]
+    if n == 0:
+        return dpnp.empty_like(b), 0
+    b_norm = dpnp.linalg.norm(b)
+    if b_norm == 0.0:
+        return b, 0
+    atol = max(float(atol), rtol * float(b_norm))
+
+    if maxiter is None:
+        maxiter = n * 10
+    if restart is None:
+        restart = 20
+    restart = min(int(restart), n)
+
+    if callback_type is None:
+        callback_type = 'pr_norm'
+    if callback_type not in ('x', 'pr_norm'):
+        raise ValueError(f"Unknown callback_type: {callback_type!r}")
+    if callback is None:
+        callback_type = None
+
     queue = b.sycl_queue
-    real_dtype = _dpnp.real(b[:1]).dtype
 
-    bnrm = _dpnp.linalg.norm(b)
-    if float(bnrm) == 0.0:
-        return _dpnp.zeros_like(b), 0
+    # Krylov basis V, Hessenberg H, and RHS e all live on device to
+    # avoid host-device sync overhead (which dominates on Intel GPUs
+    # even for small transfers).  CuPy keeps e on host and solves
+    # lstsq on CPU, but for dpnp we keep everything on device.
+    V = dpnp.empty((n, restart), dtype=dtype, sycl_queue=queue, order='F')
+    H = dpnp.zeros((restart + 1, restart), dtype=dtype,
+                    sycl_queue=queue, order='F')
+    e = dpnp.zeros(restart + 1, dtype=dtype, sycl_queue=queue)
 
-    bnrm_host = float(bnrm)
-    atol_eff = _get_atol(bnrm_host, atol=atol, rtol=rtol)
+    compute_hu = _make_compute_hu(V)
 
-    if restart is None: restart = min(20, n)
-    if maxiter is None: maxiter = max(n, 1)
-    restart = int(restart)
-    maxiter = int(maxiter)
+    iters = 0
+    while True:
+        mx = psolve(x)
+        r = b - matvec(mx)
+        r_norm = dpnp.linalg.norm(r)
 
-    is_cpx = _dpnp.issubdtype(dtype, _dpnp.complexfloating)
-    # Givens rotations are inherently serial and branchy -- keep this
-    # scalar state on host. Only the Krylov basis V and the device
-    # vector w stay on the GPU.
-    H_dtype = _np.complex128 if is_cpx else _np.float64
+        if callback_type == 'x':
+            callback(mx)
+        elif callback_type == 'pr_norm' and iters > 0:
+            callback(r_norm / b_norm)
 
-    rhotol = float(_np.finfo(_np_dtype(dtype)).eps ** 2)
-    total_iters = 0
-    info = maxiter
-
-    for _outer in range(maxiter):
-        r = M_op.matvec(b - A_op.matvec(x))
-        beta_dev = _dpnp.linalg.norm(r)
-        beta = float(beta_dev)
-        if beta == 0.0 or beta <= atol_eff:
-            info = 0
+        if r_norm <= atol or iters >= maxiter:
             break
 
-        # Column-major basis so V[:, j] is contiguous on device.
-        V = _dpnp.zeros((n, restart + 1), dtype=dtype,
-                        sycl_queue=queue, order='F')
-        V[:, 0] = r / beta_dev
+        v = r / r_norm
+        V[:, 0] = v
+        e[0] = r_norm
 
-        H_np = _np.zeros((restart + 1, restart), dtype=H_dtype)
-        cs_np = _np.zeros(restart, dtype=H_dtype)
-        sn_np = _np.zeros(restart, dtype=H_dtype)
-        g_np = _np.zeros(restart + 1, dtype=H_dtype)
-        g_np[0] = beta
-
-        j_final = 0
-        happy = False
-        converged = False
-
+        # Arnoldi iteration
         for j in range(restart):
-            total_iters += 1
-            w = M_op.matvec(A_op.matvec(V[:, j]))
-
-            # --- Classical Gram-Schmidt with one reorthogonalization (CGS2)
-            # CGS2 is numerically equivalent to MGS for orthogonality but
-            # stays fully vectorized -- a single matmul per pass.
-            Vj = V[:, :j + 1]
-
-            # Pass 1
-            h_dp = _dpnp.dot(_dpnp.conj(Vj.T), w)          # on device
-            w = w - _dpnp.dot(Vj, h_dp)                     # on device
-
-            # Pass 2 (reorthogonalization)
-            h2_dp = _dpnp.dot(_dpnp.conj(Vj.T), w)
-            w = w - _dpnp.dot(Vj, h2_dp)
-
-            # Only now pull the combined projection coefficients to host
-            # for the Givens update. h + h2 is the true projection.
-            h_combined_dp = h_dp + h2_dp
-            h_np = h_combined_dp.asnumpy()
-
-            h_j1_dev = _dpnp.linalg.norm(w)
-            h_j1 = float(h_j1_dev)                         # one sync
-
-            H_np[:j + 1, j] = h_np
-            H_np[j + 1, j] = h_j1
-
-            # Apply previous Givens rotations to the new column.
-            for i in range(j):
-                tmp = cs_np[i] * H_np[i, j] + sn_np[i] * H_np[i + 1, j]
-                H_np[i + 1, j] = (-_np.conj(sn_np[i]) * H_np[i, j]
-                                  + cs_np[i] * H_np[i + 1, j])
-                H_np[i, j] = tmp
-
-            h_jj = H_np[j, j]
-            h_j1j = H_np[j + 1, j]
-            denom = _np.sqrt(_np.abs(h_jj) ** 2 + _np.abs(h_j1j) ** 2)
-
-            # Lucky breakdown in the Givens step -- genuine breakdown.
-            if denom < rhotol:
-                info = -1
-                j_final = j
-                break
-
-            cs_np[j] = h_jj / denom
-            sn_np[j] = h_j1j / denom
-            H_np[j, j] = cs_np[j] * h_jj + sn_np[j] * h_j1j
-            H_np[j + 1, j] = 0.0
-            g_np[j + 1] = -_np.conj(sn_np[j]) * g_np[j]
-            g_np[j] = cs_np[j] * g_np[j]
-            res_norm = abs(g_np[j + 1])
-
-            # Happy breakdown: Krylov subspace is invariant.
-            # Solve the current least-squares and exit the inner loop
-            # cleanly -- do NOT try to extend the basis.
-            if h_j1 < rhotol:
-                j_final = j
-                happy = True
-                if res_norm <= atol_eff:
-                    converged = True
-                break
-
-            # Normal convergence from the estimated residual.
-            if res_norm <= atol_eff:
-                j_final = j
-                converged = True
-                break
-
-            # Extend the basis -- only safe when h_j1 is non-tiny.
+            z = psolve(v)
+            u = matvec(z)
+            H[:j + 1, j], u = compute_hu(u, j)
+            H[j + 1, j] = dpnp.linalg.norm(u)
             if j + 1 < restart:
-                V[:, j + 1] = w / h_j1_dev                 # stays on device
+                v = u / H[j + 1, j]
+                V[:, j + 1] = v
 
-            j_final = j
+        # Solve the Hessenberg least-squares H y = e on device.
+        # Tiny problem (~restart x restart), kept on-device to avoid sync.
+        y, *_ = dpnp.linalg.lstsq(H, e, rcond=None)
+        x = x + dpnp.dot(V, y)
+        iters += restart
 
-        # --- Solve the upper-triangular least-squares H y = g on host.
-        k = j_final + 1
-        y_np = _np.zeros(k, dtype=H_dtype)
-        for i in range(k - 1, -1, -1):
-            y_np[i] = g_np[i]
-            for ll in range(i + 1, k):
-                y_np[i] -= H_np[i, ll] * y_np[ll]
-            if abs(H_np[i, i]) < rhotol:
-                y_np[i] = 0.0
-            else:
-                y_np[i] /= H_np[i, i]
+    info = 0
+    if iters >= maxiter and not bool(r_norm <= atol):
+        info = iters
 
-        # Update x = x + V[:, :k] @ y. Push y to device once.
-        y_dev = _dpnp.asarray(y_np, dtype=dtype, sycl_queue=queue)
-        x = x + _dpnp.dot(V[:, :k], y_dev)
-
-        # True residual norm for the outer-loop stop test.
-        res_norm_true = float(
-            _dpnp.linalg.norm(M_op.matvec(b - A_op.matvec(x)))
-        )
-
-        if callback is not None:
-            if callback_type in ("x", "legacy"):
-                callback(x)
-            elif callback_type == "pr_norm":
-                callback(res_norm_true / bnrm_host)
-
-        if res_norm_true <= atol_eff:
-            info = 0
-            break
-
-        if info == -1:          # Givens denom breakdown
-            break
-        if happy:               # happy breakdown -- done regardless
-            if converged:
-                info = 0
-            break
-    else:
-        info = total_iters
-
-    return x, int(info)
-
-# ---------------------------------------------------------------------------
-# MINRES -- Paige-Saunders recurrence, pure dpnp / oneMKL
-# ---------------------------------------------------------------------------
+    return mx, info
 
 def minres(
     A,
     b,
-    x0: Optional[_dpnp.ndarray] = None,
+    x0: Optional[dpnp.ndarray] = None,
     *,
-    shift: float = 0.0,
     rtol: float = 1e-5,
+    shift: float = 0.0,
     tol: Optional[float] = None,
     maxiter: Optional[int] = None,
     M=None,
     callback: Optional[Callable] = None,
+    show: bool = False,
     check: bool = False,
-    atol=None,
-) -> Tuple[_dpnp.ndarray, int]:
-    """MINRES for symmetric (possibly indefinite) A -- pure dpnp/oneMKL.
+) -> Tuple[dpnp.ndarray, int]:
+    """Uses MINimum RESidual iteration to solve ``Ax = b``.
+
+    Solves the symmetric (possibly indefinite) system ``Ax = b`` or,
+    if *shift* is nonzero, ``(A - shift*I)x = b``.  All computation
+    stays on the SYCL device; only scalar recurrence coefficients and
+    norms are transferred to the host for branching.
+
+    The algorithm follows SciPy's MINRES (Paige & Saunders, 1975)
+    line-for-line.  Three host syncs per iteration are unavoidable:
+    ``alpha`` and ``beta`` (Lanczos inner products) and ``ynorm``
+    (solution norm for stopping tests).
 
     Parameters
     ----------
-    A       : array_like or LinearOperator -- symmetric/Hermitian (n, n)
-    b       : array_like -- right-hand side (n,)
-    x0      : array_like, optional -- initial guess
-    shift   : float -- solve (A - shift*I)x = b
-    rtol    : float -- relative tolerance (default 1e-5)
-    tol     : float, optional -- deprecated alias for rtol
-    maxiter : int, optional -- max iterations (default 5*n)
-    M       : LinearOperator, optional -- SPD preconditioner
-    callback: callable, optional -- callback(xk) after each step
-    check   : bool -- verify A symmetry before iterating
-    atol    : float, optional -- absolute tolerance
+    A : dpnp sparse matrix, 2-D dpnp.ndarray, or LinearOperator
+        The real symmetric or complex Hermitian matrix, shape ``(n, n)``.
+    b : dpnp.ndarray
+        Right-hand side, shape ``(n,)`` or ``(n, 1)``.
+    x0 : dpnp.ndarray, optional
+        Starting guess for the solution.
+    shift : float
+        If nonzero, solve ``(A - shift*I)x = b``.  Default 0.
+    rtol : float
+        Relative tolerance for convergence.  Default 1e-5.
+    tol : float, optional
+        Deprecated alias for *rtol*.
+    maxiter : int, optional
+        Maximum number of iterations.  Default ``5*n``.
+    M : dpnp sparse matrix, dpnp.ndarray, or LinearOperator, optional
+        Preconditioner approximating the inverse of ``A``.
+    callback : callable, optional
+        Called as ``callback(xk)`` after each iteration.
+    show : bool
+        If True, print convergence summary each iteration.
+    check : bool
+        If True, verify that ``A`` and ``M`` are symmetric before
+        iterating.  Costs extra matvecs.
 
     Returns
     -------
-    x    : dpnp.ndarray
-    info : int  0=converged  1=maxiter  2=stagnation
+    x : dpnp.ndarray
+        The converged (or best) solution.
+    info : int
+        0 if converged, ``maxiter`` if the iteration limit was reached.
+
+    Notes
+    -----
+    This is a direct translation of the Paige--Saunders MINRES algorithm
+    as implemented in SciPy, adapted for dpnp device arrays with the
+    oneMKL SpMV cached-handle fast-path.
+
+    See Also
+    --------
+    scipy.sparse.linalg.minres
+    cupyx.scipy.sparse.linalg.minres
     """
     if tol is not None:
         rtol = tol
 
     A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
-    n = b.shape[0]
-    queue = b.sycl_queue
+    matvec = A_op.matvec
+    psolve = M_op.matvec
 
-    eps = float(_np.finfo(_np_dtype(dtype)).eps)
+    n = A_op.shape[0]
     if maxiter is None:
         maxiter = 5 * n
 
-    bnrm_dev = _dpnp.linalg.norm(b)
-    bnrm = float(bnrm_dev)
-    if bnrm == 0.0:
-        return _dpnp.zeros_like(b), 0
+    istop = 0
+    itn = 0
+    Anorm = 0
+    Acond = 0
+    rnorm = 0
+    ynorm = 0
 
-    atol_eff = _get_atol(bnrm, atol=atol, rtol=rtol)
+    xtype = dtype
+    eps = dpnp.finfo(xtype).eps
 
-    r1 = b - A_op.matvec(x) if x0 is not None else b.copy()
-    y = M_op.matvec(r1)
+    # ------------------------------------------------------------------
+    # Set up y and v for the first Lanczos vector v1.
+    #   y  = beta1 * P' * v1, where P = M**(-1).
+    #   v  is really P' * v1.
+    # ------------------------------------------------------------------
 
-    # Initial preconditioner SPD check (one sync, setup only).
-    beta1_inner = float(_dpnp.real(_dpnp.vdot(r1, y)))
-    if beta1_inner < 0.0:
-        raise ValueError(
-            "minres: preconditioner M is not positive semi-definite "
-            f"(<r, M*r> = {beta1_inner:.6g} < 0)"
-        )
-    if beta1_inner == 0.0:
-        return x, 0
+    Ax = matvec(x)
+    r1 = b - Ax
+    y = psolve(r1)
 
-    beta1 = _np.sqrt(beta1_inner)
+    # beta1 = <r1, y>   -- one host sync (setup only).
+    # Transferred to host immediately because beta1 seeds ~5 host-side
+    # scalars (beta, qrnorm, phibar, rhs1) used in Python arithmetic
+    # and branches every iteration.  Keeping it as a 0-D device array
+    # would cascade implicit syncs or 0-D allocations throughout the
+    # recurrence.
+    beta1 = dpnp.inner(r1, y)
+
+    if beta1 < 0:
+        raise ValueError("indefinite preconditioner")
+    elif beta1 == 0:
+        return (x, 0)
+
+    beta1 = dpnp.sqrt(beta1)
+    beta1 = float(beta1)
 
     if check:
-        Ay = A_op.matvec(y) - shift * y
-        # This block is diagnostic and only runs when check=True, so
-        # the syncs here are acceptable.
-        y_Ay = float(_dpnp.real(_dpnp.vdot(y, Ay)))
-        y_y = float(_dpnp.real(_dpnp.vdot(y, y)))
-        lhs = float(_dpnp.linalg.norm(Ay - (y_Ay / y_y) * y))
-        rhs = eps ** 0.5 * float(_dpnp.linalg.norm(Ay))
-        if lhs > rhs:
-            raise ValueError(
-                "minres: A does not appear symmetric/Hermitian; "
-                "set check=False to skip this test."
-            )
+        # See if A is symmetric.  All on device; only the bool syncs.
+        w_chk = matvec(y)
+        r2_chk = matvec(w_chk)
+        s = dpnp.inner(w_chk, w_chk)
+        t = dpnp.inner(y, r2_chk)
+        if abs(s - t) > (s + eps) * eps ** (1.0 / 3.0):
+            raise ValueError("non-symmetric matrix")
 
-    # Host-side recurrence state -- these are all scalars that drive
-    # branches, so there's no benefit to keeping them on device.
+        # See if M is symmetric.
+        r2_chk = psolve(y)
+        s = dpnp.inner(y, y)
+        t = dpnp.inner(r1, r2_chk)
+        if abs(s - t) > (s + eps) * eps ** (1.0 / 3.0):
+            raise ValueError("non-symmetric preconditioner")
+
+    # Initialise remaining quantities (all host-side scalars).
+    oldb = 0
     beta = beta1
-    oldb = 0.0
+    dbar = 0
+    epsln = 0
+    qrnorm = beta1
     phibar = beta1
-    cs = -1.0
-    sn = 0.0
-    dbar = 0.0
-    epsln = 0.0
-    tnorm2 = 0.0
-    gmax = 0.0
-    gmin = _np.finfo(_np_dtype(dtype)).max
+    rhs1 = beta1
+    rhs2 = 0
+    tnorm2 = 0
+    gmax = 0
+    gmin = dpnp.finfo(xtype).max
+    cs = -1
+    sn = 0
+    queue = b.sycl_queue
+    w = dpnp.zeros(n, dtype=xtype, sycl_queue=queue)
+    w2 = dpnp.zeros(n, dtype=xtype, sycl_queue=queue)
+    r2 = r1
 
-    # Device-side vector state.
-    w = _dpnp.zeros(n, dtype=dtype, sycl_queue=queue)
-    w2 = _dpnp.zeros(n, dtype=dtype, sycl_queue=queue)
-    r2 = r1.copy()
-    v = y / beta1
+    # Main Lanczos loop.
+    while itn < maxiter:
+        itn += 1
 
-    stag_eps = 10.0 * eps
-    info = 1
-
-    for itr in range(1, maxiter + 1):
         s = 1.0 / beta
-        v = y * s
-        y = A_op.matvec(v) - shift * v
-        if itr > 1:
+        v = s * y                           # on device
+
+        y = matvec(v)
+        y = y - shift * v
+
+        if itn >= 2:
             y = y - (beta / oldb) * r1
 
-        # alpha = <v, y>  -- one sync for the recurrence coefficient.
-        alpha = float(_dpnp.real(_dpnp.vdot(v, y)))
+        # alpha = <v, y>   -- host sync #1
+        alpha = float(dpnp.inner(v, y))
+
         y = y - (alpha / beta) * r2
         r1 = r2
         r2 = y
-        y = M_op.matvec(r2)
+        y = psolve(r2)
         oldb = beta
 
-        # SPD check on M each iteration. Single sync, unavoidable
-        # because beta feeds the next iteration's scaling.
-        inner_r2y = float(_dpnp.real(_dpnp.vdot(r2, y)))
-        if inner_r2y < 0.0:
-            raise ValueError(
-                "minres: preconditioner M is not positive semi-definite "
-                f"(<r, M*r> = {inner_r2y:.6g} < 0 at iteration {itr})"
-            )
-        beta = _np.sqrt(inner_r2y)
+        # beta = sqrt(<r2, y>)   -- host sync #2
+        beta = float(dpnp.inner(r2, y))
+        if beta < 0:
+            raise ValueError("non-symmetric matrix")
+        beta = numpy.sqrt(beta)
 
         tnorm2 += alpha ** 2 + oldb ** 2 + beta ** 2
+
+        if itn == 1:
+            if beta / beta1 <= 10 * eps:
+                istop = -1  # Terminate later
+
+        # Apply previous rotation Q_{k-1} to get
+        #   [delta_k  epsln_{k+1}] = [cs  sn] [dbar_k     0     ]
+        #   [gbar_k   dbar_{k+1} ]   [sn -cs] [alpha_k  beta_{k+1}]
         oldeps = epsln
         delta = cs * dbar + sn * alpha
-        gbar_k = sn * dbar - cs * alpha
+        gbar = sn * dbar - cs * alpha
         epsln = sn * beta
         dbar = -cs * beta
-        root = _np.hypot(gbar_k, dbar)
-        gamma = _np.hypot(gbar_k, beta)
-        if gamma == 0.0:
-            gamma = eps
-        cs = gbar_k / gamma
+        root = numpy.sqrt(gbar ** 2 + dbar ** 2)
+        Arnorm = phibar * root          # ||A r_{k-1}||
+
+        # Compute the next plane rotation Q_k.
+        gamma = numpy.sqrt(gbar ** 2 + beta ** 2)
+        gamma = max(gamma, eps)
+        cs = gbar / gamma
         sn = beta / gamma
         phi = cs * phibar
         phibar = sn * phibar
 
+        # Update x  -- all on device.
+        denom = 1.0 / gamma
+        w1 = w2
+        w2 = w
+        w = (v - oldeps * w1 - delta * w2) * denom
+        x = x + phi * w
+
+        # Go round again.
         gmax = max(gmax, gamma)
         gmin = min(gmin, gamma)
-        denom = 1.0 / gamma
+        z = rhs1 / gamma
+        rhs1 = rhs2 - delta * z
+        rhs2 = -epsln * z
 
-        # Update solution estimate -- all on device.
-        w_new = (v - oldeps * w - delta * w2) * denom
-        w = w2
-        w2 = w_new
-        x = x + phi * w_new
+        # ----------------------------------------------------------
+        # Estimate norms and test for convergence.
+        # ----------------------------------------------------------
+        Anorm = numpy.sqrt(tnorm2)
+        ynorm = float(dpnp.linalg.norm(x))     # host sync #3
+        epsa = Anorm * eps
+        epsx = Anorm * ynorm * eps
+        epsr = Anorm * ynorm * rtol
+        diag = gbar
+        if diag == 0:
+            diag = epsa
 
-        rnorm = abs(phibar)
-        Anorm = _np.sqrt(tnorm2)
+        qrnorm = phibar
+        rnorm = qrnorm
+        if ynorm == 0 or Anorm == 0:
+            test1 = numpy.inf
+        else:
+            test1 = rnorm / (Anorm * ynorm)    # ||r|| / (||A|| ||x||)
+        if Anorm == 0:
+            test2 = numpy.inf
+        else:
+            test2 = root / Anorm                # ||Ar|| / (||A|| ||r||)
 
-        # ynorm sync: needed for the relative-residual test and the
-        # corrected stagnation test.
-        ynorm = float(_dpnp.linalg.norm(x))
+        # Estimate cond(A).
+        Acond = gmax / gmin
+
+        # Stopping criteria (SciPy's istop codes).
+        if istop == 0:
+            t1 = 1 + test1
+            t2 = 1 + test2
+            if t2 <= 1:
+                istop = 2
+            if t1 <= 1:
+                istop = 1
+
+            if itn >= maxiter:
+                istop = 6
+            if Acond >= 0.1 / eps:
+                istop = 4
+            if epsx >= beta1:
+                istop = 3
+            if test2 <= rtol:
+                istop = 2
+            if test1 <= rtol:
+                istop = 1
+
+        if show:
+            prnt = (n <= 40 or itn <= 10 or itn >= maxiter - 10
+                    or itn % 10 == 0 or qrnorm <= 10 * epsx
+                    or qrnorm <= 10 * epsr or Acond <= 1e-2 / eps
+                    or istop != 0)
+            if prnt:
+                x1 = float(x[0])
+                print(f"{itn:6g} {x1:12.5e} {test1:10.3e}"
+                      f" {test2:10.3e}"
+                      f" {Anorm:8.1e} {Acond:8.1e}"
+                      f" {gbar / Anorm if Anorm else 0:8.1e}")
+                if itn % 10 == 0:
+                    print()
 
         if callback is not None:
             callback(x)
 
-        # Stopping criterion 1: absolute residual.
-        if rnorm <= atol_eff:
-            info = 0
+        if istop != 0:
             break
 
-        # Stopping criterion 2: relative residual ||r|| / (||A|| ||x||).
-        if Anorm > 0.0 and ynorm > 0.0:
-            if rnorm / (Anorm * ynorm) <= rtol:
-                info = 0
-                break
-
-        # Stopping criterion 3: range-space residual ||A^T r|| / ||A||.
-        if Anorm > 0.0 and rnorm > 0.0:
-            if root / Anorm <= rtol:
-                info = 0
-                break
-
-        # Stopping criterion 4: condition number estimate.
-        if Anorm > 0.0 and (gmax / gmin) >= 0.1 / eps:
-            info = 0
-            break
-
-        # Stagnation: step size relative to solution magnitude.
-        # Corrected from the original (which missed the /ynorm normalization).
-        if ynorm > 0.0 and abs(phi) / gamma < stag_eps * ynorm:
-            info = 2
-            break
+    if istop == 6:
+        info = maxiter
     else:
-        info = 1
+        info = 0
 
-    return x, int(info)
+    return (x, info)
+
+def _make_compute_hu(V):
+    """Factory mirroring cupyx's _make_compute_hu using oneMKL gemv directly.
+
+    Returns a closure compute_hu(u, j) that performs:
+        h = V[:, :j+1]^H @ u            (gemv with transpose=True)
+        u = u - V[:, :j+1] @ h          (gemv with transpose=False, then subtract)
+
+    The current bi._gemv binding hardcodes alpha=1, beta=0, so the second
+    pass requires a temporary vector and an explicit subtraction.  To get
+    CuPy's fused u -= V@h in one kernel, the C++ binding would need
+    alpha/beta parameters.
+
+    V must be column-major; sub-views V[:, :j+1] of an F-order array
+    are themselves F-contiguous, so the same closure handles every j.
+    """
+    if V.ndim != 2 or not V.flags.f_contiguous:
+        raise ValueError(
+            "_make_compute_hu: V must be a 2-D column-major (F-order) "
+            "dpnp array"
+        )
+
+    exec_q = V.sycl_queue
+    dtype = V.dtype
+    is_cpx = dpnp.issubdtype(dtype, dpnp.complexfloating)
+    V_usm = dpnp.get_usm_ndarray(V)
+
+    def compute_hu(u, j):
+        # h = V[:, :j+1]^H @ u  (allocate fresh, length j+1)
+        h = dpnp.empty(j + 1, dtype=dtype, sycl_queue=exec_q)
+
+        # Sub-view: column-major slice of the trailing axis is F-contiguous.
+        Vj = V[:, :j + 1]
+        Vj_usm = dpnp.get_usm_ndarray(Vj)
+        u_usm  = dpnp.get_usm_ndarray(u)
+        h_usm  = dpnp.get_usm_ndarray(h)
+
+        _manager = dpu.SequentialOrderManager[exec_q]
+
+        # Pass 1: h = Vj^T @ u  (real) or  h = (Vj^T @ u) then conj  (complex)
+        ht1, ev1 = bi._gemv(
+            exec_q, Vj_usm, u_usm, h_usm,
+            transpose=True,
+            depends=_manager.submitted_events,
+        )
+        _manager.add_event_pair(ht1, ev1)
+
+        if is_cpx:
+            # h = conj(h) -- in-place, length j+1, negligible
+            h = dpnp.conj(h, out=h)
+            h_usm = dpnp.get_usm_ndarray(h)
+
+        # Pass 2: tmp = Vj @ h, then u -= tmp
+        # No fused AXPY available, so we still allocate tmp.
+        tmp = dpnp.empty_like(u)
+        tmp_usm = dpnp.get_usm_ndarray(tmp)
+        ht2, ev2 = bi._gemv(
+            exec_q, Vj_usm, h_usm, tmp_usm,
+            transpose=False,
+            depends=_manager.submitted_events,
+        )
+        _manager.add_event_pair(ht2, ev2)
+
+        u -= tmp
+        return h, u
+
+    return compute_hu
