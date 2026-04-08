@@ -52,9 +52,10 @@
 #include "dpctl/program/_program.h"
 #include "dpctl/program/_program_api.h"
 
-// Include generated Cython headers for usm_ndarray struct definition and C-API
-#include "dpctl_ext/tensor/_usmarray.h"
-#include "dpctl_ext/tensor/_usmarray_api.h"
+// Include generated Cython headers for usm_ndarray
+// (struct definition and constants only)
+#include "dpnp/tensor/_usmarray.h"
+#include "dpnp/tensor/_usmarray_api.h"
 
 #include <array>
 #include <cassert>
@@ -272,8 +273,8 @@ private:
         import_dpctl___sycl_queue();
         import_dpctl__memory___memory();
         import_dpctl__program___program();
-        // Import dpctl_ext tensor module for PyUSMArrayType
-        import_dpctl_ext__tensor___usmarray();
+        // Import dpnp tensor module for PyUSMArrayType
+        import_dpnp__tensor___usmarray();
 
         // Python type objects for classes implemented by dpctl
         this->Py_SyclDeviceType_ = &Py_SyclDeviceType;
@@ -386,10 +387,7 @@ private:
         default_usm_memory_ = std::shared_ptr<py::object>(
             new py::object{py_default_usm_memory}, Deleter{});
 
-        // TODO: revert to `py::module_::import("dpctl.tensor._usmarray");`
-        // when dpnp fully migrates dpctl/tensor
-        py::module_ mod_usmarray =
-            py::module_::import("dpctl_ext.tensor._usmarray");
+        py::module_ mod_usmarray = py::module_::import("dpnp.tensor._usmarray");
         auto tensor_kl = mod_usmarray.attr("usm_ndarray");
 
         const py::object &py_default_usm_ndarray =

@@ -50,14 +50,12 @@ import warnings
 import dpctl.utils as dpu
 import numpy
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_elementwise_impl as ti
-import dpctl_ext.tensor._type_utils as dtu
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
-from dpctl_ext.tensor._numpy_helper import (
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_elementwise_impl as ti
+import dpnp.tensor._type_utils as dtu
+from dpnp.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
 )

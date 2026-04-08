@@ -47,11 +47,9 @@ from typing import NamedTuple
 import dpctl
 import numpy
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import dpnp
-from dpctl_ext.tensor._numpy_helper import (
+import dpnp.tensor as dpt
+from dpnp.tensor._numpy_helper import (
     AxisError,
     normalize_axis_index,
     normalize_axis_tuple,

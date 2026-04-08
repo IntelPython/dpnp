@@ -29,9 +29,7 @@
 import dpctl.utils as du
 import numpy as np
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
+import dpnp.tensor as dpt
 
 from ._manipulation_functions import _broadcast_shape_impl
 from ._type_utils import _to_device_supported_dtype

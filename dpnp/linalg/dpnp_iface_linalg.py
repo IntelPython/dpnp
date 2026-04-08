@@ -47,11 +47,8 @@ from typing import NamedTuple
 import numpy
 
 import dpnp
-
-# TODO: revert to `from dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-from dpctl_ext.tensor._numpy_helper import normalize_axis_tuple
 from dpnp.backend.extensions.lapack._lapack_impl import LinAlgError
+from dpnp.tensor._numpy_helper import normalize_axis_tuple
 
 from .dpnp_utils_linalg import (
     assert_2d,

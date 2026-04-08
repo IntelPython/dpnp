@@ -48,13 +48,12 @@ import dpctl
 import dpctl.utils as dpu
 import numpy
 
-# pylint: disable=no-name-in-module
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
-from dpctl_ext.tensor._device import normalize_queue_device
+
+# pylint: disable=no-name-in-module
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_impl as ti
+from dpnp.tensor._device import normalize_queue_device
 
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (

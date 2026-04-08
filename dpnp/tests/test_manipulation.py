@@ -8,14 +8,9 @@ from numpy.testing import (
     assert_raises,
 )
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import dpnp
-
-# TODO: revert to `from dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-from dpctl_ext.tensor._numpy_helper import AxisError
+import dpnp.tensor as dpt
+from dpnp.tensor._numpy_helper import AxisError
 
 from .helper import (
     assert_dtype_allclose,

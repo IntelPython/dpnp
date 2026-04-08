@@ -34,13 +34,8 @@ import dpctl.memory as dpm
 import dpctl.utils
 import numpy as np
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_impl as ti
-from dpctl_ext.tensor._data_types import _get_dtype
-from dpctl_ext.tensor._device import normalize_queue_device
-from dpctl_ext.tensor._usmarray import _is_object_with_buffer_protocol
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_impl as ti
 
 from ._copy_utils import (
     _empty_like_orderK,

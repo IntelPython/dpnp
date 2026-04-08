@@ -34,6 +34,7 @@ skbuild.setup(
     cmdclass=versioneer.get_cmdclass(),
     packages=[
         "dpnp",
+        "dpnp.tensor",
         "dpnp.dpnp_algo",
         "dpnp.dpnp_utils",
         "dpnp.exceptions",
@@ -44,9 +45,6 @@ skbuild.setup(
         "dpnp.scipy",
         "dpnp.scipy.linalg",
         "dpnp.scipy.special",
-        # TODO: replace with dpctl; dpctl.tensor
-        "dpctl_ext",
-        "dpctl_ext.tensor",
     ],
     package_data={
         "dpnp": [

@@ -31,9 +31,7 @@ import numbers
 import dpctl.memory as dpm
 import numpy as np
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
+import dpnp.tensor as dpt
 
 from ._type_utils import (
     WeakBooleanType,
