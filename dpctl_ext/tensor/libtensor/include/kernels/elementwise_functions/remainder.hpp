@@ -29,8 +29,9 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of the
-/// modulo of tensor elements.
+/// This file defines kernels for elementwise evaluation of REMAINDER(x1, x2)
+/// function that computes the Python modulus operator, which is specifically
+/// designed as the complement to floor_divide(x1, x2).
 //===---------------------------------------------------------------------===//
 
 #pragma once

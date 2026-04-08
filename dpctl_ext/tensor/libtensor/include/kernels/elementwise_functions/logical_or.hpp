@@ -29,8 +29,8 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for elementwise evaluation of comparison of
-/// tensor elements.
+/// This file defines kernels for elementwise evaluation of LOGICAL_OR(x1, x2)
+/// function.
 //===---------------------------------------------------------------------===//
 
 #pragma once

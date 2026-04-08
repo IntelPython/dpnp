@@ -33,7 +33,6 @@ import dpctl.utils as du
 # TODO: revert to `import dpctl.tensor...`
 # when dpnp fully migrates dpctl/tensor
 import dpctl_ext.tensor as dpt
-from dpctl_ext.tensor._tensor_elementwise_impl import _not_equal, _subtract
 
 from ._copy_utils import _empty_like_orderK
 from ._scalar_utils import (
@@ -42,6 +41,7 @@ from ._scalar_utils import (
     _get_shape,
     _validate_dtype,
 )
+from ._tensor_elementwise_impl import _not_equal, _subtract
 from ._tensor_impl import (
     _copy_usm_ndarray_into_usm_ndarray,
     _extract,
