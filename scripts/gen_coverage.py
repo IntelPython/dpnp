@@ -119,14 +119,6 @@ def parse_args():
         action="store_true",
         help="Remove build dir before rebuild (default: False)",
     )
-    p.add_argument(
-        "--build-step",
-        choices=["tensor", "skip-tensor", "both"],
-        default="both",
-        help="Which build step to run: tensor (only tensor to generate headers), "
-        "skip-tensor (everything except tensor, assumes tensor headers exist), "
-        "or both (default: both)",
-    )
 
     return p.parse_args()
 
@@ -200,36 +192,17 @@ def main():
 
     log_cmake_args(cmake_args, "gen_coverage")
 
-    if args.build_step in ["tensor", "both"]:
-        # Build tensor only to generate Cython headers
-        tensor_cmake_args = cmake_args.copy()
-        tensor_cmake_args.append("-DDPNP_BUILD_COMPONENTS=TENSOR_ONLY")
+    build_extension(
+        setup_dir,
+        env,
+        cmake_args,
+        cmake_executable=args.cmake_executable,
+        generator=args.generator,
+        build_type="Coverage",
+    )
+    install_editable(setup_dir, env)
 
-        build_extension(
-            setup_dir,
-            env,
-            tensor_cmake_args,
-            cmake_executable=args.cmake_executable,
-            generator=args.generator,
-            build_type="Coverage",
-        )
-
-    if args.build_step in ["skip-tensor", "both"]:
-        # Build everything except tensor (assumes tensor headers already exist)
-        skip_tensor_cmake_args = cmake_args.copy()
-        skip_tensor_cmake_args.append("-DDPNP_BUILD_COMPONENTS=SKIP_TENSOR")
-
-        build_extension(
-            setup_dir,
-            env,
-            skip_tensor_cmake_args,
-            cmake_executable=args.cmake_executable,
-            generator=args.generator,
-            build_type="Coverage",
-        )
-        install_editable(setup_dir, env)
-
-    if args.run_pytest and args.build_step in ["skip-tensor", "both"]:
+    if args.run_pytest:
         env["LLVM_PROFILE_FILE"] = "dpnp_pytest.profraw"
         pytest_cmd = [
             "pytest",
@@ -296,13 +269,10 @@ def main():
             )
 
         print("[gen_coverage] Coverage export is completed")
-    elif args.build_step == "tensor":
-        print(
-            "[gen_coverage] Skipping pytest (tensor-only build, tests will run after skip-tensor build)"
-        )
     else:
         print(
-            "[gen_coverage] Skipping pytest and coverage collection (--skip-pytest)"
+            "[gen_coverage] Skipping pytest and coverage collection "
+            "(--skip-pytest)"
         )
 
     print("[gen_coverage] Done")
