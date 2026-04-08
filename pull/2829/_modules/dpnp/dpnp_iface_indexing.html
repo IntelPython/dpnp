@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.20.0dev3+350.g5462e178a60 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.20.0dev3+352.gc15d126217f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=905ced7d"></script>
+      <script src="../../_static/documentation_options.js?v=fe3ddcda"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -140,9 +140,6 @@
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.tensor._copy_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_nonzero_impl</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.tensor._indexing_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_indexing_mode</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -150,6 +147,9 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_origin</span><span class="p">,</span> <span class="n">get_usm_allocations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tensor._copy_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_nonzero_impl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tensor._indexing_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_indexing_mode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_ravel_multi_index_checks</span><span class="p">(</span><span class="n">multi_index</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
