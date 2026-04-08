@@ -31,7 +31,6 @@ import itertools
 import dpctl
 import numpy as np
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 
 import dpnp.tensor as dpt
@@ -1413,7 +1412,7 @@ def test_repeat_arg_validation():
     # compute follows data
     q2 = dpctl.SyclQueue()
     reps = dpt.asarray(1, dtype="i8", sycl_queue=q2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.repeat(x, reps)
 
     # repeats array must not contain negative elements

@@ -107,9 +107,7 @@ def test_subtract_usm_type_matrix(op1_usm_type, op2_usm_type):
 
     r = dpt.subtract(ar1, ar2)
     assert isinstance(r, dpt.usm_ndarray)
-    expected_usm_type = dpctl.utils.get_coerced_usm_type(
-        (op1_usm_type, op2_usm_type)
-    )
+    expected_usm_type = dpt.get_coerced_usm_type((op1_usm_type, op2_usm_type))
     assert r.usm_type == expected_usm_type
 
 

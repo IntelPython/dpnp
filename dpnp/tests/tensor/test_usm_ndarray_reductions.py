@@ -30,7 +30,6 @@ from random import randrange
 
 import numpy as np
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_allclose
 
 import dpnp.tensor as dpt
@@ -55,7 +54,6 @@ _no_complex_dtypes = [
     "f4",
     "f8",
 ]
-
 
 _all_dtypes = _no_complex_dtypes + [
     "c8",
@@ -650,11 +648,11 @@ def test_reduction_out_kwarg_arg_validation():
         dpt.max(x, out=dict())
     with pytest.raises(TypeError):
         dpt.argmax(x, out=dict())
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.sum(x, out=out_wrong_queue)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.max(x, out=out_wrong_queue)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.argmax(x, out=dpt.empty_like(out_wrong_queue, dtype=ind_dt))
     with pytest.raises(ValueError):
         dpt.sum(x, out=out_wrong_dtype)

@@ -404,7 +404,7 @@ def test_asarray_seq_of_arrays_on_different_queues():
     assert res.sycl_queue == w.sycl_queue
     assert dpt.isdtype(res.dtype, "integral")
 
-    with pytest.raises(dpctl.utils.ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.asarray([m, [w, py_seq]])
 
 

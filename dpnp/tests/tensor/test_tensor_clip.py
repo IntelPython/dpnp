@@ -29,7 +29,6 @@
 import dpctl
 import numpy as np
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises_regex
 
 import dpnp.tensor as dpt
@@ -392,7 +391,7 @@ def test_clip_usm_type_matrix(usm_type1, usm_type2, usm_type3):
 
     r = dpt.clip(ar1, ar2, ar3)
     assert isinstance(r, dpt.usm_ndarray)
-    expected_usm_type = dpctl.utils.get_coerced_usm_type(
+    expected_usm_type = dpt.get_coerced_usm_type(
         (usm_type1, usm_type2, usm_type3)
     )
     assert r.usm_type == expected_usm_type
@@ -409,7 +408,7 @@ def test_clip_usm_type_matrix_none_arg(usm_type1, usm_type2):
 
     r = dpt.clip(ar1, min=ar2, max=None)
     assert isinstance(r, dpt.usm_ndarray)
-    expected_usm_type = dpctl.utils.get_coerced_usm_type((usm_type1, usm_type2))
+    expected_usm_type = dpt.get_coerced_usm_type((usm_type1, usm_type2))
     assert r.usm_type == expected_usm_type
 
 
@@ -457,7 +456,7 @@ def test_clip_errors():
     ar3 = dpt.ones_like(ar1, sycl_queue=gpu_queue)
     ar4 = dpt.empty_like(ar1, sycl_queue=cpu_queue)
     assert_raises_regex(
-        ExecutionPlacementError,
+        dpt.ExecutionPlacementError,
         "Input and output allocation queues are not compatible",
         dpt.clip,
         ar1,
@@ -467,7 +466,7 @@ def test_clip_errors():
     )
 
     assert_raises_regex(
-        ExecutionPlacementError,
+        dpt.ExecutionPlacementError,
         "Input and output allocation queues are not compatible",
         dpt.clip,
         ar1,
@@ -477,7 +476,7 @@ def test_clip_errors():
     )
 
     assert_raises_regex(
-        ExecutionPlacementError,
+        dpt.ExecutionPlacementError,
         "Execution placement can not be unambiguously inferred from input "
         "arguments.",
         dpt.clip,
@@ -488,7 +487,7 @@ def test_clip_errors():
     )
 
     assert_raises_regex(
-        ExecutionPlacementError,
+        dpt.ExecutionPlacementError,
         "Execution placement can not be unambiguously inferred from input "
         "arguments.",
         dpt.clip,
@@ -499,7 +498,7 @@ def test_clip_errors():
     )
 
     assert_raises_regex(
-        ExecutionPlacementError,
+        dpt.ExecutionPlacementError,
         "Execution placement can not be unambiguously inferred from input "
         "arguments.",
         dpt.clip,
@@ -510,7 +509,7 @@ def test_clip_errors():
     )
 
     assert_raises_regex(
-        ExecutionPlacementError,
+        dpt.ExecutionPlacementError,
         "Execution placement can not be unambiguously inferred from input "
         "arguments.",
         dpt.clip,
@@ -750,19 +749,19 @@ def test_clip_compute_follows_data():
     a_max = dpt.ones(10, dtype="i4", sycl_queue=q1)
     res = dpt.empty_like(x, sycl_queue=q2)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.clip(x, a_min, a_max)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.clip(x, dpt.ones_like(x), a_max, out=res)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.clip(x, a_min)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.clip(x, None, a_max, out=res)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.clip(x, out=res)
 
 

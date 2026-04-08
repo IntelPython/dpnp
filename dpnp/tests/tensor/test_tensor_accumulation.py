@@ -29,7 +29,6 @@
 from random import randrange
 
 import pytest
-from dpctl.utils import ExecutionPlacementError
 
 import dpnp.tensor as dpt
 
@@ -308,7 +307,7 @@ def test_accumulator_arg_validation():
 
     # compute follows data
     out_wrong_queue = dpt.empty_like(x2, sycl_queue=q2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.cumulative_sum(x2, out=out_wrong_queue)
 
 

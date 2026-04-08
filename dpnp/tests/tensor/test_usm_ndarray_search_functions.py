@@ -31,7 +31,6 @@ import itertools
 
 import numpy as np
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_array_equal
 
 import dpnp.tensor as dpt
@@ -383,11 +382,11 @@ def test_where_compute_follows_data():
     x1 = dpt.empty((1,), dtype="i4", sycl_queue=q1)
     x2 = dpt.empty((1,), dtype="i4", sycl_queue=q2)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.where(dpt.empty((1,), dtype="i4", sycl_queue=q1), x1, x2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.where(dpt.empty((1,), dtype="i4", sycl_queue=q3), x1, x2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.where(x1, x1, x2)
 
 
@@ -533,7 +532,7 @@ def test_where_out_arg_validation():
 
     with pytest.raises(TypeError):
         dpt.where(condition, x1, x2, out=dict())
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.where(condition, x1, x2, out=out_wrong_queue)
     with pytest.raises(ValueError):
         dpt.where(condition, x1, x2, out=out_wrong_dtype)

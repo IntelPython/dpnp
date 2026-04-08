@@ -30,7 +30,6 @@ import ctypes
 
 import numpy as np
 import pytest
-from dpctl.utils import ExecutionPlacementError
 
 import dpnp.tensor as dpt
 
@@ -225,7 +224,7 @@ def test_isin_empty_inputs():
 
 def test_isin_validation():
     get_queue_or_skip()
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.isin(1, 1)
     not_bool = {}
     with pytest.raises(TypeError):
@@ -278,5 +277,5 @@ def test_isin_compute_follows_data():
 
     x = dpt.ones(10, sycl_queue=q1)
     test = dpt.ones_like(x, sycl_queue=q2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.isin(x, test)
