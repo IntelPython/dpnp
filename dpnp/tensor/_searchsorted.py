@@ -32,6 +32,11 @@ from typing import Literal, Union
 import dpctl
 import dpctl.utils as du
 
+from ._compute_follows_data import (
+    ExecutionPlacementError,
+    get_coerced_usm_type,
+    get_execution_queue,
+)
 from ._copy_utils import _empty_like_orderK
 from ._ctors import empty
 from ._tensor_impl import _copy_usm_ndarray_into_usm_ndarray as ti_copy
@@ -99,13 +104,13 @@ def searchsorted(
         )
 
     if sorter is None:
-        q = du.get_execution_queue([x1.sycl_queue, x2.sycl_queue])
+        q = get_execution_queue([x1.sycl_queue, x2.sycl_queue])
     else:
-        q = du.get_execution_queue(
+        q = get_execution_queue(
             [x1.sycl_queue, x2.sycl_queue, sorter.sycl_queue]
         )
     if q is None:
-        raise du.ExecutionPlacementError(
+        raise ExecutionPlacementError(
             "Execution placement can not be unambiguously "
             "inferred from input arguments."
         )
@@ -164,7 +169,7 @@ def searchsorted(
             _manager.add_event_pair(ht_ev, ev)
             x2 = x2_buf
 
-    dst_usm_type = du.get_coerced_usm_type([x1.usm_type, x2.usm_type])
+    dst_usm_type = get_coerced_usm_type([x1.usm_type, x2.usm_type])
     index_dt = ti_default_device_index_type(q)
 
     dst = _empty_like_orderK(x2, index_dt, usm_type=dst_usm_type)

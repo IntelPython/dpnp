@@ -206,46 +206,46 @@ def _concat_diff_input(arr, axis, prepend, append):
             exec_q = q1
             coerced_usm_type = x_usm_type
         elif q3 is None:
-            exec_q = du.get_execution_queue((q1, q2))
+            exec_q = dpt.get_execution_queue((q1, q2))
             if exec_q is None:
-                raise du.ExecutionPlacementError(
+                raise dpt.ExecutionPlacementError(
                     "Execution placement can not be unambiguously inferred "
                     "from input arguments."
                 )
-            coerced_usm_type = du.get_coerced_usm_type(
+            coerced_usm_type = dpt.get_coerced_usm_type(
                 (
                     x_usm_type,
                     prepend_usm_type,
                 )
             )
         elif q2 is None:
-            exec_q = du.get_execution_queue((q1, q3))
+            exec_q = dpt.get_execution_queue((q1, q3))
             if exec_q is None:
-                raise du.ExecutionPlacementError(
+                raise dpt.ExecutionPlacementError(
                     "Execution placement can not be unambiguously inferred "
                     "from input arguments."
                 )
-            coerced_usm_type = du.get_coerced_usm_type(
+            coerced_usm_type = dpt.get_coerced_usm_type(
                 (
                     x_usm_type,
                     append_usm_type,
                 )
             )
         else:
-            exec_q = du.get_execution_queue((q1, q2, q3))
+            exec_q = dpt.get_execution_queue((q1, q2, q3))
             if exec_q is None:
-                raise du.ExecutionPlacementError(
+                raise dpt.ExecutionPlacementError(
                     "Execution placement can not be unambiguously inferred "
                     "from input arguments."
                 )
-            coerced_usm_type = du.get_coerced_usm_type(
+            coerced_usm_type = dpt.get_coerced_usm_type(
                 (
                     x_usm_type,
                     prepend_usm_type,
                     append_usm_type,
                 )
             )
-        du.validate_usm_type(coerced_usm_type, allow_none=False)
+        dpt.validate_usm_type(coerced_usm_type, allow_none=False)
         arr_shape = arr.shape
         prepend_shape = _get_shape(prepend)
         append_shape = _get_shape(append)
@@ -318,19 +318,19 @@ def _concat_diff_input(arr, axis, prepend, append):
             exec_q = q1
             coerced_usm_type = x_usm_type
         else:
-            exec_q = du.get_execution_queue((q1, q2))
+            exec_q = dpt.get_execution_queue((q1, q2))
             if exec_q is None:
-                raise du.ExecutionPlacementError(
+                raise dpt.ExecutionPlacementError(
                     "Execution placement can not be unambiguously inferred "
                     "from input arguments."
                 )
-            coerced_usm_type = du.get_coerced_usm_type(
+            coerced_usm_type = dpt.get_coerced_usm_type(
                 (
                     x_usm_type,
                     prepend_usm_type,
                 )
             )
-        du.validate_usm_type(coerced_usm_type, allow_none=False)
+        dpt.validate_usm_type(coerced_usm_type, allow_none=False)
         arr_shape = arr.shape
         prepend_shape = _get_shape(prepend)
         if not isinstance(prepend_shape, (tuple, list)):
@@ -375,19 +375,19 @@ def _concat_diff_input(arr, axis, prepend, append):
             exec_q = q1
             coerced_usm_type = x_usm_type
         else:
-            exec_q = du.get_execution_queue((q1, q2))
+            exec_q = dpt.get_execution_queue((q1, q2))
             if exec_q is None:
-                raise du.ExecutionPlacementError(
+                raise dpt.ExecutionPlacementError(
                     "Execution placement can not be unambiguously inferred "
                     "from input arguments."
                 )
-            coerced_usm_type = du.get_coerced_usm_type(
+            coerced_usm_type = dpt.get_coerced_usm_type(
                 (
                     x_usm_type,
                     append_usm_type,
                 )
             )
-        du.validate_usm_type(coerced_usm_type, allow_none=False)
+        dpt.validate_usm_type(coerced_usm_type, allow_none=False)
         arr_shape = arr.shape
         append_shape = _get_shape(append)
         if not isinstance(append_shape, (tuple, list)):

@@ -32,8 +32,8 @@ from numbers import Integral
 
 import dpctl
 import dpctl.memory as dpm
-import dpctl.utils
 import numpy as np
+from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
@@ -124,7 +124,7 @@ def _copy_from_numpy_into(dst, np_ary):
             src_ary = src_ary.astype(np.float32)
         elif src_ary_dt_c == "D":
             src_ary = src_ary.astype(np.complex64)
-    _manager = dpctl.utils.SequentialOrderManager[copy_q]
+    _manager = SequentialOrderManager[copy_q]
     dep_ev = _manager.submitted_events
     # synchronizing call
     ti._copy_numpy_ndarray_into_usm_ndarray(
@@ -142,14 +142,12 @@ def _extract_impl(ary, ary_mask, axis=0):
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
         )
     if isinstance(ary_mask, dpt.usm_ndarray):
-        dst_usm_type = dpctl.utils.get_coerced_usm_type(
+        dst_usm_type = dpt.get_coerced_usm_type(
             (ary.usm_type, ary_mask.usm_type)
         )
-        exec_q = dpctl.utils.get_execution_queue(
-            (ary.sycl_queue, ary_mask.sycl_queue)
-        )
+        exec_q = dpt.get_execution_queue((ary.sycl_queue, ary_mask.sycl_queue))
         if exec_q is None:
-            raise dpctl.utils.ExecutionPlacementError(
+            raise dpt.ExecutionPlacementError(
                 "arrays have different associated queues. "
                 "Use `y.to_device(x.device)` to migrate."
             )
@@ -175,7 +173,7 @@ def _extract_impl(ary, ary_mask, axis=0):
     cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
     cumsum = dpt.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
     exec_q = cumsum.sycl_queue
-    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     mask_count = ti.mask_positions(
         ary_mask, cumsum, sycl_queue=exec_q, depends=dep_evs
@@ -230,8 +228,8 @@ def _get_indices_queue_usm_type(inds, queue, usm_type):
         raise TypeError(
             "at least one element of `inds` expected to be an array"
         )
-    usm_type = dpctl.utils.get_coerced_usm_type(usm_types)
-    q = dpctl.utils.get_execution_queue(queues)
+    usm_type = dpt.get_coerced_usm_type(usm_types)
+    q = dpt.get_execution_queue(queues)
     return q, usm_type
 
 
@@ -247,7 +245,7 @@ def _nonzero_impl(ary):
     cumsum = dpt.empty(
         mask_nelems, dtype=cumsum_dt, sycl_queue=exec_q, order="C"
     )
-    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     mask_count = ti.mask_positions(
         ary, cumsum, sycl_queue=exec_q, depends=dep_evs
@@ -318,20 +316,20 @@ def _place_impl(ary, ary_mask, vals, axis=0):
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
         )
     if isinstance(ary_mask, dpt.usm_ndarray):
-        exec_q = dpctl.utils.get_execution_queue(
+        exec_q = dpt.get_execution_queue(
             (
                 ary.sycl_queue,
                 ary_mask.sycl_queue,
             )
         )
-        coerced_usm_type = dpctl.utils.get_coerced_usm_type(
+        coerced_usm_type = dpt.get_coerced_usm_type(
             (
                 ary.usm_type,
                 ary_mask.usm_type,
             )
         )
         if exec_q is None:
-            raise dpctl.utils.ExecutionPlacementError(
+            raise dpt.ExecutionPlacementError(
                 "arrays have different associated queues. "
                 "Use `y.to_device(x.device)` to migrate."
             )
@@ -355,15 +353,15 @@ def _place_impl(ary, ary_mask, vals, axis=0):
                 sycl_queue=exec_q,
             )
         else:
-            exec_q = dpctl.utils.get_execution_queue((exec_q, vals.sycl_queue))
-            coerced_usm_type = dpctl.utils.get_coerced_usm_type(
+            exec_q = dpt.get_execution_queue((exec_q, vals.sycl_queue))
+            coerced_usm_type = dpt.get_coerced_usm_type(
                 (
                     coerced_usm_type,
                     vals.usm_type,
                 )
             )
     if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError(
+        raise dpt.ExecutionPlacementError(
             "arrays have different associated queues. "
             "Use `Y.to_device(X.device)` to migrate."
         )
@@ -383,7 +381,7 @@ def _place_impl(ary, ary_mask, vals, axis=0):
         device=ary_mask.device,
     )
     exec_q = cumsum.sycl_queue
-    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     dep_ev = _manager.submitted_events
     mask_count = ti.mask_positions(
         ary_mask, cumsum, sycl_queue=exec_q, depends=dep_ev
@@ -440,15 +438,15 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
                 sycl_queue=exec_q,
             )
         else:
-            exec_q = dpctl.utils.get_execution_queue((exec_q, vals.sycl_queue))
-            coerced_usm_type = dpctl.utils.get_coerced_usm_type(
+            exec_q = dpt.get_execution_queue((exec_q, vals.sycl_queue))
+            coerced_usm_type = dpt.get_coerced_usm_type(
                 (
                     coerced_usm_type,
                     vals.usm_type,
                 )
             )
     if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError(
+        raise dpt.ExecutionPlacementError(
             "Can not automatically determine where to allocate the "
             "result or performance execution. "
             "Use `usm_ndarray.to_device` method to migrate data to "
@@ -470,7 +468,7 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
     else:
         rhs = dpt.astype(vals, ary.dtype)
     rhs = dpt.broadcast_to(rhs, expected_vals_shape)
-    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     dep_ev = _manager.submitted_events
     hev, put_ev = ti._put(
         dst=ary,
@@ -504,7 +502,7 @@ def _take_multi_index(ary, inds, p, mode=0):
         inds, ary.sycl_queue, ary.usm_type
     )
     if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError(
+        raise dpt.ExecutionPlacementError(
             "Can not automatically determine where to allocate the "
             "result or performance execution. "
             "Use `usm_ndarray.to_device` method to migrate data to "
@@ -522,7 +520,7 @@ def _take_multi_index(ary, inds, p, mode=0):
     res = dpt.empty(
         res_shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
-    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     dep_ev = _manager.submitted_events
     hev, take_ev = ti._take(
         src=ary,
@@ -630,7 +628,7 @@ def _copy_overlapping(dst, src):
         order="C",
         buffer_ctor_kwargs={"queue": q},
     )
-    _manager = dpctl.utils.SequentialOrderManager[q]
+    _manager = SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
     hcp1, cp1 = ti._copy_usm_ndarray_into_usm_ndarray(
         src=src, dst=tmp, sycl_queue=q, depends=dep_evs
@@ -655,7 +653,7 @@ def _copy_same_shape(dst, src):
         return
 
     copy_q = dst.sycl_queue
-    _manager = dpctl.utils.SequentialOrderManager[copy_q]
+    _manager = SequentialOrderManager[copy_q]
     dep_evs = _manager.submitted_events
     hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=src, dst=dst, sycl_queue=copy_q, depends=dep_evs

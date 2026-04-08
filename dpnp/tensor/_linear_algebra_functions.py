@@ -28,8 +28,7 @@
 
 import operator
 
-import dpctl
-from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
+from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_elementwise_impl as tei
@@ -121,19 +120,19 @@ def tensordot(x1, x2, axes=2):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
     q1, x1_usm_type = x1.sycl_queue, x1.usm_type
     q2, x2_usm_type = x2.sycl_queue, x2.usm_type
-    exec_q = dpctl.utils.get_execution_queue((q1, q2))
+    exec_q = dpt.get_execution_queue((q1, q2))
     if exec_q is None:
-        raise ExecutionPlacementError(
+        raise dpt.ExecutionPlacementError(
             "Execution placement can not be unambiguously inferred "
             "from input arguments."
         )
-    res_usm_type = dpctl.utils.get_coerced_usm_type(
+    res_usm_type = dpt.get_coerced_usm_type(
         (
             x1_usm_type,
             x2_usm_type,
         )
     )
-    dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
+    dpt.validate_usm_type(res_usm_type, allow_none=False)
     # handle axes and shapes validation
     x1_nd = x1.ndim
     x2_nd = x2.ndim
@@ -357,19 +356,19 @@ def vecdot(x1, x2, axis=-1):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
     q1, x1_usm_type = x1.sycl_queue, x1.usm_type
     q2, x2_usm_type = x2.sycl_queue, x2.usm_type
-    exec_q = dpctl.utils.get_execution_queue((q1, q2))
+    exec_q = dpt.get_execution_queue((q1, q2))
     if exec_q is None:
-        raise ExecutionPlacementError(
+        raise dpt.ExecutionPlacementError(
             "Execution placement can not be unambiguously inferred "
             "from input arguments."
         )
-    res_usm_type = dpctl.utils.get_coerced_usm_type(
+    res_usm_type = dpt.get_coerced_usm_type(
         (
             x1_usm_type,
             x2_usm_type,
         )
     )
-    dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
+    dpt.validate_usm_type(res_usm_type, allow_none=False)
     # axis and shape validation
     x1_nd = x1.ndim
     x2_nd = x2.ndim
@@ -661,19 +660,19 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
         order = "K"
     q1, x1_usm_type = x1.sycl_queue, x1.usm_type
     q2, x2_usm_type = x2.sycl_queue, x2.usm_type
-    exec_q = dpctl.utils.get_execution_queue((q1, q2))
+    exec_q = dpt.get_execution_queue((q1, q2))
     if exec_q is None:
-        raise ExecutionPlacementError(
+        raise dpt.ExecutionPlacementError(
             "Execution placement can not be unambiguously inferred "
             "from input arguments."
         )
-    res_usm_type = dpctl.utils.get_coerced_usm_type(
+    res_usm_type = dpt.get_coerced_usm_type(
         (
             x1_usm_type,
             x2_usm_type,
         )
     )
-    dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
+    dpt.validate_usm_type(res_usm_type, allow_none=False)
 
     x1_nd = x1.ndim
     x2_nd = x2.ndim
@@ -780,8 +779,8 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 f"Output array of type {res_dt} is needed, got {out.dtype}"
             )
 
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
-            raise ExecutionPlacementError(
+        if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 
