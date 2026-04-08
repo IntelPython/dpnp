@@ -155,8 +155,6 @@ def main():
     args = parse_args()
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    env = os.environ.copy()
-
     c_compiler, cxx_compiler = resolve_compilers(
         args.oneapi,
         args.c_compiler,
@@ -177,6 +175,8 @@ def main():
         verbose=args.verbose,
     )
     cmake_args.append("-DDPNP_GENERATE_COVERAGE=ON")
+
+    env = os.environ.copy()
 
     if args.bin_llvm:
         bin_llvm = args.bin_llvm
