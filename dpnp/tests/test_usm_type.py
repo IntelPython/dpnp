@@ -2,7 +2,6 @@ import copy
 import tempfile
 from math import prod
 
-import dpctl.utils as du
 import numpy
 import pytest
 
@@ -29,7 +28,7 @@ def test_add(usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -46,7 +45,7 @@ def test_multiply(usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -63,7 +62,7 @@ def test_subtract(usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -80,7 +79,7 @@ def test_divide(usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -100,7 +99,7 @@ def test_remainder(usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -121,7 +120,7 @@ def test_floor_divide(usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -136,7 +135,7 @@ def test_power(usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize(
@@ -320,7 +319,7 @@ def test_linspace_arrays(usm_type_start, usm_type_stop):
     start = dpnp.array([0, 0], usm_type=usm_type_start)
     stop = dpnp.array([2, 4], usm_type=usm_type_stop)
     res = dpnp.linspace(start, stop, 4)
-    assert res.usm_type == du.get_coerced_usm_type(
+    assert res.usm_type == dpt.get_coerced_usm_type(
         [usm_type_start, usm_type_stop]
     )
 
@@ -376,7 +375,7 @@ def test_logic_op_2in(op, usm_type_x, usm_type_y):
 
     assert x.usm_type == zx.usm_type == usm_type_x
     assert y.usm_type == zy.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("op", ["bitwise_count", "bitwise_not"])
@@ -404,7 +403,7 @@ def test_bitwise_op_2in(op, usm_type_x, usm_type_y):
 
     assert x.usm_type == zx.usm_type == usm_type_x
     assert y.usm_type == zy.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 class TestMatmul:
@@ -445,7 +444,7 @@ class TestMatmul:
 
         assert x.usm_type == usm_type_x
         assert y.usm_type == usm_type_y
-        assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+        assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
     @pytest.mark.parametrize("usm_type", list_of_usm_types)
     def test_syrk(self, usm_type):
@@ -474,7 +473,7 @@ def test_matvec(usm_type_x, usm_type_y, shape1, shape2):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -496,7 +495,7 @@ def test_vecdot(usm_type_x, usm_type_y, shape1, shape2):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -518,7 +517,7 @@ def test_vecmat(usm_type_x, usm_type_y, shape1, shape2):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -744,7 +743,7 @@ def test_2in_1out(func, data1, data2, usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize(
@@ -765,7 +764,7 @@ def test_2in_2out(func, data1, data2, usm_type_x, usm_type_y):
     assert (
         z1.usm_type
         == z2.usm_type
-        == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+        == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
     )
 
 
@@ -811,7 +810,7 @@ def test_piecewise(usm_type_x, usm_type_y, usm_type_z):
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
     assert z.usm_type == usm_type_z
-    assert result.usm_type == du.get_coerced_usm_type(
+    assert result.usm_type == dpt.get_coerced_usm_type(
         [usm_type_x, usm_type_y, usm_type_z]
     )
 
@@ -836,7 +835,7 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -848,7 +847,7 @@ def test_extract(usm_type_x, usm_type_y):
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize(
@@ -896,7 +895,9 @@ class TestDelete:
 
         assert x.usm_type == usm_type
         assert y.usm_type == usm_type_other
-        assert z.usm_type == du.get_coerced_usm_type([usm_type, usm_type_other])
+        assert z.usm_type == dpt.get_coerced_usm_type(
+            [usm_type, usm_type_other]
+        )
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
@@ -941,7 +942,9 @@ class TestInsert:
 
         assert x.usm_type == usm_type
         assert y.usm_type == usm_type_other
-        assert z.usm_type == du.get_coerced_usm_type([usm_type, usm_type_other])
+        assert z.usm_type == dpt.get_coerced_usm_type(
+            [usm_type, usm_type_other]
+        )
 
     @pytest.mark.parametrize("values", [-2, [-1, -2]], ids=["scalar", "list"])
     @pytest.mark.parametrize("usm_type_other", list_of_usm_types)
@@ -952,7 +955,9 @@ class TestInsert:
 
         assert x.usm_type == usm_type
         assert y.usm_type == usm_type_other
-        assert z.usm_type == du.get_coerced_usm_type([usm_type, usm_type_other])
+        assert z.usm_type == dpt.get_coerced_usm_type(
+            [usm_type, usm_type_other]
+        )
 
     @pytest.mark.parametrize("usm_type_y", list_of_usm_types)
     @pytest.mark.parametrize("usm_type_z", list_of_usm_types)
@@ -965,7 +970,7 @@ class TestInsert:
         assert x.usm_type == usm_type
         assert y.usm_type == usm_type_y
         assert z.usm_type == usm_type_z
-        assert res.usm_type == du.get_coerced_usm_type(
+        assert res.usm_type == dpt.get_coerced_usm_type(
             [usm_type, usm_type_y, usm_type_z]
         )
 
@@ -980,7 +985,7 @@ def test_take(func, usm_type_x, usm_type_ind):
 
     assert x.usm_type == usm_type_x
     assert ind.usm_type == usm_type_ind
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_ind])
 
 
 @pytest.mark.parametrize(
@@ -1004,7 +1009,7 @@ def test_take_along_axis(data, ind, axis, usm_type_x, usm_type_ind):
 
     assert x.usm_type == usm_type_x
     assert ind.usm_type == usm_type_ind
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_ind])
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
@@ -1156,8 +1161,8 @@ def test_histogram(usm_type_v, usm_type_w):
     hist, edges = dpnp.histogram(v, weights=w)
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
-    assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
-    assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+    assert hist.usm_type == dpt.get_coerced_usm_type([usm_type_v, usm_type_w])
+    assert edges.usm_type == dpt.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -1172,13 +1177,13 @@ def test_histogram2d(usm_type_x, usm_type_y, usm_type_w):
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
     assert w.usm_type == usm_type_w
-    assert hist.usm_type == du.get_coerced_usm_type(
+    assert hist.usm_type == dpt.get_coerced_usm_type(
         [usm_type_x, usm_type_y, usm_type_w]
     )
-    assert edges_x.usm_type == du.get_coerced_usm_type(
+    assert edges_x.usm_type == dpt.get_coerced_usm_type(
         [usm_type_x, usm_type_y, usm_type_w]
     )
-    assert edges_y.usm_type == du.get_coerced_usm_type(
+    assert edges_y.usm_type == dpt.get_coerced_usm_type(
         [usm_type_x, usm_type_y, usm_type_w]
     )
 
@@ -1192,7 +1197,7 @@ def test_bincount(usm_type_v, usm_type_w):
     hist = dpnp.bincount(v, weights=w)
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
-    assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+    assert hist.usm_type == dpt.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
 @pytest.mark.parametrize("usm_type_v", list_of_usm_types)
@@ -1204,9 +1209,9 @@ def test_histogramdd(usm_type_v, usm_type_w):
     hist, edges = dpnp.histogramdd(v, weights=w)
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
-    assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+    assert hist.usm_type == dpt.get_coerced_usm_type([usm_type_v, usm_type_w])
     for e in edges:
-        assert e.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+        assert e.usm_type == dpt.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
 @pytest.mark.parametrize(
@@ -1247,7 +1252,7 @@ def test_histogram_bin_edges(usm_type_v, usm_type_w):
     edges = dpnp.histogram_bin_edges(v, weights=w)
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
-    assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+    assert edges.usm_type == dpt.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
@@ -1256,7 +1261,7 @@ def test_select(usm_type_x, usm_type_y):
     condlist = [dpnp.array([True, False], usm_type=usm_type_x)]
     choicelist = [dpnp.array([1, 2], usm_type=usm_type_y)]
     res = dpnp.select(condlist, choicelist)
-    assert res.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert res.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("axis", [None, 0, -1])
@@ -1300,7 +1305,7 @@ def test_ediff1d(usm_type_x, usm_type_args, to_end, to_begin):
 
     res = dpnp.ediff1d(x, to_end=to_end, to_begin=to_begin)
 
-    assert res.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_args])
+    assert res.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_args])
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
@@ -1337,7 +1342,7 @@ def test_choose(usm_type_x, usm_type_ind):
 
     assert chc.usm_type == usm_type_x
     assert ind.usm_type == usm_type_ind
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
+    assert z.usm_type == dpt.get_coerced_usm_type([usm_type_x, usm_type_ind])
 
 
 @pytest.mark.parametrize(
@@ -1371,7 +1376,7 @@ class TestInterp:
         assert x.usm_type == usm_type_x
         assert xp.usm_type == usm_type_xp
         assert fp.usm_type == usm_type_fp
-        assert result.usm_type == du.get_coerced_usm_type(
+        assert result.usm_type == dpt.get_coerced_usm_type(
             [usm_type_x, usm_type_xp, usm_type_fp]
         )
 
@@ -1390,7 +1395,7 @@ class TestInterp:
 
         assert left.usm_type == usm_type_left
         assert right.usm_type == usm_type_right
-        assert result.usm_type == du.get_coerced_usm_type(
+        assert result.usm_type == dpt.get_coerced_usm_type(
             [
                 x.usm_type,
                 xp.usm_type,
@@ -1523,7 +1528,7 @@ class TestLinAlgebra:
         assert a.usm_type == usm_type
         assert b.usm_type == usm_type_other
         for param in result:
-            assert param.usm_type == du.get_coerced_usm_type(
+            assert param.usm_type == dpt.get_coerced_usm_type(
                 [usm_type, usm_type_other]
             )
 
@@ -1558,7 +1563,7 @@ class TestLinAlgebra:
 
         assert lu.usm_type == usm_type
         assert b.usm_type == usm_type_rhs
-        assert result.usm_type == du.get_coerced_usm_type(
+        assert result.usm_type == dpt.get_coerced_usm_type(
             [usm_type, usm_type_rhs]
         )
 
@@ -1718,7 +1723,7 @@ class TestLinAlgebra:
 
         assert x.usm_type == usm_type
         assert y.usm_type == usm_type_rhs
-        assert z.usm_type == du.get_coerced_usm_type([usm_type, usm_type_rhs])
+        assert z.usm_type == dpt.get_coerced_usm_type([usm_type, usm_type_rhs])
 
     @pytest.mark.parametrize("full_matrices_param", [True, False])
     @pytest.mark.parametrize("compute_uv_param", [True, False])
@@ -1784,6 +1789,6 @@ class TestLinAlgebra:
 
         assert a.usm_type == usm_type
         assert b.usm_type == usm_type_other
-        assert result.usm_type == du.get_coerced_usm_type(
+        assert result.usm_type == dpt.get_coerced_usm_type(
             [usm_type, usm_type_other]
         )
