@@ -55,9 +55,6 @@ import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
 # pylint: disable=no-name-in-module
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
-from dpnp.tensor._copy_utils import _nonzero_impl
-from dpnp.tensor._indexing_functions import _get_indexing_mode
-from dpnp.tensor._numpy_helper import normalize_axis_index
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
@@ -65,6 +62,9 @@ from .dpnp_algo import (
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import call_origin, get_usm_allocations
+from .tensor._copy_utils import _nonzero_impl
+from .tensor._indexing_functions import _get_indexing_mode
+from .tensor._numpy_helper import normalize_axis_index
 
 
 def _ravel_multi_index_checks(multi_index, dims, order):

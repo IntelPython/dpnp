@@ -49,17 +49,17 @@ import numpy
 
 import dpnp
 import dpnp.tensor as dpt
-from dpnp.tensor._numpy_helper import (
-    AxisError,
-    normalize_axis_index,
-    normalize_axis_tuple,
-)
 
 from .dpnp_array import dpnp_array
 
 # pylint: disable=no-name-in-module
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_pad import dpnp_pad
+from .tensor._numpy_helper import (
+    AxisError,
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 
 class InsertDeleteParams(NamedTuple):

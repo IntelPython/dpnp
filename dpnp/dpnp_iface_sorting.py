@@ -43,7 +43,6 @@ from collections.abc import Sequence
 
 import dpnp
 import dpnp.tensor as dpt
-from dpnp.tensor._numpy_helper import normalize_axis_index
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
@@ -53,6 +52,7 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import (
     map_dtype_to_device,
 )
+from .tensor._numpy_helper import normalize_axis_index
 
 
 def _wrap_sort_argsort(

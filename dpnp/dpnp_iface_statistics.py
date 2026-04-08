@@ -50,7 +50,6 @@ import dpnp
 import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_elementwise_impl as ti
-from dpnp.tensor._numpy_helper import normalize_axis_index
 
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_common import (
@@ -59,6 +58,7 @@ from .dpnp_utils.dpnp_utils_common import (
 )
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 from .dpnp_utils.dpnp_utils_statistics import dpnp_cov, dpnp_median
+from .tensor._numpy_helper import normalize_axis_index
 
 
 def _count_reduce_items(arr, axis, where=True):

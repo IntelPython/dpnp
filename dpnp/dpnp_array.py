@@ -41,9 +41,9 @@ import warnings
 import dpnp
 import dpnp.tensor as dpt
 import dpnp.tensor._type_utils as dtu
-from dpnp.tensor._numpy_helper import AxisError
 
 from . import memory as dpm
+from .tensor._numpy_helper import AxisError
 
 
 def _get_unwrapped_index_key(key):
