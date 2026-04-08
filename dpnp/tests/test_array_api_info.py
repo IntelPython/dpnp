@@ -2,10 +2,7 @@ import pytest
 from dpctl import SyclDeviceCreationError, get_devices, select_default_device
 
 import dpnp
-
-# TODO: revert to `from dpctl.tensor....`
-# when dpnp fully migrates dpctl/tensor
-from dpctl_ext.tensor._tensor_impl import default_device_complex_type
+from dpnp.tensor._tensor_impl import default_device_complex_type
 from dpnp.tests.helper import (
     has_support_aspect64,
     is_win_platform,

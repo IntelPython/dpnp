@@ -1,11 +1,9 @@
 import numpy
 import pytest
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import dpnp
 import dpnp.memory as dpm
+import dpnp.tensor as dpt
 
 
 class IntUsmData(dpt.usm_ndarray):

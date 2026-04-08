@@ -12,13 +12,11 @@ from numpy.testing import (
     assert_raises_regex,
 )
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import dpnp
-from dpctl_ext.tensor._numpy_helper import AxisError
-from dpctl_ext.tensor._type_utils import _to_device_supported_dtype
+import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
+from dpnp.tensor._numpy_helper import AxisError
+from dpnp.tensor._type_utils import _to_device_supported_dtype
 
 from .helper import (
     get_abs_array,

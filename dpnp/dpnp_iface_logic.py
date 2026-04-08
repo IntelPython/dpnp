@@ -46,12 +46,10 @@ it contains:
 import dpctl.utils as dpu
 import numpy
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_elementwise_impl as ti
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_elementwise_impl as ti
 
 from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 from .dpnp_array import dpnp_array

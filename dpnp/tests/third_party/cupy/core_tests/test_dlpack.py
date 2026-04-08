@@ -4,10 +4,8 @@ import dpctl
 import numpy
 import pytest
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor._dlpack as dlp
 import dpnp as cupy
+import dpnp.tensor._dlpack as dlp
 from dpnp.tests.third_party.cupy import testing
 
 

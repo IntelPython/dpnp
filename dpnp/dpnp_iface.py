@@ -48,13 +48,11 @@ import dpctl
 import dpctl.utils as dpu
 import numpy
 
-# pylint: disable=no-name-in-module
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
-from dpctl_ext.tensor._device import normalize_queue_device
+
+# pylint: disable=no-name-in-module
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_impl as ti
 
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
@@ -62,6 +60,7 @@ from .dpnp_utils import (
     map_dtype_to_device,
     use_origin_backend,
 )
+from .tensor._device import normalize_queue_device
 
 
 def are_same_logical_tensors(ar1, ar2):

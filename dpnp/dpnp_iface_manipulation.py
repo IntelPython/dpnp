@@ -47,21 +47,19 @@ from typing import NamedTuple
 import dpctl
 import numpy
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
 import dpnp
-from dpctl_ext.tensor._numpy_helper import (
-    AxisError,
-    normalize_axis_index,
-    normalize_axis_tuple,
-)
+import dpnp.tensor as dpt
 
 from .dpnp_array import dpnp_array
 
 # pylint: disable=no-name-in-module
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_pad import dpnp_pad
+from .tensor._numpy_helper import (
+    AxisError,
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 
 class InsertDeleteParams(NamedTuple):

@@ -46,13 +46,10 @@ import math
 import dpctl.utils as dpu
 import numpy
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_elementwise_impl as ti
 import dpnp
 import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
-from dpctl_ext.tensor._numpy_helper import normalize_axis_index
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_elementwise_impl as ti
 
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_common import (
@@ -61,6 +58,7 @@ from .dpnp_utils.dpnp_utils_common import (
 )
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 from .dpnp_utils.dpnp_utils_statistics import dpnp_cov, dpnp_median
+from .tensor._numpy_helper import normalize_axis_index
 
 
 def _count_reduce_items(arr, axis, where=True):

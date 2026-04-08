@@ -29,10 +29,39 @@
 
 find_package(Python COMPONENTS Development.Module)
 
+# Remove global coverage flags for tensor
+# use link-time only approach like dpctl
+if(DPNP_GENERATE_COVERAGE)
+    string(REPLACE "-fprofile-instr-generate " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string(REPLACE "-fcoverage-mapping " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string(REPLACE "-fno-sycl-use-footer " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endif()
+
+# Tensor-specific debug flags
+# Disable device code debug info for Debug and Coverage builds to speed up linking
+if(
+    CMAKE_BUILD_TYPE STREQUAL "Debug"
+    OR CMAKE_BUILD_TYPE STREQUAL "DEBUG"
+    OR CMAKE_BUILD_TYPE STREQUAL "Coverage"
+)
+    if(WIN32)
+        add_compile_options(-Xsycl-target-frontend=spir64 "-g0")
+    elseif(UNIX)
+        add_compile_options(-Xsycl-target-frontend=spir64 "-g0")
+        if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+            string(REPLACE "-g1" "-g" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+            string(REPLACE "-g1" "-g" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+        endif()
+    endif()
+endif()
+
+# Suppress unused parameter warnings
+add_compile_options(-Wno-unused-parameter)
+
 file(GLOB _cython_sources *.pyx)
 foreach(_cy_file ${_cython_sources})
     get_filename_component(_trgt ${_cy_file} NAME_WLE)
-    build_dpctl_ext(${_trgt} ${_cy_file} "dpctl_ext/tensor" RELATIVE_PATH "..")
+    build_dpnp_tensor_ext(${_trgt} ${_cy_file} "dpnp/tensor" RELATIVE_PATH "..")
     target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 endforeach()
 
@@ -304,8 +333,7 @@ foreach(python_module_name ${_py_trgts})
         ${python_module_name}
         PRIVATE -fsycl-device-code-split=per_kernel
     )
-    # TODO: expand DPCTL_OFFLOAD_COMPRESS to the whole dpnp level
-    if(DPCTL_OFFLOAD_COMPRESS)
+    if(DPNP_TENSOR_OFFLOAD_COMPRESS)
         target_link_options(${python_module_name} PRIVATE --offload-compress)
     endif()
 
@@ -319,8 +347,8 @@ foreach(python_module_name ${_py_trgts})
             ${CMAKE_BINARY_DIR} # For generated Cython headers
     )
     target_link_options(${python_module_name} PRIVATE ${_linker_options})
-    if(DPCTL_GENERATE_COVERAGE)
-        if(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS)
+    if(DPNP_GENERATE_COVERAGE)
+        if(DPNP_TENSOR_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS)
             target_compile_options(
                 ${python_module_name}
                 PRIVATE -fprofile-instr-generate -fcoverage-mapping
@@ -350,6 +378,5 @@ foreach(python_module_name ${_py_trgts})
             PROPERTIES INSTALL_RPATH "$ORIGIN/../../../.."
         )
     endif()
-    # TODO: revert to `DESTINATION "dpctl/tensor"`
-    install(TARGETS ${python_module_name} DESTINATION "dpctl_ext/tensor")
+    install(TARGETS ${python_module_name} DESTINATION "dpnp/tensor")
 endforeach()

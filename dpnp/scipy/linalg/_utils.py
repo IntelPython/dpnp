@@ -45,12 +45,11 @@ from warnings import warn
 
 import dpctl.utils as dpu
 
-# pylint: disable=no-name-in-module
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
+
+# pylint: disable=no-name-in-module
+import dpnp.tensor._tensor_impl as ti
 from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.linalg.dpnp_utils_linalg import _common_type
 

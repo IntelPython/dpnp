@@ -28,12 +28,8 @@ dpnp_pytest.*
 example3
 
 *dpnp_backend*
+dpnp/include/dpnp/tensor/*.h
 dpnp/**/*.cpython*.so
 dpnp/**/*.pyd
 *~
 core
-
-# TODO: revert to `dpctl/`
-# when dpnp fully migrates dpctl/tensor
-dpctl_ext/**/*.cpython*.so
-dpctl_ext/include/

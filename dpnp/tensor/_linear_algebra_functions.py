@@ -31,12 +31,10 @@ import operator
 import dpctl
 from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_elementwise_impl as tei
-import dpctl_ext.tensor._tensor_impl as ti
-import dpctl_ext.tensor._tensor_linalg_impl as tli
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_elementwise_impl as tei
+import dpnp.tensor._tensor_impl as ti
+import dpnp.tensor._tensor_linalg_impl as tli
 
 from ._copy_utils import _empty_like_orderK, _empty_like_pair_orderK
 from ._manipulation_functions import _broadcast_shape_impl

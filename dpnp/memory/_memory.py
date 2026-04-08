@@ -30,9 +30,7 @@ from dpctl.memory import MemoryUSMDevice as DPCTLMemoryUSMDevice
 from dpctl.memory import MemoryUSMHost as DPCTLMemoryUSMHost
 from dpctl.memory import MemoryUSMShared as DPCTLMemoryUSMShared
 
-# TODO: revert to `from dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
+import dpnp.tensor as dpt
 
 
 def _add_ptr_property(cls):

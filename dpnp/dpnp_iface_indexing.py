@@ -47,18 +47,14 @@ from collections.abc import Iterable
 import dpctl.utils as dpu
 import numpy
 
-# pylint: disable=no-name-in-module
-# TODO: revert to `import dpctl.tensor...`
-# when dpnp fully migrates dpctl/tensor
-import dpctl_ext.tensor as dpt
-import dpctl_ext.tensor._tensor_impl as ti
 import dpnp
 
 # pylint: disable=no-name-in-module
 import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
-from dpctl_ext.tensor._copy_utils import _nonzero_impl
-from dpctl_ext.tensor._indexing_functions import _get_indexing_mode
-from dpctl_ext.tensor._numpy_helper import normalize_axis_index
+
+# pylint: disable=no-name-in-module
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_impl as ti
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
@@ -66,6 +62,9 @@ from .dpnp_algo import (
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import call_origin, get_usm_allocations
+from .tensor._copy_utils import _nonzero_impl
+from .tensor._indexing_functions import _get_indexing_mode
+from .tensor._numpy_helper import normalize_axis_index
 
 
 def _ravel_multi_index_checks(multi_index, dims, order):
