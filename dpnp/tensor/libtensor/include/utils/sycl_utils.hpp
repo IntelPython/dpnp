@@ -283,9 +283,21 @@ T custom_inclusive_scan_over_group(GroupT &&wg,
         const bool in_range = (lane_id < n_aggregates);
         const bool in_bounds = in_range && (lane_id > 0 || large_wg);
 
-        T __scan_val = (in_bounds)
-                           ? local_mem_acc[(offset + lane_id) * max_sgSize - 1]
-                           : identity;
+        // Here is a bug where IGC incorrectly optimized the below code:
+        // T __scan_val = (in_bounds)
+        //                 ? local_mem_acc[(offset + lane_id) * max_sgSize - 1]
+        //                 : identity;
+        // That causes `__scan_val` is not initialized with `identity` value:
+        //   wgs = 256, max_sgSize = 16   =>   n_aggregates = 16
+        //   wi = 0:   in_range = 1, in_bounds = 0   =>   __scan_val = identity
+        // The w/s adds SYCL atomic fence, since the explicit memory fence
+        // prevents reordering/elimination, while it will add slight overhead.
+        T __scan_val = identity;
+        sycl::atomic_fence(sycl::memory_order::relaxed,
+                           sycl::memory_scope::work_item);
+        if (in_bounds) {
+            __scan_val = local_mem_acc[(offset + lane_id) * max_sgSize - 1];
+        }
         for (std::uint32_t step = 1; step < sgSize; step *= 2) {
             const bool advanced_lane = (lane_id >= step);
             const std::uint32_t src_lane_id =
