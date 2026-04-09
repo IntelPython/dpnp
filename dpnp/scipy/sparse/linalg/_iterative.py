@@ -72,13 +72,13 @@ import dpctl.utils as dpu
 
 from ._interface import IdentityOperator, LinearOperator, aslinearoperator
 
-
 # ---------------------------------------------------------------------------
 # oneMKL sparse SpMV hook -- cached-handle API
 # ---------------------------------------------------------------------------
 
 try:
     from dpnp.backend.extensions.sparse import _sparse_impl as _si
+
     _HAS_SPARSE_IMPL = True
 except ImportError:
     _si = None
@@ -91,6 +91,7 @@ _SUPPORTED_DTYPES = frozenset("fdFD")
 # Internal helpers
 # ---------------------------------------------------------------------------
 
+
 def _np_dtype(dp_dtype) -> numpy.dtype:
     """Normalise any dtype-like (dpnp type, numpy type, string) to numpy.dtype."""
     return numpy.dtype(dp_dtype)
@@ -102,6 +103,7 @@ def _check_dtype(dtype, name: str) -> None:
             f"{name} has unsupported dtype {dtype}; "
             "only float32, float64, complex64, complex128 are accepted."
         )
+
 
 class _CachedSpMV:
     """
@@ -117,9 +119,19 @@ class _CachedSpMV:
     trans : int  0=N, 1=T, 2=C  (fixed at construction)
     """
 
-    __slots__ = ("_A", "_exec_q", "_handle", "_trans",
-                 "_nrows", "_ncols", "_nnz", "_out_size", "_in_size",
-                 "_dtype", "_val_type_id")
+    __slots__ = (
+        "_A",
+        "_exec_q",
+        "_handle",
+        "_trans",
+        "_nrows",
+        "_ncols",
+        "_nnz",
+        "_out_size",
+        "_in_size",
+        "_dtype",
+        "_val_type_id",
+    )
 
     def __init__(self, A, trans: int = 0):
         self._A = A  # keep alive so USM pointers stay valid
@@ -163,8 +175,9 @@ class _CachedSpMV:
 
     def __call__(self, x: dpnp.ndarray) -> dpnp.ndarray:
         """y = op(A) * x -- only sparse::gemv fires, fully async."""
-        y = dpnp.empty(self._out_size, dtype=self._dtype,
-                        sycl_queue=self._exec_q)
+        y = dpnp.empty(
+            self._out_size, dtype=self._dtype, sycl_queue=self._exec_q
+        )
         # Do NOT wait on the event -- subsequent dpnp ops on the same
         # queue will serialize behind it automatically. Blocking here
         # throws away async overlap and dominates small-problem runtime.
@@ -194,8 +207,10 @@ class _CachedSpMV:
                 pass
             self._handle = None
 
+
 class _CachedSpMVPair:
     """Holds forward and (lazily built) adjoint cached SpMV handles."""
+
     __slots__ = ("forward", "_A", "_adjoint")
 
     def __init__(self, A):
@@ -210,10 +225,10 @@ class _CachedSpMVPair:
         if self._adjoint is None:
             # Build conjtrans handle on first use. For real dtypes
             # this is equivalent to trans=1.
-            is_cpx = dpnp.issubdtype(self._A.data.dtype,
-                                      dpnp.complexfloating)
+            is_cpx = dpnp.issubdtype(self._A.data.dtype, dpnp.complexfloating)
             self._adjoint = _CachedSpMV(self._A, trans=2 if is_cpx else 1)
         return self._adjoint(x)
+
 
 def _make_fast_matvec(A):
     """Return a _CachedSpMVPair if A is a CSR matrix with oneMKL support,
@@ -226,6 +241,7 @@ def _make_fast_matvec(A):
     """
     try:
         from dpnp.scipy import sparse as _sp
+
         if not (_sp.issparse(A) and A.format == "csr"):
             return None
     except (ImportError, AttributeError):
@@ -243,6 +259,7 @@ def _make_fast_matvec(A):
     except Exception:
         return None
 
+
 def _make_system(A, M, x0, b):
     """Validate and prepare (A_op, M_op, x, b, dtype) on device.
 
@@ -254,9 +271,7 @@ def _make_system(A, M, x0, b):
     complex128 (complex).
     """
     if not isinstance(b, dpnp.ndarray):
-        raise TypeError(
-            f"b must be a dpnp.ndarray, got {type(b).__name__}"
-        )
+        raise TypeError(f"b must be a dpnp.ndarray, got {type(b).__name__}")
     if x0 is not None and not isinstance(x0, dpnp.ndarray):
         raise TypeError(
             f"x0 must be a dpnp.ndarray or None, got {type(x0).__name__}"
@@ -274,7 +289,10 @@ def _make_system(A, M, x0, b):
         )
 
     # Dtype promotion: prefer A.dtype; fall back via b.dtype.
-    if A_op.dtype is not None and _np_dtype(A_op.dtype).char in _SUPPORTED_DTYPES:
+    if (
+        A_op.dtype is not None
+        and _np_dtype(A_op.dtype).char in _SUPPORTED_DTYPES
+    ):
         dtype = A_op.dtype
     elif dpnp.issubdtype(b.dtype, dpnp.complexfloating):
         dtype = dpnp.complex128
@@ -303,25 +321,38 @@ def _make_system(A, M, x0, b):
         fast_mv_M = _make_fast_matvec(M)
         if fast_mv_M is not None:
             _orig_M = M_op
+
             class _FastMOp(LinearOperator):
                 def __init__(self):
                     super().__init__(_orig_M.dtype, _orig_M.shape)
-                def _matvec(self, x): return fast_mv_M.matvec(x)
-                def _rmatvec(self, x): return fast_mv_M.rmatvec(x)
+
+                def _matvec(self, x):
+                    return fast_mv_M.matvec(x)
+
+                def _rmatvec(self, x):
+                    return fast_mv_M.rmatvec(x)
+
             M_op = _FastMOp()
 
     # Inject fast CSR SpMV for A if available.
     fast_mv = _make_fast_matvec(A)
     if fast_mv is not None:
         _orig = A_op
+
         class _FastOp(LinearOperator):
             def __init__(self):
                 super().__init__(_orig.dtype, _orig.shape)
-            def _matvec(self, x): return fast_mv.matvec(x)
-            def _rmatvec(self, x): return fast_mv.rmatvec(x)
+
+            def _matvec(self, x):
+                return fast_mv.matvec(x)
+
+            def _rmatvec(self, x):
+                return fast_mv.rmatvec(x)
+
         A_op = _FastOp()
 
     return A_op, M_op, x, b, dtype
+
 
 def _get_atol(b_norm: float, atol, rtol: float) -> float:
     """Absolute stopping tolerance: max(atol, rtol*||b||), mirroring SciPy."""
@@ -338,6 +369,7 @@ def _get_atol(b_norm: float, atol, rtol: float) -> float:
 # ---------------------------------------------------------------------------
 # Conjugate Gradient
 # ---------------------------------------------------------------------------
+
 
 def cg(
     A,
@@ -409,14 +441,14 @@ def cg(
             break
 
         Ap = A_op.matvec(p)
-        pAp = dpnp.real(dpnp.vdot(p, Ap))   # 0-D on device
+        pAp = dpnp.real(dpnp.vdot(p, Ap))  # 0-D on device
 
         if float(dpnp.abs(pAp)) < rhotol:
             info = -1
             break
 
-        alpha = rz / pAp                       # 0-D on device
-        x = x + alpha * p                      # fully on-device
+        alpha = rz / pAp  # 0-D on device
+        x = x + alpha * p  # fully on-device
         r = r - alpha * Ap
 
         if callback is not None:
@@ -429,13 +461,14 @@ def cg(
             info = 0
             break
 
-        beta = rz_new / rz                     # 0-D on device
+        beta = rz_new / rz  # 0-D on device
         p = z + beta * p
         rz = rz_new
     else:
         info = maxiter
 
     return x, int(info)
+
 
 def gmres(
     A,
@@ -509,8 +542,8 @@ def gmres(
     restart = min(int(restart), n)
 
     if callback_type is None:
-        callback_type = 'pr_norm'
-    if callback_type not in ('x', 'pr_norm'):
+        callback_type = "pr_norm"
+    if callback_type not in ("x", "pr_norm"):
         raise ValueError(f"Unknown callback_type: {callback_type!r}")
     if callback is None:
         callback_type = None
@@ -521,9 +554,10 @@ def gmres(
     # avoid host-device sync overhead (which dominates on Intel GPUs
     # even for small transfers).  CuPy keeps e on host and solves
     # lstsq on CPU, but for dpnp we keep everything on device.
-    V = dpnp.empty((n, restart), dtype=dtype, sycl_queue=queue, order='F')
-    H = dpnp.zeros((restart + 1, restart), dtype=dtype,
-                    sycl_queue=queue, order='F')
+    V = dpnp.empty((n, restart), dtype=dtype, sycl_queue=queue, order="F")
+    H = dpnp.zeros(
+        (restart + 1, restart), dtype=dtype, sycl_queue=queue, order="F"
+    )
     e = dpnp.zeros(restart + 1, dtype=dtype, sycl_queue=queue)
 
     compute_hu = _make_compute_hu(V)
@@ -534,9 +568,9 @@ def gmres(
         r = b - matvec(mx)
         r_norm = dpnp.linalg.norm(r)
 
-        if callback_type == 'x':
+        if callback_type == "x":
             callback(mx)
-        elif callback_type == 'pr_norm' and iters > 0:
+        elif callback_type == "pr_norm" and iters > 0:
             callback(r_norm / b_norm)
 
         if r_norm <= atol or iters >= maxiter:
@@ -550,7 +584,7 @@ def gmres(
         for j in range(restart):
             z = psolve(v)
             u = matvec(z)
-            H[:j + 1, j], u = compute_hu(u, j)
+            H[: j + 1, j], u = compute_hu(u, j)
             H[j + 1, j] = dpnp.linalg.norm(u)
             if j + 1 < restart:
                 v = u / H[j + 1, j]
@@ -567,6 +601,7 @@ def gmres(
         info = iters
 
     return mx, info
+
 
 def minres(
     A,
@@ -725,7 +760,7 @@ def minres(
         itn += 1
 
         s = 1.0 / beta
-        v = s * y                           # on device
+        v = s * y  # on device
 
         y = matvec(v)
         y = y - shift * v
@@ -748,7 +783,7 @@ def minres(
             raise ValueError("non-symmetric matrix")
         beta = numpy.sqrt(beta)
 
-        tnorm2 += alpha ** 2 + oldb ** 2 + beta ** 2
+        tnorm2 += alpha**2 + oldb**2 + beta**2
 
         if itn == 1:
             if beta / beta1 <= 10 * eps:
@@ -762,11 +797,11 @@ def minres(
         gbar = sn * dbar - cs * alpha
         epsln = sn * beta
         dbar = -cs * beta
-        root = numpy.sqrt(gbar ** 2 + dbar ** 2)
-        Arnorm = phibar * root          # ||A r_{k-1}||
+        root = numpy.sqrt(gbar**2 + dbar**2)
+        Arnorm = phibar * root  # ||A r_{k-1}||
 
         # Compute the next plane rotation Q_k.
-        gamma = numpy.sqrt(gbar ** 2 + beta ** 2)
+        gamma = numpy.sqrt(gbar**2 + beta**2)
         gamma = max(gamma, eps)
         cs = gbar / gamma
         sn = beta / gamma
@@ -791,7 +826,7 @@ def minres(
         # Estimate norms and test for convergence.
         # ----------------------------------------------------------
         Anorm = numpy.sqrt(tnorm2)
-        ynorm = float(dpnp.linalg.norm(x))     # host sync #3
+        ynorm = float(dpnp.linalg.norm(x))  # host sync #3
         epsa = Anorm * eps
         epsx = Anorm * ynorm * eps
         epsr = Anorm * ynorm * rtol
@@ -804,11 +839,11 @@ def minres(
         if ynorm == 0 or Anorm == 0:
             test1 = numpy.inf
         else:
-            test1 = rnorm / (Anorm * ynorm)    # ||r|| / (||A|| ||x||)
+            test1 = rnorm / (Anorm * ynorm)  # ||r|| / (||A|| ||x||)
         if Anorm == 0:
             test2 = numpy.inf
         else:
-            test2 = root / Anorm                # ||Ar|| / (||A|| ||r||)
+            test2 = root / Anorm  # ||Ar|| / (||A|| ||r||)
 
         # Estimate cond(A).
         Acond = gmax / gmin
@@ -834,16 +869,24 @@ def minres(
                 istop = 1
 
         if show:
-            prnt = (n <= 40 or itn <= 10 or itn >= maxiter - 10
-                    or itn % 10 == 0 or qrnorm <= 10 * epsx
-                    or qrnorm <= 10 * epsr or Acond <= 1e-2 / eps
-                    or istop != 0)
+            prnt = (
+                n <= 40
+                or itn <= 10
+                or itn >= maxiter - 10
+                or itn % 10 == 0
+                or qrnorm <= 10 * epsx
+                or qrnorm <= 10 * epsr
+                or Acond <= 1e-2 / eps
+                or istop != 0
+            )
             if prnt:
                 x1 = float(x[0])
-                print(f"{itn:6g} {x1:12.5e} {test1:10.3e}"
-                      f" {test2:10.3e}"
-                      f" {Anorm:8.1e} {Acond:8.1e}"
-                      f" {gbar / Anorm if Anorm else 0:8.1e}")
+                print(
+                    f"{itn:6g} {x1:12.5e} {test1:10.3e}"
+                    f" {test2:10.3e}"
+                    f" {Anorm:8.1e} {Acond:8.1e}"
+                    f" {gbar / Anorm if Anorm else 0:8.1e}"
+                )
                 if itn % 10 == 0:
                     print()
 
@@ -859,6 +902,7 @@ def minres(
         info = 0
 
     return (x, info)
+
 
 def _make_compute_hu(V):
     """Factory mirroring cupyx's _make_compute_hu using oneMKL gemv directly.
@@ -891,16 +935,19 @@ def _make_compute_hu(V):
         h = dpnp.empty(j + 1, dtype=dtype, sycl_queue=exec_q)
 
         # Sub-view: column-major slice of the trailing axis is F-contiguous.
-        Vj = V[:, :j + 1]
+        Vj = V[:, : j + 1]
         Vj_usm = dpnp.get_usm_ndarray(Vj)
-        u_usm  = dpnp.get_usm_ndarray(u)
-        h_usm  = dpnp.get_usm_ndarray(h)
+        u_usm = dpnp.get_usm_ndarray(u)
+        h_usm = dpnp.get_usm_ndarray(h)
 
         _manager = dpu.SequentialOrderManager[exec_q]
 
         # Pass 1: h = Vj^T @ u  (real) or  h = (Vj^T @ u) then conj  (complex)
         ht1, ev1 = bi._gemv(
-            exec_q, Vj_usm, u_usm, h_usm,
+            exec_q,
+            Vj_usm,
+            u_usm,
+            h_usm,
             transpose=True,
             depends=_manager.submitted_events,
         )
@@ -916,7 +963,10 @@ def _make_compute_hu(V):
         tmp = dpnp.empty_like(u)
         tmp_usm = dpnp.get_usm_ndarray(tmp)
         ht2, ev2 = bi._gemv(
-            exec_q, Vj_usm, h_usm, tmp_usm,
+            exec_q,
+            Vj_usm,
+            h_usm,
+            tmp_usm,
             transpose=False,
             depends=_manager.submitted_events,
         )
