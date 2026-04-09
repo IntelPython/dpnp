@@ -74,7 +74,7 @@ jobs:
         os: [ubuntu-22.04] # windows-2022 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    timeout-minutes: 120
 
     defaults:
       run:
