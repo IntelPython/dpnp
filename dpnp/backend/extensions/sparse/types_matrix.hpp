@@ -73,11 +73,15 @@ struct SparseGemvInitTypePairSupportFactory
         dpctl_td_ns::TypePairDefinedEntry<Tv, double, Ti, std::int32_t>,
         dpctl_td_ns::TypePairDefinedEntry<Tv, double, Ti, std::int64_t>,
         // complex single precision
-        dpctl_td_ns::TypePairDefinedEntry<Tv, std::complex<float>, Ti, std::int32_t>,
-        dpctl_td_ns::TypePairDefinedEntry<Tv, std::complex<float>, Ti, std::int64_t>,
+        dpctl_td_ns::
+            TypePairDefinedEntry<Tv, std::complex<float>, Ti, std::int32_t>,
+        dpctl_td_ns::
+            TypePairDefinedEntry<Tv, std::complex<float>, Ti, std::int64_t>,
         // complex double precision
-        dpctl_td_ns::TypePairDefinedEntry<Tv, std::complex<double>, Ti, std::int32_t>,
-        dpctl_td_ns::TypePairDefinedEntry<Tv, std::complex<double>, Ti, std::int64_t>,
+        dpctl_td_ns::
+            TypePairDefinedEntry<Tv, std::complex<double>, Ti, std::int32_t>,
+        dpctl_td_ns::
+            TypePairDefinedEntry<Tv, std::complex<double>, Ti, std::int64_t>,
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
@@ -100,17 +104,16 @@ template <typename Tv>
 struct SparseGemvComputeTypeSupportFactory
 {
 #if defined(DPCTL_HAS_TYPE_DEFINED_ENTRY)
-    static constexpr bool is_defined = std::disjunction
-        dpctl_td_ns::TypeDefinedEntry<Tv, float>,
+    static constexpr bool
+        is_defined = std::disjunction dpctl_td_ns::TypeDefinedEntry<Tv, float>,
         dpctl_td_ns::TypeDefinedEntry<Tv, double>,
         dpctl_td_ns::TypeDefinedEntry<Tv, std::complex<float>>,
         dpctl_td_ns::TypeDefinedEntry<Tv, std::complex<double>>,
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
+        dpctl_td_ns::NotDefinedEntry > ::is_defined;
 #else
     // Portable fallback: works with any dpctl version.
     static constexpr bool is_defined =
-        std::is_same_v<Tv, float>               ||
-        std::is_same_v<Tv, double>              ||
+        std::is_same_v<Tv, float> || std::is_same_v<Tv, double> ||
         std::is_same_v<Tv, std::complex<float>> ||
         std::is_same_v<Tv, std::complex<double>>;
 #endif

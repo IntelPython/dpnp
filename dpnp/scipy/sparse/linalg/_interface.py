@@ -110,15 +110,14 @@ class LinearOperator:
         shape = tuple(int(s) for s in shape)
         if not _isshape(shape):
             raise ValueError(
-                f"invalid shape {shape!r} (must be a length-2 tuple of non-negative ints)"
+                f"invalid shape {shape!r} (must be a length-2 tuple of "
+                "non-negative ints)"
             )
         self.dtype = dtype
         self.shape = shape
 
     def _init_dtype(self):
-        """
-        Infer dtype via a trial matvec on a zero vector.
-        """
+        """Infer dtype via a trial matvec on a zero vector."""
         if self.dtype is not None:
             return
         v = dpnp.zeros(self.shape[-1], dtype=dpnp.float64)
@@ -145,24 +144,29 @@ class LinearOperator:
         return self.H.matmat(X)
 
     def matvec(self, x):
+        """Apply the matrix-vector product."""
         M, N = self.shape
         if x.shape not in ((N,), (N, 1)):
             raise ValueError(
-                f"dimension mismatch: operator shape {self.shape}, vector shape {x.shape}"
+                f"dimension mismatch: operator shape {self.shape}, "
+                "vector shape {x.shape}"
             )
         y = self._matvec(x)
         return y.reshape(M) if x.ndim == 1 else y.reshape(M, 1)
 
     def rmatvec(self, x):
+        """Apply the adjoint matrix-vector product."""
         M, N = self.shape
         if x.shape not in ((M,), (M, 1)):
             raise ValueError(
-                f"dimension mismatch: operator shape {self.shape}, vector shape {x.shape}"
+                f"dimension mismatch: operator shape {self.shape}, "
+                "vector shape {x.shape}"
             )
         y = self._rmatvec(x)
         return y.reshape(N) if x.ndim == 1 else y.reshape(N, 1)
 
     def matmat(self, X):
+        """Apply the matrix-matrix product."""
         if X.ndim != 2:
             raise ValueError(f"expected 2-D array, got {X.ndim}-D")
         if X.shape[0] != self.shape[1]:
@@ -172,6 +176,7 @@ class LinearOperator:
         return self._matmat(X)
 
     def rmatmat(self, X):
+        """Apply the adjoint matrix-matrix product."""
         if X.ndim != 2:
             raise ValueError(f"expected 2-D array, got {X.ndim}-D")
         if X.shape[0] != self.shape[0]:
@@ -199,6 +204,7 @@ class LinearOperator:
         return self * x
 
     def __mul__(self, x):
+        """Multiply operator by array x."""
         return self.dot(x)
 
     def __matmul__(self, x):
@@ -261,16 +267,14 @@ class LinearOperator:
         dt = (
             "unspecified dtype" if self.dtype is None else f"dtype={self.dtype}"
         )
-        return f"<{self.shape[0]}x{self.shape[1]} {self.__class__.__name__} with {dt}>"
-
-
-# ---------------------------------------------------------------------------
-# Concrete operator classes
-# ---------------------------------------------------------------------------
+        return (
+            f"<{self.shape[0]}x{self.shape[1]}"
+            f" {self.__class__.__name__} with {dt}>"
+        )
 
 
 class _CustomLinearOperator(LinearOperator):
-    """Created when the user calls LinearOperator(shape, matvec=...) directly."""
+    """Created when the user calls LinearOperator(shape, matvec=...)"""
 
     def __init__(
         self, shape, matvec, rmatvec=None, matmat=None, dtype=None, rmatmat=None
@@ -321,16 +325,16 @@ class _AdjointLinearOperator(LinearOperator):
         self.args = (A,)
 
     def _matvec(self, x):
-        return self.A._rmatvec(x)
+        return self.A._rmatvec(x) # pylint: disable=protected-access
 
     def _rmatvec(self, x):
-        return self.A._matvec(x)
+        return self.A._matvec(x) # pylint: disable=protected-access
 
     def _matmat(self, X):
-        return self.A._rmatmat(X)
+        return self.A._rmatmat(X) # pylint: disable=protected-access
 
     def _rmatmat(self, X):
-        return self.A._matmat(X)
+        return self.A._matmat(X) # pylint: disable=protected-access
 
     def _adjoint(self):
         return self.A
@@ -504,6 +508,7 @@ class IdentityOperator(LinearOperator):
         super().__init__(dtype, shape)
 
     def _matvec(self, x):
+        """Apply matrix-vector product via stored array."""
         return x
 
     def _rmatvec(self, x):
@@ -535,7 +540,7 @@ def aslinearoperator(A) -> LinearOperator:
         return A
 
     try:
-        from dpnp.scipy import sparse as _sp
+        from dpnp.scipy import sparse as _sp # pylint: disable=import-outside-toplevel
 
         if _sp.issparse(A):
             return MatrixLinearOperator(A)

@@ -36,6 +36,6 @@ This namespace provides submodules that mimic parts of ``SciPy`` on top of
 DPNP functionality, reusing DPNP and oneMKL implementations underneath.
 """
 
-from . import linalg, special, sparse
+from . import linalg, sparse, special
 
 __all__ = ["linalg", "special", "sparse"]

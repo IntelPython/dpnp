@@ -67,15 +67,15 @@ namespace dpnp::extensions::sparse
  * a reference to the CSR matrix for the lifetime of the handle.
  */
 extern std::tuple<std::uintptr_t, int, sycl::event>
-sparse_gemv_init(sycl::queue &exec_q,
-                 const int trans,
-                 const dpctl::tensor::usm_ndarray &row_ptr,
-                 const dpctl::tensor::usm_ndarray &col_ind,
-                 const dpctl::tensor::usm_ndarray &values,
-                 const std::int64_t num_rows,
-                 const std::int64_t num_cols,
-                 const std::int64_t nnz,
-                 const std::vector<sycl::event> &depends);
+    sparse_gemv_init(sycl::queue &exec_q,
+                     const int trans,
+                     const dpctl::tensor::usm_ndarray &row_ptr,
+                     const dpctl::tensor::usm_ndarray &col_ind,
+                     const dpctl::tensor::usm_ndarray &values,
+                     const std::int64_t num_rows,
+                     const std::int64_t num_cols,
+                     const std::int64_t nnz,
+                     const std::vector<sycl::event> &depends);
 
 /**
  * sparse_gemv_compute -- PER-ITERATION SpMV.
@@ -98,18 +98,17 @@ sparse_gemv_init(sycl::queue &exec_q,
  * subsequent work on the same queue; no host-side wait or host_task
  * keep-alive is performed.
  */
-extern sycl::event
-sparse_gemv_compute(sycl::queue &exec_q,
-                    const std::uintptr_t handle_ptr,
-                    const int val_type_id,
-                    const int trans,
-                    const double alpha,
-                    const dpctl::tensor::usm_ndarray &x,
-                    const double beta,
-                    const dpctl::tensor::usm_ndarray &y,
-                    const std::int64_t num_rows,
-                    const std::int64_t num_cols,
-                    const std::vector<sycl::event> &depends);
+extern sycl::event sparse_gemv_compute(sycl::queue &exec_q,
+                                       const std::uintptr_t handle_ptr,
+                                       const int val_type_id,
+                                       const int trans,
+                                       const double alpha,
+                                       const dpctl::tensor::usm_ndarray &x,
+                                       const double beta,
+                                       const dpctl::tensor::usm_ndarray &y,
+                                       const std::int64_t num_rows,
+                                       const std::int64_t num_cols,
+                                       const std::vector<sycl::event> &depends);
 
 /**
  * sparse_gemv_release -- free the matrix_handle created by sparse_gemv_init.
@@ -118,10 +117,9 @@ sparse_gemv_compute(sycl::queue &exec_q,
  * depend on it have completed. The returned event depends on the release,
  * so the caller can chain CSR buffer deallocation on it safely.
  */
-extern sycl::event
-sparse_gemv_release(sycl::queue &exec_q,
-                    const std::uintptr_t handle_ptr,
-                    const std::vector<sycl::event> &depends);
+extern sycl::event sparse_gemv_release(sycl::queue &exec_q,
+                                       const std::uintptr_t handle_ptr,
+                                       const std::vector<sycl::event> &depends);
 
 /**
  * Register the init (2-D on Tv x Ti) and compute (1-D on Tv) dispatch

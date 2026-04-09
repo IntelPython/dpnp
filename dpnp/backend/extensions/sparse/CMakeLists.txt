@@ -46,7 +46,7 @@ if(_dpnp_sycl_targets)
 endif()
 
 if(WIN32)
-  if(${CMAKE_VERSION} VERSION_LESS "3.27")
+    if(${CMAKE_VERSION} VERSION_LESS "3.27")
         # this is a work-around for target_link_options inserting option after -link option, cause
         # linker to ignore it.
         set(CMAKE_CXX_LINK_FLAGS

@@ -8,6 +8,13 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.scipy.sparse.linalg import (
+    LinearOperator,
+    aslinearoperator,
+    cg,
+    gmres,
+    minres,
+)
 from dpnp.tests.helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
@@ -17,14 +24,6 @@ from dpnp.tests.helper import (
     is_scipy_available,
 )
 from dpnp.tests.third_party.cupy import testing
-
-from dpnp.scipy.sparse.linalg import (
-    LinearOperator,
-    aslinearoperator,
-    cg,
-    gmres,
-    minres,
-)
 
 if is_scipy_available():
     import scipy.sparse.linalg as scipy_sla

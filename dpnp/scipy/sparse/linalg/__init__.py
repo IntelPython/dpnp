@@ -26,9 +26,8 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-from __future__ import annotations
-
-"""Sparse linear algebra interface for DPNP.
+"""
+Sparse linear algebra interface for DPNP.
 
 This module provides a subset of :mod:`scipy.sparse.linalg`
  functionality on top of DPNP arrays.
@@ -37,13 +36,9 @@ The initial implementation focuses on the :class:`LinearOperator` interface
 and a small set of Krylov solvers (``cg``, ``gmres``, ``minres``).
 """
 
+from __future__ import annotations
+
 from ._interface import LinearOperator, aslinearoperator
 from ._iterative import cg, gmres, minres
 
-__all__ = [
-    "LinearOperator",
-    "aslinearoperator",
-    "cg",
-    "gmres",
-    "minres",
-]
+__all__ = ["LinearOperator", "aslinearoperator", "cg", "gmres", "minres"]

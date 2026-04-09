@@ -63,12 +63,13 @@ _make_fast_matvec catches this and falls back to A.dot(x).
 
 from __future__ import annotations
 
-from typing import Callable, Optional, Tuple
+from typing import Callable
 
+import dpctl.utils as dpu
 import numpy
+
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
-import dpctl.utils as dpu
 
 from ._interface import IdentityOperator, LinearOperator, aslinearoperator
 
@@ -86,16 +87,9 @@ except ImportError:
 
 _SUPPORTED_DTYPES = frozenset("fdFD")
 
-
-# ---------------------------------------------------------------------------
-# Internal helpers
-# ---------------------------------------------------------------------------
-
-
 def _np_dtype(dp_dtype) -> numpy.dtype:
-    """Normalise any dtype-like (dpnp type, numpy type, string) to numpy.dtype."""
+    """Normalise any dtype-like (dpnp type/numpy type/string) to numpy.dtype."""
     return numpy.dtype(dp_dtype)
-
 
 def _check_dtype(dtype, name: str) -> None:
     if _np_dtype(dtype).char not in _SUPPORTED_DTYPES:
@@ -103,7 +97,6 @@ def _check_dtype(dtype, name: str) -> None:
             f"{name} has unsupported dtype {dtype}; "
             "only float32, float64, complex64, complex128 are accepted."
         )
-
 
 class _CachedSpMV:
     """
@@ -174,7 +167,7 @@ class _CachedSpMV:
         self._val_type_id = val_type_id
 
     def __call__(self, x: dpnp.ndarray) -> dpnp.ndarray:
-        """y = op(A) * x -- only sparse::gemv fires, fully async."""
+        """Y = op(A) * x -- only sparse::gemv fires, fully async."""
         y = dpnp.empty(
             self._out_size, dtype=self._dtype, sycl_queue=self._exec_q
         )
@@ -219,9 +212,11 @@ class _CachedSpMVPair:
         self._adjoint = None
 
     def matvec(self, x):
+        """Apply the operator to vector x."""
         return self.forward(x)
 
     def rmatvec(self, x):
+        """Return the data type of the operator."""
         if self._adjoint is None:
             # Build conjtrans handle on first use. For real dtypes
             # this is equivalent to trans=1.
@@ -315,7 +310,8 @@ def _make_system(A, M, x0, b):
         M_op = aslinearoperator(M)
         if M_op.shape != A_op.shape:
             raise ValueError(
-                f"preconditioner shape {M_op.shape} != operator shape {A_op.shape}"
+                f"preconditioner shape {M_op.shape} != "
+                f"operator shape {A_op.shape}"
             )
 
         fast_mv_M = _make_fast_matvec(M)
@@ -365,24 +361,18 @@ def _get_atol(b_norm: float, atol, rtol: float) -> float:
         )
     return max(atol, float(rtol) * float(b_norm))
 
-
-# ---------------------------------------------------------------------------
-# Conjugate Gradient
-# ---------------------------------------------------------------------------
-
-
 def cg(
     A,
     b,
-    x0: Optional[dpnp.ndarray] = None,
+    x0: dpnp.ndarray | None = None,
     *,
     rtol: float = 1e-5,
-    tol: Optional[float] = None,
-    maxiter: Optional[int] = None,
+    tol: float | None = None,
+    maxiter: int | None = None,
     M=None,
-    callback: Optional[Callable] = None,
+    callback: Callable | None = None,
     atol=None,
-) -> Tuple[dpnp.ndarray, int]:
+) -> tuple[dpnp.ndarray, int]:
     """Conjugate Gradient -- pure dpnp/oneMKL, Hermitian positive definite A.
 
     Parameters
@@ -433,7 +423,7 @@ def cg(
 
     info = maxiter
 
-    for k in range(maxiter):
+    for _k in range(maxiter):
         # Convergence check (sync).
         rnorm = dpnp.linalg.norm(r)
         if float(rnorm) <= atol_eff_host:
@@ -473,16 +463,16 @@ def cg(
 def gmres(
     A,
     b,
-    x0: Optional[dpnp.ndarray] = None,
+    x0: dpnp.ndarray | None = None,
     *,
     rtol: float = 1e-5,
     atol: float = 0.0,
-    restart: Optional[int] = None,
-    maxiter: Optional[int] = None,
+    restart: int | None = None,
+    maxiter: int | None = None,
     M=None,
-    callback: Optional[Callable] = None,
-    callback_type: Optional[str] = None,
-) -> Tuple[dpnp.ndarray, int]:
+    callback: Callable | None = None,
+    callback_type: str | None = None,
+) -> tuple[dpnp.ndarray, int]:
     """Uses Generalized Minimal RESidual iteration to solve ``Ax = b``.
 
     Parameters
@@ -606,17 +596,17 @@ def gmres(
 def minres(
     A,
     b,
-    x0: Optional[dpnp.ndarray] = None,
+    x0: dpnp.ndarray | None = None,
     *,
     rtol: float = 1e-5,
     shift: float = 0.0,
-    tol: Optional[float] = None,
-    maxiter: Optional[int] = None,
+    tol: float | None = None,
+    maxiter: int | None = None,
     M=None,
-    callback: Optional[Callable] = None,
+    callback: Callable | None = None,
     show: bool = False,
     check: bool = False,
-) -> Tuple[dpnp.ndarray, int]:
+) -> tuple[dpnp.ndarray, int]:
     """Uses MINimum RESidual iteration to solve ``Ax = b``.
 
     Solves the symmetric (possibly indefinite) system ``Ax = b`` or,
@@ -798,7 +788,6 @@ def minres(
         epsln = sn * beta
         dbar = -cs * beta
         root = numpy.sqrt(gbar**2 + dbar**2)
-        Arnorm = phibar * root  # ||A r_{k-1}||
 
         # Compute the next plane rotation Q_k.
         gamma = numpy.sqrt(gbar**2 + beta**2)
@@ -908,8 +897,8 @@ def _make_compute_hu(V):
     """Factory mirroring cupyx's _make_compute_hu using oneMKL gemv directly.
 
     Returns a closure compute_hu(u, j) that performs:
-        h = V[:, :j+1]^H @ u            (gemv with transpose=True)
-        u = u - V[:, :j+1] @ h          (gemv with transpose=False, then subtract)
+        h = V[:, :j+1]^H @ u     (gemv with transpose=True)
+        u = u - V[:, :j+1] @ h   (gemv with transpose=False, then subtract)
 
     The current bi._gemv binding hardcodes alpha=1, beta=0, so the second
     pass requires a temporary vector and an explicit subtraction.  To get
@@ -928,7 +917,6 @@ def _make_compute_hu(V):
     exec_q = V.sycl_queue
     dtype = V.dtype
     is_cpx = dpnp.issubdtype(dtype, dpnp.complexfloating)
-    V_usm = dpnp.get_usm_ndarray(V)
 
     def compute_hu(u, j):
         # h = V[:, :j+1]^H @ u  (allocate fresh, length j+1)

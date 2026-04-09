@@ -83,37 +83,23 @@ PYBIND11_MODULE(_sparse_impl, m)
     // ------------------------------------------------------------------
     m.def(
         "_sparse_gemv_init",
-        [](sycl::queue &exec_q,
-           const int trans,
+        [](sycl::queue &exec_q, const int trans,
            const dpctl::tensor::usm_ndarray &row_ptr,
            const dpctl::tensor::usm_ndarray &col_ind,
            const dpctl::tensor::usm_ndarray &values,
-           const std::int64_t num_rows,
-           const std::int64_t num_cols,
-           const std::int64_t nnz,
-           const std::vector<sycl::event> &depends)
-            -> std::tuple<std::uintptr_t, int, sycl::event>
-        {
-            return sparse_gemv_init(
-                exec_q, trans,
-                row_ptr, col_ind, values,
-                num_rows, num_cols, nnz,
-                depends);
+           const std::int64_t num_rows, const std::int64_t num_cols,
+           const std::int64_t nnz, const std::vector<sycl::event> &depends)
+            -> std::tuple<std::uintptr_t, int, sycl::event> {
+            return sparse_gemv_init(exec_q, trans, row_ptr, col_ind, values,
+                                    num_rows, num_cols, nnz, depends);
         },
-        py::arg("exec_q"),
-        py::arg("trans"),
-        py::arg("row_ptr"),
-        py::arg("col_ind"),
-        py::arg("values"),
-        py::arg("num_rows"),
-        py::arg("num_cols"),
-        py::arg("nnz"),
-        py::arg("depends"),
+        py::arg("exec_q"), py::arg("trans"), py::arg("row_ptr"),
+        py::arg("col_ind"), py::arg("values"), py::arg("num_rows"),
+        py::arg("num_cols"), py::arg("nnz"), py::arg("depends"),
         "Initialise oneMKL sparse matrix handle "
         "(set_csr_data + optimize_gemv). "
         "Returns (handle_ptr: int, val_type_id: int, event). "
-        "Call once per operator."
-    );
+        "Call once per operator.");
 
     // ------------------------------------------------------------------
     // _sparse_gemv_compute(exec_q, handle, val_type_id, trans, alpha,
@@ -131,39 +117,22 @@ PYBIND11_MODULE(_sparse_impl, m)
     // ------------------------------------------------------------------
     m.def(
         "_sparse_gemv_compute",
-        [](sycl::queue &exec_q,
-           const std::uintptr_t handle_ptr,
-           const int val_type_id,
-           const int trans,
-           const double alpha,
-           const dpctl::tensor::usm_ndarray &x,
-           const double beta,
-           const dpctl::tensor::usm_ndarray &y,
-           const std::int64_t num_rows,
+        [](sycl::queue &exec_q, const std::uintptr_t handle_ptr,
+           const int val_type_id, const int trans, const double alpha,
+           const dpctl::tensor::usm_ndarray &x, const double beta,
+           const dpctl::tensor::usm_ndarray &y, const std::int64_t num_rows,
            const std::int64_t num_cols,
-           const std::vector<sycl::event> &depends)
-            -> sycl::event
-        {
-            return sparse_gemv_compute(
-                exec_q, handle_ptr, val_type_id, trans, alpha,
-                x, beta, y,
-                num_rows, num_cols,
-                depends);
+           const std::vector<sycl::event> &depends) -> sycl::event {
+            return sparse_gemv_compute(exec_q, handle_ptr, val_type_id, trans,
+                                       alpha, x, beta, y, num_rows, num_cols,
+                                       depends);
         },
-        py::arg("exec_q"),
-        py::arg("handle"),
-        py::arg("val_type_id"),
-        py::arg("trans"),
-        py::arg("alpha"),
-        py::arg("x"),
-        py::arg("beta"),
-        py::arg("y"),
-        py::arg("num_rows"),
-        py::arg("num_cols"),
+        py::arg("exec_q"), py::arg("handle"), py::arg("val_type_id"),
+        py::arg("trans"), py::arg("alpha"), py::arg("x"), py::arg("beta"),
+        py::arg("y"), py::arg("num_rows"), py::arg("num_cols"),
         py::arg("depends"),
         "Execute sparse::gemv using a pre-built handle. "
-        "Returns the gemv event."
-    );
+        "Returns the gemv event.");
 
     // ------------------------------------------------------------------
     // _sparse_gemv_release(exec_q, handle, depends) -> event
@@ -175,16 +144,10 @@ PYBIND11_MODULE(_sparse_impl, m)
     // ------------------------------------------------------------------
     m.def(
         "_sparse_gemv_release",
-        [](sycl::queue &exec_q,
-           const std::uintptr_t handle_ptr,
-           const std::vector<sycl::event> &depends)
-            -> sycl::event
-        {
+        [](sycl::queue &exec_q, const std::uintptr_t handle_ptr,
+           const std::vector<sycl::event> &depends) -> sycl::event {
             return sparse_gemv_release(exec_q, handle_ptr, depends);
         },
-        py::arg("exec_q"),
-        py::arg("handle"),
-        py::arg("depends"),
-        "Release the oneMKL matrix_handle created by _sparse_gemv_init."
-    );
+        py::arg("exec_q"), py::arg("handle"), py::arg("depends"),
+        "Release the oneMKL matrix_handle created by _sparse_gemv_init.");
 }
