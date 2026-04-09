@@ -220,11 +220,12 @@ jobs:
       - name: Run tests
         if: env.rerun-tests-on-failure != 'true'
         run: |
+          export SKIP_TENSOR_TESTS=1
           if [[ "${{ matrix.python }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
             export DPNP_TEST_ALL_INT_TYPES=1
-            python -m pytest -ra --deselect=tests/tensor --pyargs ${{ env.package-name }}.tests
+            python -m pytest -ra --pyargs ${{ env.package-name }}.tests
           else
-            python -m pytest -n auto -ra --deselect=tests/tensor --pyargs ${{ env.package-name }}.tests
+            python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
           fi
 
       - name: Run tests
@@ -239,12 +240,13 @@ jobs:
             . $CONDA/etc/profile.d/conda.sh
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
+            export SKIP_TENSOR_TESTS=1
 
             if [[ "${{ matrix.python }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
               export DPNP_TEST_ALL_INT_TYPES=1
-              python -m pytest -ra --deselect=tests/tensor --pyargs ${{ env.package-name }}.tests
+              python -m pytest -ra --pyargs ${{ env.package-name }}.tests
             else
-              python -m pytest -n auto -ra --deselect=tests/tensor --pyargs ${{ env.package-name }}.tests
+              python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
             fi
 
       - name: Run tensor tests
@@ -402,11 +404,12 @@ jobs:
         if: env.rerun-tests-on-failure != 'true'
         shell: pwsh
         run: |
+          $env:SKIP_TENSOR_TESTS=1
           if (${{ matrix.python }} -eq ${{ env.python-ver-test-all-dtypes }}) {
             $env:DPNP_TEST_ALL_INT_TYPES=1
-            python -m pytest -ra --deselect=tests/tensor --pyargs ${{ env.package-name }}.tests
+            python -m pytest -ra --pyargs ${{ env.package-name }}.tests
           } else {
-            python -m pytest -n auto -ra --deselect=tests/tensor --pyargs ${{ env.package-name }}.tests
+            python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
           }
 
       - name: Run tests
@@ -419,11 +422,12 @@ jobs:
           retry_on: any
           shell: pwsh
           command: |
+            $env:SKIP_TENSOR_TESTS=1
             if ( ${{ matrix.python }} -eq ${{ env.python-ver-test-all-dtypes }} ) {
               $env:DPNP_TEST_ALL_INT_TYPES=1
-              python -m pytest -ra --deselect=tests/tensor --pyargs ${{ env.package-name }}.tests
+              python -m pytest -ra --pyargs ${{ env.package-name }}.tests
             } else {
-              python -m pytest -n auto -ra --deselect=tests/tensor --pyargs ${{ env.package-name }}.tests
+              python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
             }
 
       - name: Run tensor tests

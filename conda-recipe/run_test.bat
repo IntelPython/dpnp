@@ -37,8 +37,10 @@ if %errorlevel% neq 0 exit 1
 "%PYTHON%" -m dpctl -f
 if %errorlevel% neq 0 exit 1
 
-"%PYTHON%" -m pytest -ra --pyargs dpnp --deselect=tests/tensor
+set SKIP_TENSOR_TESTS=1
+"%PYTHON%" -m pytest -ra --pyargs dpnp
 if %errorlevel% neq 0 exit 1
 
+set SKIP_TENSOR_TESTS=
 "%PYTHON%" -m pytest -ra --pyargs dpnp.tests.tensor
 if %errorlevel% neq 0 exit 1
