@@ -491,6 +491,19 @@ def test_print_dpnp_special_character(character):
 
 
 def test_print_dpnp_1d():
+    # Reset print options to defaults to avoid test pollution
+    dpt.set_print_options(
+        linewidth=75,
+        edgeitems=3,
+        threshold=1000,
+        precision=8,
+        floatmode="maxprec",
+        suppress=False,
+        nanstr="nan",
+        infstr="inf",
+        sign="-",
+    )
+
     dtype = dpnp.default_float_type()
     result = repr(dpnp.arange(10000, dtype=dtype))
     expected = "array([0.000e+00, 1.000e+00, 2.000e+00, ..., 9.997e+03, 9.998e+03,\n       9.999e+03], shape=(10000,))"
