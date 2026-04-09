@@ -37,5 +37,8 @@ if %errorlevel% neq 0 exit 1
 "%PYTHON%" -m dpctl -f
 if %errorlevel% neq 0 exit 1
 
-"%PYTHON%" -m pytest -ra --pyargs dpnp
+"%PYTHON%" -m pytest -ra --pyargs dpnp --deselect=tests/tensor
+if %errorlevel% neq 0 exit 1
+
+"%PYTHON%" -m pytest -ra --pyargs dpnp.tests.tensor
 if %errorlevel% neq 0 exit 1

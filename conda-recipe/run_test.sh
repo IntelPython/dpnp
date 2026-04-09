@@ -37,4 +37,6 @@ set -e
 
 $PYTHON -c "import dpnp; print(dpnp.__version__)"
 $PYTHON -m dpctl -f
-$PYTHON -m pytest -ra --pyargs dpnp
+$PYTHON -m pytest -ra --pyargs dpnp --deselect=tests/tensor
+
+$PYTHON -m pytest -ra --pyargs dpnp.tests.tensor
