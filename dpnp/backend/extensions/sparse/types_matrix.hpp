@@ -65,7 +65,7 @@ namespace dpnp::extensions::sparse::types
 template <typename Tv, typename Ti>
 struct SparseGemvInitTypePairSupportFactory
 {
-    static constexpr bool is_defined = std::disjunction
+    static constexpr bool is_defined = std::disjunction<
         // real single precision
         dpctl_td_ns::TypePairDefinedEntry<Tv, float, Ti, std::int32_t>,
         dpctl_td_ns::TypePairDefinedEntry<Tv, float, Ti, std::int64_t>,

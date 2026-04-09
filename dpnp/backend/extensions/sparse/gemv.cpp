@@ -405,7 +405,7 @@ void init_sparse_gemv_dispatch_tables(void)
 
     // 1-D table on Tv for compute. dpctl's type dispatch headers expose
     // DispatchVectorBuilder as the 1-D analogue of DispatchTableBuilder.
-    dpctl_td_ns::DispatchVectorBuilder
+    dpctl_td_ns::DispatchVectorBuilder<
         gemv_compute_fn_ptr_t,
         GemvComputeContigFactory,
         dpctl_td_ns::num_types>
