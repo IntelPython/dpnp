@@ -128,8 +128,7 @@ std::pair<sycl::event, sycl::event>
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
     if ((dst_typeid != static_cast<int>(td_ns::typenum_t::INT64)) &&
-        (dst_typeid != static_cast<int>(td_ns::typenum_t::INT32)))
-    {
+        (dst_typeid != static_cast<int>(td_ns::typenum_t::INT32))) {
         throw py::value_error(
             "Output index array must have data type int32 or int64");
     }

@@ -67,10 +67,7 @@ struct RsqrtFunctor
     // do both argTy and resTy support sugroup store/load operation
     using supports_sg_loadstore = typename std::true_type;
 
-    resT operator()(const argT &in) const
-    {
-        return sycl::rsqrt(in);
-    }
+    resT operator()(const argT &in) const { return sycl::rsqrt(in); }
 };
 
 template <typename argTy,

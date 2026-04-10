@@ -73,8 +73,7 @@ struct NotEqualFunctor
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         if constexpr (std::is_integral_v<argT1> && std::is_integral_v<argT2> &&
-                      std::is_signed_v<argT1> != std::is_signed_v<argT2>)
-        {
+                      std::is_signed_v<argT1> != std::is_signed_v<argT2>) {
             if constexpr (std::is_signed_v<argT1> && !std::is_signed_v<argT2>) {
                 return (in1 < 0) ? true : (static_cast<argT2>(in1) != in2);
             }

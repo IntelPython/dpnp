@@ -307,10 +307,7 @@ struct BitwiseLeftShiftInplaceFunctor
     using supports_sg_loadstore = typename std::true_type;
     using supports_vec = typename std::true_type;
 
-    void operator()(resT &res, const argT &in) const
-    {
-        impl(res, in);
-    }
+    void operator()(resT &res, const argT &in) const { impl(res, in); }
 
     template <int vec_sz>
     void operator()(sycl::vec<resT, vec_sz> &res,
@@ -392,9 +389,8 @@ struct BitwiseLeftShiftInplaceTypeMapFactory
     /*! @brief get typeid for output type of x <<= y */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        if constexpr (BitwiseLeftShiftInplaceTypePairSupport<argT,
-                                                             resT>::is_defined)
-        {
+        if constexpr (BitwiseLeftShiftInplaceTypePairSupport<
+                          argT, resT>::is_defined) {
             return td_ns::GetTypeid<resT>{}.get();
         }
         else {

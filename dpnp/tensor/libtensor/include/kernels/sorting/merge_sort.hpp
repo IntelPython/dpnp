@@ -190,8 +190,8 @@ void merge_impl(const std::size_t offset,
             // Handle intermediate items
             if (l_search_bound_1 == r_search_bound_1) {
                 const std::size_t shift_1 = l_search_bound_1 - start_1;
-                for (auto idx = local_start_2 + 1; idx < local_end_2 - 1; ++idx)
-                {
+                for (auto idx = local_start_2 + 1; idx < local_end_2 - 1;
+                     ++idx) {
                     const auto intermediate_item_2 = in_acc[idx];
                     const std::size_t shift_2 = idx - start_2;
                     out_acc[start_out + shift_1 + shift_2] =
@@ -199,8 +199,8 @@ void merge_impl(const std::size_t offset,
                 }
             }
             else {
-                for (auto idx = local_start_2 + 1; idx < local_end_2 - 1; ++idx)
-                {
+                for (auto idx = local_start_2 + 1; idx < local_end_2 - 1;
+                     ++idx) {
                     const auto intermediate_item_2 = in_acc[idx];
                     // we shouldn't seek in whole 1st sequence. Just for the
                     // part where the 2nd sequence should be
@@ -282,10 +282,7 @@ struct GetValueType<sycl::buffer<ElementType, Dim, AllocatorT>>
 template <typename Iter>
 struct GetReadOnlyAccess
 {
-    Iter operator()(const Iter &it, sycl::handler &)
-    {
-        return it;
-    }
+    Iter operator()(const Iter &it, sycl::handler &) { return it; }
 };
 
 template <typename ElementType, int Dim, typename AllocatorT>
@@ -302,10 +299,7 @@ struct GetReadOnlyAccess<sycl::buffer<ElementType, Dim, AllocatorT>>
 template <typename Iter>
 struct GetWriteDiscardAccess
 {
-    Iter operator()(Iter it, sycl::handler &)
-    {
-        return it;
-    }
+    Iter operator()(Iter it, sycl::handler &) { return it; }
 };
 
 template <typename ElementType, int Dim, typename AllocatorT>
@@ -322,10 +316,7 @@ struct GetWriteDiscardAccess<sycl::buffer<ElementType, Dim, AllocatorT>>
 template <typename Iter>
 struct GetReadWriteAccess
 {
-    Iter operator()(Iter &it, sycl::handler &)
-    {
-        return it;
-    }
+    Iter operator()(Iter &it, sycl::handler &) { return it; }
 };
 
 template <typename ElementType, int Dim, typename AllocatorT>
@@ -479,8 +470,7 @@ sycl::event sort_over_work_group_contig_impl(
 
             // load input into SLM
             for (std::size_t array_id = segment_start_idx + lid;
-                 array_id < segment_end_idx; array_id += lws)
-            {
+                 array_id < segment_end_idx; array_id += lws) {
                 T v = (array_id < sort_nelems)
                           ? input_acc[iter_id * sort_nelems + array_id]
                           : T{};
@@ -505,8 +495,7 @@ sycl::event sort_over_work_group_contig_impl(
             const std::size_t max_chunks_merged =
                 1 + ((wg_chunk_size - 1) / chunk);
             for (; n_chunks_merged < max_chunks_merged;
-                 data_in_temp = !data_in_temp, n_chunks_merged *= 2)
-            {
+                 data_in_temp = !data_in_temp, n_chunks_merged *= 2) {
                 const std::size_t nelems_sorted_so_far =
                     n_chunks_merged * chunk;
                 const std::size_t q = (lid / n_chunks_merged);
@@ -531,8 +520,7 @@ sycl::event sort_over_work_group_contig_impl(
 
             const auto &out_src = (data_in_temp) ? scratch_space : work_space;
             for (std::size_t array_id = segment_start_idx + lid;
-                 array_id < segment_end_idx; array_id += lws)
-            {
+                 array_id < segment_end_idx; array_id += lws) {
                 if (array_id < sort_nelems) {
                     output_acc[iter_id * sort_nelems + array_id] =
                         out_src[array_id - segment_start_idx];

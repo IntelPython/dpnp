@@ -83,8 +83,7 @@ struct IsNanFunctor
             return (real_isnan || imag_isnan);
         }
         else if constexpr (std::is_same<argT, bool>::value ||
-                           std::is_integral<argT>::value)
-        {
+                           std::is_integral<argT>::value) {
             return constant_value;
         }
         else {

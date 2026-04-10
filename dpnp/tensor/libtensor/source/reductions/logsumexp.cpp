@@ -138,8 +138,7 @@ struct LogSumExpOverAxisTempsStridedFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForLogSumExpReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = su_ns::LogSumExp<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_over_group_temps_strided_impl<srcTy, dstTy,
@@ -157,8 +156,7 @@ struct LogSumExpOverAxis1TempsContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForLogSumExpReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = su_ns::LogSumExp<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
@@ -176,8 +174,7 @@ struct LogSumExpOverAxis0TempsContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForLogSumExpReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = su_ns::LogSumExp<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,

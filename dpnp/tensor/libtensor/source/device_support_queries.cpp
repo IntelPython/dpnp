@@ -110,15 +110,9 @@ std::string _default_device_complex_type(const sycl::device &d)
     }
 }
 
-std::string _default_device_bool_type(const sycl::device &)
-{
-    return "b1";
-}
+std::string _default_device_bool_type(const sycl::device &) { return "b1"; }
 
-std::string _default_device_index_type(const sycl::device &)
-{
-    return "i8";
-}
+std::string _default_device_index_type(const sycl::device &) { return "i8"; }
 
 sycl::device _extract_device(const py::object &arg)
 {

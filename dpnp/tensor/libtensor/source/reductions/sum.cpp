@@ -246,8 +246,7 @@ struct SumOverAxisAtomicStridedFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForSumReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = sycl::plus<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_over_group_with_atomics_strided_impl<srcTy, dstTy,
@@ -285,8 +284,7 @@ struct SumOverAxis1AtomicContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForSumReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = sycl::plus<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_axis1_over_group_with_atomics_contig_impl<
@@ -304,8 +302,7 @@ struct SumOverAxis0AtomicContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForSumReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = sycl::plus<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_axis0_over_group_with_atomics_contig_impl<

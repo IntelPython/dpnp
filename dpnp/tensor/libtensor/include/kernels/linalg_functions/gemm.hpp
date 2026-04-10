@@ -72,8 +72,7 @@ void scale_gemm_k_parameters(const std::size_t &local_mem_size,
     static constexpr std::size_t slm_elem_size = sizeof(T) * m_groups;
 
     while (slm_elem_size * (n_wi + delta_n) * delta_k + reserved_slm_size >=
-           local_mem_size)
-    {
+           local_mem_size) {
         n_wi = n_wi / 2;
         delta_n = delta_n / 2;
         if (delta_n == 0)
@@ -95,8 +94,7 @@ void scale_gemm_nm_parameters(const std::size_t &local_mem_size,
     while ((wi_delta_n * wg_delta_n * wi_delta_k * slm_A_elem_size) +
                (wi_delta_k * wg_delta_m * slm_B_elem_size) +
                reserved_slm_size >=
-           local_mem_size)
-    {
+           local_mem_size) {
         wg_delta_n /= 2;
         wg_delta_m /= 2;
         wi_delta_k /= 2;
@@ -641,8 +639,8 @@ public:
                 else {
                     accV_t local_B_vec;
 #pragma unroll
-                    for (std::size_t vec_idx = 0; vec_idx < m_groups; ++vec_idx)
-                    {
+                    for (std::size_t vec_idx = 0; vec_idx < m_groups;
+                         ++vec_idx) {
                         local_B_vec[vec_idx] =
                             (sq < k && j + vec_idx < m)
                                 ? static_cast<resT>(
@@ -1006,8 +1004,7 @@ public:
             // populate local_lhs_block<resT> ( wg_delta_n * wi_delta_n,
             // wi_delta_k)
             for (std::uint32_t vid = lid; vid < local_lhs_block.size();
-                 vid += it.get_local_range()[0])
-            {
+                 vid += it.get_local_range()[0]) {
                 // 0 <= v_i < wg_delta_n * wi_delta_n
                 const std::uint32_t v_i = vid / wi_delta_k;
                 // 0 <= v_s < wi_delta_k
@@ -1029,8 +1026,7 @@ public:
             // populate local_rhs_block<vec<resT, m_vec_size>> ( wg_delta_m *
             // wi_delta_m_vecs, wi_delta_k )
             for (std::uint32_t vid = lid; vid < local_rhs_block.size();
-                 vid += it.get_local_range()[0])
-            {
+                 vid += it.get_local_range()[0]) {
                 // 0 <= v_j < wg_delta_m * wi_delta_m_vecs
                 const std::uint32_t v_j = vid / wi_delta_k;
                 // 0 <= v_s < wi_delta_k
@@ -1091,8 +1087,8 @@ public:
 #pragma unroll
                 for (std::uint32_t pr_i = 0; pr_i < wi_delta_n; ++pr_i) {
 #pragma unroll
-                    for (std::uint32_t pr_j = 0; pr_j < wi_delta_m_vecs; ++pr_j)
-                    {
+                    for (std::uint32_t pr_j = 0; pr_j < wi_delta_m_vecs;
+                         ++pr_j) {
                         private_C[pr_i * wi_delta_m_vecs + pr_j] +=
                             pr_lhs[pr_i] * pr_rhs[pr_j];
                     }
@@ -1108,8 +1104,8 @@ public:
                 std::size_t out_i = i + local_i + pr_i * wg_delta_n;
                 if (out_i < n) {
 #pragma unroll
-                    for (std::uint32_t pr_j = 0; pr_j < wi_delta_m_vecs; ++pr_j)
-                    {
+                    for (std::uint32_t pr_j = 0; pr_j < wi_delta_m_vecs;
+                         ++pr_j) {
                         const std::size_t out_j =
                             j + (local_j + pr_j * wg_delta_m) * m_vec_size;
                         const std::size_t out_flat_id =
@@ -1128,8 +1124,8 @@ public:
                 std::size_t out_i = i + local_i + pr_i * wg_delta_n;
                 if (out_i < n) {
                     // could be unrolled
-                    for (std::uint32_t pr_j = 0; pr_j < wi_delta_m_vecs; ++pr_j)
-                    {
+                    for (std::uint32_t pr_j = 0; pr_j < wi_delta_m_vecs;
+                         ++pr_j) {
                         std::size_t out_j =
                             j + (local_j + pr_j * wg_delta_m) * m_vec_size;
 #pragma unroll
@@ -1168,18 +1164,12 @@ public:
     {
     }
 
-    constexpr std::uint32_t get_wi_delta_n() const
-    {
-        return wi_delta_n;
-    }
+    constexpr std::uint32_t get_wi_delta_n() const { return wi_delta_n; }
     constexpr std::uint32_t get_wi_delta_m_vecs() const
     {
         return wi_delta_m_vecs;
     }
-    constexpr std::uint32_t get_m_vec_size() const
-    {
-        return m_vec_size;
-    }
+    constexpr std::uint32_t get_m_vec_size() const { return m_vec_size; }
 };
 
 template <typename resT>
@@ -1937,8 +1927,8 @@ public:
             else {
                 slmB_t vec{};
 #pragma unroll
-                for (std::uint8_t lane_id = 0; lane_id < wi_delta_m; ++lane_id)
-                {
+                for (std::uint8_t lane_id = 0; lane_id < wi_delta_m;
+                     ++lane_id) {
                     std::size_t g_j1 = g_j + lane_id;
                     vec[lane_id] =
                         (g_j1 < m && g_s < k)
@@ -1966,8 +1956,8 @@ public:
             const std::size_t a_pr_offset = private_i * wi_delta_k;
 
             slmB_t local_sum(identity_);
-            for (std::size_t private_s = 0; private_s < wi_delta_k; ++private_s)
-            {
+            for (std::size_t private_s = 0; private_s < wi_delta_k;
+                 ++private_s) {
                 local_sum = local_sum +
                             (local_A_block[a_offset + a_pr_offset + private_s] *
                              local_B_block[b_offset + private_s]);
@@ -1984,8 +1974,8 @@ public:
             }
             else {
 #pragma unroll
-                for (std::uint8_t lane_id = 0; lane_id < wi_delta_m; ++lane_id)
-                {
+                for (std::uint8_t lane_id = 0; lane_id < wi_delta_m;
+                     ++lane_id) {
                     const std::size_t gl_j = j + lane_id;
 
                     if (gl_i < n && gl_j < m) {
@@ -2111,8 +2101,8 @@ public:
                 else {
                     accV_t local_B_vec;
 #pragma unroll
-                    for (std::size_t vec_idx = 0; vec_idx < m_groups; ++vec_idx)
-                    {
+                    for (std::size_t vec_idx = 0; vec_idx < m_groups;
+                         ++vec_idx) {
                         local_B_vec[vec_idx] =
                             (sq < k && j + vec_idx < m)
                                 ? static_cast<resT>(

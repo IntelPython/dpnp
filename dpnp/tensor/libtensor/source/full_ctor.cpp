@@ -127,10 +127,7 @@ sycl::event full_contig_impl(sycl::queue &exec_q,
                 constexpr UInt128() : v1{}, v2{} {}
                 UInt128(const UInt128 &) = default;
 
-                operator bool() const
-                {
-                    return bool(!v1) && bool(!v2);
-                }
+                operator bool() const { return bool(!v1) && bool(!v2); }
 
                 std::uint64_t v1;
                 std::uint64_t v2;

@@ -299,8 +299,7 @@ sycl::event topk_merge_impl(
         // if allocation would be sufficiently large or k is larger than
         // elements processed, use full sort
         if (k_rounded >= axis_nelems || k_rounded >= sorted_block_size ||
-            alloc_len >= axis_nelems / 2)
-        {
+            alloc_len >= axis_nelems / 2) {
             return topk_full_merge_sort_impl(exec_q, iter_nelems, axis_nelems,
                                              k, arg_tp, vals_tp, inds_tp,
                                              index_comp, depends);
@@ -346,8 +345,7 @@ sycl::event topk_merge_impl(
 
                     // load input into SLM
                     for (std::size_t array_id = segment_start_idx + lid;
-                         array_id < segment_end_idx; array_id += lws)
-                    {
+                         array_id < segment_end_idx; array_id += lws) {
                         IndexTy v = (array_id < axis_nelems)
                                         ? iter_id * axis_nelems + array_id
                                         : IndexTy{};
@@ -374,8 +372,7 @@ sycl::event topk_merge_impl(
                     const std::size_t max_chunks_merged =
                         1 + ((wg_chunk_size - 1) / chunk);
                     for (; n_chunks_merged < max_chunks_merged;
-                         data_in_temp = !data_in_temp, n_chunks_merged *= 2)
-                    {
+                         data_in_temp = !data_in_temp, n_chunks_merged *= 2) {
                         const std::size_t nelems_sorted_so_far =
                             n_chunks_merged * chunk;
                         const std::size_t q = (lid / n_chunks_merged);
@@ -410,8 +407,7 @@ sycl::event topk_merge_impl(
                     const auto &out_src =
                         (data_in_temp) ? scratch_space : work_space;
                     for (std::size_t array_id = k_segment_start_idx + lid;
-                         array_id < k_segment_end_idx; array_id += lws)
-                    {
+                         array_id < k_segment_end_idx; array_id += lws) {
                         if (lid < k_rounded) {
                             index_data[iter_id * alloc_len + array_id] =
                                 out_src[array_id - k_segment_start_idx];

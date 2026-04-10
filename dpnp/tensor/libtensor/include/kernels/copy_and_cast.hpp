@@ -352,8 +352,7 @@ sycl::event copy_and_cast_contig_impl(sycl::queue &q,
         const auto lws_range = sycl::range<1>(lws);
 
         if (is_aligned<required_alignment>(src_cp) &&
-            is_aligned<required_alignment>(dst_cp))
-        {
+            is_aligned<required_alignment>(dst_cp)) {
             static constexpr bool enable_sg_loadstore = true;
             using KernelName =
                 copy_cast_contig_kernel<srcTy, dstTy, vec_sz, n_vecs>;
@@ -920,10 +919,7 @@ struct CompositionIndexer
 {
     CompositionIndexer(IndexerT f, TransformerT t) : f_(f), t_(t) {}
 
-    auto operator()(std::size_t gid) const
-    {
-        return f_(t_(gid));
-    }
+    auto operator()(std::size_t gid) const { return f_(t_(gid)); }
 
 private:
     IndexerT f_;
@@ -944,10 +940,7 @@ struct RolledNDIndexer
     {
     }
 
-    ssize_t operator()(std::size_t gid) const
-    {
-        return compute_offset(gid);
-    }
+    ssize_t operator()(std::size_t gid) const { return compute_offset(gid); }
 
 private:
     int nd_ = -1;

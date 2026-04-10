@@ -217,8 +217,7 @@ std::pair<sycl::event, sycl::event>
     int x1_nd = x1.get_ndim();
     int x2_nd = x2.get_ndim();
     if (x1_nd != (batch_dims + x1_outer_dims + inner_dims) ||
-        x2_nd != (batch_dims + x2_outer_dims + inner_dims))
-    {
+        x2_nd != (batch_dims + x2_outer_dims + inner_dims)) {
         throw py::value_error("Input arrays do not have dimensions consistent "
                               "with input dimensions");
     }
@@ -332,8 +331,7 @@ std::pair<sycl::event, sycl::event>
     sycl::event dot_ev;
     if (call_vecdot) {
         if ((is_x1_c_contig && is_x2_c_contig && is_dst_c_contig) ||
-            ((is_x1_f_contig && is_x2_f_contig) && !call_batched))
-        {
+            ((is_x1_f_contig && is_x2_f_contig) && !call_batched)) {
             dot_product_contig_impl_fn_ptr_t fn = nullptr;
             if (supports_atomics) {
                 fn = dot_product_contig_dispatch_table[x1_typeid][x2_typeid];
@@ -660,8 +658,7 @@ std::pair<sycl::event, sycl::event>
                 x1_batch_offset, x2_batch_offset, dst_batch_offset);
 
             if (batch_dims == 1 && x1_outer_dims == 1 && x2_outer_dims == 1 &&
-                inner_dims == 1)
-            {
+                inner_dims == 1) {
                 bool gemm_batch_c_contig = false;
 
                 if ((static_cast<std::size_t>(outer_inner_x1_strides[0]) ==
@@ -672,8 +669,7 @@ std::pair<sycl::event, sycl::event>
                      outer_inner_x2_strides[1] == 1) &&
                     (static_cast<std::size_t>(outer_inner_dst_strides[0]) ==
                          x2_outer_nelems &&
-                     outer_inner_dst_strides[1] == 1))
-                {
+                     outer_inner_dst_strides[1] == 1)) {
                     gemm_batch_c_contig =
                         (static_cast<std::size_t>(
                              simplified_batch_x1_strides[0]) ==
@@ -801,8 +797,7 @@ py::object py_dot_result_type(const py::dtype &input1_dtype,
     }
 
     if (src1_typeid < 0 || src1_typeid >= td_ns::num_types || src2_typeid < 0 ||
-        src2_typeid >= td_ns::num_types)
-    {
+        src2_typeid >= td_ns::num_types) {
         throw std::runtime_error("binary output type lookup failed");
     }
     int dst_typeid = output_types_table[src1_typeid][src2_typeid];

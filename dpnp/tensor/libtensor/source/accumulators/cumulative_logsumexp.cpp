@@ -140,8 +140,7 @@ struct CumLogSumExp1DContigFactory
     fnT get()
     {
         if constexpr (TypePairSupportDataForLogSumExpAccumulation<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = su_ns::LogSumExp<dstTy>;
             static constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
@@ -173,8 +172,7 @@ struct CumLogSumExp1DIncludeInitialContigFactory
     fnT get()
     {
         if constexpr (TypePairSupportDataForLogSumExpAccumulation<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = su_ns::LogSumExp<dstTy>;
             static constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
@@ -206,8 +204,7 @@ struct CumLogSumExpStridedFactory
     fnT get()
     {
         if constexpr (TypePairSupportDataForLogSumExpAccumulation<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = su_ns::LogSumExp<dstTy>;
             static constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
@@ -239,8 +236,7 @@ struct CumLogSumExpIncludeInitialStridedFactory
     fnT get()
     {
         if constexpr (TypePairSupportDataForLogSumExpAccumulation<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = su_ns::LogSumExp<dstTy>;
             static constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {

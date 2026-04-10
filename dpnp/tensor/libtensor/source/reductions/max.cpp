@@ -163,8 +163,7 @@ struct MaxOverAxisAtomicStridedFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForMaxReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_floating_point<dstTy>::value) {
                 using ReductionOpT = su_ns::Maximum<dstTy>;
                 return dpctl::tensor::kernels::
@@ -217,8 +216,7 @@ struct MaxOverAxis1AtomicContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForMaxReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_floating_point<dstTy>::value) {
                 using ReductionOpT = su_ns::Maximum<dstTy>;
                 return dpctl::tensor::kernels::
@@ -244,8 +242,7 @@ struct MaxOverAxis0AtomicContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForMaxReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_floating_point<dstTy>::value) {
                 using ReductionOpT = su_ns::Maximum<dstTy>;
                 return dpctl::tensor::kernels::

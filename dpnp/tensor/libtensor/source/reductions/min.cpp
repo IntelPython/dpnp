@@ -163,8 +163,7 @@ struct MinOverAxisAtomicStridedFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForMinReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_floating_point<dstTy>::value) {
                 using ReductionOpT = su_ns::Minimum<dstTy>;
                 return dpctl::tensor::kernels::
@@ -217,8 +216,7 @@ struct MinOverAxis1AtomicContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForMinReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_floating_point<dstTy>::value) {
                 using ReductionOpT = su_ns::Minimum<dstTy>;
                 return dpctl::tensor::kernels::
@@ -244,8 +242,7 @@ struct MinOverAxis0AtomicContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForMinReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_floating_point<dstTy>::value) {
                 using ReductionOpT = su_ns::Minimum<dstTy>;
                 return dpctl::tensor::kernels::

@@ -445,8 +445,7 @@ bool py_accumulate_dtype_supported(const py::dtype &input_dtype,
     }
 
     if (arg_typeid < 0 || arg_typeid >= td_ns::num_types || out_typeid < 0 ||
-        out_typeid >= td_ns::num_types)
-    {
+        out_typeid >= td_ns::num_types) {
         throw std::runtime_error("Reduction type support check: lookup failed");
     }
 

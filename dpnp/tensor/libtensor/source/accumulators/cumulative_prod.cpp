@@ -151,9 +151,8 @@ struct CumProd1DContigFactory
 {
     fnT get()
     {
-        if constexpr (TypePairSupportDataForProdAccumulation<srcTy,
-                                                             dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportDataForProdAccumulation<
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = CumProdScanOpT<dstTy>;
             static constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
@@ -184,9 +183,8 @@ struct CumProd1DIncludeInitialContigFactory
 {
     fnT get()
     {
-        if constexpr (TypePairSupportDataForProdAccumulation<srcTy,
-                                                             dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportDataForProdAccumulation<
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = CumProdScanOpT<dstTy>;
             static constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
@@ -217,9 +215,8 @@ struct CumProdStridedFactory
 {
     fnT get()
     {
-        if constexpr (TypePairSupportDataForProdAccumulation<srcTy,
-                                                             dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportDataForProdAccumulation<
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = CumProdScanOpT<dstTy>;
             static constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
@@ -250,9 +247,8 @@ struct CumProdIncludeInitialStridedFactory
 {
     fnT get()
     {
-        if constexpr (TypePairSupportDataForProdAccumulation<srcTy,
-                                                             dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportDataForProdAccumulation<
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = CumProdScanOpT<dstTy>;
             static constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {

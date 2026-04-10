@@ -213,8 +213,7 @@ std::pair<sycl::event, sycl::event>
     // masked_dst_nelems is number of set elements in the mask, or last element
     // in cumsum
     if (!same_ortho_dims ||
-        (masked_src_nelems != static_cast<std::size_t>(cumsum_sz)))
-    {
+        (masked_src_nelems != static_cast<std::size_t>(cumsum_sz))) {
         throw py::value_error("Inconsistent array dimensions");
     }
 
@@ -539,8 +538,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     if (!same_ortho_dims ||
-        (masked_dst_nelems != static_cast<std::size_t>(cumsum_sz)))
-    {
+        (masked_dst_nelems != static_cast<std::size_t>(cumsum_sz))) {
         throw py::value_error("Inconsistent array dimensions");
     }
 
@@ -791,8 +789,7 @@ std::pair<sycl::event, sycl::event>
 
     // cumsum must be int32_t or int64_t only
     if ((cumsum_typeid != int32_typeid && cumsum_typeid != int64_typeid) ||
-        (indexes_typeid != int32_typeid && indexes_typeid != int64_typeid))
-    {
+        (indexes_typeid != int32_typeid && indexes_typeid != int64_typeid)) {
         throw py::value_error("Cumulative sum array and index array must have "
                               "int32 or int64 data-type");
     }

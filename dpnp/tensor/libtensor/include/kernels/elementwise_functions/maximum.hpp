@@ -73,15 +73,13 @@ struct MaximumFunctor
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         if constexpr (tu_ns::is_complex<argT1>::value ||
-                      tu_ns::is_complex<argT2>::value)
-        {
+                      tu_ns::is_complex<argT2>::value) {
             static_assert(std::is_same_v<argT1, argT2>);
             using dpctl::tensor::math_utils::max_complex;
             return max_complex<argT1>(in1, in2);
         }
         else if constexpr (std::is_floating_point_v<argT1> ||
-                           std::is_same_v<argT1, sycl::half>)
-        {
+                           std::is_same_v<argT1, sycl::half>) {
             const bool choose_first = (sycl::isnan(in1) || (in1 > in2));
             return (choose_first) ? in1 : in2;
         }
@@ -101,8 +99,7 @@ struct MaximumFunctor
             const auto &v1 = in1[i];
             const auto &v2 = in2[i];
             if constexpr (std::is_floating_point_v<argT1> ||
-                          std::is_same_v<argT1, sycl::half>)
-            {
+                          std::is_same_v<argT1, sycl::half>) {
                 const bool choose_first = (sycl::isnan(v1) || (v1 > v2));
                 res[i] = (choose_first) ? v1 : v2;
             }

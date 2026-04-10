@@ -355,8 +355,7 @@ struct SubtractContigMatrixContigRowBroadcastFactory
             using resT = typename SubtractOutputType<T1, T2>::value_type;
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
                           dpctl::tensor::type_utils::is_complex<T2>::value ||
-                          dpctl::tensor::type_utils::is_complex<resT>::value)
-            {
+                          dpctl::tensor::type_utils::is_complex<resT>::value) {
                 fnT fn = nullptr;
                 return fn;
             }
@@ -405,8 +404,7 @@ struct SubtractContigRowContigMatrixBroadcastFactory
             using resT = typename SubtractOutputType<T1, T2>::value_type;
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
                           dpctl::tensor::type_utils::is_complex<T2>::value ||
-                          dpctl::tensor::type_utils::is_complex<resT>::value)
-            {
+                          dpctl::tensor::type_utils::is_complex<resT>::value) {
                 fnT fn = nullptr;
                 return fn;
             }
@@ -429,10 +427,7 @@ struct SubtractInplaceFunctor
     using supports_vec = std::negation<
         std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
 
-    void operator()(resT &res, const argT &in)
-    {
-        res -= in;
-    }
+    void operator()(resT &res, const argT &in) { res -= in; }
 
     template <int vec_sz>
     void operator()(sycl::vec<resT, vec_sz> &res,
@@ -630,8 +625,7 @@ struct SubtractInplaceRowMatrixBroadcastFactory
         }
         else {
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
-                          dpctl::tensor::type_utils::is_complex<T2>::value)
-            {
+                          dpctl::tensor::type_utils::is_complex<T2>::value) {
                 fnT fn = nullptr;
                 return fn;
             }

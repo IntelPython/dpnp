@@ -82,8 +82,7 @@ struct LeftSideSearchSortedContigFactory
     fnT get() const
     {
         if constexpr (std::is_same_v<indTy, std::int32_t> ||
-                      std::is_same_v<indTy, std::int64_t>)
-        {
+                      std::is_same_v<indTy, std::int64_t>) {
             static constexpr bool left_side_search(true);
             using dpctl::tensor::kernels::searchsorted_contig_impl;
             using dpctl::tensor::rich_comparisons::AscendingSorter;
@@ -107,8 +106,7 @@ struct RightSideSearchSortedContigFactory
     fnT get() const
     {
         if constexpr (std::is_same_v<indTy, std::int32_t> ||
-                      std::is_same_v<indTy, std::int64_t>)
-        {
+                      std::is_same_v<indTy, std::int64_t>) {
             static constexpr bool right_side_search(false);
 
             using dpctl::tensor::kernels::searchsorted_contig_impl;
@@ -141,8 +139,7 @@ struct LeftSideSearchSortedStridedFactory
     fnT get() const
     {
         if constexpr (std::is_same_v<indTy, std::int32_t> ||
-                      std::is_same_v<indTy, std::int64_t>)
-        {
+                      std::is_same_v<indTy, std::int64_t>) {
             static constexpr bool left_side_search(true);
             using dpctl::tensor::kernels::searchsorted_strided_impl;
             using dpctl::tensor::rich_comparisons::AscendingSorter;
@@ -166,8 +163,7 @@ struct RightSideSearchSortedStridedFactory
     fnT get() const
     {
         if constexpr (std::is_same_v<indTy, std::int32_t> ||
-                      std::is_same_v<indTy, std::int64_t>)
-        {
+                      std::is_same_v<indTy, std::int64_t>) {
             static constexpr bool right_side_search(false);
             using dpctl::tensor::kernels::searchsorted_strided_impl;
             using dpctl::tensor::rich_comparisons::AscendingSorter;
@@ -263,8 +259,8 @@ std::pair<sycl::event, sycl::event>
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(positions);
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(exec_q, {hay, needles, positions}))
-    {
+    if (!dpctl::utils::queues_are_compatible(exec_q,
+                                             {hay, needles, positions})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
@@ -295,8 +291,7 @@ std::pair<sycl::event, sycl::event>
     const auto positions_typenum_t_v =
         static_cast<td_ns::typenum_t>(positions_typeid);
     if (positions_typenum_t_v != td_ns::typenum_t::INT32 &&
-        positions_typenum_t_v != td_ns::typenum_t::INT64)
-    {
+        positions_typenum_t_v != td_ns::typenum_t::INT64) {
         throw py::value_error(
             "Positions array must have data-type int32, or int64");
     }

@@ -142,8 +142,7 @@ std::pair<sycl::event, sycl::event>
         dpctl::tensor::overlap::SameLogicalTensors();
     if ((overlap(dst, src) && !same_logical_tensors(dst, src)) ||
         (overlap(dst, min) && !same_logical_tensors(dst, min)) ||
-        (overlap(dst, max) && !same_logical_tensors(dst, max)))
-    {
+        (overlap(dst, max) && !same_logical_tensors(dst, max))) {
         throw py::value_error("Destination array overlaps with input.");
     }
 
@@ -159,8 +158,7 @@ std::pair<sycl::event, sycl::event>
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
     if (src_typeid != dst_typeid || src_typeid != min_typeid ||
-        src_typeid != max_typeid)
-    {
+        src_typeid != max_typeid) {
         throw py::value_error("Input, min, max, and destination arrays must "
                               "have the same data type");
     }

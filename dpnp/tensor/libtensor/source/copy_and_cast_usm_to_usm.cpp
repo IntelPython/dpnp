@@ -204,8 +204,7 @@ std::pair<sycl::event, sycl::event> copy_usm_ndarray_into_usm_ndarray(
 
             sycl::event copy_and_cast_1d_event;
             if ((src_strides_arr[0] == 1) && (dst_strides_arr[0] == 1) &&
-                (src_offset == 0) && (dst_offset == 0))
-            {
+                (src_offset == 0) && (dst_offset == 0)) {
                 auto contig_fn =
                     copy_and_cast_contig_dispatch_table[dst_type_id]
                                                        [src_type_id];

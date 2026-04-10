@@ -372,8 +372,8 @@ struct BitwiseAndInplaceTypeMapFactory
     /*! @brief get typeid for output type of x &= y */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        if constexpr (BitwiseAndInplaceTypePairSupport<argT, resT>::is_defined)
-        {
+        if constexpr (BitwiseAndInplaceTypePairSupport<argT,
+                                                       resT>::is_defined) {
             return td_ns::GetTypeid<resT>{}.get();
         }
         else {

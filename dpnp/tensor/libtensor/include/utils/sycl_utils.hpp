@@ -501,10 +501,7 @@ struct GetIdentity<Op, T, std::enable_if_t<IsLogSumExp<T, Op>::value>>
 template <typename T>
 struct Hypot
 {
-    T operator()(const T &x, const T &y) const
-    {
-        return sycl::hypot(x, y);
-    }
+    T operator()(const T &x, const T &y) const { return sycl::hypot(x, y); }
 };
 
 template <typename T, class Op>

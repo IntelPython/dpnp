@@ -112,9 +112,9 @@ struct ExtendedComplexFPGreater
 };
 
 template <typename T>
-inline constexpr bool is_fp_v = (std::is_same_v<T, sycl::half> ||
-                                 std::is_same_v<T, float> ||
-                                 std::is_same_v<T, double>);
+inline constexpr bool is_fp_v =
+    (std::is_same_v<T, sycl::half> || std::is_same_v<T, float> ||
+     std::is_same_v<T, double>);
 
 } // namespace detail
 

@@ -73,8 +73,7 @@ struct EqualFunctor
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         if constexpr (tu_ns::is_complex<argT1>::value &&
-                      tu_ns::is_complex<argT2>::value)
-        {
+                      tu_ns::is_complex<argT2>::value) {
             using realT1 = typename argT1::value_type;
             using realT2 = typename argT2::value_type;
 
@@ -84,8 +83,7 @@ struct EqualFunctor
         else {
             if constexpr (std::is_integral_v<argT1> &&
                           std::is_integral_v<argT2> &&
-                          std::is_signed_v<argT1> != std::is_signed_v<argT2>)
-            {
+                          std::is_signed_v<argT1> != std::is_signed_v<argT2>) {
                 if constexpr (std::is_signed_v<argT1> &&
                               !std::is_signed_v<argT2>) {
                     return (in1 < 0) ? false : (static_cast<argT2>(in1) == in2);

@@ -73,8 +73,7 @@ struct AbsFunctor
 
         if constexpr (std::is_same_v<argT, bool> ||
                       (std::is_integral<argT>::value &&
-                       std::is_unsigned<argT>::value))
-        {
+                       std::is_unsigned<argT>::value)) {
             static_assert(std::is_same_v<resT, argT>);
             return x;
         }
@@ -83,8 +82,7 @@ struct AbsFunctor
                 return detail::cabs(x);
             }
             else if constexpr (std::is_same_v<argT, sycl::half> ||
-                               std::is_floating_point_v<argT>)
-            {
+                               std::is_floating_point_v<argT>) {
                 return (sycl::signbit(x) ? -x : x);
             }
             else {

@@ -138,8 +138,7 @@ public:
             using dpctl::tensor::type_utils::convert_impl;
             outT val;
             if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
-                          su_ns::IsLogicalOr<outT, ReductionOp>::value)
-            {
+                          su_ns::IsLogicalOr<outT, ReductionOp>::value) {
                 val = convert_impl<bool, argT>(inp_[inp_offset]);
             }
             else {
@@ -221,8 +220,7 @@ public:
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
         for (std::size_t arg_reduce_gid = arg_reduce_gid0;
-             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
-        {
+             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg) {
             auto inp_reduction_offset =
                 inp_reduced_dims_indexer_(arg_reduce_gid);
             auto inp_offset = inp_iter_offset + inp_reduction_offset;
@@ -230,8 +228,7 @@ public:
             using dpctl::tensor::type_utils::convert_impl;
             outT val;
             if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
-                          su_ns::IsLogicalOr<outT, ReductionOp>::value)
-            {
+                          su_ns::IsLogicalOr<outT, ReductionOp>::value) {
                 // handle nans
                 val = convert_impl<bool, argT>(inp_[inp_offset]);
             }
@@ -356,8 +353,7 @@ public:
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
         for (std::size_t arg_reduce_gid = arg_reduce_gid0;
-             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
-        {
+             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg) {
             auto inp_reduction_offset =
                 inp_reduced_dims_indexer_(arg_reduce_gid);
             auto inp_offset = inp_iter_offset + inp_reduction_offset;
@@ -365,8 +361,7 @@ public:
             using dpctl::tensor::type_utils::convert_impl;
             outT val;
             if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
-                          su_ns::IsLogicalOr<outT, ReductionOp>::value)
-            {
+                          su_ns::IsLogicalOr<outT, ReductionOp>::value) {
                 // handle nans
                 val = convert_impl<bool, argT>(inp_[inp_offset]);
             }
@@ -401,8 +396,8 @@ public:
                                                        ReductionOp>::value) {
                 res_ref.fetch_and(red_val_over_wg);
             }
-            else if constexpr (su_ns::IsSyclLogicalOr<outT, ReductionOp>::value)
-            {
+            else if constexpr (su_ns::IsSyclLogicalOr<outT,
+                                                      ReductionOp>::value) {
                 res_ref.fetch_or(red_val_over_wg);
             }
             else {
@@ -487,8 +482,7 @@ public:
                 using dpctl::tensor::type_utils::convert_impl;
                 outT val;
                 if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
-                              su_ns::IsLogicalOr<outT, ReductionOp>::value)
-                {
+                              su_ns::IsLogicalOr<outT, ReductionOp>::value) {
                     // handle nans
                     val = convert_impl<bool, argT>(inp_[inp_offset]);
                 }
@@ -600,8 +594,7 @@ public:
                 if constexpr (std::is_same_v<ReductionOp,
                                              sycl::logical_and<outT>> ||
                               std::is_same_v<ReductionOp,
-                                             sycl::logical_or<outT>>)
-                {
+                                             sycl::logical_or<outT>>) {
                     // handle nans
                     val = convert_impl<bool, argT>(inp_[inp_offset]);
                 }
@@ -626,14 +619,16 @@ public:
     }
 };
 
-template <
-    typename argTy,
-    typename resTy,
-    typename ReductionOpT,
-    typename InputOutputIterIndexerT,
-    typename ReductionIndexerT,
-    template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    class kernel_name_token>
+template <typename argTy,
+          typename resTy,
+          typename ReductionOpT,
+          typename InputOutputIterIndexerT,
+          typename ReductionIndexerT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename T5> class kernel_name_token>
 sycl::event
     sequential_reduction(sycl::queue &exec_q,
                          const argTy *arg,
@@ -666,14 +661,16 @@ sycl::event
 template <typename BasedKernelName>
 class custom_reduction_wrapper;
 
-template <
-    typename argTy,
-    typename resTy,
-    typename ReductionOpT,
-    typename InputOutputIterIndexerT,
-    typename ReductionIndexerT,
-    template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    class kernel_name_token>
+template <typename argTy,
+          typename resTy,
+          typename ReductionOpT,
+          typename InputOutputIterIndexerT,
+          typename ReductionIndexerT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename T5> class kernel_name_token>
 sycl::event
     submit_atomic_reduction(sycl::queue &exec_q,
                             const argTy *arg,
@@ -1051,14 +1048,16 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
 
 /* = Reduction, using sycl::reduce_over_group, but not using atomic_ref = */
 
-template <
-    typename argTy,
-    typename resTy,
-    typename ReductionOpT,
-    typename InputOutputIterIndexerT,
-    typename ReductionIndexerT,
-    template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    class kernel_name_token>
+template <typename argTy,
+          typename resTy,
+          typename ReductionOpT,
+          typename InputOutputIterIndexerT,
+          typename ReductionIndexerT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename T5> class kernel_name_token>
 sycl::event submit_no_atomic_reduction(
     sycl::queue &exec_q,
     const argTy *arg,
@@ -1928,15 +1927,13 @@ public:
                         // less_complex always returns false for NaNs, so check
                         if (less_complex<argT>(val, red_val) ||
                             std::isnan(std::real(val)) ||
-                            std::isnan(std::imag(val)))
-                        {
+                            std::isnan(std::imag(val))) {
                             red_val = val;
                             idx_val = static_cast<outT>(m);
                         }
                     }
                     else if constexpr (std::is_floating_point_v<argT> ||
-                                       std::is_same_v<argT, sycl::half>)
-                    {
+                                       std::is_same_v<argT, sycl::half>) {
                         if (val < red_val || std::isnan(val)) {
                             red_val = val;
                             idx_val = static_cast<outT>(m);
@@ -1955,15 +1952,13 @@ public:
                         using dpctl::tensor::math_utils::greater_complex;
                         if (greater_complex<argT>(val, red_val) ||
                             std::isnan(std::real(val)) ||
-                            std::isnan(std::imag(val)))
-                        {
+                            std::isnan(std::imag(val))) {
                             red_val = val;
                             idx_val = static_cast<outT>(m);
                         }
                     }
                     else if constexpr (std::is_floating_point_v<argT> ||
-                                       std::is_same_v<argT, sycl::half>)
-                    {
+                                       std::is_same_v<argT, sycl::half>) {
                         if (val > red_val || std::isnan(val)) {
                             red_val = val;
                             idx_val = static_cast<outT>(m);
@@ -2243,8 +2238,7 @@ public:
                             // check
                             if (less_complex<argT>(val, local_red_val) ||
                                 std::isnan(std::real(val)) ||
-                                std::isnan(std::imag(val)))
-                            {
+                                std::isnan(std::imag(val))) {
                                 local_red_val = val;
                                 if constexpr (!First) {
                                     local_idx = inds_[inp_offset];
@@ -2256,8 +2250,7 @@ public:
                             }
                         }
                         else if constexpr (std::is_floating_point_v<argT> ||
-                                           std::is_same_v<argT, sycl::half>)
-                        {
+                                           std::is_same_v<argT, sycl::half>) {
                             if (val < local_red_val || std::isnan(val)) {
                                 local_red_val = val;
                                 if constexpr (!First) {
@@ -2289,8 +2282,7 @@ public:
                             using dpctl::tensor::math_utils::greater_complex;
                             if (greater_complex<argT>(val, local_red_val) ||
                                 std::isnan(std::real(val)) ||
-                                std::isnan(std::imag(val)))
-                            {
+                                std::isnan(std::imag(val))) {
                                 local_red_val = val;
                                 if constexpr (!First) {
                                     local_idx = inds_[inp_offset];
@@ -2302,8 +2294,7 @@ public:
                             }
                         }
                         else if constexpr (std::is_floating_point_v<argT> ||
-                                           std::is_same_v<argT, sycl::half>)
-                        {
+                                           std::is_same_v<argT, sycl::half>) {
                             if (val > local_red_val || std::isnan(val)) {
                                 local_red_val = val;
                                 if constexpr (!First) {
@@ -2347,8 +2338,7 @@ public:
                             : idx_identity_;
         }
         else if constexpr (std::is_floating_point_v<argT> ||
-                           std::is_same_v<argT, sycl::half>)
-        {
+                           std::is_same_v<argT, sycl::half>) {
             // equality does not hold for NaNs, so check here
             local_idx =
                 (red_val_over_wg == local_red_val || std::isnan(local_red_val))

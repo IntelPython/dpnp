@@ -94,8 +94,7 @@ struct PowFunctor
             return res;
         }
         else if constexpr (tu_ns::is_complex<argT1>::value &&
-                           tu_ns::is_complex<argT2>::value)
-        {
+                           tu_ns::is_complex<argT2>::value) {
             using realT1 = typename argT1::value_type;
             using realT2 = typename argT2::value_type;
 
@@ -143,9 +142,8 @@ struct PowFunctor
         }
         else {
             auto res = sycl::pow(in1, in2);
-            if constexpr (std::is_same_v<resT,
-                                         typename decltype(res)::element_type>)
-            {
+            if constexpr (std::is_same_v<
+                              resT, typename decltype(res)::element_type>) {
                 return res;
             }
             else {
@@ -400,8 +398,7 @@ struct PowInplaceFunctor
             res = res_tmp;
         }
         else if constexpr (tu_ns::is_complex<argT>::value &&
-                           tu_ns::is_complex<resT>::value)
-        {
+                           tu_ns::is_complex<resT>::value) {
             using r_resT = typename resT::value_type;
             using r_argT = typename argT::value_type;
 

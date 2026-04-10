@@ -98,8 +98,7 @@ dstTy convert_impl(const srcTy &v)
     }
     else if constexpr (!std::is_integral_v<srcTy> &&
                        !std::is_same_v<dstTy, bool> &&
-                       std::is_integral_v<dstTy> && std::is_unsigned_v<dstTy>)
-    {
+                       std::is_integral_v<dstTy> && std::is_unsigned_v<dstTy>) {
         // first cast to signed variant, the cast to unsigned one
         using signedT = typename std::make_signed_t<dstTy>;
         return static_cast<dstTy>(convert_impl<signedT, srcTy>(v));
