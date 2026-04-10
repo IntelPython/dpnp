@@ -29,8 +29,8 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines implementation functions of dpctl.tensor.take and
-/// dpctl.tensor.put
+/// This file defines implementation functions of dpnp.tensor.take and
+/// dpnp.tensor.put
 //===----------------------------------------------------------------------===//
 
 #include <algorithm>
@@ -397,7 +397,8 @@ std::pair<sycl::event, sycl::event>
             }
 
             if (!(ind_type_id ==
-                  array_types.typenum_to_lookup_id(ind_.get_typenum()))) {
+                  array_types.typenum_to_lookup_id(ind_.get_typenum())))
+            {
                 throw py::type_error(
                     "Indices array data types are not all the same.");
             }
@@ -666,7 +667,8 @@ std::pair<sycl::event, sycl::event>
             }
 
             if (!(ind_type_id ==
-                  array_types.typenum_to_lookup_id(ind_.get_typenum()))) {
+                  array_types.typenum_to_lookup_id(ind_.get_typenum())))
+            {
                 throw py::type_error(
                     "Indices array data types are not all the same.");
             }

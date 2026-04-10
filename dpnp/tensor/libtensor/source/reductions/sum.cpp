@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_reductions_impl
+/// This file defines functions of dpnp.tensor._tensor_reductions_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 
@@ -265,7 +265,8 @@ struct SumOverAxisTempsStridedFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForSumReductionTemps<
-                          srcTy, dstTy>::is_defined) {
+                          srcTy, dstTy>::is_defined)
+        {
             using ReductionOpT =
                 std::conditional_t<std::is_same_v<dstTy, bool>,
                                    sycl::logical_or<dstTy>, sycl::plus<dstTy>>;
@@ -323,7 +324,8 @@ struct SumOverAxis1TempsContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForSumReductionTemps<
-                          srcTy, dstTy>::is_defined) {
+                          srcTy, dstTy>::is_defined)
+        {
             using ReductionOpT =
                 std::conditional_t<std::is_same_v<dstTy, bool>,
                                    sycl::logical_or<dstTy>, sycl::plus<dstTy>>;
@@ -343,7 +345,8 @@ struct SumOverAxis0TempsContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForSumReductionTemps<
-                          srcTy, dstTy>::is_defined) {
+                          srcTy, dstTy>::is_defined)
+        {
             using ReductionOpT =
                 std::conditional_t<std::is_same_v<dstTy, bool>,
                                    sycl::logical_or<dstTy>, sycl::plus<dstTy>>;

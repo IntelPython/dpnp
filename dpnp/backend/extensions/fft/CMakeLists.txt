@@ -90,7 +90,18 @@ else()
     )
 endif()
 
-target_link_options(${python_module_name} PUBLIC -fsycl-device-code-split=per_kernel)
+# For coverage builds, use per_source instead of per_kernel to reduce memory
+if(DPNP_GENERATE_COVERAGE)
+    target_link_options(
+        ${python_module_name}
+        PUBLIC -fsycl-device-code-split=per_source
+    )
+else()
+    target_link_options(
+        ${python_module_name}
+        PUBLIC -fsycl-device-code-split=per_kernel
+    )
+endif()
 
 if(DPNP_GENERATE_COVERAGE)
     target_link_options(

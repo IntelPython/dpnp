@@ -52,7 +52,8 @@ DPCTLSyclEventRef dpnp_partition_c(DPCTLSyclQueueRef q_ref,
     DPCTLSyclEventRef event_ref = nullptr;
 
     if ((array1_in == nullptr) || (array2_in == nullptr) ||
-        (result1 == nullptr)) {
+        (result1 == nullptr))
+    {
         return event_ref;
     }
 

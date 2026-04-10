@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #include <algorithm>
@@ -242,7 +242,8 @@ std::pair<sycl::event, sycl::event>
     }
     std::size_t x1_outer_nelems(1);
     for (int i = batch_dims; same_shapes && (i < (batch_dims + x1_outer_dims));
-         ++i) {
+         ++i)
+    {
         same_shapes = same_shapes && (x1_shape_ptr[i] == dst_shape_ptr[i]);
         x1_outer_nelems *= x1_shape_ptr[i];
     }
@@ -419,7 +420,8 @@ std::pair<sycl::event, sycl::event>
             bool reduce_all_elems = false;
 
             if (simplified_inner_x1_strides[0] == 1 &&
-                simplified_inner_x2_strides[0] == 1) {
+                simplified_inner_x2_strides[0] == 1)
+            {
                 reduce_all_elems = (simplified_batch_shape[0] == 1);
                 dot_product_c_contig =
                     (simplified_batch_dst_strides[0] == 1) &&

@@ -42,7 +42,7 @@ class Device:
 
     This is a wrapper around :class:`dpctl.SyclQueue` with custom
     formatting. The class does not have public constructor,
-    but a class method :meth:`dpctl.tensor.Device.create_device` to construct
+    but a class method :meth:`dpnp.tensor.Device.create_device` to construct
     it from `device` keyword argument in Array-API functions.
 
     Instance can be queried for ``sycl_queue``, ``sycl_context``,
@@ -57,21 +57,29 @@ class Device:
 
     @classmethod
     def create_device(cls, device=None):
-        """Device.create_device(device=None)
-
+        """
         Creates instance of Device from argument.
 
-        Args:
-            device:
-                Device specification, i.e. `None`, :class:`.Device`,
-                :class:`dpctl.SyclQueue`, or a :class:`dpctl.SyclDevice`
-                corresponding to a root SYCL device.
-        Raises:
-            ValueError: if an instance of :class:`dpctl.SycDevice` corresponding
-                        to a sub-device was specified as the argument
-            SyclQueueCreationError: if :class:`dpctl.SyclQueue` could not be
-                                    created from the argument
+        Parameters
+        ----------
+        device : {None, Device, dpctl.SyclQueue, dpctl.SyclDevice}, optional
+            Device specification, i.e. ``None``, :class:`.Device`,
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.SyclDevice`
+            corresponding to a root SYCL device.
+
+            Default: ``None``.
+
+        Raises
+        ------
+        ValueError
+            if an instance of :class:`dpctl.SyclDevice` corresponding
+            to a sub-device was specified as the argument.
+        SyclQueueCreationError
+            if :class:`dpctl.SyclQueue` could not be
+            created from the argument.
+
         """
+
         dev = device
         obj = super().__new__(cls)
         if isinstance(dev, Device):
@@ -147,33 +155,41 @@ class Device:
 
 
 def normalize_queue_device(sycl_queue=None, device=None):
-    """normalize_queue_device(sycl_queue=None, device=None)
-
+    """
     Utility to process exclusive keyword arguments 'device'
-    and 'sycl_queue' in functions of `dpctl.tensor`.
+    and 'sycl_queue' in functions of ``dpnp.tensor``.
 
-    Args:
-        sycl_queue (:class:`dpctl.SyclQueue`, optional):
-            explicitly indicates where USM allocation is done
-            and the population code (if any) is executed.
-            Value `None` is interpreted as get the SYCL queue
-            from `device` keyword, or use default queue.
-            Default: None
-        device (string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,
-            :class:`dpctl.tensor.Device`, optional):
-            array-API keyword indicating non-partitioned SYCL device
-            where array is allocated.
+    Parameters
+    ----------
+    sycl_queue : dpctl.SyclQueue, optional
+        explicitly indicates where USM allocation is done
+        and the population code (if any) is executed.
+        Value ``None`` is interpreted as get the SYCL queue
+        from ``device`` keyword, or use default queue.
+
+        Default: ``None``.
+    device : {str, dpctl.SyclDevice, dpctl.SyclQueue, dpnp.tensor.Device}, optional
+        array-API keyword indicating non-partitioned SYCL device
+        where array is allocated.
+
+        Default: ``None``.
 
     Returns
+    -------
+    out : dpctl.SyclQueue
         :class:`dpctl.SyclQueue` object implied by either of provided
-        keywords. If both are None, `dpctl.SyclQueue()` is returned.
-        If both are specified and imply the same queue, `sycl_queue`
+        keywords. If both are ``None``, ``dpctl.SyclQueue()`` is returned.
+        If both are specified and imply the same queue, ``sycl_queue``
         is returned.
 
-    Raises:
-        TypeError: if argument is not of the expected type, or keywords
-            imply incompatible queues.
+    Raises
+    ------
+    TypeError
+        if argument is not of the expected type, or keywords
+        imply incompatible queues.
+
     """
+
     q = sycl_queue
     d = device
     if q is None:

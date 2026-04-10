@@ -45,7 +45,7 @@ __all__ = [
 
 
 def _as_usm_ndarray(a, usm_type, sycl_queue):
-    """Converts input object to `dpctl.tensor.usm_ndarray`"""
+    """Converts input object to `dpnp.tensor.usm_ndarray`"""
 
     if isinstance(a, dpnp_array):
         a = a.get_array()

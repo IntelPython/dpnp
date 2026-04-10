@@ -68,10 +68,7 @@ struct NegativeFunctor
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
 
-    resT operator()(const argT &x) const
-    {
-        return -x;
-    }
+    resT operator()(const argT &x) const { return -x; }
 };
 
 template <typename argT,

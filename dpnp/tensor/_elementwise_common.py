@@ -54,41 +54,46 @@ class UnaryElementwiseFunc:
     """
     Class that implements unary element-wise functions.
 
-    Args:
-        name (str):
-            Name of the unary function
-        result_type_resovler_fn (callable):
-            Function that takes dtype of the input and
-            returns the dtype of the result if the
-            implementation functions supports it, or
-            returns `None` otherwise.
-        unary_dp_impl_fn (callable):
-            Data-parallel implementation function with signature
-            `impl_fn(src: usm_ndarray, dst: usm_ndarray,
-             sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])`
-            where the `src` is the argument array, `dst` is the
-            array to be populated with function values, effectively
-            evaluating `dst = func(src)`.
-            The `impl_fn` is expected to return a 2-tuple of `SyclEvent`s.
-            The first event corresponds to data-management host tasks,
-            including lifetime management of argument Python objects to ensure
-            that their associated USM allocation is not freed before offloaded
-            computational tasks complete execution, while the second event
-            corresponds to computational tasks associated with function
-            evaluation.
-        acceptance_fn (callable, optional):
-            Function to influence type promotion behavior of this unary
-            function. The function takes 4 arguments:
-                arg_dtype - Data type of the first argument
-                buf_dtype - Data type the argument would be cast to
-                res_dtype - Data type of the output array with function values
-                sycl_dev - The :class:`dpctl.SyclDevice` where the function
-                    evaluation is carried out.
-            The function is invoked when the argument of the unary function
-            requires casting, e.g. the argument of `dpctl.tensor.log` is an
-            array with integral data type.
-        docs (str):
-            Documentation string for the unary function.
+    Parameters
+    ----------
+    name : str
+        Name of the unary function.
+    result_type_resovler_fn : callable
+        Function that takes dtype of the input and
+        returns the dtype of the result if the
+        implementation functions supports it, or
+        returns ``None`` otherwise.
+    unary_dp_impl_fn : callable
+        Data-parallel implementation function with signature
+        ``impl_fn(src: usm_ndarray, dst: usm_ndarray,
+        sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])``
+        where the ``src`` is the argument array, ``dst`` is the
+        array to be populated with function values, effectively
+        evaluating ``dst = func(src)``.
+        The ``impl_fn`` is expected to return a 2-tuple of ``SyclEvent``s.
+        The first event corresponds to data-management host tasks,
+        including lifetime management of argument Python objects to ensure
+        that their associated USM allocation is not freed before offloaded
+        computational tasks complete execution, while the second event
+        corresponds to computational tasks associated with function
+        evaluation.
+    acceptance_fn : callable, optional
+        Function to influence type promotion behavior of this unary
+        function. The function takes 4 arguments:
+
+        * arg_dtype - Data type of the first argument
+        * buf_dtype - Data type the argument would be cast to
+        * res_dtype - Data type of the output array with function values
+        * sycl_dev - The :class:`dpctl.SyclDevice` where the function evaluation is carried out.
+
+        The function is invoked when the argument of the unary function
+        requires casting, e.g. the argument of ``dpnp.tensor.log`` is an
+        array with integral data type.
+
+        Default: ``None``.
+    docs : str
+        Documentation string for the unary function.
+
     """
 
     def __init__(
@@ -142,7 +147,7 @@ class UnaryElementwiseFunc:
             sycl_dev - The :class:`dpctl.SyclDevice` where the function
                 evaluation is carried out.
         The function is invoked when the argument of the unary function
-        requires casting, e.g. the argument of `dpctl.tensor.log` is an
+        requires casting, e.g. the argument of ``dpnp.tensor.log`` is an
         array with integral data type.
         """
         return self.acceptance_fn_
@@ -163,12 +168,15 @@ class UnaryElementwiseFunc:
         implementation function, using NumPy's character
         encoding for data types, e.g.
 
-        :Example:
-            .. code-block:: python
+        Examples
+        --------
+        .. code-block:: python
 
-                dpctl.tensor.sin.types
-                # Outputs: ['e->e', 'f->f', 'd->d', 'F->F', 'D->D']
+            dpnp.tensor.sin.types
+            # Outputs: ['e->e', 'f->f', 'd->d', 'F->F', 'D->D']
+
         """
+
         types = self.types_
         if not types:
             types = []
@@ -181,7 +189,7 @@ class UnaryElementwiseFunc:
 
     def __call__(self, x, /, *, out=None, order="K"):
         if not isinstance(x, dpt.usm_ndarray):
-            raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+            raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
         if order not in ["C", "F", "K", "A"]:
             order = "K"
@@ -293,55 +301,62 @@ class BinaryElementwiseFunc:
     """
     Class that implements binary element-wise functions.
 
-    Args:
-        name (str):
-            Name of the unary function
-        result_type_resovle_fn (callable):
-            Function that takes dtypes of the input and
-            returns the dtype of the result if the
-            implementation functions supports it, or
-            returns `None` otherwise.
-        binary_dp_impl_fn (callable):
-            Data-parallel implementation function with signature
-            `impl_fn(src1: usm_ndarray, src2: usm_ndarray, dst: usm_ndarray,
-             sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])`
-            where the `src1` and `src2` are the argument arrays, `dst` is the
-            array to be populated with function values,
-            i.e. `dst=func(src1, src2)`.
-            The `impl_fn` is expected to return a 2-tuple of `SyclEvent`s.
-            The first event corresponds to data-management host tasks,
-            including lifetime management of argument Python objects to ensure
-            that their associated USM allocation is not freed before offloaded
-            computational tasks complete execution, while the second event
-            corresponds to computational tasks associated with function
-            evaluation.
-        docs (str):
-            Documentation string for the unary function.
-        binary_inplace_fn (callable, optional):
-            Data-parallel implementation function with signature
-            `impl_fn(src: usm_ndarray, dst: usm_ndarray,
-             sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])`
-            where the `src` is the argument array, `dst` is the
-            array to be populated with function values,
-            i.e. `dst=func(dst, src)`.
-            The `impl_fn` is expected to return a 2-tuple of `SyclEvent`s.
-            The first event corresponds to data-management host tasks,
-            including async lifetime management of Python arguments,
-            while the second event corresponds to computational tasks
-            associated with function evaluation.
-        acceptance_fn (callable, optional):
-            Function to influence type promotion behavior of this binary
-            function. The function takes 6 arguments:
-                arg1_dtype - Data type of the first argument
-                arg2_dtype - Data type of the second argument
-                ret_buf1_dtype - Data type the first argument would be cast to
-                ret_buf2_dtype - Data type the second argument would be cast to
-                res_dtype - Data type of the output array with function values
-                sycl_dev - The :class:`dpctl.SyclDevice` where the function
-                    evaluation is carried out.
-            The function is only called when both arguments of the binary
-            function require casting, e.g. both arguments of
-            `dpctl.tensor.logaddexp` are arrays with integral data type.
+    Parameters
+    ----------
+    name : str
+        Name of the unary function.
+    result_type_resovle_fn : callable
+        Function that takes dtypes of the input and
+        returns the dtype of the result if the
+        implementation functions supports it, or
+        returns ``None`` otherwise.
+    binary_dp_impl_fn : callable
+        Data-parallel implementation function with signature
+        ``impl_fn(src1: usm_ndarray, src2: usm_ndarray, dst: usm_ndarray,
+        sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])``
+        where the ``src1`` and ``src2`` are the argument arrays, ``dst`` is the
+        array to be populated with function values,
+        i.e. ``dst=func(src1, src2)``.
+        The ``impl_fn`` is expected to return a 2-tuple of ``SyclEvent``s.
+        The first event corresponds to data-management host tasks,
+        including lifetime management of argument Python objects to ensure
+        that their associated USM allocation is not freed before offloaded
+        computational tasks complete execution, while the second event
+        corresponds to computational tasks associated with function
+        evaluation.
+    docs : str
+        Documentation string for the unary function.
+    binary_inplace_fn : callable, optional
+        Data-parallel implementation function with signature
+        ``impl_fn(src: usm_ndarray, dst: usm_ndarray,
+        sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])``
+        where the ``src`` is the argument array, ``dst`` is the
+        array to be populated with function values,
+        i.e. ``dst=func(dst, src)``.
+        The ``impl_fn`` is expected to return a 2-tuple of ``SyclEvent``s.
+        The first event corresponds to data-management host tasks,
+        including async lifetime management of Python arguments,
+        while the second event corresponds to computational tasks
+        associated with function evaluation.
+
+        Default: ``None``.
+    acceptance_fn : callable, optional
+        Function to influence type promotion behavior of this binary
+        function. The function takes 6 arguments:
+
+        * arg1_dtype - Data type of the first argument
+        * arg2_dtype - Data type of the second argument
+        * ret_buf1_dtype - Data type the first argument would be cast to
+        * ret_buf2_dtype - Data type the second argument would be cast to
+        * res_dtype - Data type of the output array with function values
+        * sycl_dev - The :class:`dpctl.SyclDevice` where the function evaluation is carried out.
+
+        The function is only called when both arguments of the binary
+        function require casting, e.g. both arguments of
+        ``dpnp.tensor.logaddexp`` are arrays with integral data type.
+
+        Default: ``None``.
+
     """
 
     def __init__(
@@ -381,6 +396,7 @@ class BinaryElementwiseFunc:
         function for this elementwise binary function.
 
         """
+
         return self.binary_fn_
 
     def get_implementation_inplace_function(self):
@@ -388,12 +404,14 @@ class BinaryElementwiseFunc:
         function for this elementwise binary function.
 
         """
+
         return self.binary_inplace_fn_
 
     def get_type_result_resolver_function(self):
         """Returns the type resolver function for this
         elementwise binary function.
         """
+
         return self.result_type_resolver_fn_
 
     def get_type_promotion_path_acceptance_function(self):
@@ -413,8 +431,10 @@ class BinaryElementwiseFunc:
 
         The acceptance function is only invoked if both input arrays must be
         cast to intermediary data types, as would happen during call of
-        `dpctl.tensor.hypot` with both arrays being of integral data type.
+        ``dpnp.tensor.hypot`` with both arrays being of integral data type.
+
         """
+
         return self.acceptance_fn_
 
     def get_array_dtype_scalar_type_resolver_function(self):
@@ -425,16 +445,19 @@ class BinaryElementwiseFunc:
         treated as prior to type promotion behavior.
         The function takes 3 arguments:
 
-        Args:
-            o1_dtype (object, dtype):
-                A class representing a Python scalar type or a ``dtype``
-            o2_dtype (object, dtype):
-                A class representing a Python scalar type or a ``dtype``
-            sycl_dev (:class:`dpctl.SyclDevice`):
-                Device on which function evaluation is carried out.
+        Parameters
+        ----------
+        o1_dtype : {type, dtype}
+            A class representing a Python scalar type or a ``dtype``.
+        o2_dtype : {type, dtype}
+            A class representing a Python scalar type or a ``dtype``.
+        sycl_dev : dpctl.SyclDevice
+            Device on which function evaluation is carried out.
 
         One of ``o1_dtype`` and ``o2_dtype`` must be a ``dtype`` instance.
+
         """
+
         return self.weak_type_resolver_
 
     @property
@@ -453,13 +476,16 @@ class BinaryElementwiseFunc:
         implementation function, using NumPy's character
         encoding for data types, e.g.
 
-        :Example:
-            .. code-block:: python
+        Examples
+        --------
+        .. code-block:: python
 
-                dpctl.tensor.divide.types
-                # Outputs: ['ee->e', 'ff->f', 'fF->F', 'dd->d', 'dD->D',
-                #    'Ff->F', 'FF->F', 'Dd->D', 'DD->D']
+            dpnp.tensor.divide.types
+            # Outputs: ['ee->e', 'ff->f', 'fF->F', 'dd->d', 'dD->D',
+            #    'Ff->F', 'FF->F', 'Dd->D', 'DD->D']
+
         """
+
         types = self.types_
         if not types:
             types = []
@@ -859,7 +885,7 @@ class BinaryElementwiseFunc:
         if not isinstance(o1, dpt.usm_ndarray):
             raise TypeError(
                 "Expected first argument to be "
-                f"dpctl.tensor.usm_ndarray, got {type(o1)}"
+                f"dpnp.tensor.usm_ndarray, got {type(o1)}"
             )
         if not o1.flags.writable:
             raise ValueError("provided left-hand side array is read-only")

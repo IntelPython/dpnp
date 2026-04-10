@@ -64,7 +64,8 @@ namespace ext_ns = ext::common;
         fnT get()                                                              \
         {                                                                      \
             if constexpr (std::is_same_v<typename OutputType<T>::value_type,   \
-                                         void>) {                              \
+                                         void>)                                \
+            {                                                                  \
                 fnT fn = nullptr;                                              \
                 return fn;                                                     \
             }                                                                  \
@@ -108,7 +109,8 @@ namespace ext_ns = ext::common;
         fnT get()                                                              \
         {                                                                      \
             if constexpr (std::is_same_v<typename OutputType<T>::value_type,   \
-                                         void>) {                              \
+                                         void>)                                \
+            {                                                                  \
                 fnT fn = nullptr;                                              \
                 return fn;                                                     \
             }                                                                  \

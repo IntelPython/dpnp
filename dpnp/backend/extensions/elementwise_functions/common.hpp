@@ -92,7 +92,8 @@ public:
         /* NOTE: work-group size must be divisible by sub-group size */
 
         if constexpr (enable_sg_loadstore &&
-                      UnaryTwoOutputsOpT::is_constant::value) {
+                      UnaryTwoOutputsOpT::is_constant::value)
+        {
             // value of operator is known to be a known constant
             constexpr resT1 const_val1 = UnaryTwoOutputsOpT::constant_value1;
             constexpr resT2 const_val2 = UnaryTwoOutputsOpT::constant_value2;
@@ -528,21 +529,18 @@ public:
  * dpctl::tensor::kernels::elementwise_common namespace.
  */
 template <typename argTy,
-          template <typename T>
-          class UnaryTwoOutputsType,
+          template <typename T> class UnaryTwoOutputsType,
           template <typename A,
                     typename R1,
                     typename R2,
                     std::uint8_t vs,
                     std::uint8_t nv,
-                    bool enable>
-          class UnaryTwoOutputsContigFunctorT,
+                    bool enable> class UnaryTwoOutputsContigFunctorT,
           template <typename A,
                     typename R1,
                     typename R2,
                     std::uint8_t vs,
-                    std::uint8_t nv>
-          class kernel_name,
+                    std::uint8_t nv> class kernel_name,
           std::uint8_t vec_sz = 4u,
           std::uint8_t n_vecs = 2u>
 sycl::event
@@ -613,12 +611,15 @@ sycl::event
  * dpctl::tensor::kernels::elementwise_common namespace.
  */
 template <typename argTy,
-          template <typename T>
-          class UnaryTwoOutputsType,
-          template <typename A, typename R1, typename R2, typename I>
-          class UnaryTwoOutputsStridedFunctorT,
-          template <typename A, typename R1, typename R2, typename I>
-          class kernel_name>
+          template <typename T> class UnaryTwoOutputsType,
+          template <typename A,
+                    typename R1,
+                    typename R2,
+                    typename I> class UnaryTwoOutputsStridedFunctorT,
+          template <typename A,
+                    typename R1,
+                    typename R2,
+                    typename I> class kernel_name>
 sycl::event unary_two_outputs_strided_impl(
     sycl::queue &exec_q,
     std::size_t nelems,
@@ -665,27 +666,25 @@ sycl::event unary_two_outputs_strided_impl(
  * @note It extends binary_contig_impl from
  * dpctl::tensor::kernels::elementwise_common namespace.
  */
-template <typename argTy1,
-          typename argTy2,
-          template <typename T1, typename T2>
-          class BinaryTwoOutputsType,
-          template <typename T1,
-                    typename T2,
-                    typename T3,
-                    typename T4,
-                    std::uint8_t vs,
-                    std::uint8_t nv,
-                    bool enable_sg_loadstore>
-          class BinaryTwoOutputsContigFunctorT,
-          template <typename T1,
-                    typename T2,
-                    typename T3,
-                    typename T4,
-                    std::uint8_t vs,
-                    std::uint8_t nv>
-          class kernel_name,
-          std::uint8_t vec_sz = 4u,
-          std::uint8_t n_vecs = 2u>
+template <
+    typename argTy1,
+    typename argTy2,
+    template <typename T1, typename T2> class BinaryTwoOutputsType,
+    template <typename T1,
+              typename T2,
+              typename T3,
+              typename T4,
+              std::uint8_t vs,
+              std::uint8_t nv,
+              bool enable_sg_loadstore> class BinaryTwoOutputsContigFunctorT,
+    template <typename T1,
+              typename T2,
+              typename T3,
+              typename T4,
+              std::uint8_t vs,
+              std::uint8_t nv> class kernel_name,
+    std::uint8_t vec_sz = 4u,
+    std::uint8_t n_vecs = 2u>
 sycl::event
     binary_two_outputs_contig_impl(sycl::queue &exec_q,
                                    std::size_t nelems,
@@ -761,15 +760,19 @@ sycl::event
  * @note It extends binary_strided_impl from
  * dpctl::tensor::kernels::elementwise_common namespace.
  */
-template <
-    typename argTy1,
-    typename argTy2,
-    template <typename T1, typename T2>
-    class BinaryTwoOutputsType,
-    template <typename T1, typename T2, typename T3, typename T4, typename IndT>
-    class BinaryTwoOutputsStridedFunctorT,
-    template <typename T1, typename T2, typename T3, typename T4, typename IndT>
-    class kernel_name>
+template <typename argTy1,
+          typename argTy2,
+          template <typename T1, typename T2> class BinaryTwoOutputsType,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename IndT> class BinaryTwoOutputsStridedFunctorT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename IndT> class kernel_name>
 sycl::event binary_two_outputs_strided_impl(
     sycl::queue &exec_q,
     std::size_t nelems,

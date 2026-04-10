@@ -106,7 +106,8 @@ struct IsNan
             return IsNan<vT>::isnan(real1) || IsNan<vT>::isnan(imag1);
         }
         else if constexpr (std::is_floating_point_v<T> ||
-                           std::is_same_v<T, sycl::half>) {
+                           std::is_same_v<T, sycl::half>)
+        {
             return sycl::isnan(v);
         }
 
@@ -215,8 +216,7 @@ sycl::nd_range<1>
 pybind11::dtype dtype_from_typenum(int dst_typenum);
 
 template <typename dispatchT,
-          template <typename fnT, typename T>
-          typename factoryT,
+          template <typename fnT, typename T> typename factoryT,
           int _num_types = type_dispatch::num_types>
 inline void init_dispatch_vector(dispatchT dispatch_vector[])
 {
@@ -225,8 +225,7 @@ inline void init_dispatch_vector(dispatchT dispatch_vector[])
 }
 
 template <typename dispatchT,
-          template <typename fnT, typename D, typename S>
-          typename factoryT,
+          template <typename fnT, typename D, typename S> typename factoryT,
           int _num_types = type_dispatch::num_types>
 inline void init_dispatch_table(dispatchT dispatch_table[][_num_types])
 {

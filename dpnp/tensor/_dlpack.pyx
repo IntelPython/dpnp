@@ -145,17 +145,20 @@ cdef extern from "dlpack/dlpack.h" nogil:
 
 def get_build_dlpack_version():
     """
-    Returns a tuple of integers representing the `major` and `minor`
-    version of DLPack :module:`dpctl.tensor` was built with.
-    This tuple can be passed as the `max_version` argument to
-    `__dlpack__` to guarantee module:`dpctl.tensor` can properly
+    Returns a tuple of integers representing the ``major`` and ``minor``
+    version of DLPack :module:`dpnp.tensor` was built with.
+    This tuple can be passed as the ``max_version`` argument to
+    ``__dlpack__`` to guarantee :module:`dpnp.tensor` can properly
     consume capsule.
 
-    Returns:
-        Tuple[int, int]
-            A tuple of integers representing the `major` and `minor`
-            version of DLPack used to build :module:`dpctl.tensor`.
+    Returns
+    -------
+    out : tuple of ints
+        A tuple of integers representing the ``major`` and ``minor``
+        version of DLPack used to build :module:`dpnp.tensor`.
+
     """
+
     return (DLPACK_MAJOR_VERSION, DLPACK_MINOR_VERSION)
 
 
@@ -251,27 +254,37 @@ cdef int get_array_dlpack_device_id(
 
 cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     """
-    to_dlpack_capsule(usm_ary)
-
     Constructs named Python capsule object referencing
     instance of ``DLManagedTensor`` from
-    :class:`dpctl.tensor.usm_ndarray` instance.
+    :class:`dpnp.tensor.usm_ndarray` instance.
 
-    Args:
-        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`
-    Returns:
+    Parameters
+    ----------
+    usm_ary : usm_ndarray
+        An instance of :class:`dpnp.tensor.usm_ndarray`.
+
+    Returns
+    -------
+    out : PyCapsule
         A new capsule with name ``"dltensor"`` that contains
         a pointer to ``DLManagedTensor`` struct.
-    Raises:
-        DLPackCreationError: when array can be represented as
-            DLPack tensor. This may happen when array was allocated
-            on a partitioned sycl device, or its USM allocation is
-            not bound to the platform default SYCL context.
-        MemoryError: when host allocation to needed for ``DLManagedTensor``
-            did not succeed.
-        ValueError: when array elements data type could not be represented
-            in ``DLManagedTensor``.
+
+    Raises
+    ------
+    DLPackCreationError
+        when array can be represented as
+        DLPack tensor. This may happen when array was allocated
+        on a partitioned sycl device, or its USM allocation is
+        not bound to the platform default SYCL context.
+    MemoryError
+        when host allocation to needed for ``DLManagedTensor``
+        did not succeed.
+    ValueError
+        when array elements data type could not be represented
+        in ``DLManagedTensor``.
+
     """
+
     cdef DLManagedTensor *dlm_tensor = NULL
     cdef DLTensor *dl_tensor = NULL
     cdef int nd = usm_ary.get_ndim()
@@ -371,30 +384,41 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
 
 cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
     """
-    to_dlpack_versioned_capsule(usm_ary, copied)
-
     Constructs named Python capsule object referencing
     instance of ``DLManagedTensorVersioned`` from
-    :class:`dpctl.tensor.usm_ndarray` instance.
+    :class:`dpnp.tensor.usm_ndarray` instance.
 
-    Args:
-        usm_ary: An instance of :class:`dpctl.tensor.usm_ndarray`
-        copied: A bint representing whether the data was previously
-            copied in order to set the flags with the is-copied
-            bitmask.
-    Returns:
+    Parameters
+    ----------
+    usm_ary : usm_ndarray
+        An instance of :class:`dpnp.tensor.usm_ndarray`.
+    copied : bool
+        A boolean representing whether the data was previously
+        copied in order to set the flags with the is-copied
+        bitmask.
+
+    Returns
+    -------
+    out : PyCapsule
         A new capsule with name ``"dltensor_versioned"`` that
         contains a pointer to ``DLManagedTensorVersioned`` struct.
-    Raises:
-        DLPackCreationError: when array can be represented as
-            DLPack tensor. This may happen when array was allocated
-            on a partitioned sycl device, or its USM allocation is
-            not bound to the platform default SYCL context.
-        MemoryError: when host allocation to needed for
-            ``DLManagedTensorVersioned`` did not succeed.
-        ValueError: when array elements data type could not be represented
-            in ``DLManagedTensorVersioned``.
+
+    Raises
+    ------
+    DLPackCreationError
+        when array can be represented as
+        DLPack tensor. This may happen when array was allocated
+        on a partitioned sycl device, or its USM allocation is
+        not bound to the platform default SYCL context.
+    MemoryError
+        when host allocation to needed for
+        ``DLManagedTensorVersioned`` did not succeed.
+    ValueError
+        when array elements data type could not be represented
+        in ``DLManagedTensorVersioned``.
+
     """
+
     cdef DLManagedTensorVersioned *dlmv_tensor = NULL
     cdef DLTensor *dl_tensor = NULL
     cdef uint32_t dlmv_flags = 0
@@ -513,28 +537,39 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
 
 cpdef numpy_to_dlpack_versioned_capsule(ndarray npy_ary, bint copied):
     """
-    to_dlpack_versioned_capsule(npy_ary, copied)
-
     Constructs named Python capsule object referencing
     instance of ``DLManagedTensorVersioned`` from
     :class:`numpy.ndarray` instance.
 
-    Args:
-        npy_ary: An instance of :class:`numpy.ndarray`
-        copied: A bint representing whether the data was previously
-            copied in order to set the flags with the is-copied
-            bitmask.
-    Returns:
+    Parameters
+    ----------
+    npy_ary : numpy.ndarray
+        An instance of :class:`numpy.ndarray`.
+    copied : bool
+        A boolean representing whether the data was previously
+        copied in order to set the flags with the is-copied
+        bitmask.
+
+    Returns
+    -------
+    out : PyCapsule
         A new capsule with name ``"dltensor_versioned"`` that
         contains a pointer to ``DLManagedTensorVersioned`` struct.
-    Raises:
-        DLPackCreationError: when array can be represented as
-            DLPack tensor.
-        MemoryError: when host allocation to needed for
-            ``DLManagedTensorVersioned`` did not succeed.
-        ValueError: when array elements data type could not be represented
-            in ``DLManagedTensorVersioned``.
+
+    Raises
+    ------
+    DLPackCreationError
+        when array can be represented as
+        DLPack tensor.
+    MemoryError
+        when host allocation to needed for
+        ``DLManagedTensorVersioned`` did not succeed.
+    ValueError
+        when array elements data type could not be represented
+        in ``DLManagedTensorVersioned``.
+
     """
+
     cdef DLManagedTensorVersioned *dlmv_tensor = NULL
     cdef DLTensor *dl_tensor = NULL
     cdef uint32_t dlmv_flags = 0
@@ -752,30 +787,36 @@ cdef bint _is_kdlcpu_device(DLDevice *dev):
 
 cpdef object from_dlpack_capsule(object py_caps):
     """
-    from_dlpack_capsule(py_caps)
-
-    Reconstructs instance of :class:`dpctl.tensor.usm_ndarray` from
+    Reconstructs instance of :class:`dpnp.tensor.usm_ndarray` from
     named Python capsule object referencing instance of ``DLManagedTensor``
     without copy. The instance forms a view in the memory of the tensor.
 
-    Args:
-        caps:
-            Python capsule with name ``"dltensor"`` expected to reference
-            an instance of ``DLManagedTensor`` struct.
-    Returns:
-        Instance of :class:`dpctl.tensor.usm_ndarray` with a view into
+    Parameters
+    ----------
+    py_caps : PyCapsule
+        Python capsule with name ``"dltensor"`` expected to reference
+        an instance of ``DLManagedTensor`` struct.
+
+    Returns
+    -------
+    out : {usm_ndarray, numpy.ndarray}
+        Instance of :class:`dpnp.tensor.usm_ndarray` with a view into
         memory of the tensor. Capsule is renamed to ``"used_dltensor"``
         upon success.
-    Raises:
-        TypeError:
-            if argument is not a ``"dltensor"`` capsule.
-        ValueError:
-            if argument is ``"used_dltensor"`` capsule
-        BufferError:
-            if the USM pointer is not bound to the reconstructed
-            sycl context, or the DLPack's device_type is not supported
-            by :mod:`dpctl`.
+
+    Raises
+    ------
+    TypeError
+        if argument is not a ``"dltensor"`` capsule.
+    ValueError
+        if argument is ``"used_dltensor"`` capsule.
+    BufferError
+        if the USM pointer is not bound to the reconstructed
+        sycl context, or the DLPack's device_type is not supported
+        by :mod:`dpnp`.
+
     """
+
     cdef DLManagedTensorVersioned *dlmv_tensor = NULL
     cdef DLManagedTensor *dlm_tensor = NULL
     cdef DLTensor *dl_tensor = NULL
@@ -997,115 +1038,114 @@ cdef object _create_device(object device, object dl_device):
 
 
 def from_dlpack(x, /, *, device=None, copy=None):
-    """from_dlpack(x, /, *, device=None, copy=None)
-
-    Constructs :class:`dpctl.tensor.usm_ndarray` or :class:`numpy.ndarray`
+    """
+    Constructs :class:`dpnp.tensor.usm_ndarray` or :class:`numpy.ndarray`
     instance from a Python object ``x`` that implements ``__dlpack__`` protocol.
 
-    Args:
-        x (object):
-            A Python object representing an array that supports
-            ``__dlpack__`` protocol.
-        device (
-            Optional[str, :class:`dpctl.SyclDevice`,
-            :class:`dpctl.SyclQueue`,
-            :class:`dpctl.tensor.Device`,
-            tuple([:class:`enum.IntEnum`, int])])
-        ):
-            Device where the output array is to be placed. ``device`` keyword
-            values can be:
+    Parameters
+    ----------
+    x : object
+        A Python object representing an array that supports
+        ``__dlpack__`` protocol.
+    device : {None, str, dpctl.SyclDevice, dpctl.SyclQueue, dpnp.tensor.Device, tuple}, optional
+        Device where the output array is to be placed. ``device`` keyword
+        values can be:
 
-            * ``None``
-                The data remains on the same device.
-            * oneAPI filter selector string
-                SYCL device selected by :ref:`filter selector string
-                <filter_selector_string>`.
-            * :class:`dpctl.SyclDevice`
-                explicit SYCL device that must correspond to
-                a non-partitioned SYCL device.
-            * :class:`dpctl.SyclQueue`
-                implies SYCL device targeted by the SYCL queue.
-            * :class:`dpctl.tensor.Device`
-                implies SYCL device `device.sycl_queue`. The `Device` object
-                is obtained via :attr:`dpctl.tensor.usm_ndarray.device`.
-            * ``(device_type, device_id)``
-               2-tuple matching the format of the output of the
-               ``__dlpack_device__`` method: an integer enumerator representing
-               the device type followed by an integer representing the index of
-               the device. The only supported :class:`dpctl.tensor.DLDeviceType`
-               device types are ``"kDLCPU"`` and ``"kDLOneAPI"``.
+        * ``None``
+            The data remains on the same device.
+        * oneAPI filter selector string
+            SYCL device selected by :ref:`filter selector string
+            <filter_selector_string>`.
+        * :class:`dpctl.SyclDevice`
+            explicit SYCL device that must correspond to
+            a non-partitioned SYCL device.
+        * :class:`dpctl.SyclQueue`
+            implies SYCL device targeted by the SYCL queue.
+        * :class:`dpnp.tensor.Device`
+            implies SYCL device ``device.sycl_queue``. The ``Device`` object
+            is obtained via :attr:`dpnp.tensor.usm_ndarray.device`.
+        * ``(device_type, device_id)``
+           2-tuple matching the format of the output of the
+           ``__dlpack_device__`` method: an integer enumerator representing
+           the device type followed by an integer representing the index of
+           the device. The only supported :class:`dpnp.tensor.DLDeviceType`
+           device types are ``"kDLCPU"`` and ``"kDLOneAPI"``.
 
-            Default: ``None``.
+        Default: ``None``.
+    copy : bool, optional
+        Boolean indicating whether or not to copy the input.
 
-        copy (bool, optional)
-            Boolean indicating whether or not to copy the input.
+        * If ``copy`` is ``True``, the input will always be
+          copied.
+        * If ``False``, a ``BufferError`` will be raised if a
+          copy is deemed necessary.
+        * If ``None``, a copy will be made only if deemed
+          necessary, otherwise, the existing memory buffer will
+          be reused.
 
-            * If ``copy`` is ``True``, the input will always be
-              copied.
-            * If ``False``, a ``BufferError`` will be raised if a
-              copy is deemed necessary.
-            * If ``None``, a copy will be made only if deemed
-              necessary, otherwise, the existing memory buffer will
-              be reused.
+        Default: ``None``.
 
-            Default: ``None``.
+    Returns
+    -------
+    out : {usm_ndarray, numpy.ndarray}
+        An array containing the data in ``x``. When ``copy`` is
+        ``None`` or ``False``, this may be a view into the original
+        memory.
 
-    Returns:
-        Alternative[usm_ndarray, numpy.ndarray]:
-            An array containing the data in ``x``. When ``copy`` is
-            ``None`` or ``False``, this may be a view into the original
-            memory.
+        The type of the returned object
+        depends on where the data backing up input object ``x`` resides.
+        If it resides in a USM allocation on a SYCL device, the
+        type :class:`dpnp.tensor.usm_ndarray` is returned, otherwise if it
+        resides on ``"kDLCPU"`` device the type is :class:`numpy.ndarray`,
+        and otherwise an exception is raised.
 
-            The type of the returned object
-            depends on where the data backing up input object ``x`` resides.
-            If it resides in a USM allocation on a SYCL device, the
-            type :class:`dpctl.tensor.usm_ndarray` is returned, otherwise if it
-            resides on ``"kDLCPU"`` device the type is :class:`numpy.ndarray`,
-            and otherwise an exception is raised.
+        .. note::
 
-            .. note::
+            If the return type is :class:`dpnp.tensor.usm_ndarray`, the
+            associated SYCL queue is derived from the ``device`` keyword.
+            When ``device`` keyword value has type :class:`dpctl.SyclQueue`,
+            the explicit queue instance is used, when ``device`` keyword
+            value has type :class:`dpnp.tensor.Device`, the
+            ``device.sycl_queue`` is used. In all other cases, the cached
+            SYCL queue corresponding to the implied SYCL device is used.
 
-                If the return type is :class:`dpctl.tensor.usm_ndarray`, the
-                associated SYCL queue is derived from the ``device`` keyword.
-                When ``device`` keyword value has type :class:`dpctl.SyclQueue`,
-                the explicit queue instance is used, when ``device`` keyword
-                value has type :class:`dpctl.tensor.Device`, the
-                ``device.sycl_queue`` is used. In all other cases, the cached
-                SYCL queue corresponding to the implied SYCL device is used.
+    Raises
+    ------
+    TypeError
+        if ``x`` does not implement ``__dlpack__`` method.
+    ValueError
+        if data of the input object resides on an unsupported device.
 
-    Raises:
-        TypeError:
-            if ``x`` does not implement ``__dlpack__`` method
-        ValueError:
-            if data of the input object resides on an unsupported device
+    See Also
+    --------
+    https://dmlc.github.io/dlpack/latest/ : DLPack specification.
 
-    See https://dmlc.github.io/dlpack/latest/ for more details.
+    Examples
+    --------
+    .. code-block:: python
 
-    :Example:
+        import dpctl
+        import dpnp.tensor as dpt
 
-        .. code-block:: python
+        class Container:
+            "Helper class implementing `__dlpack__` protocol"
+            def __init__(self, array):
+                self._array = array
 
-            import dpctl
-            import dpnp.tensor as dpt
+            def __dlpack__(self, stream=None):
+                return self._array.__dlpack__(stream=stream)
 
-            class Container:
-                "Helper class implementing `__dlpack__` protocol"
-                def __init__(self, array):
-                    self._array = array
+            def __dlpack_device__(self):
+                return self._array.__dlpack_device__()
 
-                def __dlpack__(self, stream=None):
-                    return self._array.__dlpack__(stream=stream)
-
-                def __dlpack_device__(self):
-                    return self._array.__dlpack_device__()
-
-            C = Container(dpt.linspace(0, 100, num=20, dtype="int16"))
-            # create usm_ndarray view
-            X = dpt.from_dlpack(C)
-            # migrate content of the container to device of type kDLCPU
-            Y = dpt.from_dlpack(C, device=(dpt.DLDeviceType.kDLCPU, 0))
+        C = Container(dpt.linspace(0, 100, num=20, dtype="int16"))
+        # create usm_ndarray view
+        X = dpt.from_dlpack(C)
+        # migrate content of the container to device of type kDLCPU
+        Y = dpt.from_dlpack(C, device=(dpt.DLDeviceType.kDLCPU, 0))
 
     """
+
     dlpack_attr = getattr(x, "__dlpack__", None)
     dlpack_dev_attr = getattr(x, "__dlpack_device__", None)
     if not callable(dlpack_attr) or not callable(dlpack_dev_attr):

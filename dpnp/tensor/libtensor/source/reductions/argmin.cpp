@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_reductions_impl
+/// This file defines functions of dpnp.tensor._tensor_reductions_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 
@@ -135,7 +135,8 @@ struct ArgminOverAxisTempsStridedFactory
                                                              dstTy>::is_defined)
         {
             if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
+                          !std::is_same_v<srcTy, bool>)
+            {
                 // op for values
                 using ReductionOpT = sycl::minimum<srcTy>;
                 // op for indices
@@ -169,7 +170,8 @@ struct ArgminOverAxis1TempsContigFactory
                                                              dstTy>::is_defined)
         {
             if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
+                          !std::is_same_v<srcTy, bool>)
+            {
                 // op for values
                 using ReductionOpT = sycl::minimum<srcTy>;
                 // op for indices
@@ -203,7 +205,8 @@ struct ArgminOverAxis0TempsContigFactory
                                                              dstTy>::is_defined)
         {
             if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
+                          !std::is_same_v<srcTy, bool>)
+            {
                 // op for values
                 using ReductionOpT = sycl::minimum<srcTy>;
                 // op for indices

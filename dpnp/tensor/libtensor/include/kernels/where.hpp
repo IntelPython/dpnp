@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for dpctl.tensor.where.
+/// This file defines kernels for dpnp.tensor.where.
 //===---------------------------------------------------------------------===//
 
 #pragma once

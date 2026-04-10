@@ -307,10 +307,7 @@ struct BitwiseLeftShiftInplaceFunctor
     using supports_sg_loadstore = typename std::true_type;
     using supports_vec = typename std::true_type;
 
-    void operator()(resT &res, const argT &in) const
-    {
-        impl(res, in);
-    }
+    void operator()(resT &res, const argT &in) const { impl(res, in); }
 
     template <int vec_sz>
     void operator()(sycl::vec<resT, vec_sz> &res,
@@ -431,7 +428,8 @@ struct BitwiseLeftShiftInplaceContigFactory
     fnT get()
     {
         if constexpr (!BitwiseLeftShiftInplaceTypePairSupport<T1,
-                                                              T2>::is_defined) {
+                                                              T2>::is_defined)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -471,7 +469,8 @@ struct BitwiseLeftShiftInplaceStridedFactory
     fnT get()
     {
         if constexpr (!BitwiseLeftShiftInplaceTypePairSupport<T1,
-                                                              T2>::is_defined) {
+                                                              T2>::is_defined)
+        {
             fnT fn = nullptr;
             return fn;
         }

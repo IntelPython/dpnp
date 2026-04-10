@@ -301,14 +301,16 @@ public:
     }
 };
 
-template <
-    typename lhsTy,
-    typename rhsTy,
-    typename resTy,
-    typename BatchIndexerT,
-    typename RedIndexerT,
-    template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    class kernel_name_token>
+template <typename lhsTy,
+          typename rhsTy,
+          typename resTy,
+          typename BatchIndexerT,
+          typename RedIndexerT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename T5> class kernel_name_token>
 sycl::event sequential_dot_product(sycl::queue &exec_q,
                                    const lhsTy *lhs,
                                    const rhsTy *rhs,
@@ -345,8 +347,7 @@ template <typename lhsTy,
                     typename T3,
                     typename T4,
                     typename T5,
-                    typename T6>
-          class kernel_name_token>
+                    typename T6> class kernel_name_token>
 sycl::event submit_atomic_dot_product(sycl::queue &exec_q,
                                       const lhsTy *lhs,
                                       const rhsTy *rhs,
@@ -858,8 +859,7 @@ template <typename lhsTy,
                     typename T3,
                     typename T4,
                     typename T5,
-                    typename T6>
-          class kernel_name_token>
+                    typename T6> class kernel_name_token>
 sycl::event
     submit_no_atomic_dot_product(sycl::queue &exec_q,
                                  const lhsTy *lhs,
@@ -1082,7 +1082,8 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             std::size_t reduction_groups_ =
                 (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
                  1) /
@@ -1323,7 +1324,8 @@ sycl::event
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             std::size_t reduction_groups_ =
                 (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
                  1) /

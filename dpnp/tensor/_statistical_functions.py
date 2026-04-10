@@ -164,37 +164,44 @@ def _var_impl(x, axis, correction, keepdims):
 
 
 def mean(x, axis=None, keepdims=False):
-    """mean(x, axis=None, keepdims=False)
-
+    """
     Calculates the arithmetic mean of elements in the input array `x`.
 
-    Args:
-        x (usm_ndarray):
-            input array.
-        axis (Optional[int, Tuple[int, ...]]):
-            axis or axes along which the arithmetic means must be computed. If
-            a tuple of unique integers, the means are computed over multiple
-            axes. If `None`, the mean is computed over the entire array.
-            Default: `None`.
-        keepdims (Optional[bool]):
-            if `True`, the reduced axes (dimensions) are included in the result
-            as singleton dimensions, so that the returned array remains
-            compatible with the input array according to Array Broadcasting
-            rules. Otherwise, if `False`, the reduced axes are not included in
-            the returned array. Default: `False`.
-    Returns:
-        usm_ndarray:
-            an array containing the arithmetic means. If the mean was computed
-            over the entire array, a zero-dimensional array is returned.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : {None, int, tuple of ints}, optional
+        Axis or axes along which the arithmetic means must be computed. If
+        a tuple of unique integers, the means are computed over multiple
+        axes. If `None`, the mean is computed over the entire array.
 
-            If `x` has a floating-point data type, the returned array will have
-            the same data type as `x`.
-            If `x` has a boolean or integral data type, the returned array
-            will have the default floating point data type for the device
-            where input array `x` is allocated.
+        Default: ``None``.
+    keepdims : bool, optional
+        If `True`, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if `False`, the reduced axes are not included in
+        the returned array.
+
+        Default: ``False``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array containing the arithmetic means. If the mean was computed
+        over the entire array, a zero-dimensional array is returned.
+
+        If `x` has a floating-point data type, the returned array will have
+        the same data type as `x`.
+        If `x` has a boolean or integral data type, the returned array
+        will have the default floating point data type for the device
+        where input array `x` is allocated.
+
     """
+
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     nd = x.ndim
     if axis is None:
         axis = tuple(range(nd))
@@ -271,42 +278,50 @@ def mean(x, axis=None, keepdims=False):
 
 
 def var(x, axis=None, correction=0.0, keepdims=False):
-    """var(x, axis=None, correction=0.0, keepdims=False)
-
+    """
     Calculates the variance of elements in the input array `x`.
 
-    Args:
-        x (usm_ndarray):
-            input array.
-        axis (Optional[int, Tuple[int, ...]]):
-            axis or axes along which the variances must be computed. If a tuple
-            of unique integers, the variances are computed over multiple axes.
-            If `None`, the variance is computed over the entire array.
-            Default: `None`.
-        correction (Optional[float, int]):
-            degrees of freedom adjustment. The divisor used in calculating the
-            variance is `N - correction`, where `N` corresponds to the total
-            number of elements over which the variance is calculated.
-            Default: `0.0`.
-        keepdims (Optional[bool]):
-            if `True`, the reduced axes (dimensions) are included in the result
-            as singleton dimensions, so that the returned array remains
-            compatible with the input array according to Array Broadcasting
-            rules. Otherwise, if `False`, the reduced axes are not included in
-            the returned array. Default: `False`.
-    Returns:
-        usm_ndarray:
-            an array containing the variances. If the variance was computed
-            over the entire array, a zero-dimensional array is returned.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : {None, int, tuple of ints}, optional
+        Axis or axes along which the variances must be computed. If a tuple
+        of unique integers, the variances are computed over multiple axes.
+        If `None`, the variance is computed over the entire array.
 
-            If `x` has a real-valued floating-point data type, the returned
-            array will have the same data type as `x`.
-            If `x` has a boolean or integral data type, the returned array
-            will have the default floating point data type for the device
-            where input array `x` is allocated.
+        Default: ``None``.
+    correction : {float, int}, optional
+        Degrees of freedom adjustment. The divisor used in calculating the
+        variance is `N - correction`, where `N` corresponds to the total
+        number of elements over which the variance is calculated.
+
+        Default: ``0.0``.
+    keepdims : bool, optional
+        If `True`, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if `False`, the reduced axes are not included in
+        the returned array.
+
+        Default: ``False``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array containing the variances. If the variance was computed
+        over the entire array, a zero-dimensional array is returned.
+
+        If `x` has a real-valued floating-point data type, the returned
+        array will have the same data type as `x`.
+        If `x` has a boolean or integral data type, the returned array
+        will have the default floating point data type for the device
+        where input array `x` is allocated.
+
     """
+
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     if not isinstance(correction, (int, float)):
         raise TypeError(
@@ -322,43 +337,53 @@ def var(x, axis=None, correction=0.0, keepdims=False):
 
 
 def std(x, axis=None, correction=0.0, keepdims=False):
-    """std(x, axis=None, correction=0.0, keepdims=False)
-
+    """
     Calculates the standard deviation of elements in the input array `x`.
 
-    Args:
-        x (usm_ndarray):
-            input array.
-        axis (Optional[int, Tuple[int, ...]]):
-            axis or axes along which the standard deviations must be computed.
-            If a tuple of unique integers, the standard deviations are computed
-            over multiple axes. If `None`, the standard deviation is computed
-            over the entire array. Default: `None`.
-        correction (Optional[float, int]):
-            degrees of freedom adjustment. The divisor used in calculating the
-            standard deviation is `N - correction`, where `N` corresponds to the
-            total number of elements over which the standard deviation is
-            calculated. Default: `0.0`.
-        keepdims (Optional[bool]):
-            if `True`, the reduced axes (dimensions) are included in the result
-            as singleton dimensions, so that the returned array remains
-            compatible with the input array according to Array Broadcasting
-            rules. Otherwise, if `False`, the reduced axes are not included in
-            the returned array. Default: `False`.
-    Returns:
-        usm_ndarray:
-            an array containing the standard deviations. If the standard
-            deviation was computed over the entire array, a zero-dimensional
-            array is returned.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : {None, int, tuple of ints}, optional
+        Axis or axes along which the standard deviations must be computed.
+        If a tuple of unique integers, the standard deviations are computed
+        over multiple axes. If `None`, the standard deviation is computed
+        over the entire array.
 
-            If `x` has a real-valued floating-point data type, the returned
-            array will have the same data type as `x`.
-            If `x` has a boolean or integral data type, the returned array
-            will have the default floating point data type for the device
-            where input array `x` is allocated.
+        Default: ``None``.
+    correction : {float, int}, optional
+        Degrees of freedom adjustment. The divisor used in calculating the
+        standard deviation is `N - correction`, where `N` corresponds to the
+        total number of elements over which the standard deviation is
+        calculated.
+
+        Default: ``0.0``.
+    keepdims : bool, optional
+        If `True`, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if `False`, the reduced axes are not included in
+        the returned array.
+
+        Default: ``False``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array containing the standard deviations. If the standard
+        deviation was computed over the entire array, a zero-dimensional
+        array is returned.
+
+        If `x` has a real-valued floating-point data type, the returned
+        array will have the same data type as `x`.
+        If `x` has a boolean or integral data type, the returned array
+        will have the default floating point data type for the device
+        where input array `x` is allocated.
+
     """
+
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     if not isinstance(correction, (int, float)):
         raise TypeError(

@@ -63,10 +63,11 @@ def _get_dtype(inp_dt, sycl_obj, ref_type=None):
     Type inference utility to construct data type
     object with defaults based on reference type.
 
-    _get_dtype is used by dpctl.tensor.asarray
+    _get_dtype is used by dpnp.tensor.asarray
     to infer data type of the output array from the
     input sequence.
     """
+
     if inp_dt is None:
         if ref_type in [None, float] or np_issubdtype(ref_type, np_floating):
             fp_dt = ti_default_device_fp_type(sycl_obj)

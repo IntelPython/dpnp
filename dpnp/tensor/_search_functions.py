@@ -125,44 +125,51 @@ def _where_result_type(dt1, dt2, dev):
 
 def where(condition, x1, x2, /, *, order="K", out=None):
     """
-    Returns :class:`dpctl.tensor.usm_ndarray` with elements chosen
+    Returns :class:`dpnp.tensor.usm_ndarray` with elements chosen
     from ``x1`` or ``x2`` depending on ``condition``.
 
-    Args:
-        condition (usm_ndarray): When ``True`` yields from ``x1``,
-            and otherwise yields from ``x2``.
-            Must be compatible with ``x1`` and ``x2`` according
-            to broadcasting rules.
-        x1 (Union[usm_ndarray, bool, int, float, complex]):
-            Array from which values are chosen when ``condition`` is ``True``.
-            Must be compatible with ``condition`` and ``x2`` according
-            to broadcasting rules.
-        x2 (Union[usm_ndarray, bool, int, float, complex]):
-            Array from which values are chosen when ``condition`` is not
-            ``True``.
-            Must be compatible with ``condition`` and ``x2`` according
-            to broadcasting rules.
-        order (``"K"``, ``"C"``, ``"F"``, ``"A"``, optional):
-            Memory layout of the new output array,
-            if parameter ``out`` is ``None``.
-            Default: ``"K"``.
-        out (Optional[usm_ndarray]):
-            the array into which the result is written.
-            The data type of `out` must match the expected shape and the
-            expected data type of the result.
-            If ``None`` then a new array is returned. Default: ``None``.
+    Parameters
+    ----------
+    condition : usm_ndarray
+        When ``True`` yields from ``x1``, and otherwise yields from ``x2``.
+        Must be compatible with ``x1`` and ``x2`` according
+        to broadcasting rules.
+    x1 : {usm_ndarray, bool, int, float, complex}
+        Array from which values are chosen when ``condition`` is ``True``.
+        Must be compatible with ``condition`` and ``x2`` according
+        to broadcasting rules.
+    x2 : {usm_ndarray, bool, int, float, complex}
+        Array from which values are chosen when ``condition`` is not
+        ``True``.
+        Must be compatible with ``condition`` and ``x1`` according
+        to broadcasting rules.
+    order : {"K", "C", "F", "A"}, optional
+        Memory layout of the new output array,
+        if parameter ``out`` is ``None``.
 
-    Returns:
-        usm_ndarray:
-            An array with elements from ``x1`` where ``condition`` is ``True``,
-            and elements from ``x2`` elsewhere.
+        Default: ``"K"``.
+    out : {None, usm_ndarray}, optional
+        The array into which the result is written.
+        The data type of ``out`` must match the expected shape and the
+        expected data type of the result.
+        If ``None`` then a new array is returned.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array with elements from ``x1`` where ``condition`` is ``True``,
+        and elements from ``x2`` elsewhere.
 
     The data type of the returned array is determined by applying
     the Type Promotion Rules to ``x1`` and ``x2``.
+
     """
+
     if not isinstance(condition, dpt.usm_ndarray):
         raise TypeError(
-            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(condition)}"
+            "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(condition)}"
         )
     if order not in ["K", "C", "F", "A"]:
         order = "K"

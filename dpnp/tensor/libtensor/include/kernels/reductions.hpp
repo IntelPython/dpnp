@@ -398,7 +398,8 @@ public:
                 res_ref.fetch_min(red_val_over_wg);
             }
             else if constexpr (su_ns::IsSyclLogicalAnd<outT,
-                                                       ReductionOp>::value) {
+                                                       ReductionOp>::value)
+            {
                 res_ref.fetch_and(red_val_over_wg);
             }
             else if constexpr (su_ns::IsSyclLogicalOr<outT, ReductionOp>::value)
@@ -626,14 +627,16 @@ public:
     }
 };
 
-template <
-    typename argTy,
-    typename resTy,
-    typename ReductionOpT,
-    typename InputOutputIterIndexerT,
-    typename ReductionIndexerT,
-    template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    class kernel_name_token>
+template <typename argTy,
+          typename resTy,
+          typename ReductionOpT,
+          typename InputOutputIterIndexerT,
+          typename ReductionIndexerT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename T5> class kernel_name_token>
 sycl::event
     sequential_reduction(sycl::queue &exec_q,
                          const argTy *arg,
@@ -666,14 +669,16 @@ sycl::event
 template <typename BasedKernelName>
 class custom_reduction_wrapper;
 
-template <
-    typename argTy,
-    typename resTy,
-    typename ReductionOpT,
-    typename InputOutputIterIndexerT,
-    typename ReductionIndexerT,
-    template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    class kernel_name_token>
+template <typename argTy,
+          typename resTy,
+          typename ReductionOpT,
+          typename InputOutputIterIndexerT,
+          typename ReductionIndexerT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename T5> class kernel_name_token>
 sycl::event
     submit_atomic_reduction(sycl::queue &exec_q,
                             const argTy *arg,
@@ -1051,14 +1056,16 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
 
 /* = Reduction, using sycl::reduce_over_group, but not using atomic_ref = */
 
-template <
-    typename argTy,
-    typename resTy,
-    typename ReductionOpT,
-    typename InputOutputIterIndexerT,
-    typename ReductionIndexerT,
-    template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    class kernel_name_token>
+template <typename argTy,
+          typename resTy,
+          typename ReductionOpT,
+          typename InputOutputIterIndexerT,
+          typename ReductionIndexerT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename T5> class kernel_name_token>
 sycl::event submit_no_atomic_reduction(
     sycl::queue &exec_q,
     const argTy *arg,
@@ -1309,7 +1316,8 @@ sycl::event reduction_over_group_temps_strided_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             std::size_t reduction_groups_ =
                 (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
                  1) /
@@ -1547,7 +1555,8 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             std::size_t reduction_groups_ =
                 (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
                  1) /
@@ -1779,7 +1788,8 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             std::size_t reduction_groups_ =
                 (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
                  1) /
@@ -2089,7 +2099,8 @@ public:
                         }
                     }
                     else if constexpr (su_ns::IsMaximum<argT,
-                                                        ReductionOp>::value) {
+                                                        ReductionOp>::value)
+                    {
                         if (val > local_red_val) {
                             local_red_val = val;
                             if constexpr (!First) {
@@ -2283,7 +2294,8 @@ public:
                         }
                     }
                     else if constexpr (su_ns::IsMaximum<argT,
-                                                        ReductionOp>::value) {
+                                                        ReductionOp>::value)
+                    {
                         using dpctl::tensor::type_utils::is_complex;
                         if constexpr (is_complex<argT>::value) {
                             using dpctl::tensor::math_utils::greater_complex;
@@ -2694,7 +2706,8 @@ sycl::event search_over_group_temps_strided_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             std::size_t reduction_groups_ =
                 (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
                  1) /
@@ -2969,7 +2982,8 @@ sycl::event search_axis1_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             std::size_t reduction_groups_ =
                 (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
                  1) /
@@ -3236,7 +3250,8 @@ sycl::event search_axis0_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             std::size_t reduction_groups_ =
                 (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
                  1) /

@@ -1053,7 +1053,8 @@ public:
                     slmB_t vec{};
 #pragma unroll
                     for (std::uint32_t lane_id = 0; lane_id < m_vec_size;
-                         ++lane_id) {
+                         ++lane_id)
+                    {
                         const std::size_t g_j1 = g_j + lane_id;
                         vec[lane_id] = (g_j1 < m && g_s < k)
                                            ? static_cast<resT>(
@@ -1134,7 +1135,8 @@ public:
                             j + (local_j + pr_j * wg_delta_m) * m_vec_size;
 #pragma unroll
                         for (std::uint32_t lane_id = 0; lane_id < m_vec_size;
-                             ++lane_id) {
+                             ++lane_id)
+                        {
                             const std::size_t out_flat_id =
                                 out_i * c_st0 + (out_j + lane_id) * c_st1;
                             if (out_j + lane_id < m) {
@@ -1168,18 +1170,12 @@ public:
     {
     }
 
-    constexpr std::uint32_t get_wi_delta_n() const
-    {
-        return wi_delta_n;
-    }
+    constexpr std::uint32_t get_wi_delta_n() const { return wi_delta_n; }
     constexpr std::uint32_t get_wi_delta_m_vecs() const
     {
         return wi_delta_m_vecs;
     }
-    constexpr std::uint32_t get_m_vec_size() const
-    {
-        return m_vec_size;
-    }
+    constexpr std::uint32_t get_m_vec_size() const { return m_vec_size; }
 };
 
 template <typename resT>

@@ -139,7 +139,8 @@ void merge_impl(const std::size_t offset,
             if (r_search_bound_2 == l_search_bound_2) {
                 const std::size_t shift_2 = l_search_bound_2 - start_2;
                 for (std::size_t idx = local_start_1 + 1; idx < local_end_1 - 1;
-                     ++idx) {
+                     ++idx)
+                {
                     const auto intermediate_item_1 = in_acc[idx];
                     const std::size_t shift_1 = idx - start_1;
                     out_acc[start_out + shift_1 + shift_2] =
@@ -148,7 +149,8 @@ void merge_impl(const std::size_t offset,
             }
             else {
                 for (std::size_t idx = local_start_1 + 1; idx < local_end_1 - 1;
-                     ++idx) {
+                     ++idx)
+                {
                     const auto intermediate_item_1 = in_acc[idx];
                     // we shouldn't seek in whole 2nd sequence. Just for the
                     // part where the 1st sequence should be
@@ -282,10 +284,7 @@ struct GetValueType<sycl::buffer<ElementType, Dim, AllocatorT>>
 template <typename Iter>
 struct GetReadOnlyAccess
 {
-    Iter operator()(const Iter &it, sycl::handler &)
-    {
-        return it;
-    }
+    Iter operator()(const Iter &it, sycl::handler &) { return it; }
 };
 
 template <typename ElementType, int Dim, typename AllocatorT>
@@ -302,10 +301,7 @@ struct GetReadOnlyAccess<sycl::buffer<ElementType, Dim, AllocatorT>>
 template <typename Iter>
 struct GetWriteDiscardAccess
 {
-    Iter operator()(Iter it, sycl::handler &)
-    {
-        return it;
-    }
+    Iter operator()(Iter it, sycl::handler &) { return it; }
 };
 
 template <typename ElementType, int Dim, typename AllocatorT>
@@ -322,10 +318,7 @@ struct GetWriteDiscardAccess<sycl::buffer<ElementType, Dim, AllocatorT>>
 template <typename Iter>
 struct GetReadWriteAccess
 {
-    Iter operator()(Iter &it, sycl::handler &)
-    {
-        return it;
-    }
+    Iter operator()(Iter &it, sycl::handler &) { return it; }
 };
 
 template <typename ElementType, int Dim, typename AllocatorT>

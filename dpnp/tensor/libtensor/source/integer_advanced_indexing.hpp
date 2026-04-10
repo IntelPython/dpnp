@@ -30,7 +30,7 @@
 ///
 /// \file
 /// This file declares Python API for implementation functions of
-/// dpctl.tensor.take and dpctl.tensor.put
+/// dpnp.tensor.take and dpnp.tensor.put
 //===----------------------------------------------------------------------===//
 
 #pragma once

@@ -111,21 +111,46 @@ def _allclose_others(r1, r2):
 
 
 def allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False):
-    """allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False)
-
+    """
     Returns True if two arrays are element-wise equal within tolerances.
 
     The testing is based on the following elementwise comparison:
 
            abs(a - b) <= max(atol, rtol * max(abs(a), abs(b)))
+
+    Parameters
+    ----------
+    a1 : usm_ndarray
+        First input array.
+    a2 : usm_ndarray
+        Second input array.
+    atol : float, optional
+        Absolute tolerance.
+
+        Default: ``1e-8``.
+    rtol : float, optional
+        Relative tolerance.
+
+        Default: ``1e-5``.
+    equal_nan : bool, optional
+        Whether to compare NaN's as equal.
+
+        Default: ``False``.
+
+    Returns
+    -------
+    out : bool
+        True if the two arrays are equal within the given tolerances.
+
     """
+
     if not isinstance(a1, dpt.usm_ndarray):
         raise TypeError(
-            f"Expected dpctl.tensor.usm_ndarray type, got {type(a1)}."
+            f"Expected dpnp.tensor.usm_ndarray type, got {type(a1)}."
         )
     if not isinstance(a2, dpt.usm_ndarray):
         raise TypeError(
-            f"Expected dpctl.tensor.usm_ndarray type, got {type(a2)}."
+            f"Expected dpnp.tensor.usm_ndarray type, got {type(a2)}."
         )
     atol = float(atol)
     rtol = float(rtol)

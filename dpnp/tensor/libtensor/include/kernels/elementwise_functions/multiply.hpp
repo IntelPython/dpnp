@@ -92,7 +92,8 @@ struct MultiplyFunctor
     {
         auto tmp = in1 * in2;
         if constexpr (std::is_same_v<resT,
-                                     typename decltype(tmp)::element_type>) {
+                                     typename decltype(tmp)::element_type>)
+        {
             return tmp;
         }
         else {
@@ -430,10 +431,7 @@ struct MultiplyInplaceFunctor
     using supports_vec = std::negation<
         std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
 
-    void operator()(resT &res, const argT &in)
-    {
-        res *= in;
-    }
+    void operator()(resT &res, const argT &in) { res *= in; }
 
     template <int vec_sz>
     void operator()(sycl::vec<resT, vec_sz> &res,

@@ -672,37 +672,40 @@ class finfo_object:
 
 
 def can_cast(from_, to, /, *, casting="safe") -> bool:
-    """can_cast(from, to, casting="safe")
-
-    Determines if one data type can be cast to another data type according \
+    """
+    Determines if one data type can be cast to another data type according
     to Type Promotion Rules.
 
-    Args:
-       from_ (Union[usm_ndarray, dtype]):
-           source data type. If `from_` is an array, a device-specific type
-           promotion rules apply.
-       to (dtype):
-           target data type
-       casting (Optional[str]):
-            controls what kind of data casting may occur.
+    Parameters
+    ----------
+    from_ : {usm_ndarray, dtype}
+        Source data type. If `from_` is an array, device-specific type
+        promotion rules apply.
+    to : dtype
+        Target data type.
+    casting : str, optional
+        Controls what kind of data casting may occur.
 
-                * "no" means data types should not be cast at all.
-                * "safe" means only casts that preserve values are allowed.
-                * "same_kind" means only safe casts and casts within a kind,
-                  like `float64` to `float32`, are allowed.
-                * "unsafe" means any data conversion can be done.
+            * "no" means data types should not be cast at all.
+            * "safe" means only casts that preserve values are allowed.
+            * "same_kind" means only safe casts and casts within a kind,
+              like `float64` to `float32`, are allowed.
+            * "unsafe" means any data conversion can be done.
 
-            Default: `"safe"`.
+        Default: ``"safe"``.
 
-    Returns:
-        bool:
-            Gives `True` if cast can occur according to the casting rule.
+    Returns
+    -------
+    out : bool
+        Gives `True` if cast can occur according to the casting rule.
 
     Device-specific type promotion rules take into account which data type are
     and are not supported by a specific device.
+
     """
+
     if isinstance(to, dpt.usm_ndarray):
-        raise TypeError(f"Expected `dpt.dtype` type, got {type(to)}.")
+        raise TypeError(f"Expected `dpnp.tensor.dtype` type, got {type(to)}.")
 
     dtype_to = dpt.dtype(to)
     _supported_dtype([dtype_to])
@@ -725,20 +728,22 @@ def can_cast(from_, to, /, *, casting="safe") -> bool:
 
 def result_type(*arrays_and_dtypes):
     """
-    result_type(*arrays_and_dtypes)
+    Returns the dtype that results from applying the Type Promotion Rules to
+    the arguments.
 
-    Returns the dtype that results from applying the Type Promotion Rules to \
-        the arguments.
+    Parameters
+    ----------
+    arrays_and_dtypes : {usm_ndarray, dtype}
+        An arbitrary length sequence of usm_ndarray objects or dtypes.
 
-    Args:
-        arrays_and_dtypes (Union[usm_ndarray, dtype]):
-            An arbitrary length sequence of usm_ndarray objects or dtypes.
+    Returns
+    -------
+    out : dtype
+        The dtype resulting from an operation involving the
+        input arrays and dtypes.
 
-    Returns:
-        dtype:
-            The dtype resulting from an operation involving the
-            input arrays and dtypes.
     """
+
     dtypes = []
     devices = []
     weak_dtypes = []
@@ -807,28 +812,30 @@ def result_type(*arrays_and_dtypes):
 
 
 def iinfo(dtype, /):
-    """iinfo(dtype)
-
+    """
     Returns machine limits for integer data types.
 
-    Args:
-        dtype (dtype, usm_ndarray):
-            integer dtype or
-            an array with integer dtype.
+    Parameters
+    ----------
+    dtype : {dtype, usm_ndarray}
+        Integer dtype or an array with integer dtype.
 
-    Returns:
-        iinfo_object:
-            An object with the following attributes:
+    Returns
+    -------
+    out : iinfo_object
+        An object with the following attributes:
 
-            * bits: int
-                number of bits occupied by the data type
-            * max: int
-                largest representable number.
-            * min: int
-                smallest representable number.
-            * dtype: dtype
-                integer data type.
+        * bits: int
+            number of bits occupied by the data type
+        * max: int
+            largest representable number.
+        * min: int
+            smallest representable number.
+        * dtype: dtype
+            integer data type.
+
     """
+
     if isinstance(dtype, dpt.usm_ndarray):
         dtype = dtype.dtype
     _supported_dtype([dpt.dtype(dtype)])
@@ -836,37 +843,38 @@ def iinfo(dtype, /):
 
 
 def finfo(dtype, /):
-    """finfo(type)
-
+    """
     Returns machine limits for floating-point data types.
 
-    Args:
-        dtype (dtype, usm_ndarray): floating-point dtype or
-            an array with floating point data type.
-            If complex, the information is about its component
-            data type.
+    Parameters
+    ----------
+    dtype : {dtype, usm_ndarray}
+        Floating-point dtype or an array with floating point data type.
+        If complex, the information is about its component data type.
 
-    Returns:
-        finfo_object:
-            an object have the following attributes:
+    Returns
+    -------
+    out : finfo_object
+        An object with the following attributes:
 
-                * bits: int
-                    number of bits occupied by dtype.
-                * eps: float
-                    difference between 1.0 and the next smallest representable
-                    real-valued floating-point number larger than 1.0 according
-                    to the IEEE-754 standard.
-                * max: float
-                    largest representable real-valued number.
-                * min: float
-                    smallest representable real-valued number.
-                * smallest_normal: float
-                    smallest positive real-valued floating-point number with
-                    full precision.
-                * dtype: dtype
-                    real-valued floating-point data type.
+        * bits: int
+            number of bits occupied by dtype.
+        * eps: float
+            difference between 1.0 and the next smallest representable
+            real-valued floating-point number larger than 1.0 according
+            to the IEEE-754 standard.
+        * max: float
+            largest representable real-valued number.
+        * min: float
+            smallest representable real-valued number.
+        * smallest_normal: float
+            smallest positive real-valued floating-point number with
+            full precision.
+        * dtype: dtype
+            real-valued floating-point data type.
 
     """
+
     if isinstance(dtype, dpt.usm_ndarray):
         dtype = dtype.dtype
     _supported_dtype([dpt.dtype(dtype)])
@@ -876,23 +884,37 @@ def finfo(dtype, /):
 def _supported_dtype(dtypes):
     for dtype in dtypes:
         if dtype.char not in "?bBhHiIlLqQefdFD":
-            raise ValueError(f"Dpctl doesn't support dtype {dtype}.")
+            raise ValueError(f"dpnp.tensor doesn't support dtype {dtype}.")
     return True
 
 
 def isdtype(dtype, kind):
-    """isdtype(dtype, kind)
-
+    """
     Returns a boolean indicating whether a provided `dtype` is
     of a specified data type `kind`.
 
     See [array API](array_api) for more information.
 
     [array_api]: https://data-apis.org/array-api/latest/
+
+    Parameters
+    ----------
+    dtype : dtype
+        Data type to test.
+    kind : {dtype, str, tuple}
+        Data type kind.
+
+    Returns
+    -------
+    out : bool
+        Whether the provided `dtype` is of the specified data type `kind`.
+
     """
 
     if not isinstance(dtype, np.dtype):
-        raise TypeError(f"Expected instance of `dpt.dtype`, got {dtype}")
+        raise TypeError(
+            f"Expected instance of `dpnp.tensor.dtype`, got {dtype}"
+        )
 
     if isinstance(kind, np.dtype):
         return dtype == kind

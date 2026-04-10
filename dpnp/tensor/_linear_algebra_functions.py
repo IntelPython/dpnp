@@ -46,30 +46,33 @@ from ._type_utils import (
 
 
 def matrix_transpose(x):
-    r"""matrix_transpose(x)
-
+    """
     Transposes the innermost two dimensions of `x`, where `x` is a
     2-dimensional matrix or a stack of 2-dimensional matrices.
 
     To convert from a 1-dimensional array to a 2-dimensional column
     vector, use x[:, dpt.newaxis].
 
-    Args:
-       x (usm_ndarray):
-          Input array with shape (..., m, n).
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array with shape (..., m, n).
 
-    Returns:
-       usm_ndarray:
-          Array with shape (..., n, m).
+    Returns
+    -------
+    out : usm_ndarray
+        Array with shape (..., n, m).
+
     """
 
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
-            "Expected instance of `dpt.usm_ndarray`, got `{}`.".format(type(x))
+            "Expected instance of `dpnp.tensor.usm_ndarray`,"
+            " got `{}`.".format(type(x))
         )
     if x.ndim < 2:
         raise ValueError(
-            "dpctl.tensor.matrix_transpose requires array to have"
+            "dpnp.tensor.matrix_transpose requires array to have "
             "at least 2 dimensions"
         )
 
@@ -77,47 +80,53 @@ def matrix_transpose(x):
 
 
 def tensordot(x1, x2, axes=2):
-    r"""tensordot(x1, x2, axes=2)
-
+    """
     Returns a tensor contraction of `x1` and `x2` over specific axes.
 
-    Args:
-        x1 (usm_ndarray):
-            first input array, expected to have numeric data type.
-        x2 (usm_ndarray):
-            second input array, expected to have numeric data type.
-            Corresponding contracted axes of `x1` and `x2` must be equal.
-        axes (Union[int, Tuple[Sequence[int], Sequence[int]]):
-            number of axes to contract or explicit sequences of axes for
-            `x1` and `x2`, respectively. If `axes` is an integer equal to `N`,
-            then the contraction is performed over last `N` axes of `x1` and
-            the first `N` axis of `x2` in order. The size of each corresponding
-            axis must match and must be non-negative.
+    Parameters
+    ----------
+    x1 : usm_ndarray
+        First input array, expected to have numeric data type.
+    x2 : usm_ndarray
+        Second input array, expected to have numeric data type.
+        Corresponding contracted axes of `x1` and `x2` must be equal.
+    axes : {int, tuple}, optional
+        Number of axes to contract or explicit sequences of axes for
+        `x1` and `x2`, respectively. If `axes` is an integer equal to `N`,
+        then the contraction is performed over last `N` axes of `x1` and
+        the first `N` axis of `x2` in order. The size of each corresponding
+        axis must match and must be non-negative.
 
-                * if `N` equals `0`, the result is the tensor outer product
-                * if `N` equals `1`, the result is the tensor dot product
-                * if `N` equals `2`, the result is the tensor double
-                  contraction (default).
+            * if `N` equals `0`, the result is the tensor outer product
+            * if `N` equals `1`, the result is the tensor dot product
+            * if `N` equals `2`, the result is the tensor double
+              contraction (default).
 
-            If `axes` is a tuple of two sequences `(x1_axes, x2_axes)`, the
-            first sequence applies to `x1` and the second sequence applies
-            to `x2`. Both sequences must have equal length, and each axis
-            `x1_axes[i]` for `x1` must have the same size as the respective
-            axis `x2_axes[i]` for `x2`. Each sequence must consist of unique
-            integers that specify valid axes for each respective array.
-            For example, if `x1` has rank `N`, a valid axis must reside on the
-            half-open interval `[-N, N)`.
-    Returns:
-        usm_ndarray:
-            an array containing the tensor contraction whose shape consists of
-            the non-contracted axes of the first array `x1`, followed by the
-            non-contracted axes of the second array `x2`. The returned array
-            must have a data type determined by Type Promotion Rules.
+        If `axes` is a tuple of two sequences `(x1_axes, x2_axes)`, the
+        first sequence applies to `x1` and the second sequence applies
+        to `x2`. Both sequences must have equal length, and each axis
+        `x1_axes[i]` for `x1` must have the same size as the respective
+        axis `x2_axes[i]` for `x2`. Each sequence must consist of unique
+        integers that specify valid axes for each respective array.
+        For example, if `x1` has rank `N`, a valid axis must reside on the
+        half-open interval `[-N, N)`.
+
+        Default: ``2``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array containing the tensor contraction whose shape consists of
+        the non-contracted axes of the first array `x1`, followed by the
+        non-contracted axes of the second array `x2`. The returned array
+        must have a data type determined by Type Promotion Rules.
+
     """
+
     if not isinstance(x1, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x1)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x1)}")
     if not isinstance(x2, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x2)}")
     q1, x1_usm_type = x1.sycl_queue, x1.usm_type
     q2, x2_usm_type = x2.sycl_queue, x2.usm_type
     exec_q = dpt.get_execution_queue((q1, q2))
@@ -320,40 +329,44 @@ def tensordot(x1, x2, axes=2):
 
 
 def vecdot(x1, x2, axis=-1):
-    r"""vecdot(x1, x2, axis=-1)
-
+    """
     Computes the (vector) dot product of two arrays.
 
-    Args:
-        x1 (usm_ndarray):
-            first input array.
-        x2 (usm_ndarray):
-            second input array. Input arrays must have compatible
-            shapes along non-contract axes according to broadcasting
-            rules, and must have the same size along the contracted
-            axis. Input arrays should be of numeric type.
-        axis (Optional[int]):
-            axis over which to compute the dot product. The axis must
-            be an integer on the interval `[-N, -1]`, where `N` is
-            ``min(x1.ndim, x2.ndim)``. The axis along which dot product
-            is performed is counted backward from the last axes
-            (that is, `-1` refers to the last axis). By default,
-            dot product is computed over the last axis.
-            Default: `-1`.
+    Parameters
+    ----------
+    x1 : usm_ndarray
+        First input array.
+    x2 : usm_ndarray
+        Second input array. Input arrays must have compatible
+        shapes along non-contract axes according to broadcasting
+        rules, and must have the same size along the contracted
+        axis. Input arrays should be of numeric type.
+    axis : int, optional
+        Axis over which to compute the dot product. The axis must
+        be an integer on the interval `[-N, -1]`, where `N` is
+        ``min(x1.ndim, x2.ndim)``. The axis along which dot product
+        is performed is counted backward from the last axes
+        (that is, `-1` refers to the last axis). By default,
+        dot product is computed over the last axis.
 
-    Returns:
-        usm_ndarray:
-            if `x1` and `x2` are both one-dimensional arrays, a
-            zero-dimensional array containing the dot product value
-            is returned; otherwise, a non-zero-dimensional array containing
-            the dot products and having rank `N-1`, where `N` is the rank
-            of the shape of input arrays after broadcasting rules are applied
-            to non-contracted axes.
+        Default: ``-1``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        If `x1` and `x2` are both one-dimensional arrays, a
+        zero-dimensional array containing the dot product value
+        is returned; otherwise, a non-zero-dimensional array containing
+        the dot products and having rank `N-1`, where `N` is the rank
+        of the shape of input arrays after broadcasting rules are applied
+        to non-contracted axes.
+
     """
+
     if not isinstance(x1, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x1)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x1)}")
     if not isinstance(x2, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x2)}")
     q1, x1_usm_type = x1.sycl_queue, x1.usm_type
     q2, x2_usm_type = x2.sycl_queue, x2.usm_type
     exec_q = dpt.get_execution_queue((q1, q2))
@@ -586,76 +599,85 @@ def vecdot(x1, x2, axis=-1):
 
 
 def matmul(x1, x2, out=None, dtype=None, order="K"):
-    r"""matmul(x1, x2, out=None, order="K")
-
+    """
     Computes the matrix product. Implements the same semantics
     as the built-in operator `@`.
 
-    Args:
-        x1 (usm_ndarray):
-            first input array. Expected to have numeric data type, and
-            at least one dimension. If `x1` is one-dimensional having
-            shape `(M,)`, and `x2` has more than one dimension, `x1` is
-            effectively treated as a two-dimensional array with shape `(1, M)`,
-            although the prepended dimension is removed from the output array.
-            If `x1` has shape `(..., M, K)`, the innermost two dimensions form
-            matrices on which to perform matrix multiplication.
-        x2 (usm_ndarray):
-            second input array. Expected to have numeric data type, and
-            at least one dimension. If `x2` is one-dimensional having
-            shape `(N,)`, and `x1` has more than one dimension, `x2` is
-            effectively treated as a two-dimensional array with shape `(N, 1)`,
-            although the appended dimension is removed from the output array.
-            If `x2` has shape `(..., K, N)`, the innermost two dimensions form
-            matrices on which to perform matrix multiplication.
-        out (Optional[usm_ndarray]):
-            the array into which the result of the matrix product is written.
-            The data type of `out` must match the expected data type of the
-            result or (if provided) `dtype`.
-            If `None` then a new array is returned. Default: `None`.
-        dtype (Optional[dtype]):
-            data type of the returned array. If `None`, the data type of the
-            returned array is determined by the Type Promotion Rules.
-            Default: `None`.
-        order (["K", "C", "F", "A"]):
-            memory layout of the output array, if `out` is `None`, otherwise
-            the `order` parameter value is not used. Default: `K`.
-    Returns:
-        usm_ndarray:
-            * if both `x1` and `x2` are one-dimensional arrays with shape
-              `(N,)`, returned array is a zero-dimensional array containing
-              inner product as its only element.
-            * if `x1` is two-dimensional array with shape `(M, K)` and `x2` is
-              a two-dimensional array with shape `(K, N)`, returned array is a
-              two-dimensional array with shape `(M, N)` and contains the
-              conventional matrix product.
-            * if `x1` is a one-dimensional array with shape `(K,)` and `x2` is
-              an array with shape `(..., K, N)`, returned array contains the
-              conventional matrix product and has shape `(..., N)`.
-            * if `x1` is an array with shape `(..., M, K)` and `x2` is a
-              one-dimensional array with shape `(K,)`, returned array has shape
-              `(..., M)` and contains the conventional matrix product.
-            * if `x1` is a two-dimensional array with shape `(M, K)` and `x2`
-              is an array with shape `(..., K, N)`, returned array contains
-              conventional matrix product for each stacked matrix and has shape
-              `(..., M, N)`.
-            * if `x1` has shape `(..., M, K)` and `x2` is a two-dimensional
-              array with shape `(K, N)`, returned array contains conventional
-              matrix product for each stacked matrix and has shape
-              `(..., M, N)`.
-            * if both `x1` and `x2` have more than two dimensions, returned
-              array contains conventional matrix product for each stacked
-              matrix and has shape determined by broadcasting rules for
-              `x1.shape[:-2]` and `x2.shape[:-2]`.
+    Parameters
+    ----------
+    x1 : usm_ndarray
+        First input array. Expected to have numeric data type, and
+        at least one dimension. If `x1` is one-dimensional having
+        shape `(M,)`, and `x2` has more than one dimension, `x1` is
+        effectively treated as a two-dimensional array with shape `(1, M)`,
+        although the prepended dimension is removed from the output array.
+        If `x1` has shape `(..., M, K)`, the innermost two dimensions form
+        matrices on which to perform matrix multiplication.
+    x2 : usm_ndarray
+        Second input array. Expected to have numeric data type, and
+        at least one dimension. If `x2` is one-dimensional having
+        shape `(N,)`, and `x1` has more than one dimension, `x2` is
+        effectively treated as a two-dimensional array with shape `(N, 1)`,
+        although the appended dimension is removed from the output array.
+        If `x2` has shape `(..., K, N)`, the innermost two dimensions form
+        matrices on which to perform matrix multiplication.
+    out : {None, usm_ndarray}, optional
+        The array into which the result of the matrix product is written.
+        The data type of `out` must match the expected data type of the
+        result or (if provided) `dtype`.
+        If `None` then a new array is returned.
 
-            The data type of the returned array is determined by the Type
-            Promotion Rules. If either `x1` or `x2` has a complex floating
-            point type, neither argument is complex conjugated or transposed.
+        Default: ``None``.
+    dtype : {None, dtype}, optional
+        Data type of the returned array. If `None`, the data type of the
+        returned array is determined by the Type Promotion Rules.
+
+        Default: ``None``.
+    order : {"K", "C", "F", "A"}, optional
+        Memory layout of the output array, if `out` is `None`, otherwise
+        the `order` parameter value is not used.
+
+        Default: ``"K"``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        * if both `x1` and `x2` are one-dimensional arrays with shape
+          `(N,)`, returned array is a zero-dimensional array containing
+          inner product as its only element.
+        * if `x1` is two-dimensional array with shape `(M, K)` and `x2` is
+          a two-dimensional array with shape `(K, N)`, returned array is a
+          two-dimensional array with shape `(M, N)` and contains the
+          conventional matrix product.
+        * if `x1` is a one-dimensional array with shape `(K,)` and `x2` is
+          an array with shape `(..., K, N)`, returned array contains the
+          conventional matrix product and has shape `(..., N)`.
+        * if `x1` is an array with shape `(..., M, K)` and `x2` is a
+          one-dimensional array with shape `(K,)`, returned array has shape
+          `(..., M)` and contains the conventional matrix product.
+        * if `x1` is a two-dimensional array with shape `(M, K)` and `x2`
+          is an array with shape `(..., K, N)`, returned array contains
+          conventional matrix product for each stacked matrix and has shape
+          `(..., M, N)`.
+        * if `x1` has shape `(..., M, K)` and `x2` is a two-dimensional
+          array with shape `(K, N)`, returned array contains conventional
+          matrix product for each stacked matrix and has shape
+          `(..., M, N)`.
+        * if both `x1` and `x2` have more than two dimensions, returned
+          array contains conventional matrix product for each stacked
+          matrix and has shape determined by broadcasting rules for
+          `x1.shape[:-2]` and `x2.shape[:-2]`.
+
+        The data type of the returned array is determined by the Type
+        Promotion Rules. If either `x1` or `x2` has a complex floating
+        point type, neither argument is complex conjugated or transposed.
+
     """
+
     if not isinstance(x1, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x1)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x1)}")
     if not isinstance(x2, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x2)}")
     if order not in ["K", "C", "F", "A"]:
         order = "K"
     q1, x1_usm_type = x1.sycl_queue, x1.usm_type

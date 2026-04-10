@@ -107,60 +107,60 @@ class Info:
 
     def capabilities(self):
         """
-        capabilities()
-
-        Returns a dictionary of ``dpctl``'s capabilities.
+        Returns a dictionary of ``dpnp.tensor``'s capabilities.
 
         The dictionary contains the following keys:
             ``"boolean indexing"``:
-                boolean indicating ``dpctl``'s support of boolean indexing.
+                boolean indicating ``dpnp.tensor``'s support of boolean indexing.
                 Value: ``True``
             ``"data-dependent shapes"``:
-                boolean indicating ``dpctl``'s support of data-dependent shapes.
+                boolean indicating ``dpnp.tensor``'s support of data-dependent shapes.
                 Value: ``True``
             ``max dimensions``:
-                integer indication the maximum array dimension supported by ``dpctl``.
+                integer indication the maximum array dimension supported by ``dpnp.tensor``.
                 Value: ``None``
 
-        Returns:
-            dict:
-                dictionary of ``dpctl``'s capabilities
+        Returns
+        -------
+        capabilities : dict
+            dictionary of ``dpnp.tensor``'s capabilities
+
         """
+
         return self._capabilities.copy()
 
     def default_device(self):
-        """
-        default_device()
-
-        Returns the default SYCL device.
-        """
+        """Returns the default SYCL device."""
         return dpctl.select_default_device()
 
     def default_dtypes(self, *, device=None):
         """
-        default_dtypes(*, device=None)
-
         Returns a dictionary of default data types for ``device``.
 
-        Args:
-            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):
-                array API concept of device used in getting default data types.
-                ``device`` can be ``None`` (in which case the default device
-                is used), an instance of :class:`dpctl.SyclDevice`, an instance
-                of :class:`dpctl.SyclQueue`, a :class:`dpctl.tensor.Device`
-                object returned by :attr:`dpctl.tensor.usm_ndarray.device`, or
-                a filter selector string.
-                Default: ``None``.
+        Parameters
+        ----------
+        device : {:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpnp.tensor.Device`, str}, optional
+            array API concept of device used in getting default data types.
+            ``device`` can be ``None`` (in which case the default device
+            is used), an instance of :class:`dpctl.SyclDevice`, an instance
+            of :class:`dpctl.SyclQueue`, a :class:`dpnp.tensor.Device`
+            object returned by :attr:`dpnp.tensor.usm_ndarray.device`, or
+            a filter selector string.
 
-        Returns:
-            dict:
-                a dictionary of default data types for ``device``:
+            Default: ``None``.
 
-                    - ``"real floating"``: dtype
-                    - ``"complex floating"``: dtype
-                    - ``"integral"``: dtype
-                    - ``"indexing"``: dtype
+        Returns
+        -------
+        dtypes : dict
+            a dictionary of default data types for ``device``:
+
+                - ``"real floating"``: dtype
+                - ``"complex floating"``: dtype
+                - ``"integral"``: dtype
+                - ``"indexing"``: dtype
+
         """
+
         device = _get_device_impl(device)
         return {
             "real floating": dpt.dtype(default_device_fp_type(device)),
@@ -171,8 +171,6 @@ class Info:
 
     def dtypes(self, *, device=None, kind=None):
         """
-        dtypes(*, device=None, kind=None)
-
         Returns a dictionary of all Array API data types of a specified
         ``kind`` supported by ``device``.
 
@@ -180,45 +178,49 @@ class Info:
         `Python Array API <https://data-apis.org/array-api/latest/>`_
         specification.
 
-        Args:
-            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):
-                array API concept of device used in getting default data types.
-                ``device`` can be ``None`` (in which case the default device is
-                used), an instance of :class:`dpctl.SyclDevice`, an instance of
-                :class:`dpctl.SyclQueue`, a :class:`dpctl.tensor.Device`
-                object returned by :attr:`dpctl.tensor.usm_ndarray.device`, or
-                a filter selector string.
-                Default: ``None``.
+        Parameters
+        ----------
+        device : {:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpnp.tensor.Device`, str}, optional
+            array API concept of device used in getting default data types.
+            ``device`` can be ``None`` (in which case the default device is
+            used), an instance of :class:`dpctl.SyclDevice`, an instance of
+            :class:`dpctl.SyclQueue`, a :class:`dpnp.tensor.Device`
+            object returned by :attr:`dpnp.tensor.usm_ndarray.device`, or
+            a filter selector string.
 
-            kind (Optional[str, Tuple[str, ...]]):
-                data type kind.
+            Default: ``None``.
+        kind : {str, Tuple[str, ...]}, optional
+            data type kind.
 
-                - if ``kind`` is ``None``, returns a dictionary of all data
-                  types supported by `device`
-                - if ``kind`` is a string, returns a dictionary containing the
-                  data types belonging to the data type kind specified.
+            - if ``kind`` is ``None``, returns a dictionary of all data
+              types supported by `device`
+            - if ``kind`` is a string, returns a dictionary containing the
+              data types belonging to the data type kind specified.
 
-                  Supports:
+              Supports:
 
-                  * ``"bool"``
-                  * ``"signed integer"``
-                  * ``"unsigned integer"``
-                  * ``"integral"``
-                  * ``"real floating"``
-                  * ``"complex floating"``
-                  * ``"numeric"``
+              * ``"bool"``
+              * ``"signed integer"``
+              * ``"unsigned integer"``
+              * ``"integral"``
+              * ``"real floating"``
+              * ``"complex floating"``
+              * ``"numeric"``
 
-                - if ``kind`` is a tuple, the tuple represents a union of
-                  ``kind`` strings, and returns a dictionary containing data
-                  types corresponding to the-specified union.
+            - if ``kind`` is a tuple, the tuple represents a union of
+              ``kind`` strings, and returns a dictionary containing data
+              types corresponding to the-specified union.
 
-                Default: ``None``.
+            Default: ``None``.
 
-        Returns:
-            dict:
-                a dictionary of the supported data types of the specified
-                ``kind``
+        Returns
+        -------
+        dtypes : dict
+            a dictionary of the supported data types of the specified
+            ``kind``
+
         """
+
         device = _get_device_impl(device)
         _fp64 = device.has_aspect_fp64
         if kind is None:
@@ -236,19 +238,10 @@ class Info:
             }
 
     def devices(self):
-        """
-        devices()
-
-        Returns a list of supported devices.
-        """
+        """Returns a list of supported devices."""
         return dpctl.get_devices()
 
 
 def __array_namespace_info__():
-    """
-    __array_namespace_info__()
-
-    Returns a namespace with Array API namespace inspection utilities.
-
-    """
+    """Returns a namespace with Array API namespace inspection utilities."""
     return Info()

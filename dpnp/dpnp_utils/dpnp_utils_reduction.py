@@ -33,7 +33,7 @@ __all__ = ["dpnp_wrap_reduction_call"]
 
 
 def dpnp_wrap_reduction_call(usm_a, out, _reduction_fn, res_dt, **kwargs):
-    """Wrap a reduction call from dpctl.tensor interface."""
+    """Wrap a reduction call from dpnp.tensor interface."""
 
     input_out = out
     if out is None:

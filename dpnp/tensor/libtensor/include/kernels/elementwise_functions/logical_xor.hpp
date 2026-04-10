@@ -89,7 +89,8 @@ struct LogicalXorFunctor
 
         auto tmp = (tmp1 != tmp2);
         if constexpr (std::is_same_v<resT,
-                                     typename decltype(tmp)::element_type>) {
+                                     typename decltype(tmp)::element_type>)
+        {
             return tmp;
         }
         else {

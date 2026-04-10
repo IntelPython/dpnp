@@ -85,12 +85,14 @@ struct LessEqualFunctor
                           std::is_signed_v<argT1> != std::is_signed_v<argT2>)
             {
                 if constexpr (std::is_signed_v<argT1> &&
-                              !std::is_signed_v<argT2>) {
+                              !std::is_signed_v<argT2>)
+                {
                     return (in1 < 0) ? true : (static_cast<argT2>(in1) <= in2);
                 }
                 else {
                     if constexpr (!std::is_signed_v<argT1> &&
-                                  std::is_signed_v<argT2>) {
+                                  std::is_signed_v<argT2>)
+                    {
                         return (in2 < 0) ? false
                                          : (in1 <= static_cast<argT1>(in2));
                     }
@@ -111,7 +113,8 @@ struct LessEqualFunctor
         auto tmp = (in1 <= in2);
 
         if constexpr (std::is_same_v<resT,
-                                     typename decltype(tmp)::element_type>) {
+                                     typename decltype(tmp)::element_type>)
+        {
             return tmp;
         }
         else {
