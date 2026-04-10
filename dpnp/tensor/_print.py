@@ -37,7 +37,7 @@ import numpy as np
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
 
-__doc__ = "Print functions for :class:`dpctl.tensor.usm_ndarray`."
+__doc__ = "Print functions for :class:`dpnp.tensor.usm_ndarray`."
 
 _print_options = {
     "linewidth": 75,
@@ -131,76 +131,86 @@ def set_print_options(
     numpy=False,
 ):
     """
-    set_print_options(linewidth=None, edgeitems=None, threshold=None,
-                      precision=None, floatmode=None, suppress=None,
-                      nanstr=None, infstr=None, sign=None, numpy=False)
+    Set options for printing :class:`dpnp.tensor.usm_ndarray` class.
 
-    Set options for printing :class:`dpctl.tensor.usm_ndarray` class.
+    Parameters
+    ----------
+    linewidth : int, optional
+        Number of characters printed per line.
+        Raises `TypeError` if linewidth is not an integer.
 
-    Args:
-        linewidth (int, optional):
-            Number of characters printed per line.
-            Raises `TypeError` if linewidth is not an integer.
-            Default: `75`.
-        edgeitems (int, optional):
-            Number of elements at the beginning and end
-            when the printed array is abbreviated.
-            Raises `TypeError` if edgeitems is not an integer.
-            Default: `3`.
-        threshold (int, optional):
-            Number of elements that triggers array abbreviation.
-            Raises `TypeError` if threshold is not an integer.
-            Default: `1000`.
-        precision (int or None, optional):
-            Number of digits printed for floating point numbers.
-            Raises `TypeError` if precision is not an integer.
-            Default: `8`.
-        floatmode (str, optional):
-            Controls how floating point numbers are interpreted.
-                `"fixed:`:
-                    Always prints exactly `precision` digits.
-                `"unique"`:
-                    Ignores precision, prints the number of
-                    digits necessary to uniquely specify each number.
-                `"maxprec"`:
-                    Prints `precision` digits or fewer,
-                    if fewer will uniquely represent a number.
-                `"maxprec_equal"`:
-                    Prints an equal number of digits
-                    for each number. This number is `precision` digits
-                    or fewer, if fewer will uniquely represent each number.
-            Raises `ValueError` if floatmode is not one of
-            `fixed`, `unique`, `maxprec`, or `maxprec_equal`.
-            Default: "maxprec_equal"
-        suppress (bool, optional):
-            If `True,` numbers equal to zero in the current precision
-            will print as zero.
-            Default: `False`.
-        nanstr (str, optional):
-            String used to represent nan.
-            Raises `TypeError` if nanstr is not a string.
-            Default: `"nan"`.
-        infstr (str, optional):
-            String used to represent infinity.
-            Raises `TypeError` if infstr is not a string.
-            Default: `"inf"`.
-        sign (str, optional):
-            Controls the sign of floating point numbers.
-                `"-"`:
-                    Omit the sign of positive numbers.
-                `"+"`:
-                    Always print the sign of positive numbers.
-                `" "`:
-                    Always print a whitespace in place of the
-                    sign of positive numbers.
-            Raises `ValueError` if sign is not one of
-            `"-"`, `"+"`, or `" "`.
-            Default: `"-"`.
-        numpy (bool, optional): If `True,` then before other specified print
-            options are set, a dictionary of Numpy's print options
-            will be used to initialize dpctl's print options.
-            Default: "False"
+        Default: ``75``.
+    edgeitems : int, optional
+        Number of elements at the beginning and end
+        when the printed array is abbreviated.
+        Raises `TypeError` if edgeitems is not an integer.
+
+        Default: ``3``.
+    threshold : int, optional
+        Number of elements that triggers array abbreviation.
+        Raises `TypeError` if threshold is not an integer.
+
+        Default: ``1000``.
+    precision : int, optional
+        Number of digits printed for floating point numbers.
+        Raises `TypeError` if precision is not an integer.
+
+        Default: ``8``.
+    floatmode : str, optional
+        Controls how floating point numbers are interpreted.
+            `"fixed"`:
+                Always prints exactly `precision` digits.
+            `"unique"`:
+                Ignores precision, prints the number of
+                digits necessary to uniquely specify each number.
+            `"maxprec"`:
+                Prints `precision` digits or fewer,
+                if fewer will uniquely represent a number.
+            `"maxprec_equal"`:
+                Prints an equal number of digits
+                for each number. This number is `precision` digits
+                or fewer, if fewer will uniquely represent each number.
+        Raises `ValueError` if floatmode is not one of
+        `fixed`, `unique`, `maxprec`, or `maxprec_equal`.
+
+        Default: ``"maxprec_equal"``.
+    suppress : bool, optional
+        If `True,` numbers equal to zero in the current precision
+        will print as zero.
+
+        Default: ``False``.
+    nanstr : str, optional
+        String used to represent nan.
+        Raises `TypeError` if nanstr is not a string.
+
+        Default: ``"nan"``.
+    infstr : str, optional
+        String used to represent infinity.
+        Raises `TypeError` if infstr is not a string.
+
+        Default: ``"inf"``.
+    sign : str, optional
+        Controls the sign of floating point numbers.
+            `"-"`:
+                Omit the sign of positive numbers.
+            `"+"`:
+                Always print the sign of positive numbers.
+            `" "`:
+                Always print a whitespace in place of the
+                sign of positive numbers.
+        Raises `ValueError` if sign is not one of
+        `"-"`, `"+"`, or `" "`.
+
+        Default: ``"-"``.
+    numpy : bool, optional
+        If `True,` then before other specified print
+        options are set, a dictionary of Numpy's print options
+        will be used to initialize dpnp.tensor's print options.
+
+        Default: ``False``.
+
     """
+
     options = _options_dict(
         linewidth=linewidth,
         edgeitems=edgeitems,
@@ -217,14 +227,14 @@ def set_print_options(
 
 
 def get_print_options():
-    """get_print_options()
-
+    """
     Returns a copy of current options for printing
-    :class:`dpctl.tensor.usm_ndarray` class.
+    :class:`dpnp.tensor.usm_ndarray` class.
 
-    Returns:
-        dict: dictionary with array
-           printing option settings.
+    Returns
+    -------
+    out : dict
+        Dictionary with array printing option settings.
 
     Options:
         - "linewidth" : int, default 75
@@ -236,7 +246,9 @@ def get_print_options():
         - "nanstr" : str, default "nan"
         - "infstr" : str, default "inf"
         - "sign" : str, default "-"
+
     """
+
     return _print_options.copy()
 
 
@@ -247,7 +259,9 @@ def print_options(*args, **kwargs):
 
     Set print options for the scope of a `with` block.
     `as` yields dictionary of print options.
+
     """
+
     options = dpt.get_print_options()
     try:
         dpt.set_print_options(*args, **kwargs)
@@ -317,87 +331,98 @@ def usm_ndarray_str(
     suffix="",
 ):
     """
-    usm_ndarray_str(x, line_width=None, edgeitems=None, threshold=None,
-                    precision=None, floatmode=None, suppress=None,
-                    sign=None, numpy=False, separator=" ", prefix="",
-                    suffix="")
-
     Returns a string representing the elements of a
-    :class:`dpctl.tensor.usm_ndarray`.
+    :class:`dpnp.tensor.usm_ndarray`.
 
-    Args:
-        x (usm_ndarray):
-            Input array.
-        line_width (int, optional):
-            Number of characters printed per line.
-            Raises `TypeError` if line_width is not an integer.
-            Default: `75`.
-        edgeitems (int, optional):
-            Number of elements at the beginning and end
-            when the printed array is abbreviated.
-            Raises `TypeError` if edgeitems is not an integer.
-            Default: `3`.
-        threshold (int, optional):
-            Number of elements that triggers array abbreviation.
-            Raises `TypeError` if threshold is not an integer.
-            Default: `1000`.
-        precision (int or None, optional):
-            Number of digits printed for floating point numbers.
-            Raises `TypeError` if precision is not an integer.
-            Default: `8`.
-        floatmode (str, optional):
-            Controls how floating point numbers are interpreted.
-                `"fixed:`:
-                    Always prints exactly `precision` digits.
-                `"unique"`:
-                    Ignores precision, prints the number of
-                    digits necessary to uniquely specify each number.
-                `"maxprec"`:
-                    Prints `precision` digits or fewer,
-                    if fewer will uniquely represent a number.
-                `"maxprec_equal"`:
-                    Prints an equal number of digits for each number.
-                    This number is `precision` digits or fewer,
-                    if fewer will uniquely represent each number.
-            Raises `ValueError` if floatmode is not one of
-            `fixed`, `unique`, `maxprec`, or `maxprec_equal`.
-            Default: "maxprec_equal"
-        suppress (bool, optional):
-            If `True,` numbers equal to zero in the current precision
-            will print as zero.
-            Default: `False`.
-        sign (str, optional):
-            Controls the sign of floating point numbers.
-                `"-"`:
-                    Omit the sign of positive numbers.
-                `"+"`:
-                    Always print the sign of positive numbers.
-                `" "`:
-                    Always print a whitespace in place of the
-                    sign of positive numbers.
-            Raises `ValueError` if sign is not one of
-            `"-"`, `"+"`, or `" "`.
-            Default: `"-"`.
-        numpy (bool, optional):
-            If `True,` then before other specified print
-            options are set, a dictionary of Numpy's print options
-            will be used to initialize dpctl's print options.
-            Default: "False"
-        separator (str, optional):
-            String inserted between elements of the array string.
-            Default: " "
-        prefix (str, optional):
-            String used to determine spacing to the left of the array string.
-            Default: ""
-        suffix (str, optional):
-            String that determines length of the last line of the array string.
-            Default: ""
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    line_width : int, optional
+        Number of characters printed per line.
+        Raises `TypeError` if line_width is not an integer.
 
-    Returns:
-        str: string representation of input array.
+        Default: ``75``.
+    edgeitems : int, optional
+        Number of elements at the beginning and end
+        when the printed array is abbreviated.
+        Raises `TypeError` if edgeitems is not an integer.
+
+        Default: ``3``.
+    threshold : int, optional
+        Number of elements that triggers array abbreviation.
+        Raises `TypeError` if threshold is not an integer.
+
+        Default: ``1000``.
+    precision : int, optional
+        Number of digits printed for floating point numbers.
+        Raises `TypeError` if precision is not an integer.
+
+        Default: ``8``.
+    floatmode : str, optional
+        Controls how floating point numbers are interpreted.
+            `"fixed"`:
+                Always prints exactly `precision` digits.
+            `"unique"`:
+                Ignores precision, prints the number of
+                digits necessary to uniquely specify each number.
+            `"maxprec"`:
+                Prints `precision` digits or fewer,
+                if fewer will uniquely represent a number.
+            `"maxprec_equal"`:
+                Prints an equal number of digits for each number.
+                This number is `precision` digits or fewer,
+                if fewer will uniquely represent each number.
+        Raises `ValueError` if floatmode is not one of
+        `fixed`, `unique`, `maxprec`, or `maxprec_equal`.
+
+        Default: ``"maxprec_equal"``.
+    suppress : bool, optional
+        If `True,` numbers equal to zero in the current precision
+        will print as zero.
+
+        Default: ``False``.
+    sign : str, optional
+        Controls the sign of floating point numbers.
+            `"-"`:
+                Omit the sign of positive numbers.
+            `"+"`:
+                Always print the sign of positive numbers.
+            `" "`:
+                Always print a whitespace in place of the
+                sign of positive numbers.
+        Raises `ValueError` if sign is not one of
+        `"-"`, `"+"`, or `" "`.
+
+        Default: ``"-"``.
+    numpy : bool, optional
+        If `True,` then before other specified print
+        options are set, a dictionary of Numpy's print options
+        will be used to initialize dpnp.tensor's print options.
+
+        Default: ``False``.
+    separator : str, optional
+        String inserted between elements of the array string.
+
+        Default: ``" "``.
+    prefix : str, optional
+        String used to determine spacing to the left of the array string.
+
+        Default: ``""``.
+    suffix : str, optional
+        String that determines length of the last line of the array string.
+
+        Default: ``""``.
+
+    Returns
+    -------
+    out : str
+        String representation of input array.
+
     """
+
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     options = get_print_options()
     options.update(
@@ -432,34 +457,43 @@ def usm_ndarray_repr(
     x, line_width=None, precision=None, suppress=None, prefix="usm_ndarray"
 ):
     """
-    usm_ndarray_repr(x, line_width=None, precision=None,
-                     suppress=None, prefix="")
-
     Returns a formatted string representing the elements
-    of a :class:`dpctl.tensor.usm_ndarray` and its data type,
+    of a :class:`dpnp.tensor.usm_ndarray` and its data type,
     if not a default type.
 
-    Args:
-        x (usm_ndarray): Input array.
-        line_width (int, optional): Number of characters printed per line.
-            Raises `TypeError` if line_width is not an integer.
-            Default: `75`.
-        precision (int or None, optional): Number of digits printed for
-            floating point numbers.
-            Raises `TypeError` if precision is not an integer.
-            Default: `8`.
-        suppress (bool, optional): If `True,` numbers equal to zero
-            in the current precision will print as zero.
-            Default: `False`.
-        prefix (str, optional): String inserted at the start of the array
-            string.
-            Default: ""
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    line_width : int, optional
+        Number of characters printed per line.
+        Raises `TypeError` if line_width is not an integer.
 
-    Returns:
-        str: formatted string representing the input array
+        Default: ``75``.
+    precision : int, optional
+        Number of digits printed for floating point numbers.
+        Raises `TypeError` if precision is not an integer.
+
+        Default: ``8``.
+    suppress : bool, optional
+        If `True,` numbers equal to zero in the current precision
+        will print as zero.
+
+        Default: ``False``.
+    prefix : str, optional
+        String inserted at the start of the array string.
+
+        Default: ``"usm_ndarray"``.
+
+    Returns
+    -------
+    out : str
+        Formatted string representing the input array.
+
     """
+
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     if line_width is None:
         line_width = _print_options["linewidth"]
