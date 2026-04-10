@@ -105,6 +105,7 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
         returned array has the same data type as `x`.
 
     """
+
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
@@ -201,6 +202,7 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
           array index data type.
 
     """
+
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
@@ -337,6 +339,7 @@ def unique_inverse(x):
           index data type.
 
     """
+
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
@@ -509,6 +512,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
           array index data type.
 
     """
+
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
@@ -695,6 +699,7 @@ def isin(
         boolean data type and the same shape as `x`.
 
     """
+
     q1, x_usm_type = _get_queue_usm_type(x)
     q2, test_usm_type = _get_queue_usm_type(test_elements)
     if q1 is None and q2 is None:

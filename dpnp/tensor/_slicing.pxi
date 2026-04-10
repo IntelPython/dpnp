@@ -252,7 +252,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
             else:
                 raise IndexError(
                     "Only integers, slices (`:`), ellipsis (`...`), "
-                    "dpctl.tensor.newaxis (`None`) and integer and "
+                    "dpnp.tensor.newaxis (`None`) and integer and "
                     "boolean arrays are valid indices."
                 )
         if ellipses_count > 1:
@@ -378,6 +378,6 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
     else:
         raise IndexError(
             "Only integers, slices (`:`), ellipsis (`...`), "
-            "dpctl.tensor.newaxis (`None`) and integer and "
+            "dpnp.tensor.newaxis (`None`) and integer and "
             "boolean arrays are valid indices."
         )
