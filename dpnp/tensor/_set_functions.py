@@ -703,7 +703,7 @@ def isin(
     q1, x_usm_type = _get_queue_usm_type(x)
     q2, test_usm_type = _get_queue_usm_type(test_elements)
     if q1 is None and q2 is None:
-        raise du.ExecutionPlacementError(
+        raise dpt.ExecutionPlacementError(
             "Execution placement can not be unambiguously inferred "
             "from input arguments. "
             "One of the arguments must represent USM allocation and "
@@ -716,19 +716,19 @@ def isin(
         exec_q = q1
         res_usm_type = x_usm_type
     else:
-        exec_q = du.get_execution_queue((q1, q2))
+        exec_q = dpt.get_execution_queue((q1, q2))
         if exec_q is None:
-            raise du.ExecutionPlacementError(
+            raise dpt.ExecutionPlacementError(
                 "Execution placement can not be unambiguously inferred "
                 "from input arguments."
             )
-        res_usm_type = du.get_coerced_usm_type(
+        res_usm_type = dpt.get_coerced_usm_type(
             (
                 x_usm_type,
                 test_usm_type,
             )
         )
-    du.validate_usm_type(res_usm_type, allow_none=False)
+    dpt.validate_usm_type(res_usm_type, allow_none=False)
     sycl_dev = exec_q.sycl_device
 
     if not isinstance(invert, bool):

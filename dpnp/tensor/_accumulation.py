@@ -26,8 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl
-from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
+from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_accumulation_impl as tai
@@ -121,8 +120,8 @@ def _accumulate_common(
             raise ValueError(
                 f"Output array of type {res_dt} is needed, " f"got {out.dtype}"
             )
-        if dpctl.utils.get_execution_queue((q, out.sycl_queue)) is None:
-            raise ExecutionPlacementError(
+        if dpt.get_execution_queue((q, out.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
         # permute out array dims if necessary

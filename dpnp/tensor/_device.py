@@ -31,6 +31,8 @@ import dpctl
 from dpctl._sycl_device_factory import _cached_default_device
 from dpctl._sycl_queue_manager import get_device_cached_queue
 
+from ._compute_follows_data import get_execution_queue
+
 __doc__ = "Implementation of array API mandated Device class"
 
 
@@ -198,7 +200,7 @@ def normalize_queue_device(sycl_queue=None, device=None):
     if d is None:
         return q
     d = Device.create_device(d)
-    qq = dpctl.utils.get_execution_queue(
+    qq = get_execution_queue(
         (
             q,
             d.sycl_queue,

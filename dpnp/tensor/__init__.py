@@ -30,6 +30,12 @@
 from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._array_api import __array_api_version__, __array_namespace_info__
 from ._clip import clip
+from ._compute_follows_data import (
+    ExecutionPlacementError,
+    get_coerced_usm_type,
+    get_execution_queue,
+    validate_usm_type,
+)
 from ._constants import e, inf, nan, newaxis, pi
 from ._copy_utils import (
     asnumpy,
@@ -411,4 +417,9 @@ __all__ = [
     "zeros_like",
     "__array_api_version__",
     "__array_namespace_info__",
+    # utilities
+    "ExecutionPlacementError",
+    "get_coerced_usm_type",
+    "get_execution_queue",
+    "validate_usm_type",
 ]

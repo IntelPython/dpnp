@@ -31,8 +31,8 @@ from numbers import Number
 
 import dpctl
 import dpctl.memory as dpm
-import dpctl.utils
 import numpy as np
+from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
@@ -164,8 +164,8 @@ def _asarray_from_seq(
     if usm_type is None:
         usm_types_in_seq = []
         _usm_types_walker(seq_obj, usm_types_in_seq)
-        usm_type = dpctl.utils.get_coerced_usm_type(usm_types_in_seq)
-    dpctl.utils.validate_usm_type(usm_type)
+        usm_type = dpt.get_coerced_usm_type(usm_types_in_seq)
+    dpt.validate_usm_type(usm_type)
     if dtype is None:
         dtype = _map_to_device_dtype(seq_dt, alloc_q)
     else:
@@ -186,7 +186,7 @@ def _asarray_from_seq(
             sycl_queue=alloc_q,
             order=order,
         )
-        _manager = dpctl.utils.SequentialOrderManager[exec_q]
+        _manager = SequentialOrderManager[exec_q]
         _device_copy_walker(seq_obj, res, _manager)
         return res
     else:
@@ -215,7 +215,7 @@ def _asarray_from_seq_single_device(
         exec_q = seq_dev
         alloc_q = seq_dev
     else:
-        exec_q = dpctl.utils.get_execution_queue(
+        exec_q = dpt.get_execution_queue(
             (
                 sycl_queue,
                 seq_dev,
@@ -249,9 +249,7 @@ def _asarray_from_usm_ndarray(
     if usm_type is None:
         usm_type = usm_ndary.usm_type
     if sycl_queue is not None:
-        exec_q = dpctl.utils.get_execution_queue(
-            [usm_ndary.sycl_queue, sycl_queue]
-        )
+        exec_q = dpt.get_execution_queue([usm_ndary.sycl_queue, sycl_queue])
         copy_q = normalize_queue_device(sycl_queue=sycl_queue, device=exec_q)
     else:
         copy_q = usm_ndary.sycl_queue
@@ -300,9 +298,9 @@ def _asarray_from_usm_ndarray(
             order=order,
             buffer_ctor_kwargs={"queue": copy_q},
         )
-    eq = dpctl.utils.get_execution_queue([usm_ndary.sycl_queue, copy_q])
+    eq = dpt.get_execution_queue([usm_ndary.sycl_queue, copy_q])
     if eq is not None:
-        _manager = dpctl.utils.SequentialOrderManager[eq]
+        _manager = SequentialOrderManager[eq]
         dep_evs = _manager.submitted_events
         hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=usm_ndary, dst=res, sycl_queue=eq, depends=dep_evs
@@ -351,7 +349,7 @@ def _coerce_and_infer_dt(*args, dt, sycl_queue, err_msg, allow_bool=False):
 def _copy_through_host_walker(seq_o, usm_res):
     if isinstance(seq_o, dpt.usm_ndarray):
         if (
-            dpctl.utils.get_execution_queue(
+            dpt.get_execution_queue(
                 (
                     usm_res.sycl_queue,
                     seq_o.sycl_queue,
@@ -371,7 +369,7 @@ def _copy_through_host_walker(seq_o, usm_res):
     if hasattr(seq_o, "__sycl_usm_array_interface__"):
         usm_ar = _usm_ndarray_from_suai(seq_o)
         if (
-            dpctl.utils.get_execution_queue(
+            dpt.get_execution_queue(
                 (
                     usm_res.sycl_queue,
                     usm_ar.sycl_queue,
@@ -643,7 +641,7 @@ def arange(
         start = 0
     if step is None:
         step = 1
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    dpt.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     is_bool = False
     if dtype:
@@ -684,7 +682,7 @@ def arange(
     else:
         _step = sc_ty(1)
     _start = _first
-    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    _manager = SequentialOrderManager[sycl_queue]
     # populating newly allocated array, no task dependencies
     hev, lin_ev = ti._linspace_step(_start, _step, res, sycl_queue)
     _manager.add_event_pair(hev, lin_ev)
@@ -796,7 +794,7 @@ def asarray(
         )
     order = order[0].upper()
     # 4. Check that usm_type is None, or a valid value
-    dpctl.utils.validate_usm_type(usm_type, allow_none=True)
+    dpt.validate_usm_type(usm_type, allow_none=True)
     # 5. Normalize device/sycl_queue [keep it None if was None]
     if device is not None or sycl_queue is not None:
         sycl_queue = normalize_queue_device(
@@ -890,7 +888,7 @@ def asarray(
                 if len(devs) == 1:
                     alloc_q = devs[0]
                 else:
-                    raise dpctl.utils.ExecutionPlacementError(
+                    raise dpt.ExecutionPlacementError(
                         "Please specify `device` or `sycl_queue` keyword "
                         "argument to determine where to allocate the "
                         "resulting array."
@@ -986,7 +984,7 @@ def empty(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
     order = order[0].upper()
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    dpt.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
     _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
@@ -1067,7 +1065,7 @@ def empty_like(
         dtype = x.dtype
     if usm_type is None:
         usm_type = x.usm_type
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    dpt.validate_usm_type(usm_type, allow_none=False)
     if device is None and sycl_queue is None:
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
@@ -1179,7 +1177,7 @@ def eye(
             usm_type=usm_type,
             sycl_queue=sycl_queue,
         )
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    dpt.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
     _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
@@ -1191,7 +1189,7 @@ def eye(
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
     if n_rows != 0 and n_cols != 0:
-        _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+        _manager = SequentialOrderManager[sycl_queue]
         hev, eye_ev = ti._eye(k, dst=res, sycl_queue=sycl_queue)
         _manager.add_event_pair(hev, eye_ev)
     return res
@@ -1274,7 +1272,7 @@ def full(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
     order = order[0].upper()
-    dpctl.utils.validate_usm_type(usm_type, allow_none=True)
+    dpt.validate_usm_type(usm_type, allow_none=True)
 
     if isinstance(fill_value, (dpt.usm_ndarray, np.ndarray, tuple, list)):
         if (
@@ -1310,7 +1308,7 @@ def full(
     )
     fill_value = _cast_fill_val(fill_value, dtype)
 
-    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    _manager = SequentialOrderManager[sycl_queue]
     # populating new allocation, no dependent events
     hev, full_ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
     _manager.add_event_pair(hev, full_ev)
@@ -1396,7 +1394,7 @@ def full_like(
         dtype = x.dtype
     if usm_type is None:
         usm_type = x.usm_type
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    dpt.validate_usm_type(usm_type, allow_none=False)
     if device is None and sycl_queue is None:
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
@@ -1415,7 +1413,7 @@ def full_like(
             )
             X = dpt.broadcast_to(X, sh)
             res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
-            _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+            _manager = SequentialOrderManager[sycl_queue]
             # order copy after tasks populating X
             dep_evs = _manager.submitted_events
             hev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -1429,7 +1427,7 @@ def full_like(
         dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
         res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
         fill_value = _cast_fill_val(fill_value, dtype)
-        _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+        _manager = SequentialOrderManager[sycl_queue]
         # populating new allocation, no dependent events
         hev, full_ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
         _manager.add_event_pair(hev, full_ev)
@@ -1524,7 +1522,7 @@ def linspace(
     """
 
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    dpt.validate_usm_type(usm_type, allow_none=False)
     if endpoint not in [True, False]:
         raise TypeError("endpoint keyword argument must be of boolean type")
 
@@ -1551,7 +1549,7 @@ def linspace(
         stop = float(stop)
 
     res = dpt.empty(num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue)
-    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    _manager = SequentialOrderManager[sycl_queue]
     hev, la_ev = ti._linspace_affine(
         start, stop, dst=res, include_endpoint=endpoint, sycl_queue=sycl_queue
     )
@@ -1704,7 +1702,7 @@ def ones(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
     order = order[0].upper()
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    dpt.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
     res = dpt.usm_ndarray(
@@ -1714,7 +1712,7 @@ def ones(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    _manager = SequentialOrderManager[sycl_queue]
     # populating new allocation, no dependent events
     hev, full_ev = ti._full_usm_ndarray(1, res, sycl_queue)
     _manager.add_event_pair(hev, full_ev)
@@ -1788,7 +1786,7 @@ def ones_like(
         dtype = x.dtype
     if usm_type is None:
         usm_type = x.usm_type
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    dpt.validate_usm_type(usm_type, allow_none=False)
     if device is None and sycl_queue is None:
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
@@ -1797,7 +1795,7 @@ def ones_like(
     if order == "K":
         _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
         res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
-        _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+        _manager = SequentialOrderManager[sycl_queue]
         # populating new allocation, no dependent events
         hev, full_ev = ti._full_usm_ndarray(1, res, sycl_queue)
         _manager.add_event_pair(hev, full_ev)
@@ -1865,7 +1863,7 @@ def tril(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        _manager = dpctl.utils.SequentialOrderManager[q]
+        _manager = SequentialOrderManager[q]
         dep_evs = _manager.submitted_events
         hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x, dst=res, sycl_queue=q, depends=dep_evs
@@ -1887,7 +1885,7 @@ def tril(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        _manager = dpctl.utils.SequentialOrderManager[q]
+        _manager = SequentialOrderManager[q]
         dep_evs = _manager.submitted_events
         hev, tril_ev = ti._tril(
             src=x, dst=res, k=k, sycl_queue=q, depends=dep_evs
@@ -1956,7 +1954,7 @@ def triu(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        _manager = dpctl.utils.SequentialOrderManager[q]
+        _manager = SequentialOrderManager[q]
         dep_evs = _manager.submitted_events
         hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x, dst=res, sycl_queue=q, depends=dep_evs
@@ -1970,7 +1968,7 @@ def triu(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        _manager = dpctl.utils.SequentialOrderManager[q]
+        _manager = SequentialOrderManager[q]
         dep_evs = _manager.submitted_events
         hev, triu_ev = ti._triu(
             src=x, dst=res, k=k, sycl_queue=q, depends=dep_evs
@@ -2043,7 +2041,7 @@ def zeros(
             "Unrecognized order keyword value, expecting 'F' or 'C'."
         )
     order = order[0].upper()
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    dpt.validate_usm_type(usm_type, allow_none=False)
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = _get_dtype(dtype, sycl_queue)
     _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
@@ -2054,7 +2052,7 @@ def zeros(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    _manager = SequentialOrderManager[sycl_queue]
     # populating new allocation, no dependent events
     hev, zeros_ev = ti._zeros_usm_ndarray(res, sycl_queue)
     _manager.add_event_pair(hev, zeros_ev)
@@ -2131,7 +2129,7 @@ def zeros_like(
         dtype = x.dtype
     if usm_type is None:
         usm_type = x.usm_type
-    dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+    dpt.validate_usm_type(usm_type, allow_none=False)
     if device is None and sycl_queue is None:
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
@@ -2140,7 +2138,7 @@ def zeros_like(
     if order == "K":
         _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
         res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
-        _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+        _manager = SequentialOrderManager[sycl_queue]
         # populating new allocation, no dependent events
         hev, full_ev = ti._full_usm_ndarray(0, res, sycl_queue)
         _manager.add_event_pair(hev, full_ev)

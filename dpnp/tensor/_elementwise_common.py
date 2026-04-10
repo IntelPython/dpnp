@@ -26,8 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl
-from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
+from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
@@ -240,11 +239,8 @@ class UnaryElementwiseFunc:
                 # created, so the array overlap check isn't needed.
                 out = dpt.empty_like(out)
 
-            if (
-                dpctl.utils.get_execution_queue((x.sycl_queue, out.sycl_queue))
-                is None
-            ):
-                raise ExecutionPlacementError(
+            if dpt.get_execution_queue((x.sycl_queue, out.sycl_queue)) is None:
+                raise dpt.ExecutionPlacementError(
                     "Input and output allocation queues are not compatible"
                 )
 
@@ -508,7 +504,7 @@ class BinaryElementwiseFunc:
         q1, o1_usm_type = _get_queue_usm_type(o1)
         q2, o2_usm_type = _get_queue_usm_type(o2)
         if q1 is None and q2 is None:
-            raise ExecutionPlacementError(
+            raise dpt.ExecutionPlacementError(
                 "Execution placement can not be unambiguously inferred "
                 "from input arguments. "
                 "One of the arguments must represent USM allocation and "
@@ -521,19 +517,19 @@ class BinaryElementwiseFunc:
             exec_q = q1
             res_usm_type = o1_usm_type
         else:
-            exec_q = dpctl.utils.get_execution_queue((q1, q2))
+            exec_q = dpt.get_execution_queue((q1, q2))
             if exec_q is None:
-                raise ExecutionPlacementError(
+                raise dpt.ExecutionPlacementError(
                     "Execution placement can not be unambiguously inferred "
                     "from input arguments."
                 )
-            res_usm_type = dpctl.utils.get_coerced_usm_type(
+            res_usm_type = dpt.get_coerced_usm_type(
                 (
                     o1_usm_type,
                     o2_usm_type,
                 )
             )
-        dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
+        dpt.validate_usm_type(res_usm_type, allow_none=False)
         o1_shape = _get_shape(o1)
         o2_shape = _get_shape(o2)
         if not all(
@@ -609,11 +605,8 @@ class BinaryElementwiseFunc:
                     f"got {out.dtype}"
                 )
 
-            if (
-                dpctl.utils.get_execution_queue((exec_q, out.sycl_queue))
-                is None
-            ):
-                raise ExecutionPlacementError(
+            if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
+                raise dpt.ExecutionPlacementError(
                     "Input and output allocation queues are not compatible"
                 )
 
@@ -902,19 +895,19 @@ class BinaryElementwiseFunc:
             exec_q = q1
             res_usm_type = o1_usm_type
         else:
-            exec_q = dpctl.utils.get_execution_queue((q1, q2))
+            exec_q = dpt.get_execution_queue((q1, q2))
             if exec_q is None:
-                raise ExecutionPlacementError(
+                raise dpt.ExecutionPlacementError(
                     "Execution placement can not be unambiguously inferred "
                     "from input arguments."
                 )
-            res_usm_type = dpctl.utils.get_coerced_usm_type(
+            res_usm_type = dpt.get_coerced_usm_type(
                 (
                     o1_usm_type,
                     o2_usm_type,
                 )
             )
-        dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
+        dpt.validate_usm_type(res_usm_type, allow_none=False)
         o1_shape = o1.shape
         o2_shape = _get_shape(o2)
         if not isinstance(o2_shape, (tuple, list)):

@@ -31,8 +31,8 @@ import itertools
 import operator
 
 import dpctl
-import dpctl.utils
 import numpy as np
+from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
@@ -300,7 +300,7 @@ def _nd_corners(arr_in, edge_items):
         else:
             blocks.append((np.s_[:],))
 
-    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     hev_list = []
     for slc in itertools.product(*blocks):

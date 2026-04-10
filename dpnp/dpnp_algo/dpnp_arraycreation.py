@@ -29,7 +29,6 @@
 import math
 import operator
 
-import dpctl.utils as dpu
 import numpy
 
 import dpnp
@@ -340,7 +339,7 @@ class dpnp_nd_grid:
     def __init__(
         self, sparse=False, device=None, usm_type="device", sycl_queue=None
     ):
-        dpu.validate_usm_type(usm_type, allow_none=True)
+        dpt.validate_usm_type(usm_type, allow_none=True)
         self.sparse = sparse
         self.usm_type = "device" if usm_type is None else usm_type
         self.sycl_queue_normalized = dpnp.get_normalized_queue_device(

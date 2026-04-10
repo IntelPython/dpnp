@@ -1,7 +1,6 @@
 import dpctl
 import numpy
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
@@ -496,7 +495,7 @@ class TestNanMedian:
         # out has a different queue
         exec_q = dpctl.SyclQueue()
         res = dpnp.empty(2, dtype=a.dtype, sycl_queue=exec_q)
-        with pytest.raises(ExecutionPlacementError):
+        with pytest.raises(dpt.ExecutionPlacementError):
             dpnp.nanmedian(a, axis=1, out=res)
 
 

@@ -117,15 +117,12 @@ jobs:
           mamba info
           mamba list
 
-      - name: Build dpnp tensor with coverage
-        id: build_tensor
+      - name: Build dpnp with coverage
+        id: build_coverage
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
-        env:
-          SYCL_CACHE_PERSISTENT: 1
-          CMAKE_BUILD_PARALLEL_LEVEL: 2
         with:
           shell: bash
-          timeout_minutes: 90
+          timeout_minutes: 120
           max_attempts: 5
           retry_on: error
           command: |
@@ -133,28 +130,12 @@ jobs:
             conda activate coverage
             [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
             git clean -fxd
-            python scripts/gen_coverage.py --build-step tensor
-
-      - name: Build dpnp with coverage (skip tensor)
-        id: build_skip_tensor
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
-        env:
-          SYCL_CACHE_PERSISTENT: 1
-        with:
-          shell: bash
-          timeout_minutes: 60
-          max_attempts: 5
-          retry_on: error
-          command: |
-            . $CONDA/etc/profile.d/conda.sh
-            conda activate coverage
-            [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
-            python scripts/gen_coverage.py --build-step skip-tensor
+            export SKIP_TENSOR_TESTS=1
+            python scripts/gen_coverage.py
 
       - name: Total number of coverage attempts
         run: |
-          echo "Total tensor build attempts: ${{ steps.build_tensor.outputs.total_attempts }}"
-          echo "Total skip-tensor build attempts: ${{ steps.build_skip_tensor.outputs.total_attempts }}"
+          echo "Total number of coverage attempts: ${{ steps.build_coverage.outputs.total_attempts }}"
 
       - name: Upload coverage data to coveralls.io
         uses: coverallsapp/github-action@5cbfd81b66ca5d10c19b062c04de0199c215fb6e # v2.3.7

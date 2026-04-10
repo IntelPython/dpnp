@@ -92,15 +92,10 @@ function(build_dpnp_tensor_ext _trgt _src _dest)
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
     set(_cythonize_trgt "${_trgt}_cythonize_pyx")
     python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
-    if(BUILD_DPNP_SYCL)
+    if(BUILD_DPNP_TENSOR_SYCL)
         add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
         target_compile_options(${_trgt} PRIVATE -fno-sycl-id-queries-fit-in-int)
-        # For coverage builds, use per_source instead of per_kernel to reduce memory
-        if(DPNP_GENERATE_COVERAGE)
-            target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=per_source)
-        else()
-            target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=per_kernel)
-        endif()
+        target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=per_kernel)
         if(DPNP_TENSOR_OFFLOAD_COMPRESS)
             target_link_options(${_trgt} PRIVATE --offload-compress)
         endif()
@@ -179,14 +174,17 @@ function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
     target_link_libraries(${_trgt} PRIVATE dpnp_backend_library)
 endfunction()
 
-# Control which components to build (for memory-constrained CI builds)
-# DPNP_BUILD_COMPONENTS:
-#   ALL (default),
-#   TENSOR_ONLY,
-#   SKIP_TENSOR,
-if(NOT DEFINED DPNP_BUILD_COMPONENTS)
-    set(DPNP_BUILD_COMPONENTS "ALL")
-endif()
+add_subdirectory(tensor)
+
+add_subdirectory(backend)
+add_subdirectory(backend/extensions/blas)
+add_subdirectory(backend/extensions/fft)
+add_subdirectory(backend/extensions/indexing)
+add_subdirectory(backend/extensions/lapack)
+add_subdirectory(backend/extensions/statistics)
+add_subdirectory(backend/extensions/ufunc)
+add_subdirectory(backend/extensions/vm)
+add_subdirectory(backend/extensions/window)
 
 if(DPNP_BUILD_COMPONENTS STREQUAL "ALL" OR DPNP_BUILD_COMPONENTS STREQUAL "TENSOR_ONLY")
     add_subdirectory(tensor)

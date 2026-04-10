@@ -53,7 +53,6 @@ import dpnp
 # pylint: disable=no-name-in-module
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
-from dpnp.tensor._device import normalize_queue_device
 
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
@@ -61,6 +60,7 @@ from .dpnp_utils import (
     map_dtype_to_device,
     use_origin_backend,
 )
+from .tensor._device import normalize_queue_device
 
 
 def are_same_logical_tensors(ar1, ar2):
@@ -407,7 +407,7 @@ def get_dpnp_descriptor(
     if queue is not None and copy_when_nondefault_queue:
         default_queue = dpctl.SyclQueue()
         queue_is_default = (
-            dpctl.utils.get_execution_queue([queue, default_queue]) is not None
+            dpt.get_execution_queue([queue, default_queue]) is not None
         )
         if not queue_is_default:
             ext_obj = dpnp.array(ext_obj, sycl_queue=default_queue)

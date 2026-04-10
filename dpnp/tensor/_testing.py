@@ -26,7 +26,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl.utils as du
 import numpy as np
 
 import dpnp.tensor as dpt
@@ -160,9 +159,9 @@ def allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False):
             "Absolute and relative tolerances must be non-negative"
         )
     equal_nan = bool(equal_nan)
-    exec_q = du.get_execution_queue(tuple(a.sycl_queue for a in (a1, a2)))
+    exec_q = dpt.get_execution_queue(tuple(a.sycl_queue for a in (a1, a2)))
     if exec_q is None:
-        raise du.ExecutionPlacementError(
+        raise dpt.ExecutionPlacementError(
             "Execution placement can not be unambiguously inferred "
             "from input arguments."
         )

@@ -26,8 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl
-from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
+from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
@@ -181,46 +180,46 @@ def where(condition, x1, x2, /, *, order="K", out=None):
         exec_q = q1
         out_usm_type = condition_usm_type
     elif q3 is None:
-        exec_q = dpctl.utils.get_execution_queue((q1, q2))
+        exec_q = dpt.get_execution_queue((q1, q2))
         if exec_q is None:
-            raise ExecutionPlacementError(
+            raise dpt.ExecutionPlacementError(
                 "Execution placement can not be unambiguously inferred "
                 "from input arguments."
             )
-        out_usm_type = dpctl.utils.get_coerced_usm_type(
+        out_usm_type = dpt.get_coerced_usm_type(
             (
                 condition_usm_type,
                 x1_usm_type,
             )
         )
     elif q2 is None:
-        exec_q = dpctl.utils.get_execution_queue((q1, q3))
+        exec_q = dpt.get_execution_queue((q1, q3))
         if exec_q is None:
-            raise ExecutionPlacementError(
+            raise dpt.ExecutionPlacementError(
                 "Execution placement can not be unambiguously inferred "
                 "from input arguments."
             )
-        out_usm_type = dpctl.utils.get_coerced_usm_type(
+        out_usm_type = dpt.get_coerced_usm_type(
             (
                 condition_usm_type,
                 x2_usm_type,
             )
         )
     else:
-        exec_q = dpctl.utils.get_execution_queue((q1, q2, q3))
+        exec_q = dpt.get_execution_queue((q1, q2, q3))
         if exec_q is None:
-            raise ExecutionPlacementError(
+            raise dpt.ExecutionPlacementError(
                 "Execution placement can not be unambiguously inferred "
                 "from input arguments."
             )
-        out_usm_type = dpctl.utils.get_coerced_usm_type(
+        out_usm_type = dpt.get_coerced_usm_type(
             (
                 condition_usm_type,
                 x1_usm_type,
                 x2_usm_type,
             )
         )
-    dpctl.utils.validate_usm_type(out_usm_type, allow_none=False)
+    dpt.validate_usm_type(out_usm_type, allow_none=False)
     condition_shape = condition.shape
     x1_shape = _get_shape(x1)
     x2_shape = _get_shape(x2)
@@ -287,8 +286,8 @@ def where(condition, x1, x2, /, *, order="K", out=None):
                 f"got {out.dtype}"
             )
 
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
-            raise ExecutionPlacementError(
+        if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 

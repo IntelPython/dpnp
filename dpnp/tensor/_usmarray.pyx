@@ -37,7 +37,7 @@ import numpy as np
 from dpctl._backend cimport DPCTLSyclUSMRef
 from dpctl._sycl_device_factory cimport _cached_default_device
 
-import dpnp.tensor
+import dpnp
 
 from ._data_types import bool as dpt_bool
 from ._device import Device

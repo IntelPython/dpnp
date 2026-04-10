@@ -28,8 +28,7 @@
 
 import operator
 
-import dpctl
-import dpctl.utils
+from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
@@ -93,14 +92,14 @@ def extract(condition, arr):
         raise TypeError(
             "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(arr)}"
         )
-    exec_q = dpctl.utils.get_execution_queue(
+    exec_q = dpt.get_execution_queue(
         (
             condition.sycl_queue,
             arr.sycl_queue,
         )
     )
     if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError
+        raise dpt.ExecutionPlacementError
     if condition.shape != arr.shape:
         raise ValueError("Arrays are not of the same size")
     return _extract_impl(arr, condition)
@@ -170,7 +169,7 @@ def place(arr, mask, vals):
         raise TypeError(
             "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(vals)}"
         )
-    exec_q = dpctl.utils.get_execution_queue(
+    exec_q = dpt.get_execution_queue(
         (
             arr.sycl_queue,
             mask.sycl_queue,
@@ -178,11 +177,11 @@ def place(arr, mask, vals):
         )
     )
     if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError
+        raise dpt.ExecutionPlacementError
     if arr.shape != mask.shape or vals.ndim != 1:
         raise ValueError("Array sizes are not as required")
     cumsum = dpt.empty(mask.size, dtype="i8", sycl_queue=exec_q)
-    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     nz_count = ti.mask_positions(
         mask, cumsum, sycl_queue=exec_q, depends=deps_ev
@@ -308,10 +307,10 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
                 indices.dtype
             )
         )
-    exec_q = dpctl.utils.get_execution_queue(queues_)
+    exec_q = dpt.get_execution_queue(queues_)
     if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError
-    vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
+        raise dpt.ExecutionPlacementError
+    vals_usm_type = dpt.get_coerced_usm_type(usm_types_)
 
     mode = _get_indexing_mode(mode)
 
@@ -351,7 +350,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         rhs = dpt.astype(vals, x.dtype)
     rhs = dpt.broadcast_to(rhs, val_shape)
 
-    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     hev, put_ev = ti._put(
         x, (indices,), rhs, axis, mode, sycl_queue=exec_q, depends=deps_ev
@@ -419,13 +418,13 @@ def put_along_axis(x, indices, vals, /, *, axis=-1, mode="wrap"):
     else:
         queues_ = [x.sycl_queue, indices.sycl_queue]
         usm_types_ = [x.usm_type, indices.usm_type]
-    exec_q = dpctl.utils.get_execution_queue(queues_)
+    exec_q = dpt.get_execution_queue(queues_)
     if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError(
+        raise dpt.ExecutionPlacementError(
             "Execution placement can not be unambiguously inferred "
             "from input arguments. "
         )
-    out_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
+    out_usm_type = dpt.get_coerced_usm_type(usm_types_)
     mode_i = _get_indexing_mode(mode)
     indexes_dt = (
         dpt.uint64
@@ -504,12 +503,10 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
         raise ValueError(
             "`indices` expected a 1D array, got `{}`".format(indices.ndim)
         )
-    exec_q = dpctl.utils.get_execution_queue([x.sycl_queue, indices.sycl_queue])
+    exec_q = dpt.get_execution_queue([x.sycl_queue, indices.sycl_queue])
     if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError
-    res_usm_type = dpctl.utils.get_coerced_usm_type(
-        [x.usm_type, indices.usm_type]
-    )
+        raise dpt.ExecutionPlacementError
+    res_usm_type = dpt.get_coerced_usm_type([x.usm_type, indices.usm_type])
 
     mode = _get_indexing_mode(mode)
 
@@ -554,8 +551,8 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
             raise ValueError(
                 f"Output array of type {dt} is needed, got {out.dtype}"
             )
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
-            raise dpctl.utils.ExecutionPlacementError(
+        if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
         if ti._array_overlap(x, out):
@@ -565,7 +562,7 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
             res_shape, dtype=dt, usm_type=res_usm_type, sycl_queue=exec_q
         )
 
-    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     hev, take_ev = ti._take(
         x, (indices,), out, axis, mode, sycl_queue=exec_q, depends=deps_ev
@@ -640,12 +637,10 @@ def take_along_axis(x, indices, /, *, axis=-1, mode="wrap"):
             "argument arrays must be equal"
         )
     pp = normalize_axis_index(operator.index(axis), x_nd)
-    out_usm_type = dpctl.utils.get_coerced_usm_type(
-        (x.usm_type, indices.usm_type)
-    )
-    exec_q = dpctl.utils.get_execution_queue((x.sycl_queue, indices.sycl_queue))
+    out_usm_type = dpt.get_coerced_usm_type((x.usm_type, indices.usm_type))
+    exec_q = dpt.get_execution_queue((x.sycl_queue, indices.sycl_queue))
     if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError(
+        raise dpt.ExecutionPlacementError(
             "Execution placement can not be unambiguously inferred "
             "from input arguments. "
         )

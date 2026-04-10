@@ -28,9 +28,6 @@
 
 import warnings
 
-import dpctl
-from dpctl.utils import ExecutionPlacementError
-
 import dpnp
 import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
@@ -67,9 +64,9 @@ def _calc_nanmedian(a, out=None):
         res = dpnp.empty_like(valid_counts, dtype=a.dtype)
     else:
         dpnp.check_supported_arrays_type(out)
-        exec_q = dpctl.utils.get_execution_queue((a.sycl_queue, out.sycl_queue))
+        exec_q = dpt.get_execution_queue((a.sycl_queue, out.sycl_queue))
         if exec_q is None:
-            raise ExecutionPlacementError(
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
         if out.shape != valid_counts.shape:

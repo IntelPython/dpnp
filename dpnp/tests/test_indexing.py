@@ -3,7 +3,6 @@ import functools
 import dpctl
 import numpy
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_,
     assert_array_equal,
@@ -1380,7 +1379,7 @@ class TestCompress:
         with pytest.raises(ValueError):
             dpnp.compress(condition, a, out=out_bad_shape)
         out_bad_queue = dpnp.empty(1, dtype="i4", sycl_queue=q2)
-        with pytest.raises(ExecutionPlacementError):
+        with pytest.raises(dpt.ExecutionPlacementError):
             dpnp.compress(condition, a, out=out_bad_queue)
         out_bad_dt = dpnp.empty(1, dtype="i8", sycl_queue=q1)
         with pytest.raises(TypeError):
@@ -1496,7 +1495,7 @@ class TestChoose:
         with pytest.raises(ValueError):
             dpnp.choose(inds, [chcs], out=out_bad_shape)
         out_bad_queue = dpnp.empty(chcs.shape, dtype=chcs.dtype, sycl_queue=q2)
-        with pytest.raises(ExecutionPlacementError):
+        with pytest.raises(dpt.ExecutionPlacementError):
             dpnp.choose(inds, [chcs], out=out_bad_queue)
         out_bad_dt = dpnp.empty(chcs.shape, dtype="i8", sycl_queue=q1)
         with pytest.raises(TypeError):

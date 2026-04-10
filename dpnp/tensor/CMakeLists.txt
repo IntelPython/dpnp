@@ -29,16 +29,44 @@
 
 find_package(Python COMPONENTS Development.Module)
 
+# Tensor-specific flags
+
+# dpctl doesn't add -fsycl globally
+# only to pybind11 module sources via add_sycl_to_target()
+string(REPLACE "-fsycl " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
+# Use LLD linker (dpctl sets this at root level)
+if(UNIX)
+    add_link_options("-fuse-ld=lld")
+endif()
+
+# Remove global coverage flags for tensor
+# use link-time only approach like dpctl
+if(DPNP_GENERATE_COVERAGE)
+    string(REPLACE "-fprofile-instr-generate " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string(REPLACE "-fcoverage-mapping " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string(REPLACE "-fno-sycl-use-footer " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endif()
+
 # Tensor-specific debug flags
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+# Disable device code debug info for Debug and Coverage builds to speed up linking
+if(
+    CMAKE_BUILD_TYPE STREQUAL "Debug"
+    OR CMAKE_BUILD_TYPE STREQUAL "DEBUG"
+    OR CMAKE_BUILD_TYPE STREQUAL "Coverage"
+)
     if(WIN32)
         add_compile_options(-Xsycl-target-frontend=spir64 "-g0")
     elseif(UNIX)
-        string(REPLACE "-g1" "-g" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-        string(REPLACE "-g1" "-g" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+        add_compile_options(-Xsycl-target-frontend=spir64 "-g0")
+        if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+            string(REPLACE "-g1" "-g" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+            string(REPLACE "-g1" "-g" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+        endif()
     endif()
 endif()
 
+# Match dpctl warning flags
 # Suppress unused parameter warnings
 add_compile_options(-Wno-unused-parameter)
 
@@ -313,18 +341,10 @@ foreach(python_module_name ${_py_trgts})
         ${python_module_name}
         PRIVATE -fno-sycl-id-queries-fit-in-int
     )
-    # For coverage builds, use per_source instead of per_kernel to reduce memory
-    if(DPNP_GENERATE_COVERAGE)
-        target_link_options(
-            ${python_module_name}
-            PRIVATE -fsycl-device-code-split=per_source
-        )
-    else()
-        target_link_options(
-            ${python_module_name}
-            PRIVATE -fsycl-device-code-split=per_kernel
-        )
-    endif()
+    target_link_options(
+        ${python_module_name}
+        PRIVATE -fsycl-device-code-split=per_kernel
+    )
     if(DPNP_TENSOR_OFFLOAD_COMPRESS)
         target_link_options(${python_module_name} PRIVATE --offload-compress)
     endif()

@@ -36,7 +36,6 @@ Set of functions to implement NumPy random module API
 
 """
 
-import dpctl.utils as dpu
 import numpy
 
 import dpnp
@@ -46,6 +45,7 @@ from dpnp.dpnp_utils.dpnp_algo_utils import (
     use_origin_backend,
 )
 from dpnp.random.dpnp_algo_random import MCG59, MT19937
+from dpnp.tensor import validate_usm_type
 
 
 class RandomState:
@@ -269,7 +269,7 @@ class RandomState:
                         f"scale={scale}, but must be non-negative."
                     )
 
-                dpu.validate_usm_type(usm_type, allow_none=False)
+                validate_usm_type(usm_type, allow_none=False)
                 return self._random_state.normal(
                     loc=loc,
                     scale=scale,
@@ -635,7 +635,7 @@ class RandomState:
                 dtype = self._validate_float_dtype(
                     dtype, (dpnp.int32, dpnp.float32, dpnp.float64)
                 )
-                dpu.validate_usm_type(usm_type, allow_none=False)
+                validate_usm_type(usm_type, allow_none=False)
 
                 return self._random_state.uniform(
                     low=low,

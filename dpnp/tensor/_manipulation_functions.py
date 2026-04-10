@@ -29,9 +29,8 @@
 import itertools
 import operator
 
-import dpctl
-import dpctl.utils as dputils
 import numpy as np
+from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
@@ -57,11 +56,11 @@ def _arrays_validation(arrays, check_ndim=True):
         if not isinstance(X, dpt.usm_ndarray):
             raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
 
-    exec_q = dputils.get_execution_queue([X.sycl_queue for X in arrays])
+    exec_q = dpt.get_execution_queue([X.sycl_queue for X in arrays])
     if exec_q is None:
         raise ValueError("All the input arrays must have same sycl queue.")
 
-    res_usm_type = dputils.get_coerced_usm_type([X.usm_type for X in arrays])
+    res_usm_type = dpt.get_coerced_usm_type([X.usm_type for X in arrays])
     if res_usm_type is None:
         raise ValueError("All the input arrays must have usm_type.")
 
@@ -176,7 +175,7 @@ def _concat_axis_None(arrays):
     )
 
     fill_start = 0
-    _manager = dputils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     deps = _manager.submitted_events
     for array in arrays:
         fill_end = fill_start + array.size
@@ -349,7 +348,7 @@ def concat(arrays, /, *, axis=0):
         res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
-    _manager = dputils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     deps = _manager.submitted_events
     fill_start = 0
     for i in range(n):
@@ -625,21 +624,19 @@ def repeat(x, repeats, /, *, axis=None):
                 "`repeats` array must be 0- or 1-dimensional, got "
                 f"{repeats.ndim}"
             )
-        exec_q = dpctl.utils.get_execution_queue(
-            (x.sycl_queue, repeats.sycl_queue)
-        )
+        exec_q = dpt.get_execution_queue((x.sycl_queue, repeats.sycl_queue))
         if exec_q is None:
-            raise dputils.ExecutionPlacementError(
+            raise dpt.ExecutionPlacementError(
                 "Execution placement can not be unambiguously inferred "
                 "from input arguments."
             )
-        usm_type = dpctl.utils.get_coerced_usm_type(
+        usm_type = dpt.get_coerced_usm_type(
             (
                 x.usm_type,
                 repeats.usm_type,
             )
         )
-        dpctl.utils.validate_usm_type(usm_type, allow_none=False)
+        dpt.validate_usm_type(usm_type, allow_none=False)
         if not dpt.can_cast(repeats.dtype, dpt.int64, casting="same_kind"):
             raise TypeError(
                 f"'repeats' data type {repeats.dtype} cannot be cast to "
@@ -692,7 +689,7 @@ def repeat(x, repeats, /, *, axis=None):
             f"got {type(repeats)}"
         )
 
-    _manager = dputils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     if scalar:
         res_axis_size = repeats * axis_size
@@ -832,7 +829,7 @@ def roll(x, /, shift, *, axis=None):
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
     exec_q = x.sycl_queue
-    _manager = dputils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     if axis is None:
         shift = operator.index(shift)
         res = dpt.empty(
@@ -978,7 +975,7 @@ def stack(arrays, /, *, axis=0):
         res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
-    _manager = dputils.SequentialOrderManager[exec_q]
+    _manager = SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     for i in range(n):
         c_shapes_copy = tuple(
@@ -1164,7 +1161,7 @@ def tile(x, repetitions, /):
             broadcast_sh,
         )
         # copy broadcast input into flat array
-        _manager = dputils.SequentialOrderManager[exec_q]
+        _manager = SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
         hev, cp_ev = ti._copy_usm_ndarray_for_reshape(
             src=x, dst=res, sycl_queue=exec_q, depends=dep_evs

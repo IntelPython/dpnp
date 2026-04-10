@@ -451,7 +451,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
                     f"Expected output shape is {x.shape}, got {res.shape}"
                 )
 
-            if dpu.get_execution_queue((exec_q, res.sycl_queue)) is None:
+            if dpt.get_execution_queue((exec_q, res.sycl_queue)) is None:
                 raise dpnp.exceptions.ExecutionPlacementError(
                     "Input and output allocation queues are not compatible"
                 )
@@ -1062,7 +1062,7 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                     f"Expected output shape is {res_shape}, got {res.shape}"
                 )
 
-            if dpu.get_execution_queue((exec_q, res.sycl_queue)) is None:
+            if dpt.get_execution_queue((exec_q, res.sycl_queue)) is None:
                 raise dpnp.exceptions.ExecutionPlacementError(
                     "Input and output allocation queues are not compatible"
                 )
