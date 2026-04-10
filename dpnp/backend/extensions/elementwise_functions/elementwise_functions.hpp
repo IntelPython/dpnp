@@ -310,8 +310,7 @@ std::pair<sycl::event, sycl::event>
 
     // check that types are supported
     if (dst1_typeid != func_output_typeids.first ||
-        dst2_typeid != func_output_typeids.second)
-    {
+        dst2_typeid != func_output_typeids.second) {
         throw py::value_error(
             "One of destination arrays has unexpected elemental data type.");
     }
@@ -363,8 +362,7 @@ std::pair<sycl::event, sycl::event>
         dpctl::tensor::overlap::SameLogicalTensors();
     if ((overlap(src, dst1) && !same_logical_tensors(src, dst1)) ||
         (overlap(src, dst2) && !same_logical_tensors(src, dst2)) ||
-        (overlap(dst1, dst2) && !same_logical_tensors(dst1, dst2)))
-    {
+        (overlap(dst1, dst2) && !same_logical_tensors(dst1, dst2))) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
@@ -431,8 +429,7 @@ std::pair<sycl::event, sycl::event>
         simplified_dst2_strides, src_offset, dst1_offset, dst2_offset);
 
     if (nd == 1 && simplified_src_strides[0] == 1 &&
-        simplified_dst1_strides[0] == 1 && simplified_dst2_strides[0] == 1)
-    {
+        simplified_dst1_strides[0] == 1 && simplified_dst2_strides[0] == 1) {
         // Special case of contiguous data
         auto contig_fn = contig_dispatch_vector[src_typeid];
 
@@ -626,8 +623,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     auto const &same_logical_tensors =
         dpctl::tensor::overlap::SameLogicalTensors();
     if ((overlap(src1, dst) && !same_logical_tensors(src1, dst)) ||
-        (overlap(src2, dst) && !same_logical_tensors(src2, dst)))
-    {
+        (overlap(src2, dst) && !same_logical_tensors(src2, dst))) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
     // check memory overlap
@@ -694,8 +690,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
 
         if ((nd == 1) && isEqual(simplified_src1_strides, unit_stride) &&
             isEqual(simplified_src2_strides, unit_stride) &&
-            isEqual(simplified_dst_strides, unit_stride))
-        {
+            isEqual(simplified_dst_strides, unit_stride)) {
             auto contig_fn = contig_dispatch_table[src1_typeid][src2_typeid];
 
             if (contig_fn != nullptr) {
@@ -717,8 +712,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
             // special case of C-contiguous matrix and a row
             if (isEqual(simplified_src2_strides, zero_one_strides) &&
                 isEqual(simplified_src1_strides, {simplified_shape[1], one}) &&
-                isEqual(simplified_dst_strides, {simplified_shape[1], one}))
-            {
+                isEqual(simplified_dst_strides, {simplified_shape[1], one})) {
                 auto matrix_row_broadcast_fn =
                     contig_matrix_row_broadcast_dispatch_table[src1_typeid]
                                                               [src2_typeid];
@@ -732,8 +726,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                         is_aligned<required_alignment>(
                             src2_data + src2_offset * src2_itemsize) &&
                         is_aligned<required_alignment>(
-                            dst_data + dst_offset * dst_itemsize))
-                    {
+                            dst_data + dst_offset * dst_itemsize)) {
                         std::size_t n0 = simplified_shape[0];
                         std::size_t n1 = simplified_shape[1];
                         sycl::event comp_ev = matrix_row_broadcast_fn(
@@ -750,8 +743,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
             }
             if (isEqual(simplified_src1_strides, one_zero_strides) &&
                 isEqual(simplified_src2_strides, {one, simplified_shape[0]}) &&
-                isEqual(simplified_dst_strides, {one, simplified_shape[0]}))
-            {
+                isEqual(simplified_dst_strides, {one, simplified_shape[0]})) {
                 auto row_matrix_broadcast_fn =
                     contig_row_matrix_broadcast_dispatch_table[src1_typeid]
                                                               [src2_typeid];
@@ -766,8 +758,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                         is_aligned<required_alignment>(
                             src2_data + src2_offset * src2_itemsize) &&
                         is_aligned<required_alignment>(
-                            dst_data + dst_offset * dst_itemsize))
-                    {
+                            dst_data + dst_offset * dst_itemsize)) {
                         std::size_t n0 = simplified_shape[1];
                         std::size_t n1 = simplified_shape[0];
                         sycl::event comp_ev = row_matrix_broadcast_fn(
@@ -840,8 +831,7 @@ py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
     }
 
     if (src1_typeid < 0 || src1_typeid >= td_ns::num_types || src2_typeid < 0 ||
-        src2_typeid >= td_ns::num_types)
-    {
+        src2_typeid >= td_ns::num_types) {
         throw std::runtime_error("binary output type lookup failed");
     }
     int dst_typeid = output_types_table[src1_typeid][src2_typeid];
@@ -899,8 +889,8 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src1, src2, dst1, dst2}))
-    {
+    if (!dpctl::utils::queues_are_compatible(exec_q,
+                                             {src1, src2, dst1, dst2})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
@@ -956,8 +946,7 @@ std::pair<sycl::event, sycl::event>
         (overlap(src1, dst2) && !same_logical_tensors(src1, dst2)) ||
         (overlap(src2, dst1) && !same_logical_tensors(src2, dst1)) ||
         (overlap(src2, dst2) && !same_logical_tensors(src2, dst2)) ||
-        (overlap(dst1, dst2)))
-    {
+        (overlap(dst1, dst2))) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
@@ -1032,8 +1021,7 @@ std::pair<sycl::event, sycl::event>
     if ((nd == 1) && isEqual(simplified_src1_strides, unit_stride) &&
         isEqual(simplified_src2_strides, unit_stride) &&
         isEqual(simplified_dst1_strides, unit_stride) &&
-        isEqual(simplified_dst2_strides, unit_stride))
-    {
+        isEqual(simplified_dst2_strides, unit_stride)) {
         auto contig_fn = contig_dispatch_table[src1_typeid][src2_typeid];
 
         if (contig_fn != nullptr) {
@@ -1108,8 +1096,7 @@ std::pair<py::object, py::object> py_binary_two_outputs_ufunc_result_type(
     }
 
     if (src1_typeid < 0 || src1_typeid >= td_ns::num_types || src2_typeid < 0 ||
-        src2_typeid >= td_ns::num_types)
-    {
+        src2_typeid >= td_ns::num_types) {
         throw std::runtime_error("binary output type lookup failed");
     }
     std::pair<int, int> dst_typeids =
@@ -1264,8 +1251,7 @@ std::pair<sycl::event, sycl::event>
             std::initializer_list<py::ssize_t>{1};
 
         if ((nd == 1) && isEqual(simplified_rhs_strides, unit_stride) &&
-            isEqual(simplified_lhs_strides, unit_stride))
-        {
+            isEqual(simplified_lhs_strides, unit_stride)) {
             auto contig_fn = contig_dispatch_table[rhs_typeid][lhs_typeid];
 
             if (contig_fn != nullptr) {
@@ -1284,8 +1270,7 @@ std::pair<sycl::event, sycl::event>
             static constexpr py::ssize_t one{1};
             // special case of C-contiguous matrix and a row
             if (isEqual(simplified_rhs_strides, one_zero_strides) &&
-                isEqual(simplified_lhs_strides, {one, simplified_shape[0]}))
-            {
+                isEqual(simplified_lhs_strides, {one, simplified_shape[0]})) {
                 auto row_matrix_broadcast_fn =
                     contig_row_matrix_broadcast_dispatch_table[rhs_typeid]
                                                               [lhs_typeid];

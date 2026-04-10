@@ -11,6 +11,7 @@ import dpnp.linalg
 import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
+from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
     generate_random_numpy_array,
@@ -51,6 +52,23 @@ def assert_sycl_queue_equal(result, expected):
     assert result.has_enable_profiling == expected.has_enable_profiling
     exec_queue = dpt.get_execution_queue([result, expected])
     assert exec_queue is not None
+
+
+def get_all_dev_dtypes(no_float16=True, no_none=True):
+    """
+    Build a list of (device, dtype) combinations for each device's
+    supported dtype.
+
+    """
+
+    device_dtype_pairs = []
+    for device in valid_dev:
+        dtypes = get_all_dtypes(
+            no_float16=no_float16, no_none=no_none, device=device
+        )
+        for dtype in dtypes:
+            device_dtype_pairs.append((device, dtype))
+    return device_dtype_pairs
 
 
 @pytest.mark.parametrize(
@@ -1081,11 +1099,10 @@ def test_array_creation_from_dpctl(copy, device):
     assert isinstance(result, dpnp_array)
 
 
-@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
+@pytest.mark.parametrize("device, dt", get_all_dev_dtypes())
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
-def test_from_dlpack(arr_dtype, shape, device):
-    X = dpnp.empty(shape=shape, dtype=arr_dtype, device=device)
+def test_from_dlpack(shape, device, dt):
+    X = dpnp.ones(shape=shape, dtype=dt, device=device)
     Y = dpnp.from_dlpack(X)
     assert_array_equal(X, Y)
     assert X.__dlpack_device__() == Y.__dlpack_device__()
@@ -1097,10 +1114,9 @@ def test_from_dlpack(arr_dtype, shape, device):
         assert V.strides == W.strides
 
 
-@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
-def test_from_dlpack_with_dpt(arr_dtype, device):
-    X = dpt.empty((64,), dtype=arr_dtype, device=device)
+@pytest.mark.parametrize("device, dt", get_all_dev_dtypes())
+def test_from_dlpack_with_dpt(device, dt):
+    X = dpt.ones((64,), dtype=dt, device=device)
     Y = dpnp.from_dlpack(X)
     assert_array_equal(X, Y)
     assert isinstance(Y, dpnp.dpnp_array.dpnp_array)
@@ -1660,6 +1676,18 @@ class TestLinAlgebra:
     def test_lu_factor(self, data, device):
         a = dpnp.array(data, device=device)
         result = dpnp.scipy.linalg.lu_factor(a)
+
+        for param in result:
+            param_queue = param.sycl_queue
+            assert_sycl_queue_equal(param_queue, a.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "data",
+        [[[1.0, 2.0], [3.0, 5.0]], [[]], [[[1.0, 2.0], [3.0, 5.0]]], [[[]]]],
+    )
+    def test_lu(self, data, device):
+        a = dpnp.array(data, device=device)
+        result = dpnp.scipy.linalg.lu(a)
 
         for param in result:
             param_queue = param.sycl_queue

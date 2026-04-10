@@ -56,8 +56,7 @@ public:
     {
         mkl_dft::precision fft_prec = get_precision();
         if (fft_prec == mkl_dft::precision::DOUBLE &&
-            !q.get_device().has(sycl::aspect::fp64))
-        {
+            !q.get_device().has(sycl::aspect::fp64)) {
             throw py::value_error("Descriptor is double precision but the "
                                   "device does not support double precision.");
         }
@@ -66,10 +65,7 @@ public:
         queue_ptr_ = std::make_unique<sycl::queue>(q);
     }
 
-    descr_type &get_descriptor()
-    {
-        return descr_;
-    }
+    descr_type &get_descriptor() { return descr_; }
 
     const sycl::queue &get_queue() const
     {

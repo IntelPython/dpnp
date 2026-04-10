@@ -13,10 +13,8 @@ import dpnp
 import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import map_dtype_to_device
-from dpnp.tensor._numpy_helper import (
-    AxisError,
-    normalize_axis_index,
-)
+from dpnp.exceptions import AxisError, ExecutionPlacementError
+from dpnp.tensor._numpy_helper import normalize_axis_index
 
 from .helper import (
     LTS_VERSION,
@@ -709,14 +707,12 @@ class TestEdiff1d:
         # another `to_begin` sycl queue
         to_begin = dpnp.array([-20, -15], sycl_queue=dpctl.SyclQueue())
         assert_raises(
-            dpt.ExecutionPlacementError, dpnp.ediff1d, ia, to_begin=to_begin
+            ExecutionPlacementError, dpnp.ediff1d, ia, to_begin=to_begin
         )
 
         # another `to_end` sycl queue
         to_end = dpnp.array([15, 20], sycl_queue=dpctl.SyclQueue())
-        assert_raises(
-            dpt.ExecutionPlacementError, dpnp.ediff1d, ia, to_end=to_end
-        )
+        assert_raises(ExecutionPlacementError, dpnp.ediff1d, ia, to_end=to_end)
 
 
 class TestGradient:
@@ -1734,6 +1730,7 @@ class TestSinc:
 
 
 class TestSpacing:
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     @pytest.mark.parametrize("sign", [1, -1])
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_basic(self, sign, dt):
@@ -2132,13 +2129,13 @@ class TestUfunc:
         out1 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
         out2 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
         with pytest.raises(
-            dpt.ExecutionPlacementError,
+            ExecutionPlacementError,
             match="Input and output allocation queues are not compatible",
         ):
             _ = fn(*args, out1)
 
         with pytest.raises(
-            dpt.ExecutionPlacementError,
+            ExecutionPlacementError,
             match="Input and output allocation queues are not compatible",
         ):
             _ = fn(*args, out=(None, out2))

@@ -87,8 +87,7 @@
 
     std::cout << "Available SYCL devices:" << std::endl;
     for (std::vector<sycl::device>::const_iterator it = devices.cbegin();
-         it != devices.cend(); ++it)
-    {
+         it != devices.cend(); ++it) {
         std::cout
             // not yet implemented error << " " <<
             // it->has(sycl::aspect::usm_shared_allocations)  << " "

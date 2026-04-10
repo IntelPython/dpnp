@@ -1077,8 +1077,7 @@ DPCTLSyclEventRef
         // input parameters which follow the condition
         if (is_cpu_queue ||
             (!is_cpu_queue && (p_size >= ((size_t)ntrial * 16)) &&
-             (ntrial <= 16)))
-        {
+             (ntrial <= 16))) {
             DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result, size, true,
                                                     true);
             _DataType *result1 = result_ptr.get_ptr();
@@ -1399,8 +1398,7 @@ DPCTLSyclEventRef
                 size_t j;
                 int cv = pvec[idx[i]];
                 // TODO vectorize
-                for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++) {
-                }
+                for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++) {}
 
                 if (j <= i) {
                     throw std::runtime_error(

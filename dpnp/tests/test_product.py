@@ -5,8 +5,7 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp
 from dpnp.dpnp_utils import map_dtype_to_device
-from dpnp.tensor import ExecutionPlacementError
-from dpnp.tensor._numpy_helper import AxisError
+from dpnp.exceptions import AxisError, ExecutionPlacementError
 
 from .helper import (
     assert_dtype_allclose,

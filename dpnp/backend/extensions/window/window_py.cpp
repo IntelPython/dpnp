@@ -33,11 +33,12 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "bartlett.hpp"
-#include "blackman.hpp"
+#include "kernels/window/bartlett.hpp"
+#include "kernels/window/blackman.hpp"
+#include "kernels/window/hamming.hpp"
+#include "kernels/window/hanning.hpp"
+
 #include "common.hpp"
-#include "hamming.hpp"
-#include "hanning.hpp"
 #include "kaiser.hpp"
 
 // utils extension header
@@ -51,6 +52,22 @@ using window_ns::window_fn_ptr_t;
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
+template <typename fnT, typename T>
+using BartlettFactory =
+    window_ns::Factory<fnT, T, dpnp::kernels::bartlett::BartlettFunctor>;
+
+template <typename fnT, typename T>
+using BlackmanFactory =
+    window_ns::Factory<fnT, T, dpnp::kernels::blackman::BlackmanFunctor>;
+
+template <typename fnT, typename T>
+using HammingFactory =
+    window_ns::Factory<fnT, T, dpnp::kernels::hamming::HammingFunctor>;
+
+template <typename fnT, typename T>
+using HanningFactory =
+    window_ns::Factory<fnT, T, dpnp::kernels::hanning::HanningFunctor>;
+
 static window_fn_ptr_t bartlett_dispatch_vector[dpctl_td_ns::num_types];
 static window_fn_ptr_t blackman_dispatch_vector[dpctl_td_ns::num_types];
 static window_fn_ptr_t hamming_dispatch_vector[dpctl_td_ns::num_types];
@@ -62,8 +79,7 @@ PYBIND11_MODULE(_window_impl, m)
     using event_vecT = std::vector<sycl::event>;
 
     {
-        init_dispatch_vector<window_ns::window_fn_ptr_t,
-                             window_ns::kernels::BartlettFactory>(
+        init_dispatch_vector<window_ns::window_fn_ptr_t, BartlettFactory>(
             bartlett_dispatch_vector);
 
         auto bartlett_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
@@ -78,8 +94,7 @@ PYBIND11_MODULE(_window_impl, m)
     }
 
     {
-        init_dispatch_vector<window_ns::window_fn_ptr_t,
-                             window_ns::kernels::BlackmanFactory>(
+        init_dispatch_vector<window_ns::window_fn_ptr_t, BlackmanFactory>(
             blackman_dispatch_vector);
 
         auto blackman_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
@@ -94,8 +109,7 @@ PYBIND11_MODULE(_window_impl, m)
     }
 
     {
-        init_dispatch_vector<window_ns::window_fn_ptr_t,
-                             window_ns::kernels::HammingFactory>(
+        init_dispatch_vector<window_ns::window_fn_ptr_t, HammingFactory>(
             hamming_dispatch_vector);
 
         auto hamming_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
@@ -110,8 +124,7 @@ PYBIND11_MODULE(_window_impl, m)
     }
 
     {
-        init_dispatch_vector<window_ns::window_fn_ptr_t,
-                             window_ns::kernels::HanningFactory>(
+        init_dispatch_vector<window_ns::window_fn_ptr_t, HanningFactory>(
             hanning_dispatch_vector);
 
         auto hanning_pyapi = [&](sycl::queue &exec_q, const arrayT &result,

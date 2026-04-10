@@ -125,8 +125,8 @@ struct HeevdContigFactory
 {
     fnT get()
     {
-        if constexpr (types::HeevdTypePairSupportFactory<T, RealT>::is_defined)
-        {
+        if constexpr (types::HeevdTypePairSupportFactory<T,
+                                                         RealT>::is_defined) {
             return heevd_impl<T, RealT>;
         }
         else {

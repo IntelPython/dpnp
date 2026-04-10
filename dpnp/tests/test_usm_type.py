@@ -1536,6 +1536,18 @@ class TestLinAlgebra:
         "data",
         [[[1.0, 2.0], [3.0, 5.0]], [[]], [[[1.0, 2.0], [3.0, 5.0]]], [[[]]]],
     )
+    def test_lu(self, data, usm_type):
+        a = dpnp.array(data, usm_type=usm_type)
+        result = dpnp.scipy.linalg.lu(a)
+
+        assert a.usm_type == usm_type
+        for param in result:
+            assert param.usm_type == a.usm_type
+
+    @pytest.mark.parametrize(
+        "data",
+        [[[1.0, 2.0], [3.0, 5.0]], [[]], [[[1.0, 2.0], [3.0, 5.0]]], [[[]]]],
+    )
     def test_lu_factor(self, data, usm_type):
         a = dpnp.array(data, usm_type=usm_type)
         result = dpnp.scipy.linalg.lu_factor(a)

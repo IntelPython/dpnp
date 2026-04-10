@@ -28,23 +28,25 @@
 
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <type_traits>
+
 #include <sycl/sycl.hpp>
 
+#include "dpctl4pybind11.hpp"
+
 #include "ext/common.hpp"
+#include "kernels/statistics/histogram.hpp"
 
-namespace dpctl::tensor
+namespace statistics::histogram
 {
-class usm_ndarray;
-}
-
 using dpctl::tensor::usm_ndarray;
 
 using ext::common::AtomicOp;
 using ext::common::IsNan;
 using ext::common::Less;
-
-namespace statistics::histogram
-{
 
 template <typename T, int Dims>
 struct CachedData
@@ -64,37 +66,28 @@ struct CachedData
         local_data = LocalData(shape, cgh);
     }
 
-    T *get_ptr() const
-    {
-        return &local_data[0];
-    }
+    T *get_ptr() const { return &local_data[0]; }
 
     template <int _Dims>
     void init(const sycl::nd_item<_Dims> &item) const
     {
-        uint32_t llid = item.get_local_linear_id();
+        std::uint32_t llid = item.get_local_linear_id();
         auto local_ptr = &local_data[0];
-        uint32_t size = local_data.size();
+        std::uint32_t size = local_data.size();
         auto group = item.get_group();
-        uint32_t local_size = group.get_local_linear_range();
+        std::uint32_t local_size = group.get_local_linear_range();
 
-        for (uint32_t i = llid; i < size; i += local_size) {
+        for (std::uint32_t i = llid; i < size; i += local_size) {
             local_ptr[i] = global_data[i];
         }
     }
 
-    size_t size() const
-    {
-        return local_data.size();
-    }
+    std::size_t size() const { return local_data.size(); }
 
-    T &operator[](const sycl::id<Dims> &id) const
-    {
-        return local_data[id];
-    }
+    T &operator[](const sycl::id<Dims> &id) const { return local_data[id]; }
 
     template <typename = std::enable_if_t<Dims == 1>>
-    T &operator[](const size_t id) const
+    T &operator[](const std::size_t id) const
     {
         return local_data[id];
     }
@@ -119,28 +112,19 @@ struct UncachedData
         _shape = shape;
     }
 
-    T *get_ptr() const
-    {
-        return global_data;
-    }
+    T *get_ptr() const { return global_data; }
 
     template <int _Dims>
     void init(const sycl::nd_item<_Dims> &) const
     {
     }
 
-    size_t size() const
-    {
-        return _shape.size();
-    }
+    std::size_t size() const { return _shape.size(); }
 
-    T &operator[](const sycl::id<Dims> &id) const
-    {
-        return global_data[id];
-    }
+    T &operator[](const sycl::id<Dims> &id) const { return global_data[id]; }
 
     template <typename = std::enable_if_t<Dims == 1>>
-    T &operator[](const size_t id) const
+    T &operator[](const std::size_t id) const
     {
         return global_data[id];
     }
@@ -157,15 +141,15 @@ struct HistLocalType
 };
 
 template <>
-struct HistLocalType<uint64_t>
+struct HistLocalType<std::uint64_t>
 {
-    using type = uint32_t;
+    using type = std::uint32_t;
 };
 
 template <>
-struct HistLocalType<int64_t>
+struct HistLocalType<std::int64_t>
 {
-    using type = int32_t;
+    using type = std::int32_t;
 };
 
 template <typename T, typename localT = typename HistLocalType<T>::type>
@@ -177,8 +161,8 @@ struct HistWithLocalCopies
     using LocalHist = sycl::local_accessor<localT, 2>;
 
     HistWithLocalCopies(T *global_data,
-                        size_t bins_count,
-                        int32_t copies_count,
+                        std::size_t bins_count,
+                        std::int32_t copies_count,
                         sycl::handler &cgh)
     {
         local_hist = LocalHist(sycl::range<2>(copies_count, bins_count), cgh);
@@ -188,23 +172,25 @@ struct HistWithLocalCopies
     template <int _Dims>
     void init(const sycl::nd_item<_Dims> &item, localT val = 0) const
     {
-        uint32_t llid = item.get_local_linear_id();
+        std::uint32_t llid = item.get_local_linear_id();
         auto *local_ptr = &local_hist[0][0];
-        uint32_t size = local_hist.size();
+        std::uint32_t size = local_hist.size();
         auto group = item.get_group();
-        uint32_t local_size = group.get_local_linear_range();
+        std::uint32_t local_size = group.get_local_linear_range();
 
-        for (uint32_t i = llid; i < size; i += local_size) {
+        for (std::uint32_t i = llid; i < size; i += local_size) {
             local_ptr[i] = val;
         }
     }
 
     template <int _Dims>
-    void add(const sycl::nd_item<_Dims> &item, int32_t bin, localT value) const
+    void add(const sycl::nd_item<_Dims> &item,
+             std::int32_t bin,
+             localT value) const
     {
-        int32_t llid = item.get_local_linear_id();
-        int32_t local_hist_count = local_hist.get_range().get(0);
-        int32_t local_copy_id =
+        std::int32_t llid = item.get_local_linear_id();
+        std::int32_t local_hist_count = local_hist.get_range().get(0);
+        std::int32_t local_copy_id =
             local_hist_count == 1 ? 0 : llid % local_hist_count;
 
         AtomicOp<localT, sycl::memory_order::relaxed,
@@ -216,15 +202,15 @@ struct HistWithLocalCopies
     template <int _Dims>
     void finalize(const sycl::nd_item<_Dims> &item) const
     {
-        uint32_t llid = item.get_local_linear_id();
-        uint32_t bins_count = local_hist.get_range().get(1);
-        uint32_t local_hist_count = local_hist.get_range().get(0);
+        std::uint32_t llid = item.get_local_linear_id();
+        std::uint32_t bins_count = local_hist.get_range().get(1);
+        std::uint32_t local_hist_count = local_hist.get_range().get(0);
         auto group = item.get_group();
-        uint32_t local_size = group.get_local_linear_range();
+        std::uint32_t local_size = group.get_local_linear_range();
 
-        for (uint32_t i = llid; i < bins_count; i += local_size) {
+        for (std::uint32_t i = llid; i < bins_count; i += local_size) {
             auto value = local_hist[0][i];
-            for (uint32_t lhc = 1; lhc < local_hist_count; ++lhc) {
+            for (std::uint32_t lhc = 1; lhc < local_hist_count; ++lhc) {
                 value += local_hist[lhc][i];
             }
             if (value != T(0)) {
@@ -235,10 +221,7 @@ struct HistWithLocalCopies
         }
     }
 
-    uint32_t size() const
-    {
-        return local_hist.size();
-    }
+    std::uint32_t size() const { return local_hist.size(); }
 
 private:
     LocalHist local_hist;
@@ -251,10 +234,7 @@ struct HistGlobalMemory
     static constexpr bool const sync_after_init = false;
     static constexpr bool const sync_before_finalize = false;
 
-    HistGlobalMemory(T *global_data)
-    {
-        global_hist = global_data;
-    }
+    HistGlobalMemory(T *global_data) { global_hist = global_data; }
 
     template <int _Dims>
     void init(const sycl::nd_item<_Dims> &) const
@@ -262,7 +242,7 @@ struct HistGlobalMemory
     }
 
     template <int _Dims>
-    void add(const sycl::nd_item<_Dims> &, int32_t bin, T value) const
+    void add(const sycl::nd_item<_Dims> &, std::int32_t bin, T value) const
     {
         AtomicOp<T, sycl::memory_order::relaxed,
                  sycl::memory_scope::device>::add(global_hist[bin], value);
@@ -277,27 +257,18 @@ private:
     T *global_hist = nullptr;
 };
 
-template <typename T = uint32_t>
+template <typename T = std::uint32_t>
 struct NoWeights
 {
-    constexpr T get(size_t) const
-    {
-        return 1;
-    }
+    constexpr T get(std::size_t) const { return 1; }
 };
 
 template <typename T>
 struct Weights
 {
-    Weights(T *weights)
-    {
-        data = weights;
-    }
+    Weights(T *weights) { data = weights; }
 
-    T get(size_t id) const
-    {
-        return data[id];
-    }
+    T get(std::size_t id) const { return data[id]; }
 
 private:
     T *data = nullptr;
@@ -311,54 +282,22 @@ bool check_in_bounds(const dT &val, const dT &min, const dT &max)
 }
 
 template <typename T, typename HistImpl, typename Edges, typename Weights>
-class histogram_kernel;
-
-template <typename T, typename HistImpl, typename Edges, typename Weights>
 void submit_histogram(const T *in,
-                      const size_t size,
-                      const size_t dims,
-                      const uint32_t WorkPI,
+                      const std::size_t size,
+                      const std::size_t dims,
+                      const std::uint32_t WorkPI,
                       const HistImpl &hist,
                       const Edges &edges,
                       const Weights &weights,
                       sycl::nd_range<1> nd_range,
                       sycl::handler &cgh)
 {
-    cgh.parallel_for<histogram_kernel<T, HistImpl, Edges, Weights>>(
-        nd_range, [=](sycl::nd_item<1> item) {
-            auto id = item.get_group_linear_id();
-            auto lid = item.get_local_linear_id();
-            auto group = item.get_group();
-            auto local_size = item.get_local_range(0);
+    using HistogramKernel =
+        dpnp::kernels::histogram::HistogramFunctor<T, HistImpl, Edges, Weights>;
 
-            hist.init(item);
-            edges.init(item);
-
-            if constexpr (HistImpl::sync_after_init || Edges::sync_after_init) {
-                sycl::group_barrier(group, sycl::memory_scope::work_group);
-            }
-
-            auto bounds = edges.get_bounds();
-
-            for (uint32_t i = 0; i < WorkPI; ++i) {
-                auto data_idx = id * WorkPI * local_size + i * local_size + lid;
-                if (data_idx < size) {
-                    auto *d = &in[data_idx * dims];
-
-                    if (edges.in_bounds(d, bounds)) {
-                        auto bin = edges.get_bin(item, d, bounds);
-                        auto weight = weights.get(data_idx);
-                        hist.add(item, bin, weight);
-                    }
-                }
-            }
-
-            if constexpr (HistImpl::sync_before_finalize) {
-                sycl::group_barrier(group, sycl::memory_scope::work_group);
-            }
-
-            hist.finalize(item);
-        });
+    cgh.parallel_for<HistogramKernel>(
+        nd_range,
+        HistogramKernel(in, size, dims, WorkPI, hist, edges, weights));
 }
 
 void validate(const usm_ndarray &sample,
@@ -366,8 +305,8 @@ void validate(const usm_ndarray &sample,
               const std::optional<const dpctl::tensor::usm_ndarray> &weights,
               const usm_ndarray &histogram);
 
-uint32_t get_local_hist_copies_count(uint32_t loc_mem_size_in_items,
-                                     uint32_t local_size,
-                                     uint32_t hist_size_in_items);
+std::uint32_t get_local_hist_copies_count(std::uint32_t loc_mem_size_in_items,
+                                          std::uint32_t local_size,
+                                          std::uint32_t hist_size_in_items);
 
 } // namespace statistics::histogram

@@ -17,3 +17,6 @@ c106d91b866f4acd30226b68519b12a73a881490
 
 # Add pygrep-hooks to pre-commit config
 e62718415aa3660da5f607e352c991a063a54219
+
+# Bump clang-format from 12.0.1 to 22.1.0 version
+c2d65bd451a7d8e5b6319147da95e9dabf7a382b

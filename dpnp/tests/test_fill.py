@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_array_equal
 
 import dpnp
-from dpnp.tensor import ExecutionPlacementError
+from dpnp.exceptions import ExecutionPlacementError
 
 
 @pytest.mark.parametrize(

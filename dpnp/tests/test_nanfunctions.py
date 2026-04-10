@@ -12,6 +12,7 @@ from numpy.testing import (
 
 import dpnp
 import dpnp.tensor as dpt
+from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
     assert_dtype_allclose,
@@ -495,7 +496,7 @@ class TestNanMedian:
         # out has a different queue
         exec_q = dpctl.SyclQueue()
         res = dpnp.empty(2, dtype=a.dtype, sycl_queue=exec_q)
-        with pytest.raises(dpt.ExecutionPlacementError):
+        with pytest.raises(ExecutionPlacementError):
             dpnp.nanmedian(a, axis=1, out=res)
 
 

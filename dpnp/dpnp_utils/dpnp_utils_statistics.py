@@ -31,6 +31,7 @@ import warnings
 import dpnp
 import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
+from dpnp.exceptions import ExecutionPlacementError
 from dpnp.tensor._numpy_helper import normalize_axis_tuple
 
 __all__ = ["dpnp_cov", "dpnp_median"]
@@ -66,7 +67,7 @@ def _calc_nanmedian(a, out=None):
         dpnp.check_supported_arrays_type(out)
         exec_q = dpt.get_execution_queue((a.sycl_queue, out.sycl_queue))
         if exec_q is None:
-            raise dpt.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
         if out.shape != valid_counts.shape:

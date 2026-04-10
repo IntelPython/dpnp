@@ -80,6 +80,7 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
+from .exceptions import ExecutionPlacementError
 from .tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
@@ -140,7 +141,9 @@ def _gradient_build_dx(f, axes, *varargs):
             if dpnp.issubdtype(distances.dtype, dpnp.integer):
                 # Convert integer types to default float type to avoid modular
                 # arithmetic in dpnp.diff(distances).
-                distances = distances.astype(dpnp.default_float_type())
+                distances = distances.astype(
+                    dpnp.default_float_type(sycl_queue=f.sycl_queue)
+                )
             diffx = dpnp.diff(distances)
 
             # if distances are constant reduce to the scalar case
@@ -273,7 +276,7 @@ def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
         usm_type = dpt.get_coerced_usm_type([usm_type, arg.usm_type])
         # check that arrays have the same allocation queue
         if dpt.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
-            raise dpt.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 f"ary and {arg_name} must be allocated on the same SYCL queue"
             )
 
@@ -2706,9 +2709,9 @@ def gradient(f, *varargs, axis=None, edge_order=1):
         # All other types convert to floating point.
         # First check if f is a dpnp integer type; if so, convert f to default
         # float type to avoid modular arithmetic when computing changes in f.
-        if dpnp.issubdtype(otype, dpnp.integer):
-            f = f.astype(dpnp.default_float_type())
-        otype = dpnp.default_float_type()
+        otype = dpnp.default_float_type(sycl_queue=f.sycl_queue)
+        if dpnp.issubdtype(f.dtype, dpnp.integer):
+            f = f.astype(otype)
 
     for axis_, ax_dx in zip(axes, dx):
         if f.shape[axis_] < edge_order + 1:

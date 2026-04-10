@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2026, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,57 +28,37 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include <sycl/sycl.hpp>
 
-// dpctl tensor headers
-#include "utils/math_utils.hpp"
-#include "utils/type_utils.hpp"
+#include "kernels/elementwise_functions/i0.hpp"
 
-namespace dpnp::kernels::fmin
+namespace dpnp::kernels::kaiser
 {
-namespace mu_ns = dpctl::tensor::math_utils;
-namespace tu_ns = dpctl::tensor::type_utils;
-
-template <typename argT1, typename argT2, typename resT>
-struct FminFunctor
+template <typename T>
+class KaiserFunctor
 {
-    using supports_sg_loadstore = std::negation<
-        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
-    using supports_vec =
-        std::conjunction<std::is_same<argT1, argT2>,
-                         std::disjunction<std::is_floating_point<argT1>,
-                                          std::is_same<argT1, sycl::half>>>;
+private:
+    T *res = nullptr;
+    const std::size_t N;
+    const T beta;
 
-    resT operator()(const argT1 &in1, const argT2 &in2) const
+public:
+    KaiserFunctor(T *res, const std::size_t N, const T beta)
+        : res(res), N(N), beta(beta)
     {
-        if constexpr (std::is_integral_v<argT1> && std::is_integral_v<argT2>) {
-            return in1 <= in2 ? in1 : in2;
-        }
-        else if constexpr (tu_ns::is_complex<argT1>::value &&
-                           tu_ns::is_complex<argT2>::value) {
-            static_assert(std::is_same_v<argT1, argT2>);
-
-            using realT = typename argT1::value_type;
-            const realT in2r = std::real(in2);
-            const realT in2i = std::imag(in2);
-
-            if (sycl::isnan(in2r) || sycl::isnan(in2i) ||
-                mu_ns::less_equal_complex<argT1>(in1, in2)) {
-                return in1;
-            }
-            return in2;
-        }
-        else {
-            return sycl::fmin(in1, in2);
-        }
     }
 
-    template <int vec_sz>
-    sycl::vec<resT, vec_sz>
-        operator()(const sycl::vec<argT1, vec_sz> &in1,
-                   const sycl::vec<argT2, vec_sz> &in2) const
+    void operator()(sycl::id<1> id) const
     {
-        return sycl::fmin(in1, in2);
+        using dpnp::kernels::i0::cyl_bessel_i0;
+
+        const auto i = id.get(0);
+        const T alpha = (N - 1) / T(2);
+        const T tmp = (i - alpha) / alpha;
+        res[i] = cyl_bessel_i0(beta * sycl::sqrt(1 - tmp * tmp)) /
+                 cyl_bessel_i0(beta);
     }
 };
-} // namespace dpnp::kernels::fmin
+} // namespace dpnp::kernels::kaiser

@@ -92,9 +92,8 @@ std::pair<sycl::event, sycl::event>
     }
 
     sycl::queue exec_q = descr.get_queue();
-    if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {in.get_queue(), out.get_queue()}))
-    {
+    if (!dpctl::utils::queues_are_compatible(
+            exec_q, {in.get_queue(), out.get_queue()})) {
         throw py::value_error("USM allocations are not compatible with the "
                               "execution queue of the descriptor.");
     }

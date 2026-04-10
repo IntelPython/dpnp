@@ -12,7 +12,7 @@ import pytest
 from dpctl import select_default_device
 
 import dpnp as cupy
-from dpnp.tensor._numpy_helper import AxisError
+from dpnp.exceptions import AxisError
 from dpnp.tests import config
 from dpnp.tests.third_party.cupy.testing import _array, _parameterized
 from dpnp.tests.third_party.cupy.testing._pytest_impl import is_available
@@ -410,7 +410,7 @@ numpy: {}""".format(cupy_r.dtype, numpy_r.dtype)
                         numpy_r = numpy_r[mask]
 
                 if not skip:
-                    check_func(cupy_r, numpy_r)
+                    check_func(cupy_r, numpy_r, **kw)
 
         return test_func
 
@@ -469,6 +469,9 @@ def _convert_output_to_ndarray(c_out, n_out, sp_name, check_sparse_format):
 
 def _check_tolerance_keys(rtol, atol):
     def _check(tol):
+        if callable(tol):
+            # Callable tolerance is allowed
+            return
         if isinstance(tol, dict):
             for k in tol.keys():
                 if type(k) is type:
@@ -486,9 +489,13 @@ def _check_tolerance_keys(rtol, atol):
     _check(atol)
 
 
-def _resolve_tolerance(type_check, result, rtol, atol):
+def _resolve_tolerance(type_check, result, rtol, atol, **test_kwargs):
     def _resolve(dtype, tol):
-        if isinstance(tol, dict):
+        if callable(tol):
+            # Support callable tolerance that can inspect test kwargs
+            return tol(dtype, **test_kwargs)
+        elif isinstance(tol, dict):
+            # Original dict lookup logic
             tol1 = tol.get(dtype.type)
             if tol1 is None:
                 tol1 = tol.get("default")
@@ -523,13 +530,15 @@ def numpy_cupy_allclose(
     """Decorator that checks NumPy results and CuPy ones are close.
 
     Args:
-         rtol(float or dict): Relative tolerance. Besides a float value, a
-             dictionary that maps a dtypes to a float value can be supplied to
-             adjust tolerance per dtype. If the dictionary has ``'default'``
-             string as its key, its value is used as the default tolerance in
-             case any dtype keys do not match.
-         atol(float or dict): Absolute tolerance. Besides a float value, a
-             dictionary can be supplied as ``rtol``.
+         rtol(float, dict, or callable): Relative tolerance. Can be:
+             - A float value
+             - A dictionary that maps dtypes to float values. If the dictionary
+               has ``'default'`` string as its key, its value is used as the
+               default tolerance in case any dtype keys do not match.
+             - A callable with signature ``(dtype, **test_kwargs)`` that returns
+               a float. This allows dynamic tolerance based on test parameters
+               like input dtypes.
+         atol(float, dict, or callable): Absolute tolerance. Same options as ``rtol``.
          err_msg(str): The error message to be printed in case of failure.
          verbose(bool): If ``True``, the conflicting values are
              appended to the error message.
@@ -583,10 +592,17 @@ def numpy_cupy_allclose(
     #             "must be supplied as float."
     #         )
 
-    def check_func(c, n):
-        rtol1, atol1 = _resolve_tolerance(type_check, c, rtol, atol)
+    def check_func(cupy_result, numpy_result, **test_kwargs):
+        rtol1, atol1 = _resolve_tolerance(
+            type_check, cupy_result, rtol, atol, **test_kwargs
+        )
         _array.assert_allclose(
-            c, n, rtol1, atol1, err_msg=err_msg, verbose=verbose
+            cupy_result,
+            numpy_result,
+            rtol1,
+            atol1,
+            err_msg=err_msg,
+            verbose=verbose,
         )
 
     return _make_decorator(
@@ -641,8 +657,10 @@ def numpy_cupy_array_almost_equal(
     .. seealso:: :func:`cupy.testing.assert_array_almost_equal`
     """
 
-    def check_func(x, y):
-        _array.assert_array_almost_equal(x, y, decimal, err_msg, verbose)
+    def check_func(cupy_result, numpy_result, **test_kwargs):
+        _array.assert_array_almost_equal(
+            cupy_result, numpy_result, decimal, err_msg, verbose
+        )
 
     return _make_decorator(
         check_func, name, type_check, False, accept_error, sp_name, scipy_name
@@ -684,8 +702,8 @@ def numpy_cupy_array_almost_equal_nulp(
     .. seealso:: :func:`cupy.testing.assert_array_almost_equal_nulp`
     """
 
-    def check_func(x, y):
-        _array.assert_array_almost_equal_nulp(x, y, nulp)
+    def check_func(cupy_result, numpy_result, **test_kwargs):
+        _array.assert_array_almost_equal_nulp(cupy_result, numpy_result, nulp)
 
     return _make_decorator(
         check_func,
@@ -738,8 +756,8 @@ def numpy_cupy_array_max_ulp(
 
     """
 
-    def check_func(x, y):
-        _array.assert_array_max_ulp(x, y, maxulp, dtype)
+    def check_func(cupy_result, numpy_result, **test_kwargs):
+        _array.assert_array_max_ulp(cupy_result, numpy_result, maxulp, dtype)
 
     return _make_decorator(
         check_func, name, type_check, False, accept_error, sp_name, scipy_name
@@ -787,9 +805,13 @@ def numpy_cupy_array_equal(
     .. seealso:: :func:`cupy.testing.assert_array_equal`
     """
 
-    def check_func(x, y):
+    def check_func(cupy_result, numpy_result, **test_kwargs):
         _array.assert_array_equal(
-            x, y, err_msg, verbose, strides_check=strides_check
+            cupy_result,
+            numpy_result,
+            err_msg,
+            verbose,
+            strides_check=strides_check,
         )
 
     return _make_decorator(
@@ -826,8 +848,8 @@ def numpy_cupy_array_list_equal(
         DeprecationWarning,
     )
 
-    def check_func(x, y):
-        _array.assert_array_equal(x, y, err_msg, verbose)
+    def check_func(cupy_result, numpy_result, **test_kwargs):
+        _array.assert_array_equal(cupy_result, numpy_result, err_msg, verbose)
 
     return _make_decorator(
         check_func, name, False, False, False, sp_name, scipy_name
@@ -871,8 +893,8 @@ def numpy_cupy_array_less(
     .. seealso:: :func:`cupy.testing.assert_array_less`
     """
 
-    def check_func(x, y):
-        _array.assert_array_less(x, y, err_msg, verbose)
+    def check_func(cupy_result, numpy_result, **test_kwargs):
+        _array.assert_array_less(cupy_result, numpy_result, err_msg, verbose)
 
     return _make_decorator(
         check_func, name, type_check, False, accept_error, sp_name, scipy_name

@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2025, Intel Corporation
+// Copyright (c) 2026, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,12 +28,12 @@
 
 #pragma once
 
-#include "common.hpp"
+#include <cstddef>
+
 #include <sycl/sycl.hpp>
 
-namespace dpnp::extensions::window::kernels
+namespace dpnp::kernels::hanning
 {
-
 template <typename T>
 class HanningFunctor
 {
@@ -51,19 +51,4 @@ public:
         res[i] = T(0.5) - T(0.5) * sycl::cospi(T(2) * i / (N - 1));
     }
 };
-
-template <typename fnT, typename T>
-struct HanningFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_floating_point_v<T>) {
-            return window_impl<T, HanningFunctor>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-} // namespace dpnp::extensions::window::kernels
+} // namespace dpnp::kernels::hanning
