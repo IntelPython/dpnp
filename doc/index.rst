@@ -82,6 +82,7 @@ core `NumPy*`_ functions and numerical data types.
 
    overview
    quick_start_guide
+   user_guides/index
    reference/index
    tensor
    dpnp_backend_api
