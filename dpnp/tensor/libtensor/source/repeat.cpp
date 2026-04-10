@@ -29,7 +29,7 @@
 //===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #include <algorithm>
@@ -113,7 +113,8 @@ std::pair<sycl::event, sycl::event>
 {
     int src_nd = src.get_ndim();
     if (axis < 0 || (axis + 1 > src_nd && src_nd > 0) ||
-        (axis > 0 && src_nd == 0)) {
+        (axis > 0 && src_nd == 0))
+    {
         throw py::value_error("Specified axis is invalid.");
     }
 
@@ -510,7 +511,8 @@ std::pair<sycl::event, sycl::event>
 {
     int src_nd = src.get_ndim();
     if (axis < 0 || (axis + 1 > src_nd && src_nd > 0) ||
-        (axis > 0 && src_nd == 0)) {
+        (axis > 0 && src_nd == 0))
+    {
         throw py::value_error("Specified axis is invalid.");
     }
 

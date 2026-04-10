@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_elementwise_impl
+/// This file defines functions of dpnp.tensor._tensor_elementwise_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 

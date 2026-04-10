@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -340,7 +340,8 @@ sycl::event
                 sycl::min(seg_start + elems_per_segment, n);
             if (is_ascending) {
                 for (std::size_t val_id = seg_start + lid; val_id < seg_end;
-                     val_id += wg_size) {
+                     val_id += wg_size)
+                {
                     // get the bucket for the bit-ordered input value,
                     // applying the offset and mask for radix bits
                     const auto val =
@@ -355,7 +356,8 @@ sycl::event
             }
             else {
                 for (std::size_t val_id = seg_start + lid; val_id < seg_end;
-                     val_id += wg_size) {
+                     val_id += wg_size)
+                {
                     // get the bucket for the bit-ordered input value,
                     // applying the offset and mask for radix bits
                     const auto val =
@@ -691,7 +693,8 @@ void copy_func_for_radix_sort(const std::size_t n_segments,
     // find offsets for the same values within a segment and fill the resulting
     // buffer
     for (std::size_t val_id = seg_start + lid; val_id < seg_end;
-         val_id += sg_size) {
+         val_id += sg_size)
+    {
         output_ptr[val_id] = std::move(input_ptr[val_id]);
     }
 
@@ -822,7 +825,8 @@ sycl::event
             // resulting buffer
             if (is_ascending) {
                 for (std::size_t val_id = seg_start + lid; val_id < seg_end;
-                     val_id += sg_size) {
+                     val_id += sg_size)
+                {
                     ValueT in_val = std::move(b_input_ptr[val_id]);
 
                     // get the bucket for the bit-ordered input value, applying
@@ -851,7 +855,8 @@ sycl::event
             }
             else {
                 for (std::size_t val_id = seg_start + lid; val_id < seg_end;
-                     val_id += sg_size) {
+                     val_id += sg_size)
+                {
                     ValueT in_val = std::move(b_input_ptr[val_id]);
 
                     // get the bucket for the bit-ordered input value, applying
@@ -1164,10 +1169,7 @@ private:
             return sycl::local_accessor<KeyT>(buf_size, cgh);
         }
 
-        std::size_t get_iter_stride() const
-        {
-            return std::size_t{0};
-        }
+        std::size_t get_iter_stride() const { return std::size_t{0}; }
     };
 
     template <typename KeyT>
@@ -1185,10 +1187,7 @@ private:
         {
             return sycl::accessor(buf, cgh, sycl::read_write, sycl::no_init);
         }
-        std::size_t get_iter_stride() const
-        {
-            return iter_stride;
-        }
+        std::size_t get_iter_stride() const { return iter_stride; }
     };
 
     static_assert(wg_size <= 1024);
@@ -1377,7 +1376,8 @@ private:
                                 if (is_ascending) {
 #pragma unroll
                                     for (std::uint16_t i = 0; i < block_size;
-                                         ++i) {
+                                         ++i)
+                                    {
                                         const std::uint16_t id =
                                             wi * block_size + i;
                                         static constexpr std::uint16_t
@@ -1413,7 +1413,8 @@ private:
                                 else {
 #pragma unroll
                                     for (std::uint16_t i = 0; i < block_size;
-                                         ++i) {
+                                         ++i)
+                                    {
                                         const std::uint16_t id =
                                             wi * block_size + i;
                                         static constexpr std::uint16_t
@@ -1740,7 +1741,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
                                                depends);
 
         for (std::uint32_t radix_iter = 1; radix_iter < radix_iters;
-             ++radix_iter) {
+             ++radix_iter)
+        {
             if (radix_iter % 2 == 0) {
                 sort_ev = parallel_radix_sort_iteration_step<
                     radix_bits,
@@ -1798,10 +1800,7 @@ struct IndexedProj
     {
     }
 
-    auto operator()(IndexT i) const
-    {
-        return value_projector(ptr[i]);
-    }
+    auto operator()(IndexT i) const { return value_projector(ptr[i]); }
 
 private:
     const ValueT *ptr;

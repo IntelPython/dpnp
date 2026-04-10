@@ -29,8 +29,8 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines implementation functions of dpctl.tensor.place and
-/// dpctl.tensor.extract, dpctl.tensor.nonzero
+/// This file defines implementation functions of dpnp.tensor.place and
+/// dpnp.tensor.extract, dpnp.tensor.nonzero
 //===----------------------------------------------------------------------===//
 
 #include <algorithm>

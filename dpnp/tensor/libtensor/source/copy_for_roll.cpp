@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #include <algorithm>
@@ -203,7 +203,8 @@ std::pair<sycl::event, sycl::event>
                              simplified_dst_strides, src_offset, dst_offset);
 
     if (nd == 1 && simplified_src_strides[0] == 1 &&
-        simplified_dst_strides[0] == 1) {
+        simplified_dst_strides[0] == 1)
+    {
         auto fn = copy_for_roll_contig_dispatch_vector[type_id];
 
         if (fn != nullptr) {

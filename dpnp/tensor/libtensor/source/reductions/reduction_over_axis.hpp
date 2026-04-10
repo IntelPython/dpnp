@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_reductions_impl
+/// This file defines functions of dpnp.tensor._tensor_reductions_impl
 /// extension, specifically functions for reductions.
 //===---------------------------------------------------------------------===//
 
@@ -1243,7 +1243,8 @@ std::pair<sycl::event, sycl::event>
                  red_nelems);
         }
         else if (static_cast<std::size_t>(simplified_red_src_strides[0]) ==
-                 iter_nelems) {
+                 iter_nelems)
+        {
             mat_reduce_over_axis0 = (simplified_iter_dst_strides[0] == 1) &&
                                     (simplified_iter_src_strides[0] == 1);
         }

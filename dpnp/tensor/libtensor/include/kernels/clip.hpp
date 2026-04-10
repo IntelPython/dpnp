@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for dpctl.tensor.clip.
+/// This file defines kernels for dpnp.tensor.clip.
 //===---------------------------------------------------------------------===//
 
 #pragma once
@@ -73,7 +73,8 @@ T clip(const T &x, const T &min, const T &max)
         return min_complex(max_complex(x, min), max);
     }
     else if constexpr (std::is_floating_point_v<T> ||
-                       std::is_same_v<T, sycl::half>) {
+                       std::is_same_v<T, sycl::half>)
+    {
         auto tmp = (std::isnan(x) || x > min) ? x : min;
         return (std::isnan(tmp) || tmp < max) ? tmp : max;
     }

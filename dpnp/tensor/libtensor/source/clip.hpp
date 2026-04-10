@@ -30,7 +30,7 @@
 ///
 /// \file
 /// This file defines Python API for implementation functions of
-/// dpctl.tensor.clip
+/// dpnp.tensor.clip
 //===---------------------------------------------------------------------===//
 
 #pragma once

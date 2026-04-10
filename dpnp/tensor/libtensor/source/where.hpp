@@ -30,7 +30,7 @@
 ///
 /// \file
 /// This file declares Python API for implementation functions of
-/// dpctl.tensor.where
+/// dpnp.tensor.where
 //===---------------------------------------------------------------------===//
 
 #pragma once

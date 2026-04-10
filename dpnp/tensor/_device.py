@@ -40,7 +40,7 @@ class Device:
 
     This is a wrapper around :class:`dpctl.SyclQueue` with custom
     formatting. The class does not have public constructor,
-    but a class method :meth:`dpctl.tensor.Device.create_device` to construct
+    but a class method :meth:`dpnp.tensor.Device.create_device` to construct
     it from `device` keyword argument in Array-API functions.
 
     Instance can be queried for ``sycl_queue``, ``sycl_context``,
