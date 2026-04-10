@@ -27,7 +27,6 @@
 # *****************************************************************************
 
 import dpctl
-import dpctl.utils as dpu
 import numpy as np
 import pytest
 

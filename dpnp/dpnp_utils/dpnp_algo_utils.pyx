@@ -36,7 +36,6 @@ This module contains different helpers and utilities
 """
 
 import dpctl
-import dpctl.utils as dpu
 import numpy
 
 import dpnp
