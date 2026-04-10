@@ -538,7 +538,7 @@ cdef class dpnp_descriptor:
             return self.origin_pyobj.get_array()
 
         raise TypeError(
-            "expected either dpctl.tensor.usm_ndarray or dpnp.dpnp_array.dpnp_array, got {}"
+            "expected either dpnp.tensor.usm_ndarray or dpnp.dpnp_array.dpnp_array, got {}"
             "".format(type(self.origin_pyobj)))
 
     cdef void * get_data(self):

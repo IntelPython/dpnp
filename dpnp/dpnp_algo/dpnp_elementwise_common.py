@@ -119,7 +119,7 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
             sycl_dev - The :class:`dpctl.SyclDevice` where the function
                 evaluation is carried out.
         The function is invoked when the argument of the unary function
-        requires casting, e.g. the argument of `dpctl.tensor.log` is an
+        requires casting, e.g. the argument of `dpnp.tensor.log` is an
         array with integral data type.
 
     """
@@ -137,7 +137,7 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
         def _call_func(src, dst, sycl_queue, depends=None):
             """
             A callback to register in UnaryElementwiseFunc class of
-            dpctl.tensor
+            dpnp.tensor
             """
 
             if depends is None:
@@ -588,7 +588,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 evaluation is carried out.
         The function is only called when both arguments of the binary
         function require casting, e.g. both arguments of
-        `dpctl.tensor.logaddexp` are arrays with integral data type.
+        `dpnp.tensor.logaddexp` are arrays with integral data type.
     weak_type_resolver : {None, callable}, optional
         Function to influence type promotion behavior for Python scalar types
         of this binary function. The function takes 3 arguments:
@@ -615,7 +615,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         def _call_func(src1, src2, dst, sycl_queue, depends=None):
             """
             A callback to register in UnaryElementwiseFunc class of
-            dpctl.tensor
+            dpnp.tensor
             """
 
             if depends is None:

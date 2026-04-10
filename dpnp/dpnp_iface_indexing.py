@@ -100,7 +100,7 @@ def _build_choices_list(choices):
     list of arrays. If a single array of dimension greater than one, the array
     will be unstacked.
 
-    Returns a list of :class:`dpctl.tensor.usm_ndarray`s.
+    Returns a list of :class:`dpnp.tensor.usm_ndarray`s.
     """
 
     if dpnp.is_supported_array_type(choices):
@@ -446,7 +446,7 @@ def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1051,7 +1051,7 @@ def indices(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1315,7 +1315,7 @@ def mask_indices(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2328,7 +2328,7 @@ def tril_indices(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2545,7 +2545,7 @@ def triu_indices(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.

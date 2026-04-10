@@ -64,7 +64,7 @@ def _wrap_sort_argsort(
     descending=False,
     stable=True,
 ):
-    """Wrap a sorting call from dpctl.tensor interface."""
+    """Wrap a sorting call from dpnp.tensor interface."""
 
     if order is not None:
         raise NotImplementedError(

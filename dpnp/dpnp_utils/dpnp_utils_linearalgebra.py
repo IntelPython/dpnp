@@ -771,7 +771,7 @@ def dpnp_dot(a, b, /, out=None, *, casting="same_kind", conjugate=False):
 
     The routine that is used to perform the main calculation
     depends on input arrays data type: 1) For integer and boolean data types,
-    `dpctl.tensor.vecdot` form the Data Parallel Control library is used,
+    `dpnp.tensor.vecdot` form the Data Parallel Control library is used,
     2) For real-valued floating point data types, `dot` routines from
     BLAS library of OneMKL are used, and 3) For complex data types,
     `dotu` or `dotc` routines from BLAS library of OneMKL are used.
@@ -819,7 +819,7 @@ def dpnp_dot(a, b, /, out=None, *, casting="same_kind", conjugate=False):
         _manager.add_event_pair(ht_ev, dot_ev)
     else:
         # oneapi::mkl::blas::dot does not support integer dtypes,
-        # so using dpctl.tensor.vecdot instead
+        # so using dpnp.tensor.vecdot instead
         a_usm = dpnp.get_usm_ndarray(a)
         b_usm = dpnp.get_usm_ndarray(b)
         result = dpnp_array._create_from_usm_ndarray(dpt.vecdot(a_usm, b_usm))
@@ -1118,7 +1118,7 @@ def dpnp_multiplication(
             else:
                 # oneapi::mkl::blas::gemm/gemv do not support integer dtypes,
                 # except for special cases determined in `_gemm_special_case`,
-                # use dpctl.tensor.matmul for unsupported cases
+                # use dpnp.tensor.matmul for unsupported cases
 
                 # `dpt.matmul` does not support `casting` kwarg.
                 # We may need to change input dtypes based on given `casting`.
