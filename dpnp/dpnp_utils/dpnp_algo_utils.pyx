@@ -402,7 +402,7 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
     array1_obj = x1.get_array()
     array2_obj = x2.get_array()
 
-    common_usm_type = dpnp.tensor.get_coerced_usm_type((array1_obj.usm_type, array2_obj.usm_type))
+    common_usm_type = get_coerced_usm_type((array1_obj.usm_type, array2_obj.usm_type))
     if common_usm_type is None:
         raise ValueError(
             "could not recognize common USM type for inputs of USM types {} and {}"
