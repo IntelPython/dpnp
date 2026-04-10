@@ -39,7 +39,7 @@ from ._tensor_impl import (
     _unravel_index,
 )
 
-__doc__ = "Implementation module for :func:`dpctl.tensor.reshape`."
+__doc__ = "Implementation module for :func:`dpnp.tensor.reshape`."
 
 
 def _make_unit_indexes(shape):
@@ -102,27 +102,32 @@ def reshaped_strides(old_sh, old_sts, new_sh, order="C"):
 
 
 def reshape(X, /, shape, *, order="C", copy=None):
-    """reshape(x, shape, order="C")
-
+    """
     Reshapes array ``x`` into new shape.
 
-    Args:
-        x (usm_ndarray):
-            input array
-        shape (Tuple[int]):
-            the desired shape of the resulting array.
-        order ("C", "F", optional):
-            memory layout of the resulting array
-            if a copy is found to be necessary. Supported
-            choices are ``"C"`` for C-contiguous, or row-major layout;
-            and ``"F"`` for F-contiguous, or column-major layout.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    shape : tuple of ints
+        The desired shape of the resulting array.
+    order : {"C", "F"}, optional
+        Memory layout of the resulting array
+        if a copy is found to be necessary. Supported
+        choices are ``"C"`` for C-contiguous, or row-major layout;
+        and ``"F"`` for F-contiguous, or column-major layout.
 
-    Returns:
-        usm_ndarray:
-            Reshaped array is a view, if possible,
-            and a copy otherwise with memory layout as indicated
-            by ``order`` keyword.
+        Default: ``"C"``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        Reshaped array is a view, if possible,
+        and a copy otherwise with memory layout as indicated
+        by ``order`` keyword.
+
     """
+
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError
     if not isinstance(shape, (list, tuple)):
