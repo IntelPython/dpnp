@@ -264,7 +264,8 @@ std::pair<sycl::event, sycl::event>
 
     const py::ssize_t *ipiv_array_shape = ipiv_array.get_shape_raw();
     if (ipiv_array_shape[0] != batch_size ||
-        ipiv_array_shape[1] != std::min(m, n)) {
+        ipiv_array_shape[1] != std::min(m, n))
+    {
         throw py::value_error(
             "The shape of 'ipiv_array' must be (batch_size, min(m, n))");
     }

@@ -334,7 +334,8 @@ struct IsCloseStridedScalarFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename IsCloseOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             return nullptr;
         }
         else {
@@ -349,7 +350,8 @@ struct IsCloseContigScalarFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename IsCloseOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             return nullptr;
         }
         else {

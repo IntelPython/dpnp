@@ -290,16 +290,16 @@ SizeT select_lws(const sycl::device &, SizeT n_work_items_needed)
 }
 
 template <typename argTy,
-          template <typename T>
-          class UnaryOutputType,
+          template <typename T> class UnaryOutputType,
           template <typename A,
                     typename R,
                     std::uint8_t vs,
                     std::uint8_t nv,
-                    bool enable>
-          class ContigFunctorT,
-          template <typename A, typename R, std::uint8_t vs, std::uint8_t nv>
-          class kernel_name,
+                    bool enable> class ContigFunctorT,
+          template <typename A,
+                    typename R,
+                    std::uint8_t vs,
+                    std::uint8_t nv> class kernel_name,
           std::uint8_t vec_sz = 4u,
           std::uint8_t n_vecs = 2u>
 sycl::event unary_contig_impl(sycl::queue &exec_q,
@@ -356,12 +356,9 @@ sycl::event unary_contig_impl(sycl::queue &exec_q,
 }
 
 template <typename argTy,
-          template <typename T>
-          class UnaryOutputType,
-          template <typename A, typename R, typename I>
-          class StridedFunctorT,
-          template <typename A, typename R, typename I>
-          class kernel_name>
+          template <typename T> class UnaryOutputType,
+          template <typename A, typename R, typename I> class StridedFunctorT,
+          template <typename A, typename R, typename I> class kernel_name>
 sycl::event
     unary_strided_impl(sycl::queue &exec_q,
                        std::size_t nelems,
@@ -771,21 +768,18 @@ typedef sycl::event (*binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t)(
 
 template <typename argTy1,
           typename argTy2,
-          template <typename T1, typename T2>
-          class BinaryOutputType,
+          template <typename T1, typename T2> class BinaryOutputType,
           template <typename T1,
                     typename T2,
                     typename T3,
                     std::uint8_t vs,
                     std::uint8_t nv,
-                    bool enable_sg_loadstore>
-          class BinaryContigFunctorT,
+                    bool enable_sg_loadstore> class BinaryContigFunctorT,
           template <typename T1,
                     typename T2,
                     typename T3,
                     std::uint8_t vs,
-                    std::uint8_t nv>
-          class kernel_name,
+                    std::uint8_t nv> class kernel_name,
           std::uint8_t vec_sz = 4u,
           std::uint8_t n_vecs = 2u>
 sycl::event binary_contig_impl(sycl::queue &exec_q,
@@ -849,12 +843,15 @@ sycl::event binary_contig_impl(sycl::queue &exec_q,
 
 template <typename argTy1,
           typename argTy2,
-          template <typename T1, typename T2>
-          class BinaryOutputType,
-          template <typename T1, typename T2, typename T3, typename IndT>
-          class BinaryStridedFunctorT,
-          template <typename T1, typename T2, typename T3, typename IndT>
-          class kernel_name>
+          template <typename T1, typename T2> class BinaryOutputType,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename IndT> class BinaryStridedFunctorT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename IndT> class kernel_name>
 sycl::event
     binary_strided_impl(sycl::queue &exec_q,
                         std::size_t nelems,
@@ -893,13 +890,14 @@ sycl::event
     return comp_ev;
 }
 
-template <typename argT1,
-          typename argT2,
-          typename resT,
-          template <typename T1, typename T2, typename T3>
-          class BinaryContigMatrixContigRowBroadcastFunctorT,
-          template <typename T1, typename T2, typename T3>
-          class kernel_name>
+template <
+    typename argT1,
+    typename argT2,
+    typename resT,
+    template <typename T1,
+              typename T2,
+              typename T3> class BinaryContigMatrixContigRowBroadcastFunctorT,
+    template <typename T1, typename T2, typename T3> class kernel_name>
 sycl::event binary_contig_matrix_contig_row_broadcast_impl(
     sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
@@ -967,13 +965,14 @@ sycl::event binary_contig_matrix_contig_row_broadcast_impl(
     return comp_ev;
 }
 
-template <typename argT1,
-          typename argT2,
-          typename resT,
-          template <typename T1, typename T2, typename T3>
-          class BinaryContigRowContigMatrixBroadcastFunctorT,
-          template <typename T1, typename T2, typename T3>
-          class kernel_name>
+template <
+    typename argT1,
+    typename argT2,
+    typename resT,
+    template <typename T1,
+              typename T2,
+              typename T3> class BinaryContigRowContigMatrixBroadcastFunctorT,
+    template <typename T1, typename T2, typename T3> class kernel_name>
 sycl::event binary_contig_row_contig_matrix_broadcast_impl(
     sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,

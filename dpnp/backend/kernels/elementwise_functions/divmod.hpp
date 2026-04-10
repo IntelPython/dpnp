@@ -59,7 +59,8 @@ struct DivmodFunctor
 
             if constexpr (std::is_signed_v<argT>) {
                 if ((in1 == std::numeric_limits<argT>::min()) &&
-                    (in2 == argT(-1))) {
+                    (in2 == argT(-1)))
+                {
                     mod = modT(0);
                     return std::numeric_limits<argT>::min();
                 }
@@ -115,9 +116,6 @@ struct DivmodFunctor
     }
 
 private:
-    bool l_xor(bool b1, bool b2) const
-    {
-        return (b1 != b2);
-    }
+    bool l_xor(bool b1, bool b2) const { return (b1 != b2); }
 };
 } // namespace dpnp::kernels::divmod

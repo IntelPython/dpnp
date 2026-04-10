@@ -189,7 +189,8 @@ std::pair<sycl::event, sycl::event>
                              simplified_dst_strides, src_offset, dst_offset);
 
     if (nd == 1 && simplified_src_strides[0] == 1 &&
-        simplified_dst_strides[0] == 1) {
+        simplified_dst_strides[0] == 1)
+    {
         // Special case of contiguous data
         auto contig_fn = contig_dispatch_vector[src_typeid];
 
@@ -893,7 +894,8 @@ std::pair<sycl::event, sycl::event>
         output_types_table[src1_typeid][src2_typeid];
 
     if (dst1_typeid != output_typeids.first ||
-        dst2_typeid != output_typeids.second) {
+        dst2_typeid != output_typeids.second)
+    {
         throw py::value_error(
             "One of destination arrays has unexpected elemental data type.");
     }

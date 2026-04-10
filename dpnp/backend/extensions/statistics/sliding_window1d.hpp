@@ -129,30 +129,15 @@ public:
         return sycl::shift_group_right(sbgroup, data[y], x);
     }
 
-    constexpr SizeT size_y() const
-    {
-        return _size;
-    }
+    constexpr SizeT size_y() const { return _size; }
 
-    SizeT size_x() const
-    {
-        return sbgroup.get_max_local_range()[0];
-    }
+    SizeT size_x() const { return sbgroup.get_max_local_range()[0]; }
 
-    SizeT total_size() const
-    {
-        return size_x() * size_y();
-    }
+    SizeT total_size() const { return size_x() * size_y(); }
 
-    ncT *ptr()
-    {
-        return data;
-    }
+    ncT *ptr() { return data; }
 
-    SizeT x() const
-    {
-        return sbgroup.get_local_linear_id();
-    }
+    SizeT x() const { return sbgroup.get_local_linear_id(); }
 
 protected:
     const sycl::sub_group sbgroup;
@@ -277,8 +262,7 @@ struct RegistryData : public _RegistryDataStorage<T, Size>
 
     T *load(const T *const data, const bool &mask, const T &default_v)
     {
-        return load(
-            data, [mask](auto &&) { return mask; }, default_v);
+        return load(data, [mask](auto &&) { return mask; }, default_v);
     }
 
     T *load(const T *const data)
@@ -349,10 +333,7 @@ struct RegistryData : public _RegistryDataStorage<T, Size>
         return store(data, [mask](auto &&) { return mask; });
     }
 
-    T *store(T *const data)
-    {
-        return store(data, true);
-    }
+    T *store(T *const data) { return store(data, true); }
 };
 
 template <typename T, uint32_t Size>
@@ -379,10 +360,7 @@ struct RegistryWindow : public RegistryData<T, Size>
         }
     }
 
-    void advance_left(const T &fill_value)
-    {
-        advance_left(1, fill_value);
-    }
+    void advance_left(const T &fill_value) { advance_left(1, fill_value); }
 
     void advance_left()
     {
@@ -400,25 +378,13 @@ public:
 
     Span(T *const data, const SizeT size) : data_(data), size_(size) {}
 
-    T *begin() const
-    {
-        return data();
-    }
+    T *begin() const { return data(); }
 
-    T *end() const
-    {
-        return data() + size();
-    }
+    T *end() const { return data() + size(); }
 
-    SizeT size() const
-    {
-        return size_;
-    }
+    SizeT size() const { return size_; }
 
-    T *data() const
-    {
-        return data_;
-    }
+    T *data() const { return data_; }
 
 protected:
     T *const data_;
@@ -443,15 +409,9 @@ public:
     {
     }
 
-    T *padded_begin() const
-    {
-        return this->begin() - pad();
-    }
+    T *padded_begin() const { return this->begin() - pad(); }
 
-    SizeT pad() const
-    {
-        return pad_;
-    }
+    SizeT pad() const { return pad_; }
 
 protected:
     const SizeT pad_;

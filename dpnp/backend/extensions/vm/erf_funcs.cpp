@@ -125,7 +125,8 @@ using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
         fnT get()                                                              \
         {                                                                      \
             if constexpr (std::is_same_v<typename OutputType<T>::value_type,   \
-                                         void>) {                              \
+                                         void>)                                \
+            {                                                                  \
                 return nullptr;                                                \
             }                                                                  \
             else {                                                             \

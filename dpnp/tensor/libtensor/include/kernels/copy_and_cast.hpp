@@ -246,7 +246,8 @@ public:
 
         using dpctl::tensor::type_utils::is_complex_v;
         if constexpr (!enable_sg_loadstore || is_complex_v<srcT> ||
-                      is_complex_v<dstT>) {
+                      is_complex_v<dstT>)
+        {
             std::uint16_t sgSize = ndit.get_sub_group().get_local_range()[0];
             const std::size_t gid = ndit.get_global_linear_id();
 
@@ -920,10 +921,7 @@ struct CompositionIndexer
 {
     CompositionIndexer(IndexerT f, TransformerT t) : f_(f), t_(t) {}
 
-    auto operator()(std::size_t gid) const
-    {
-        return f_(t_(gid));
-    }
+    auto operator()(std::size_t gid) const { return f_(t_(gid)); }
 
 private:
     IndexerT f_;
@@ -944,10 +942,7 @@ struct RolledNDIndexer
     {
     }
 
-    ssize_t operator()(std::size_t gid) const
-    {
-        return compute_offset(gid);
-    }
+    ssize_t operator()(std::size_t gid) const { return compute_offset(gid); }
 
 private:
     int nd_ = -1;

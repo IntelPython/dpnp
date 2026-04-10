@@ -43,10 +43,7 @@
 class RandomTestCase : public ::testing::Test
 {
 public:
-    static void SetUpTestCase()
-    {
-        _get_device_mem();
-    }
+    static void SetUpTestCase() { _get_device_mem(); }
 
     static void TearDownTestCase()
     {

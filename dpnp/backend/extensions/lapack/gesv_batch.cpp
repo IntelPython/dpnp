@@ -258,10 +258,10 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
         try {
             gesv_event = mkl_lapack::gesv(
                 exec_q,
-                n,    // The order of the square matrix A
-                      // and the number of rows in matrix B (0 ≤ n).
-                nrhs, // The number of right-hand sides,
-                      // i.e., the number of columns in matrix B (0 ≤ nrhs).
+                n,       // The order of the square matrix A
+                         // and the number of rows in matrix B (0 ≤ n).
+                nrhs,    // The number of right-hand sides,
+                         // i.e., the number of columns in matrix B (0 ≤ nrhs).
                 a_batch, // Pointer to the square coefficient matrix A (n x n).
                 lda, // The leading dimension of a, must be at least max(1, n).
                 current_ipiv, // The pivot indices that define the permutation

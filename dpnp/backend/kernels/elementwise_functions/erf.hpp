@@ -63,7 +63,8 @@ struct BaseFunctor
     ResT operator()(const ArgT &x) const
     {
         if constexpr (std::is_same_v<ArgT, sycl::half> &&
-                      std::is_same_v<ResT, float>) {
+                      std::is_same_v<ResT, float>)
+        {
             // cast sycl::half to float for accuracy reasons
             return OpT::apply(float(x));
         }

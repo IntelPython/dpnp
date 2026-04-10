@@ -1399,8 +1399,7 @@ DPCTLSyclEventRef
                 size_t j;
                 int cv = pvec[idx[i]];
                 // TODO vectorize
-                for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++) {
-                }
+                for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++) {}
 
                 if (j <= i) {
                     throw std::runtime_error(

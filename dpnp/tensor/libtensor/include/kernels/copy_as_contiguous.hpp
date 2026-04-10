@@ -261,10 +261,7 @@ typedef sycl::event (*as_c_contiguous_array_impl_fn_ptr_t)(
 template <typename fnT, typename T>
 struct AsCContigFactory
 {
-    fnT get()
-    {
-        return as_c_contiguous_array_generic_impl<T>;
-    }
+    fnT get() { return as_c_contiguous_array_generic_impl<T>; }
 };
 
 template <typename T,
@@ -402,9 +399,11 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
 
             if (local_tile_id0 <= local_tile_id1) {
                 for (std::uint16_t pr_i0 = 0; pr_i0 < private_tile_size;
-                     ++pr_i0) {
+                     ++pr_i0)
+                {
                     for (std::uint16_t pr_i1 = 0; pr_i1 < private_tile_size;
-                         ++pr_i1) {
+                         ++pr_i1)
+                    {
                         const std::uint16_t t0_offset =
                             local_tile_id0 * private_tile_size;
                         const std::uint16_t t1_offset =
@@ -435,9 +434,11 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
 
             if (local_tile_id0 <= local_tile_id1) {
                 for (std::uint16_t pr_i0 = 0; pr_i0 < private_tile_size;
-                     ++pr_i0) {
+                     ++pr_i0)
+                {
                     for (std::uint16_t pr_i1 = 0; pr_i1 < private_tile_size;
-                         ++pr_i1) {
+                         ++pr_i1)
+                    {
                         const std::uint16_t t0_offset =
                             local_tile_id0 * private_tile_size;
                         const std::uint16_t t1_offset =
@@ -577,10 +578,7 @@ typedef sycl::event (
 template <typename fnT, typename T>
 struct AsCContig1DBatchOfSquareMatricesFactory
 {
-    fnT get()
-    {
-        return as_c_contiguous_1d_batch_of_square_matrices_impl<T>;
-    }
+    fnT get() { return as_c_contiguous_1d_batch_of_square_matrices_impl<T>; }
 };
 
 template <typename T>
@@ -638,9 +636,6 @@ typedef sycl::event (
 template <typename fnT, typename T>
 struct AsCContigNDBatchOfSquareMatricesFactory
 {
-    fnT get()
-    {
-        return as_c_contiguous_nd_batch_of_square_matrices_impl<T>;
-    }
+    fnT get() { return as_c_contiguous_nd_batch_of_square_matrices_impl<T>; }
 };
 } // namespace dpctl::tensor::kernels::copy_as_contig

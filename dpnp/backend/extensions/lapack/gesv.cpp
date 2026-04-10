@@ -114,14 +114,14 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     try {
         getrf_event = mkl_lapack::getrf(
             exec_q,
-            n,    // The order of the square matrix A (0 ≤ n).
-                  // It must be a non-negative integer.
-            n,    // The number of columns in the square matrix A (0 ≤ n).
-                  // It must be a non-negative integer.
-            a,    // Pointer to the square matrix A (n x n).
-            lda,  // The leading dimension of matrix A.
-                  // It must be at least max(1, n).
-            ipiv, // Pointer to the output array of pivot indices.
+            n,          // The order of the square matrix A (0 ≤ n).
+                        // It must be a non-negative integer.
+            n,          // The number of columns in the square matrix A (0 ≤ n).
+                        // It must be a non-negative integer.
+            a,          // Pointer to the square matrix A (n x n).
+            lda,        // The leading dimension of matrix A.
+                        // It must be at least max(1, n).
+            ipiv,       // Pointer to the output array of pivot indices.
             scratchpad, // Pointer to scratchpad memory to be used by MKL
                         // routine for storing intermediate results.
             scratchpad_size, depends);

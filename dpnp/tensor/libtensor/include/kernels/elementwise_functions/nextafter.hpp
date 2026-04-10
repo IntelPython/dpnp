@@ -76,7 +76,8 @@ struct NextafterFunctor
     {
         auto res = sycl::nextafter(in1, in2);
         if constexpr (std::is_same_v<resT,
-                                     typename decltype(res)::element_type>) {
+                                     typename decltype(res)::element_type>)
+        {
             return res;
         }
         else {

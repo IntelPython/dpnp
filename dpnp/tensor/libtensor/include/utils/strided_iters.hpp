@@ -312,14 +312,8 @@ public:
         elem_count = s;
     }
 
-    indT size() const
-    {
-        return elem_count;
-    }
-    indT rank() const
-    {
-        return ndim;
-    }
+    indT size() const { return elem_count; }
+    indT rank() const { return ndim; }
 
     void set(const indT i)
     {
@@ -339,10 +333,7 @@ public:
         multi_index[0] = i_;
     }
 
-    const index_t &get() const
-    {
-        return multi_index;
-    }
+    const index_t &get() const { return multi_index; }
 };
 
 /*
@@ -731,7 +722,8 @@ std::tuple<vecT, vecT, T, vecT, T, vecT, T> contract_iter3(const vecT &shape,
 {
     const std::size_t dim = shape.size();
     if (dim != strides1.size() || dim != strides2.size() ||
-        dim != strides3.size()) {
+        dim != strides3.size())
+    {
         throw Error("Shape and strides must be of equal size.");
     }
     vecT out_shape = shape;
@@ -865,7 +857,8 @@ int simplify_iteration_four_strides(const int nd,
             StridesTy jump4 = strides4_w[i] - (shape_w[i + 1] - 1) * str4;
 
             if (jump1 == str1 && jump2 == str2 && jump3 == str3 &&
-                jump4 == str4) {
+                jump4 == str4)
+            {
                 changed = true;
                 shape_w[i] *= shape_w[i + 1];
                 for (int j = i; j < nd_; ++j) {

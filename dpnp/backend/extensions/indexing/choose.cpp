@@ -299,7 +299,8 @@ std::pair<sycl::event, sycl::event>
             }
 
             if (!(chc_type_id ==
-                  array_types.typenum_to_lookup_id(chc_.get_typenum()))) {
+                  array_types.typenum_to_lookup_id(chc_.get_typenum())))
+            {
                 throw py::type_error(
                     "Choice array data types are not all the same.");
             }
@@ -420,7 +421,8 @@ struct ChooseFactory
     fnT get()
     {
         if constexpr (std::is_integral<IndT>::value &&
-                      !std::is_same<IndT, bool>::value) {
+                      !std::is_same<IndT, bool>::value)
+        {
             fnT fn = kernels::choose_impl<Index, IndT, T>;
             return fn;
         }

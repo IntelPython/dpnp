@@ -70,10 +70,7 @@ struct PositiveFunctor
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
 
-    resT operator()(const argT &x) const
-    {
-        return x;
-    }
+    resT operator()(const argT &x) const { return x; }
 
     template <int vec_sz>
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in) const

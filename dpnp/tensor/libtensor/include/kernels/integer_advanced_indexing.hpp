@@ -349,7 +349,8 @@ struct TakeWrapFactory
     fnT get()
     {
         if constexpr (std::is_integral<indT>::value &&
-                      !std::is_same<indT, bool>::value) {
+                      !std::is_same<indT, bool>::value)
+        {
             using dpctl::tensor::indexing_utils::WrapIndex;
             fnT fn = take_impl<WrapIndex<indT>, T, indT>;
             return fn;
@@ -367,7 +368,8 @@ struct TakeClipFactory
     fnT get()
     {
         if constexpr (std::is_integral<indT>::value &&
-                      !std::is_same<indT, bool>::value) {
+                      !std::is_same<indT, bool>::value)
+        {
             using dpctl::tensor::indexing_utils::ClipIndex;
             fnT fn = take_impl<ClipIndex<indT>, T, indT>;
             return fn;
@@ -385,7 +387,8 @@ struct PutWrapFactory
     fnT get()
     {
         if constexpr (std::is_integral<indT>::value &&
-                      !std::is_same<indT, bool>::value) {
+                      !std::is_same<indT, bool>::value)
+        {
             using dpctl::tensor::indexing_utils::WrapIndex;
             fnT fn = put_impl<WrapIndex<indT>, T, indT>;
             return fn;
@@ -403,7 +406,8 @@ struct PutClipFactory
     fnT get()
     {
         if constexpr (std::is_integral<indT>::value &&
-                      !std::is_same<indT, bool>::value) {
+                      !std::is_same<indT, bool>::value)
+        {
             using dpctl::tensor::indexing_utils::ClipIndex;
             fnT fn = put_impl<ClipIndex<indT>, T, indT>;
             return fn;

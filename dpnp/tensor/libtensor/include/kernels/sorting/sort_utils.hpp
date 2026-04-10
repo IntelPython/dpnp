@@ -89,7 +89,8 @@ sycl::event iota_impl(sycl::queue &exec_q,
             }
             else {
                 for (std::size_t idx = offset + lane_id; idx < nelems;
-                     idx += max_sgSize) {
+                     idx += max_sgSize)
+                {
                     data[idx] = T(idx);
                 }
             }

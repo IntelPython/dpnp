@@ -62,8 +62,7 @@ enum class typenum_t : int
 inline constexpr int num_types = 14; // number of elements in typenum_t
 
 template <typename funcPtrT,
-          template <typename fnT, typename D, typename S>
-          typename factory,
+          template <typename fnT, typename D, typename S> typename factory,
           int _num_types>
 class DispatchTableBuilder
 {
@@ -124,8 +123,7 @@ public:
 };
 
 template <typename funcPtrT,
-          template <typename fnT, typename T>
-          typename factory,
+          template <typename fnT, typename T> typename factory,
           int _num_types>
 class DispatchVectorBuilder
 {
@@ -260,10 +258,7 @@ struct NullPtrVector
 
     NullPtrVector() : val(nullptr) {}
 
-    const_reference operator[](int) const
-    {
-        return val;
-    }
+    const_reference operator[](int) const { return val; }
 
 private:
     value_type val;
@@ -278,10 +273,7 @@ struct NullPtrTable
 
     NullPtrTable() : val() {}
 
-    const_reference operator[](int) const
-    {
-        return val;
-    }
+    const_reference operator[](int) const { return val; }
 
 private:
     value_type val;
