@@ -4,7 +4,6 @@ import tempfile
 import dpctl
 import numpy
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_array_equal, assert_raises
 
 import dpnp
@@ -50,7 +49,7 @@ def assert_sycl_queue_equal(result, expected):
     assert result.sycl_device == expected.sycl_device
     assert result.is_in_order == expected.is_in_order
     assert result.has_enable_profiling == expected.has_enable_profiling
-    exec_queue = dpctl.utils.get_execution_queue([result, expected])
+    exec_queue = dpt.get_execution_queue([result, expected])
     assert exec_queue is not None
 
 
@@ -657,7 +656,7 @@ def test_2in_broadcasting(func, data1, data2, device):
 def test_2in_1out_diff_queue_but_equal_context(func, device):
     x1 = dpnp.arange(10)
     x2 = dpnp.arange(10, sycl_queue=dpctl.SyclQueue(device))[::-1]
-    with assert_raises((ValueError, ExecutionPlacementError)):
+    with assert_raises((ValueError, dpt.ExecutionPlacementError)):
         getattr(dpnp, func)(x1, x2)
 
 

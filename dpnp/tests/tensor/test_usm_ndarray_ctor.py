@@ -1442,14 +1442,14 @@ def test_full_compute_follows_data():
 
     assert Y.dtype == X.dtype
     assert Y.usm_type == X.usm_type
-    assert dpctl.utils.get_execution_queue((Y.sycl_queue, X.sycl_queue))
+    assert dpt.get_execution_queue((Y.sycl_queue, X.sycl_queue))
     assert np.array_equal(dpt.asnumpy(Y), np.full(10, 3, dtype="i4"))
 
     Y = dpt.full(10, X[3], dtype="f4", sycl_queue=q2, usm_type="host")
 
     assert Y.dtype == dpt.dtype("f4")
     assert Y.usm_type == "host"
-    assert dpctl.utils.get_execution_queue((Y.sycl_queue, q2))
+    assert dpt.get_execution_queue((Y.sycl_queue, q2))
     assert np.array_equal(dpt.asnumpy(Y), np.full(10, 3, dtype="f4"))
 
 

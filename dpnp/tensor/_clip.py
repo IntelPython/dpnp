@@ -26,8 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl
-from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
+from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_elementwise_impl as tei
@@ -80,19 +79,19 @@ def _clip_none(x, val, out, order, _binary_fn):
         exec_q = q1
         res_usm_type = x_usm_type
     else:
-        exec_q = dpctl.utils.get_execution_queue((q1, q2))
+        exec_q = dpt.get_execution_queue((q1, q2))
         if exec_q is None:
-            raise ExecutionPlacementError(
+            raise dpt.ExecutionPlacementError(
                 "Execution placement can not be unambiguously inferred "
                 "from input arguments."
             )
-        res_usm_type = dpctl.utils.get_coerced_usm_type(
+        res_usm_type = dpt.get_coerced_usm_type(
             (
                 x_usm_type,
                 val_usm_type,
             )
         )
-    dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
+    dpt.validate_usm_type(res_usm_type, allow_none=False)
     x_shape = x.shape
     val_shape = _get_shape(val)
     if not isinstance(val_shape, (tuple, list)):
@@ -153,8 +152,8 @@ def _clip_none(x, val, out, order, _binary_fn):
                 f"Output array of type {res_dt} is needed, got {out.dtype}"
             )
 
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
-            raise ExecutionPlacementError(
+        if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 
@@ -340,11 +339,8 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                     f"got {out.dtype}"
                 )
 
-            if (
-                dpctl.utils.get_execution_queue((exec_q, out.sycl_queue))
-                is None
-            ):
-                raise ExecutionPlacementError(
+            if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
+                raise dpt.ExecutionPlacementError(
                     "Input and output allocation queues are not compatible"
                 )
 
@@ -388,46 +384,46 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
             exec_q = q1
             res_usm_type = x_usm_type
         elif q3 is None:
-            exec_q = dpctl.utils.get_execution_queue((q1, q2))
+            exec_q = dpt.get_execution_queue((q1, q2))
             if exec_q is None:
-                raise ExecutionPlacementError(
+                raise dpt.ExecutionPlacementError(
                     "Execution placement can not be unambiguously inferred "
                     "from input arguments."
                 )
-            res_usm_type = dpctl.utils.get_coerced_usm_type(
+            res_usm_type = dpt.get_coerced_usm_type(
                 (
                     x_usm_type,
                     min_usm_type,
                 )
             )
         elif q2 is None:
-            exec_q = dpctl.utils.get_execution_queue((q1, q3))
+            exec_q = dpt.get_execution_queue((q1, q3))
             if exec_q is None:
-                raise ExecutionPlacementError(
+                raise dpt.ExecutionPlacementError(
                     "Execution placement can not be unambiguously inferred "
                     "from input arguments."
                 )
-            res_usm_type = dpctl.utils.get_coerced_usm_type(
+            res_usm_type = dpt.get_coerced_usm_type(
                 (
                     x_usm_type,
                     max_usm_type,
                 )
             )
         else:
-            exec_q = dpctl.utils.get_execution_queue((q1, q2, q3))
+            exec_q = dpt.get_execution_queue((q1, q2, q3))
             if exec_q is None:
-                raise ExecutionPlacementError(
+                raise dpt.ExecutionPlacementError(
                     "Execution placement can not be unambiguously inferred "
                     "from input arguments."
                 )
-            res_usm_type = dpctl.utils.get_coerced_usm_type(
+            res_usm_type = dpt.get_coerced_usm_type(
                 (
                     x_usm_type,
                     min_usm_type,
                     max_usm_type,
                 )
             )
-        dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
+        dpt.validate_usm_type(res_usm_type, allow_none=False)
         x_shape = x.shape
         min_shape = _get_shape(min)
         max_shape = _get_shape(max)
@@ -506,11 +502,8 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                     f"got {out.dtype}"
                 )
 
-            if (
-                dpctl.utils.get_execution_queue((exec_q, out.sycl_queue))
-                is None
-            ):
-                raise ExecutionPlacementError(
+            if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
+                raise dpt.ExecutionPlacementError(
                     "Input and output allocation queues are not compatible"
                 )
 

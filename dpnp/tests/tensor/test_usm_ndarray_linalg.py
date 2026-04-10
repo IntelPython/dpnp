@@ -31,7 +31,6 @@ import itertools
 import dpctl
 import numpy as np
 import pytest
-from dpctl.utils import ExecutionPlacementError
 
 import dpnp.tensor as dpt
 
@@ -452,7 +451,7 @@ def test_matmul_out_errors():
     with pytest.raises(ValueError):
         dpt.matmul(m1, m2, out=dpt.empty(sh, dtype="f4", sycl_queue=q1))
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.matmul(m1, m2, out=dpt.empty(sh, dtype=dt, sycl_queue=q2))
 
 
@@ -536,7 +535,7 @@ def test_matmul_compute_follows_data():
     m1 = dpt.zeros(sh, dtype=dt, sycl_queue=q1)
     m2 = dpt.zeros(sh, dtype=dt, sycl_queue=q2)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.matmul(m1, m2)
 
 
@@ -751,7 +750,7 @@ def test_tensordot_validation():
 
     t2 = dpt.empty((10, 10, 10))
     q = dpctl.SyclQueue(t2.sycl_context, t2.sycl_device, property="in_order")
-    with pytest.raises(dpctl.utils.ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.tensordot(t1, t2.to_device(q))
 
     invalid_axes = (
@@ -938,7 +937,7 @@ def test_vector_arg_validation():
     q = dpctl.SyclQueue(
         v2.sycl_context, v2.sycl_device, property="enable_profiling"
     )
-    with pytest.raises(dpctl.utils.ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.vecdot(v1, v2.to_device(q))
 
     m1 = dpt.empty((10, 5))

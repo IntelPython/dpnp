@@ -26,8 +26,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl
-from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
+from dpctl.utils import SequentialOrderManager
 
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
@@ -88,8 +87,8 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
             raise ValueError(
                 f"Output array of type {res_dt} is needed, got {out.dtype}"
             )
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
-            raise ExecutionPlacementError(
+        if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
         if keepdims:
@@ -204,8 +203,8 @@ def _reduction_over_axis(
             raise ValueError(
                 f"Output array of type {res_dt} is needed, got {out.dtype}"
             )
-        if dpctl.utils.get_execution_queue((q, out.sycl_queue)) is None:
-            raise ExecutionPlacementError(
+        if dpt.get_execution_queue((q, out.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
         if keepdims:
@@ -351,8 +350,8 @@ def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
             raise ValueError(
                 f"Output array of type {res_dt} is needed, got {out.dtype}"
             )
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
-            raise ExecutionPlacementError(
+        if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
         if keepdims:

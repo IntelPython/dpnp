@@ -28,7 +28,6 @@
 
 import dpctl.utils as dpu
 import numpy
-from dpctl.utils import ExecutionPlacementError
 
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
@@ -694,8 +693,8 @@ def _validate_out_array(out, exec_q):
     """Validate out is supported array and has correct queue."""
     if out is not None:
         dpnp.check_supported_arrays_type(out)
-        if dpu.get_execution_queue((exec_q, out.sycl_queue)) is None:
-            raise ExecutionPlacementError(
+        if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise dpt.ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 

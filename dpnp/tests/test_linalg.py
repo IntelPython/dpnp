@@ -3,7 +3,6 @@ import warnings
 import dpctl
 import numpy
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
@@ -607,7 +606,9 @@ class TestEinsum:
         a = dpnp.ones((5, 5))
         out = dpnp.empty((5,), sycl_queue=dpctl.SyclQueue())
         # inconsistent sycl_queue
-        assert_raises(ExecutionPlacementError, dpnp.einsum, "ii->i", a, out=out)
+        assert_raises(
+            dpt.ExecutionPlacementError, dpnp.einsum, "ii->i", a, out=out
+        )
 
         # unknown value for optimize keyword
         assert_raises(TypeError, dpnp.einsum, "ii->i", a, optimize="blah")
@@ -2777,7 +2778,7 @@ class TestMatrixRank:
         a_dp_q = dpnp.array(a_dp, sycl_queue=a_queue)
         tol_dp_q = dpnp.array([0.5], dtype="float32", sycl_queue=tol_queue)
         assert_raises(
-            ExecutionPlacementError,
+            dpt.ExecutionPlacementError,
             dpnp.linalg.matrix_rank,
             a_dp_q,
             tol_dp_q,

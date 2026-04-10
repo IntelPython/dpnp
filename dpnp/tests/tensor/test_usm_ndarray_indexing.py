@@ -29,7 +29,6 @@
 import dpctl
 import numpy as np
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_array_equal
 
 import dpnp.tensor as dpt
@@ -1154,17 +1153,17 @@ def test_advanced_indexing_compute_follows_data():
     val0 = dpt.asarray(2, dtype=x.dtype, sycl_queue=q1)
     val1 = dpt.asarray(2, dtype=x.dtype, sycl_queue=q2)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.take(x, ind1, axis=0)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         x[ind1]
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.put(x, ind1, val0, axis=0)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         x[ind1] = val0
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.put(x, ind0, val1, axis=0)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         x[ind0] = val1
 
 
@@ -1500,7 +1499,7 @@ def test_extract_arg_validation():
     with pytest.raises(TypeError):
         dpt.extract(cond, None)
     q1 = dpctl.SyclQueue()
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.extract(cond.to_device(q1), dpt.zeros_like(cond, dtype="u1"))
     with pytest.raises(ValueError):
         dpt.extract(dpt.ones((2, 3), dtype="?"), dpt.ones((3, 2), dtype="i1"))
@@ -1518,7 +1517,7 @@ def test_place_arg_validation():
         dpt.place(arr, cond, None)
     vals = dpt.ones_like(arr)
     q1 = dpctl.SyclQueue()
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.place(arr.to_device(q1), cond, vals)
     with pytest.raises(ValueError):
         dpt.place(dpt.reshape(arr, (2, 2, 2)), cond, vals)
@@ -1699,7 +1698,7 @@ def test_take_along_axis_validation():
     # check compute-follows-data
     q2 = dpctl.SyclQueue(x_dev, property="enable_profiling")
     ind2 = dpt.zeros(1, dtype=ind_dt, sycl_queue=q2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.take_along_axis(x, ind2)
 
 
@@ -1764,7 +1763,7 @@ def test_put_along_axis_validation():
     # check compute-follows-data
     q2 = dpctl.SyclQueue(x_dev, property="enable_profiling")
     ind2 = dpt.zeros(1, dtype=ind_dt, sycl_queue=q2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.put_along_axis(x, ind2, vals)
 
 
@@ -1822,7 +1821,7 @@ def check__extract_impl_validation(fn):
         fn(x, list())
     q2 = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
     ind2 = dpt.ones(10, dtype="?", sycl_queue=q2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         fn(x, ind2)
     with pytest.raises(ValueError):
         fn(x, ind, 1)
@@ -1850,7 +1849,7 @@ def check__take_multi_index(fn):
         fn(x, (x,), 1)
     q2 = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
     ind2 = dpt.arange(10, dtype=ind_dt, sycl_queue=q2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         fn(x, (ind2,), 0)
     m = dpt.ones((10, 10))
     ind_1 = dpt.arange(10, dtype="i8")
@@ -1867,7 +1866,7 @@ def check__place_impl_validation(fn):
         fn(x, list(), list())
     q2 = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
     mask2 = dpt.ones(10, dtype="?", sycl_queue=q2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         fn(x, mask2, 1)
     x2 = dpt.ones((5, 5))
     mask2 = dpt.ones((5, 5), dtype="?")
@@ -2037,7 +2036,7 @@ def test_take_out_errors():
         dpt.take(x, ind, out=out_bad_dt)
 
     out_bad_q = dpt.empty(ind.shape, dtype=x.dtype, sycl_queue=q2)
-    with pytest.raises(dpctl.utils.ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.take(x, ind, out=out_bad_q)
 
 

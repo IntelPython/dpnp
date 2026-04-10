@@ -41,14 +41,13 @@ available as a pybind11 extension.
 
 from collections.abc import Sequence
 
-import dpctl
 import dpctl.utils as dpu
 import numpy
-from dpctl.utils import ExecutionPlacementError
 
 import dpnp
 import dpnp.backend.extensions.fft._fft_impl as fi
 import dpnp.tensor._tensor_impl as ti
+from dpnp.tensor import ExecutionPlacementError, get_execution_queue
 from dpnp.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
@@ -546,10 +545,7 @@ def _validate_out_keyword(a, out, s, axes, c2c, c2r, r2c):
     """Validate out keyword argument."""
     if out is not None:
         dpnp.check_supported_arrays_type(out)
-        if (
-            dpctl.utils.get_execution_queue((a.sycl_queue, out.sycl_queue))
-            is None
-        ):
+        if get_execution_queue((a.sycl_queue, out.sycl_queue)) is None:
             raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
@@ -779,7 +775,7 @@ def dpnp_fillfreq(a, m, n, val):
     """Fill an array with the sample frequencies"""
 
     exec_q = a.sycl_queue
-    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    _manager = dpu.SequentialOrderManager[exec_q]
 
     # it's assumed there are no dependent events to populate the array
     ht_lin_ev, lin_ev = ti._linspace_step(0, 1, a[:m].get_array(), exec_q)

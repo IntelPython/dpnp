@@ -1261,12 +1261,12 @@ def isin(
         usm_element = dpnp.get_usm_ndarray(element)
     else:
         if (
-            dpu.get_execution_queue(
+            dpt.get_execution_queue(
                 (element.sycl_queue, test_elements.sycl_queue)
             )
             is None
         ):
-            raise dpu.ExecutionPlacementError(
+            raise dpt.ExecutionPlacementError(
                 "Input arrays have incompatible allocation queues"
             )
         usm_element = dpnp.get_usm_ndarray(element)

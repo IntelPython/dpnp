@@ -1,7 +1,6 @@
 import dpctl
 import numpy
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
@@ -710,12 +709,14 @@ class TestEdiff1d:
         # another `to_begin` sycl queue
         to_begin = dpnp.array([-20, -15], sycl_queue=dpctl.SyclQueue())
         assert_raises(
-            ExecutionPlacementError, dpnp.ediff1d, ia, to_begin=to_begin
+            dpt.ExecutionPlacementError, dpnp.ediff1d, ia, to_begin=to_begin
         )
 
         # another `to_end` sycl queue
         to_end = dpnp.array([15, 20], sycl_queue=dpctl.SyclQueue())
-        assert_raises(ExecutionPlacementError, dpnp.ediff1d, ia, to_end=to_end)
+        assert_raises(
+            dpt.ExecutionPlacementError, dpnp.ediff1d, ia, to_end=to_end
+        )
 
 
 class TestGradient:
@@ -2131,13 +2132,13 @@ class TestUfunc:
         out1 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
         out2 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
         with pytest.raises(
-            ExecutionPlacementError,
+            dpt.ExecutionPlacementError,
             match="Input and output allocation queues are not compatible",
         ):
             _ = fn(*args, out1)
 
         with pytest.raises(
-            ExecutionPlacementError,
+            dpt.ExecutionPlacementError,
             match="Input and output allocation queues are not compatible",
         ):
             _ = fn(*args, out=(None, out2))

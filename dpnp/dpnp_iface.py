@@ -407,7 +407,7 @@ def get_dpnp_descriptor(
     if queue is not None and copy_when_nondefault_queue:
         default_queue = dpctl.SyclQueue()
         queue_is_default = (
-            dpctl.utils.get_execution_queue([queue, default_queue]) is not None
+            dpt.get_execution_queue([queue, default_queue]) is not None
         )
         if not queue_is_default:
             ext_obj = dpnp.array(ext_obj, sycl_queue=default_queue)

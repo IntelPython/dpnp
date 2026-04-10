@@ -1,7 +1,6 @@
 import dpctl
 import numpy
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
@@ -10,6 +9,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.tensor import ExecutionPlacementError
 
 from .helper import (
     generate_random_numpy_array,

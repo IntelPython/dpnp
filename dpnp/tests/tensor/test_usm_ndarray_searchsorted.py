@@ -27,7 +27,6 @@
 # *****************************************************************************
 
 import dpctl
-import dpctl.utils as dpu
 import numpy as np
 import pytest
 
@@ -334,10 +333,10 @@ def test_searchsorted_validation2():
     q2 = dpctl.SyclQueue(d, property="in_order")
     x2 = dpt.ones(5, dtype=x1.dtype, sycl_queue=q2)
 
-    with pytest.raises(dpu.ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.searchsorted(x1, x2)
 
-    with pytest.raises(dpu.ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.searchsorted(x1, x2, sorter=sorter)
 
     sorter = dpt.ones(x1.shape, dtype=dpt.bool)

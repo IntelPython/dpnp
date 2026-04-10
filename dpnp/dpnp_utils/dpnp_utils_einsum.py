@@ -31,13 +31,12 @@ import itertools
 import operator
 import warnings
 
-import dpctl
 import numpy
-from dpctl.utils import ExecutionPlacementError
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations, map_dtype_to_device
+from dpnp.tensor import ExecutionPlacementError
 
 _einsum_symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -1023,7 +1022,7 @@ def dpnp_einsum(
     res_usm_type, exec_q = get_usm_allocations(arrays)
     if out is not None:
         dpnp.check_supported_arrays_type(out)
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
+        if dpnp.tensor.get_execution_queue((exec_q, out.sycl_queue)) is None:
             raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )

@@ -32,7 +32,6 @@ import re
 import dpctl
 import numpy as np
 import pytest
-from dpctl.utils import ExecutionPlacementError
 
 import dpnp.tensor as dpt
 from dpnp.tensor._type_utils import _can_cast
@@ -101,9 +100,7 @@ def test_add_usm_type_matrix(op1_usm_type, op2_usm_type):
 
     r = dpt.add(ar1, ar2)
     assert isinstance(r, dpt.usm_ndarray)
-    expected_usm_type = dpctl.utils.get_coerced_usm_type(
-        (op1_usm_type, op2_usm_type)
-    )
+    expected_usm_type = dpt.get_coerced_usm_type((op1_usm_type, op2_usm_type))
     assert r.usm_type == expected_usm_type
 
 
@@ -299,7 +296,7 @@ def test_add_errors():
     ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
     ar2 = dpt.ones_like(ar1, sycl_queue=gpu_queue)
     y = dpt.empty_like(ar1, sycl_queue=cpu_queue)
-    with pytest.raises(ExecutionPlacementError) as excinfo:
+    with pytest.raises(dpt.ExecutionPlacementError) as excinfo:
         dpt.add(ar1, ar2, out=y)
     assert "Input and output allocation queues are not compatible" in str(
         excinfo.value
@@ -316,7 +313,7 @@ def test_add_errors():
 
     ar1 = np.ones(2, dtype="float32")
     ar2 = np.ones_like(ar1, dtype="int32")
-    with pytest.raises(ExecutionPlacementError) as excinfo:
+    with pytest.raises(dpt.ExecutionPlacementError) as excinfo:
         dpt.add(ar1, ar2)
     assert re.match(
         "Execution placement can not be unambiguously inferred.*",
@@ -484,7 +481,7 @@ def test_add_inplace_errors():
 
     ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
     ar2 = dpt.ones_like(ar1, sycl_queue=cpu_queue)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.add(ar1, ar2, out=ar1)
 
     ar1 = dpt.ones(2, dtype="float32")
@@ -522,7 +519,7 @@ def test_add_inplace_operator_errors():
 
     x_q1 = dpt.ones(10, dtype="i4", sycl_queue=q1)
     x_q2 = dpt.ones(10, dtype="i4", sycl_queue=q2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.add._inplace_op(x_q1, x_q2)
 
 
@@ -564,10 +561,10 @@ def test_add_cfd():
 
     x1 = dpt.ones(10, sycl_queue=q1)
     x2 = dpt.ones(10, sycl_queue=q2)
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.add(x1, x2)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.add(x1, x1, out=x2)
 
 

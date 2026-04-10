@@ -29,7 +29,6 @@
 from math import prod
 
 import pytest
-from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises_regex
 
 import dpnp.tensor as dpt
@@ -305,19 +304,19 @@ def test_diff_compute_follows_data():
     ar2 = dpt.ones(1, dtype="i4", sycl_queue=q2)
     ar3 = dpt.ones(1, dtype="i4", sycl_queue=q3)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.diff(ar1, prepend=ar2, append=ar3)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.diff(ar1, prepend=ar2, append=0)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.diff(ar1, prepend=0, append=ar2)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.diff(ar1, prepend=ar2)
 
-    with pytest.raises(ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.diff(ar1, append=ar2)
 
 

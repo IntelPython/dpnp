@@ -154,7 +154,7 @@ def test_unary_func_arg_validation():
 
 
 def test_binary_func_arg_validation():
-    with pytest.raises(dpctl.utils.ExecutionPlacementError):
+    with pytest.raises(dpt.ExecutionPlacementError):
         dpt.add([1, 2, 3], 1)
     try:
         a = dpt.arange(8)
