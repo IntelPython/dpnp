@@ -60,38 +60,48 @@ def _get_radixsort_impl_fn(descending):
 
 
 def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
-    """sort(x, axis=-1, descending=False, stable=True)
-
+    """
     Returns a sorted copy of an input array `x`.
 
-    Args:
-        x (usm_ndarray):
-            input array.
-        axis (Optional[int]):
-            axis along which to sort. If set to `-1`, the function
-            must sort along the last axis. Default: `-1`.
-        descending (Optional[bool]):
-            sort order. If `True`, the array must be sorted in descending
-            order (by value). If `False`, the array must be sorted in
-            ascending order (by value). Default: `False`.
-        stable (Optional[bool]):
-            sort stability. If `True`, the returned array must maintain the
-            relative order of `x` values which compare as equal. If `False`,
-            the returned array may or may not maintain the relative order of
-            `x` values which compare as equal. Default: `True`.
-        kind (Optional[Literal["stable", "mergesort", "radixsort"]]):
-            Sorting algorithm. The default is `"stable"`, which uses parallel
-            merge-sort or parallel radix-sort algorithms depending on the
-            array data type.
-    Returns:
-        usm_ndarray:
-            a sorted array. The returned array has the same data type and
-            the same shape as the input array `x`.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : int, optional
+        Axis along which to sort. If set to `-1`, the function
+        must sort along the last axis.
+
+        Default: ``-1``.
+    descending : bool, optional
+        Sort order. If `True`, the array must be sorted in descending
+        order (by value). If `False`, the array must be sorted in
+        ascending order (by value).
+
+        Default: ``False``.
+    stable : bool, optional
+        Sort stability. If `True`, the returned array must maintain the
+        relative order of `x` values which compare as equal. If `False`,
+        the returned array may or may not maintain the relative order of
+        `x` values which compare as equal.
+
+        Default: ``True``.
+    kind : {"stable", "mergesort", "radixsort"}, optional
+        Sorting algorithm. The default is `"stable"`, which uses parallel
+        merge-sort or parallel radix-sort algorithms depending on the
+        array data type.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        A sorted array. The returned array has the same data type and
+        the same shape as the input array `x`.
+
     """
+
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(
-            f"Expected type dpctl.tensor.usm_ndarray, got {type(x)}"
-        )
+        raise TypeError(f"Expected type dpnp.tensor.usm_ndarray, got {type(x)}")
     nd = x.ndim
     if nd == 0:
         axis = normalize_axis_index(axis, ndim=1, msg_prefix="axis")
@@ -174,40 +184,49 @@ def _get_radixargsort_impl_fn(descending):
 
 
 def argsort(x, axis=-1, descending=False, stable=True, kind=None):
-    """argsort(x, axis=-1, descending=False, stable=True)
-
+    """
     Returns the indices that sort an array `x` along a specified axis.
 
-    Args:
-        x (usm_ndarray):
-            input array.
-        axis (Optional[int]):
-            axis along which to sort. If set to `-1`, the function
-            must sort along the last axis. Default: `-1`.
-        descending (Optional[bool]):
-            sort order. If `True`, the array must be sorted in descending
-            order (by value). If `False`, the array must be sorted in
-            ascending order (by value). Default: `False`.
-        stable (Optional[bool]):
-            sort stability. If `True`, the returned array must maintain the
-            relative order of `x` values which compare as equal. If `False`,
-            the returned array may or may not maintain the relative order of
-            `x` values which compare as equal. Default: `True`.
-        kind (Optional[Literal["stable", "mergesort", "radixsort"]]):
-            Sorting algorithm. The default is `"stable"`, which uses parallel
-            merge-sort or parallel radix-sort algorithms depending on the
-            array data type.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : int, optional
+        Axis along which to sort. If set to `-1`, the function
+        must sort along the last axis.
 
-    Returns:
-        usm_ndarray:
-            an array of indices. The returned array has the  same shape as
-            the input array `x`. The return array has default array index
-            data type.
+        Default: ``-1``.
+    descending : bool, optional
+        Sort order. If `True`, the array must be sorted in descending
+        order (by value). If `False`, the array must be sorted in
+        ascending order (by value).
+
+        Default: ``False``.
+    stable : bool, optional
+        Sort stability. If `True`, the returned array must maintain the
+        relative order of `x` values which compare as equal. If `False`,
+        the returned array may or may not maintain the relative order of
+        `x` values which compare as equal.
+
+        Default: ``True``.
+    kind : {"stable", "mergesort", "radixsort"}, optional
+        Sorting algorithm. The default is `"stable"`, which uses parallel
+        merge-sort or parallel radix-sort algorithms depending on the
+        array data type.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array of indices. The returned array has the same shape as
+        the input array `x`. The return array has default array index
+        data type.
+
     """
+
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(
-            f"Expected type dpctl.tensor.usm_ndarray, got {type(x)}"
-        )
+        raise TypeError(f"Expected type dpnp.tensor.usm_ndarray, got {type(x)}")
     nd = x.ndim
     if nd == 0:
         axis = normalize_axis_index(axis, ndim=1, msg_prefix="axis")
@@ -300,45 +319,48 @@ class TopKResult(NamedTuple):
 
 
 def top_k(x, k, /, *, axis=None, mode="largest"):
-    """top_k(x, k, axis=None, mode="largest")
-
+    """
     Returns the `k` largest or smallest values and their indices in the input
     array `x` along the specified axis `axis`.
 
-    Args:
-        x (usm_ndarray):
-            input array.
-        k (int):
-            number of elements to find. Must be a positive integer value.
-        axis (Optional[int]):
-            axis along which to search. If `None`, the search will be performed
-            over the flattened array. Default: ``None``.
-        mode (Literal["largest", "smallest"]):
-            search mode. Must be one of the following modes:
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    k : int
+        Number of elements to find. Must be a positive integer value.
+    axis : int, optional
+        Axis along which to search. If `None`, the search will be performed
+        over the flattened array.
 
-            - `"largest"`: return the `k` largest elements.
-            - `"smallest"`: return the `k` smallest elements.
+        Default: ``None``.
+    mode : {"largest", "smallest"}, optional
+        Search mode. Must be one of the following modes:
 
-            Default: `"largest"`.
+        - `"largest"`: return the `k` largest elements.
+        - `"smallest"`: return the `k` smallest elements.
 
-    Returns:
-        tuple[usm_ndarray, usm_ndarray]
-            a namedtuple `(values, indices)` whose
+        Default: ``"largest"``.
 
-            * first element `values` will be an array containing the `k`
-              largest or smallest elements of `x`. The array has the same data
-              type as `x`. If `axis` was `None`, `values` will be a
-              one-dimensional array with shape `(k,)` and otherwise, `values`
-              will have shape `x.shape[:axis] + (k,) + x.shape[axis+1:]`
-            * second element `indices` will be an array containing indices of
-              `x` that result in `values`. The array will have the same shape
-              as `values` and will have the default array index data type.
+    Returns
+    -------
+    out : tuple of usm_ndarrays
+        A namedtuple `(values, indices)` whose
+
+        * first element `values` will be an array containing the `k`
+          largest or smallest elements of `x`. The array has the same data
+          type as `x`. If `axis` was `None`, `values` will be a
+          one-dimensional array with shape `(k,)` and otherwise, `values`
+          will have shape `x.shape[:axis] + (k,) + x.shape[axis+1:]`
+        * second element `indices` will be an array containing indices of
+          `x` that result in `values`. The array will have the same shape
+          as `values` and will have the default array index data type.
+
     """
+
     largest = _get_top_k_largest(mode)
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(
-            f"Expected type dpctl.tensor.usm_ndarray, got {type(x)}"
-        )
+        raise TypeError(f"Expected type dpnp.tensor.usm_ndarray, got {type(x)}")
 
     k = operator.index(k)
     if k < 0:
