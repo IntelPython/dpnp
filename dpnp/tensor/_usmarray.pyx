@@ -256,13 +256,15 @@ cdef class usm_ndarray:
 
         Default: ``None``.
 
-    ``buffer`` can be ``"shared"``, ``"host"``, ``"device"`` to allocate
-    new device memory by calling respective constructor with
-    the specified ``buffer_ctor_kwrds``; ``buffer`` can be an
-    instance of :class:`dpctl.memory.MemoryUSMShared`,
+    Notes
+    -----
+    The ``buffer`` argument accepts string values ``"shared"``,
+    ``"host"``, or ``"device"`` to allocate new device memory by calling
+    the respective constructor with the specified ``buffer_ctor_kwrds``.
+    It can also be an instance of :class:`dpctl.memory.MemoryUSMShared`,
     :class:`dpctl.memory.MemoryUSMDevice`, or
-    :class:`dpctl.memory.MemoryUSMHost`; ``buffer`` can also be
-    another :class:`dpnp.tensor.usm_ndarray` instance, in which case its
+    :class:`dpctl.memory.MemoryUSMHost`, or another
+    :class:`dpnp.tensor.usm_ndarray` instance, in which case its
     underlying ``MemoryUSM*`` buffer is used.
 
     """
