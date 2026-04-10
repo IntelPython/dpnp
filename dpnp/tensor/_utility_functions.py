@@ -50,7 +50,7 @@ from ._type_utils import (
 
 def _boolean_reduction(x, axis, keepdims, func):
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     nd = x.ndim
     if axis is None:
@@ -118,59 +118,71 @@ def _boolean_reduction(x, axis, keepdims, func):
 
 def all(x, /, *, axis=None, keepdims=False):
     """
-    all(x, axis=None, keepdims=False)
-
     Tests whether all input array elements evaluate to True along a given axis.
 
-    Args:
-        x (usm_ndarray): Input array.
-        axis (Optional[Union[int, Tuple[int,...]]]): Axis (or axes)
-            along which to perform a logical AND reduction.
-            When `axis` is `None`, a logical AND reduction
-            is performed over all dimensions of `x`.
-            If `axis` is negative, the axis is counted from
-            the last dimension to the first.
-            Default: `None`.
-        keepdims (bool, optional): If `True`, the reduced axes are included
-            in the result as singleton dimensions, and the result is
-            broadcastable to the input array shape.
-            If `False`, the reduced axes are not included in the result.
-            Default: `False`.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : {None, int, tuple of ints}, optional
+        Axis (or axes) along which to perform a logical AND reduction.
+        When `axis` is `None`, a logical AND reduction
+        is performed over all dimensions of `x`.
+        If `axis` is negative, the axis is counted from
+        the last dimension to the first.
 
-    Returns:
-        usm_ndarray:
-            An array with a data type of `bool`
-            containing the results of the logical AND reduction.
+        Default: ``None``.
+    keepdims : bool, optional
+        If `True`, the reduced axes are included in the result as
+        singleton dimensions, and the result is broadcastable to the
+        input array shape.
+        If `False`, the reduced axes are not included in the result.
+
+        Default: ``False``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array with a data type of `bool`
+        containing the results of the logical AND reduction.
+
     """
+
     return _boolean_reduction(x, axis, keepdims, tri._all)
 
 
 def any(x, /, *, axis=None, keepdims=False):
     """
-    any(x, axis=None, keepdims=False)
-
     Tests whether any input array elements evaluate to True along a given axis.
 
-    Args:
-        x (usm_ndarray): Input array.
-        axis (Optional[Union[int, Tuple[int,...]]]): Axis (or axes)
-            along which to perform a logical OR reduction.
-            When `axis` is `None`, a logical OR reduction
-            is performed over all dimensions of `x`.
-            If `axis` is negative, the axis is counted from
-            the last dimension to the first.
-            Default: `None`.
-        keepdims (bool, optional): If `True`, the reduced axes are included
-            in the result as singleton dimensions, and the result is
-            broadcastable to the input array shape.
-            If `False`, the reduced axes are not included in the result.
-            Default: `False`.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : {None, int, tuple of ints}, optional
+        Axis (or axes) along which to perform a logical OR reduction.
+        When `axis` is `None`, a logical OR reduction
+        is performed over all dimensions of `x`.
+        If `axis` is negative, the axis is counted from
+        the last dimension to the first.
 
-    Returns:
-        usm_ndarray:
-            An array with a data type of `bool`
-            containing the results of the logical OR reduction.
+        Default: ``None``.
+    keepdims : bool, optional
+        If `True`, the reduced axes are included in the result as
+        singleton dimensions, and the result is broadcastable to the
+        input array shape.
+        If `False`, the reduced axes are not included in the result.
+
+        Default: ``False``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array with a data type of `bool`
+        containing the results of the logical OR reduction.
+
     """
+
     return _boolean_reduction(x, axis, keepdims, tri._any)
 
 
@@ -432,43 +444,50 @@ def diff(x, /, *, axis=-1, n=1, prepend=None, append=None):
     """
     Calculates the `n`-th discrete forward difference of `x` along `axis`.
 
-    Args:
-        x (usm_ndarray):
-            input array.
-        axis (int):
-            axis along which to compute the difference. A valid axis must be on
-            the interval `[-N, N)`, where `N` is the rank (number of
-            dimensions) of `x`.
-            Default: `-1`
-        n (int):
-            number of times to recursively compute the difference.
-            Default: `1`.
-        prepend (Union[usm_ndarray, bool, int, float, complex]):
-            value or values to prepend to the specified axis before taking the
-            difference.
-            Must have the same shape as `x` except along `axis`, which can have
-            any shape.
-            Default: `None`.
-        append (Union[usm_ndarray, bool, int, float, complex]):
-            value or values to append to the specified axis before taking the
-            difference.
-            Must have the same shape as `x` except along `axis`, which can have
-            any shape.
-            Default: `None`.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : int, optional
+        Axis along which to compute the difference. A valid axis must be on
+        the interval `[-N, N)`, where `N` is the rank (number of
+        dimensions) of `x`.
 
-    Returns:
-        usm_ndarray:
-            an array containing the `n`-th differences. The array will have the
-            same shape as `x`, except along `axis`, which will have shape:
-            ``prepend.shape[axis] + x.shape[axis] + append.shape[axis] - n``
+        Default: ``-1``.
+    n : int, optional
+        Number of times to recursively compute the difference.
 
-            The data type of the returned array is determined by the Type
-            Promotion Rules.
+        Default: ``1``.
+    prepend : {None, usm_ndarray, bool, int, float, complex}, optional
+        Value or values to prepend to the specified axis before taking the
+        difference.
+        Must have the same shape as `x` except along `axis`, which can have
+        any shape.
+
+        Default: ``None``.
+    append : {None, usm_ndarray, bool, int, float, complex}, optional
+        Value or values to append to the specified axis before taking the
+        difference.
+        Must have the same shape as `x` except along `axis`, which can have
+        any shape.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array containing the `n`-th differences. The array will have the
+        same shape as `x`, except along `axis`, which will have shape:
+        ``prepend.shape[axis] + x.shape[axis] + append.shape[axis] - n``
+
+        The data type of the returned array is determined by the Type
+        Promotion Rules.
+
     """
 
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
-            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(x)}"
+            "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(x)}"
         )
     x_nd = x.ndim
     axis = normalize_axis_index(operator.index(axis), x_nd)
