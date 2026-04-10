@@ -12,6 +12,7 @@ Data Parallel Extension for NumPy*
 
    overview
    quick_start_guide
+   user_guides/index
    reference/index
 
 .. toctree::
