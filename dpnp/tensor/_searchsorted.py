@@ -52,45 +52,53 @@ def searchsorted(
     side: Literal["left", "right"] = "left",
     sorter: Union[usm_ndarray, None] = None,
 ) -> usm_ndarray:
-    """searchsorted(x1, x2, side='left', sorter=None)
-
+    """
     Finds the indices into `x1` such that, if the corresponding elements
     in `x2` were inserted before the indices, the order of `x1`, when sorted
     in ascending order, would be preserved.
 
-    Args:
-        x1 (usm_ndarray):
-            input array. Must be a one-dimensional array. If `sorter` is
-            `None`, must be sorted in ascending order; otherwise, `sorter` must
-            be an array of indices that sort `x1` in ascending order.
-        x2 (usm_ndarray):
-            array containing search values.
-        side (Literal["left", "right]):
-            argument controlling which index is returned if a value lands
-            exactly on an edge. If `x2` is an array of rank `N` where
-            `v = x2[n, m, ..., j]`, the element `ret[n, m, ..., j]` in the
-            return array `ret` contains the position `i` such that
-            if `side="left"`, it is the first index such that
-            `x1[i-1] < v <= x1[i]`, `0` if `v <= x1[0]`, and `x1.size`
-            if `v > x1[-1]`;
-            and if `side="right"`, it is the first position `i` such that
-            `x1[i-1] <= v < x1[i]`, `0` if `v < x1[0]`, and `x1.size`
-            if `v >= x1[-1]`. Default: `"left"`.
-        sorter (Optional[usm_ndarray]):
-            array of indices that sort `x1` in ascending order. The array must
-            have the same shape as `x1` and have an integral data type.
-            Out of bound index values of `sorter` array are treated using
-            `"wrap"` mode documented in :py:func:`dpctl.tensor.take`.
-            Default: `None`.
+    Parameters
+    ----------
+    x1 : usm_ndarray
+        Input array. Must be a one-dimensional array. If `sorter` is
+        `None`, must be sorted in ascending order; otherwise, `sorter` must
+        be an array of indices that sort `x1` in ascending order.
+    x2 : usm_ndarray
+        Array containing search values.
+    side : {"left", "right"}, optional
+        Argument controlling which index is returned if a value lands
+        exactly on an edge. If `x2` is an array of rank `N` where
+        `v = x2[n, m, ..., j]`, the element `ret[n, m, ..., j]` in the
+        return array `ret` contains the position `i` such that
+        if `side="left"`, it is the first index such that
+        `x1[i-1] < v <= x1[i]`, `0` if `v <= x1[0]`, and `x1.size`
+        if `v > x1[-1]`;
+        and if `side="right"`, it is the first position `i` such that
+        `x1[i-1] <= v < x1[i]`, `0` if `v < x1[0]`, and `x1.size`
+        if `v >= x1[-1]`.
+
+        Default: ``"left"``.
+    sorter : {None, usm_ndarray}, optional
+        Array of indices that sort `x1` in ascending order. The array must
+        have the same shape as `x1` and have an integral data type.
+        Out of bound index values of `sorter` array are treated using
+        `"wrap"` mode documented in :py:func:`dpnp.tensor.take`.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array of indices with the same shape as `x2`.
+
     """
+
     if not isinstance(x1, usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x1)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x1)}")
     if not isinstance(x2, usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x2)}")
     if sorter is not None and not isinstance(sorter, usm_ndarray):
-        raise TypeError(
-            f"Expected dpctl.tensor.usm_ndarray, got {type(sorter)}"
-        )
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(sorter)}")
 
     if side not in ["left", "right"]:
         raise ValueError(
