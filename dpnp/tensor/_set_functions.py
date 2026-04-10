@@ -90,20 +90,23 @@ class UniqueInverseResult(NamedTuple):
 
 
 def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
-    """unique_values(x)
-
+    """
     Returns the unique elements of an input array `x`.
 
-    Args:
-        x (usm_ndarray):
-            input array. Inputs with more than one dimension are flattened.
-    Returns:
-        usm_ndarray
-            an array containing the set of unique elements in `x`. The
-            returned array has the same data type as `x`.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array. Inputs with more than one dimension are flattened.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array containing the set of unique elements in `x`. The
+        returned array has the same data type as `x`.
+
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
     if x.ndim == 1:
@@ -175,28 +178,31 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
 
 
 def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
-    """unique_counts(x)
-
+    """
     Returns the unique elements of an input array `x` and the corresponding
     counts for each unique element in `x`.
 
-    Args:
-        x (usm_ndarray):
-            input array. Inputs with more than one dimension are flattened.
-    Returns:
-        tuple[usm_ndarray, usm_ndarray]
-            a namedtuple `(values, counts)` whose
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array. Inputs with more than one dimension are flattened.
 
-            * first element is the field name `values` and is an array
-               containing the unique elements of `x`. This array has the
-               same data type as `x`.
-            * second element has the field name `counts` and is an array
-              containing the number of times each unique element occurs in `x`.
-              This array has the same shape as `values` and has the default
-              array index data type.
+    Returns
+    -------
+    out : tuple of usm_ndarrays
+        A namedtuple `(values, counts)` whose
+
+        * first element is the field name `values` and is an array
+          containing the unique elements of `x`. This array has the
+          same data type as `x`.
+        * second element has the field name `counts` and is an array
+          containing the number of times each unique element occurs in `x`.
+          This array has the same shape as `values` and has the default
+          array index data type.
+
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
     x_usm_type = x.usm_type
@@ -308,28 +314,31 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
 
 
 def unique_inverse(x):
-    """unique_inverse
-
-    Returns the unique elements of an input array x and the indices from the
+    """
+    Returns the unique elements of an input array `x` and the indices from the
     set of unique elements that reconstruct `x`.
 
-    Args:
-        x (usm_ndarray):
-            input array. Inputs with more than one dimension are flattened.
-    Returns:
-        tuple[usm_ndarray, usm_ndarray]
-            a namedtuple `(values, inverse_indices)` whose
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array. Inputs with more than one dimension are flattened.
 
-            * first element has the field name `values` and is an array
-              containing the unique elements of `x`. The array has the same
-              data type as `x`.
-            * second element has the field name `inverse_indices` and is an
-              array containing the indices of values that reconstruct `x`.
-              The array has the same shape as `x` and has the default array
-              index data type.
+    Returns
+    -------
+    out : tuple of usm_ndarrays
+        A namedtuple `(values, inverse_indices)` whose
+
+        * first element has the field name `values` and is an array
+          containing the unique elements of `x`. The array has the same
+          data type as `x`.
+        * second element has the field name `inverse_indices` and is an
+          array containing the indices of values that reconstruct `x`.
+          The array has the same shape as `x` and has the default array
+          index data type.
+
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
     x_usm_type = x.usm_type
@@ -467,38 +476,41 @@ def unique_inverse(x):
 
 
 def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
-    """unique_all(x)
-
+    """
     Returns the unique elements of an input array `x`, the first occurring
     indices for each unique element in `x`, the indices from the set of unique
     elements that reconstruct `x`, and the corresponding counts for each
     unique element in `x`.
 
-    Args:
-        x (usm_ndarray):
-            input array. Inputs with more than one dimension are flattened.
-    Returns:
-        tuple[usm_ndarray, usm_ndarray, usm_ndarray, usm_ndarray]
-            a namedtuple `(values, indices, inverse_indices, counts)` whose
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array. Inputs with more than one dimension are flattened.
 
-            * first element has the field name `values` and is an array
-              containing the unique elements of `x`. The array has the same
-              data type as `x`.
-            * second element has the field name `indices` and is an array
-              the indices (of first occurrences) of `x` that result in
-              `values`. The array has the same shape as `values` and has the
-              default array index data type.
-            * third element has the field name `inverse_indices` and is an
-              array containing the indices of values that reconstruct `x`.
-              The array has the same shape as `x` and has the default array
-              index data type.
-            * fourth element has the field name `counts` and is an array
-              containing the number of times each unique element occurs in `x`.
-              This array has the same shape as `values` and has the default
-              array index data type.
+    Returns
+    -------
+    out : tuple of usm_ndarrays
+        A namedtuple `(values, indices, inverse_indices, counts)` whose
+
+        * first element has the field name `values` and is an array
+          containing the unique elements of `x`. The array has the same
+          data type as `x`.
+        * second element has the field name `indices` and is an array
+          the indices (of first occurrences) of `x` that result in
+          `values`. The array has the same shape as `values` and has the
+          default array index data type.
+        * third element has the field name `inverse_indices` and is an
+          array containing the indices of values that reconstruct `x`.
+          The array has the same shape as `x` and has the default array
+          index data type.
+        * fourth element has the field name `counts` and is an array
+          containing the number of times each unique element occurs in `x`.
+          This array has the same shape as `values` and has the default
+          array index data type.
+
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
     x_usm_type = x.usm_type
@@ -659,26 +671,29 @@ def isin(
     *,
     invert: Optional[bool] = False,
 ) -> dpt.usm_ndarray:
-    """isin(x, test_elements, /, *, invert=False)
-
+    """
     Tests `x in test_elements` for each element of `x`. Returns a boolean array
     with the same shape as `x` that is `True` where the element is in
     `test_elements`, `False` otherwise.
 
-    Args:
-        x (Union[usm_ndarray, bool, int, float, complex]):
-            input element or elements.
-        test_elements (Union[usm_ndarray, bool, int, float, complex]):
-            elements against which to test each value of `x`.
-        invert (Optional[bool]):
-            if `True`, the output results are inverted, i.e., are equivalent to
-            testing `x not in test_elements` for each element of `x`.
-            Default: `False`.
+    Parameters
+    ----------
+    x : {usm_ndarray, bool, int, float, complex}
+        Input element or elements.
+    test_elements : {usm_ndarray, bool, int, float, complex}
+        Elements against which to test each value of `x`.
+    invert : bool, optional
+        If `True`, the output results are inverted, i.e., are equivalent to
+        testing `x not in test_elements` for each element of `x`.
 
-    Returns:
-        usm_ndarray:
-            an array of the inclusion test results. The returned array has a
-            boolean data type and the same shape as `x`.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array of the inclusion test results. The returned array has a
+        boolean data type and the same shape as `x`.
+
     """
     q1, x_usm_type = _get_queue_usm_type(x)
     q2, test_usm_type = _get_queue_usm_type(test_elements)
