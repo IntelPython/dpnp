@@ -37,7 +37,7 @@ jobs:
       actions: write
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 80
+    timeout-minutes: 90
 
     defaults:
       run:
@@ -220,6 +220,7 @@ jobs:
       - name: Run tests
         if: env.rerun-tests-on-failure != 'true'
         run: |
+          export SKIP_TENSOR_TESTS=1
           if [[ "${{ matrix.python }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
             export DPNP_TEST_ALL_INT_TYPES=1
             python -m pytest -ra --pyargs ${{ env.package-name }}.tests
@@ -239,6 +240,7 @@ jobs:
             . $CONDA/etc/profile.d/conda.sh
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
+            export SKIP_TENSOR_TESTS=1
 
             if [[ "${{ matrix.python }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
               export DPNP_TEST_ALL_INT_TYPES=1
@@ -246,6 +248,26 @@ jobs:
             else
               python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
             fi
+
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure != 'true'
+        run: |
+          python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure == 'true'
+        id: run_tests_tensor_linux
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        with:
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          retry_on: any
+          command: |
+            . $CONDA/etc/profile.d/conda.sh
+            . $CONDA/etc/profile.d/mamba.sh
+            mamba activate ${{ env.test-env-name }}
+
+            python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
 
   test_windows:
     name: Test
@@ -382,6 +404,7 @@ jobs:
         if: env.rerun-tests-on-failure != 'true'
         shell: pwsh
         run: |
+          $env:SKIP_TENSOR_TESTS=1
           if (${{ matrix.python }} -eq ${{ env.python-ver-test-all-dtypes }}) {
             $env:DPNP_TEST_ALL_INT_TYPES=1
             python -m pytest -ra --pyargs ${{ env.package-name }}.tests
@@ -399,12 +422,31 @@ jobs:
           retry_on: any
           shell: pwsh
           command: |
+            $env:SKIP_TENSOR_TESTS=1
             if ( ${{ matrix.python }} -eq ${{ env.python-ver-test-all-dtypes }} ) {
               $env:DPNP_TEST_ALL_INT_TYPES=1
               python -m pytest -ra --pyargs ${{ env.package-name }}.tests
             } else {
               python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
             }
+
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure != 'true'
+        shell: pwsh
+        run: |
+          python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure == 'true'
+        id: run_tests_tensor_win
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        with:
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          retry_on: any
+          shell: pwsh
+          command: |
+            python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
 
   upload:
     name: Upload

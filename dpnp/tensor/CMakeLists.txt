@@ -29,6 +29,17 @@
 
 find_package(Python COMPONENTS Development.Module)
 
+# Tensor-specific flags
+
+# dpctl doesn't add -fsycl globally
+# only to pybind11 module sources via add_sycl_to_target()
+string(REPLACE "-fsycl " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
+# Use LLD linker (dpctl sets this at root level)
+if(UNIX)
+    add_link_options("-fuse-ld=lld")
+endif()
+
 # Remove global coverage flags for tensor
 # use link-time only approach like dpctl
 if(DPNP_GENERATE_COVERAGE)
@@ -55,6 +66,7 @@ if(
     endif()
 endif()
 
+# Match dpctl warning flags
 # Suppress unused parameter warnings
 add_compile_options(-Wno-unused-parameter)
 
