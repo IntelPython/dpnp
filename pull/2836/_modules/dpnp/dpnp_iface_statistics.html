@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.20.0dev3+30.gf237fc78bb7 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.20.0dev3+33.g75eec54ddd7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=7252995b"></script>
+      <script src="../../_static/documentation_options.js?v=b3ad623d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -770,7 +770,7 @@
     <span class="n">a_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">supported_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
     <span class="n">v_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">supported_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
 
-    <span class="n">usm_type</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="n">a_casted</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">v_casted</span><span class="o">.</span><span class="n">usm_type</span><span class="p">])</span>
+    <span class="n">usm_type</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="n">a_casted</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">v_casted</span><span class="o">.</span><span class="n">usm_type</span><span class="p">])</span>
     <span class="n">out_size</span> <span class="o">=</span> <span class="n">l_pad</span> <span class="o">+</span> <span class="n">r_pad</span> <span class="o">+</span> <span class="n">a_casted</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">v_casted</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="c1"># out type is the same as input type</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a_casted</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">out_size</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
