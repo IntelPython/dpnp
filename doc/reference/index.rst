@@ -13,6 +13,7 @@ API reference of the Data Parallel Extension for NumPy*
 .. toctree::
    :maxdepth: 2
 
+   tensor
    ndarray
    ufunc
    routines
