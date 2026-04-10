@@ -41,7 +41,7 @@ from ._type_utils import _supported_dtype, _to_device_supported_dtype
 
 __doc__ = (
     "Implementation module for array manipulation "
-    "functions in :module:`dpctl.tensor`"
+    "functions in :module:`dpnp.tensor`"
 )
 
 
@@ -219,22 +219,25 @@ def _concat_axis_None(arrays):
 
 
 def broadcast_arrays(*args):
-    """broadcast_arrays(*arrays)
-
-    Broadcasts one or more :class:`dpctl.tensor.usm_ndarrays` against
+    """
+    Broadcasts one or more :class:`dpnp.tensor.usm_ndarrays` against
     one another.
 
-    Args:
-        arrays (usm_ndarray): an arbitrary number of arrays to be
-            broadcasted.
+    Parameters
+    ----------
+    arrays : usm_ndarray
+        An arbitrary number of arrays to be broadcasted.
 
-    Returns:
-        List[usm_ndarray]:
-            A list of broadcasted arrays. Each array
-            must have the same shape. Each array must have the same `dtype`,
-            `device` and `usm_type` attributes as its corresponding input
-            array.
+    Returns
+    -------
+    out : list of usm_ndarrays
+        A list of broadcasted arrays. Each array
+        must have the same shape. Each array must have the same `dtype`,
+        `device` and `usm_type` attributes as its corresponding input
+        array.
+
     """
+
     if len(args) == 0:
         raise ValueError("`broadcast_arrays` requires at least one argument")
     for X in args:
@@ -250,23 +253,28 @@ def broadcast_arrays(*args):
 
 
 def broadcast_to(X, /, shape):
-    """broadcast_to(x, shape)
-
-    Broadcast an array to a new `shape`; returns the broadcasted
-    :class:`dpctl.tensor.usm_ndarray` as a view.
-
-    Args:
-        x (usm_ndarray): input array
-        shape (Tuple[int,...]): array shape. The `shape` must be
-            compatible with `x` according to broadcasting rules.
-
-    Returns:
-        usm_ndarray:
-            An array with the specified `shape`.
-            The output array is a view of the input array, and
-            hence has the same data type, USM allocation type and
-            device attributes.
     """
+    Broadcast an array to a new `shape`; returns the broadcasted
+    :class:`dpnp.tensor.usm_ndarray` as a view.
+
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    shape : tuple of ints
+        Array shape. The `shape` must be compatible with `x`
+        according to broadcasting rules.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array with the specified `shape`.
+        The output array is a view of the input array, and
+        hence has the same data type, USM allocation type and
+        device attributes.
+
+    """
+
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
 
@@ -287,31 +295,37 @@ def broadcast_to(X, /, shape):
 
 
 def concat(arrays, /, *, axis=0):
-    """concat(arrays, axis)
-
+    """
     Joins a sequence of arrays along an existing axis.
 
-    Args:
-        arrays (Union[List[usm_ndarray, Tuple[usm_ndarray,...]]]):
-            input arrays to join. The arrays must have the same shape,
-            except in the dimension specified by `axis`.
-        axis (Optional[int]): axis along which the arrays will be joined.
-            If `axis` is `None`, arrays must be flattened before
-            concatenation. If `axis` is negative, it is understood as
-            being counted from the last dimension. Default: `0`.
+    Parameters
+    ----------
+    arrays : {list of usm_ndarrays, tuple of usm_ndarrays}
+        Input arrays to join. The arrays must have the same shape,
+        except in the dimension specified by `axis`.
+    axis : int, optional
+        Axis along which the arrays will be joined.
+        If `axis` is `None`, arrays must be flattened before
+        concatenation. If `axis` is negative, it is understood as
+        being counted from the last dimension.
 
-    Returns:
-        usm_ndarray:
-            An output array containing the concatenated
-            values. The output array data type is determined by Type
-            Promotion Rules of array API.
+        Default: ``0``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An output array containing the concatenated
+        values. The output array data type is determined by Type
+        Promotion Rules of array API.
 
     All input arrays must have the same device attribute. The output array
     is allocated on that same device, and data movement operations are
     scheduled on a queue underlying the device. The USM allocation type
     of the output array is determined by USM allocation type promotion
     rules.
+
     """
+
     if axis is None:
         return _concat_axis_None(arrays)
 
@@ -357,36 +371,41 @@ def concat(arrays, /, *, axis=0):
 
 
 def expand_dims(X, /, *, axis=0):
-    """expand_dims(x, axis)
-
+    """
     Expands the shape of an array by inserting a new axis (dimension)
     of size one at the position specified by axis.
 
-    Args:
-        x (usm_ndarray):
-            input array
-        axis (Union[int, Tuple[int]]):
-            axis position in the expanded axes (zero-based). If `x` has rank
-            (i.e, number of dimensions) `N`, a valid `axis` must reside
-            in the closed-interval `[-N-1, N]`. If provided a negative
-            `axis`, the `axis` position at which to insert a singleton
-            dimension is computed as `N + axis + 1`. Hence, if
-            provided `-1`, the resolved axis position is `N` (i.e.,
-            a singleton dimension must be appended to the input array `x`).
-            If provided `-N-1`, the resolved axis position is `0` (i.e., a
-            singleton dimension is prepended to the input array `x`).
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : {int, tuple of ints}
+        Axis position in the expanded axes (zero-based). If `x` has rank
+        (i.e, number of dimensions) `N`, a valid `axis` must reside
+        in the closed-interval `[-N-1, N]`. If provided a negative
+        `axis`, the `axis` position at which to insert a singleton
+        dimension is computed as `N + axis + 1`. Hence, if
+        provided `-1`, the resolved axis position is `N` (i.e.,
+        a singleton dimension must be appended to the input array `x`).
+        If provided `-N-1`, the resolved axis position is `0` (i.e., a
+        singleton dimension is prepended to the input array `x`).
 
-    Returns:
-        usm_ndarray:
-            Returns a view, if possible, and a copy otherwise with the number
-            of dimensions increased.
-            The expanded array has the same data type as the input array `x`.
-            The expanded array is located on the same device as the input
-            array, and has the same USM allocation type.
+    Returns
+    -------
+    out : usm_ndarray
+        Returns a view, if possible, and a copy otherwise with the number
+        of dimensions increased.
+        The expanded array has the same data type as the input array `x`.
+        The expanded array is located on the same device as the input
+        array, and has the same USM allocation type.
 
-    Raises:
-        IndexError: if `axis` value is invalid.
+    Raises
+    ------
+    IndexError
+        If `axis` value is invalid.
+
     """
+
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
 
@@ -403,24 +422,30 @@ def expand_dims(X, /, *, axis=0):
 
 
 def flip(X, /, *, axis=None):
-    """flip(x, axis)
-
+    """
     Reverses the order of elements in an array `x` along the given `axis`.
     The shape of the array is preserved, but the elements are reordered.
 
-    Args:
-        x (usm_ndarray): input array.
-        axis (Optional[Union[int, Tuple[int,...]]]): axis (or axes) along
-            which to flip.
-            If `axis` is `None`, all input array axes are flipped.
-            If `axis` is negative, the flipped axis is counted from the
-            last dimension. If provided more than one axis, only the specified
-            axes are flipped. Default: `None`.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : {None, int, tuple of ints}, optional
+        Axis (or axes) along which to flip.
+        If `axis` is `None`, all input array axes are flipped.
+        If `axis` is negative, the flipped axis is counted from the
+        last dimension. If provided more than one axis, only the specified
+        axes are flipped.
 
-    Returns:
-        usm_ndarray:
-            A view of `x` with the entries of `axis` reversed.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        A view of `x` with the entries of `axis` reversed.
+
     """
+
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
     X_ndim = X.ndim
@@ -435,36 +460,41 @@ def flip(X, /, *, axis=None):
 
 
 def moveaxis(X, source, destination, /):
-    """moveaxis(x, source, destination)
-
+    """
     Moves axes of an array to new positions.
 
-    Args:
-        x (usm_ndarray): input array
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    source : {int, sequence of ints}
+        Original positions of the axes to move.
+        These must be unique. If `x` has rank (i.e., number of
+        dimensions) `N`, a valid `axis` must be in the
+        half-open interval `[-N, N)`.
+    destination : {int, sequence of ints}
+        Destination positions for each of the original axes.
+        These must also be unique. If `x` has rank
+        (i.e., number of dimensions) `N`, a valid `axis` must be
+        in the half-open interval `[-N, N)`.
 
-        source (int or a sequence of int):
-            Original positions of the axes to move.
-            These must be unique. If `x` has rank (i.e., number of
-            dimensions) `N`, a valid `axis` must be in the
-            half-open interval `[-N, N)`.
+    Returns
+    -------
+    out : usm_ndarray
+        Array with moved axes.
+        The returned array must has the same data type as `x`,
+        is created on the same device as `x` and has the same
+        USM allocation type as `x`.
 
-        destination (int or a sequence of int):
-            Destination positions for each of the original axes.
-            These must also be unique. If `x` has rank
-            (i.e., number of dimensions) `N`, a valid `axis` must be
-            in the half-open interval `[-N, N)`.
+    Raises
+    ------
+    AxisError
+        If `axis` value is invalid.
+    ValueError
+        If `src` and `dst` have not equal number of elements.
 
-    Returns:
-        usm_ndarray:
-            Array with moved axes.
-            The returned array must has the same data type as `x`,
-            is created on the same device as `x` and has the same
-            USM allocation type as `x`.
-
-    Raises:
-        AxisError: if `axis` value is invalid.
-        ValueError: if `src` and `dst` have not equal number of elements.
     """
+
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
 
@@ -486,30 +516,35 @@ def moveaxis(X, source, destination, /):
 
 
 def permute_dims(X, /, axes):
-    """permute_dims(x, axes)
-
+    """
     Permute the axes (dimensions) of an array; returns the permuted
     array as a view.
 
-    Args:
-        x (usm_ndarray): input array.
-        axes (Tuple[int, ...]): tuple containing permutation of
-           `(0,1,...,N-1)` where `N` is the number of axes (dimensions)
-           of `x`.
-    Returns:
-        usm_ndarray:
-            An array with permuted axes.
-            The returned array must has the same data type as `x`,
-            is created on the same device as `x` and has the same USM allocation
-            type as `x`.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axes : tuple of ints
+        Tuple containing permutation of `(0,1,...,N-1)` where `N` is
+        the number of axes (dimensions) of `x`.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array with permuted axes.
+        The returned array must has the same data type as `x`,
+        is created on the same device as `x` and has the same USM
+        allocation type as `x`.
+
     """
+
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
     axes = normalize_axis_tuple(axes, X.ndim, "axes")
     if not X.ndim == len(axes):
         raise ValueError(
             "The length of the passed axes does not match "
-            "to the number of usm_ndarray dimensions."
+            "to the number of usm_ndarrays dimensions."
         )
     newstrides = tuple(X.strides[i] for i in axes)
     newshape = tuple(X.shape[i] for i in axes)
@@ -523,43 +558,49 @@ def permute_dims(X, /, axes):
 
 
 def repeat(x, repeats, /, *, axis=None):
-    """repeat(x, repeats, axis=None)
-
+    """
     Repeat elements of an array on a per-element basis.
 
-    Args:
-        x (usm_ndarray): input array
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    repeats : {int, sequence of ints, usm_ndarray}
+        The number of repetitions for each element.
 
-        repeats (Union[int, Sequence[int, ...], usm_ndarray]):
-            The number of repetitions for each element.
+        `repeats` must be broadcast-compatible with `N` where `N` is
+        `prod(x.shape)` if `axis` is `None` and `x.shape[axis]`
+        otherwise.
 
-            `repeats` must be broadcast-compatible with `N` where `N` is
-            `prod(x.shape)` if `axis` is `None` and `x.shape[axis]`
-            otherwise.
+        If `repeats` is an array, it must have an integer data type.
+        Otherwise, `repeats` must be a Python integer or sequence of
+        Python integers (i.e., a tuple, list, or range).
+    axis : int, optional
+        The axis along which to repeat values. If `axis` is `None`, the
+        function repeats elements of the flattened array.
 
-            If `repeats` is an array, it must have an integer data type.
-            Otherwise, `repeats` must be a Python integer or sequence of
-            Python integers (i.e., a tuple, list, or range).
+        Default: ``None``.
 
-        axis (Optional[int]):
-            The axis along which to repeat values. If `axis` is `None`, the
-            function repeats elements of the flattened array. Default: `None`.
+    Returns
+    -------
+    out : usm_ndarray
+        Output array with repeated elements.
 
-    Returns:
-        usm_ndarray:
-            output array with repeated elements.
+        If `axis` is `None`, the returned array is one-dimensional,
+        otherwise, it has the same shape as `x`, except for the axis along
+        which elements were repeated.
 
-            If `axis` is `None`, the returned array is one-dimensional,
-            otherwise, it has the same shape as `x`, except for the axis along
-            which elements were repeated.
+        The returned array will have the same data type as `x`.
+        The returned array will be located on the same device as `x` and
+        have the same USM allocation type as `x`.
 
-            The returned array will have the same data type as `x`.
-            The returned array will be located on the same device as `x` and
-            have the same USM allocation type as `x`.
+    Raises
+    ------
+    AxisError
+        If `axis` value is invalid.
 
-    Raises:
-        AxisError: if `axis` value is invalid.
     """
+
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
 
@@ -753,36 +794,41 @@ def repeat(x, repeats, /, *, axis=None):
 
 def roll(x, /, shift, *, axis=None):
     """
-    roll(x, shift, axis)
-
     Rolls array elements along a specified axis.
     Array elements that roll beyond the last position are re-introduced
     at the first position. Array elements that roll beyond the first position
     are re-introduced at the last position.
 
-    Args:
-        x (usm_ndarray): input array
-        shift (Union[int, Tuple[int,...]]): number of places by which the
-            elements are shifted. If `shift` is a tuple, then `axis` must be a
-            tuple of the same size, and each of the given axes must be shifted
-            by the corresponding element in `shift`. If `shift` is an `int`
-            and `axis` a tuple, then the same `shift` must be used for all
-            specified axes. If a `shift` is positive, then array elements is
-            shifted positively (toward larger indices) along the dimension of
-            `axis`.
-            If a `shift` is negative, then array elements must be shifted
-            negatively (toward smaller indices) along the dimension of `axis`.
-        axis (Optional[Union[int, Tuple[int,...]]]): axis (or axes) along which
-            elements to shift. If `axis` is `None`, the array is
-            flattened, shifted, and then restored to its original shape.
-            Default: `None`.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    shift : {int, tuple of ints}
+        Number of places by which the elements are shifted. If `shift`
+        is a tuple, then `axis` must be a tuple of the same size, and
+        each of the given axes must be shifted by the corresponding
+        element in `shift`. If `shift` is an `int` and `axis` a tuple,
+        then the same `shift` must be used for all specified axes. If a
+        `shift` is positive, then array elements is shifted positively
+        (toward larger indices) along the dimension of `axis`.
+        If a `shift` is negative, then array elements must be shifted
+        negatively (toward smaller indices) along the dimension of `axis`.
+    axis : {None, int, tuple of ints}, optional
+        Axis (or axes) along which elements to shift. If `axis` is
+        `None`, the array is flattened, shifted, and then restored to
+        its original shape.
 
-    Returns:
-        usm_ndarray:
-            An array having the same `dtype`, `usm_type` and
-            `device` attributes as `x` and whose elements are shifted relative
-            to `x`.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : usm_ndarray
+        An array having the same `dtype`, `usm_type` and
+        `device` attributes as `x` and whose elements are shifted relative
+        to `x`.
+
     """
+
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
     exec_q = x.sycl_queue
@@ -828,26 +874,33 @@ def roll(x, /, shift, *, axis=None):
 
 
 def squeeze(X, /, axis=None):
-    """squeeze(x, axis)
-
+    """
     Removes singleton dimensions (axes) from array `x`.
 
-    Args:
-        x (usm_ndarray): input array
-        axis (Union[int, Tuple[int,...]]): axis (or axes) to squeeze.
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : {int, tuple of ints}
+        Axis (or axes) to squeeze.
 
-    Returns:
-        usm_ndarray:
-            Output array is a view, if possible,
-            and a copy otherwise, but with all or a subset of the
-            dimensions of length 1 removed. Output has the same data
-            type as the input, is allocated on the same device as the
-            input and has the same USM allocation type as the input
-            array `x`.
+    Returns
+    -------
+    out : usm_ndarray
+        Output array is a view, if possible,
+        and a copy otherwise, but with all or a subset of the
+        dimensions of length 1 removed. Output has the same data
+        type as the input, is allocated on the same device as the
+        input and has the same USM allocation type as the input
+        array `x`.
 
-    Raises:
-        ValueError: if the specified axis has a size greater than one.
+    Raises
+    ------
+    ValueError
+        If the specified axis has a size greater than one.
+
     """
+
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
     X_shape = X.shape
@@ -874,29 +927,36 @@ def squeeze(X, /, axis=None):
 
 def stack(arrays, /, *, axis=0):
     """
-    stack(arrays, axis)
-
     Joins a sequence of arrays along a new axis.
 
-    Args:
-        arrays (Union[List[usm_ndarray], Tuple[usm_ndarray,...]]):
-            input arrays to join. Each array must have the same shape.
-        axis (int): axis along which the arrays will be joined. Providing
-            an `axis` specified the index of the new axis in the dimensions
-            of the output array. A valid axis must be on the interval
-            `[-N, N)`, where `N` is the rank (number of dimensions) of `x`.
-            Default: `0`.
+    Parameters
+    ----------
+    arrays : {list of usm_ndarrays, tuple of usm_ndarrays}
+        Input arrays to join. Each array must have the same shape.
+    axis : int, optional
+        Axis along which the arrays will be joined. Providing
+        an `axis` specified the index of the new axis in the dimensions
+        of the output array. A valid axis must be on the interval
+        `[-N, N)`, where `N` is the rank (number of dimensions) of `x`.
 
-    Returns:
-        usm_ndarray:
-            An output array having rank `N+1`, where `N` is
-            the rank (number of dimensions) of `x`. If the input arrays have
-            different data types, array API Type Promotion Rules apply.
+        Default: ``0``.
 
-    Raises:
-        ValueError: if not all input arrays have the same shape
-        IndexError: if provided an `axis` outside of the required interval.
+    Returns
+    -------
+    out : usm_ndarray
+        An output array having rank `N+1`, where `N` is
+        the rank (number of dimensions) of `x`. If the input arrays have
+        different data types, array API Type Promotion Rules apply.
+
+    Raises
+    ------
+    ValueError
+        If not all input arrays have the same shape.
+    IndexError
+        If provided an `axis` outside of the required interval.
+
     """
+
     res_dtype, res_usm_type, exec_q = _arrays_validation(arrays)
 
     n = len(arrays)
@@ -934,31 +994,37 @@ def stack(arrays, /, *, axis=0):
 
 
 def swapaxes(X, axis1, axis2):
-    """swapaxes(x, axis1, axis2)
-
+    """
     Interchanges two axes of an array.
 
-    Args:
-        x (usm_ndarray): input array
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis1 : int
+        First axis.
+        If `x` has rank (i.e., number of dimensions) `N`,
+        a valid `axis` must be in the half-open interval `[-N, N)`.
+    axis2 : int
+        Second axis.
+        If `x` has rank (i.e., number of dimensions) `N`,
+        a valid `axis` must be in the half-open interval `[-N, N)`.
 
-        axis1 (int): First axis.
-            If `x` has rank (i.e., number of dimensions) `N`,
-            a valid `axis` must be in the half-open interval `[-N, N)`.
+    Returns
+    -------
+    out : usm_ndarray
+        Array with swapped axes.
+        The returned array must has the same data type as `x`,
+        is created on the same device as `x` and has the same USM
+        allocation type as `x`.
 
-        axis2 (int): Second axis.
-            If `x` has rank (i.e., number of dimensions) `N`,
-            a valid `axis` must be in the half-open interval `[-N, N)`.
+    Raises
+    ------
+    AxisError
+        If `axis` value is invalid.
 
-    Returns:
-        usm_ndarray:
-            Array with swapped axes.
-            The returned array must has the same data type as `x`,
-            is created on the same device as `x` and has the same USM
-            allocation type as `x`.
-
-    Raises:
-        AxisError: if `axis` value is invalid.
     """
+
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
 
@@ -972,25 +1038,32 @@ def swapaxes(X, axis1, axis2):
 
 
 def unstack(X, /, *, axis=0):
-    """unstack(x, axis=0)
-
+    """
     Splits an array in a sequence of arrays along the given axis.
 
-    Args:
-        x (usm_ndarray): input array
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    axis : int, optional
+        Axis along which `x` is unstacked.
+        If `x` has rank (i.e, number of dimensions) `N`,
+        a valid `axis` must reside in the half-open interval `[-N, N)`.
 
-        axis (int, optional): axis along which `x` is unstacked.
-            If `x` has rank (i.e, number of dimensions) `N`,
-            a valid `axis` must reside in the half-open interval `[-N, N)`.
-            Default: `0`.
+        Default: ``0``.
 
-    Returns:
-        Tuple[usm_ndarray,...]:
-            Output sequence of arrays which are views into the input array.
+    Returns
+    -------
+    out : tuple of usm_ndarrays
+        Output sequence of arrays which are views into the input array.
 
-    Raises:
-        AxisError: if the `axis` value is invalid.
+    Raises
+    ------
+    AxisError
+        If the `axis` value is invalid.
+
     """
+
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
 
@@ -1001,8 +1074,7 @@ def unstack(X, /, *, axis=0):
 
 
 def tile(x, repetitions, /):
-    """tile(x, repetitions)
-
+    """
     Repeat an input array `x` along each axis a number of times given by
     `repetitions`.
 
@@ -1011,25 +1083,29 @@ def tile(x, repetitions, /):
         * If `M < N`, `x` will have `N - M` new axes prepended to its shape
         * If `M > N`, `repetitions` will have `M - N` ones prepended to it
 
-    Args:
-        x (usm_ndarray): input array
+    Parameters
+    ----------
+    x : usm_ndarray
+        Input array.
+    repetitions : {int, tuple of ints}
+        The number of repetitions along each dimension of `x`.
 
-        repetitions (Union[int, Tuple[int, ...]]):
-            The number of repetitions along each dimension of `x`.
+    Returns
+    -------
+    out : usm_ndarray
+        Tiled output array.
 
-    Returns:
-        usm_ndarray:
-            tiled output array.
+        The returned array will have rank `max(M, N)`. If `S` is the
+        shape of `x` after prepending dimensions and `R` is
+        `repetitions` after prepending ones, then the shape of the
+        result will be `S[i] * R[i]` for each dimension `i`.
 
-            The returned array will have rank `max(M, N)`. If `S` is the
-            shape of `x` after prepending dimensions and `R` is
-            `repetitions` after prepending ones, then the shape of the
-            result will be `S[i] * R[i]` for each dimension `i`.
+        The returned array will have the same data type as `x`.
+        The returned array will be located on the same device as `x` and
+        have the same USM allocation type as `x`.
 
-            The returned array will have the same data type as `x`.
-            The returned array will be located on the same device as `x` and
-            have the same USM allocation type as `x`.
     """
+
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
 
