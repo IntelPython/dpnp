@@ -1,0 +1,10 @@
+﻿
+
+dpnp.interp
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: interp
