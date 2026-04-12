@@ -44,8 +44,6 @@
 
 #include "dpnp4pybind11.hpp"
 
-#include "choose_kernel.hpp"
-
 #include "ext/common.hpp"
 #include "kernels/indexing/choose.hpp"
 

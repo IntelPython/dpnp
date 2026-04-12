@@ -35,7 +35,7 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
 
 #include "ext/common.hpp"
 #include "kernels/statistics/histogram.hpp"
