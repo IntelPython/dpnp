@@ -43,6 +43,8 @@
 
 #include "dpnp4pybind11.hpp"
 
+#include "kernels/elementwise_functions/interpolate.hpp"
+
 // dpctl tensor headers
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
