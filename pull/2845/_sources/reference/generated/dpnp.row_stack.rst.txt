@@ -1,0 +1,10 @@
+﻿
+
+dpnp.row\_stack
+===============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: row_stack
