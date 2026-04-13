@@ -4,3 +4,4 @@ channels:
 dependencies:
   - python=3.13 # no python 3.14 support by conda-build
   - conda-build=25.11.1
+  - conda-verify=3.4.2
