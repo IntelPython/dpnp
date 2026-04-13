@@ -303,7 +303,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
-            "Expected `x` to be of dpctl.tensor.usm_ndarray type, got "
+            "Expected `x` to be of dpnp.tensor.usm_ndarray type, got "
             f"{type(x)}"
         )
     if order not in ["K", "C", "F", "A"]:

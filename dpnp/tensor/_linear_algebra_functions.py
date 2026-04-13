@@ -69,7 +69,7 @@ def matrix_transpose(x):
         )
     if x.ndim < 2:
         raise ValueError(
-            "dpctl.tensor.matrix_transpose requires array to have"
+            "dpnp.tensor.matrix_transpose requires array to have"
             "at least 2 dimensions"
         )
 
@@ -115,9 +115,9 @@ def tensordot(x1, x2, axes=2):
             must have a data type determined by Type Promotion Rules.
     """
     if not isinstance(x1, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x1)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x1)}")
     if not isinstance(x2, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x2)}")
     q1, x1_usm_type = x1.sycl_queue, x1.usm_type
     q2, x2_usm_type = x2.sycl_queue, x2.usm_type
     exec_q = dpt.get_execution_queue((q1, q2))
@@ -351,9 +351,9 @@ def vecdot(x1, x2, axis=-1):
             to non-contracted axes.
     """
     if not isinstance(x1, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x1)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x1)}")
     if not isinstance(x2, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x2)}")
     q1, x1_usm_type = x1.sycl_queue, x1.usm_type
     q2, x2_usm_type = x2.sycl_queue, x2.usm_type
     exec_q = dpt.get_execution_queue((q1, q2))
@@ -653,9 +653,9 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             point type, neither argument is complex conjugated or transposed.
     """
     if not isinstance(x1, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x1)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x1)}")
     if not isinstance(x2, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x2)}")
     if order not in ["K", "C", "F", "A"]:
         order = "K"
     q1, x1_usm_type = x1.sycl_queue, x1.usm_type

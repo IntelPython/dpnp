@@ -89,9 +89,7 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
             the same shape as the input array `x`.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(
-            f"Expected type dpctl.tensor.usm_ndarray, got {type(x)}"
-        )
+        raise TypeError(f"Expected type dpnp.tensor.usm_ndarray, got {type(x)}")
     nd = x.ndim
     if nd == 0:
         axis = normalize_axis_index(axis, ndim=1, msg_prefix="axis")
@@ -205,9 +203,7 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
             data type.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(
-            f"Expected type dpctl.tensor.usm_ndarray, got {type(x)}"
-        )
+        raise TypeError(f"Expected type dpnp.tensor.usm_ndarray, got {type(x)}")
     nd = x.ndim
     if nd == 0:
         axis = normalize_axis_index(axis, ndim=1, msg_prefix="axis")
@@ -336,9 +332,7 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
     """
     largest = _get_top_k_largest(mode)
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(
-            f"Expected type dpctl.tensor.usm_ndarray, got {type(x)}"
-        )
+        raise TypeError(f"Expected type dpnp.tensor.usm_ndarray, got {type(x)}")
 
     k = operator.index(k)
     if k < 0:

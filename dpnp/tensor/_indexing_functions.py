@@ -84,11 +84,11 @@ def extract(condition, arr):
     """
     if not isinstance(condition, dpt.usm_ndarray):
         raise TypeError(
-            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(condition)}"
+            "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(condition)}"
         )
     if not isinstance(arr, dpt.usm_ndarray):
         raise TypeError(
-            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(arr)}"
+            "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(arr)}"
         )
     exec_q = dpt.get_execution_queue(
         (
@@ -123,7 +123,7 @@ def nonzero(arr):
     """
     if not isinstance(arr, dpt.usm_ndarray):
         raise TypeError(
-            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(arr)}"
+            "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(arr)}"
         )
     if arr.ndim == 0:
         raise ValueError("Array of positive rank is expected")
@@ -152,15 +152,15 @@ def place(arr, mask, vals):
     """
     if not isinstance(arr, dpt.usm_ndarray):
         raise TypeError(
-            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(arr)}"
+            "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(arr)}"
         )
     if not isinstance(mask, dpt.usm_ndarray):
         raise TypeError(
-            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(mask)}"
+            "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(mask)}"
         )
     if not isinstance(vals, dpt.usm_ndarray):
         raise TypeError(
-            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(vals)}"
+            "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(vals)}"
         )
     exec_q = dpt.get_execution_queue(
         (
@@ -385,10 +385,10 @@ def put_along_axis(x, indices, vals, /, *, axis=-1, mode="wrap"):
         work.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     if not isinstance(indices, dpt.usm_ndarray):
         raise TypeError(
-            f"Expected dpctl.tensor.usm_ndarray, got {type(indices)}"
+            f"Expected dpnp.tensor.usm_ndarray, got {type(indices)}"
         )
     x_nd = x.ndim
     if x_nd != indices.ndim:
@@ -597,10 +597,10 @@ def take_along_axis(x, indices, /, *, axis=-1, mode="wrap"):
         by the value of ``mode`` keyword.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     if not isinstance(indices, dpt.usm_ndarray):
         raise TypeError(
-            f"Expected dpctl.tensor.usm_ndarray, got {type(indices)}"
+            f"Expected dpnp.tensor.usm_ndarray, got {type(indices)}"
         )
     x_nd = x.ndim
     if x_nd != indices.ndim:

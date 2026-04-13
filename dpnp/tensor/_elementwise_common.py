@@ -181,7 +181,7 @@ class UnaryElementwiseFunc:
 
     def __call__(self, x, /, *, out=None, order="K"):
         if not isinstance(x, dpt.usm_ndarray):
-            raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+            raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
         if order not in ["C", "F", "K", "A"]:
             order = "K"
@@ -859,7 +859,7 @@ class BinaryElementwiseFunc:
         if not isinstance(o1, dpt.usm_ndarray):
             raise TypeError(
                 "Expected first argument to be "
-                f"dpctl.tensor.usm_ndarray, got {type(o1)}"
+                f"dpnp.tensor.usm_ndarray, got {type(o1)}"
             )
         if not o1.flags.writable:
             raise ValueError("provided left-hand side array is read-only")

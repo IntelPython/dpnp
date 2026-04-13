@@ -42,7 +42,7 @@ from ._type_utils import (
 
 def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     nd = x.ndim
     if axis is None:
@@ -149,7 +149,7 @@ def _reduction_over_axis(
     _default_reduction_type_fn,
 ):
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     nd = x.ndim
     if axis is None:
         axis = tuple(range(nd))
@@ -298,7 +298,7 @@ def _reduction_over_axis(
 
 def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     nd = x.ndim
     if axis is None:

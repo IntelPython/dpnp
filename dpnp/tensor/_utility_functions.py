@@ -50,7 +50,7 @@ from ._type_utils import (
 
 def _boolean_reduction(x, axis, keepdims, func):
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     nd = x.ndim
     if axis is None:
@@ -468,7 +468,7 @@ def diff(x, /, *, axis=-1, n=1, prepend=None, append=None):
 
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
-            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(x)}"
+            "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(x)}"
         )
     x_nd = x.ndim
     axis = normalize_axis_index(operator.index(axis), x_nd)

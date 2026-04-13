@@ -903,7 +903,7 @@ cdef class usm_ndarray:
             raise ValueError(
                 "array.T requires array to have 2 dimensions. "
                 "Use array.mT to transpose stacks of matrices and "
-                "dpctl.tensor.permute_dims() to permute dimensions."
+                "dpnp.tensor.permute_dims() to permute dimensions."
             )
 
     @property
@@ -1161,7 +1161,7 @@ cdef class usm_ndarray:
 
         raise ValueError(
             "The truth value of an array with more than one element is "
-            "ambiguous. Use dpctl.tensor.any() or dpctl.tensor.all()"
+            "ambiguous. Use dpnp.tensor.any() or dpnp.tensor.all()"
         )
 
     def __float__(self):
@@ -1491,7 +1491,7 @@ cdef class usm_ndarray:
                     except Exception:
                         raise ValueError(
                             f"Input of type {type(rhs)} could not be "
-                            "copied into dpctl.tensor.usm_ndarray"
+                            "copied into dpnp.tensor.usm_ndarray"
                         )
             return
 
@@ -1620,8 +1620,8 @@ cdef class usm_ndarray:
         """
         raise TypeError(
             "Implicit conversion to a NumPy array is not allowed. "
-            "Use `dpctl.tensor.asnumpy` to copy data from this "
-            "`dpctl.tensor.usm_ndarray` instance to NumPy array"
+            "Use `dpnp.tensor.asnumpy` to copy data from this "
+            "`dpnp.tensor.usm_ndarray` instance to NumPy array"
         )
 
 
