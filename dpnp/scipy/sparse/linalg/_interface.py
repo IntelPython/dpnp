@@ -325,16 +325,16 @@ class _AdjointLinearOperator(LinearOperator):
         self.args = (A,)
 
     def _matvec(self, x):
-        return self.A._rmatvec(x) # pylint: disable=protected-access
+        return self.A._rmatvec(x)  # pylint: disable=protected-access
 
     def _rmatvec(self, x):
-        return self.A._matvec(x) # pylint: disable=protected-access
+        return self.A._matvec(x)  # pylint: disable=protected-access
 
     def _matmat(self, X):
-        return self.A._rmatmat(X) # pylint: disable=protected-access
+        return self.A._rmatmat(X)  # pylint: disable=protected-access
 
     def _rmatmat(self, X):
-        return self.A._matmat(X) # pylint: disable=protected-access
+        return self.A._matmat(X)  # pylint: disable=protected-access
 
     def _adjoint(self):
         return self.A
@@ -540,9 +540,9 @@ def aslinearoperator(A) -> LinearOperator:
         return A
 
     try:
-        from dpnp.scipy import sparse as _sp # pylint: disable=import-outside-toplevel
+        from dpnp.scipy.sparse import issparse
 
-        if _sp.issparse(A):
+        if issparse(A):
             return MatrixLinearOperator(A)
     except (ImportError, AttributeError):
         pass

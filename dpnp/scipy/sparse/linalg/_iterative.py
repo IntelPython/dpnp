@@ -87,9 +87,11 @@ except ImportError:
 
 _SUPPORTED_DTYPES = frozenset("fdFD")
 
+
 def _np_dtype(dp_dtype) -> numpy.dtype:
     """Normalise any dtype-like (dpnp type/numpy type/string) to numpy.dtype."""
     return numpy.dtype(dp_dtype)
+
 
 def _check_dtype(dtype, name: str) -> None:
     if _np_dtype(dtype).char not in _SUPPORTED_DTYPES:
@@ -97,6 +99,7 @@ def _check_dtype(dtype, name: str) -> None:
             f"{name} has unsupported dtype {dtype}; "
             "only float32, float64, complex64, complex128 are accepted."
         )
+
 
 class _CachedSpMV:
     """
@@ -360,6 +363,7 @@ def _get_atol(b_norm: float, atol, rtol: float) -> float:
             f"atol={atol!r} is invalid; must be a real, non-negative number."
         )
     return max(atol, float(rtol) * float(b_norm))
+
 
 def cg(
     A,
