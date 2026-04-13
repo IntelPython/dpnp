@@ -87,8 +87,17 @@ static sycl::event orgqr_impl(sycl::queue &exec_q,
 
     sycl::event orgqr_event;
     try {
+        // Release GIL to avoid serialization of host task submissions
+        // to the same queue in OneMKL
+        py::gil_scoped_release lock{};
+
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
+        // mkl_lapack::orgqr() is done through GPU-to-Host reverse offload:
+        // exec_q.submit([&](sycl::handler& cgh) {
+        //   cgh.depends_on(depends);
+        //   cgh.host_task([=]() { orgqr_host(...); });
+        // }).wait();
         orgqr_event = mkl_lapack::orgqr(
             exec_q,
             m,          // The number of rows in the matrix; (0 ≤ m).
