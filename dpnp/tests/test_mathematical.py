@@ -17,7 +17,6 @@ from dpnp.dpnp_utils import map_dtype_to_device
 from dpnp.exceptions import AxisError, ExecutionPlacementError
 
 from .helper import (
-    LTS_VERSION,
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_abs_array,
@@ -31,7 +30,6 @@ from .helper import (
     has_support_aspect16,
     has_support_aspect64,
     is_intel_numpy,
-    is_lts_driver,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -216,9 +214,6 @@ class TestCumLogSumExp:
     @pytest.mark.parametrize("axis", [None, 2, -1])
     @pytest.mark.parametrize("include_initial", [True, False])
     def test_basic(self, dtype, axis, include_initial):
-        if axis is None and not is_lts_driver(version=LTS_VERSION.V1_6):
-            pytest.skip("due to SAT-8336")
-
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
         res = dpnp.cumlogsumexp(a, axis=axis, include_initial=include_initial)
 
@@ -236,9 +231,6 @@ class TestCumLogSumExp:
     @pytest.mark.parametrize("axis", [None, 2, -1])
     @pytest.mark.parametrize("include_initial", [True, False])
     def test_include_initial(self, dtype, axis, include_initial):
-        if axis is None and not is_lts_driver(version=LTS_VERSION.V1_6):
-            pytest.skip("due to SAT-8336")
-
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
 
         if dpnp.issubdtype(a, dpnp.float32):
