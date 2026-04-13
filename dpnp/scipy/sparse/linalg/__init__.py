@@ -27,15 +27,18 @@
 # *****************************************************************************
 
 """
-``dpnp.scipy``
-==============
+Sparse linear algebra interface for DPNP.
 
-The SciPy-compatible interface of DPNP.
+This module provides a subset of :mod:`scipy.sparse.linalg`
+ functionality on top of DPNP arrays.
 
-This namespace provides submodules that mimic parts of ``SciPy`` on top of
-DPNP functionality, reusing DPNP and oneMKL implementations underneath.
+The initial implementation focuses on the :class:`LinearOperator` interface
+and a small set of Krylov solvers (``cg``, ``gmres``, ``minres``).
 """
 
-from . import linalg, sparse, special
+from __future__ import annotations
 
-__all__ = ["linalg", "special", "sparse"]
+from ._interface import LinearOperator, aslinearoperator
+from ._iterative import cg, gmres, minres
+
+__all__ = ["LinearOperator", "aslinearoperator", "cg", "gmres", "minres"]

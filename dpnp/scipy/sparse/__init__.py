@@ -26,16 +26,12 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-``dpnp.scipy``
-==============
+"""Sparse linear algebra namespace for DPNP.
 
-The SciPy-compatible interface of DPNP.
-
-This namespace provides submodules that mimic parts of ``SciPy`` on top of
-DPNP functionality, reusing DPNP and oneMKL implementations underneath.
+Currently this module exposes the :mod:`dpnp.scipy.sparse.linalg` submodule
+and provides a location for future sparse matrix container types.
 """
 
-from . import linalg, sparse, special
+from . import linalg
 
-__all__ = ["linalg", "special", "sparse"]
+__all__ = ["linalg"]
