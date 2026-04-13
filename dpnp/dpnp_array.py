@@ -72,7 +72,7 @@ class dpnp_array:
     An array object represents a multidimensional tensor of numeric elements
     stored in a USM allocation on a SYCL device.
 
-    This is a wrapper around :class:`dpctl.tensor.usm_ndarray` that provides
+    This is a wrapper around :class:`dpnp.tensor.usm_ndarray` that provides
     methods to be compliant with original NumPy.
 
     """
@@ -609,12 +609,12 @@ class dpnp_array:
         """
         Property to support ``__usm_ndarray__`` protocol.
 
-        It assumes to return :class:`dpctl.tensor.usm_ndarray` instance
+        It assumes to return :class:`dpnp.tensor.usm_ndarray` instance
         corresponding to the content of the object.
 
         This property is intended to speed-up conversion from
-        :class:`dpnp.ndarray` to :class:`dpctl.tensor.usm_ndarray` passed into
-        :func:`dpctl.tensor.asarray` function. The input object that implements
+        :class:`dpnp.ndarray` to :class:`dpnp.tensor.usm_ndarray` passed into
+        :func:`dpnp.tensor.asarray` function. The input object that implements
         ``__usm_ndarray__`` protocol is recognized as owner of USM allocation
         that is managed by a smart pointer, and asynchronous deallocation
         will not involve GIL.
@@ -631,13 +631,13 @@ class dpnp_array:
     def _create_from_usm_ndarray(usm_ary: dpt.usm_ndarray):
         """
         Return :class:`dpnp.ndarray` instance from USM allocation providing
-        by an instance of :class:`dpctl.tensor.usm_ndarray`.
+        by an instance of :class:`dpnp.tensor.usm_ndarray`.
 
         """
 
         if not isinstance(usm_ary, dpt.usm_ndarray):
             raise TypeError(
-                f"Expected dpctl.tensor.usm_ndarray, got {type(usm_ary)}"
+                f"Expected dpnp.tensor.usm_ndarray, got {type(usm_ary)}"
             )
         res = dpnp_array.__new__(dpnp_array)
         res._array_obj = usm_ary
@@ -956,7 +956,7 @@ class dpnp_array:
             `device` can be ``None``, a oneAPI filter selector string,
             an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            :class:`dpctl.SyclQueue`, or a :class:`dpnp.tensor.Device` object
             returned by :attr:`dpnp.ndarray.device`.
             If the value is ``None``, returned array is created on the same
             device as that array.
@@ -1067,7 +1067,7 @@ class dpnp_array:
             `device` can be ``None``, a oneAPI filter selector string,
             an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            :class:`dpctl.SyclQueue`, or a :class:`dpnp.tensor.Device` object
             returned by :attr:`dpnp.ndarray.device`.
 
             Default: ``None``.
@@ -1162,7 +1162,7 @@ class dpnp_array:
     @property
     def device(self):
         """
-        Return :class:`dpctl.tensor.Device` object representing residence of
+        Return :class:`dpnp.tensor.Device` object representing residence of
         the array data.
 
         The ``Device`` object represents Array API notion of the device, and
@@ -1329,7 +1329,7 @@ class dpnp_array:
         return self.reshape(-1, order=order, copy=True)
 
     def get_array(self):
-        """Get :class:`dpctl.tensor.usm_ndarray` object."""
+        """Get :class:`dpnp.tensor.usm_ndarray` object."""
         return self._array_obj
 
     # 'getfield',
@@ -2182,7 +2182,7 @@ class dpnp_array:
             `device` can be ``None``, a oneAPI filter selector string,
             an instance of :class:`dpctl.SyclDevice` corresponding to
             a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            :class:`dpctl.SyclQueue`, or a :class:`dpnp.tensor.Device` object
             returned by :attr:`dpnp.ndarray.device`.
         stream : {SyclQueue, None}, optional
             Execution queue to synchronize with. If ``None``, synchronization

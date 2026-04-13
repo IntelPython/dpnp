@@ -324,7 +324,7 @@ def test_diff_input_validation():
     bad_in = {}
     assert_raises_regex(
         TypeError,
-        "Expecting dpctl.tensor.usm_ndarray type, got.*",
+        "Expecting dpnp.tensor.usm_ndarray type, got.*",
         dpt.diff,
         bad_in,
     )

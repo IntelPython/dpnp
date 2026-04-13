@@ -548,7 +548,7 @@ def test_clip_errors():
     ar3 = dpt.ones(2, dtype="f4")
     assert_raises_regex(
         TypeError,
-        "Expected `x` to be of dpctl.tensor.usm_ndarray type*",
+        "Expected `x` to be of dpnp.tensor.usm_ndarray type*",
         dpt.clip,
         ar1,
         ar2,
