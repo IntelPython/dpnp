@@ -172,8 +172,7 @@ public:
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
         for (std::size_t arg_reduce_gid = arg_reduce_gid0;
-             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
-        {
+             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg) {
             auto reduction_offsets_ = reduced_dims_indexer_(arg_reduce_gid);
             const auto &lhs_reduction_offset =
                 reduction_offsets_.get_first_offset();
@@ -270,8 +269,7 @@ public:
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
         for (std::size_t arg_reduce_gid = arg_reduce_gid0;
-             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
-        {
+             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg) {
             auto reduction_offsets_ = reduced_dims_indexer_(arg_reduce_gid);
             const auto &lhs_reduction_offset =
                 reduction_offsets_.get_first_offset();
@@ -301,14 +299,16 @@ public:
     }
 };
 
-template <
-    typename lhsTy,
-    typename rhsTy,
-    typename resTy,
-    typename BatchIndexerT,
-    typename RedIndexerT,
-    template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    class kernel_name_token>
+template <typename lhsTy,
+          typename rhsTy,
+          typename resTy,
+          typename BatchIndexerT,
+          typename RedIndexerT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    typename T4,
+                    typename T5> class kernel_name_token>
 sycl::event sequential_dot_product(sycl::queue &exec_q,
                                    const lhsTy *lhs,
                                    const rhsTy *rhs,
@@ -345,8 +345,7 @@ template <typename lhsTy,
                     typename T3,
                     typename T4,
                     typename T5,
-                    typename T6>
-          class kernel_name_token>
+                    typename T6> class kernel_name_token>
 sycl::event submit_atomic_dot_product(sycl::queue &exec_q,
                                       const lhsTy *lhs,
                                       const rhsTy *rhs,
@@ -716,8 +715,7 @@ public:
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
         for (std::size_t arg_reduce_gid = arg_reduce_gid0;
-             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
-        {
+             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg) {
             auto reduction_offsets_ = reduced_dims_indexer_(arg_reduce_gid);
             const auto &lhs_reduction_offset =
                 reduction_offsets_.get_first_offset();
@@ -817,8 +815,7 @@ public:
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
         for (std::size_t arg_reduce_gid = arg_reduce_gid0;
-             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
-        {
+             arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg) {
             auto reduction_offsets_ = reduced_dims_indexer_(arg_reduce_gid);
             const auto &lhs_reduction_offset =
                 reduction_offsets_.get_first_offset();
@@ -858,8 +855,7 @@ template <typename lhsTy,
                     typename T3,
                     typename T4,
                     typename T5,
-                    typename T6>
-          class kernel_name_token>
+                    typename T6> class kernel_name_token>
 sycl::event
     submit_no_atomic_dot_product(sycl::queue &exec_q,
                                  const lhsTy *lhs,

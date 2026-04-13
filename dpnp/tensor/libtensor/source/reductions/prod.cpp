@@ -246,8 +246,7 @@ struct ProductOverAxisAtomicStridedFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForProductReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = sycl::multiplies<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_over_group_with_atomics_strided_impl<srcTy, dstTy,
@@ -265,8 +264,7 @@ struct ProductOverAxisTempsStridedFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForProductReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = std::conditional_t<std::is_same_v<dstTy, bool>,
                                                     sycl::logical_and<dstTy>,
                                                     sycl::multiplies<dstTy>>;
@@ -286,8 +284,7 @@ struct ProductOverAxis1AtomicContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForProductReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = sycl::multiplies<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_axis1_over_group_with_atomics_contig_impl<
@@ -305,8 +302,7 @@ struct ProductOverAxis0AtomicContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForProductReductionAtomic<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = sycl::multiplies<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_axis0_over_group_with_atomics_contig_impl<
@@ -324,8 +320,7 @@ struct ProductOverAxis1TempsContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForProductReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = std::conditional_t<std::is_same_v<dstTy, bool>,
                                                     sycl::logical_and<dstTy>,
                                                     sycl::multiplies<dstTy>>;
@@ -345,8 +340,7 @@ struct ProductOverAxis0TempsContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForProductReductionTemps<
-                          srcTy, dstTy>::is_defined)
-        {
+                          srcTy, dstTy>::is_defined) {
             using ReductionOpT = std::conditional_t<std::is_same_v<dstTy, bool>,
                                                     sycl::logical_and<dstTy>,
                                                     sycl::multiplies<dstTy>>;

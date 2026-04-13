@@ -131,9 +131,8 @@ struct ArgminOverAxisTempsStridedFactory
 {
     fnT get() const
     {
-        if constexpr (TypePairSupportForArgminReductionTemps<srcTy,
-                                                             dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportForArgminReductionTemps<
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_integral_v<srcTy> &&
                           !std::is_same_v<srcTy, bool>) {
                 // op for values
@@ -165,9 +164,8 @@ struct ArgminOverAxis1TempsContigFactory
 {
     fnT get() const
     {
-        if constexpr (TypePairSupportForArgminReductionTemps<srcTy,
-                                                             dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportForArgminReductionTemps<
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_integral_v<srcTy> &&
                           !std::is_same_v<srcTy, bool>) {
                 // op for values
@@ -199,9 +197,8 @@ struct ArgminOverAxis0TempsContigFactory
 {
     fnT get() const
     {
-        if constexpr (TypePairSupportForArgminReductionTemps<srcTy,
-                                                             dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportForArgminReductionTemps<
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_integral_v<srcTy> &&
                           !std::is_same_v<srcTy, bool>) {
                 // op for values

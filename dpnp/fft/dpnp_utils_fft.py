@@ -47,7 +47,8 @@ import numpy
 import dpnp
 import dpnp.backend.extensions.fft._fft_impl as fi
 import dpnp.tensor._tensor_impl as ti
-from dpnp.tensor import ExecutionPlacementError, get_execution_queue
+from dpnp.exceptions import ExecutionPlacementError
+from dpnp.tensor import get_execution_queue
 from dpnp.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,

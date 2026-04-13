@@ -150,9 +150,8 @@ struct CumSum1DContigFactory
 {
     fnT get()
     {
-        if constexpr (TypePairSupportDataForSumAccumulation<srcTy,
-                                                            dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportDataForSumAccumulation<
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = CumSumScanOpT<dstTy>;
             static constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
@@ -183,9 +182,8 @@ struct CumSum1DIncludeInitialContigFactory
 {
     fnT get()
     {
-        if constexpr (TypePairSupportDataForSumAccumulation<srcTy,
-                                                            dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportDataForSumAccumulation<
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = CumSumScanOpT<dstTy>;
             static constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
@@ -216,9 +214,8 @@ struct CumSumStridedFactory
 {
     fnT get()
     {
-        if constexpr (TypePairSupportDataForSumAccumulation<srcTy,
-                                                            dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportDataForSumAccumulation<
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = CumSumScanOpT<dstTy>;
             static constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
@@ -249,9 +246,8 @@ struct CumSumIncludeInitialStridedFactory
 {
     fnT get()
     {
-        if constexpr (TypePairSupportDataForSumAccumulation<srcTy,
-                                                            dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportDataForSumAccumulation<
+                          srcTy, dstTy>::is_defined) {
             using ScanOpT = CumSumScanOpT<dstTy>;
             static constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {

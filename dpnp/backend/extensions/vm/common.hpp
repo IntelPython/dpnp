@@ -181,8 +181,7 @@ bool need_to_call_unary_two_outputs_ufunc(
 
     // check that types are supported
     if (dst1_typeid != func_output_typeids.first ||
-        dst2_typeid != func_output_typeids.second)
-    {
+        dst2_typeid != func_output_typeids.second) {
         return false;
     }
 
@@ -425,8 +424,7 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
             if constexpr (std::is_same_v<typename OutputType<T>::value_type1,  \
                                          void> ||                              \
                           std::is_same_v<typename OutputType<T>::value_type2,  \
-                                         void>)                                \
-            {                                                                  \
+                                         void>) {                              \
                 fnT fn = nullptr;                                              \
                 return fn;                                                     \
             }                                                                  \
@@ -471,8 +469,8 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
         fnT get()                                                              \
         {                                                                      \
             if constexpr (std::is_same_v<                                      \
-                              typename OutputType<T1, T2>::value_type, void>)  \
-            {                                                                  \
+                              typename OutputType<T1, T2>::value_type,         \
+                              void>) {                                         \
                 return nullptr;                                                \
             }                                                                  \
             else {                                                             \

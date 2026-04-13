@@ -136,8 +136,8 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Expecting `cumsum` array to be C-contiguous.");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, reps, cumsum, dst}))
-    {
+    if (!dpctl::utils::queues_are_compatible(exec_q,
+                                             {src, reps, cumsum, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
@@ -170,8 +170,7 @@ std::pair<sycl::event, sycl::event>
 
     // shape at repeated axis must be equal to the sum of reps
     if (!same_orthog_dims || src_axis_nelems != reps_sz ||
-        src_axis_nelems != cumsum_sz)
-    {
+        src_axis_nelems != cumsum_sz) {
         throw py::value_error("Inconsistent array dimensions");
     }
 
@@ -386,8 +385,8 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Expecting `cumsum` array to be C-contiguous.");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, reps, cumsum, dst}))
-    {
+    if (!dpctl::utils::queues_are_compatible(exec_q,
+                                             {src, reps, cumsum, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }

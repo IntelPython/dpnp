@@ -75,8 +75,7 @@ std::pair<sycl::event, sycl::event>
                       expected_eig_vecs_nd, expected_eig_vals_nd);
 
     if (eig_vecs_shape[2] != eig_vals_shape[0] ||
-        eig_vecs_shape[0] != eig_vals_shape[1])
-    {
+        eig_vecs_shape[0] != eig_vals_shape[1]) {
         throw py::value_error(
             "The shape of 'eig_vals' must be (batch_size, n), "
             "where batch_size = " +

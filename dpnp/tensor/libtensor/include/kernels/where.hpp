@@ -96,8 +96,7 @@ public:
 
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!enable_sg_loadstore || is_complex<condT>::value ||
-                      is_complex<T>::value)
-        {
+                      is_complex<T>::value) {
             const std::uint16_t sgSize =
                 ndit.get_sub_group().get_local_range()[0];
             const std::size_t gid = ndit.get_global_linear_id();
@@ -199,8 +198,7 @@ sycl::event where_contig_impl(sycl::queue &q,
         if (is_aligned<required_alignment>(cond_cp) &&
             is_aligned<required_alignment>(x1_cp) &&
             is_aligned<required_alignment>(x2_cp) &&
-            is_aligned<required_alignment>(dst_cp))
-        {
+            is_aligned<required_alignment>(dst_cp)) {
             static constexpr bool enable_sg_loadstore = true;
             using KernelName = where_contig_kernel<T, condT, vec_sz, n_vecs>;
 

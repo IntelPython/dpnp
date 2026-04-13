@@ -97,8 +97,7 @@ struct ArithmeticAtomicSupportFactory
     {
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (std::is_floating_point_v<T> ||
-                      std::is_same_v<T, sycl::half> || is_complex<T>::value)
-        {
+                      std::is_same_v<T, sycl::half> || is_complex<T>::value) {
             // for real- and complex- floating point types, tree reduction has
             // better round-off accumulation properties (round-off error is
             // proportional to the log2(reduction_size), while naive elementwise
@@ -117,10 +116,7 @@ struct ArithmeticAtomicSupportFactory
 template <typename fnT, typename T>
 struct MinMaxAtomicSupportFactory
 {
-    fnT get()
-    {
-        return check_atomic_support<T>;
-    }
+    fnT get() { return check_atomic_support<T>; }
 };
 
 template <typename fnT, typename T>

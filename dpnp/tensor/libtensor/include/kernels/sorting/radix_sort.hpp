@@ -374,8 +374,7 @@ sycl::event
             // each work-item in the order of their local ids
             const std::uint32_t count_start_id = radix_states * lid;
             for (std::uint32_t radix_state_id = 0;
-                 radix_state_id < radix_states; ++radix_state_id)
-            {
+                 radix_state_id < radix_states; ++radix_state_id) {
                 counts_lacc[count_start_id + radix_state_id] =
                     counts_arr[radix_state_id];
             }
@@ -396,8 +395,7 @@ sycl::event
             // count per work-group: reduce until count_lacc[] size >
             // radix_states (n_witems /= 2 per iteration)
             for (std::uint32_t n_witems = (wg_size >> 1);
-                 n_witems >= radix_states; n_witems >>= 1)
-            {
+                 n_witems >= radix_states; n_witems >>= 1) {
                 if (lid < n_witems)
                     counts_lacc[lid] += counts_lacc[n_witems + lid];
 
@@ -478,8 +476,8 @@ sycl::event radix_sort_scan_submit(sycl::queue &exec_q,
 
             // NB: No race condition here, because the condition may ever be
             // true for only on one WG, one WI.
-            if ((lid == wg_size - 1) && (begin_ptr[scan_size - 1] == n_values))
-            {
+            if ((lid == wg_size - 1) &&
+                (begin_ptr[scan_size - 1] == n_values)) {
                 // set flag, since all the values got into one
                 // this is optimization, may happy often for
                 // higher radix offsets (all zeros)
@@ -794,8 +792,7 @@ sycl::event
             offset_arr[zero_radix_state_id] = b_offset_ptr[segment_id];
 
             for (std::uint32_t radix_state_id = 1;
-                 radix_state_id < radix_states; ++radix_state_id)
-            {
+                 radix_state_id < radix_states; ++radix_state_id) {
                 const std::uint32_t local_offset_id =
                     segment_id + scan_size * radix_state_id;
 
@@ -835,8 +832,7 @@ sycl::event
 
                     OffsetT new_offset_id = 0;
                     for (std::uint32_t radix_state_id = 0;
-                         radix_state_id < radix_states; ++radix_state_id)
-                    {
+                         radix_state_id < radix_states; ++radix_state_id) {
                         bool is_current_bucket = (bucket_id == radix_state_id);
                         std::uint32_t sg_total_offset =
                             peer_prefix_hlp.peer_contribution(
@@ -864,8 +860,7 @@ sycl::event
 
                     OffsetT new_offset_id = 0;
                     for (std::uint32_t radix_state_id = 0;
-                         radix_state_id < radix_states; ++radix_state_id)
-                    {
+                         radix_state_id < radix_states; ++radix_state_id) {
                         bool is_current_bucket = (bucket_id == radix_state_id);
                         std::uint32_t sg_total_offset =
                             peer_prefix_hlp.peer_contribution(
@@ -899,8 +894,7 @@ sycl::event
 
                 OffsetT new_offset_id = 0;
                 for (std::uint32_t radix_state_id = 0;
-                     radix_state_id < radix_states; ++radix_state_id)
-                {
+                     radix_state_id < radix_states; ++radix_state_id) {
                     bool is_current_bucket = (bucket_id == radix_state_id);
                     std::uint32_t sg_total_offset =
                         peer_prefix_hlp.peer_contribution(
@@ -1038,8 +1032,7 @@ struct parallel_radix_sort_iteration_step
         static constexpr std::size_t sg16_v = 16u;
         static constexpr std::size_t sg08_v = 8u;
         if (sg32_v == reorder_sg_size || sg16_v == reorder_sg_size ||
-            sg08_v == reorder_sg_size)
-        {
+            sg08_v == reorder_sg_size) {
             static constexpr auto peer_algorithm =
                 peer_prefix_algo::subgroup_ballot;
 
@@ -1164,10 +1157,7 @@ private:
             return sycl::local_accessor<KeyT>(buf_size, cgh);
         }
 
-        std::size_t get_iter_stride() const
-        {
-            return std::size_t{0};
-        }
+        std::size_t get_iter_stride() const { return std::size_t{0}; }
     };
 
     template <typename KeyT>
@@ -1185,10 +1175,7 @@ private:
         {
             return sycl::accessor(buf, cgh, sycl::read_write, sycl::no_init);
         }
-        std::size_t get_iter_stride() const
-        {
-            return iter_stride;
-        }
+        std::size_t get_iter_stride() const { return iter_stride; }
     };
 
     static_assert(wg_size <= 1024);
@@ -1798,10 +1785,7 @@ struct IndexedProj
     {
     }
 
-    auto operator()(IndexT i) const
-    {
-        return value_projector(ptr[i]);
-    }
+    auto operator()(IndexT i) const { return value_projector(ptr[i]); }
 
 private:
     const ValueT *ptr;

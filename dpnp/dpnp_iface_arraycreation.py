@@ -2664,10 +2664,9 @@ def identity(
 
     dpnp.check_limitations(like=like)
 
-    _dtype = dpnp.default_float_type() if dtype is None else dtype
     return dpnp.eye(
         n,
-        dtype=_dtype,
+        dtype=dtype,
         device=device,
         usm_type=usm_type,
         sycl_queue=sycl_queue,

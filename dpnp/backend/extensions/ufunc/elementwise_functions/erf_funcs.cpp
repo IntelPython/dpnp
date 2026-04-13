@@ -188,8 +188,7 @@ using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
     };
 
 template <template <typename fnT, typename T> typename contigFactoryT,
-          template <typename fnT, typename T>
-          typename stridedFactoryT>
+          template <typename fnT, typename T> typename stridedFactoryT>
 static void populate(py::module_ m,
                      const char *name,
                      const char *docstring,

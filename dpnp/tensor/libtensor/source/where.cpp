@@ -79,8 +79,8 @@ std::pair<sycl::event, sycl::event>
              const std::vector<sycl::event> &depends)
 {
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {x1, x2, condition, dst}))
-    {
+    if (!dpctl::utils::queues_are_compatible(exec_q,
+                                             {x1, x2, condition, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
@@ -129,8 +129,7 @@ std::pair<sycl::event, sycl::event>
         dpctl::tensor::overlap::SameLogicalTensors();
     if ((overlap(dst, condition) && !same_logical_tensors(dst, condition)) ||
         (overlap(dst, x1) && !same_logical_tensors(dst, x1)) ||
-        (overlap(dst, x2) && !same_logical_tensors(dst, x2)))
-    {
+        (overlap(dst, x2) && !same_logical_tensors(dst, x2))) {
         throw py::value_error("Destination array overlaps with input.");
     }
 

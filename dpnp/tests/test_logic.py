@@ -9,7 +9,7 @@ from numpy.testing import (
 )
 
 import dpnp
-from dpnp.tensor import ExecutionPlacementError
+from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
     generate_random_numpy_array,

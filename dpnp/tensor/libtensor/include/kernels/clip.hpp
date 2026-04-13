@@ -219,8 +219,7 @@ sycl::event clip_contig_impl(sycl::queue &q,
         if (is_aligned<required_alignment>(x_cp) &&
             is_aligned<required_alignment>(min_cp) &&
             is_aligned<required_alignment>(max_cp) &&
-            is_aligned<required_alignment>(dst_cp))
-        {
+            is_aligned<required_alignment>(dst_cp)) {
             static constexpr bool enable_sg_loadstore = true;
             using KernelName = clip_contig_kernel<T, vec_sz, n_vecs>;
             using Impl =

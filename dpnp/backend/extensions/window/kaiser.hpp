@@ -30,10 +30,13 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpnp4pybind11.hpp"
+#include <dpnp4pybind11.hpp>
+#include <pybind11/pybind11.h>
 
 namespace dpnp::extensions::window
 {
+namespace py = pybind11;
+
 extern std::pair<sycl::event, sycl::event>
     py_kaiser(sycl::queue &exec_q,
               const py::object &beta,

@@ -228,10 +228,87 @@ class TestView:
         expected = a.view(dt)
         assert_allclose(result, expected)
 
-    def test_type_error(self):
-        x = dpnp.ones(4, dtype="i4")
-        with pytest.raises(NotImplementedError):
-            x.view("i2", type=dpnp.ndarray)
+    def test_subclass_basic(self):
+        class MyArray(dpnp.ndarray):
+            pass
+
+        x = dpnp.array([1, 2, 3])
+        view = x.view(type=MyArray)
+
+        assert isinstance(view, MyArray)
+        assert type(view) is MyArray
+        assert (view == x).all()
+
+    def test_dtype_type_subclass(self):
+        class MyArray(dpnp.ndarray):
+            pass
+
+        x = dpnp.array([1, 2, 3])
+
+        # All three syntaxes should work identically
+        view1 = x.view(type=MyArray)
+        view2 = x.view(MyArray)
+        view3 = x.view(dtype=MyArray)
+
+        assert type(view1) is MyArray
+        assert type(view2) is MyArray
+        assert type(view3) is MyArray
+
+    def test_subclass_array_finalize(self):
+        class ArrayWithInfo(dpnp.ndarray):
+            def __array_finalize__(self, obj):
+                self.info = getattr(obj, "info", "default")
+
+        x = dpnp.array([1, 2, 3]).view(type=ArrayWithInfo)
+        x.info = "metadata"
+
+        # Create a view - __array_finalize__ should be called
+        view = x.view()
+        assert hasattr(view, "info")
+        assert view.info == "metadata"
+        assert type(view) is ArrayWithInfo
+
+    def test_subclass_self_class_preservation(self):
+        class MyArray(dpnp.ndarray):
+            pass
+
+        x = dpnp.array([1, 2, 3]).view(type=MyArray)
+
+        # View without type parameter should preserve MyArray
+        view = x.view()
+        assert type(view) is MyArray
+
+    def test_subclass_with_dtype_change(self):
+        class MyArray(dpnp.ndarray):
+            pass
+
+        x = dpnp.array([1.0, 2.0], dtype=dpnp.float32)
+        view = x.view(dtype=dpnp.int32, type=MyArray)
+
+        assert type(view) is MyArray
+        assert view.dtype == dpnp.int32
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_subclass_invalid_type(self, xp):
+        x = xp.array([1, 2, 3])
+        with pytest.raises(
+            ValueError, match="Type must be a sub-type of ndarray type"
+        ):
+            x.view(type=list)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_subclass_double_type_specification(self, xp):
+        class MyArray(xp.ndarray):
+            pass
+
+        class OtherArray(xp.ndarray):
+            pass
+
+        x = xp.array([1, 2, 3])
+        with pytest.raises(
+            ValueError, match="Cannot specify output type twice"
+        ):
+            x.view(dtype=MyArray, type=OtherArray)
 
 
 @pytest.mark.parametrize(

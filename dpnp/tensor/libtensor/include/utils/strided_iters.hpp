@@ -312,14 +312,8 @@ public:
         elem_count = s;
     }
 
-    indT size() const
-    {
-        return elem_count;
-    }
-    indT rank() const
-    {
-        return ndim;
-    }
+    indT size() const { return elem_count; }
+    indT rank() const { return ndim; }
 
     void set(const indT i)
     {
@@ -339,10 +333,7 @@ public:
         multi_index[0] = i_;
     }
 
-    const index_t &get() const
-    {
-        return multi_index;
-    }
+    const index_t &get() const { return multi_index; }
 };
 
 /*
@@ -658,8 +649,7 @@ int simplify_iteration_three_strides(const int nd,
         auto str3_p = strides3[p];
         shape_w.push_back(sh_p);
         if (str1_p <= 0 && str2_p <= 0 && str3_p <= 0 &&
-            std::min({str1_p, str2_p, str3_p}) < 0)
-        {
+            std::min({str1_p, str2_p, str3_p}) < 0) {
             disp1 += str1_p * (sh_p - 1);
             str1_p = -str1_p;
             disp2 += str2_p * (sh_p - 1);
@@ -832,8 +822,7 @@ int simplify_iteration_four_strides(const int nd,
         auto str4_p = strides4[p];
         shape_w.push_back(sh_p);
         if (str1_p <= 0 && str2_p <= 0 && str3_p <= 0 && str4_p <= 0 &&
-            std::min({str1_p, str2_p, str3_p, str4_p}) < 0)
-        {
+            std::min({str1_p, str2_p, str3_p, str4_p}) < 0) {
             disp1 += str1_p * (sh_p - 1);
             str1_p = -str1_p;
             disp2 += str2_p * (sh_p - 1);
@@ -919,8 +908,7 @@ std::tuple<vecT, vecT, T, vecT, T, vecT, T, vecT, T>
 {
     const std::size_t dim = shape.size();
     if (dim != strides1.size() || dim != strides2.size() ||
-        dim != strides3.size() || dim != strides4.size())
-    {
+        dim != strides3.size() || dim != strides4.size()) {
         throw Error("Shape and strides must be of equal size.");
     }
     vecT out_shape = shape;

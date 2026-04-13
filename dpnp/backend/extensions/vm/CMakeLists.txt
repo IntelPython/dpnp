@@ -123,7 +123,6 @@ target_include_directories(
     PRIVATE
         ${SYCL_INCLUDE_DIR}
         ${Dpctl_INCLUDE_DIRS}
-        ${Dpctl_TENSOR_INCLUDE_DIR}
         ${CMAKE_BINARY_DIR} # For generated Cython headers
 )
 

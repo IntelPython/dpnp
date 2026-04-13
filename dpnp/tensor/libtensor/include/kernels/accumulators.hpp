@@ -85,10 +85,7 @@ struct NoOpTransformer
 {
     constexpr NoOpTransformer() {}
 
-    T operator()(const T &val) const
-    {
-        return val;
-    }
+    T operator()(const T &val) const { return val; }
 };
 
 template <typename srcTy, typename dstTy>
@@ -134,22 +131,13 @@ public:
         : src_(src), size_(sz), local_scans_(local_scans)
     {
     }
-    ~stack_t(){};
+    ~stack_t() {};
 
-    T *get_src_ptr() const
-    {
-        return src_;
-    }
+    T *get_src_ptr() const { return src_; }
 
-    std::size_t get_size() const
-    {
-        return size_;
-    }
+    std::size_t get_size() const { return size_; }
 
-    T *get_local_scans_ptr() const
-    {
-        return local_scans_;
-    }
+    T *get_local_scans_ptr() const { return local_scans_; }
 };
 
 template <typename T>
@@ -170,27 +158,15 @@ public:
           local_stride_(local_stride)
     {
     }
-    ~stack_strided_t(){};
+    ~stack_strided_t() {};
 
-    T *get_src_ptr() const
-    {
-        return src_;
-    }
+    T *get_src_ptr() const { return src_; }
 
-    std::size_t get_size() const
-    {
-        return size_;
-    }
+    std::size_t get_size() const { return size_; }
 
-    T *get_local_scans_ptr() const
-    {
-        return local_scans_;
-    }
+    T *get_local_scans_ptr() const { return local_scans_; }
 
-    std::size_t get_local_stride() const
-    {
-        return local_stride_;
-    }
+    std::size_t get_local_stride() const { return local_stride_; }
 };
 
 } // end of namespace detail
@@ -515,32 +491,35 @@ sycl::event inclusive_scan_base_step_striped(
             it.barrier(sycl::access::fence_space::local_space);
 
             // convert back to blocked layout
-            {{const std::uint32_t local_offset0 = lid * n_wi;
+            {
+                {
+                    const std::uint32_t local_offset0 = lid * n_wi;
 #pragma unroll
-            for (nwiT m_wi = 0; m_wi < n_wi; ++m_wi) {
-                slm_iscan_tmp[local_offset0 + m_wi] = local_iscan[m_wi];
-            }
+                    for (nwiT m_wi = 0; m_wi < n_wi; ++m_wi) {
+                        slm_iscan_tmp[local_offset0 + m_wi] = local_iscan[m_wi];
+                    }
 
-            it.barrier(sycl::access::fence_space::local_space);
+                    it.barrier(sycl::access::fence_space::local_space);
                 }
             }
 
             {
-        const std::uint32_t block_offset = sgroup_id * sgSize * n_wi + lane_id;
+                const std::uint32_t block_offset =
+                    sgroup_id * sgSize * n_wi + lane_id;
 #pragma unroll
-        for (nwiT m_wi = 0; m_wi < n_wi; ++m_wi) {
-            const std::uint32_t m_wi_scaled = m_wi * sgSize;
-            const std::size_t out_id = inp_id0 + m_wi_scaled;
-            if (out_id < acc_nelems) {
-                output[out_iter_offset + out_indexer(out_id)] =
-                    slm_iscan_tmp[block_offset + m_wi_scaled];
+                for (nwiT m_wi = 0; m_wi < n_wi; ++m_wi) {
+                    const std::uint32_t m_wi_scaled = m_wi * sgSize;
+                    const std::size_t out_id = inp_id0 + m_wi_scaled;
+                    if (out_id < acc_nelems) {
+                        output[out_iter_offset + out_indexer(out_id)] =
+                            slm_iscan_tmp[block_offset + m_wi_scaled];
+                    }
+                }
             }
-        }
-            }
-});
-});
+        });
+    });
 
-return inc_scan_phase1_ev;
+    return inc_scan_phase1_ev;
 }
 
 template <typename inputT,
@@ -746,8 +725,7 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
         }
 
         for (std::size_t reverse_stack_id = 0; reverse_stack_id < stack.size();
-             ++reverse_stack_id)
-        {
+             ++reverse_stack_id) {
             const std::size_t stack_id = stack.size() - 1 - reverse_stack_id;
 
             const auto &stack_elem = stack[stack_id];
@@ -1082,8 +1060,7 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
         }
 
         for (std::size_t reverse_stack_id = 0;
-             reverse_stack_id < stack.size() - 1; ++reverse_stack_id)
-        {
+             reverse_stack_id < stack.size() - 1; ++reverse_stack_id) {
             const std::size_t stack_id = stack.size() - 1 - reverse_stack_id;
 
             const auto &stack_elem = stack[stack_id];

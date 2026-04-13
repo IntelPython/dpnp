@@ -94,6 +94,9 @@ class TestConsistency:
             # calling numpy testing func, because it's more verbose
             assert_allclose(x.asnumpy(), y.asnumpy(), rtol=rtol, atol=atol)
 
+    @pytest.mark.usefixtures(
+        "suppress_overflow_encountered_in_cast_numpy_warnings"
+    )
     def test_erfc(self, inverse):
         self._check_variant_func(
             inverse,
@@ -103,6 +106,9 @@ class TestConsistency:
             atol=self.tol,
         )
 
+    @pytest.mark.usefixtures(
+        "suppress_overflow_encountered_in_cast_numpy_warnings"
+    )
     def test_erfcx(self, inverse):
         self._check_variant_func(
             inverse,

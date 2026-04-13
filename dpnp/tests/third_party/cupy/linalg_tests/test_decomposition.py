@@ -12,10 +12,9 @@ import dpnp as cupy
 # from cupy.cuda import runtime
 # from cupy.linalg import _util
 from dpnp.tests.helper import (
-    LTS_VERSION,
     has_support_aspect64,
-    is_lts_driver,
 )
+from dpnp.tests.qr_helper import check_qr
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
 
@@ -169,7 +168,6 @@ class TestCholeskyInvalid(unittest.TestCase):
     )
 )
 class TestQRDecomposition(unittest.TestCase):
-
     @testing.for_dtypes("fdFD")
     def check_mode(self, array, mode, dtype):
         # if runtime.is_hip and driver.get_build_version() < 307:
@@ -178,22 +176,29 @@ class TestQRDecomposition(unittest.TestCase):
 
         a_cpu = numpy.asarray(array, dtype=dtype)
         a_gpu = cupy.asarray(array, dtype=dtype)
-        result_gpu = cupy.linalg.qr(a_gpu, mode=mode)
+        # QR is not unique:
+        # element-wise comparison with NumPy may differ by sign/phase.
+        # To verify correctness use mode-dependent functional checks:
+        # complete/reduced: check decomposition Q @ R = A
+        # raw/r: check invariant R^H @ R = A^H @ A
+
+        # result_gpu = cupy.linalg.qr(a_gpu, mode=mode)
         if (
             mode != "raw"
             or numpy.lib.NumpyVersion(numpy.__version__) >= "1.22.0rc1"
         ):
-            result_cpu = numpy.linalg.qr(a_cpu, mode=mode)
-            self._check_result(result_cpu, result_gpu)
+            # result_cpu = numpy.linalg.qr(a_cpu, mode=mode)
+            # self._check_result(result_cpu, result_gpu, a_gpu, mode)
+            check_qr(a_cpu, a_gpu, mode, cupy)
 
-    def _check_result(self, result_cpu, result_gpu):
-        if isinstance(result_cpu, tuple):
-            for b_cpu, b_gpu in zip(result_cpu, result_gpu):
-                assert b_cpu.dtype == b_gpu.dtype
-                testing.assert_allclose(b_cpu, b_gpu, atol=1e-4)
-        else:
-            assert result_cpu.dtype == result_gpu.dtype
-            testing.assert_allclose(result_cpu, result_gpu, atol=1e-4)
+    # def _check_result(self, result_cpu, result_gpu):
+    #     if isinstance(result_cpu, tuple):
+    #         for b_cpu, b_gpu in zip(result_cpu, result_gpu):
+    #             assert b_cpu.dtype == b_gpu.dtype
+    #             testing.assert_allclose(b_cpu, b_gpu, atol=1e-4)
+    #     else:
+    #         assert result_cpu.dtype == result_gpu.dtype
+    #         testing.assert_allclose(result_cpu, result_gpu, atol=1e-4)
 
     @testing.fix_random()
     @_condition.repeat(3, 10)
@@ -202,9 +207,6 @@ class TestQRDecomposition(unittest.TestCase):
         self.check_mode(numpy.random.randn(3, 3), mode=self.mode)
         self.check_mode(numpy.random.randn(5, 4), mode=self.mode)
 
-    @pytest.mark.skipif(
-        is_lts_driver(version=LTS_VERSION.V1_6), reason="SAT-8375"
-    )
     @testing.with_requires("numpy>=1.22")
     @testing.fix_random()
     def test_mode_rank3(self):
@@ -212,9 +214,6 @@ class TestQRDecomposition(unittest.TestCase):
         self.check_mode(numpy.random.randn(4, 3, 3), mode=self.mode)
         self.check_mode(numpy.random.randn(2, 5, 4), mode=self.mode)
 
-    @pytest.mark.skipif(
-        is_lts_driver(version=LTS_VERSION.V1_6), reason="SAT-8375"
-    )
     @testing.with_requires("numpy>=1.22")
     @testing.fix_random()
     def test_mode_rank4(self):

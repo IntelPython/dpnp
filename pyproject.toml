@@ -171,6 +171,10 @@ allow-wildcard-with-all = true
 [tool.pylint.miscellaneous]
 notes = ["FIXME", "XXX"]
 
+[tool.pylint.typecheck]
+extension-pkg-allow-list = ["numpy"]
+generated-members = ["numpy.*", "finfo.*", "iinfo.*"]
+
 [tool.versioneer]
 VCS = "git"
 parentdir_prefix = "dpnp-"

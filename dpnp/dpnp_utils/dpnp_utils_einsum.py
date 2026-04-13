@@ -36,7 +36,7 @@ import numpy
 import dpnp
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations, map_dtype_to_device
-from dpnp.tensor import ExecutionPlacementError
+from dpnp.exceptions import ExecutionPlacementError
 
 _einsum_symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 

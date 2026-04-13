@@ -73,8 +73,7 @@ struct GreaterFunctor
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         if constexpr (tu_ns::is_complex<argT1>::value ||
-                      tu_ns::is_complex<argT2>::value)
-        {
+                      tu_ns::is_complex<argT2>::value) {
             static_assert(std::is_same_v<argT1, argT2>);
             using dpctl::tensor::math_utils::greater_complex;
             return greater_complex<argT1>(in1, in2);
@@ -82,8 +81,7 @@ struct GreaterFunctor
         else {
             if constexpr (std::is_integral_v<argT1> &&
                           std::is_integral_v<argT2> &&
-                          std::is_signed_v<argT1> != std::is_signed_v<argT2>)
-            {
+                          std::is_signed_v<argT1> != std::is_signed_v<argT2>) {
                 if constexpr (std::is_signed_v<argT1> &&
                               !std::is_signed_v<argT2>) {
                     return (in1 < 0) ? false : (static_cast<argT2>(in1) > in2);

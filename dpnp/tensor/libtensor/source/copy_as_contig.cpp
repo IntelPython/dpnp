@@ -535,8 +535,7 @@ std::pair<sycl::event, sycl::event>
     if (1 == nd) {
         const auto expected_dim = static_cast<py::ssize_t>(batch_nelems);
         if ((simplified_shape.front() != expected_dim) ||
-            (simplified_dst_strides.front() != dst_batch_step))
-        {
+            (simplified_dst_strides.front() != dst_batch_step)) {
             throw std::runtime_error(
                 "Unexpected result of simplifying iteration space, 2");
         }
@@ -727,8 +726,7 @@ std::pair<sycl::event, sycl::event>
     if (1 == nd) {
         const auto expected_dim = static_cast<py::ssize_t>(batch_nelems);
         if ((simplified_shape.front() != expected_dim) ||
-            (simplified_dst_strides.front() != dst_batch_step))
-        {
+            (simplified_dst_strides.front() != dst_batch_step)) {
             throw std::runtime_error(
                 "Unexpected result of simplifying iteration space, 2");
         }

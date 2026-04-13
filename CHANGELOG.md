@@ -19,13 +19,15 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added implementation of `dpnp.scipy.special.erfinv` and `dpnp.scipy.special.erfcinv` [#2624](https://github.com/IntelPython/dpnp/pull/2624)
 * Added implementation of `dpnp.ndarray.tolist` method [#2652](https://github.com/IntelPython/dpnp/pull/2652)
 * Added implementation of `dpnp.frexp` [#2635](https://github.com/IntelPython/dpnp/pull/2635)
-* Added implementation of `dpnp.ndarray.tofile` method [#2635](https://github.com/IntelPython/dpnp/pull/2635)
+* Added implementation of `dpnp.ndarray.tofile` method [#2653](https://github.com/IntelPython/dpnp/pull/2653)
 * Extended `pre-commit` configuration with `pyupgrade`, `actionlint`, and `gersemi` hooks [#2658](https://github.com/IntelPython/dpnp/pull/2658)
 * Added implementation of `dpnp.ndarray.tobytes` method [#2656](https://github.com/IntelPython/dpnp/pull/2656)
 * Added implementation of `dpnp.ndarray.__format__` method [#2662](https://github.com/IntelPython/dpnp/pull/2662)
 * Added implementation of `dpnp.ndarray.__bytes__` method [#2671](https://github.com/IntelPython/dpnp/pull/2671)
 * Added implementation of `dpnp.divmod` [#2674](https://github.com/IntelPython/dpnp/pull/2674)
 * Added implementation of `dpnp.isin` function [#2595](https://github.com/IntelPython/dpnp/pull/2595)
+* Added implementation of `dpnp.scipy.linalg.lu` (SciPy-compatible) [#2787](https://github.com/IntelPython/dpnp/pull/2787)
+* Added support for ndarray subclassing via `dpnp.ndarray.view` method with `type` parameter [#2815](https://github.com/IntelPython/dpnp/issues/2815)
 
 ### Changed
 
@@ -50,8 +52,11 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Aligned `strides` property of `dpnp.ndarray` with NumPy and CuPy implementations [#2747](https://github.com/IntelPython/dpnp/pull/2747)
 * Extended `dpnp.nan_to_num` to support broadcasting of `nan`, `posinf`, and `neginf` keywords [#2754](https://github.com/IntelPython/dpnp/pull/2754)
 * Changed `dpnp.partition` implementation to reuse `dpnp.sort` where it brings the performance benefit [#2766](https://github.com/IntelPython/dpnp/pull/2766)
-* `dpnp` uses pybind11 3.0.2 [#27734](https://github.com/IntelPython/dpnp/pull/2773)
+* `dpnp` uses pybind11 3.0.2 [#2773](https://github.com/IntelPython/dpnp/pull/2773)
 * Modified CMake files for the extension to explicitly mark DPC++ compiler and dpctl headers as system ones and so to suppress the build warning generated inside them [#2770](https://github.com/IntelPython/dpnp/pull/2770)
+* Updated QR tests to avoid element-wise comparisons for `raw` and `r` modes [#2785](https://github.com/IntelPython/dpnp/pull/2785)
+* Moved all SYCL kernel functors from `backend/extensions/` to a unified `backend/kernels/` directory hierarchy [#2816](https://github.com/IntelPython/dpnp/pull/2816)
+* `dpnp` uses pybind11 3.0.3 [#2834](https://github.com/IntelPython/dpnp/pull/2834)
 
 ### Deprecated
 
@@ -75,6 +80,10 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Resolved an issue causing `dpnp.linspace` to return an incorrect output shape when inputs were passed as arrays [#2712](https://github.com/IntelPython/dpnp/pull/2712)
 * Resolved an issue where `dpnp` always returns the base allocation pointer, when the view start is expected [#2651](https://github.com/IntelPython/dpnp/pull/2651)
 * Fixed an issue causing an exception in `dpnp.geomspace` and `dpnp.logspace` when called with explicit `device` keyword but any input array is allocated on another device [#2723](https://github.com/IntelPython/dpnp/pull/2723)
+* Fixed `.data.ptr` property on array views to correctly return the pointer to the view's data location instead of the base allocation pointer [#2812](https://github.com/IntelPython/dpnp/pull/2812)
+* Resolved an issue with strides calculation in `dpnp.diagonal` to return correct values for empty diagonals [#2814](https://github.com/IntelPython/dpnp/pull/2814)
+* Fixed test tolerance issues for float16 intermediate precision that became visible when testing against conda-forge's NumPy [#2828](https://github.com/IntelPython/dpnp/pull/2828)
+* Ensured device aware dtype handling in `dpnp.identity` and `dpnp.gradient` [#2835](https://github.com/IntelPython/dpnp/pull/2835)
 
 ### Security
 

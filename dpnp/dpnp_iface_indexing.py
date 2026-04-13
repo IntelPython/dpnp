@@ -62,6 +62,7 @@ from .dpnp_algo import (
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import call_origin, get_usm_allocations
+from .exceptions import ExecutionPlacementError
 from .tensor._copy_utils import _nonzero_impl
 from .tensor._indexing_functions import _get_indexing_mode
 from .tensor._numpy_helper import normalize_axis_index
@@ -131,7 +132,7 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
             )
 
         if dpt.get_execution_queue((q, out.sycl_queue)) is None:
-            raise dpt.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 
@@ -293,7 +294,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
             )
 
         if dpt.get_execution_queue((q, out.sycl_queue)) is None:
-            raise dpt.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 
@@ -720,24 +721,18 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
         offset = -offset
 
     a_shape = a.shape
-    a_straides = a.strides
+    a_strides = a.strides
     n, m = a_shape[-2:]
-    st_n, st_m = a_straides[-2:]
+    st_n, st_m = a_strides[-2:]
 
-    # Compute shape, strides and offset of the resulting diagonal array
-    # based on the input offset
-    if offset == 0:
-        out_shape = a_shape[:-2] + (min(n, m),)
-        out_strides = a_straides[:-2] + (st_n + st_m,)
-        out_offset = 0
-    elif 0 < offset < m:
-        out_shape = a_shape[:-2] + (min(n, m - offset),)
-        out_strides = a_straides[:-2] + (st_n + st_m,)
-        out_offset = st_m // a.itemsize * offset
-    else:
-        out_shape = a_shape[:-2] + (0,)
-        out_strides = a_straides[:-2] + (a.itemsize,)
-        out_offset = 0
+    # Compute the diagonal array as a view:
+    # - stride: sum of row and column strides (diag advances in both dimensions)
+    # - shape: determined by diagonal size using max(0, min(n, m - offset))
+    # - offset: starting position in buffer for non-zero offsets
+    diag_size = max(0, min(n, m - offset))
+    out_shape = a_shape[:-2] + (diag_size,)
+    out_strides = a_strides[:-2] + (st_n + st_m,)
+    out_offset = st_m // a.itemsize * offset
 
     return dpnp_array(
         out_shape, buffer=a, strides=out_strides, offset=out_offset

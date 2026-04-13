@@ -13,13 +13,10 @@ import dpnp
 import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import map_dtype_to_device
-from dpnp.tensor._numpy_helper import (
-    AxisError,
-    normalize_axis_index,
-)
+from dpnp.exceptions import AxisError, ExecutionPlacementError
+from dpnp.tensor._numpy_helper import normalize_axis_index
 
 from .helper import (
-    LTS_VERSION,
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_abs_array,
@@ -33,7 +30,6 @@ from .helper import (
     has_support_aspect16,
     has_support_aspect64,
     is_intel_numpy,
-    is_lts_driver,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -218,9 +214,6 @@ class TestCumLogSumExp:
     @pytest.mark.parametrize("axis", [None, 2, -1])
     @pytest.mark.parametrize("include_initial", [True, False])
     def test_basic(self, dtype, axis, include_initial):
-        if axis is None and not is_lts_driver(version=LTS_VERSION.V1_6):
-            pytest.skip("due to SAT-8336")
-
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
         res = dpnp.cumlogsumexp(a, axis=axis, include_initial=include_initial)
 
@@ -238,9 +231,6 @@ class TestCumLogSumExp:
     @pytest.mark.parametrize("axis", [None, 2, -1])
     @pytest.mark.parametrize("include_initial", [True, False])
     def test_include_initial(self, dtype, axis, include_initial):
-        if axis is None and not is_lts_driver(version=LTS_VERSION.V1_6):
-            pytest.skip("due to SAT-8336")
-
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
 
         if dpnp.issubdtype(a, dpnp.float32):
@@ -709,14 +699,12 @@ class TestEdiff1d:
         # another `to_begin` sycl queue
         to_begin = dpnp.array([-20, -15], sycl_queue=dpctl.SyclQueue())
         assert_raises(
-            dpt.ExecutionPlacementError, dpnp.ediff1d, ia, to_begin=to_begin
+            ExecutionPlacementError, dpnp.ediff1d, ia, to_begin=to_begin
         )
 
         # another `to_end` sycl queue
         to_end = dpnp.array([15, 20], sycl_queue=dpctl.SyclQueue())
-        assert_raises(
-            dpt.ExecutionPlacementError, dpnp.ediff1d, ia, to_end=to_end
-        )
+        assert_raises(ExecutionPlacementError, dpnp.ediff1d, ia, to_end=to_end)
 
 
 class TestGradient:
@@ -1734,6 +1722,7 @@ class TestSinc:
 
 
 class TestSpacing:
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     @pytest.mark.parametrize("sign", [1, -1])
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_basic(self, sign, dt):
@@ -2132,13 +2121,13 @@ class TestUfunc:
         out1 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
         out2 = dpnp.empty((), sycl_queue=dpctl.SyclQueue())
         with pytest.raises(
-            dpt.ExecutionPlacementError,
+            ExecutionPlacementError,
             match="Input and output allocation queues are not compatible",
         ):
             _ = fn(*args, out1)
 
         with pytest.raises(
-            dpt.ExecutionPlacementError,
+            ExecutionPlacementError,
             match="Input and output allocation queues are not compatible",
         ):
             _ = fn(*args, out=(None, out2))

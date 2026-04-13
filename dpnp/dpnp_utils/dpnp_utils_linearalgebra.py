@@ -37,8 +37,8 @@ import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
+from dpnp.exceptions import AxisError, ExecutionPlacementError
 from dpnp.tensor._numpy_helper import (
-    AxisError,
     normalize_axis_index,
     normalize_axis_tuple,
 )
@@ -694,7 +694,7 @@ def _validate_out_array(out, exec_q):
     if out is not None:
         dpnp.check_supported_arrays_type(out)
         if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
-            raise dpt.ExecutionPlacementError(
+            raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 

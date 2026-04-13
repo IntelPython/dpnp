@@ -69,10 +69,7 @@ struct SignbitFunctor
     using supports_vec = std::true_type;
     using supports_sg_loadstore = std::true_type;
 
-    resT operator()(const argT &in) const
-    {
-        return std::signbit(in);
-    }
+    resT operator()(const argT &in) const { return std::signbit(in); }
 
     template <int vec_sz>
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in) const

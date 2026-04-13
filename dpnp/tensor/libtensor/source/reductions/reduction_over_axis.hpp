@@ -96,8 +96,7 @@ bool py_reduction_dtype_supported(
     }
 
     if (arg_typeid < 0 || arg_typeid >= td_ns::num_types || out_typeid < 0 ||
-        out_typeid >= td_ns::num_types)
-    {
+        out_typeid >= td_ns::num_types) {
         throw std::runtime_error("Reduction type support check: lookup failed");
     }
 
@@ -158,8 +157,7 @@ bool py_tree_reduction_dtype_supported(const py::dtype &input_dtype,
     }
 
     if (arg_typeid < 0 || arg_typeid >= td_ns::num_types || out_typeid < 0 ||
-        out_typeid >= td_ns::num_types)
-    {
+        out_typeid >= td_ns::num_types) {
         throw std::runtime_error("Reduction type support check: lookup failed");
     }
 
@@ -259,8 +257,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     bool is_src_f_contig = src.is_f_contiguous();
 
     if ((is_src_c_contig && is_dst_c_contig) ||
-        (is_src_f_contig && dst_nelems == 1))
-    {
+        (is_src_f_contig && dst_nelems == 1)) {
         // remove_all_extents gets underlying type of table
         using contig_fn_ptr_T =
             typename std::remove_all_extents<contig_fnT>::type;
@@ -292,8 +289,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         }
     }
     else if (is_src_f_contig &&
-             ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous()))
-    {
+             ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous())) {
         // remove_all_extents gets underlying type of table
         using contig_fn_ptr_T =
             typename std::remove_all_extents<contig_fnT>::type;
@@ -391,8 +387,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
                      simplified_iteration_src_strides[0]) == reduction_nelems);
         }
         else if (static_cast<std::size_t>(
-                     simplified_reduction_src_strides[0]) == iter_nelems)
-        {
+                     simplified_reduction_src_strides[0]) == iter_nelems) {
             mat_reduce_over_axis0 =
                 (simplified_iteration_dst_strides[0] == 1) &&
                 (simplified_iteration_src_strides[0] == 1);
@@ -586,8 +581,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
     bool is_src_f_contig = src.is_f_contiguous();
 
     if ((is_src_c_contig && is_dst_c_contig) ||
-        (is_src_f_contig && dst_nelems == 1))
-    {
+        (is_src_f_contig && dst_nelems == 1)) {
         auto fn = axis1_temps_dispatch_table[src_typeid][dst_typeid];
         if (fn != nullptr) {
             std::size_t iter_nelems = dst_nelems;
@@ -610,8 +604,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
         }
     }
     else if (is_src_f_contig &&
-             ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous()))
-    {
+             ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous())) {
         auto fn = axis0_temps_dispatch_table[src_typeid][dst_typeid];
         if (fn != nullptr) {
             std::size_t iter_nelems = dst_nelems;
@@ -699,8 +692,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
                      simplified_iteration_src_strides[0]) == reduction_nelems);
         }
         else if (static_cast<std::size_t>(
-                     simplified_reduction_src_strides[0]) == iter_nelems)
-        {
+                     simplified_reduction_src_strides[0]) == iter_nelems) {
             mat_reduce_over_axis0 =
                 (simplified_iteration_dst_strides[0] == 1) &&
                 (simplified_iteration_src_strides[0] == 1);
@@ -969,8 +961,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                      simplified_iteration_src_strides[0]) == reduction_nelems);
         }
         else if (static_cast<std::size_t>(compact_reduction_src_strides[0]) ==
-                 iter_nelems)
-        {
+                 iter_nelems) {
             mat_reduce_over_axis0 =
                 (simplified_iteration_dst_strides[0] == 1) &&
                 (simplified_iteration_src_strides[0] == 1);
@@ -1153,8 +1144,7 @@ std::pair<sycl::event, sycl::event>
 
     // TODO: should be dst_nelems == 0?
     if ((is_src_c_contig && is_dst_c_contig) ||
-        (is_src_f_contig && dst_nelems == 0))
-    {
+        (is_src_f_contig && dst_nelems == 0)) {
         auto fn = axis1_contig_dispatch_vector[src_typeid];
         static constexpr py::ssize_t zero_offset = 0;
 
@@ -1168,8 +1158,7 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(keep_args_event, red_ev);
     }
     else if (is_src_f_contig &&
-             ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous()))
-    {
+             ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous())) {
         auto fn = axis0_contig_dispatch_vector[src_typeid];
         static constexpr py::ssize_t zero_offset = 0;
 

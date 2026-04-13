@@ -84,8 +84,7 @@ struct IsFiniteFunctor
             return (real_isfinite && imag_isfinite);
         }
         else if constexpr (std::is_same<argT, bool>::value ||
-                           std::is_integral<argT>::value)
-        {
+                           std::is_integral<argT>::value) {
             return constant_value;
         }
         else if constexpr (std::is_same_v<argT, sycl::half>) {

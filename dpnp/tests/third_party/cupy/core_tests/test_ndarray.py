@@ -11,15 +11,13 @@ import pytest
 # from cupy_backends.cuda.api import runtime
 # from cupy_backends.cuda import stream as stream_module
 import dpnp as cupy
-from dpnp.tensor._numpy_helper import AxisError
+from dpnp.exceptions import AxisError
 
 # from cupy import _util
 # from cupy import _core
 # from cupy import cuda
 # from cupy import get_array_module
 from dpnp.tests.third_party.cupy import testing
-
-# from cupy.exceptions import AxisError
 
 
 def get_array_module(*args):

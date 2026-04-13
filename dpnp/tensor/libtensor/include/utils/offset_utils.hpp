@@ -53,9 +53,9 @@ namespace detail
 {
 struct sink_t
 {
-    sink_t(){};
+    sink_t() {};
     template <class T>
-    sink_t(T &&){};
+    sink_t(T &&) {};
 };
 
 template <class V>
@@ -137,10 +137,7 @@ std::tuple<std::unique_ptr<indT, dpctl::tensor::alloc_utils::USMDeleter>,
 struct NoOpIndexer
 {
     constexpr NoOpIndexer() {}
-    constexpr std::size_t operator()(std::size_t gid) const
-    {
-        return gid;
-    }
+    constexpr std::size_t operator()(std::size_t gid) const { return gid; }
 };
 
 using dpctl::tensor::ssize_t;
@@ -156,10 +153,7 @@ struct StridedIndexer
     {
     }
 
-    ssize_t operator()(ssize_t gid) const
-    {
-        return compute_offset(gid);
-    }
+    ssize_t operator()(ssize_t gid) const { return compute_offset(gid); }
 
     ssize_t operator()(std::size_t gid) const
     {
@@ -200,10 +194,7 @@ struct UnpackedStridedIndexer
     {
     }
 
-    ssize_t operator()(ssize_t gid) const
-    {
-        return compute_offset(gid);
-    }
+    ssize_t operator()(ssize_t gid) const { return compute_offset(gid); }
 
     ssize_t operator()(std::size_t gid) const
     {
@@ -310,14 +301,8 @@ struct TwoOffsets
     {
     }
 
-    constexpr displacementT get_first_offset() const
-    {
-        return first_offset;
-    }
-    constexpr displacementT get_second_offset() const
-    {
-        return second_offset;
-    }
+    constexpr displacementT get_first_offset() const { return first_offset; }
+    constexpr displacementT get_second_offset() const { return second_offset; }
 
 private:
     displacementT first_offset = 0;
@@ -418,18 +403,9 @@ struct ThreeOffsets
     {
     }
 
-    constexpr displacementT get_first_offset() const
-    {
-        return first_offset;
-    }
-    constexpr displacementT get_second_offset() const
-    {
-        return second_offset;
-    }
-    constexpr displacementT get_third_offset() const
-    {
-        return third_offset;
-    }
+    constexpr displacementT get_first_offset() const { return first_offset; }
+    constexpr displacementT get_second_offset() const { return second_offset; }
+    constexpr displacementT get_third_offset() const { return third_offset; }
 
 private:
     displacementT first_offset = 0;
@@ -552,22 +528,10 @@ struct FourOffsets
     {
     }
 
-    constexpr displacementT get_first_offset() const
-    {
-        return first_offset;
-    }
-    constexpr displacementT get_second_offset() const
-    {
-        return second_offset;
-    }
-    constexpr displacementT get_third_offset() const
-    {
-        return third_offset;
-    }
-    constexpr displacementT get_fourth_offset() const
-    {
-        return fourth_offset;
-    }
+    constexpr displacementT get_first_offset() const { return first_offset; }
+    constexpr displacementT get_second_offset() const { return second_offset; }
+    constexpr displacementT get_third_offset() const { return third_offset; }
+    constexpr displacementT get_fourth_offset() const { return fourth_offset; }
 
 private:
     displacementT first_offset = 0;

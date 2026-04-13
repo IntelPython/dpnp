@@ -10,7 +10,7 @@ from numpy.testing import (
 
 import dpnp
 import dpnp.tensor as dpt
-from dpnp.tensor._numpy_helper import AxisError
+from dpnp.exceptions import AxisError
 
 from .helper import (
     assert_dtype_allclose,

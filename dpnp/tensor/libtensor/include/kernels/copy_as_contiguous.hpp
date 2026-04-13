@@ -261,10 +261,7 @@ typedef sycl::event (*as_c_contiguous_array_impl_fn_ptr_t)(
 template <typename fnT, typename T>
 struct AsCContigFactory
 {
-    fnT get()
-    {
-        return as_c_contiguous_array_generic_impl<T>;
-    }
+    fnT get() { return as_c_contiguous_array_generic_impl<T>; }
 };
 
 template <typename T,
@@ -496,8 +493,7 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
             else {
                 // map local_linear_id into (local_dim0, local_dim1)
                 for (std::uint16_t el_id = lid_lin;
-                     el_id < local_dim0 * local_dim1; el_id += lws0 * lws1)
-                {
+                     el_id < local_dim0 * local_dim1; el_id += lws0 * lws1) {
 
                     // 0 <= local_i0 < local_dim0
                     const std::uint16_t loc_i0 = el_id / local_dim1;
@@ -577,10 +573,7 @@ typedef sycl::event (
 template <typename fnT, typename T>
 struct AsCContig1DBatchOfSquareMatricesFactory
 {
-    fnT get()
-    {
-        return as_c_contiguous_1d_batch_of_square_matrices_impl<T>;
-    }
+    fnT get() { return as_c_contiguous_1d_batch_of_square_matrices_impl<T>; }
 };
 
 template <typename T>
@@ -638,9 +631,6 @@ typedef sycl::event (
 template <typename fnT, typename T>
 struct AsCContigNDBatchOfSquareMatricesFactory
 {
-    fnT get()
-    {
-        return as_c_contiguous_nd_batch_of_square_matrices_impl<T>;
-    }
+    fnT get() { return as_c_contiguous_nd_batch_of_square_matrices_impl<T>; }
 };
 } // namespace dpctl::tensor::kernels::copy_as_contig

@@ -128,10 +128,7 @@ struct FloorDivideFunctor
     }
 
 private:
-    bool l_xor(bool b1, bool b2) const
-    {
-        return (b1 != b2);
-    }
+    bool l_xor(bool b1, bool b2) const { return (b1 != b2); }
 };
 
 template <typename argT1,
@@ -401,10 +398,7 @@ struct FloorDivideInplaceFunctor
     }
 
 private:
-    bool l_xor(bool b1, bool b2) const
-    {
-        return (b1 != b2);
-    }
+    bool l_xor(bool b1, bool b2) const { return (b1 != b2); }
 };
 
 template <typename argT,
@@ -462,8 +456,8 @@ struct FloorDivideInplaceTypeMapFactory
     /*! @brief get typeid for output type of x //= y */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        if constexpr (FloorDivideInplaceTypePairSupport<argT, resT>::is_defined)
-        {
+        if constexpr (FloorDivideInplaceTypePairSupport<argT,
+                                                        resT>::is_defined) {
             return td_ns::GetTypeid<resT>{}.get();
         }
         else {

@@ -104,8 +104,7 @@ struct AscendingRadixArgSortContigFactory
     {
         if constexpr (RadixSortSupportVector<argTy>::is_defined &&
                       (std::is_same_v<IndexTy, std::int64_t> ||
-                       std::is_same_v<IndexTy, std::int32_t>))
-        {
+                       std::is_same_v<IndexTy, std::int32_t>)) {
             return argsort_axis1_contig_caller<
                 /*ascending*/ true, argTy, IndexTy>;
         }
@@ -122,8 +121,7 @@ struct DescendingRadixArgSortContigFactory
     {
         if constexpr (RadixSortSupportVector<argTy>::is_defined &&
                       (std::is_same_v<IndexTy, std::int64_t> ||
-                       std::is_same_v<IndexTy, std::int32_t>))
-        {
+                       std::is_same_v<IndexTy, std::int32_t>)) {
             return argsort_axis1_contig_caller<
                 /*ascending*/ false, argTy, IndexTy>;
         }

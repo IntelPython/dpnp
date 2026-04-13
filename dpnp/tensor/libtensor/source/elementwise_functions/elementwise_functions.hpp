@@ -377,8 +377,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     auto const &same_logical_tensors =
         dpctl::tensor::overlap::SameLogicalTensors();
     if ((overlap(src1, dst) && !same_logical_tensors(src1, dst)) ||
-        (overlap(src2, dst) && !same_logical_tensors(src2, dst)))
-    {
+        (overlap(src2, dst) && !same_logical_tensors(src2, dst))) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
     // check memory overlap
@@ -445,8 +444,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
 
         if ((nd == 1) && isEqual(simplified_src1_strides, unit_stride) &&
             isEqual(simplified_src2_strides, unit_stride) &&
-            isEqual(simplified_dst_strides, unit_stride))
-        {
+            isEqual(simplified_dst_strides, unit_stride)) {
             auto contig_fn = contig_dispatch_table[src1_typeid][src2_typeid];
 
             if (contig_fn != nullptr) {
@@ -468,8 +466,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
             // special case of C-contiguous matrix and a row
             if (isEqual(simplified_src2_strides, zero_one_strides) &&
                 isEqual(simplified_src1_strides, {simplified_shape[1], one}) &&
-                isEqual(simplified_dst_strides, {simplified_shape[1], one}))
-            {
+                isEqual(simplified_dst_strides, {simplified_shape[1], one})) {
                 auto matrix_row_broadcast_fn =
                     contig_matrix_row_broadcast_dispatch_table[src1_typeid]
                                                               [src2_typeid];
@@ -483,8 +480,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                         is_aligned<required_alignment>(
                             src2_data + src2_offset * src2_itemsize) &&
                         is_aligned<required_alignment>(
-                            dst_data + dst_offset * dst_itemsize))
-                    {
+                            dst_data + dst_offset * dst_itemsize)) {
                         std::size_t n0 = simplified_shape[0];
                         std::size_t n1 = simplified_shape[1];
                         sycl::event comp_ev = matrix_row_broadcast_fn(
@@ -501,8 +497,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
             }
             if (isEqual(simplified_src1_strides, one_zero_strides) &&
                 isEqual(simplified_src2_strides, {one, simplified_shape[0]}) &&
-                isEqual(simplified_dst_strides, {one, simplified_shape[0]}))
-            {
+                isEqual(simplified_dst_strides, {one, simplified_shape[0]})) {
                 auto row_matrix_broadcast_fn =
                     contig_row_matrix_broadcast_dispatch_table[src1_typeid]
                                                               [src2_typeid];
@@ -517,8 +512,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                         is_aligned<required_alignment>(
                             src2_data + src2_offset * src2_itemsize) &&
                         is_aligned<required_alignment>(
-                            dst_data + dst_offset * dst_itemsize))
-                    {
+                            dst_data + dst_offset * dst_itemsize)) {
                         std::size_t n0 = simplified_shape[1];
                         std::size_t n1 = simplified_shape[0];
                         sycl::event comp_ev = row_matrix_broadcast_fn(
@@ -590,8 +584,7 @@ py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
     }
 
     if (src1_typeid < 0 || src1_typeid >= td_ns::num_types || src2_typeid < 0 ||
-        src2_typeid >= td_ns::num_types)
-    {
+        src2_typeid >= td_ns::num_types) {
         throw std::runtime_error("binary output type lookup failed");
     }
     int dst_typeid = output_types_table[src1_typeid][src2_typeid];
@@ -739,8 +732,7 @@ std::pair<sycl::event, sycl::event>
             std::initializer_list<py::ssize_t>{1};
 
         if ((nd == 1) && isEqual(simplified_rhs_strides, unit_stride) &&
-            isEqual(simplified_lhs_strides, unit_stride))
-        {
+            isEqual(simplified_lhs_strides, unit_stride)) {
             auto contig_fn = contig_dispatch_table[rhs_typeid][lhs_typeid];
 
             if (contig_fn != nullptr) {
@@ -759,8 +751,7 @@ std::pair<sycl::event, sycl::event>
             static constexpr py::ssize_t one{1};
             // special case of C-contiguous matrix and a row
             if (isEqual(simplified_rhs_strides, one_zero_strides) &&
-                isEqual(simplified_lhs_strides, {one, simplified_shape[0]}))
-            {
+                isEqual(simplified_lhs_strides, {one, simplified_shape[0]})) {
                 auto row_matrix_broadcast_fn =
                     contig_row_matrix_broadcast_dispatch_table[rhs_typeid]
                                                               [lhs_typeid];

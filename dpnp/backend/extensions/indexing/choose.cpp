@@ -30,6 +30,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <stdexcept>
+#include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -41,32 +44,110 @@
 
 #include "dpnp4pybind11.hpp"
 
-#include "choose_kernel.hpp"
-
-// utils extension header
 #include "ext/common.hpp"
+#include "kernels/indexing/choose.hpp"
 
 // dpctl tensor headers
 #include "utils/indexing_utils.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
+#include "utils/type_utils.hpp"
 
 namespace dpnp::extensions::indexing
 {
+namespace py = pybind11;
+
+namespace impl
+{
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-static kernels::choose_fn_ptr_t choose_clip_dispatch_table[td_ns::num_types]
-                                                          [td_ns::num_types];
-static kernels::choose_fn_ptr_t choose_wrap_dispatch_table[td_ns::num_types]
-                                                          [td_ns::num_types];
+using dpctl::tensor::ssize_t;
 
-namespace py = pybind11;
+typedef sycl::event (*choose_fn_ptr_t)(sycl::queue &,
+                                       size_t,
+                                       ssize_t,
+                                       int,
+                                       const ssize_t *,
+                                       const char *,
+                                       char *,
+                                       char **,
+                                       ssize_t,
+                                       ssize_t,
+                                       const ssize_t *,
+                                       const std::vector<sycl::event> &);
+
+static choose_fn_ptr_t choose_clip_dispatch_table[td_ns::num_types]
+                                                 [td_ns::num_types];
+static choose_fn_ptr_t choose_wrap_dispatch_table[td_ns::num_types]
+                                                 [td_ns::num_types];
+
+template <typename ProjectorT, typename indTy, typename Ty>
+sycl::event choose_impl(sycl::queue &q,
+                        size_t nelems,
+                        ssize_t n_chcs,
+                        int nd,
+                        const ssize_t *shape_and_strides,
+                        const char *ind_cp,
+                        char *dst_cp,
+                        char **chcs_cp,
+                        ssize_t ind_offset,
+                        ssize_t dst_offset,
+                        const ssize_t *chc_offsets,
+                        const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+
+    const indTy *ind_tp = reinterpret_cast<const indTy *>(ind_cp);
+    Ty *dst_tp = reinterpret_cast<Ty *>(dst_cp);
+
+    sycl::event choose_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using InOutIndexerT =
+            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        const InOutIndexerT ind_out_indexer{nd, ind_offset, dst_offset,
+                                            shape_and_strides};
+
+        using NthChoiceIndexerT =
+            dpnp::kernels::choose::strides::NthStrideOffsetUnpacked;
+        const NthChoiceIndexerT choices_indexer{
+            nd, chc_offsets, shape_and_strides, shape_and_strides + 3 * nd};
+
+        using ChooseFunc =
+            dpnp::kernels::choose::ChooseFunctor<ProjectorT, InOutIndexerT,
+                                                 NthChoiceIndexerT, indTy, Ty>;
+
+        cgh.parallel_for<ChooseFunc>(sycl::range<1>(nelems),
+                                     ChooseFunc(ind_tp, dst_tp, chcs_cp, n_chcs,
+                                                ind_out_indexer,
+                                                choices_indexer));
+    });
+
+    return choose_ev;
+}
+
+template <typename fnT, typename IndT, typename T, typename Index>
+struct ChooseFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_integral<IndT>::value &&
+                      !std::is_same<IndT, bool>::value) {
+            fnT fn = choose_impl<Index, IndT, T>;
+            return fn;
+        }
+        else {
+            fnT fn = nullptr;
+            return fn;
+        }
+    }
+};
 
 namespace detail
 {
-
 using host_ptrs_allocator_t =
     dpctl::tensor::alloc_utils::usm_host_allocator<char *>;
 using ptrs_t = std::vector<char *, host_ptrs_allocator_t>;
@@ -193,7 +274,6 @@ std::vector<dpctl::tensor::usm_ndarray> parse_py_chcs(const sycl::queue &q,
 
     return res;
 }
-
 } // namespace detail
 
 std::pair<sycl::event, sycl::event>
@@ -414,23 +494,6 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(arg_cleanup_ev, choose_generic_ev);
 }
 
-template <typename fnT, typename IndT, typename T, typename Index>
-struct ChooseFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_integral<IndT>::value &&
-                      !std::is_same<IndT, bool>::value) {
-            fnT fn = kernels::choose_impl<Index, IndT, T>;
-            return fn;
-        }
-        else {
-            fnT fn = nullptr;
-            return fn;
-        }
-    }
-};
-
 using dpctl::tensor::indexing_utils::ClipIndex;
 using dpctl::tensor::indexing_utils::WrapIndex;
 
@@ -443,19 +506,19 @@ using ChooseClipFactory = ChooseFactory<fnT, IndT, T, ClipIndex<IndT>>;
 void init_choose_dispatch_tables(void)
 {
     using ext::common::init_dispatch_table;
-    using kernels::choose_fn_ptr_t;
 
     init_dispatch_table<choose_fn_ptr_t, ChooseClipFactory>(
         choose_clip_dispatch_table);
     init_dispatch_table<choose_fn_ptr_t, ChooseWrapFactory>(
         choose_wrap_dispatch_table);
 }
+} // namespace impl
 
 void init_choose(py::module_ m)
 {
-    dpnp::extensions::indexing::init_choose_dispatch_tables();
+    impl::init_choose_dispatch_tables();
 
-    m.def("_choose", &py_choose, "", py::arg("src"), py::arg("chcs"),
+    m.def("_choose", &impl::py_choose, "", py::arg("src"), py::arg("chcs"),
           py::arg("dst"), py::arg("mode"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 

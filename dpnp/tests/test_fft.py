@@ -6,6 +6,7 @@ from numpy.testing import assert_raises
 import dpnp
 import dpnp.tensor as dpt
 from dpnp.dpnp_utils import map_dtype_to_device
+from dpnp.exceptions import ExecutionPlacementError
 
 from .helper import (
     assert_dtype_allclose,
@@ -276,7 +277,7 @@ class TestFft:
         # Inconsistent sycl_queue
         a = dpnp.ones((10,), dtype=dpnp.complex64, sycl_queue=dpctl.SyclQueue())
         out = dpnp.empty((10,), sycl_queue=dpctl.SyclQueue())
-        assert_raises(dpt.ExecutionPlacementError, dpnp.fft.fft, a, out=out)
+        assert_raises(ExecutionPlacementError, dpnp.fft.fft, a, out=out)
 
         # Invalid shape
         a = dpnp.ones((10,), dtype=dpnp.complex64)

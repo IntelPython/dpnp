@@ -72,8 +72,7 @@ struct AscendingArgSortContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<IndexTy, std::int64_t> ||
-                      std::is_same_v<IndexTy, std::int32_t>)
-        {
+                      std::is_same_v<IndexTy, std::int32_t>) {
             using dpctl::tensor::rich_comparisons::AscendingSorter;
             using Comp = typename AscendingSorter<argTy>::type;
 
@@ -92,8 +91,7 @@ struct DescendingArgSortContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<IndexTy, std::int64_t> ||
-                      std::is_same_v<IndexTy, std::int32_t>)
-        {
+                      std::is_same_v<IndexTy, std::int32_t>) {
             using dpctl::tensor::rich_comparisons::DescendingSorter;
             using Comp = typename DescendingSorter<argTy>::type;
 

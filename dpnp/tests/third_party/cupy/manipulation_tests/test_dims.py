@@ -4,7 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tensor._numpy_helper import AxisError
+from dpnp.exceptions import AxisError
 from dpnp.tests.third_party.cupy import testing
 
 

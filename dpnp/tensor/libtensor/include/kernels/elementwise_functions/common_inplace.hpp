@@ -92,8 +92,7 @@ public:
         if constexpr (enable_sg_loadstore &&
                       BinaryInplaceOperatorT::supports_sg_loadstore::value &&
                       BinaryInplaceOperatorT::supports_vec::value &&
-                      (vec_sz > 1))
-        {
+                      (vec_sz > 1)) {
             auto sg = ndit.get_sub_group();
             std::uint16_t sgSize = sg.get_max_local_range()[0];
 
@@ -130,8 +129,8 @@ public:
             }
         }
         else if constexpr (enable_sg_loadstore &&
-                           BinaryInplaceOperatorT::supports_sg_loadstore::value)
-        {
+                           BinaryInplaceOperatorT::supports_sg_loadstore::
+                               value) {
             auto sg = ndit.get_sub_group();
             std::uint16_t sgSize = sg.get_max_local_range()[0];
 
@@ -312,10 +311,11 @@ template <typename argTy,
                     typename T2,
                     std::uint8_t vs,
                     std::uint8_t nv,
-                    bool enable_sg_loadstore>
-          class BinaryInplaceContigFunctorT,
-          template <typename T1, typename T2, std::uint8_t vs, std::uint8_t nv>
-          class kernel_name,
+                    bool enable_sg_loadstore> class BinaryInplaceContigFunctorT,
+          template <typename T1,
+                    typename T2,
+                    std::uint8_t vs,
+                    std::uint8_t nv> class kernel_name,
           std::uint8_t vec_sz = 4u,
           std::uint8_t n_vecs = 2u>
 sycl::event
@@ -341,8 +341,7 @@ sycl::event
         resTy *res_tp = reinterpret_cast<resTy *>(lhs_p) + lhs_offset;
 
         if (is_aligned<required_alignment>(arg_tp) &&
-            is_aligned<required_alignment>(res_tp))
-        {
+            is_aligned<required_alignment>(res_tp)) {
             static constexpr bool enable_sg_loadstore = true;
             using KernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
             using Impl =
@@ -372,10 +371,10 @@ sycl::event
 
 template <typename argTy,
           typename resTy,
-          template <typename T1, typename T2, typename IndT>
-          class BinaryInplaceStridedFunctorT,
-          template <typename T1, typename T2, typename IndT>
-          class kernel_name>
+          template <typename T1,
+                    typename T2,
+                    typename IndT> class BinaryInplaceStridedFunctorT,
+          template <typename T1, typename T2, typename IndT> class kernel_name>
 sycl::event binary_inplace_strided_impl(
     sycl::queue &exec_q,
     std::size_t nelems,
@@ -410,10 +409,9 @@ sycl::event binary_inplace_strided_impl(
 
 template <typename argT,
           typename resT,
-          template <typename T1, typename T3>
-          class BinaryInplaceRowMatrixBroadcastFunctorT,
-          template <typename T1, typename T3>
-          class kernel_name>
+          template <typename T1,
+                    typename T3> class BinaryInplaceRowMatrixBroadcastFunctorT,
+          template <typename T1, typename T3> class kernel_name>
 sycl::event binary_inplace_row_matrix_broadcast_impl(
     sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,

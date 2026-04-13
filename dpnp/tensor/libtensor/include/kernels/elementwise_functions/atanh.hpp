@@ -123,8 +123,8 @@ struct AtanhFunctor
              */
             const realT RECIP_EPSILON =
                 realT(1) / std::numeric_limits<realT>::epsilon();
-            if (sycl::fabs(x) > RECIP_EPSILON || sycl::fabs(y) > RECIP_EPSILON)
-            {
+            if (sycl::fabs(x) > RECIP_EPSILON ||
+                sycl::fabs(y) > RECIP_EPSILON) {
                 const realT pi_half = sycl::atan(realT(1)) * 2;
 
                 const realT res_re = realT(0);

@@ -58,10 +58,9 @@ sycl::event
         sycl::range<1> gRange{padded_vec_sz};
 
         cgh.parallel_for<class populate_padded_vec_krn<T>>(
-            gRange, [=](sycl::id<1> id)
-        {
-            std::size_t i = id[0];
-            padded_vec[i] = vec[i % vec_sz];
+            gRange, [=](sycl::id<1> id) {
+                std::size_t i = id[0];
+                padded_vec[i] = vec[i % vec_sz];
             });
     });
 

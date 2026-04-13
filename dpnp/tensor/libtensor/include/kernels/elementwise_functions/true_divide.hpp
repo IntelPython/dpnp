@@ -71,8 +71,7 @@ struct TrueDivideFunctor
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
         if constexpr (tu_ns::is_complex<argT1>::value &&
-                      tu_ns::is_complex<argT2>::value)
-        {
+                      tu_ns::is_complex<argT2>::value) {
             using realT1 = typename argT1::value_type;
             using realT2 = typename argT2::value_type;
 
@@ -80,15 +79,13 @@ struct TrueDivideFunctor
                    exprm_ns::complex<realT2>(in2);
         }
         else if constexpr (tu_ns::is_complex<argT1>::value &&
-                           !tu_ns::is_complex<argT2>::value)
-        {
+                           !tu_ns::is_complex<argT2>::value) {
             using realT1 = typename argT1::value_type;
 
             return exprm_ns::complex<realT1>(in1) / in2;
         }
         else if constexpr (!tu_ns::is_complex<argT1>::value &&
-                           tu_ns::is_complex<argT2>::value)
-        {
+                           tu_ns::is_complex<argT2>::value) {
             using realT2 = typename argT2::value_type;
 
             return in1 / exprm_ns::complex<realT2>(in2);
@@ -362,8 +359,7 @@ struct TrueDivideContigMatrixContigRowBroadcastFactory
             using resT = typename TrueDivideOutputType<T1, T2>::value_type;
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
                           dpctl::tensor::type_utils::is_complex<T2>::value ||
-                          dpctl::tensor::type_utils::is_complex<resT>::value)
-            {
+                          dpctl::tensor::type_utils::is_complex<resT>::value) {
                 fnT fn = nullptr;
                 return fn;
             }
@@ -412,8 +408,7 @@ struct TrueDivideContigRowContigMatrixBroadcastFactory
             using resT = typename TrueDivideOutputType<T1, T2>::value_type;
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
                           dpctl::tensor::type_utils::is_complex<T2>::value ||
-                          dpctl::tensor::type_utils::is_complex<resT>::value)
-            {
+                          dpctl::tensor::type_utils::is_complex<resT>::value) {
                 fnT fn = nullptr;
                 return fn;
             }
@@ -498,8 +493,8 @@ struct TrueDivideInplaceTypeMapFactory
     /*! @brief get typeid for output type of divide(T1 x, T2 y) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        if constexpr (TrueDivideInplaceTypePairSupport<argT, resT>::is_defined)
-        {
+        if constexpr (TrueDivideInplaceTypePairSupport<argT,
+                                                       resT>::is_defined) {
             return td_ns::GetTypeid<resT>{}.get();
         }
         else {
@@ -652,8 +647,7 @@ struct TrueDivideInplaceRowMatrixBroadcastFactory
         }
         else {
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
-                          dpctl::tensor::type_utils::is_complex<T2>::value)
-            {
+                          dpctl::tensor::type_utils::is_complex<T2>::value) {
                 fnT fn = nullptr;
                 return fn;
             }

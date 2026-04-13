@@ -309,10 +309,7 @@ struct BitwiseRightShiftInplaceFunctor
     using supports_sg_loadstore = typename std::true_type;
     using supports_vec = typename std::true_type;
 
-    void operator()(resT &res, const argT &in) const
-    {
-        impl(res, in);
-    }
+    void operator()(resT &res, const argT &in) const { impl(res, in); }
 
     template <int vec_sz>
     void operator()(sycl::vec<resT, vec_sz> &res,
@@ -396,9 +393,8 @@ struct BitwiseRightShiftInplaceTypeMapFactory
     /*! @brief get typeid for output type of x >>= y */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        if constexpr (BitwiseRightShiftInplaceTypePairSupport<argT,
-                                                              resT>::is_defined)
-        {
+        if constexpr (BitwiseRightShiftInplaceTypePairSupport<
+                          argT, resT>::is_defined) {
             return td_ns::GetTypeid<resT>{}.get();
         }
         else {
@@ -436,9 +432,8 @@ struct BitwiseRightShiftInplaceContigFactory
 {
     fnT get()
     {
-        if constexpr (!BitwiseRightShiftInplaceTypePairSupport<T1,
-                                                               T2>::is_defined)
-        {
+        if constexpr (!BitwiseRightShiftInplaceTypePairSupport<
+                          T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -477,9 +472,8 @@ struct BitwiseRightShiftInplaceStridedFactory
 {
     fnT get()
     {
-        if constexpr (!BitwiseRightShiftInplaceTypePairSupport<T1,
-                                                               T2>::is_defined)
-        {
+        if constexpr (!BitwiseRightShiftInplaceTypePairSupport<
+                          T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

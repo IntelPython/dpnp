@@ -259,6 +259,9 @@ def main():
                     "-format=lcov",
                     "-ignore-filename-regex=/tmp/icpx*",
                     r"-ignore-filename-regex=.*/backend/kernels/elementwise_functions/.*\.hpp$",
+                    r"-ignore-filename-regex=.*/backend/kernels/indexing/.*\.hpp$",
+                    r"-ignore-filename-regex=.*/backend/kernels/statistics/.*\.hpp$",
+                    r"-ignore-filename-regex=.*/backend/kernels/window/.*\.hpp$",
                     "-instr-profile=" + instr_profile_fn,
                 ]
                 + objects

@@ -125,8 +125,8 @@ struct SyevdContigFactory
 {
     fnT get()
     {
-        if constexpr (types::SyevdTypePairSupportFactory<T, RealT>::is_defined)
-        {
+        if constexpr (types::SyevdTypePairSupportFactory<T,
+                                                         RealT>::is_defined) {
             return syevd_impl<T, RealT>;
         }
         else {

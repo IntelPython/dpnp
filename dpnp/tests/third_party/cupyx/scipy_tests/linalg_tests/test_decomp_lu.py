@@ -124,7 +124,6 @@ class TestLUFactor(unittest.TestCase):
 )
 @testing.fix_random()
 @testing.with_requires("scipy")
-@pytest.mark.skip("lu() is not supported yet")
 class TestLU(unittest.TestCase):
 
     @testing.for_dtypes("fdFD")
@@ -132,7 +131,7 @@ class TestLU(unittest.TestCase):
         a_cpu = testing.shaped_random(self.shape, numpy, dtype=dtype)
         a_gpu = cupy.asarray(a_cpu)
         result_cpu = scipy.linalg.lu(a_cpu, permute_l=self.permute_l)
-        result_gpu = cupy.linalg.lu(a_gpu, permute_l=self.permute_l)
+        result_gpu = cupy.scipy.linalg.lu(a_gpu, permute_l=self.permute_l)
         assert len(result_cpu) == len(result_gpu)
         if not self.permute_l:
             # check permutation matrix
@@ -140,22 +139,22 @@ class TestLU(unittest.TestCase):
             result_gpu = list(result_gpu)
             P_cpu = result_cpu.pop(0)
             P_gpu = result_gpu.pop(0)
-            cupy.testing.assert_array_equal(P_gpu, P_cpu)
-        cupy.testing.assert_allclose(result_gpu[0], result_cpu[0], atol=1e-5)
-        cupy.testing.assert_allclose(result_gpu[1], result_cpu[1], atol=1e-5)
+            testing.assert_array_equal(P_gpu, P_cpu)
+        testing.assert_allclose(result_gpu[0], result_cpu[0], atol=1e-5)
+        testing.assert_allclose(result_gpu[1], result_cpu[1], atol=1e-5)
 
     @testing.for_dtypes("fdFD")
     def test_lu_reconstruction(self, dtype):
         m, n = self.shape
         A = testing.shaped_random(self.shape, cupy, dtype=dtype)
         if self.permute_l:
-            PL, U = cupy.linalg.lu(A, permute_l=self.permute_l)
+            PL, U = cupy.scipy.linalg.lu(A, permute_l=self.permute_l)
             PLU = PL @ U
         else:
-            P, L, U = cupy.linalg.lu(A, permute_l=self.permute_l)
+            P, L, U = cupy.scipy.linalg.lu(A, permute_l=self.permute_l)
             PLU = P @ L @ U
         # check that reconstruction is close to original
-        cupy.testing.assert_allclose(PLU, A, atol=1e-5)
+        testing.assert_allclose(PLU, A, atol=1e-5)
 
 
 @testing.parameterize(

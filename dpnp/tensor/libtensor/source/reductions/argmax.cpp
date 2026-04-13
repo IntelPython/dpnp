@@ -131,9 +131,8 @@ struct ArgmaxOverAxisTempsStridedFactory
 {
     fnT get() const
     {
-        if constexpr (TypePairSupportForArgmaxReductionTemps<srcTy,
-                                                             dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportForArgmaxReductionTemps<
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_integral_v<srcTy> &&
                           !std::is_same_v<srcTy, bool>) {
                 // op for values
@@ -165,9 +164,8 @@ struct ArgmaxOverAxis1TempsContigFactory
 {
     fnT get() const
     {
-        if constexpr (TypePairSupportForArgmaxReductionTemps<srcTy,
-                                                             dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportForArgmaxReductionTemps<
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_integral_v<srcTy> &&
                           !std::is_same_v<srcTy, bool>) {
                 // op for values
@@ -199,9 +197,8 @@ struct ArgmaxOverAxis0TempsContigFactory
 {
     fnT get() const
     {
-        if constexpr (TypePairSupportForArgmaxReductionTemps<srcTy,
-                                                             dstTy>::is_defined)
-        {
+        if constexpr (TypePairSupportForArgmaxReductionTemps<
+                          srcTy, dstTy>::is_defined) {
             if constexpr (std::is_integral_v<srcTy> &&
                           !std::is_same_v<srcTy, bool>) {
                 // op for values

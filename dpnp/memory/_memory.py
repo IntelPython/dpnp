@@ -99,13 +99,18 @@ def create_data(x):
     usm_data = x.usm_data
 
     if isinstance(usm_data, tuple(dispatch.values())):
-        return usm_data
+        # usm_data is already an instance of MemoryUSM<type> class
+        cls = usm_data.__class__
+    elif (cls := dispatch.get(type(usm_data))) is not None:
+        pass  # cls is set
+    else:
+        raise TypeError(f"Expected USM memory, but got {type(usm_data)}")
 
-    cls = dispatch.get(type(usm_data), None)
-    if cls:
-        data = cls(usm_data)
-        # `ptr` is expecting to point at the start of the array's data,
-        # while `usm_data._pointer` is a pointer at the start of memory buffer
-        data.ptr = x._pointer
-        return data
-    raise TypeError(f"Expected USM memory, but got {type(usm_data)}")
+    # create a new instance each time since usm_data might be a view
+    # of another array
+    data = cls(usm_data)
+
+    # `ptr` is expecting to point at the start of the array's data,
+    # while `usm_data._pointer` is a pointer at the start of memory buffer
+    data.ptr = x._pointer
+    return data

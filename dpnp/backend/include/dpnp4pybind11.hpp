@@ -195,22 +195,10 @@ public:
         return api;
     }
 
-    py::object default_sycl_queue_pyobj()
-    {
-        return *default_sycl_queue_;
-    }
-    py::object default_usm_memory_pyobj()
-    {
-        return *default_usm_memory_;
-    }
-    py::object default_usm_ndarray_pyobj()
-    {
-        return *default_usm_ndarray_;
-    }
-    py::object as_usm_memory_pyobj()
-    {
-        return *as_usm_memory_;
-    }
+    py::object default_sycl_queue_pyobj() { return *default_sycl_queue_; }
+    py::object default_usm_memory_pyobj() { return *default_usm_memory_; }
+    py::object default_usm_ndarray_pyobj() { return *default_usm_ndarray_; }
+    py::object as_usm_memory_pyobj() { return *as_usm_memory_; }
 
 private:
     struct Deleter

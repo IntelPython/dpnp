@@ -7,7 +7,7 @@ from numpy.testing import (
 )
 
 import dpnp
-from dpnp.tensor._numpy_helper import AxisError
+from dpnp.exceptions import AxisError
 
 from .helper import (
     get_all_dtypes,

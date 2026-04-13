@@ -106,8 +106,8 @@ struct usm_ndarray_types
                 throw_unrecognized_typenum_error(typenum);
             }
         }
-        else if (typenum == api.UAR_LONGLONG_ || typenum == api.UAR_ULONGLONG_)
-        {
+        else if (typenum == api.UAR_LONGLONG_ ||
+                 typenum == api.UAR_ULONGLONG_) {
             switch (sizeof(long long)) {
             case sizeof(std::int64_t):
                 return ((typenum == api.UAR_LONGLONG_)
