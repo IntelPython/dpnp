@@ -80,6 +80,45 @@ def normalize_test_name(nodeid):
     return normalized_nodeid
 
 
+def get_device_memory_info(device=None):
+    """
+    Safely retrieve device memory information.
+
+    Returns dict with keys: 'global_mem_size', 'max_mem_alloc_size', 'local_mem_size'
+    or None if information cannot be retrieved.
+    """
+    try:
+        if device is None:
+            device = dpctl.select_default_device()
+
+        return {
+            "global_mem_size": device.global_mem_size,
+            "max_mem_alloc_size": device.max_mem_alloc_size,
+            "local_mem_size": device.local_mem_size,
+            "device_name": device.name,
+            "device_type": str(device.device_type),
+            "backend": str(device.backend),
+        }
+    except Exception as e:
+        warnings.warn(f"Failed to get device memory info: {e}")
+        return None
+
+
+def format_memory_size(size_bytes):
+    """Format memory size in human-readable format."""
+    if size_bytes is None:
+        return "N/A"
+
+    if size_bytes >= 1024**3:
+        return f"{size_bytes / (1024**3):.2f} GB"
+    elif size_bytes >= 1024**2:
+        return f"{size_bytes / (1024**2):.2f} MB"
+    elif size_bytes >= 1024:
+        return f"{size_bytes / 1024:.2f} KB"
+    else:
+        return f"{size_bytes} bytes"
+
+
 def pytest_configure(config):
     # By default, tests marked as slow will be deselected.
     # To run all tests, use -m "slow or not slow".
@@ -141,6 +180,9 @@ def pytest_collection_modifyitems(config, items):
     support_fp64 = dev.has_aspect_fp64
     is_cuda = dpnp.is_cuda_backend(dev)
 
+    # Get device memory information
+    mem_info = get_device_memory_info(dev)
+
     print("")
     print(
         f"DPNP Test scope includes all integer dtypes: {bool(dtype_config.all_int_types)}"
@@ -153,6 +195,23 @@ def pytest_collection_modifyitems(config, items):
     print(f"DPNP version: {dpnp.__version__}, location: {dpnp}")
     print(f"NumPy version: {numpy.__version__}, location: {numpy}")
     print(f"Python version: {sys.version}")
+
+    # Log device memory information
+    if mem_info:
+        print("")
+        print("Device Memory Information:")
+        print(f"  Device: {mem_info['device_name']}")
+        print(f"  Backend: {mem_info['backend']}")
+        print(
+            f"  Global Memory Size: {format_memory_size(mem_info['global_mem_size'])}"
+        )
+        print(
+            f"  Max Allocation Size: {format_memory_size(mem_info['max_mem_alloc_size'])}"
+        )
+        print(
+            f"  Local Memory Size: {format_memory_size(mem_info['local_mem_size'])}"
+        )
+
     print("")
     if is_gpu or os.getenv("DPNP_QUEUE_GPU") == "1":
         excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
@@ -239,3 +298,70 @@ def suppress_divide_invalid_numpy_warnings(
     suppress_divide_numpy_warnings, suppress_invalid_numpy_warnings
 ):
     yield
+
+
+# Memory logging hooks
+# Set DPNP_TEST_LOG_MEMORY=1 to enable per-test memory logging
+def pytest_runtest_setup(item):
+    """Log memory info before each test if enabled."""
+    if os.getenv("DPNP_TEST_LOG_MEMORY") == "1":
+        mem_info = get_device_memory_info()
+        if mem_info:
+            # Get the pytest terminal writer to bypass capture
+            tw = item.config.get_terminal_writer()
+            tw.line()
+            tw.write(
+                f"[MEMORY BEFORE] {item.nodeid}: "
+                f"Global={format_memory_size(mem_info['global_mem_size'])}, "
+                f"MaxAlloc={format_memory_size(mem_info['max_mem_alloc_size'])}, "
+                f"Local={format_memory_size(mem_info['local_mem_size'])}"
+            )
+            tw.line()
+
+
+def pytest_runtest_teardown(item):
+    """Log memory info after each test if enabled."""
+    if os.getenv("DPNP_TEST_LOG_MEMORY") == "1":
+        mem_info = get_device_memory_info()
+        if mem_info:
+            tw = item.config.get_terminal_writer()
+            tw.write(
+                f"[MEMORY AFTER] {item.nodeid}: "
+                f"Global={format_memory_size(mem_info['global_mem_size'])}, "
+                f"MaxAlloc={format_memory_size(mem_info['max_mem_alloc_size'])}, "
+                f"Local={format_memory_size(mem_info['local_mem_size'])}"
+            )
+            tw.line()
+
+
+def pytest_runtest_makereport(item, call):
+    """
+    Enhanced error reporting that handles device failures gracefully.
+
+    This hook catches device errors during test reporting phase and
+    provides meaningful error messages instead of crashing.
+    """
+    # Only intercept if we're in the call phase and there was an exception
+    if call.when == "call" and call.excinfo is not None:
+        # Check if this is a device-related error
+        exc_type = call.excinfo.type
+        exc_value = call.excinfo.value
+
+        # Log device state if there's a device-related error
+        if (
+            "sycl" in str(exc_type).lower()
+            or "device" in str(exc_value).lower()
+        ):
+            try:
+                mem_info = get_device_memory_info()
+                if mem_info:
+                    print(
+                        f"\n[DEVICE ERROR] Test: {item.nodeid}"
+                        f"\n  Device: {mem_info['device_name']}"
+                        f"\n  Backend: {mem_info['backend']}"
+                        f"\n  Global Memory: {format_memory_size(mem_info['global_mem_size'])}"
+                    )
+            except Exception as e:
+                print(
+                    f"\n[DEVICE ERROR] Failed to retrieve device info during error: {e}"
+                )
