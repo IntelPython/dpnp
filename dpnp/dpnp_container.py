@@ -64,7 +64,7 @@ def arange(
     usm_type="device",
     sycl_queue=None,
 ):
-    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    """Validate input parameters before passing them into `dpnp.tensor` module"""
     dpt.validate_usm_type(usm_type, allow_none=False)
     sycl_queue_normalized = dpnp.get_normalized_queue_device(
         sycl_queue=sycl_queue, device=device
@@ -151,7 +151,7 @@ def empty(
     usm_type="device",
     sycl_queue=None,
 ):
-    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    """Validate input parameters before passing them into `dpnp.tensor` module"""
     dpt.validate_usm_type(usm_type, allow_none=False)
     sycl_queue_normalized = dpnp.get_normalized_queue_device(
         sycl_queue=sycl_queue, device=device
@@ -182,7 +182,7 @@ def eye(
     usm_type="device",
     sycl_queue=None,
 ):
-    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    """Validate input parameters before passing them into `dpnp.tensor` module"""
     dpt.validate_usm_type(usm_type, allow_none=False)
     sycl_queue_normalized = dpnp.get_normalized_queue_device(
         sycl_queue=sycl_queue, device=device
@@ -213,7 +213,7 @@ def full(
     usm_type=None,
     sycl_queue=None,
 ):
-    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    """Validate input parameters before passing them into `dpnp.tensor` module"""
     dpt.validate_usm_type(usm_type, allow_none=True)
 
     sycl_queue_normalized = dpnp.get_normalized_queue_device(
@@ -246,7 +246,7 @@ def ones(
     usm_type="device",
     sycl_queue=None,
 ):
-    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    """Validate input parameters before passing them into `dpnp.tensor` module"""
     dpt.validate_usm_type(usm_type, allow_none=False)
     sycl_queue_normalized = dpnp.get_normalized_queue_device(
         sycl_queue=sycl_queue, device=device
@@ -286,7 +286,7 @@ def zeros(
     usm_type="device",
     sycl_queue=None,
 ):
-    """Validate input parameters before passing them into `dpctl.tensor` module"""
+    """Validate input parameters before passing them into `dpnp.tensor` module"""
     dpt.validate_usm_type(usm_type, allow_none=False)
     sycl_queue_normalized = dpnp.get_normalized_queue_device(
         sycl_queue=sycl_queue, device=device

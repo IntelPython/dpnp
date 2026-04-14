@@ -77,7 +77,7 @@ def create_data(x):
     Parameters
     ----------
     x : usm_ndarray
-        Input array of :class:`dpctl.tensor.usm_ndarray` type.
+        Input array of :class:`dpnp.tensor.usm_ndarray` type.
 
     Returns
     -------

@@ -121,11 +121,11 @@ def allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False):
     """
     if not isinstance(a1, dpt.usm_ndarray):
         raise TypeError(
-            f"Expected dpctl.tensor.usm_ndarray type, got {type(a1)}."
+            f"Expected dpnp.tensor.usm_ndarray type, got {type(a1)}."
         )
     if not isinstance(a2, dpt.usm_ndarray):
         raise TypeError(
-            f"Expected dpctl.tensor.usm_ndarray type, got {type(a2)}."
+            f"Expected dpnp.tensor.usm_ndarray type, got {type(a2)}."
         )
     atol = float(atol)
     rtol = float(rtol)

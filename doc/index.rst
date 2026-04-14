@@ -13,6 +13,7 @@ Data Parallel Extension for NumPy*
    overview
    quick_start_guide
    reference/index
+   tensor
 
 .. toctree::
    :maxdepth: 1

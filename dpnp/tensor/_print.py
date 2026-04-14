@@ -397,7 +397,7 @@ def usm_ndarray_str(
         str: string representation of input array.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     options = get_print_options()
     options.update(
@@ -459,7 +459,7 @@ def usm_ndarray_repr(
         str: formatted string representing the input array
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     if line_width is None:
         line_width = _print_options["linewidth"]

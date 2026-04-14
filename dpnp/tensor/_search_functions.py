@@ -162,7 +162,7 @@ def where(condition, x1, x2, /, *, order="K", out=None):
     """
     if not isinstance(condition, dpt.usm_ndarray):
         raise TypeError(
-            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(condition)}"
+            "Expecting dpnp.tensor.usm_ndarray type, " f"got {type(condition)}"
         )
     if order not in ["K", "C", "F", "A"]:
         order = "K"

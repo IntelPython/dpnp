@@ -167,7 +167,7 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
     Limitations
     -----------
     Input array is only supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
+    or :class:`dpnp.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -251,7 +251,7 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
     Limitations
     -----------
     Input and output arrays are only supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
+    or :class:`dpnp.tensor.usm_ndarray`.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -466,7 +466,7 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     Limitations
     -----------
     Input array is only supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
+    or :class:`dpnp.tensor.usm_ndarray`.
     Parameters `where`, and `initial` are only supported with their default
     values.
     Otherwise ``NotImplementedError`` exception will be raised.
@@ -782,7 +782,7 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     Limitations
     -----------
     Input array is only supported as either :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray`.
+    or :class:`dpnp.tensor.usm_ndarray`.
     Parameters `where`, and `initial` are only supported with their default
     values.
     Otherwise ``NotImplementedError`` exception will be raised.
@@ -896,7 +896,7 @@ def nanprod(
     Limitations
     -----------
     Input array is only supported as either :class:`dpnp.ndarray` or
-    :class:`dpctl.tensor.usm_ndarray`.
+    :class:`dpnp.tensor.usm_ndarray`.
     Parameters `initial`, and `where` are only supported with their default
     values.
     Otherwise the function will be executed sequentially on CPU.

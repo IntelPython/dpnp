@@ -84,7 +84,7 @@ class TestPut(unittest.TestCase):
         # Take care so that actual indices don't overlap.
         if self.mode == "raise":
             pytest.skip("'raise' mode is not supported")
-        # `wrap` mode in dpctl.tensor.put is different from numpy.put (#1365):
+        # `wrap` mode in dpnp.tensor.put is different from numpy.put (#1365):
         # numpy`s `wrap` mode wraps indices around for cyclic operations
         # while dpctl`s `wrap` mode restricts indices to stay within the array bounds (-n <= i < n).
         elif self.mode == "wrap":

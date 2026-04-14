@@ -194,7 +194,7 @@ def mean(x, axis=None, keepdims=False):
             where input array `x` is allocated.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     nd = x.ndim
     if axis is None:
         axis = tuple(range(nd))
@@ -306,7 +306,7 @@ def var(x, axis=None, correction=0.0, keepdims=False):
             where input array `x` is allocated.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     if not isinstance(correction, (int, float)):
         raise TypeError(
@@ -358,7 +358,7 @@ def std(x, axis=None, correction=0.0, keepdims=False):
             where input array `x` is allocated.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     if not isinstance(correction, (int, float)):
         raise TypeError(
