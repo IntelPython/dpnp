@@ -33,6 +33,7 @@ from ._type_utils import (
     _acceptance_fn_divide,
     _acceptance_fn_negative,
     _acceptance_fn_reciprocal,
+    _acceptance_fn_round,
     _acceptance_fn_subtract,
     _resolve_weak_types_all_py_ints,
 )
@@ -1723,7 +1724,11 @@ Returns:
 """
 
 round = UnaryElementwiseFunc(
-    "round", ti._round_result_type, ti._round, _round_docstring
+    "round",
+    ti._round_result_type,
+    ti._round,
+    _round_docstring,
+    acceptance_fn=_acceptance_fn_round,
 )
 del _round_docstring
 
