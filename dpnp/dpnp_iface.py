@@ -142,7 +142,7 @@ def asnumpy(a, order="C"):
 
 def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
     """
-    Return :class:`dpctl.tensor.usm_ndarray` from input object `a`.
+    Return :class:`dpnp.tensor.usm_ndarray` from input object `a`.
 
     Parameters
     ----------
@@ -159,7 +159,7 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
         If the value is ``None``, returned array is created on the same device
         as `a`.
@@ -180,7 +180,7 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
     out : usm_ndarray
         A dpctl USM ndarray from input array or scalar `a`.
         If `a` is instance of :class:`dpnp.ndarray`
-        or :class:`dpctl.tensor.usm_ndarray`, no array allocation will be done
+        or :class:`dpnp.tensor.usm_ndarray`, no array allocation will be done
         and `dtype`, `device`, `usm_type`, `sycl_queue` keywords
         will be ignored.
 
@@ -256,7 +256,7 @@ def check_limitations(
 def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
     """
     Return ``True`` if each array has either type of scalar,
-    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.
+    :class:`dpnp.ndarray` or :class:`dpnp.tensor.usm_ndarray`.
     But if any array has unsupported type, ``TypeError`` will be raised.
 
     Parameters
@@ -318,7 +318,7 @@ def default_float_type(device=None, sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
         The value ``None`` is interpreted as to use a default device.
 
@@ -434,7 +434,7 @@ def get_include():
 def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     """
     Utility to process complementary keyword arguments 'device' and 'sycl_queue'
-    in subsequent calls of functions from `dpctl.tensor` module.
+    in subsequent calls of functions from `dpnp.tensor` module.
 
     If both arguments 'device' and 'sycl_queue' have default value ``None``
     and 'obj' has `sycl_queue` attribute, it assumes that Compute Follows Data
@@ -445,7 +445,7 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     ----------
     obj : object, optional
         A python object. Can be an instance of `dpnp_array`,
-        `dpctl.tensor.usm_ndarray`, an object representing SYCL USM allocation
+        `dpnp.tensor.usm_ndarray`, an object representing SYCL USM allocation
         and implementing `__sycl_usm_array_interface__` protocol, an instance
         of `numpy.ndarray`, an object supporting Python buffer protocol,
         a Python scalar, or a (possibly nested) sequence of Python scalars.
@@ -462,7 +462,7 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
         The value ``None`` is interpreted as to use the same device as `obj`.
 
@@ -472,7 +472,7 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
     -------
     sycl_queue: dpctl.SyclQueue
         A :class:`dpctl.SyclQueue` object normalized by
-        `normalize_queue_device` call of `dpctl.tensor` module invoked with
+        `normalize_queue_device` call of `dpnp.tensor` module invoked with
         `device` and `sycl_queue` values. If both incoming `device` and
         `sycl_queue` are ``None`` and `obj` has `sycl_queue` attribute,
         the normalization will be performed for `obj.sycl_queue` value.
@@ -540,13 +540,13 @@ def get_result_array(a, out=None, casting="safe"):
 
 def get_usm_ndarray(a):
     """
-    Return :class:`dpctl.tensor.usm_ndarray` from input array `a`.
+    Return :class:`dpnp.tensor.usm_ndarray` from input array `a`.
 
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array of supported type :class:`dpnp.ndarray`
-        or :class:`dpctl.tensor.usm_ndarray`.
+        or :class:`dpnp.tensor.usm_ndarray`.
 
     Returns
     -------
@@ -571,13 +571,13 @@ def get_usm_ndarray(a):
 
 def get_usm_ndarray_or_scalar(a):
     """
-    Return scalar or :class:`dpctl.tensor.usm_ndarray` from input object `a`.
+    Return scalar or :class:`dpnp.tensor.usm_ndarray` from input object `a`.
 
     Parameters
     ----------
     a : {scalar, dpnp_array, usm_ndarray}
         Input of any supported type: scalar, :class:`dpnp.ndarray`
-        or :class:`dpctl.tensor.usm_ndarray`.
+        or :class:`dpnp.tensor.usm_ndarray`.
 
     Returns
     -------
@@ -634,7 +634,7 @@ def is_cuda_backend(obj=None):
 def is_supported_array_or_scalar(a):
     """
     Return ``True`` if `a` is a scalar or an array of either
-    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` type,
+    :class:`dpnp.ndarray` or :class:`dpnp.tensor.usm_ndarray` type,
     ``False`` otherwise.
 
     Parameters
@@ -656,7 +656,7 @@ def is_supported_array_or_scalar(a):
 def is_supported_array_type(a):
     """
     Return ``True`` if an array of either type :class:`dpnp.ndarray`
-    or :class:`dpctl.tensor.usm_ndarray` type, ``False`` otherwise.
+    or :class:`dpnp.tensor.usm_ndarray` type, ``False`` otherwise.
 
     Parameters
     ----------

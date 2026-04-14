@@ -52,7 +52,7 @@ def _accumulate_common(
     _default_accumulation_type_fn,
 ):
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     appended_axis = False
     if x.ndim == 0:
         x = x[dpt.newaxis]

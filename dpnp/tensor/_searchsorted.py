@@ -89,13 +89,11 @@ def searchsorted(
             Default: `None`.
     """
     if not isinstance(x1, usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x1)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x1)}")
     if not isinstance(x2, usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x2)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x2)}")
     if sorter is not None and not isinstance(sorter, usm_ndarray):
-        raise TypeError(
-            f"Expected dpctl.tensor.usm_ndarray, got {type(sorter)}"
-        )
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(sorter)}")
 
     if side not in ["left", "right"]:
         raise ValueError(

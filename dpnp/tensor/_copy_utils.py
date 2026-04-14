@@ -53,7 +53,7 @@ int32_t_max = 1 + np.iinfo(np.int32).max
 
 def _copy_to_numpy(ary):
     if not isinstance(ary, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(ary)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(ary)}")
     if ary.size == 0:
         # no data needs to be copied for zero sized array
         return np.ndarray(ary.shape, dtype=ary.dtype)
@@ -139,7 +139,7 @@ def _extract_impl(ary, ary_mask, axis=0):
     """
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+            f"Expecting type dpnp.tensor.usm_ndarray, got {type(ary)}"
         )
     if isinstance(ary_mask, dpt.usm_ndarray):
         dst_usm_type = dpt.get_coerced_usm_type(
@@ -159,7 +159,7 @@ def _extract_impl(ary, ary_mask, axis=0):
         )
     else:
         raise TypeError(
-            "Expecting type dpctl.tensor.usm_ndarray or numpy.ndarray, got "
+            "Expecting type dpnp.tensor.usm_ndarray or numpy.ndarray, got "
             f"{type(ary_mask)}"
         )
     ary_nd = ary.ndim
@@ -236,7 +236,7 @@ def _get_indices_queue_usm_type(inds, queue, usm_type):
 def _nonzero_impl(ary):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+            f"Expecting type dpnp.tensor.usm_ndarray, got {type(ary)}"
         )
     exec_q = ary.sycl_queue
     usm_type = ary.usm_type
@@ -313,7 +313,7 @@ def _place_impl(ary, ary_mask, vals, axis=0):
     """
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+            f"Expecting type dpnp.tensor.usm_ndarray, got {type(ary)}"
         )
     if isinstance(ary_mask, dpt.usm_ndarray):
         exec_q = dpt.get_execution_queue(
@@ -341,7 +341,7 @@ def _place_impl(ary, ary_mask, vals, axis=0):
         )
     else:
         raise TypeError(
-            "Expecting type dpctl.tensor.usm_ndarray or numpy.ndarray, got "
+            "Expecting type dpnp.tensor.usm_ndarray or numpy.ndarray, got "
             f"{type(ary_mask)}"
         )
     if exec_q is not None:
@@ -413,7 +413,7 @@ def _place_impl(ary, ary_mask, vals, axis=0):
 def _put_multi_index(ary, inds, p, vals, mode=0):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+            f"Expecting type dpnp.tensor.usm_ndarray, got {type(ary)}"
         )
     ary_nd = ary.ndim
     p = normalize_axis_index(operator.index(p), ary_nd)
@@ -486,7 +486,7 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
 def _take_multi_index(ary, inds, p, mode=0):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
+            f"Expecting type dpnp.tensor.usm_ndarray, got {type(ary)}"
         )
     ary_nd = ary.ndim
     p = normalize_axis_index(operator.index(p), ary_nd)
@@ -703,7 +703,7 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
         )
     ):
         raise TypeError(
-            "Both types are expected to be dpctl.tensor.usm_ndarray, "
+            "Both types are expected to be dpnp.tensor.usm_ndarray, "
             f"got {type(dst)} and {type(src)}."
         )
 

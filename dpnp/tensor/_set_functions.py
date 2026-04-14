@@ -103,7 +103,7 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
             returned array has the same data type as `x`.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
     if x.ndim == 1:
@@ -196,7 +196,7 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
               array index data type.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
     x_usm_type = x.usm_type
@@ -329,7 +329,7 @@ def unique_inverse(x):
               index data type.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
     x_usm_type = x.usm_type
@@ -498,7 +498,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
               array index data type.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+        raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
     array_api_dev = x.device
     exec_q = array_api_dev.sycl_queue
     x_usm_type = x.usm_type

@@ -244,7 +244,7 @@ def _asarray_from_usm_ndarray(
 ):
     if not isinstance(usm_ndary, dpt.usm_ndarray):
         raise TypeError(
-            f"Expected dpctl.tensor.usm_ndarray, got {type(usm_ndary)}"
+            f"Expected dpnp.tensor.usm_ndarray, got {type(usm_ndary)}"
         )
     if usm_type is None:
         usm_type = usm_ndary.usm_type
@@ -1687,7 +1687,7 @@ def tril(x, /, *, k=0):
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
-            "Expected argument of type dpctl.tensor.usm_ndarray, "
+            "Expected argument of type dpnp.tensor.usm_ndarray, "
             f"got {type(x)}."
         )
 
@@ -1765,7 +1765,7 @@ def triu(x, /, *, k=0):
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
-            "Expected argument of type dpctl.tensor.usm_ndarray, "
+            "Expected argument of type dpnp.tensor.usm_ndarray, "
             f"got {type(x)}."
         )
 
