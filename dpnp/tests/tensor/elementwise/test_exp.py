@@ -78,6 +78,7 @@ def test_exp_real_contig(dtype):
     assert_allclose(dpt.asnumpy(Z), np.repeat(Ynp, n_rep), atol=tol, rtol=tol)
 
 
+@pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
 def test_exp_complex_contig(dtype):
     q = get_queue_or_skip()
