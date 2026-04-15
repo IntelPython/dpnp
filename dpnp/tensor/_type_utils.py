@@ -133,6 +133,13 @@ def _acceptance_fn_reciprocal(arg_dtype, buf_dt, res_dt, sycl_dev):
         return True
 
 
+def _acceptance_fn_round(arg_dtype, buf_dt, res_dt, sycl_dev):
+    # for boolean input, prefer floating-point output over integral
+    if arg_dtype.kind == "b" and res_dt.kind != "f":
+        return False
+    return True
+
+
 def _acceptance_fn_subtract(
     arg1_dtype, arg2_dtype, buf1_dt, buf2_dt, res_dt, sycl_dev
 ):
@@ -970,6 +977,7 @@ __all__ = [
     "_find_buf_dtype2",
     "_to_device_supported_dtype",
     "_acceptance_fn_default_unary",
+    "_acceptance_fn_round",
     "_acceptance_fn_reciprocal",
     "_acceptance_fn_default_binary",
     "_acceptance_fn_divide",
