@@ -984,13 +984,19 @@ def test_dpctl_tensor_input(func, args):
     [[], [[1]], [[1, 2, 3], [4, 5, 6]], [[1, 2], [3, 4], [5, 6]]],
     ids=["[]", "[[1]]", "[[1, 2, 3], [4, 5, 6]]", "[[1, 2], [3, 4], [5, 6]]"],
 )
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_float16=False)
+)
 @pytest.mark.parametrize("indexing", ["ij", "xy"])
 def test_meshgrid(arrays, dtype, indexing):
     func = lambda xp, xi: xp.meshgrid(*xi, indexing=indexing)
     a = tuple(numpy.array(array, dtype=dtype) for array in arrays)
     ia = tuple(dpnp.array(array, dtype=dtype) for array in arrays)
-    assert_array_equal(func(numpy, a), func(dpnp, ia))
+
+    result = func(dpnp, ia)
+    expected = func(numpy, a)
+    assert_array_equal(result, expected, strict=True)
+    assert isinstance(result, tuple)
 
 
 @pytest.mark.parametrize("shape", [(24,), (4, 6), (2, 3, 4), (2, 3, 2, 2)])
