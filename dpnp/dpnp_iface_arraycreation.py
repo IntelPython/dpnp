@@ -3680,8 +3680,7 @@ def tri(
     try:
         _k = operator.index(k)
     except TypeError:
-        pass
-    if _k is None:
+        # pylint: disable=raise-missing-from
         raise TypeError(f"`k` must be a integer data type, but got {type(k)}")
 
     sycl_dev = dpnp.get_normalized_queue_device(
