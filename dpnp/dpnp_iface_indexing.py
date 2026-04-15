@@ -2621,6 +2621,12 @@ def triu_indices(
 
     """
 
+    try:
+        k = operator.index(k)
+    except TypeError:
+        # pylint: disable=raise-missing-from
+        raise TypeError(f"`k` must be a integer data type, but got {type(k)}")
+
     tri_ = ~dpnp.tri(
         n,
         m,

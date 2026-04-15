@@ -1172,6 +1172,14 @@ def test_triu_indices(n, k, m):
     assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("k", [3.2, dpnp.bool(0), numpy.array(3.14)])
+def test_triu_indices_error(k):
+    with pytest.raises(
+        TypeError, match="`k` must be a integer data type, but got"
+    ):
+        dpnp.triu_indices(n=4, k=k)
+
+
 @pytest.mark.parametrize("k", [-3, -2, -1, 0, 1, 2, 3])
 @pytest.mark.parametrize(
     "array",
