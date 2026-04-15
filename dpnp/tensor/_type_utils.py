@@ -135,7 +135,7 @@ def _acceptance_fn_reciprocal(arg_dtype, buf_dt, res_dt, sycl_dev):
 
 def _acceptance_fn_round(arg_dtype, buf_dt, res_dt, sycl_dev):
     # for boolean input, prefer floating-point output over integral
-    if arg_dtype.char == "?" and res_dt.kind in "biu":
+    if arg_dtype.kind == "b" and res_dt.kind != "f":
         return False
     return True
 
@@ -195,19 +195,17 @@ def _dtype_supported_by_device_impl(
 
 
 def _find_buf_dtype(arg_dtype, query_fn, sycl_dev, acceptance_fn):
-    _fp16 = sycl_dev.has_aspect_fp16
-    _fp64 = sycl_dev.has_aspect_fp64
-
     res_dt = query_fn(arg_dtype)
     if res_dt:
-        if _dtype_supported_by_device_impl(res_dt, _fp16, _fp64):
-            return None, res_dt
+        return None, res_dt
 
+    _fp16 = sycl_dev.has_aspect_fp16
+    _fp64 = sycl_dev.has_aspect_fp64
     all_dts = _all_data_types(_fp16, _fp64)
     for buf_dt in all_dts:
         if _can_cast(arg_dtype, buf_dt, _fp16, _fp64):
             res_dt = query_fn(buf_dt)
-            if res_dt and _dtype_supported_by_device_impl(res_dt, _fp16, _fp64):
+            if res_dt:
                 acceptable = acceptance_fn(arg_dtype, buf_dt, res_dt, sycl_dev)
                 if acceptable:
                     return buf_dt, res_dt
