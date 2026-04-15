@@ -57,6 +57,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Updated QR tests to avoid element-wise comparisons for `raw` and `r` modes [#2785](https://github.com/IntelPython/dpnp/pull/2785)
 * Moved all SYCL kernel functors from `backend/extensions/` to a unified `backend/kernels/` directory hierarchy [#2816](https://github.com/IntelPython/dpnp/pull/2816)
 * `dpnp` uses pybind11 3.0.3 [#2834](https://github.com/IntelPython/dpnp/pull/2834)
+* Changed `dpnp.meshgrid` to return a tuple instead of a list, aligning with NumPy 2.5+ behavior and 2025.12 version of the Python array API standard [#2854](https://github.com/IntelPython/dpnp/pull/2854)
 
 ### Deprecated
 
