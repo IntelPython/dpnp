@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.20.0] - MM/DD/2026
 
+This release introduces a major architectural change: the Array API-compliant tensor implementation has been migrated from `dpctl.tensor` into `dpnp.tensor`, simplifying maintenance, reducing cross-project dependencies, and allows the tensor implementation to evolve within ``dpnp``.
 This release changes the license from `BSD-2-Clause` to `BSD-3-Clause`.
 This release achieves `dpnp` compatibility with Python 3.14 and enables distributing `dpnp` packages with the latest Python version.
 Also, that release drops support for Python 3.9, making Python 3.10 the minimum required version.
@@ -28,6 +29,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added implementation of `dpnp.isin` function [#2595](https://github.com/IntelPython/dpnp/pull/2595)
 * Added implementation of `dpnp.scipy.linalg.lu` (SciPy-compatible) [#2787](https://github.com/IntelPython/dpnp/pull/2787)
 * Added support for ndarray subclassing via `dpnp.ndarray.view` method with `type` parameter [#2815](https://github.com/IntelPython/dpnp/issues/2815)
+* Migrated tensor implementation from `dpctl.tensor` into `dpnp.tensor`, making `dpnp` the primary owner of the Array API-compliant tensor layer [#2856](https://github.com/IntelPython/dpnp/pull/2856)
 
 ### Changed
 
