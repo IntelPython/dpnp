@@ -1,0 +1,10 @@
+﻿
+
+dpnp.divmod
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: divmod
