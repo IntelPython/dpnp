@@ -3104,7 +3104,7 @@ class TestMatrixPower:
 
 
 class TestMatrixRank:
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "data",
         [
@@ -3116,7 +3116,7 @@ class TestMatrixRank:
             numpy.array(1),
         ],
     )
-    def test_matrix_rank(self, data, dtype):
+    def test_basic(self, data, dtype):
         a = data.astype(dtype)
         a_dp = dpnp.array(a)
 
@@ -3124,7 +3124,7 @@ class TestMatrixRank:
         dp_rank = dpnp.linalg.matrix_rank(a_dp)
         assert dp_rank.asnumpy() == np_rank
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "data",
         [
@@ -3134,7 +3134,7 @@ class TestMatrixRank:
             numpy.diag([1, 1, 1, 0]),
         ],
     )
-    def test_matrix_rank_hermitian(self, data, dtype):
+    def test_hermitian(self, data, dtype):
         a = data.astype(dtype)
         a_dp = dpnp.array(a)
 
@@ -3151,7 +3151,7 @@ class TestMatrixRank:
         ],
         ids=["float", "0-D array", "1-D array"],
     )
-    def test_matrix_rank_tolerance(self, high_tol, low_tol):
+    def test_tolerance(self, high_tol, low_tol):
         a = numpy.eye(4)
         a[-1, -1] = 1e-6
         a_dp = dpnp.array(a)
@@ -3190,7 +3190,7 @@ class TestMatrixRank:
         [0.99e-6, numpy.array(1.01e-6), numpy.ones(4) * [0.99e-6]],
         ids=["float", "0-D array", "1-D array"],
     )
-    def test_matrix_rank_tol(self, tol):
+    def test_tol(self, tol):
         a = numpy.zeros((4, 3, 2))
         a_dp = dpnp.array(a)
 
@@ -3209,7 +3209,7 @@ class TestMatrixRank:
         result = dpnp.linalg.matrix_rank(a_dp, tol=dp_tol)
         assert_dtype_allclose(result, expected)
 
-    def test_matrix_rank_errors(self):
+    def test_errors(self):
         a_dp = dpnp.array([[1, 2], [3, 4]], dtype="float32")
 
         # unsupported type `a`
@@ -3237,6 +3237,41 @@ class TestMatrixRank:
         assert_raises(
             ValueError, dpnp.linalg.matrix_rank, a_dp, tol=1e-06, rtol=1e-04
         )
+
+    # TODO: use below fixture when NumPy 2.5 is released
+    # @testing.with_requires("numpy>=2.5")
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (0, 0),
+            (0, 5),
+            (5, 0),
+            (0, 5, 5),
+            (3, 0, 5),
+            (2, 0, 0),
+            (2, 5, 0),
+            (2, 3, 0, 4),
+        ],
+    )
+    def test_empty(self, shape):
+        a = numpy.zeros(shape)
+        ia = dpnp.array(a)
+
+        result = dpnp.linalg.matrix_rank(ia)
+        if numpy_version() < "2.5.0":  # TODO: remove
+            # Expected behavior: rank of empty matrix is 0
+            # For stacked matrices, return array of zeros
+            expected = numpy.zeros(shape[:-2], dtype=numpy.intp)
+            if expected.ndim == 0:
+                expected = numpy.array(0)
+        else:
+            result = numpy.linalg.matrix_rank(a)
+        assert_array_equal(result, expected, strict=True)
+
+        # Also test with hermitian=True
+        if len(shape) >= 2 and shape[-2] == shape[-1]:
+            result = dpnp.linalg.matrix_rank(ia, hermitian=True)
+            assert_array_equal(result, expected, strict=True)
 
 
 # numpy.linalg.matrix_transpose() is available since numpy >= 2.0

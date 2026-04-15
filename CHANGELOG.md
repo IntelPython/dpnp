@@ -84,6 +84,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Resolved an issue with strides calculation in `dpnp.diagonal` to return correct values for empty diagonals [#2814](https://github.com/IntelPython/dpnp/pull/2814)
 * Fixed test tolerance issues for float16 intermediate precision that became visible when testing against conda-forge's NumPy [#2828](https://github.com/IntelPython/dpnp/pull/2828)
 * Ensured device aware dtype handling in `dpnp.identity` and `dpnp.gradient` [#2835](https://github.com/IntelPython/dpnp/pull/2835)
+* Fixed `dpnp.linalg.matrix_rank` to properly handle an empty input array [#2853](https://github.com/IntelPython/dpnp/pull/2853)
 
 ### Security
 

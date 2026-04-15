@@ -2277,6 +2277,13 @@ def dpnp_matrix_rank(A, tol=None, hermitian=False, rtol=None):
 
     S = dpnp_svd(A, compute_uv=False, hermitian=hermitian)
 
+    # Handle empty matrices: if either dimension is 0, there are no singular
+    # values and the rank is 0. For stacked matrices, return array of zeros
+    # with proper shape.
+    if S.shape[-1] == 0:
+        # S has shape (..., 0), so result should have shape (...)
+        return dpnp.count_nonzero(S, axis=-1)
+
     if tol is None:
         if rtol is None:
             rtol = max(A.shape[-2:]) * dpnp.finfo(S.dtype).eps
