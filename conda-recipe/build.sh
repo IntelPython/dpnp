@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Test reproducer:
+echo "building ..."
+icpx -fsycl --gcc-install-dir=$BUILD_PREFIX/lib/gcc/x86_64-conda-linux-gnu/14.3.0 --sysroot=$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot test_minimal.cpp -o test_minimal
+echo "build is completed, run now ..."
+./test_minimal
+echo "run is done"
+
 # This is necessary to help DPC++ find Intel libraries such as SVML, IRNG, etc in build prefix
 export LIBRARY_PATH="$LIBRARY_PATH:${BUILD_PREFIX}/lib"
 
