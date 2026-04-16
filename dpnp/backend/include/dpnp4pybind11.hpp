@@ -28,29 +28,8 @@
 
 #pragma once
 
-// Include dpctl SYCL interface from external dpctl package
-#include "syclinterface/dpctl_sycl_extension_interface.h"
-#include "syclinterface/dpctl_sycl_types.h"
-
-#ifdef __cplusplus
-#define CYTHON_EXTERN_C extern "C"
-#else
-#define CYTHON_EXTERN_C
-#endif
-
-// Include dpctl C-API headers (both declarations and import functions)
-#include "dpctl/_sycl_context.h"
-#include "dpctl/_sycl_context_api.h"
-#include "dpctl/_sycl_device.h"
-#include "dpctl/_sycl_device_api.h"
-#include "dpctl/_sycl_event.h"
-#include "dpctl/_sycl_event_api.h"
-#include "dpctl/_sycl_queue.h"
-#include "dpctl/_sycl_queue_api.h"
-#include "dpctl/memory/_memory.h"
-#include "dpctl/memory/_memory_api.h"
-#include "dpctl/program/_program.h"
-#include "dpctl/program/_program_api.h"
+// Include dpctl C-API headers
+#include "dpctl_capi.h"
 
 // Include generated Cython headers for usm_ndarray
 // (struct definition and constants only)
@@ -253,14 +232,9 @@ private:
           default_usm_memory_{}, default_usm_ndarray_{}, as_usm_memory_{}
 
     {
-        // Import dpctl SYCL interface modules
-        // This imports python modules and initializes pointers to Python types
-        import_dpctl___sycl_device();
-        import_dpctl___sycl_context();
-        import_dpctl___sycl_event();
-        import_dpctl___sycl_queue();
-        import_dpctl__memory___memory();
-        import_dpctl__program___program();
+        // Import dpctl C-API
+        // (device, context, event, queue, memory, program)
+        import_dpctl();
         // Import dpnp tensor module for PyUSMArrayType
         import_dpnp__tensor___usmarray();
 
