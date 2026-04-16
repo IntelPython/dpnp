@@ -43,10 +43,10 @@ it contains:
 
 import operator
 
-import dpctl.tensor as dpt
 import numpy
 
 import dpnp
+import dpnp.tensor as dpt
 from dpnp import dpnp_container
 
 from .dpnp_algo.dpnp_arraycreation import (
@@ -175,7 +175,7 @@ def arange(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -295,7 +295,7 @@ def array(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -440,7 +440,7 @@ def asanyarray(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -545,7 +545,7 @@ def asarray(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -646,7 +646,7 @@ def ascontiguousarray(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -760,7 +760,7 @@ def asfortranarray(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -897,7 +897,7 @@ def astype(x, dtype, /, *, order="K", casting="unsafe", copy=True, device=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
         If the value is ``None``, returned array is created on the same device
         as `x`.
@@ -966,7 +966,7 @@ def copy(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1086,7 +1086,7 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1191,7 +1191,7 @@ def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1297,7 +1297,7 @@ def empty(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1403,7 +1403,7 @@ def empty_like(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1515,7 +1515,7 @@ def eye(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1627,7 +1627,7 @@ def frombuffer(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1747,7 +1747,7 @@ def fromfile(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1868,7 +1868,7 @@ def fromfunction(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1979,7 +1979,7 @@ def fromiter(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2081,7 +2081,7 @@ def fromstring(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2158,9 +2158,9 @@ def from_dlpack(x, /, *, device=None, copy=None):
           to a non-partitioned SYCL device.
         * :class:`dpctl.SyclQueue` : Implies SYCL device targeted by the SYCL
           queue.
-        * :class:`dpctl.tensor.Device` : Implies SYCL device
+        * :class:`dpnp.tensor.Device` : Implies SYCL device
           ``device.sycl_queue``. The `device` object is obtained via
-          :attr:`dpctl.tensor.usm_ndarray.device`.
+          :attr:`dpnp.tensor.usm_ndarray.device`.
         * ``(device_type, device_id)`` : 2-tuple matching the format of the
           output of the :meth:`dpnp.ndarray.__dlpack_device__`: an integer
           enumerator representing the device type followed by an integer
@@ -2205,7 +2205,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
     If the return type is :class:`dpnp.ndarray`, the associated SYCL queue is
     derived from the `device` keyword. When `device` keyword value has type
     :class:`dpctl.SyclQueue`, the explicit queue instance is used, when `device`
-    keyword value has type :class:`dpctl.tensor.Device`, the
+    keyword value has type :class:`dpnp.tensor.Device`, the
     ``device.sycl_queue`` is used. In all other cases, the cached SYCL queue
     corresponding to the implied SYCL device is used.
 
@@ -2261,7 +2261,7 @@ def full(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2370,7 +2370,7 @@ def full_like(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2485,7 +2485,7 @@ def geomspace(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2597,7 +2597,7 @@ def identity(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2715,7 +2715,7 @@ def linspace(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2827,7 +2827,7 @@ def loadtxt(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2942,7 +2942,7 @@ def logspace(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -3148,7 +3148,7 @@ class MGridClass:
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -3227,7 +3227,7 @@ class OGridClass:
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -3317,7 +3317,7 @@ def ones(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -3429,7 +3429,7 @@ def ones_like(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -3602,7 +3602,7 @@ def tri(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -3840,7 +3840,7 @@ def vander(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -3970,7 +3970,7 @@ def zeros(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -4082,7 +4082,7 @@ def zeros_like(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.

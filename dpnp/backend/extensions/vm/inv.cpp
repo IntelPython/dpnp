@@ -34,7 +34,10 @@
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+#include "dpnp4pybind11.hpp"
 
 #include "common.hpp"
 #include "inv.hpp"

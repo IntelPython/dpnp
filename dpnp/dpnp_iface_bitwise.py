@@ -43,10 +43,10 @@ it contains:
 # pylint: disable=no-name-in-module
 # pylint: disable=protected-access
 
-import dpctl.tensor._tensor_elementwise_impl as ti
 import numpy
 
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
+import dpnp.tensor._tensor_elementwise_impl as ti
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
 

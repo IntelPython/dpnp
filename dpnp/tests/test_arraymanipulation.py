@@ -1,11 +1,9 @@
-import warnings
-
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
+import dpnp.tensor as dpt
 from dpnp.exceptions import AxisError
 
 from .helper import get_all_dtypes, get_float_complex_dtypes

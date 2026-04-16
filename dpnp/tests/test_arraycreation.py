@@ -2,7 +2,6 @@ import tempfile
 from math import prod
 
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from numpy.testing import (
@@ -14,6 +13,7 @@ from numpy.testing import (
 )
 
 import dpnp
+import dpnp.tensor as dpt
 
 from .helper import (
     assert_dtype_allclose,

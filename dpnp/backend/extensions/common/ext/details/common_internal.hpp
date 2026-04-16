@@ -30,9 +30,11 @@
 
 #include <algorithm>
 
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+
 #include "ext/common.hpp"
 #include "utils/type_dispatch.hpp"
-#include <pybind11/pybind11.h>
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 

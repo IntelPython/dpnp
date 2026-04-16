@@ -29,11 +29,10 @@
 import math
 import operator
 
-import dpctl.tensor as dpt
-import dpctl.utils as dpu
 import numpy
 
 import dpnp
+import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations, map_dtype_to_device
 
@@ -46,7 +45,7 @@ __all__ = [
 
 
 def _as_usm_ndarray(a, usm_type, sycl_queue):
-    """Converts input object to `dpctl.tensor.usm_ndarray`"""
+    """Converts input object to `dpnp.tensor.usm_ndarray`"""
 
     if isinstance(a, dpnp_array):
         a = a.get_array()
@@ -340,7 +339,7 @@ class dpnp_nd_grid:
     def __init__(
         self, sparse=False, device=None, usm_type="device", sycl_queue=None
     ):
-        dpu.validate_usm_type(usm_type, allow_none=True)
+        dpt.validate_usm_type(usm_type, allow_none=True)
         self.sparse = sparse
         self.usm_type = "device" if usm_type is None else usm_type
         self.sycl_queue_normalized = dpnp.get_normalized_queue_device(

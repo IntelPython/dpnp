@@ -36,7 +36,7 @@ more details.
 
 """
 
-import dpctl.tensor as dpt
+import dpnp.tensor as dpt
 
 
 def __array_namespace_info__():

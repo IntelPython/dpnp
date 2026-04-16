@@ -29,8 +29,10 @@
 #pragma once
 
 #include <complex>
+
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+
 #include <sycl/sycl.hpp>
 
 // dpctl tensor headers

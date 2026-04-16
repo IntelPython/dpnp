@@ -45,10 +45,10 @@ it contains:
 from typing import NamedTuple
 
 import numpy
-from dpctl.tensor._numpy_helper import normalize_axis_tuple
 
 import dpnp
 from dpnp.backend.extensions.lapack._lapack_impl import LinAlgError
+from dpnp.tensor._numpy_helper import normalize_axis_tuple
 
 from .dpnp_utils_linalg import (
     assert_2d,

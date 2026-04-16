@@ -43,16 +43,15 @@ it contains:
 # pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
 
-
-import dpctl.tensor as dpt
-import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as dpu
 import numpy
 
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
-from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_elementwise_impl as ti
 
+from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 from .exceptions import ExecutionPlacementError
@@ -1263,7 +1262,7 @@ def isin(
         usm_element = dpnp.get_usm_ndarray(element)
     else:
         if (
-            dpu.get_execution_queue(
+            dpt.get_execution_queue(
                 (element.sycl_queue, test_elements.sycl_queue)
             )
             is None

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import dpctl
-import dpctl.tensor._dlpack as dlp
 import numpy
 import pytest
 
 import dpnp as cupy
+import dpnp.tensor._dlpack as dlp
 from dpnp.tests.third_party.cupy import testing
 
 

@@ -1,8 +1,8 @@
-import dpctl.tensor as dpt
 import numpy
 import pytest
 
 import dpnp
+import dpnp.tensor as dpt
 
 
 class TestIsSupportedArrayOrScalar:

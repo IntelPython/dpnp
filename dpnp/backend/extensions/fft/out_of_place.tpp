@@ -27,15 +27,25 @@
 //*****************************************************************************
 
 #pragma once
+
+#include <cstddef>
+#include <cstdint>
 #include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
+#include <pybind11/pybind11.h>
+
+#include "dpnp4pybind11.hpp"
 
 #include "common.hpp"
 #include "fft_utils.hpp"
+#include "out_of_place.hpp"
+
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"

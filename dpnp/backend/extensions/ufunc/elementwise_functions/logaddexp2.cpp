@@ -28,9 +28,13 @@
 
 #include <vector>
 
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
 
 #include "kernels/elementwise_functions/logaddexp2.hpp"
 #include "logaddexp2.hpp"

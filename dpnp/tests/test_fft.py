@@ -1,10 +1,10 @@
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from numpy.testing import assert_raises
 
 import dpnp
+import dpnp.tensor as dpt
 from dpnp.dpnp_utils import map_dtype_to_device
 from dpnp.exceptions import ExecutionPlacementError
 

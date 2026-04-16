@@ -74,7 +74,7 @@ jobs:
         os: [ubuntu-22.04] # windows-2022 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    timeout-minutes: 120
 
     defaults:
       run:
@@ -134,6 +134,14 @@ jobs:
         run: |
           python -m pytest -ra --pyargs dpnp.tests
         env:
+          SKIP_TENSOR_TESTS: 1
+          SYCL_CACHE_PERSISTENT: 1
+
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure != 'true'
+        run: |
+          python -m pytest -ra --pyargs dpnp.tests.tensor
+        env:
           SYCL_CACHE_PERSISTENT: 1
 
       - name: ReRun tests on Linux
@@ -150,6 +158,24 @@ jobs:
             mamba activate ${{ env.test-env-name }}
 
             python -m pytest -ra --pyargs dpnp.tests
+        env:
+          SKIP_TENSOR_TESTS: 1
+          SYCL_CACHE_PERSISTENT: 1
+
+      - name: ReRun tensor tests on Linux
+        if: env.rerun-tests-on-failure == 'true'
+        id: run_tensor_tests
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        with:
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          retry_on: any
+          command: |
+            . $CONDA/etc/profile.d/conda.sh
+            . $CONDA/etc/profile.d/mamba.sh
+            mamba activate ${{ env.test-env-name }}
+
+            python -m pytest -ra --pyargs dpnp.tests.tensor
         env:
           SYCL_CACHE_PERSISTENT: 1
 
@@ -240,6 +266,14 @@ jobs:
         run: |
           python -m pytest -ra --pyargs dpnp.tests
         env:
+          SKIP_TENSOR_TESTS: 1
+          SYCL_CACHE_PERSISTENT: 1
+
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure != 'true'
+        run: |
+          python -m pytest -ra --pyargs dpnp.tests.tensor
+        env:
           SYCL_CACHE_PERSISTENT: 1
 
       - name: ReRun tests on Linux
@@ -256,5 +290,23 @@ jobs:
             mamba activate ${{ env.test-env-name }}
 
             python -m pytest -ra --pyargs dpnp.tests
+        env:
+          SKIP_TENSOR_TESTS: 1
+          SYCL_CACHE_PERSISTENT: 1
+
+      - name: ReRun tensor tests on Linux
+        if: env.rerun-tests-on-failure == 'true'
+        id: run_tensor_tests_branch
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        with:
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          retry_on: any
+          command: |
+            . $CONDA/etc/profile.d/conda.sh
+            . $CONDA/etc/profile.d/mamba.sh
+            mamba activate ${{ env.test-env-name }}
+
+            python -m pytest -ra --pyargs dpnp.tests.tensor
         env:
           SYCL_CACHE_PERSISTENT: 1

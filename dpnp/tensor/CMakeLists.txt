@@ -1,0 +1,394 @@
+# -*- coding: utf-8 -*-
+# *****************************************************************************
+# Copyright (c) 2026, Intel Corporation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# - Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
+# - Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+# - Neither the name of the copyright holder nor the names of its contributors
+#   may be used to endorse or promote products derived from this software
+#   without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+# THE POSSIBILITY OF SUCH DAMAGE.
+# *****************************************************************************
+
+find_package(Python COMPONENTS Development.Module)
+
+# Tensor-specific flags
+
+# dpctl doesn't add -fsycl globally
+# only to pybind11 module sources via add_sycl_to_target()
+string(REPLACE "-fsycl " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
+# Use LLD linker (dpctl sets this at root level)
+if(UNIX)
+    add_link_options("-fuse-ld=lld")
+endif()
+
+# Remove global coverage flags for tensor
+# use link-time only approach like dpctl
+if(DPNP_GENERATE_COVERAGE)
+    string(REPLACE "-fprofile-instr-generate " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string(REPLACE "-fcoverage-mapping " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string(REPLACE "-fno-sycl-use-footer " "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endif()
+
+# Tensor-specific debug flags
+# Disable device code debug info for Debug and Coverage builds to speed up linking
+if(
+    CMAKE_BUILD_TYPE STREQUAL "Debug"
+    OR CMAKE_BUILD_TYPE STREQUAL "DEBUG"
+    OR CMAKE_BUILD_TYPE STREQUAL "Coverage"
+)
+    if(WIN32)
+        add_compile_options(-Xsycl-target-frontend=spir64 "-g0")
+    elseif(UNIX)
+        add_compile_options(-Xsycl-target-frontend=spir64 "-g0")
+        if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+            string(REPLACE "-g1" "-g" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+            string(REPLACE "-g1" "-g" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+        endif()
+    endif()
+endif()
+
+# Match dpctl warning flags
+# Suppress unused parameter warnings
+add_compile_options(-Wno-unused-parameter)
+
+file(GLOB _cython_sources *.pyx)
+foreach(_cy_file ${_cython_sources})
+    get_filename_component(_trgt ${_cy_file} NAME_WLE)
+    build_dpnp_tensor_ext(${_trgt} ${_cy_file} "dpnp/tensor" RELATIVE_PATH "..")
+    target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+endforeach()
+
+if(WIN32)
+    if(${CMAKE_VERSION} VERSION_LESS "3.27")
+        # this is a work-around for target_link_options inserting option after -link option, cause
+        # linker to ignore it.
+        set(CMAKE_CXX_LINK_FLAGS
+            "${CMAKE_CXX_LINK_FLAGS} -fsycl-device-code-split=per_kernel"
+        )
+    endif()
+endif()
+
+# TODO: reuse this library for dpnp ufunc extension build
+set(_static_lib_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
+)
+set(_tensor_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_ctors.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_and_cast_usm_to_usm.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_as_contig.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_numpy_ndarray_into_usm_ndarray.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_for_reshape.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_for_roll.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/integer_advanced_indexing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/boolean_advanced_indexing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/eye_ctor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/zeros_ctor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/triul_ctor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/where.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/device_support_queries.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/repeat.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
+)
+set(_accumulator_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/accumulators_common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/cumulative_logsumexp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/cumulative_prod.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/cumulative_sum.cpp
+)
+set(_elementwise_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/elementwise_common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/elementwise_functions_type_utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/abs.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/acos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/acosh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/add.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/angle.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/asin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/asinh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/atan.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/atan2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/atanh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/bitwise_and.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/bitwise_invert.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/bitwise_left_shift.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/bitwise_or.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/bitwise_right_shift.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/bitwise_xor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/cbrt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/ceil.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/conj.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/copysign.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/cos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/cosh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/equal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/exp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/exp2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/expm1.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/floor_divide.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/floor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/greater_equal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/greater.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/hypot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/imag.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/isfinite.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/isinf.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/isnan.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/less_equal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/less.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/log.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/log1p.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/log2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/log10.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/logaddexp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/logical_and.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/logical_not.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/logical_or.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/logical_xor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/maximum.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/minimum.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/multiply.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/negative.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/nextafter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/not_equal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/positive.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/pow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/proj.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/real.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/reciprocal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/remainder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/round.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/rsqrt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/sign.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/signbit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/sin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/sinh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/sqrt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/square.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/subtract.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/tan.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/tanh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/true_divide.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/trunc.cpp
+)
+set(_reduction_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/reduction_common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/all.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/any.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmax.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/argmin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/logsumexp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/max.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/min.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/prod.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/reduce_hypot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/reductions/sum.cpp
+)
+set(_sorting_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/isin.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/merge_sort.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/merge_argsort.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/radix_sort.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/radix_argsort.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/searchsorted.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/topk.cpp
+)
+set(_linalg_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/elementwise_functions/elementwise_functions_type_utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linalg_functions/dot.cpp
+)
+set(_tensor_accumulation_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_accumulation.cpp
+    ${_accumulator_sources}
+)
+set(_tensor_elementwise_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_elementwise.cpp
+    ${_elementwise_sources}
+)
+set(_tensor_reductions_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_reductions.cpp
+    ${_reduction_sources}
+)
+set(_tensor_sorting_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_sorting.cpp
+    ${_sorting_sources}
+)
+set(_tensor_linalg_impl_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_linalg.cpp
+    ${_linalg_sources}
+)
+
+set(_static_lib_trgt simplify_iteration_space)
+
+add_library(${_static_lib_trgt} STATIC ${_static_lib_sources})
+target_include_directories(
+    ${_static_lib_trgt}
+    PRIVATE
+        # ${Python_INCLUDE_DIRS}
+        # ${Dpctl_INCLUDE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
+)
+target_link_libraries(${_static_lib_trgt} PRIVATE pybind11::headers Python::Module)
+set_target_properties(${_static_lib_trgt} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+set(_py_trgts)
+
+set(python_module_name _tensor_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
+list(APPEND _py_trgts ${python_module_name})
+
+set(python_module_name _tensor_accumulation_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_accumulation_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_accumulation_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
+list(APPEND _py_trgts ${python_module_name})
+
+set(python_module_name _tensor_elementwise_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_elementwise_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_elementwise_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
+list(APPEND _py_trgts ${python_module_name})
+
+set(python_module_name _tensor_reductions_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_reductions_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_reductions_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
+list(APPEND _py_trgts ${python_module_name})
+
+set(python_module_name _tensor_sorting_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_sorting_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_sorting_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
+list(APPEND _py_trgts ${python_module_name})
+
+set(python_module_name _tensor_linalg_impl)
+pybind11_add_module(${python_module_name} MODULE ${_tensor_linalg_impl_sources})
+add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_linalg_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
+list(APPEND _py_trgts ${python_module_name})
+
+set(_clang_prefix "")
+if(WIN32)
+    set(_clang_prefix "/clang:")
+endif()
+
+set(_no_fast_math_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_and_cast_usm_to_usm.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/full_ctor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/linear_sequences.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/clip.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/where.cpp
+)
+list(
+    APPEND _no_fast_math_sources
+    ${_elementwise_sources}
+    ${_reduction_sources}
+    ${_sorting_sources}
+    ${_linalg_sources}
+    ${_accumulator_sources}
+)
+
+foreach(_src_fn ${_no_fast_math_sources})
+    get_source_file_property(_cmpl_options_prop ${_src_fn} COMPILE_OPTIONS)
+    set(_combined_options_prop ${_cmpl_options_prop} "${_clang_prefix}-fno-fast-math")
+    set_source_files_properties(
+        ${_src_fn}
+        PROPERTIES COMPILE_OPTIONS "${_combined_options_prop}"
+    )
+endforeach()
+
+set(_compiler_definitions "")
+
+foreach(_src_fn ${_elementwise_sources})
+    get_source_file_property(_cmpl_options_defs ${_src_fn} COMPILE_DEFINITIONS)
+    if(${_cmpl_options_defs})
+        set(_combined_options_defs ${_cmpl_options_defs} "${_compiler_definitions}")
+    else()
+        set(_combined_options_defs "${_compiler_definitions}")
+    endif()
+    set_source_files_properties(
+        ${_src_fn}
+        PROPERTIES COMPILE_DEFINITIONS "${_combined_options_defs}"
+    )
+endforeach()
+
+set(_linker_options "LINKER:${DPNP_LDFLAGS}")
+foreach(python_module_name ${_py_trgts})
+    target_compile_options(
+        ${python_module_name}
+        PRIVATE -fno-sycl-id-queries-fit-in-int
+    )
+    target_link_options(
+        ${python_module_name}
+        PRIVATE -fsycl-device-code-split=per_kernel
+    )
+    if(DPNP_TENSOR_OFFLOAD_COMPRESS)
+        target_link_options(${python_module_name} PRIVATE --offload-compress)
+    endif()
+
+    target_include_directories(
+        ${python_module_name}
+        PRIVATE
+            ${CMAKE_SOURCE_DIR}/dpnp/backend/include
+            ${Dpctl_INCLUDE_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/
+            ${CMAKE_BINARY_DIR} # For generated Cython headers
+    )
+    target_link_options(${python_module_name} PRIVATE ${_linker_options})
+    if(DPNP_GENERATE_COVERAGE)
+        if(DPNP_TENSOR_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS)
+            target_compile_options(
+                ${python_module_name}
+                PRIVATE -fprofile-instr-generate -fcoverage-mapping
+            )
+        endif()
+        target_link_options(
+            ${python_module_name}
+            PRIVATE -fprofile-instr-generate -fcoverage-mapping
+        )
+    endif()
+    if(_dpnp_sycl_targets)
+        # make fat binary
+        target_compile_options(
+            ${python_module_name}
+            PRIVATE ${_dpnp_sycl_target_compile_options}
+        )
+        target_link_options(
+            ${python_module_name}
+            PRIVATE ${_dpnp_sycl_target_link_options}
+        )
+    endif()
+    # Ensure Cython modules build first so _usmarray.h exists
+    add_dependencies(${python_module_name} _usmarray)
+    if(DPNP_WITH_REDIST)
+        set_target_properties(
+            ${python_module_name}
+            PROPERTIES INSTALL_RPATH "$ORIGIN/../../../.."
+        )
+    endif()
+    install(TARGETS ${python_module_name} DESTINATION "dpnp/tensor")
+endforeach()

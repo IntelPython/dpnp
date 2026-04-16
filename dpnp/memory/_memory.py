@@ -26,10 +26,11 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl.tensor as dpt
 from dpctl.memory import MemoryUSMDevice as DPCTLMemoryUSMDevice
 from dpctl.memory import MemoryUSMHost as DPCTLMemoryUSMHost
 from dpctl.memory import MemoryUSMShared as DPCTLMemoryUSMShared
+
+import dpnp.tensor as dpt
 
 
 def _add_ptr_property(cls):
@@ -76,7 +77,7 @@ def create_data(x):
     Parameters
     ----------
     x : usm_ndarray
-        Input array of :class:`dpctl.tensor.usm_ndarray` type.
+        Input array of :class:`dpnp.tensor.usm_ndarray` type.
 
     Returns
     -------

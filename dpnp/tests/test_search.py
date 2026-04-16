@@ -1,9 +1,9 @@
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
+import dpnp.tensor as dpt
 
 from .helper import (
     generate_random_numpy_array,

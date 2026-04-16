@@ -1,8 +1,6 @@
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 import pytest
-from dpctl.tensor._numpy_helper import normalize_axis_index
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
@@ -12,9 +10,11 @@ from numpy.testing import (
 )
 
 import dpnp
+import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import map_dtype_to_device
 from dpnp.exceptions import AxisError, ExecutionPlacementError
+from dpnp.tensor._numpy_helper import normalize_axis_index
 
 from .helper import (
     assert_dtype_allclose,

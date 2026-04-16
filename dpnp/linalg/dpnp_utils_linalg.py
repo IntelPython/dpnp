@@ -42,15 +42,17 @@ available as a pybind11 extension.
 
 from typing import NamedTuple
 
-import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import normalize_axis_index
 from numpy import prod
 
 import dpnp
 import dpnp.backend.extensions.lapack._lapack_impl as li
+
+# pylint: disable=no-name-in-module
+import dpnp.tensor._tensor_impl as ti
 from dpnp.dpnp_utils import get_usm_allocations
+from dpnp.tensor._numpy_helper import normalize_axis_index
 
 
 # pylint:disable=missing-class-docstring
@@ -1262,7 +1264,7 @@ def _real_type(dtype, device=None):
         type is created. `device` can be ``None``, a oneAPI filter selector
         string, an instance of :class:`dpctl.SyclDevice` corresponding to
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a :class:`dpctl.tensor.Device` object returned by
+        or a :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.

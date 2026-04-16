@@ -41,15 +41,14 @@ it contains:
 
 # pylint: disable=protected-access
 
-from dpctl.tensor._numpy_helper import (
-    normalize_axis_index,
-    normalize_axis_tuple,
-)
-
 import dpnp
 
 # pylint: disable=no-name-in-module
-from dpnp.dpnp_utils import get_usm_allocations
+from .dpnp_utils import get_usm_allocations
+from .tensor._numpy_helper import (
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 
 def apply_along_axis(func1d, axis, arr, *args, **kwargs):

@@ -32,7 +32,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
+
+// dpctl tensor headers
+#include "utils/type_dispatch.hpp"
 
 namespace ext::validation
 {

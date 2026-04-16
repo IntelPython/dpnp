@@ -39,26 +39,26 @@ it contains:
 
 """
 
+# pylint: disable=no-name-in-module
+
 import math
 
-import dpctl.tensor as dpt
-import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
-
-# pylint: disable=no-name-in-module
 import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
-from dpnp.dpnp_utils.dpnp_utils_common import (
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_elementwise_impl as ti
+
+from .dpnp_utils import get_usm_allocations
+from .dpnp_utils.dpnp_utils_common import (
     result_type_for_device,
     to_supported_dtypes,
 )
-
-from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 from .dpnp_utils.dpnp_utils_statistics import dpnp_cov, dpnp_median
+from .tensor._numpy_helper import normalize_axis_index
 
 
 def _count_reduce_items(arr, axis, where=True):
@@ -670,7 +670,7 @@ def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad, rdtype):
     a_casted = dpnp.asarray(a, dtype=supported_dtype, order="C")
     v_casted = dpnp.asarray(v, dtype=supported_dtype, order="C")
 
-    usm_type = dpu.get_coerced_usm_type([a_casted.usm_type, v_casted.usm_type])
+    usm_type = dpt.get_coerced_usm_type([a_casted.usm_type, v_casted.usm_type])
     out_size = l_pad + r_pad + a_casted.size - v_casted.size + 1
     # out type is the same as input type
     out = dpnp.empty_like(a_casted, shape=out_size, usm_type=usm_type)

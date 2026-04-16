@@ -2,13 +2,13 @@ import copy
 import tempfile
 
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from numpy.testing import assert_array_equal, assert_raises
 
 import dpnp
 import dpnp.linalg
+import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.exceptions import ExecutionPlacementError
@@ -50,7 +50,7 @@ def assert_sycl_queue_equal(result, expected):
     assert result.sycl_device == expected.sycl_device
     assert result.is_in_order == expected.is_in_order
     assert result.has_enable_profiling == expected.has_enable_profiling
-    exec_queue = dpctl.utils.get_execution_queue([result, expected])
+    exec_queue = dpt.get_execution_queue([result, expected])
     assert exec_queue is not None
 
 
