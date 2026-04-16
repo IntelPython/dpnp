@@ -1,5 +1,39 @@
 #!/bin/bash
 
+# Test reproducer:
+echo "building ..."
+icpx -fsycl --gcc-install-dir=$BUILD_PREFIX/lib/gcc/x86_64-conda-linux-gnu/14.3.0 --sysroot=$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot test_minimal.cpp -o test_minimal
+echo "build is completed, run now ..."
+./test_minimal
+echo "run is done"
+
+echo "create tmp folder: $SRC_DIR/tmp"
+mkdir -p $SRC_DIR/tmp
+echo "run with dump enabled ..."
+export SYCL_CACHE_DISABLE=1
+export IGC_ShaderDumpEnable=1
+export IGC_ShaderDumpEnableAll=1
+export IGC_DumpToCustomDir=$SRC_DIR/tmp/
+./test_minimal
+
+echo "waiting for .asm files..."
+timeout=5
+while [ $timeout -gt 0 ]; do
+    if find $SRC_DIR/tmp -name "*.asm" -print -quit | grep -q .; then
+        echo "found .asm files"
+        break
+    fi
+    sleep 1
+    ((timeout--))
+done
+
+echo "list files..."
+ls -la $SRC_DIR/tmp
+echo "print dump:"
+find $SRC_DIR/tmp -name "*.asm"
+find $SRC_DIR/tmp -name "*.asm" | head -n 1 | xargs -r cat
+echo "test is complete"
+
 # This is necessary to help DPC++ find Intel libraries such as SVML, IRNG, etc in build prefix
 export LIBRARY_PATH="$LIBRARY_PATH:${BUILD_PREFIX}/lib"
 
