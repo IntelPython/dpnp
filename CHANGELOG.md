@@ -59,6 +59,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Updated QR tests to avoid element-wise comparisons for `raw` and `r` modes [#2785](https://github.com/IntelPython/dpnp/pull/2785)
 * Moved all SYCL kernel functors from `backend/extensions/` to a unified `backend/kernels/` directory hierarchy [#2816](https://github.com/IntelPython/dpnp/pull/2816)
 * `dpnp` uses pybind11 3.0.3 [#2834](https://github.com/IntelPython/dpnp/pull/2834)
+* Disabled `dpnp.tensor` tests by default in conda recipe to prevent OOM failures during package testing [#2859](https://github.com/IntelPython/dpnp/pull/2859)
 
 ### Deprecated
 
