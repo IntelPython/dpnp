@@ -31,6 +31,12 @@ if not defined PYTHON (
 )
 
 
+REM Skip tensor tests by default to avoid OOM in conda builds.
+REM Set SKIP_TENSOR_TESTS=0 to run them on machines with enough memory.
+if not defined SKIP_TENSOR_TESTS (
+    set "SKIP_TENSOR_TESTS=1"
+)
+
 "%PYTHON%" -c "import dpnp; print(dpnp.__version__)"
 if %errorlevel% neq 0 exit 1
 
