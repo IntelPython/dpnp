@@ -48,7 +48,7 @@ struct usm_ndarray_types
     int typenum_to_lookup_id(int typenum) const
     {
         using typenum_t = ::dpctl::tensor::type_dispatch::typenum_t;
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        auto const &api = ::dpctl::detail::dpnp_capi::get();
 
         if (typenum == api.UAR_DOUBLE_) {
             return static_cast<int>(typenum_t::DOUBLE);
