@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #include <algorithm>
@@ -57,19 +57,19 @@
 #include "simplify_iteration_space.hpp"
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
-using dpctl::tensor::kernels::copy_and_cast::
+using dpnp::tensor::kernels::copy_and_cast::
     copy_and_cast_from_host_blocking_fn_ptr_t;
 
 static copy_and_cast_from_host_blocking_fn_ptr_t
     copy_and_cast_from_host_blocking_dispatch_table[td_ns::num_types]
                                                    [td_ns::num_types];
 
-using dpctl::tensor::kernels::copy_and_cast::
+using dpnp::tensor::kernels::copy_and_cast::
     copy_and_cast_from_host_contig_blocking_fn_ptr_t;
 
 static copy_and_cast_from_host_contig_blocking_fn_ptr_t
@@ -78,7 +78,7 @@ static copy_and_cast_from_host_contig_blocking_fn_ptr_t
 
 void copy_numpy_ndarray_into_usm_ndarray(
     const py::array &npy_src,
-    const dpctl::tensor::usm_ndarray &dst,
+    const dpnp::tensor::usm_ndarray &dst,
     sycl::queue &exec_q,
     const std::vector<sycl::event> &depends)
 {
@@ -111,14 +111,14 @@ void copy_numpy_ndarray_into_usm_ndarray(
         return;
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {dst})) {
         throw py::value_error("Execution queue is not compatible with the "
                               "allocation queue");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     // here we assume that NumPy's type numbers agree with ours for types
     // supported in both
@@ -219,11 +219,11 @@ void copy_numpy_ndarray_into_usm_ndarray(
     else {
         if (is_src_c_contig) {
             src_strides_in_elems =
-                dpctl::tensor::c_contiguous_strides(nd, src_shape);
+                dpnp::tensor::c_contiguous_strides(nd, src_shape);
         }
         else if (is_src_f_contig) {
             src_strides_in_elems =
-                dpctl::tensor::f_contiguous_strides(nd, src_shape);
+                dpnp::tensor::f_contiguous_strides(nd, src_shape);
         }
         else {
             throw py::value_error("NumPy source array has null strides but is "
@@ -313,7 +313,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
     host_task_events.reserve(1);
 
     // Copy shape strides into device memory
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
@@ -345,7 +345,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
 void init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables(void)
 {
     using namespace td_ns;
-    using dpctl::tensor::kernels::copy_and_cast::CopyAndCastFromHostFactory;
+    using dpnp::tensor::kernels::copy_and_cast::CopyAndCastFromHostFactory;
 
     DispatchTableBuilder<copy_and_cast_from_host_blocking_fn_ptr_t,
                          CopyAndCastFromHostFactory, num_types>
@@ -354,7 +354,7 @@ void init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables(void)
     dtb_copy_from_numpy.populate_dispatch_table(
         copy_and_cast_from_host_blocking_dispatch_table);
 
-    using dpctl::tensor::kernels::copy_and_cast::
+    using dpnp::tensor::kernels::copy_and_cast::
         CopyAndCastFromHostContigFactory;
 
     DispatchTableBuilder<copy_and_cast_from_host_contig_blocking_fn_ptr_t,
@@ -365,4 +365,4 @@ void init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables(void)
         copy_and_cast_from_host_contig_blocking_dispatch_table);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

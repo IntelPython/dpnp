@@ -40,7 +40,7 @@
 
 #include <sycl/sycl.hpp>
 
-namespace dpctl::tensor::type_dispatch
+namespace dpnp::tensor::type_dispatch
 {
 enum class typenum_t : int
 {
@@ -290,4 +290,4 @@ struct NotDefinedEntry : std::true_type
 {
     static constexpr bool is_defined = false;
 };
-} // namespace dpctl::tensor::type_dispatch
+} // namespace dpnp::tensor::type_dispatch

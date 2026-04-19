@@ -41,7 +41,7 @@
 
 #include <sycl/sycl.hpp>
 
-namespace dpctl::tensor::type_utils
+namespace dpnp::tensor::type_utils
 {
 template <typename T, typename = void>
 struct is_complex : public std::false_type
@@ -160,4 +160,4 @@ auto vec_cast(const sycl::vec<srcT, N> &s)
                                                                      Indices{});
     }
 }
-} // namespace dpctl::tensor::type_utils
+} // namespace dpnp::tensor::type_utils

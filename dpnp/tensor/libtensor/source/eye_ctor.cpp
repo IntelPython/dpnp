@@ -29,7 +29,7 @@
 //===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #include <algorithm>
@@ -48,19 +48,19 @@
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
-using dpctl::utils::keep_args_alive;
+using dpnp::utils::keep_args_alive;
 
-using dpctl::tensor::kernels::constructors::eye_fn_ptr_t;
+using dpnp::tensor::kernels::constructors::eye_fn_ptr_t;
 static eye_fn_ptr_t eye_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
     usm_ndarray_eye(py::ssize_t k,
-                    const dpctl::tensor::usm_ndarray &dst,
+                    const dpnp::tensor::usm_ndarray &dst,
                     sycl::queue &exec_q,
                     const std::vector<sycl::event> &depends)
 {
@@ -71,12 +71,12 @@ std::pair<sycl::event, sycl::event>
             "usm_ndarray_eye: Expecting 2D array to populate");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {dst})) {
         throw py::value_error("Execution queue is not compatible with the "
                               "allocation queue");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();
@@ -131,7 +131,7 @@ std::pair<sycl::event, sycl::event>
 void init_eye_ctor_dispatch_vectors(void)
 {
     using namespace td_ns;
-    using dpctl::tensor::kernels::constructors::EyeFactory;
+    using dpnp::tensor::kernels::constructors::EyeFactory;
 
     DispatchVectorBuilder<eye_fn_ptr_t, EyeFactory, num_types> dvb;
     dvb.populate_dispatch_vector(eye_dispatch_vector);
@@ -139,4 +139,4 @@ void init_eye_ctor_dispatch_vectors(void)
     return;
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

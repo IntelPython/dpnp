@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #pragma once
@@ -40,22 +40,22 @@
 
 #include "dpnp4pybind11.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern void populate_mask_positions_dispatch_vectors(void);
 
 extern std::size_t
-    py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
-                      const dpctl::tensor::usm_ndarray &cumsum,
+    py_mask_positions(const dpnp::tensor::usm_ndarray &mask,
+                      const dpnp::tensor::usm_ndarray &cumsum,
                       sycl::queue &exec_q,
                       const std::vector<sycl::event> &depends = {});
 
 extern void populate_cumsum_1d_dispatch_vectors(void);
 
-extern std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
-                                const dpctl::tensor::usm_ndarray &cumsum,
+extern std::size_t py_cumsum_1d(const dpnp::tensor::usm_ndarray &src,
+                                const dpnp::tensor::usm_ndarray &cumsum,
                                 sycl::queue &exec_q,
                                 std::vector<sycl::event> const &depends = {});
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

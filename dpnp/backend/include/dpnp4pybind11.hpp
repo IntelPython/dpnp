@@ -52,28 +52,26 @@
 
 namespace py = pybind11;
 
-namespace dpctl
+namespace dpnp
 {
 namespace detail
 {
 // Lookup a type according to its size, and return a value corresponding to the
 // NumPy typenum.
 
-// TODO: uncomment when these are removed from dpctl4pybind11 or when dpctl
-// namespace is changed to dpnp
-// template <typename Concrete>
-// constexpr int platform_typeid_lookup()
-// {
-//     return -1;
-// }
+template <typename Concrete>
+constexpr int platform_typeid_lookup()
+{
+    return -1;
+}
 
-// template <typename Concrete, typename T, typename... Ts, typename... Ints>
-// constexpr int platform_typeid_lookup(int I, Ints... Is)
-// {
-//     return sizeof(Concrete) == sizeof(T)
-//                ? I
-//                : platform_typeid_lookup<Concrete, Ts...>(Is...);
-// }
+template <typename Concrete, typename T, typename... Ts, typename... Ints>
+constexpr int platform_typeid_lookup(int I, Ints... Is)
+{
+    return sizeof(Concrete) == sizeof(T)
+               ? I
+               : platform_typeid_lookup<Concrete, Ts...>(Is...);
+}
 
 class dpnp_capi
 {
@@ -258,12 +256,12 @@ class usm_ndarray : public py::object
 public:
     PYBIND11_OBJECT(usm_ndarray, py::object, [](PyObject *o) -> bool {
         return PyObject_TypeCheck(
-                   o, ::dpctl::detail::dpnp_capi::get().PyUSMArrayType_) != 0;
+                   o, ::dpnp::detail::dpnp_capi::get().PyUSMArrayType_) != 0;
     })
 
     usm_ndarray()
         : py::object(
-              ::dpctl::detail::dpnp_capi::get().default_usm_ndarray_pyobj(),
+              ::dpnp::detail::dpnp_capi::get().default_usm_ndarray_pyobj(),
               borrowed_t{})
     {
         if (!m_ptr)
@@ -427,7 +425,7 @@ public:
     int get_elemsize() const
     {
         int typenum = get_typenum();
-        auto const &api = ::dpctl::detail::dpnp_capi::get();
+        auto const &api = ::dpnp::detail::dpnp_capi::get();
 
         // Lookup table for element sizes based on typenum
         if (typenum == api.UAR_BOOL_)
@@ -469,21 +467,21 @@ public:
     bool is_c_contiguous() const
     {
         int flags = get_flags();
-        auto const &api = ::dpctl::detail::dpnp_capi::get();
+        auto const &api = ::dpnp::detail::dpnp_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_C_CONTIGUOUS_);
     }
 
     bool is_f_contiguous() const
     {
         int flags = get_flags();
-        auto const &api = ::dpctl::detail::dpnp_capi::get();
+        auto const &api = ::dpnp::detail::dpnp_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_F_CONTIGUOUS_);
     }
 
     bool is_writable() const
     {
         int flags = get_flags();
-        auto const &api = ::dpctl::detail::dpnp_capi::get();
+        auto const &api = ::dpnp::detail::dpnp_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_WRITABLE_);
     }
 
@@ -556,11 +554,15 @@ private:
 namespace utils
 {
 
+// add these functions to dpnp::utils for convenience
+using ::dpctl::utils::keep_args_alive;
+using ::dpctl::utils::queues_are_compatible;
+
 /*! @brief Check if all allocation queues of usm_ndarrays are the same as
     the execution queue */
 template <std::size_t num>
 bool queues_are_compatible(const sycl::queue &exec_q,
-                           const ::dpctl::tensor::usm_ndarray (&arrs)[num])
+                           const ::dpnp::tensor::usm_ndarray (&arrs)[num])
 {
     for (std::size_t i = 0; i < num; ++i) {
 
@@ -571,4 +573,4 @@ bool queues_are_compatible(const sycl::queue &exec_q,
     return true;
 }
 } // end namespace utils
-} // end namespace dpctl
+} // end namespace dpnp

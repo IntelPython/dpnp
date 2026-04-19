@@ -29,7 +29,7 @@
 //===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #include <algorithm> // for std::copy
@@ -52,22 +52,22 @@
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
-using dpctl::utils::keep_args_alive;
+using dpnp::utils::keep_args_alive;
 
-using dpctl::tensor::kernels::constructors::tri_fn_ptr_t;
+using dpnp::tensor::kernels::constructors::tri_fn_ptr_t;
 
 static tri_fn_ptr_t tril_generic_dispatch_vector[td_ns::num_types];
 static tri_fn_ptr_t triu_generic_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
     usm_ndarray_triul(sycl::queue &exec_q,
-                      const dpctl::tensor::usm_ndarray &src,
-                      const dpctl::tensor::usm_ndarray &dst,
+                      const dpnp::tensor::usm_ndarray &src,
+                      const dpnp::tensor::usm_ndarray &dst,
                       char part,
                       py::ssize_t k = 0,
                       const std::vector<sycl::event> &depends = {})
@@ -107,7 +107,7 @@ std::pair<sycl::event, sycl::event>
     char *dst_data = dst.get_data();
 
     // check that arrays do not overlap, and concurrent copying is safe.
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         // TODO: could use a temporary, but this is done by the caller
         throw py::value_error("Arrays index overlapping segments of memory");
@@ -125,12 +125,12 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check same queues
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue context is not the same as allocation contexts");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     auto src_strides = src.get_strides_vector();
     auto dst_strides = dst.get_strides_vector();
@@ -162,7 +162,7 @@ std::pair<sycl::event, sycl::event>
     nd += 2;
 
     using usm_host_allocatorT =
-        dpctl::tensor::alloc_utils::usm_host_allocator<py::ssize_t>;
+        dpnp::tensor::alloc_utils::usm_host_allocator<py::ssize_t>;
     using usmshT = std::vector<py::ssize_t, usm_host_allocatorT>;
 
     usm_host_allocatorT allocator(exec_q);
@@ -185,8 +185,8 @@ std::pair<sycl::event, sycl::event>
     (*shp_host_shape_and_strides)[3 * nd - 1] = dst_strides[src_nd - 1];
 
     auto dev_shape_and_strides_owner =
-        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(3 * nd,
-                                                                     exec_q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(3 * nd,
+                                                                    exec_q);
     py::ssize_t *dev_shape_and_strides = dev_shape_and_strides_owner.get();
 
     const sycl::event &copy_shape_and_strides = exec_q.copy<py::ssize_t>(
@@ -212,7 +212,7 @@ std::pair<sycl::event, sycl::event>
     const auto &temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(tri_ev);
         const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+        using dpnp::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task(
             [shp_host_shape_and_strides = std::move(shp_host_shape_and_strides),
              dev_shape_and_strides, ctx]() {
@@ -233,8 +233,8 @@ void init_triul_ctor_dispatch_vectors(void)
 {
 
     using namespace td_ns;
-    using dpctl::tensor::kernels::constructors::TrilGenericFactory;
-    using dpctl::tensor::kernels::constructors::TriuGenericFactory;
+    using dpnp::tensor::kernels::constructors::TrilGenericFactory;
+    using dpnp::tensor::kernels::constructors::TriuGenericFactory;
 
     DispatchVectorBuilder<tri_fn_ptr_t, TrilGenericFactory, num_types> dvb1;
     dvb1.populate_dispatch_vector(tril_generic_dispatch_vector);
@@ -243,4 +243,4 @@ void init_triul_ctor_dispatch_vectors(void)
     dvb2.populate_dispatch_vector(triu_generic_dispatch_vector);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

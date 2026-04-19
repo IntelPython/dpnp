@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_reductions_impl
+/// This file defines functions of dpnp.tensor._tensor_reductions_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 
@@ -50,22 +50,22 @@
 
 #include "reduction_over_axis.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
-namespace su_ns = dpctl::tensor::sycl_utils;
+namespace td_ns = dpnp::tensor::type_dispatch;
+namespace su_ns = dpnp::tensor::sycl_utils;
 
 namespace impl
 {
 
-using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
+using dpnp::tensor::kernels::reduction_strided_impl_fn_ptr;
 static reduction_strided_impl_fn_ptr
     hypot_over_axis_strided_temps_dispatch_table[td_ns::num_types]
                                                 [td_ns::num_types];
 
-using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
+using dpnp::tensor::kernels::reduction_contig_impl_fn_ptr;
 static reduction_contig_impl_fn_ptr
     hypot_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
                                                 [td_ns::num_types];
@@ -140,7 +140,7 @@ struct HypotOverAxisTempsStridedFactory
         if constexpr (TypePairSupportDataForHypotReductionTemps<
                           srcTy, dstTy>::is_defined) {
             using ReductionOpT = su_ns::Hypot<dstTy>;
-            return dpctl::tensor::kernels::
+            return dpnp::tensor::kernels::
                 reduction_over_group_temps_strided_impl<srcTy, dstTy,
                                                         ReductionOpT>;
         }
@@ -158,7 +158,7 @@ struct HypotOverAxis1TempsContigFactory
         if constexpr (TypePairSupportDataForHypotReductionTemps<
                           srcTy, dstTy>::is_defined) {
             using ReductionOpT = su_ns::Hypot<dstTy>;
-            return dpctl::tensor::kernels::
+            return dpnp::tensor::kernels::
                 reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
                                                              ReductionOpT>;
         }
@@ -176,7 +176,7 @@ struct HypotOverAxis0TempsContigFactory
         if constexpr (TypePairSupportDataForHypotReductionTemps<
                           srcTy, dstTy>::is_defined) {
             using ReductionOpT = su_ns::Hypot<dstTy>;
-            return dpctl::tensor::kernels::
+            return dpnp::tensor::kernels::
                 reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
                                                              ReductionOpT>;
         }
@@ -188,8 +188,8 @@ struct HypotOverAxis0TempsContigFactory
 
 void populate_hypot_over_axis_dispatch_tables(void)
 {
-    using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
-    using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
+    using dpnp::tensor::kernels::reduction_contig_impl_fn_ptr;
+    using dpnp::tensor::kernels::reduction_strided_impl_fn_ptr;
     using namespace td_ns;
 
     DispatchTableBuilder<reduction_strided_impl_fn_ptr,
@@ -212,7 +212,7 @@ void populate_hypot_over_axis_dispatch_tables(void)
 
 void init_reduce_hypot(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
     {
         using impl::populate_hypot_over_axis_dispatch_tables;
@@ -221,8 +221,8 @@ void init_reduce_hypot(py::module_ m)
         using impl::hypot_over_axis1_contig_temps_dispatch_table;
         using impl::hypot_over_axis_strided_temps_dispatch_table;
 
-        using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
-        using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
+        using dpnp::tensor::kernels::reduction_contig_impl_fn_ptr;
+        using dpnp::tensor::kernels::reduction_strided_impl_fn_ptr;
 
         auto hypot_pyapi = [&](const arrayT &src, int trailing_dims_to_reduce,
                                const arrayT &dst, sycl::queue &exec_q,
@@ -248,4 +248,4 @@ void init_reduce_hypot(py::module_ m)
     }
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

@@ -45,18 +45,18 @@
 
 #include <sycl/sycl.hpp>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/sorting/search_sorted_detail.hpp"
 #include "kernels/sorting/sort_utils.hpp"
 
-namespace dpctl::tensor::kernels
+namespace dpnp::tensor::kernels
 {
 
 namespace merge_sort_detail
 {
 
-using dpctl::tensor::ssize_t;
-using namespace dpctl::tensor::kernels::search_sorted_detail;
+using dpnp::tensor::ssize_t;
+using namespace dpnp::tensor::kernels::search_sorted_detail;
 
 /*! @brief Merge two contiguous sorted segments */
 template <typename InAcc, typename OutAcc, typename Compare>
@@ -807,7 +807,7 @@ sycl::event stable_argsort_axis1_contig_impl(
 
     const std::size_t total_nelems = iter_nelems * sort_nelems;
 
-    using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
+    using dpnp::tensor::kernels::sort_utils_detail::iota_impl;
 
     using IotaKernelName = populate_index_data_krn<argTy, IndexTy>;
 
@@ -833,7 +833,7 @@ sycl::event stable_argsort_axis1_contig_impl(
     }
 
     using MapBackKernelName = index_map_to_rows_krn<argTy, IndexTy>;
-    using dpctl::tensor::kernels::sort_utils_detail::map_back_impl;
+    using dpnp::tensor::kernels::sort_utils_detail::map_back_impl;
 
     sycl::event write_out_ev = map_back_impl<MapBackKernelName, IndexTy>(
         exec_q, total_nelems, res_tp, res_tp, sort_nelems, {merges_ev});
@@ -841,4 +841,4 @@ sycl::event stable_argsort_axis1_contig_impl(
     return write_out_ev;
 }
 
-} // namespace dpctl::tensor::kernels
+} // namespace dpnp::tensor::kernels

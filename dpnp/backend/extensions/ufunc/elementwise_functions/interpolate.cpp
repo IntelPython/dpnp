@@ -45,7 +45,7 @@
 
 #include "kernels/elementwise_functions/interpolate.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -59,8 +59,8 @@ namespace py = pybind11;
 
 namespace impl
 {
-namespace td_ns = dpctl::tensor::type_dispatch;
-namespace type_utils = dpctl::tensor::type_utils;
+namespace td_ns = dpnp::tensor::type_dispatch;
+namespace type_utils = dpnp::tensor::type_utils;
 
 template <typename T>
 using value_type_of_t = typename ext::common::value_type_of<T>::type;
@@ -94,7 +94,7 @@ sycl::event interpolate_impl(sycl::queue &q,
                              const std::size_t xp_size,
                              const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<T>(q);
 
     using type_utils::is_complex_v;
     using TCoord = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
@@ -163,13 +163,13 @@ using ext::validation::check_same_dtype;
 using ext::validation::check_same_size;
 using ext::validation::common_checks;
 
-void validate(const dpctl::tensor::usm_ndarray &x,
-              const dpctl::tensor::usm_ndarray &idx,
-              const dpctl::tensor::usm_ndarray &xp,
-              const dpctl::tensor::usm_ndarray &fp,
-              const dpctl::tensor::usm_ndarray &out,
-              const std::optional<const dpctl::tensor::usm_ndarray> &left,
-              const std::optional<const dpctl::tensor::usm_ndarray> &right)
+void validate(const dpnp::tensor::usm_ndarray &x,
+              const dpnp::tensor::usm_ndarray &idx,
+              const dpnp::tensor::usm_ndarray &xp,
+              const dpnp::tensor::usm_ndarray &fp,
+              const dpnp::tensor::usm_ndarray &out,
+              const std::optional<const dpnp::tensor::usm_ndarray> &left,
+              const std::optional<const dpnp::tensor::usm_ndarray> &right)
 {
     array_names names = {{&x, "x"}, {&xp, "xp"}, {&fp, "fp"}, {&out, "out"}};
 
@@ -202,13 +202,13 @@ void validate(const dpctl::tensor::usm_ndarray &x,
 } // namespace detail
 
 std::pair<sycl::event, sycl::event>
-    py_interpolate(const dpctl::tensor::usm_ndarray &x,
-                   const dpctl::tensor::usm_ndarray &idx,
-                   const dpctl::tensor::usm_ndarray &xp,
-                   const dpctl::tensor::usm_ndarray &fp,
-                   std::optional<const dpctl::tensor::usm_ndarray> &left,
-                   std::optional<const dpctl::tensor::usm_ndarray> &right,
-                   dpctl::tensor::usm_ndarray &out,
+    py_interpolate(const dpnp::tensor::usm_ndarray &x,
+                   const dpnp::tensor::usm_ndarray &idx,
+                   const dpnp::tensor::usm_ndarray &xp,
+                   const dpnp::tensor::usm_ndarray &fp,
+                   std::optional<const dpnp::tensor::usm_ndarray> &left,
+                   std::optional<const dpnp::tensor::usm_ndarray> &right,
+                   dpnp::tensor::usm_ndarray &out,
                    sycl::queue &exec_q,
                    const std::vector<sycl::event> &depends)
 {
@@ -240,17 +240,17 @@ std::pair<sycl::event, sycl::event>
     sycl::event args_ev;
 
     if (left && right) {
-        args_ev = dpctl::utils::keep_args_alive(
+        args_ev = dpnp::utils::keep_args_alive(
             exec_q, {x, idx, xp, fp, out, left.value(), right.value()}, {ev});
     }
     else if (left || right) {
-        args_ev = dpctl::utils::keep_args_alive(
+        args_ev = dpnp::utils::keep_args_alive(
             exec_q, {x, idx, xp, fp, out, left ? left.value() : right.value()},
             {ev});
     }
     else {
         args_ev =
-            dpctl::utils::keep_args_alive(exec_q, {x, idx, xp, fp, out}, {ev});
+            dpnp::utils::keep_args_alive(exec_q, {x, idx, xp, fp, out}, {ev});
     }
 
     return std::make_pair(args_ev, ev);

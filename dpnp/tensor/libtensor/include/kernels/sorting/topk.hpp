@@ -50,7 +50,7 @@
 #include "kernels/sorting/sort_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 
-namespace dpctl::tensor::kernels
+namespace dpnp::tensor::kernels
 {
 
 namespace topk_detail
@@ -157,14 +157,14 @@ sycl::event
                               const std::vector<sycl::event> &depends)
 {
     auto index_data_owner =
-        dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(
+        dpnp::tensor::alloc_utils::smart_malloc_device<IndexTy>(
             iter_nelems * axis_nelems, exec_q);
     // extract USM pointer
     IndexTy *index_data = index_data_owner.get();
 
     using IotaKernelName = topk_populate_index_data_krn<argTy, IndexTy>;
 
-    using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
+    using dpnp::tensor::kernels::sort_utils_detail::iota_impl;
 
     sycl::event populate_indexed_data_ev = iota_impl<IotaKernelName, IndexTy>(
         exec_q, index_data, iter_nelems * axis_nelems, depends);
@@ -191,8 +191,8 @@ sycl::event
             axis_nelems, vals_tp, inds_tp, {merges_ev});
 
     sycl::event cleanup_host_task_event =
-        dpctl::tensor::alloc_utils::async_smart_free(exec_q, {write_out_ev},
-                                                     index_data_owner);
+        dpnp::tensor::alloc_utils::async_smart_free(exec_q, {write_out_ev},
+                                                    index_data_owner);
 
     return cleanup_host_task_event;
 };
@@ -226,7 +226,7 @@ sycl::event topk_merge_impl(
     argTy *vals_tp = reinterpret_cast<argTy *>(vals_cp);
     IndexTy *inds_tp = reinterpret_cast<IndexTy *>(inds_cp);
 
-    using dpctl::tensor::kernels::IndexComp;
+    using dpnp::tensor::kernels::IndexComp;
     const IndexComp<IndexTy, argTy, ValueComp> index_comp{arg_tp, ValueComp{}};
 
     if (axis_nelems <= 512 || k >= 1024 || k > axis_nelems / 2) {
@@ -306,7 +306,7 @@ sycl::event topk_merge_impl(
         }
 
         auto index_data_owner =
-            dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(
+            dpnp::tensor::alloc_utils::smart_malloc_device<IndexTy>(
                 iter_nelems * alloc_len, exec_q);
         // get raw USM pointer
         IndexTy *index_data = index_data_owner.get();
@@ -432,8 +432,8 @@ sycl::event topk_merge_impl(
                 axis_nelems, vals_tp, inds_tp, {merges_ev});
 
         sycl::event cleanup_host_task_event =
-            dpctl::tensor::alloc_utils::async_smart_free(
-                exec_q, {write_topk_ev}, index_data_owner);
+            dpnp::tensor::alloc_utils::async_smart_free(exec_q, {write_topk_ev},
+                                                        index_data_owner);
 
         return cleanup_host_task_event;
     }
@@ -467,7 +467,7 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
     const std::size_t total_nelems = iter_nelems * axis_nelems;
     const std::size_t padded_total_nelems = ((total_nelems + 63) / 64) * 64;
     auto workspace_owner =
-        dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(
+        dpnp::tensor::alloc_utils::smart_malloc_device<IndexTy>(
             padded_total_nelems + total_nelems, exec_q);
 
     // get raw USM pointer
@@ -481,7 +481,7 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
 
     using IotaKernelName = topk_iota_krn<argTy, IndexTy>;
 
-    using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
+    using dpnp::tensor::kernels::sort_utils_detail::iota_impl;
 
     sycl::event iota_ev = iota_impl<IotaKernelName, IndexTy>(
         exec_q, workspace, total_nelems, depends);
@@ -499,10 +499,10 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
             exec_q, iter_nelems, k, arg_tp, tmp_tp, axis_nelems, axis_nelems,
             vals_tp, inds_tp, {radix_sort_ev});
 
-    sycl::event cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {write_topk_ev}, workspace_owner);
 
     return cleanup_ev;
 }
 
-} // namespace dpctl::tensor::kernels
+} // namespace dpnp::tensor::kernels

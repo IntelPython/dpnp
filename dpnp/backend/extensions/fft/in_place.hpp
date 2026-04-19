@@ -43,7 +43,7 @@ namespace mkl_dft = oneapi::mkl::dft;
 template <mkl_dft::precision prec, mkl_dft::domain dom>
 std::pair<sycl::event, sycl::event>
     compute_fft_in_place(DescriptorWrapper<prec, dom> &descr,
-                         const dpctl::tensor::usm_ndarray &in_out,
+                         const dpnp::tensor::usm_ndarray &in_out,
                          const bool is_forward,
                          const std::vector<sycl::event> &depends);
 

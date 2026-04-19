@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_reductions_impl
+/// This file defines functions of dpnp.tensor._tensor_reductions_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 
@@ -49,26 +49,26 @@
 #include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
-namespace su_ns = dpctl::tensor::sycl_utils;
+namespace td_ns = dpnp::tensor::type_dispatch;
+namespace su_ns = dpnp::tensor::sycl_utils;
 
 namespace impl
 {
 
-using dpctl::tensor::kernels::search_strided_impl_fn_ptr;
+using dpnp::tensor::kernels::search_strided_impl_fn_ptr;
 static search_strided_impl_fn_ptr
     argmin_over_axis_strided_temps_dispatch_table[td_ns::num_types]
                                                  [td_ns::num_types];
 
-using dpctl::tensor::kernels::search_contig_impl_fn_ptr;
+using dpnp::tensor::kernels::search_contig_impl_fn_ptr;
 static search_contig_impl_fn_ptr
     argmin_over_axis1_contig_temps_dispatch_table[td_ns::num_types]
                                                  [td_ns::num_types];
-using dpctl::tensor::kernels::search_contig_impl_fn_ptr;
+using dpnp::tensor::kernels::search_contig_impl_fn_ptr;
 static search_contig_impl_fn_ptr
     argmin_over_axis0_contig_temps_dispatch_table[td_ns::num_types]
                                                  [td_ns::num_types];
@@ -139,7 +139,7 @@ struct ArgminOverAxisTempsStridedFactory
                 using ReductionOpT = sycl::minimum<srcTy>;
                 // op for indices
                 using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     search_over_group_temps_strided_impl<
                         srcTy, dstTy, ReductionOpT, IndexOpT>;
             }
@@ -148,7 +148,7 @@ struct ArgminOverAxisTempsStridedFactory
                 using ReductionOpT = su_ns::Minimum<srcTy>;
                 // op for indices
                 using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     search_over_group_temps_strided_impl<
                         srcTy, dstTy, ReductionOpT, IndexOpT>;
             }
@@ -172,7 +172,7 @@ struct ArgminOverAxis1TempsContigFactory
                 using ReductionOpT = sycl::minimum<srcTy>;
                 // op for indices
                 using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     search_axis1_over_group_temps_contig_impl<
                         srcTy, dstTy, ReductionOpT, IndexOpT>;
             }
@@ -181,7 +181,7 @@ struct ArgminOverAxis1TempsContigFactory
                 using ReductionOpT = su_ns::Minimum<srcTy>;
                 // op for indices
                 using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     search_axis1_over_group_temps_contig_impl<
                         srcTy, dstTy, ReductionOpT, IndexOpT>;
             }
@@ -205,7 +205,7 @@ struct ArgminOverAxis0TempsContigFactory
                 using ReductionOpT = sycl::minimum<srcTy>;
                 // op for indices
                 using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     search_axis0_over_group_temps_contig_impl<
                         srcTy, dstTy, ReductionOpT, IndexOpT>;
             }
@@ -214,7 +214,7 @@ struct ArgminOverAxis0TempsContigFactory
                 using ReductionOpT = su_ns::Minimum<srcTy>;
                 // op for indices
                 using IndexOpT = sycl::minimum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     search_axis0_over_group_temps_contig_impl<
                         srcTy, dstTy, ReductionOpT, IndexOpT>;
             }
@@ -249,7 +249,7 @@ void populate_argmin_over_axis_dispatch_tables(void)
 
 void init_argmin(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
     {
         using impl::populate_argmin_over_axis_dispatch_tables;
@@ -273,4 +273,4 @@ void init_argmin(py::module_ m)
     }
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

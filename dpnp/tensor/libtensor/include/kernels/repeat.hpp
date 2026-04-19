@@ -39,14 +39,14 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl_tensor_types.hpp"
+#include "dpnp_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 
-namespace dpctl::tensor::kernels::repeat
+namespace dpnp::tensor::kernels::repeat
 {
 
-using dpctl::tensor::ssize_t;
-using namespace dpctl::tensor::offset_utils;
+using dpnp::tensor::ssize_t;
+using namespace dpnp::tensor::offset_utils;
 
 template <typename OrthogIndexer,
           typename SrcAxisIndexer,
@@ -457,4 +457,4 @@ struct RepeatScalar1DFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::repeat
+} // namespace dpnp::tensor::kernels::repeat

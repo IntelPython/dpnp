@@ -41,7 +41,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace dpctl::tensor::strides
+namespace dpnp::tensor::strides
 {
 /* An N-dimensional array can be stored in a single
  * contiguous chunk of memory by contiguously laying
@@ -981,4 +981,4 @@ int compact_iteration(const int nd, ShapeTy *shape, StridesTy *strides)
 
     return nd_;
 }
-} // namespace dpctl::tensor::strides
+} // namespace dpnp::tensor::strides

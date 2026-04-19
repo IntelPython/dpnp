@@ -29,7 +29,7 @@
 //===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #include <cstddef>
@@ -48,12 +48,12 @@
 #include "zeros_ctor.hpp"
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
-using dpctl::utils::keep_args_alive;
+using dpnp::utils::keep_args_alive;
 
 typedef sycl::event (*zeros_contig_fn_ptr_t)(sycl::queue &,
                                              std::size_t,
@@ -105,7 +105,7 @@ struct ZerosContigFactory
 static zeros_contig_fn_ptr_t zeros_contig_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
-    usm_ndarray_zeros(const dpctl::tensor::usm_ndarray &dst,
+    usm_ndarray_zeros(const dpnp::tensor::usm_ndarray &dst,
                       sycl::queue &exec_q,
                       const std::vector<sycl::event> &depends)
 {
@@ -116,12 +116,12 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {dst})) {
         throw py::value_error(
             "Execution queue is not compatible with the allocation queue");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();
@@ -156,4 +156,4 @@ void init_zeros_ctor_dispatch_vectors(void)
     return;
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

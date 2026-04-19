@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #include <array>
@@ -53,14 +53,14 @@
 #include "copy_as_contig.hpp"
 #include "simplify_iteration_space.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_1d_fn_ptr_t;
-using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_contig_fn_ptr_t;
-using dpctl::tensor::kernels::copy_and_cast::copy_and_cast_generic_fn_ptr_t;
+using dpnp::tensor::kernels::copy_and_cast::copy_and_cast_1d_fn_ptr_t;
+using dpnp::tensor::kernels::copy_and_cast::copy_and_cast_contig_fn_ptr_t;
+using dpnp::tensor::kernels::copy_and_cast::copy_and_cast_generic_fn_ptr_t;
 
 static copy_and_cast_generic_fn_ptr_t
     copy_and_cast_generic_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -71,11 +71,11 @@ static copy_and_cast_contig_fn_ptr_t
 
 namespace py = pybind11;
 
-using dpctl::utils::keep_args_alive;
+using dpnp::utils::keep_args_alive;
 
 std::pair<sycl::event, sycl::event> copy_usm_ndarray_into_usm_ndarray(
-    const dpctl::tensor::usm_ndarray &src,
-    const dpctl::tensor::usm_ndarray &dst,
+    const dpnp::tensor::usm_ndarray &src,
+    const dpnp::tensor::usm_ndarray &dst,
     sycl::queue &exec_q,
     const std::vector<sycl::event> &depends = {})
 {
@@ -107,15 +107,15 @@ std::pair<sycl::event, sycl::event> copy_usm_ndarray_into_usm_ndarray(
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
@@ -128,7 +128,7 @@ std::pair<sycl::event, sycl::event> copy_usm_ndarray_into_usm_ndarray(
     char *dst_data = dst.get_data();
 
     // check that arrays do not overlap, and concurrent copying is safe.
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         // TODO: could use a temporary, but this is done by the caller
         throw py::value_error("Arrays index overlapping segments of memory");
@@ -248,7 +248,7 @@ std::pair<sycl::event, sycl::event> copy_usm_ndarray_into_usm_ndarray(
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
@@ -262,7 +262,7 @@ std::pair<sycl::event, sycl::event> copy_usm_ndarray_into_usm_ndarray(
 
     // async free of shape_strides temporary
     const auto &temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
+        dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {copy_and_cast_generic_ev}, shape_strides_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
@@ -274,23 +274,23 @@ void init_copy_and_cast_usm_to_usm_dispatch_tables(void)
 {
     using namespace td_ns;
 
-    using dpctl::tensor::kernels::copy_and_cast::CopyAndCastContigFactory;
+    using dpnp::tensor::kernels::copy_and_cast::CopyAndCastContigFactory;
     DispatchTableBuilder<copy_and_cast_contig_fn_ptr_t,
                          CopyAndCastContigFactory, num_types>
         dtb_contig;
     dtb_contig.populate_dispatch_table(copy_and_cast_contig_dispatch_table);
 
-    using dpctl::tensor::kernels::copy_and_cast::CopyAndCastGenericFactory;
+    using dpnp::tensor::kernels::copy_and_cast::CopyAndCastGenericFactory;
     DispatchTableBuilder<copy_and_cast_generic_fn_ptr_t,
                          CopyAndCastGenericFactory, num_types>
         dtb_generic;
     dtb_generic.populate_dispatch_table(copy_and_cast_generic_dispatch_table);
 
-    using dpctl::tensor::kernels::copy_and_cast::CopyAndCast1DFactory;
+    using dpnp::tensor::kernels::copy_and_cast::CopyAndCast1DFactory;
     DispatchTableBuilder<copy_and_cast_1d_fn_ptr_t, CopyAndCast1DFactory,
                          num_types>
         dtb_1d;
     dtb_1d.populate_dispatch_table(copy_and_cast_1d_dispatch_table);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

@@ -42,18 +42,18 @@
 #include <utility>
 #include <vector>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/reductions.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels
+namespace dpnp::tensor::kernels
 {
 
-using dpctl::tensor::ssize_t;
-namespace su_ns = dpctl::tensor::sycl_utils;
+using dpnp::tensor::ssize_t;
+namespace su_ns = dpnp::tensor::sycl_utils;
 
 template <typename lhsT,
           typename rhsT,
@@ -97,7 +97,7 @@ public:
             auto lhs_reduction_offset = reduction_offsets.get_first_offset();
             auto rhs_reduction_offset = reduction_offsets.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
+            using dpnp::tensor::type_utils::convert_impl;
             red_val += convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
                        convert_impl<outT, rhsT>(
@@ -179,7 +179,7 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
+            using dpnp::tensor::type_utils::convert_impl;
             outT val = convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
                        convert_impl<outT, rhsT>(
@@ -276,7 +276,7 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
+            using dpnp::tensor::type_utils::convert_impl;
             outT val = convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
                        convert_impl<outT, rhsT>(
@@ -457,9 +457,9 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
 
     if (reduction_nelems < wg) {
         using InputOutputBatchIndexerT =
-            dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;
         using ReductionIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             batch_nd, batch_lhs_offset, batch_rhs_offset, batch_res_offset,
@@ -479,8 +479,7 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
     }
     else {
         sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
-            using IndexerT =
-                dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+            using IndexerT = dpnp::tensor::offset_utils::UnpackedStridedIndexer;
 
             const ssize_t *const &res_shape = batch_shape_and_strides;
             const ssize_t *const &res_strides =
@@ -501,9 +500,9 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
         using ReductionOpT = sycl::plus<resTy>;
 
         using BatchIndexerT =
-            dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;
         using ReductionIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
         const BatchIndexerT batch_indexer{batch_nd, batch_lhs_offset,
                                           batch_rhs_offset, batch_res_offset,
@@ -575,14 +574,13 @@ sycl::event
     std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        using InputBatchIndexerT =
-            dpctl::tensor::offset_utils::Strided1DIndexer;
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputBatchIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputBatchIndexerT =
-            dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
                 InputBatchIndexerT, InputBatchIndexerT, NoOpIndexerT>;
         using ReductionIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
 
         const InputBatchIndexerT inp_batch_indexer{/* size */ batches,
@@ -610,14 +608,13 @@ sycl::event
 
         using ReductionOpT = sycl::plus<resTy>;
 
-        using InputBatchIndexerT =
-            dpctl::tensor::offset_utils::Strided1DIndexer;
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputBatchIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputBatchIndexerT =
-            dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
                 InputBatchIndexerT, InputBatchIndexerT, NoOpIndexerT>;
         using ReductionIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
 
         const InputBatchIndexerT inp_batch_indexer{/* size */ batches,
@@ -722,7 +719,7 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
+            using dpnp::tensor::type_utils::convert_impl;
             outT val = convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
                        convert_impl<outT, rhsT>(
@@ -822,7 +819,7 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
+            using dpnp::tensor::type_utils::convert_impl;
             outT val = convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
                        convert_impl<outT, rhsT>(
@@ -949,9 +946,9 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
 
     if (reduction_nelems < wg) {
         using InputOutputBatchIndexerT =
-            dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;
         using ReductionIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             batch_nd, batch_lhs_offset, batch_rhs_offset, batch_res_offset,
@@ -981,9 +978,9 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
     std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
         using BatchIndexerT =
-            dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;
         using ReductionIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
         const BatchIndexerT batch_indexer{batch_nd, batch_lhs_offset,
                                           batch_rhs_offset, batch_res_offset,
@@ -1030,7 +1027,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
 
         // returns unique_ptr
         auto partially_reduced_tmp_owner =
-            dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+            dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                 batches * (reduction_groups + second_iter_reduction_groups_),
                 exec_q);
 
@@ -1040,15 +1037,15 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
 
         sycl::event first_reduction_ev;
         {
-            using LhsIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+            using LhsIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
             using RhsIndexerT =
-                dpctl::tensor::offset_utils::UnpackedStridedIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                dpnp::tensor::offset_utils::UnpackedStridedIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputBatchIndexerT =
-                dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
                     LhsIndexerT, RhsIndexerT, ResIndexerT>;
             using ReductionIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+                dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
             const LhsIndexerT lhs_indexer(batch_nd, batch_lhs_offset,
                                           batch_shape_and_strides);
@@ -1085,12 +1082,12 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                 (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
-            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     InputIndexerT, ResIndexerT>;
-            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
             const InputIndexerT inp_indexer{/* size */ batches,
                                             /* step */ reduction_groups_};
@@ -1101,7 +1098,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
             static constexpr ReductionIndexerT reduction_indexer{};
 
             sycl::event partial_reduction_ev =
-                dpctl::tensor::kernels::submit_no_atomic_reduction<
+                dpnp::tensor::kernels::submit_no_atomic_reduction<
                     resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                     ReductionIndexerT, dot_product_tree_reduction_krn>(
                     exec_q, temp_arg, temp2_arg, identity_val, wg, batches,
@@ -1115,12 +1112,12 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         }
 
         // final reduction to res
-        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+        using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::UnpackedStridedIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{/* size */ batches,
                                         /* step */ remaining_reduction_nelems};
@@ -1143,7 +1140,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         assert(reduction_groups == 1);
 
         sycl::event final_reduction_ev =
-            dpctl::tensor::kernels::submit_no_atomic_reduction<
+            dpnp::tensor::kernels::submit_no_atomic_reduction<
                 resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                 ReductionIndexerT, dot_product_tree_reduction_krn>(
                 exec_q, temp_arg, res_tp, identity_val, wg, batches,
@@ -1152,7 +1149,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
 
         // transfer ownership of USM allocation to host_task
         sycl::event cleanup_host_task_event =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {final_reduction_ev}, partially_reduced_tmp_owner);
 
         return cleanup_host_task_event;
@@ -1185,14 +1182,13 @@ sycl::event
     std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        using InputBatchIndexerT =
-            dpctl::tensor::offset_utils::Strided1DIndexer;
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputBatchIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputBatchIndexerT =
-            dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
                 InputBatchIndexerT, InputBatchIndexerT, NoOpIndexerT>;
         using ReductionIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
 
         const InputBatchIndexerT inp_batch_indexer{/* size */ batches,
@@ -1222,14 +1218,13 @@ sycl::event
 
     std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
-        using InputBatchIndexerT =
-            dpctl::tensor::offset_utils::Strided1DIndexer;
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputBatchIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputBatchIndexerT =
-            dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
                 InputBatchIndexerT, InputBatchIndexerT, NoOpIndexerT>;
         using ReductionIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
 
         const InputBatchIndexerT inp_batch_indexer{/* size */ batches,
@@ -1276,7 +1271,7 @@ sycl::event
 
         // unique_ptr that owns temporary allocation for partial reductions
         auto partially_reduced_tmp_owner =
-            dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+            dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                 batches * (reduction_groups + second_iter_reduction_groups_),
                 exec_q);
         // get raw pointers
@@ -1287,13 +1282,13 @@ sycl::event
         sycl::event first_reduction_ev;
         {
             using InputBatchIndexerT =
-                dpctl::tensor::offset_utils::Strided1DIndexer;
-            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                dpnp::tensor::offset_utils::Strided1DIndexer;
+            using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputBatchIndexerT =
-                dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer<
                     InputBatchIndexerT, InputBatchIndexerT, NoOpIndexerT>;
             using ReductionIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     NoOpIndexerT, NoOpIndexerT>;
 
             const InputBatchIndexerT inp_batch_indexer{
@@ -1326,12 +1321,12 @@ sycl::event
                 (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
-            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     InputIndexerT, ResIndexerT>;
-            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
             const InputIndexerT inp_indexer{/* size */ batches,
                                             /* step */ reduction_groups_};
@@ -1342,7 +1337,7 @@ sycl::event
             static constexpr ReductionIndexerT reduction_indexer{};
 
             sycl::event partial_reduction_ev =
-                dpctl::tensor::kernels::submit_no_atomic_reduction<
+                dpnp::tensor::kernels::submit_no_atomic_reduction<
                     resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                     ReductionIndexerT, dot_product_tree_reduction_krn>(
                     exec_q, temp_arg, temp2_arg, identity_val, wg, batches,
@@ -1356,12 +1351,12 @@ sycl::event
         }
 
         // final reduction to res
-        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{/* size */ batches,
                                         /* step */ remaining_reduction_nelems};
@@ -1381,7 +1376,7 @@ sycl::event
         assert(reduction_groups == 1);
 
         sycl::event final_reduction_ev =
-            dpctl::tensor::kernels::submit_no_atomic_reduction<
+            dpnp::tensor::kernels::submit_no_atomic_reduction<
                 resTy, resTy, ReductionOpT, InputOutputIterIndexerT,
                 ReductionIndexerT, dot_product_tree_reduction_krn>(
                 exec_q, temp_arg, res_tp, identity_val, wg, batches,
@@ -1389,11 +1384,11 @@ sycl::event
                 in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {final_reduction_ev}, partially_reduced_tmp_owner);
 
         return cleanup_host_task_event;
     }
 }
 
-} // namespace dpctl::tensor::kernels
+} // namespace dpnp::tensor::kernels

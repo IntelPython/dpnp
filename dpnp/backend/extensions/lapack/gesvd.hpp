@@ -39,20 +39,20 @@ extern std::pair<sycl::event, sycl::event>
     gesvd(sycl::queue &exec_q,
           const std::int8_t jobu_val,
           const std::int8_t jobvt_val,
-          const dpctl::tensor::usm_ndarray &a_array,
-          const dpctl::tensor::usm_ndarray &out_s,
-          const dpctl::tensor::usm_ndarray &out_u,
-          const dpctl::tensor::usm_ndarray &out_vt,
+          const dpnp::tensor::usm_ndarray &a_array,
+          const dpnp::tensor::usm_ndarray &out_s,
+          const dpnp::tensor::usm_ndarray &out_u,
+          const dpnp::tensor::usm_ndarray &out_vt,
           const std::vector<sycl::event> &depends);
 
 extern std::pair<sycl::event, sycl::event>
     gesvd_batch(sycl::queue &exec_q,
                 const std::int8_t jobu_val,
                 const std::int8_t jobvt_val,
-                const dpctl::tensor::usm_ndarray &a_array,
-                const dpctl::tensor::usm_ndarray &out_s,
-                const dpctl::tensor::usm_ndarray &out_u,
-                const dpctl::tensor::usm_ndarray &out_vt,
+                const dpnp::tensor::usm_ndarray &a_array,
+                const dpnp::tensor::usm_ndarray &out_s,
+                const dpnp::tensor::usm_ndarray &out_u,
+                const dpnp::tensor::usm_ndarray &out_vt,
                 const std::vector<sycl::event> &depends);
 
 extern void init_gesvd_dispatch_table(void);

@@ -43,18 +43,18 @@
 
 #include "vec_size_util.hpp"
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::logical_not
+namespace dpnp::tensor::kernels::logical_not
 {
 
-using dpctl::tensor::ssize_t;
-namespace td_ns = dpctl::tensor::type_dispatch;
-namespace tu_ns = dpctl::tensor::type_utils;
+using dpnp::tensor::ssize_t;
+namespace td_ns = dpnp::tensor::type_dispatch;
+namespace tu_ns = dpnp::tensor::type_utils;
 
 template <typename argT, typename resT>
 struct LogicalNotFunctor
@@ -103,7 +103,7 @@ struct LogicalNotOutputType
 namespace hyperparam_detail
 {
 
-namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+namespace vsu_ns = dpnp::tensor::kernels::vec_size_utils;
 
 using vsu_ns::ContigHyperparameterSetDefault;
 using vsu_ns::UnaryContigHyperparameterSetEntry;
@@ -196,4 +196,4 @@ struct LogicalNotStridedFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::logical_not
+} // namespace dpnp::tensor::kernels::logical_not

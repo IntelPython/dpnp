@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -49,16 +49,16 @@
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 template <typename sorting_contig_impl_fnT>
 std::pair<sycl::event, sycl::event>
-    py_argsort(const dpctl::tensor::usm_ndarray &src,
+    py_argsort(const dpnp::tensor::usm_ndarray &src,
                const int trailing_dims_to_sort,
-               const dpctl::tensor::usm_ndarray &dst,
+               const dpnp::tensor::usm_ndarray &dst,
                sycl::queue &exec_q,
                const std::vector<sycl::event> &depends,
                const sorting_contig_impl_fnT &sort_contig_fns)
@@ -99,12 +99,12 @@ std::pair<sycl::event, sycl::event>
             "Destination shape does not match the input shape");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     if ((iter_nelems == 0) || (sort_nelems == 0)) {
         // Nothing to do
@@ -112,12 +112,12 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check that dst and src do not overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         dst, sort_nelems * iter_nelems);
 
     int src_typenum = src.get_typenum();
@@ -153,7 +153,7 @@ std::pair<sycl::event, sycl::event>
                    zero_offset, depends);
 
             sycl::event keep_args_alive_ev =
-                dpctl::utils::keep_args_alive(exec_q, {src, dst}, {comp_ev});
+                dpnp::utils::keep_args_alive(exec_q, {src, dst}, {comp_ev});
 
             return std::make_pair(keep_args_alive_ev, comp_ev);
         }
@@ -170,7 +170,7 @@ std::pair<sycl::event, sycl::event>
             });
 
             sycl::event keep_args_alive_ev =
-                dpctl::utils::keep_args_alive(exec_q, {src, dst}, {fill_ev});
+                dpnp::utils::keep_args_alive(exec_q, {src, dst}, {fill_ev});
 
             return std::make_pair(keep_args_alive_ev, fill_ev);
         }
@@ -180,4 +180,4 @@ std::pair<sycl::event, sycl::event>
         "Both source and destination arrays must be C-contiguous");
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

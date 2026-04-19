@@ -41,14 +41,14 @@
 
 #include <sycl/sycl.hpp>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 
-namespace dpctl::tensor::indexing_utils
+namespace dpnp::tensor::indexing_utils
 {
-using dpctl::tensor::ssize_t;
+using dpnp::tensor::ssize_t;
 
 /*
- * ssize_t for indices is a design choice, dpctl::tensor::usm_ndarray
+ * ssize_t for indices is a design choice, dpnp::tensor::usm_ndarray
  * uses py::ssize_t for shapes and strides internally and Python uses
  * py_ssize_t for sizes of e.g. lists.
  */
@@ -150,4 +150,4 @@ struct ClipIndex
         return projected;
     }
 };
-} // namespace dpctl::tensor::indexing_utils
+} // namespace dpnp::tensor::indexing_utils

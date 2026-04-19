@@ -44,19 +44,19 @@
 
 #include "vec_size_util.hpp"
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::log1p
+namespace dpnp::tensor::kernels::log1p
 {
 
-using dpctl::tensor::ssize_t;
-namespace td_ns = dpctl::tensor::type_dispatch;
+using dpnp::tensor::ssize_t;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::type_utils::is_complex;
+using dpnp::tensor::type_utils::is_complex;
 
 // TODO: evaluate precision against alternatives
 template <typename argT, typename resT>
@@ -144,7 +144,7 @@ struct Log1pOutputType
 namespace hyperparam_detail
 {
 
-namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+namespace vsu_ns = dpnp::tensor::kernels::vec_size_utils;
 
 using vsu_ns::ContigHyperparameterSetDefault;
 using vsu_ns::UnaryContigHyperparameterSetEntry;
@@ -245,4 +245,4 @@ struct Log1pStridedFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::log1p
+} // namespace dpnp::tensor::kernels::log1p

@@ -35,13 +35,13 @@
 
 #include <sycl/sycl.hpp>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/math_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
-namespace type_utils = dpctl::tensor::type_utils;
-namespace type_dispatch = dpctl::tensor::type_dispatch;
+namespace type_utils = dpnp::tensor::type_utils;
+namespace type_dispatch = dpnp::tensor::type_dispatch;
 
 namespace ext::common
 {
@@ -84,7 +84,7 @@ struct Less
     bool operator()(const T &lhs, const T &rhs) const
     {
         if constexpr (type_utils::is_complex_v<T>) {
-            return dpctl::tensor::math_utils::less_complex(lhs, rhs);
+            return dpnp::tensor::math_utils::less_complex(lhs, rhs);
         }
         else {
             return std::less{}(lhs, rhs);
@@ -210,8 +210,9 @@ sycl::nd_range<Dims> make_ndrange(const sycl::range<Dims> &global_range,
 sycl::nd_range<1>
     make_ndrange(size_t global_size, size_t local_range, size_t work_per_item);
 
-// This function is a copy from dpctl because it is not available in the public
-// headers of dpctl.
+// This function was a copy from dpctl because it was not available in the
+// public headers of dpctl.
+// TODO: consolidate with tensor post-migration
 pybind11::dtype dtype_from_typenum(int dst_typenum);
 
 template <typename dispatchT,

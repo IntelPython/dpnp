@@ -29,7 +29,7 @@
 //===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #include <cstddef>
@@ -54,12 +54,12 @@
 #include "full_ctor.hpp"
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
-using dpctl::utils::keep_args_alive;
+using dpnp::utils::keep_args_alive;
 
 typedef sycl::event (*full_contig_fn_ptr_t)(sycl::queue &,
                                             std::size_t,
@@ -145,7 +145,7 @@ sycl::event full_contig_impl(sycl::queue &exec_q,
             });
         }
         else {
-            using dpctl::tensor::kernels::constructors::full_contig_impl;
+            using dpnp::tensor::kernels::constructors::full_contig_impl;
 
             fill_ev =
                 full_contig_impl<dstTy>(exec_q, nelems, fill_v, dst_p, depends);
@@ -203,7 +203,7 @@ sycl::event full_strided_impl(sycl::queue &exec_q,
 {
     dstTy fill_v = py::cast<dstTy>(py_value);
 
-    using dpctl::tensor::kernels::constructors::full_strided_impl;
+    using dpnp::tensor::kernels::constructors::full_strided_impl;
     sycl::event fill_ev = full_strided_impl<dstTy>(
         exec_q, nd, nelems, shape_strides, fill_v, dst_p, depends);
 
@@ -225,7 +225,7 @@ static full_strided_fn_ptr_t full_strided_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
     usm_ndarray_full(const py::object &py_value,
-                     const dpctl::tensor::usm_ndarray &dst,
+                     const dpnp::tensor::usm_ndarray &dst,
                      sycl::queue &exec_q,
                      const std::vector<sycl::event> &depends)
 {
@@ -238,12 +238,12 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {dst})) {
         throw py::value_error(
             "Execution queue is not compatible with the allocation queue");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();
@@ -271,7 +271,7 @@ std::pair<sycl::event, sycl::event>
 
         std::vector<sycl::event> host_task_events;
         host_task_events.reserve(2);
-        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        using dpnp::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, dst_shape, dst_strides);
         auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_tuple));
@@ -284,7 +284,7 @@ std::pair<sycl::event, sycl::event>
 
         // free shape_strides
         const auto &temporaries_cleanup_ev =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {full_strided_ev}, shape_strides_owner);
         host_task_events.push_back(temporaries_cleanup_ev);
 
@@ -306,4 +306,4 @@ void init_full_ctor_dispatch_vectors(void)
     dvb2.populate_dispatch_vector(full_strided_dispatch_vector);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

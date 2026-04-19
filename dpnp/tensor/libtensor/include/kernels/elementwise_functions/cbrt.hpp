@@ -43,16 +43,16 @@
 
 #include "vec_size_util.hpp"
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 
 #include "utils/type_dispatch_building.hpp"
 
-namespace dpctl::tensor::kernels::cbrt
+namespace dpnp::tensor::kernels::cbrt
 {
 
-using dpctl::tensor::ssize_t;
-namespace td_ns = dpctl::tensor::type_dispatch;
+using dpnp::tensor::ssize_t;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 template <typename argT, typename resT>
 struct CbrtFunctor
@@ -102,7 +102,7 @@ struct CbrtOutputType
 namespace hyperparam_detail
 {
 
-namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+namespace vsu_ns = dpnp::tensor::kernels::vec_size_utils;
 
 using vsu_ns::ContigHyperparameterSetDefault;
 using vsu_ns::UnaryContigHyperparameterSetEntry;
@@ -203,4 +203,4 @@ struct CbrtStridedFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::cbrt
+} // namespace dpnp::tensor::kernels::cbrt

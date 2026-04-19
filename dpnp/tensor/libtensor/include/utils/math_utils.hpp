@@ -38,7 +38,7 @@
 
 #include <sycl/sycl.hpp>
 
-namespace dpctl::tensor::math_utils
+namespace dpnp::tensor::math_utils
 {
 template <typename T>
 bool less_complex(const T &x1, const T &x2)
@@ -145,4 +145,4 @@ T logaddexp(T x, T y)
                                     : std::numeric_limits<T>::quiet_NaN());
     }
 }
-} // namespace dpctl::tensor::math_utils
+} // namespace dpnp::tensor::math_utils

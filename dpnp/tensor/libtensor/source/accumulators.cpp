@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #include <cstddef>
@@ -53,21 +53,21 @@
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 // Computation of positions of masked elements
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::accumulators::cumsum_val_contig_impl_fn_ptr_t;
+using dpnp::tensor::kernels::accumulators::cumsum_val_contig_impl_fn_ptr_t;
 static cumsum_val_contig_impl_fn_ptr_t
     mask_positions_contig_i64_dispatch_vector[td_ns::num_types];
 static cumsum_val_contig_impl_fn_ptr_t
     mask_positions_contig_i32_dispatch_vector[td_ns::num_types];
 
-using dpctl::tensor::kernels::accumulators::cumsum_val_strided_impl_fn_ptr_t;
+using dpnp::tensor::kernels::accumulators::cumsum_val_strided_impl_fn_ptr_t;
 static cumsum_val_strided_impl_fn_ptr_t
     mask_positions_strided_i64_dispatch_vector[td_ns::num_types];
 static cumsum_val_strided_impl_fn_ptr_t
@@ -75,7 +75,7 @@ static cumsum_val_strided_impl_fn_ptr_t
 
 void populate_mask_positions_dispatch_vectors(void)
 {
-    using dpctl::tensor::kernels::accumulators::
+    using dpnp::tensor::kernels::accumulators::
         MaskPositionsContigFactoryForInt64;
     td_ns::DispatchVectorBuilder<cumsum_val_contig_impl_fn_ptr_t,
                                  MaskPositionsContigFactoryForInt64,
@@ -83,7 +83,7 @@ void populate_mask_positions_dispatch_vectors(void)
         dvb1;
     dvb1.populate_dispatch_vector(mask_positions_contig_i64_dispatch_vector);
 
-    using dpctl::tensor::kernels::accumulators::
+    using dpnp::tensor::kernels::accumulators::
         MaskPositionsContigFactoryForInt32;
     td_ns::DispatchVectorBuilder<cumsum_val_contig_impl_fn_ptr_t,
                                  MaskPositionsContigFactoryForInt32,
@@ -91,7 +91,7 @@ void populate_mask_positions_dispatch_vectors(void)
         dvb2;
     dvb2.populate_dispatch_vector(mask_positions_contig_i32_dispatch_vector);
 
-    using dpctl::tensor::kernels::accumulators::
+    using dpnp::tensor::kernels::accumulators::
         MaskPositionsStridedFactoryForInt64;
     td_ns::DispatchVectorBuilder<cumsum_val_strided_impl_fn_ptr_t,
                                  MaskPositionsStridedFactoryForInt64,
@@ -99,7 +99,7 @@ void populate_mask_positions_dispatch_vectors(void)
         dvb3;
     dvb3.populate_dispatch_vector(mask_positions_strided_i64_dispatch_vector);
 
-    using dpctl::tensor::kernels::accumulators::
+    using dpnp::tensor::kernels::accumulators::
         MaskPositionsStridedFactoryForInt32;
     td_ns::DispatchVectorBuilder<cumsum_val_strided_impl_fn_ptr_t,
                                  MaskPositionsStridedFactoryForInt32,
@@ -110,12 +110,12 @@ void populate_mask_positions_dispatch_vectors(void)
     return;
 }
 
-std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
-                              const dpctl::tensor::usm_ndarray &cumsum,
+std::size_t py_mask_positions(const dpnp::tensor::usm_ndarray &mask,
+                              const dpnp::tensor::usm_ndarray &cumsum,
                               sycl::queue &exec_q,
                               const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(cumsum);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(cumsum);
 
     // cumsum is 1D
     if (cumsum.get_ndim() != 1) {
@@ -133,7 +133,7 @@ std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
         throw py::value_error("Inconsistent dimensions");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {mask, cumsum})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {mask, cumsum})) {
         // FIXME: use ExecutionPlacementError
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
@@ -205,7 +205,7 @@ std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
         (use_i32) ? mask_positions_strided_i32_dispatch_vector[mask_typeid]
                   : mask_positions_strided_i64_dispatch_vector[mask_typeid];
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, compact_shape, compact_strides);
     auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_tuple));
@@ -247,22 +247,22 @@ std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
     return total_set;
 }
 
-using dpctl::tensor::kernels::accumulators::cumsum_val_strided_impl_fn_ptr_t;
+using dpnp::tensor::kernels::accumulators::cumsum_val_strided_impl_fn_ptr_t;
 static cumsum_val_strided_impl_fn_ptr_t
     cumsum_1d_strided_dispatch_vector[td_ns::num_types];
-using dpctl::tensor::kernels::accumulators::cumsum_val_contig_impl_fn_ptr_t;
+using dpnp::tensor::kernels::accumulators::cumsum_val_contig_impl_fn_ptr_t;
 static cumsum_val_contig_impl_fn_ptr_t
     cumsum_1d_contig_dispatch_vector[td_ns::num_types];
 
 void populate_cumsum_1d_dispatch_vectors(void)
 {
-    using dpctl::tensor::kernels::accumulators::Cumsum1DContigFactory;
+    using dpnp::tensor::kernels::accumulators::Cumsum1DContigFactory;
     td_ns::DispatchVectorBuilder<cumsum_val_contig_impl_fn_ptr_t,
                                  Cumsum1DContigFactory, td_ns::num_types>
         dvb1;
     dvb1.populate_dispatch_vector(cumsum_1d_contig_dispatch_vector);
 
-    using dpctl::tensor::kernels::accumulators::Cumsum1DStridedFactory;
+    using dpnp::tensor::kernels::accumulators::Cumsum1DStridedFactory;
     td_ns::DispatchVectorBuilder<cumsum_val_strided_impl_fn_ptr_t,
                                  Cumsum1DStridedFactory, td_ns::num_types>
         dvb2;
@@ -271,8 +271,8 @@ void populate_cumsum_1d_dispatch_vectors(void)
     return;
 }
 
-std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
-                         const dpctl::tensor::usm_ndarray &cumsum,
+std::size_t py_cumsum_1d(const dpnp::tensor::usm_ndarray &src,
+                         const dpnp::tensor::usm_ndarray &cumsum,
                          sycl::queue &exec_q,
                          std::vector<sycl::event> const &depends)
 {
@@ -292,13 +292,13 @@ std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error("Inconsistent dimensions");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, cumsum})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, cumsum})) {
         // FIXME: use ExecutionPlacementError
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(cumsum);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(cumsum);
 
     if (src_size == 0) {
         return 0;
@@ -363,7 +363,7 @@ std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
             std::to_string(src_typeid));
     }
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, compact_shape, compact_strides);
     auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_tuple));
@@ -404,4 +404,4 @@ std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
     return total;
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

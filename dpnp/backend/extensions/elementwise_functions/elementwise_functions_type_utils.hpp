@@ -33,13 +33,13 @@
 
 #include "dpnp4pybind11.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 
 namespace dpnp::extensions::py_internal::type_utils
 {
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 /*! @brief Produce dtype from a type number */
 extern py::dtype _dtype_from_typenum(td_ns::typenum_t);

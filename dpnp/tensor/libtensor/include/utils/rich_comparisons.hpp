@@ -27,7 +27,7 @@
 //*****************************************************************************
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 
@@ -40,7 +40,7 @@
 
 #include "sycl/sycl.hpp"
 
-namespace dpctl::tensor::rich_comparisons
+namespace dpnp::tensor::rich_comparisons
 {
 
 namespace detail
@@ -146,4 +146,4 @@ struct DescendingSorter<std::complex<T>>
     using type = detail::ExtendedComplexFPGreater<std::complex<T>>;
 };
 
-} // namespace dpctl::tensor::rich_comparisons
+} // namespace dpnp::tensor::rich_comparisons

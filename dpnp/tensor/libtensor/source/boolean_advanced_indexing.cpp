@@ -29,8 +29,8 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines implementation functions of dpctl.tensor.place and
-/// dpctl.tensor.extract, dpctl.tensor.nonzero
+/// This file defines implementation functions of dpnp.tensor.place and
+/// dpnp.tensor.extract, dpnp.tensor.nonzero
 //===----------------------------------------------------------------------===//
 
 #include <algorithm>
@@ -61,14 +61,14 @@
 #include "boolean_advanced_indexing.hpp"
 #include "kernels/boolean_advanced_indexing.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 // Masked extraction
 
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::indexing::
+using dpnp::tensor::kernels::indexing::
     masked_extract_all_slices_strided_impl_fn_ptr_t;
 
 static masked_extract_all_slices_strided_impl_fn_ptr_t
@@ -78,7 +78,7 @@ static masked_extract_all_slices_strided_impl_fn_ptr_t
     masked_extract_all_slices_strided_i64_impl_dispatch_vector
         [td_ns::num_types];
 
-using dpctl::tensor::kernels::indexing::
+using dpnp::tensor::kernels::indexing::
     masked_extract_all_slices_contig_impl_fn_ptr_t;
 
 static masked_extract_all_slices_contig_impl_fn_ptr_t
@@ -86,7 +86,7 @@ static masked_extract_all_slices_contig_impl_fn_ptr_t
 static masked_extract_all_slices_contig_impl_fn_ptr_t
     masked_extract_all_slices_contig_i64_impl_dispatch_vector[td_ns::num_types];
 
-using dpctl::tensor::kernels::indexing::
+using dpnp::tensor::kernels::indexing::
     masked_extract_some_slices_strided_impl_fn_ptr_t;
 
 static masked_extract_some_slices_strided_impl_fn_ptr_t
@@ -98,7 +98,7 @@ static masked_extract_some_slices_strided_impl_fn_ptr_t
 
 void populate_masked_extract_dispatch_vectors(void)
 {
-    using dpctl::tensor::kernels::indexing::
+    using dpnp::tensor::kernels::indexing::
         MaskExtractAllSlicesStridedFactoryForInt32;
     td_ns::DispatchVectorBuilder<
         masked_extract_all_slices_strided_impl_fn_ptr_t,
@@ -107,7 +107,7 @@ void populate_masked_extract_dispatch_vectors(void)
     dvb1.populate_dispatch_vector(
         masked_extract_all_slices_strided_i32_impl_dispatch_vector);
 
-    using dpctl::tensor::kernels::indexing::
+    using dpnp::tensor::kernels::indexing::
         MaskExtractAllSlicesStridedFactoryForInt64;
     td_ns::DispatchVectorBuilder<
         masked_extract_all_slices_strided_impl_fn_ptr_t,
@@ -116,7 +116,7 @@ void populate_masked_extract_dispatch_vectors(void)
     dvb2.populate_dispatch_vector(
         masked_extract_all_slices_strided_i64_impl_dispatch_vector);
 
-    using dpctl::tensor::kernels::indexing::
+    using dpnp::tensor::kernels::indexing::
         MaskExtractSomeSlicesStridedFactoryForInt32;
     td_ns::DispatchVectorBuilder<
         masked_extract_some_slices_strided_impl_fn_ptr_t,
@@ -125,7 +125,7 @@ void populate_masked_extract_dispatch_vectors(void)
     dvb3.populate_dispatch_vector(
         masked_extract_some_slices_strided_i32_impl_dispatch_vector);
 
-    using dpctl::tensor::kernels::indexing::
+    using dpnp::tensor::kernels::indexing::
         MaskExtractSomeSlicesStridedFactoryForInt64;
     td_ns::DispatchVectorBuilder<
         masked_extract_some_slices_strided_impl_fn_ptr_t,
@@ -134,7 +134,7 @@ void populate_masked_extract_dispatch_vectors(void)
     dvb4.populate_dispatch_vector(
         masked_extract_some_slices_strided_i64_impl_dispatch_vector);
 
-    using dpctl::tensor::kernels::indexing::
+    using dpnp::tensor::kernels::indexing::
         MaskExtractAllSlicesContigFactoryForInt32;
     td_ns::DispatchVectorBuilder<masked_extract_all_slices_contig_impl_fn_ptr_t,
                                  MaskExtractAllSlicesContigFactoryForInt32,
@@ -143,7 +143,7 @@ void populate_masked_extract_dispatch_vectors(void)
     dvb5.populate_dispatch_vector(
         masked_extract_all_slices_contig_i32_impl_dispatch_vector);
 
-    using dpctl::tensor::kernels::indexing::
+    using dpnp::tensor::kernels::indexing::
         MaskExtractAllSlicesContigFactoryForInt64;
     td_ns::DispatchVectorBuilder<masked_extract_all_slices_contig_impl_fn_ptr_t,
                                  MaskExtractAllSlicesContigFactoryForInt64,
@@ -154,15 +154,15 @@ void populate_masked_extract_dispatch_vectors(void)
 }
 
 std::pair<sycl::event, sycl::event>
-    py_extract(const dpctl::tensor::usm_ndarray &src,
-               const dpctl::tensor::usm_ndarray &cumsum,
+    py_extract(const dpnp::tensor::usm_ndarray &src,
+               const dpnp::tensor::usm_ndarray &cumsum,
                int axis_start, // axis_start <= mask_i < axis_end
                int axis_end,
-               const dpctl::tensor::usm_ndarray &dst,
+               const dpnp::tensor::usm_ndarray &dst,
                sycl::queue &exec_q,
                const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     int src_nd = src.get_ndim();
     if ((axis_start < 0 || axis_end > src_nd || axis_start >= axis_end)) {
@@ -180,7 +180,7 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("cumsum array must be a C-contiguous vector");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, cumsum, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, cumsum, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
@@ -217,10 +217,10 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Inconsistent array dimensions");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         dst, ortho_nelems * masked_dst_nelems);
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with src, not with cumsum.
     if (overlap(dst, cumsum) || overlap(dst, src)) {
         throw py::value_error("Destination array overlaps with inputs");
@@ -291,7 +291,7 @@ std::pair<sycl::event, sycl::event>
                     : masked_extract_all_slices_strided_i64_impl_dispatch_vector
                           [src_typeid];
 
-            using dpctl::tensor::offset_utils::device_allocate_and_pack;
+            using dpnp::tensor::offset_utils::device_allocate_and_pack;
             auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
                 exec_q, host_task_events, src_shape_vec, src_strides_vec);
             auto packed_src_shape_strides_owner =
@@ -313,7 +313,7 @@ std::pair<sycl::event, sycl::event>
                             dst_shape_vec[0], dst_strides_vec[0], all_deps);
 
             sycl::event cleanup_tmp_allocations_ev =
-                dpctl::tensor::alloc_utils::async_smart_free(
+                dpnp::tensor::alloc_utils::async_smart_free(
                     exec_q, {extract_ev}, packed_src_shape_strides_owner);
             host_task_events.push_back(cleanup_tmp_allocations_ev);
         }
@@ -373,7 +373,7 @@ std::pair<sycl::event, sycl::event>
         assert(masked_dst_shape.size() == 1);
         assert(masked_dst_strides.size() == 1);
 
-        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        using dpnp::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_ortho_shape,
             simplified_ortho_src_strides, simplified_ortho_dst_strides,
@@ -409,12 +409,12 @@ std::pair<sycl::event, sycl::event>
                         masked_dst_shape[0], masked_dst_strides[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {extract_ev}, packed_shapes_strides_owner);
         host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
 
-    sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
+    sycl::event py_obj_management_host_task_ev = dpnp::utils::keep_args_alive(
         exec_q, {src, cumsum, dst}, host_task_events);
 
     return std::make_pair(py_obj_management_host_task_ev, extract_ev);
@@ -422,7 +422,7 @@ std::pair<sycl::event, sycl::event>
 
 // Masked placement
 
-using dpctl::tensor::kernels::indexing::
+using dpnp::tensor::kernels::indexing::
     masked_place_all_slices_strided_impl_fn_ptr_t;
 
 static masked_place_all_slices_strided_impl_fn_ptr_t
@@ -430,7 +430,7 @@ static masked_place_all_slices_strided_impl_fn_ptr_t
 static masked_place_all_slices_strided_impl_fn_ptr_t
     masked_place_all_slices_strided_i64_impl_dispatch_vector[td_ns::num_types];
 
-using dpctl::tensor::kernels::indexing::
+using dpnp::tensor::kernels::indexing::
     masked_place_some_slices_strided_impl_fn_ptr_t;
 
 static masked_place_some_slices_strided_impl_fn_ptr_t
@@ -440,7 +440,7 @@ static masked_place_some_slices_strided_impl_fn_ptr_t
 
 void populate_masked_place_dispatch_vectors(void)
 {
-    using dpctl::tensor::kernels::indexing::
+    using dpnp::tensor::kernels::indexing::
         MaskPlaceAllSlicesStridedFactoryForInt32;
     td_ns::DispatchVectorBuilder<masked_place_all_slices_strided_impl_fn_ptr_t,
                                  MaskPlaceAllSlicesStridedFactoryForInt32,
@@ -449,7 +449,7 @@ void populate_masked_place_dispatch_vectors(void)
     dvb1.populate_dispatch_vector(
         masked_place_all_slices_strided_i32_impl_dispatch_vector);
 
-    using dpctl::tensor::kernels::indexing::
+    using dpnp::tensor::kernels::indexing::
         MaskPlaceAllSlicesStridedFactoryForInt64;
     td_ns::DispatchVectorBuilder<masked_place_all_slices_strided_impl_fn_ptr_t,
                                  MaskPlaceAllSlicesStridedFactoryForInt64,
@@ -458,7 +458,7 @@ void populate_masked_place_dispatch_vectors(void)
     dvb2.populate_dispatch_vector(
         masked_place_all_slices_strided_i64_impl_dispatch_vector);
 
-    using dpctl::tensor::kernels::indexing::
+    using dpnp::tensor::kernels::indexing::
         MaskPlaceSomeSlicesStridedFactoryForInt32;
     td_ns::DispatchVectorBuilder<masked_place_some_slices_strided_impl_fn_ptr_t,
                                  MaskPlaceSomeSlicesStridedFactoryForInt32,
@@ -467,7 +467,7 @@ void populate_masked_place_dispatch_vectors(void)
     dvb3.populate_dispatch_vector(
         masked_place_some_slices_strided_i32_impl_dispatch_vector);
 
-    using dpctl::tensor::kernels::indexing::
+    using dpnp::tensor::kernels::indexing::
         MaskPlaceSomeSlicesStridedFactoryForInt64;
     td_ns::DispatchVectorBuilder<masked_place_some_slices_strided_impl_fn_ptr_t,
                                  MaskPlaceSomeSlicesStridedFactoryForInt64,
@@ -482,15 +482,15 @@ void populate_masked_place_dispatch_vectors(void)
  * ((i > 0) ? cumsum[i-1] + 1 : 1)
  */
 std::pair<sycl::event, sycl::event>
-    py_place(const dpctl::tensor::usm_ndarray &dst,
-             const dpctl::tensor::usm_ndarray &cumsum,
+    py_place(const dpnp::tensor::usm_ndarray &dst,
+             const dpnp::tensor::usm_ndarray &cumsum,
              int axis_start, // axis_start <= mask_i < axis_end
              int axis_end,
-             const dpctl::tensor::usm_ndarray &rhs,
+             const dpnp::tensor::usm_ndarray &rhs,
              sycl::queue &exec_q,
              const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     int dst_nd = dst.get_ndim();
     if ((axis_start < 0 || axis_end > dst_nd || axis_start >= axis_end)) {
@@ -508,7 +508,7 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("cumsum array must be a C-contiguous vector");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {dst, cumsum, rhs})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {dst, cumsum, rhs})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
@@ -542,10 +542,10 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Inconsistent array dimensions");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         dst, ortho_nelems * masked_dst_nelems);
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with src, not with cumsum.
     if (overlap(dst, rhs) || overlap(dst, cumsum)) {
         throw py::value_error("Destination array overlaps with inputs");
@@ -599,7 +599,7 @@ std::pair<sycl::event, sycl::event>
         assert(rhs_shape_vec.size() == 1);
         assert(rhs_strides_vec.size() == 1);
 
-        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        using dpnp::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, dst_shape_vec, dst_strides_vec);
         auto packed_dst_shape_strides_owner =
@@ -621,7 +621,7 @@ std::pair<sycl::event, sycl::event>
                       rhs_strides_vec[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {place_ev}, packed_dst_shape_strides_owner);
         host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
@@ -679,7 +679,7 @@ std::pair<sycl::event, sycl::event>
         assert(masked_rhs_shape.size() == 1);
         assert(masked_rhs_strides.size() == 1);
 
-        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        using dpnp::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_ortho_shape,
             simplified_ortho_dst_strides, simplified_ortho_rhs_strides,
@@ -713,12 +713,12 @@ std::pair<sycl::event, sycl::event>
                       masked_rhs_shape[0], masked_rhs_strides[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {place_ev}, packed_shapes_strides_owner);
         host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
 
-    sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
+    sycl::event py_obj_management_host_task_ev = dpnp::utils::keep_args_alive(
         exec_q, {dst, cumsum, rhs}, host_task_events);
 
     return std::make_pair(py_obj_management_host_task_ev, place_ev);
@@ -727,21 +727,21 @@ std::pair<sycl::event, sycl::event>
 // Non-zero
 
 std::pair<sycl::event, sycl::event>
-    py_nonzero(const dpctl::tensor::usm_ndarray
+    py_nonzero(const dpnp::tensor::usm_ndarray
                    &cumsum, // int32/int64 input array, 1D, C-contiguous
-               const dpctl::tensor::usm_ndarray
+               const dpnp::tensor::usm_ndarray
                    &indexes, // int32/int64 2D output array, C-contiguous
                const std::vector<py::ssize_t>
                    &mask_shape, // shape of array from which cumsum was computed
                sycl::queue &exec_q,
                const std::vector<sycl::event> &depends)
 {
-    if (!dpctl::utils::queues_are_compatible(exec_q, {cumsum, indexes})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {cumsum, indexes})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(indexes);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(indexes);
 
     int cumsum_nd = cumsum.get_ndim();
     if (cumsum_nd != 1 || !cumsum.is_c_contiguous()) {
@@ -798,18 +798,18 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(cumsum, indexes)) {
         throw py::value_error("Arrays are expected to ave no memory overlap");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
-        indexes, nz_elems * _ndim);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(indexes,
+                                                              nz_elems * _ndim);
 
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto mask_shape_copying_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, mask_shape);
     auto src_shape_device_owner =
@@ -823,8 +823,8 @@ std::pair<sycl::event, sycl::event>
     all_deps.insert(all_deps.end(), depends.begin(), depends.end());
     all_deps.push_back(copy_ev);
 
-    using dpctl::tensor::kernels::indexing::non_zero_indexes_fn_ptr_t;
-    using dpctl::tensor::kernels::indexing::non_zero_indexes_impl;
+    using dpnp::tensor::kernels::indexing::non_zero_indexes_fn_ptr_t;
+    using dpnp::tensor::kernels::indexing::non_zero_indexes_impl;
 
     int fn_index = ((cumsum_typeid == int64_typeid) ? 1 : 0) +
                    ((indexes_typeid == int64_typeid) ? 2 : 0);
@@ -840,14 +840,14 @@ std::pair<sycl::event, sycl::event>
            indexes.get_data(), src_shape_device_ptr, all_deps);
 
     sycl::event temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
+        dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {non_zero_indexes_ev}, src_shape_device_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
-    sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
+    sycl::event py_obj_management_host_task_ev = dpnp::utils::keep_args_alive(
         exec_q, {cumsum, indexes}, host_task_events);
 
     return std::make_pair(py_obj_management_host_task_ev, non_zero_indexes_ev);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

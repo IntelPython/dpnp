@@ -41,11 +41,11 @@
 #include "elementwise_functions_type_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace dpctl::tensor::py_internal::type_utils
+namespace dpnp::tensor::py_internal::type_utils
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 py::dtype _dtype_from_typenum(td_ns::typenum_t dst_typenum_t)
 {
@@ -93,4 +93,4 @@ int _result_typeid(int arg_typeid, const int *fn_output_id)
     return fn_output_id[arg_typeid];
 }
 
-} // namespace dpctl::tensor::py_internal::type_utils
+} // namespace dpnp::tensor::py_internal::type_utils

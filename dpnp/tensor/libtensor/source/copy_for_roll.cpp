@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #include <algorithm>
@@ -53,17 +53,17 @@
 
 #include "simplify_iteration_space.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::copy_and_cast::copy_for_roll_contig_fn_ptr_t;
-using dpctl::tensor::kernels::copy_and_cast::
+using dpnp::tensor::kernels::copy_and_cast::copy_for_roll_contig_fn_ptr_t;
+using dpnp::tensor::kernels::copy_and_cast::
     copy_for_roll_ndshift_strided_fn_ptr_t;
-using dpctl::tensor::kernels::copy_and_cast::copy_for_roll_strided_fn_ptr_t;
-using dpctl::utils::keep_args_alive;
+using dpnp::tensor::kernels::copy_and_cast::copy_for_roll_strided_fn_ptr_t;
+using dpnp::utils::keep_args_alive;
 
 // define static vector
 static copy_for_roll_strided_fn_ptr_t
@@ -85,8 +85,8 @@ static copy_for_roll_ndshift_strided_fn_ptr_t
  *     dst[np.multi_index(i, dst.shape)] = src[np.multi_index(i, src.shape)]
  */
 std::pair<sycl::event, sycl::event>
-    copy_usm_ndarray_for_roll_1d(const dpctl::tensor::usm_ndarray &src,
-                                 const dpctl::tensor::usm_ndarray &dst,
+    copy_usm_ndarray_for_roll_1d(const dpnp::tensor::usm_ndarray &src,
+                                 const dpnp::tensor::usm_ndarray &dst,
                                  py::ssize_t shift,
                                  sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends)
@@ -126,15 +126,15 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
     // check same contexts
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     if (src_nelems == 1) {
         // handle special case of 1-element array
@@ -225,7 +225,7 @@ std::pair<sycl::event, sycl::event>
     host_task_events.reserve(2);
 
     // shape_strides = [src_shape, src_strides, dst_strides]
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
@@ -242,7 +242,7 @@ std::pair<sycl::event, sycl::event>
            src_offset, dst_data, dst_offset, all_deps);
 
     sycl::event temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
+        dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {copy_for_roll_event}, shape_strides_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
@@ -251,8 +251,8 @@ std::pair<sycl::event, sycl::event>
 }
 
 std::pair<sycl::event, sycl::event>
-    copy_usm_ndarray_for_roll_nd(const dpctl::tensor::usm_ndarray &src,
-                                 const dpctl::tensor::usm_ndarray &dst,
+    copy_usm_ndarray_for_roll_nd(const dpnp::tensor::usm_ndarray &src,
+                                 const dpnp::tensor::usm_ndarray &dst,
                                  const std::vector<py::ssize_t> &shifts,
                                  sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends)
@@ -298,10 +298,10 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
     // check for compatible queues
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
@@ -348,7 +348,7 @@ std::pair<sycl::event, sycl::event>
     host_task_events.reserve(2);
 
     // shape_strides = [src_shape, src_strides, dst_strides]
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, common_shape, src_strides, dst_strides,
         normalized_shifts);
@@ -365,7 +365,7 @@ std::pair<sycl::event, sycl::event>
         fn(exec_q, src_nelems, src_nd, shape_strides_shifts, src_data,
            src_offset, dst_data, dst_offset, all_deps);
 
-    auto temporaries_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    auto temporaries_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {copy_for_roll_event}, shape_strides_shifts_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
@@ -376,24 +376,24 @@ std::pair<sycl::event, sycl::event>
 void init_copy_for_roll_dispatch_vectors(void)
 {
     using namespace td_ns;
-    using dpctl::tensor::kernels::copy_and_cast::CopyForRollStridedFactory;
+    using dpnp::tensor::kernels::copy_and_cast::CopyForRollStridedFactory;
 
     DispatchVectorBuilder<copy_for_roll_strided_fn_ptr_t,
                           CopyForRollStridedFactory, num_types>
         dvb1;
     dvb1.populate_dispatch_vector(copy_for_roll_strided_dispatch_vector);
 
-    using dpctl::tensor::kernels::copy_and_cast::CopyForRollContigFactory;
+    using dpnp::tensor::kernels::copy_and_cast::CopyForRollContigFactory;
     DispatchVectorBuilder<copy_for_roll_contig_fn_ptr_t,
                           CopyForRollContigFactory, num_types>
         dvb2;
     dvb2.populate_dispatch_vector(copy_for_roll_contig_dispatch_vector);
 
-    using dpctl::tensor::kernels::copy_and_cast::CopyForRollNDShiftFactory;
+    using dpnp::tensor::kernels::copy_and_cast::CopyForRollNDShiftFactory;
     DispatchVectorBuilder<copy_for_roll_ndshift_strided_fn_ptr_t,
                           CopyForRollNDShiftFactory, num_types>
         dvb3;
     dvb3.populate_dispatch_vector(copy_for_roll_ndshift_dispatch_vector);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -47,11 +47,11 @@
 
 #include <sycl/sycl.hpp>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/sorting/sort_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 
-namespace dpctl::tensor::kernels
+namespace dpnp::tensor::kernels
 {
 
 namespace radix_sort_details
@@ -1687,7 +1687,7 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
 
         // memory for storing count and offset values
         auto count_owner =
-            dpctl::tensor::alloc_utils::smart_malloc_device<CountT>(
+            dpnp::tensor::alloc_utils::smart_malloc_device<CountT>(
                 n_iters * n_counts, exec_q);
 
         CountT *count_ptr = count_owner.get();
@@ -1703,14 +1703,14 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
                                                    n_counts, count_ptr, proj_op,
                                                    is_ascending, depends);
 
-            sort_ev = dpctl::tensor::alloc_utils::async_smart_free(
+            sort_ev = dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {sort_ev}, count_owner);
 
             return sort_ev;
         }
 
         auto tmp_arr_owner =
-            dpctl::tensor::alloc_utils::smart_malloc_device<ValueT>(
+            dpnp::tensor::alloc_utils::smart_malloc_device<ValueT>(
                 n_iters * n_to_sort, exec_q);
 
         ValueT *tmp_arr = tmp_arr_owner.get();
@@ -1746,7 +1746,7 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             }
         }
 
-        sort_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        sort_ev = dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {sort_ev}, tmp_arr_owner, count_owner);
     }
 
@@ -1794,7 +1794,7 @@ private:
 
 } // namespace radix_sort_details
 
-using dpctl::tensor::ssize_t;
+using dpnp::tensor::ssize_t;
 
 template <typename argTy>
 sycl::event
@@ -1861,8 +1861,8 @@ sycl::event
 
     const std::size_t total_nelems = iter_nelems * sort_nelems;
     auto workspace_owner =
-        dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(total_nelems,
-                                                                 exec_q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<IndexTy>(total_nelems,
+                                                                exec_q);
 
     // get raw USM pointer
     IndexTy *workspace = workspace_owner.get();
@@ -1874,7 +1874,7 @@ sycl::event
 
     using IotaKernelName = radix_argsort_iota_krn<argTy, IndexTy>;
 
-    using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
+    using dpnp::tensor::kernels::sort_utils_detail::iota_impl;
 
     sycl::event iota_ev = iota_impl<IotaKernelName, IndexTy>(
         exec_q, workspace, total_nelems, depends);
@@ -1885,7 +1885,7 @@ sycl::event
             sort_ascending, {iota_ev});
 
     using MapBackKernelName = radix_argsort_index_write_out_krn<argTy, IndexTy>;
-    using dpctl::tensor::kernels::sort_utils_detail::map_back_impl;
+    using dpnp::tensor::kernels::sort_utils_detail::map_back_impl;
 
     sycl::event dep = radix_sort_ev;
 
@@ -1896,10 +1896,10 @@ sycl::event
             exec_q, total_nelems, res_tp, res_tp, sort_nelems, {dep});
     }
 
-    sycl::event cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {dep}, workspace_owner);
 
     return cleanup_ev;
 }
 
-} // namespace dpctl::tensor::kernels
+} // namespace dpnp::tensor::kernels

@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_elementwise_impl
+/// This file defines functions of dpnp.tensor._tensor_elementwise_impl
 /// extension, specifically functions for elementwise operations.
 //===---------------------------------------------------------------------===//
 
@@ -50,12 +50,12 @@
 #include "kernels/elementwise_functions/common.hpp"
 #include "kernels/elementwise_functions/round.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+namespace ew_cmn_ns = dpnp::tensor::kernels::elementwise_common;
 using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
@@ -63,7 +63,7 @@ using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 namespace impl
 {
 
-namespace round_fn_ns = dpctl::tensor::kernels::round;
+namespace round_fn_ns = dpnp::tensor::kernels::round;
 
 static unary_contig_impl_fn_ptr_t
     round_contig_dispatch_vector[td_ns::num_types];
@@ -97,7 +97,7 @@ void populate_round_dispatch_vectors(void)
 
 void init_round(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
     {
         impl::populate_round_dispatch_vectors();
@@ -123,4 +123,4 @@ void init_round(py::module_ m)
     }
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

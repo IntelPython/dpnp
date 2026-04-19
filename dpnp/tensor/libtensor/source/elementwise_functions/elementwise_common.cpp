@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_elementwise_impl
+/// This file defines functions of dpnp.tensor._tensor_elementwise_impl
 /// extension, specifically functions for elementwise operations.
 //===---------------------------------------------------------------------===//
 
@@ -107,7 +107,7 @@
 #include "true_divide.hpp"
 #include "trunc.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
@@ -188,4 +188,4 @@ void init_elementwise_functions(py::module_ m)
     init_trunc(m);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_reductions_impl
+/// This file defines functions of dpnp.tensor._tensor_reductions_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 
@@ -47,20 +47,20 @@
 #include "reduction_over_axis.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 namespace impl
 {
 
-using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
+using dpnp::tensor::kernels::reduction_strided_impl_fn_ptr;
 static reduction_strided_impl_fn_ptr
     all_reduction_strided_dispatch_vector[td_ns::num_types];
 
-using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
+using dpnp::tensor::kernels::reduction_contig_impl_fn_ptr;
 static reduction_contig_impl_fn_ptr
     all_reduction_axis1_contig_dispatch_vector[td_ns::num_types];
 static reduction_contig_impl_fn_ptr
@@ -73,7 +73,7 @@ struct AllStridedFactory
     {
         using dstTy = std::int32_t;
         using ReductionOpT = sycl::logical_and<dstTy>;
-        return dpctl::tensor::kernels::
+        return dpnp::tensor::kernels::
             reduction_over_group_with_atomics_strided_impl<srcTy, dstTy,
                                                            ReductionOpT>;
     }
@@ -86,7 +86,7 @@ struct AllAxis1ContigFactory
     {
         using dstTy = std::int32_t;
         using ReductionOpT = sycl::logical_and<dstTy>;
-        return dpctl::tensor::kernels::
+        return dpnp::tensor::kernels::
             reduction_axis1_over_group_with_atomics_contig_impl<srcTy, dstTy,
                                                                 ReductionOpT>;
     }
@@ -99,7 +99,7 @@ struct AllAxis0ContigFactory
     {
         using dstTy = std::int32_t;
         using ReductionOpT = sycl::logical_and<dstTy>;
-        return dpctl::tensor::kernels::
+        return dpnp::tensor::kernels::
             reduction_axis0_over_group_with_atomics_contig_impl<srcTy, dstTy,
                                                                 ReductionOpT>;
     }
@@ -136,7 +136,7 @@ static atomic_support_fn_ptr_t all_atomic_support =
 
 void init_all(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
     {
         impl::populate_all_dispatch_vectors();
@@ -161,4 +161,4 @@ void init_all(py::module_ m)
     }
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

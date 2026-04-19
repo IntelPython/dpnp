@@ -30,7 +30,7 @@
 ///
 /// \file
 /// This file defines Python API for implementation functions of
-/// dpctl.tensor.clip
+/// dpnp.tensor.clip
 //===---------------------------------------------------------------------===//
 
 #pragma once
@@ -41,17 +41,17 @@
 
 #include "dpnp4pybind11.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-    py_clip(const dpctl::tensor::usm_ndarray &src,
-            const dpctl::tensor::usm_ndarray &min,
-            const dpctl::tensor::usm_ndarray &max,
-            const dpctl::tensor::usm_ndarray &dst,
+    py_clip(const dpnp::tensor::usm_ndarray &src,
+            const dpnp::tensor::usm_ndarray &min,
+            const dpnp::tensor::usm_ndarray &max,
+            const dpnp::tensor::usm_ndarray &dst,
             sycl::queue &exec_q,
             const std::vector<sycl::event> &depends);
 
 extern void init_clip_dispatch_vectors(void);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

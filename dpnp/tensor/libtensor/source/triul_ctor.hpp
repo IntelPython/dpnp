@@ -29,7 +29,7 @@
 //===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #pragma once
@@ -42,17 +42,17 @@
 
 namespace py = pybind11;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
     usm_ndarray_triul(sycl::queue &exec_q,
-                      const dpctl::tensor::usm_ndarray &src,
-                      const dpctl::tensor::usm_ndarray &dst,
+                      const dpnp::tensor::usm_ndarray &src,
+                      const dpnp::tensor::usm_ndarray &dst,
                       char part,
                       py::ssize_t k = 0,
                       const std::vector<sycl::event> &depends = {});
 
 extern void init_triul_ctor_dispatch_vectors(void);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

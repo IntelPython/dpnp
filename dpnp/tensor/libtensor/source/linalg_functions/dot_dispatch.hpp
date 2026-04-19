@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #pragma once
@@ -42,10 +42,10 @@
 #include "kernels/linalg_functions/gemm.hpp"
 #include "utils/type_dispatch_building.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 template <typename T1, typename T2>
 struct DotAtomicOutputType
@@ -196,7 +196,7 @@ struct GemmBatchAtomicFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::gemm_batch_impl;
+            using dpnp::tensor::kernels::gemm_batch_impl;
             using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_batch_impl<T1, T2, T3>;
             return fn;
@@ -214,7 +214,7 @@ struct GemmBatchContigAtomicFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::gemm_batch_contig_impl;
+            using dpnp::tensor::kernels::gemm_batch_contig_impl;
             using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_batch_contig_impl<T1, T2, T3>;
             return fn;
@@ -232,7 +232,7 @@ struct GemmAtomicFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::gemm_impl;
+            using dpnp::tensor::kernels::gemm_impl;
             using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_impl<T1, T2, T3>;
             return fn;
@@ -250,7 +250,7 @@ struct GemmContigAtomicFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::gemm_contig_impl;
+            using dpnp::tensor::kernels::gemm_contig_impl;
             using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_contig_impl<T1, T2, T3>;
             return fn;
@@ -268,7 +268,7 @@ struct GemmTempsFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::gemm_tree_impl;
+            using dpnp::tensor::kernels::gemm_tree_impl;
             using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_tree_impl<T1, T2, T3>;
             return fn;
@@ -286,7 +286,7 @@ struct GemmContigTempsFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::gemm_contig_tree_impl;
+            using dpnp::tensor::kernels::gemm_contig_tree_impl;
             using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_contig_tree_impl<T1, T2, T3>;
             return fn;
@@ -304,7 +304,7 @@ struct GemmBatchTempsFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::gemm_batch_tree_impl;
+            using dpnp::tensor::kernels::gemm_batch_tree_impl;
             using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_batch_tree_impl<T1, T2, T3>;
             return fn;
@@ -322,7 +322,7 @@ struct GemmBatchContigTempsFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::gemm_batch_contig_tree_impl;
+            using dpnp::tensor::kernels::gemm_batch_contig_tree_impl;
             using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_batch_contig_tree_impl<T1, T2, T3>;
             return fn;
@@ -340,7 +340,7 @@ struct DotProductAtomicFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::dot_product_impl;
+            using dpnp::tensor::kernels::dot_product_impl;
             using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = dot_product_impl<T1, T2, T3>;
             return fn;
@@ -358,7 +358,7 @@ struct DotProductNoAtomicFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::dot_product_tree_impl;
+            using dpnp::tensor::kernels::dot_product_tree_impl;
             using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = dot_product_tree_impl<T1, T2, T3>;
             return fn;
@@ -376,7 +376,7 @@ struct DotProductContigAtomicFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::dot_product_contig_impl;
+            using dpnp::tensor::kernels::dot_product_contig_impl;
             using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = dot_product_contig_impl<T1, T2, T3>;
             return fn;
@@ -394,7 +394,7 @@ struct DotProductContigNoAtomicFactory
             return fn;
         }
         else {
-            using dpctl::tensor::kernels::dot_product_contig_tree_impl;
+            using dpnp::tensor::kernels::dot_product_contig_tree_impl;
             using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = dot_product_contig_tree_impl<T1, T2, T3>;
             return fn;
@@ -402,4 +402,4 @@ struct DotProductContigNoAtomicFactory
     }
 };
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

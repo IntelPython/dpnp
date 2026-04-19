@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_reductions_impl
+/// This file defines functions of dpnp.tensor._tensor_reductions_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 
@@ -51,17 +51,17 @@
 #include "reduction_atomic_support.hpp"
 #include "reduction_over_axis.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
-namespace su_ns = dpctl::tensor::sycl_utils;
+namespace td_ns = dpnp::tensor::type_dispatch;
+namespace su_ns = dpnp::tensor::sycl_utils;
 
 namespace impl
 {
 
-using dpctl::tensor::kernels::reduction_strided_impl_fn_ptr;
+using dpnp::tensor::kernels::reduction_strided_impl_fn_ptr;
 static reduction_strided_impl_fn_ptr
     max_over_axis_strided_atomic_dispatch_table[td_ns::num_types]
                                                [td_ns::num_types];
@@ -69,7 +69,7 @@ static reduction_strided_impl_fn_ptr
     max_over_axis_strided_temps_dispatch_table[td_ns::num_types]
                                               [td_ns::num_types];
 
-using dpctl::tensor::kernels::reduction_contig_impl_fn_ptr;
+using dpnp::tensor::kernels::reduction_contig_impl_fn_ptr;
 static reduction_contig_impl_fn_ptr
     max_over_axis1_contig_atomic_dispatch_table[td_ns::num_types]
                                                [td_ns::num_types];
@@ -166,13 +166,13 @@ struct MaxOverAxisAtomicStridedFactory
                           srcTy, dstTy>::is_defined) {
             if constexpr (std::is_floating_point<dstTy>::value) {
                 using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_over_group_with_atomics_strided_impl<
                         srcTy, dstTy, ReductionOpT>;
             }
             else {
                 using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_over_group_with_atomics_strided_impl<
                         srcTy, dstTy, ReductionOpT>;
             }
@@ -193,13 +193,13 @@ struct MaxOverAxisTempsStridedFactory
             if constexpr (std::is_integral_v<dstTy> &&
                           !std::is_same_v<dstTy, bool>) {
                 using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_over_group_temps_strided_impl<srcTy, dstTy,
                                                             ReductionOpT>;
             }
             else {
                 using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_over_group_temps_strided_impl<srcTy, dstTy,
                                                             ReductionOpT>;
             }
@@ -219,13 +219,13 @@ struct MaxOverAxis1AtomicContigFactory
                           srcTy, dstTy>::is_defined) {
             if constexpr (std::is_floating_point<dstTy>::value) {
                 using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_axis1_over_group_with_atomics_contig_impl<
                         srcTy, dstTy, ReductionOpT>;
             }
             else {
                 using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_axis1_over_group_with_atomics_contig_impl<
                         srcTy, dstTy, ReductionOpT>;
             }
@@ -245,13 +245,13 @@ struct MaxOverAxis0AtomicContigFactory
                           srcTy, dstTy>::is_defined) {
             if constexpr (std::is_floating_point<dstTy>::value) {
                 using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_axis0_over_group_with_atomics_contig_impl<
                         srcTy, dstTy, ReductionOpT>;
             }
             else {
                 using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_axis0_over_group_with_atomics_contig_impl<
                         srcTy, dstTy, ReductionOpT>;
             }
@@ -272,13 +272,13 @@ struct MaxOverAxis1TempsContigFactory
             if constexpr (std::is_integral_v<dstTy> &&
                           !std::is_same_v<dstTy, bool>) {
                 using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
                                                                  ReductionOpT>;
             }
             else {
                 using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
                                                                  ReductionOpT>;
             }
@@ -299,13 +299,13 @@ struct MaxOverAxis0TempsContigFactory
             if constexpr (std::is_integral_v<dstTy> &&
                           !std::is_same_v<dstTy, bool>) {
                 using ReductionOpT = sycl::maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
                                                                  ReductionOpT>;
             }
             else {
                 using ReductionOpT = su_ns::Maximum<dstTy>;
-                return dpctl::tensor::kernels::
+                return dpnp::tensor::kernels::
                     reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
                                                                  ReductionOpT>;
             }
@@ -369,7 +369,7 @@ void populate_max_atomic_support_dispatch_vector(void)
 
 void init_max(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
     {
         using impl::populate_max_over_axis_dispatch_tables;
@@ -404,4 +404,4 @@ void init_max(py::module_ m)
     }
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

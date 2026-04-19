@@ -41,15 +41,15 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl_tensor_types.hpp"
+#include "dpnp_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/strided_iters.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::constructors
+namespace dpnp::tensor::kernels::constructors
 {
 
-using dpctl::tensor::ssize_t;
+using dpnp::tensor::ssize_t;
 
 /*!
   @defgroup CtorKernels
@@ -64,7 +64,7 @@ class full_strided_kernel;
 template <typename Ty>
 class eye_kernel;
 
-using namespace dpctl::tensor::offset_utils;
+using namespace dpnp::tensor::offset_utils;
 
 template <typename Ty>
 class LinearSequenceStepFunctor
@@ -83,7 +83,7 @@ public:
     void operator()(sycl::id<1> wiid) const
     {
         auto i = wiid.get(0);
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (is_complex<Ty>::value) {
             p[i] = Ty{start_v.real() + i * step_v.real(),
                       start_v.imag() + i * step_v.imag()};
@@ -119,7 +119,7 @@ sycl::event lin_space_step_impl(sycl::queue &exec_q,
                                 char *array_data,
                                 const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
+    dpnp::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
     sycl::event lin_space_step_event = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.parallel_for<linear_sequence_step_kernel<Ty>>(
@@ -154,7 +154,7 @@ public:
         auto i = wiid.get(0);
         wTy wc = wTy(i) / n;
         wTy w = wTy(n - i) / n;
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (is_complex<Ty>::value) {
             using reT = typename Ty::value_type;
             auto _w = static_cast<reT>(w);
@@ -179,7 +179,7 @@ public:
             p[i] = affine_comb;
         }
         else {
-            using dpctl::tensor::type_utils::convert_impl;
+            using dpnp::tensor::type_utils::convert_impl;
             auto affine_comb = start_v * w + end_v * wc;
             p[i] = convert_impl<Ty, decltype(affine_comb)>(affine_comb);
         }
@@ -212,7 +212,7 @@ sycl::event lin_space_affine_impl(sycl::queue &exec_q,
                                   char *array_data,
                                   const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
+    dpnp::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
 
     const bool device_supports_doubles =
         exec_q.get_device().has(sycl::aspect::fp64);
@@ -263,7 +263,7 @@ sycl::event full_contig_impl(sycl::queue &q,
                              char *dst_p,
                              const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<dstTy>(q);
     sycl::event fill_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         dstTy *p = reinterpret_cast<dstTy *>(dst_p);
@@ -321,11 +321,11 @@ sycl::event full_strided_impl(sycl::queue &q,
                               char *dst_p,
                               const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<dstTy>(q);
 
     dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_p);
 
-    using dpctl::tensor::offset_utils::StridedIndexer;
+    using dpnp::tensor::offset_utils::StridedIndexer;
     const StridedIndexer strided_indexer(nd, 0, shape_strides);
 
     sycl::event fill_ev = q.submit([&](sycl::handler &cgh) {
@@ -406,7 +406,7 @@ sycl::event eye_impl(sycl::queue &exec_q,
                      char *array_data,
                      const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
+    dpnp::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
     sycl::event eye_event = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
@@ -492,7 +492,7 @@ sycl::event tri_impl(sycl::queue &exec_q,
     Ty *src = reinterpret_cast<Ty *>(src_p);
     Ty *dst = reinterpret_cast<Ty *>(dst_p);
 
-    dpctl::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
+    dpnp::tensor::type_utils::validate_type_for_device<Ty>(exec_q);
 
     sycl::event tri_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -507,7 +507,7 @@ sycl::event tri_impl(sycl::queue &exec_q,
                 bool to_copy{false};
 
                 {
-                    using dpctl::tensor::strides::CIndexer_array;
+                    using dpnp::tensor::strides::CIndexer_array;
                     CIndexer_array<d2, ssize_t> indexer_i(
                         {shape_and_strides[nd_2], shape_and_strides[nd_1]});
                     indexer_i.set(inner_gid);
@@ -528,7 +528,7 @@ sycl::event tri_impl(sycl::queue &exec_q,
                 ssize_t src_offset = 0;
                 ssize_t dst_offset = 0;
                 {
-                    using dpctl::tensor::strides::CIndexer_vector;
+                    using dpnp::tensor::strides::CIndexer_vector;
                     CIndexer_vector<ssize_t> outer(nd - d2);
                     outer.get_displacement(
                         outer_gid, shape_and_strides, shape_and_strides + src_s,
@@ -572,4 +572,4 @@ struct TriuGenericFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::constructors
+} // namespace dpnp::tensor::kernels::constructors

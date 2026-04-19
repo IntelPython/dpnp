@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #pragma once
@@ -37,7 +37,7 @@
 #include "reductions/reduction_atomic_support.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::py_internal::atomic_support
+namespace dpnp::tensor::py_internal::atomic_support
 {
 
 template <typename fnT, typename T>
@@ -45,7 +45,7 @@ struct DotAtomicSupportFactory
 {
     fnT get()
     {
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (is_complex<T>::value) {
             return atomic_support::fixed_decision<false>;
         }
@@ -55,4 +55,4 @@ struct DotAtomicSupportFactory
     }
 };
 
-} // namespace dpctl::tensor::py_internal::atomic_support
+} // namespace dpnp::tensor::py_internal::atomic_support

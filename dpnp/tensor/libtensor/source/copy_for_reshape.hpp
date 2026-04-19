@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #pragma once
@@ -40,15 +40,15 @@
 
 #include "dpnp4pybind11.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-    copy_usm_ndarray_for_reshape(const dpctl::tensor::usm_ndarray &src,
-                                 const dpctl::tensor::usm_ndarray &dst,
+    copy_usm_ndarray_for_reshape(const dpnp::tensor::usm_ndarray &src,
+                                 const dpnp::tensor::usm_ndarray &dst,
                                  sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends = {});
 
 extern void init_copy_for_reshape_dispatch_vectors();
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

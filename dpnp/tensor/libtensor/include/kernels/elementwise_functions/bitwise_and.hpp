@@ -42,18 +42,18 @@
 
 #include "vec_size_util.hpp"
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 #include "kernels/elementwise_functions/common_inplace.hpp"
 
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::bitwise_and
+namespace dpnp::tensor::kernels::bitwise_and
 {
 
-using dpctl::tensor::ssize_t;
-namespace td_ns = dpctl::tensor::type_dispatch;
+using dpnp::tensor::ssize_t;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 template <typename argT1, typename argT2, typename resT>
 struct BitwiseAndFunctor
@@ -81,7 +81,7 @@ struct BitwiseAndFunctor
     {
 
         if constexpr (std::is_same_v<resT, bool>) {
-            using dpctl::tensor::type_utils::vec_cast;
+            using dpnp::tensor::type_utils::vec_cast;
 
             auto tmp = (in1 && in2);
             return vec_cast<resT, typename decltype(tmp)::element_type, vec_sz>(
@@ -169,7 +169,7 @@ struct BitwiseAndOutputType
 namespace hyperparam_detail
 {
 
-namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+namespace vsu_ns = dpnp::tensor::kernels::vec_size_utils;
 
 using vsu_ns::BinaryContigHyperparameterSetEntry;
 using vsu_ns::ContigHyperparameterSetDefault;
@@ -307,7 +307,7 @@ struct BitwiseAndInplaceFunctor
     {
 
         if constexpr (std::is_same_v<resT, bool>) {
-            using dpctl::tensor::type_utils::vec_cast;
+            using dpnp::tensor::type_utils::vec_cast;
 
             auto tmp = (res && in);
             res = vec_cast<resT, typename decltype(tmp)::element_type, vec_sz>(
@@ -458,4 +458,4 @@ struct BitwiseAndInplaceStridedFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::bitwise_and
+} // namespace dpnp::tensor::kernels::bitwise_and

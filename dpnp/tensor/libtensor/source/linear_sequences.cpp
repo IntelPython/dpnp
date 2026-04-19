@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===---------------------------------------------------------------------===//
 
 #include <cstddef>
@@ -48,11 +48,11 @@
 
 #include "linear_sequences.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 // Constructor to populate tensor with linear sequence defined by
 // start and step data
@@ -95,7 +95,7 @@ sycl::event lin_space_step_impl(sycl::queue &exec_q,
     Ty start_v = py::cast<Ty>(start);
     Ty step_v = py::cast<Ty>(step);
 
-    using dpctl::tensor::kernels::constructors::lin_space_step_impl;
+    using dpnp::tensor::kernels::constructors::lin_space_step_impl;
 
     auto lin_space_step_event = lin_space_step_impl<Ty>(
         exec_q, nelems, start_v, step_v, array_data, depends);
@@ -144,7 +144,7 @@ sycl::event lin_space_affine_impl(sycl::queue &exec_q,
     Ty start_v = py::cast<Ty>(start);
     Ty end_v = py::cast<Ty>(end);
 
-    using dpctl::tensor::kernels::constructors::lin_space_affine_impl;
+    using dpnp::tensor::kernels::constructors::lin_space_affine_impl;
 
     auto lin_space_affine_event = lin_space_affine_impl<Ty>(
         exec_q, nelems, start_v, end_v, include_endpoint, array_data, depends);
@@ -152,7 +152,7 @@ sycl::event lin_space_affine_impl(sycl::queue &exec_q,
     return lin_space_affine_event;
 }
 
-using dpctl::utils::keep_args_alive;
+using dpnp::utils::keep_args_alive;
 
 static lin_space_step_fn_ptr_t lin_space_step_dispatch_vector[td_ns::num_types];
 
@@ -162,7 +162,7 @@ static lin_space_affine_fn_ptr_t
 std::pair<sycl::event, sycl::event>
     usm_ndarray_linear_sequence_step(const py::object &start,
                                      const py::object &dt,
-                                     const dpctl::tensor::usm_ndarray &dst,
+                                     const dpnp::tensor::usm_ndarray &dst,
                                      sycl::queue &exec_q,
                                      const std::vector<sycl::event> &depends)
 {
@@ -179,12 +179,12 @@ std::pair<sycl::event, sycl::event>
             "usm_ndarray_linspace: Non-contiguous arrays are not supported");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {dst})) {
         throw py::value_error(
             "Execution queue is not compatible with the allocation queue");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();
@@ -211,7 +211,7 @@ std::pair<sycl::event, sycl::event>
 std::pair<sycl::event, sycl::event>
     usm_ndarray_linear_sequence_affine(const py::object &start,
                                        const py::object &end,
-                                       const dpctl::tensor::usm_ndarray &dst,
+                                       const dpnp::tensor::usm_ndarray &dst,
                                        bool include_endpoint,
                                        sycl::queue &exec_q,
                                        const std::vector<sycl::event> &depends)
@@ -229,12 +229,12 @@ std::pair<sycl::event, sycl::event>
             "usm_ndarray_linspace: Non-contiguous arrays are not supported");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {dst})) {
         throw py::value_error(
             "Execution queue context is not the same as allocation context");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     auto array_types = td_ns::usm_ndarray_types();
     int dst_typenum = dst.get_typenum();
@@ -303,4 +303,4 @@ void init_linear_sequences_dispatch_vectors(void)
     dvb2.populate_dispatch_vector(lin_space_affine_dispatch_vector);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

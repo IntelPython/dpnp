@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -55,14 +55,14 @@
 #include "simplify_iteration_space.hpp"
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 namespace detail
 {
 
-using dpctl::tensor::kernels::isin_contig_impl_fp_ptr_t;
+using dpnp::tensor::kernels::isin_contig_impl_fp_ptr_t;
 
 static isin_contig_impl_fp_ptr_t
     isin_contig_impl_dispatch_vector[td_ns::num_types];
@@ -74,12 +74,12 @@ struct IsinContigFactory
 
     fnT get() const
     {
-        using dpctl::tensor::kernels::isin_contig_impl;
+        using dpnp::tensor::kernels::isin_contig_impl;
         return isin_contig_impl<argTy>;
     }
 };
 
-using dpctl::tensor::kernels::isin_strided_impl_fp_ptr_t;
+using dpnp::tensor::kernels::isin_strided_impl_fp_ptr_t;
 
 static isin_strided_impl_fp_ptr_t
     isin_strided_impl_dispatch_vector[td_ns::num_types];
@@ -91,7 +91,7 @@ struct IsinStridedFactory
 
     fnT get() const
     {
-        using dpctl::tensor::kernels::isin_strided_impl;
+        using dpnp::tensor::kernels::isin_strided_impl;
         return isin_strided_impl<argTy>;
     }
 };
@@ -116,9 +116,9 @@ void init_isin_dispatch_vector(void)
 
 /*! @brief search for needle from needles in sorted hay */
 std::pair<sycl::event, sycl::event>
-    py_isin(const dpctl::tensor::usm_ndarray &needles,
-            const dpctl::tensor::usm_ndarray &hay,
-            const dpctl::tensor::usm_ndarray &dst,
+    py_isin(const dpnp::tensor::usm_ndarray &needles,
+            const dpnp::tensor::usm_ndarray &hay,
+            const dpnp::tensor::usm_ndarray &dst,
             sycl::queue &exec_q,
             const bool invert,
             const std::vector<sycl::event> &depends)
@@ -155,20 +155,20 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check that dst is ample enough
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst,
-                                                               needles_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst,
+                                                              needles_nelems);
 
     // check that dst is writable
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(exec_q, {hay, needles, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {hay, needles, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
     // if output array overlaps with input arrays, race condition results
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(dst, hay) || overlap(dst, needles)) {
         throw py::value_error("Destination array overlaps with input.");
     }
@@ -229,7 +229,7 @@ std::pair<sycl::event, sycl::event>
                                  hay_data, zero_offset, needles_data,
                                  zero_offset, dst_data, zero_offset, depends);
 
-        return std::make_pair(dpctl::utils::keep_args_alive(
+        return std::make_pair(dpnp::utils::keep_args_alive(
                                   exec_q, {hay, needles, dst}, {comp_ev}),
                               comp_ev);
     }
@@ -268,7 +268,7 @@ std::pair<sycl::event, sycl::event>
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
 
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events,
@@ -303,11 +303,11 @@ std::pair<sycl::event, sycl::event>
 
     // free packed temporaries
     sycl::event temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
-            exec_q, {comp_ev}, packed_shape_strides_owner);
+        dpnp::tensor::alloc_utils::async_smart_free(exec_q, {comp_ev},
+                                                    packed_shape_strides_owner);
 
     host_task_events.push_back(temporaries_cleanup_ev);
-    const sycl::event &ht_ev = dpctl::utils::keep_args_alive(
+    const sycl::event &ht_ev = dpnp::utils::keep_args_alive(
         exec_q, {hay, needles, dst}, host_task_events);
 
     return std::make_pair(ht_ev, comp_ev);
@@ -322,4 +322,4 @@ void init_isin_functions(py::module_ m)
           py::arg("depends") = py::list());
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

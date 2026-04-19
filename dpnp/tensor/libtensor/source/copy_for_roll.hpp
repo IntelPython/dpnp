@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #pragma once
@@ -43,23 +43,23 @@
 
 namespace py = pybind11;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-    copy_usm_ndarray_for_roll_1d(const dpctl::tensor::usm_ndarray &src,
-                                 const dpctl::tensor::usm_ndarray &dst,
+    copy_usm_ndarray_for_roll_1d(const dpnp::tensor::usm_ndarray &src,
+                                 const dpnp::tensor::usm_ndarray &dst,
                                  py::ssize_t shift,
                                  sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends = {});
 
 extern std::pair<sycl::event, sycl::event>
-    copy_usm_ndarray_for_roll_nd(const dpctl::tensor::usm_ndarray &src,
-                                 const dpctl::tensor::usm_ndarray &dst,
+    copy_usm_ndarray_for_roll_nd(const dpnp::tensor::usm_ndarray &src,
+                                 const dpnp::tensor::usm_ndarray &dst,
                                  const std::vector<py::ssize_t> &shifts,
                                  sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends = {});
 
 extern void init_copy_for_roll_dispatch_vectors();
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

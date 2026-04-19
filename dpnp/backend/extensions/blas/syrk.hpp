@@ -37,8 +37,8 @@ namespace dpnp::extensions::blas
 {
 extern std::pair<sycl::event, sycl::event>
     syrk(sycl::queue &exec_q,
-         const dpctl::tensor::usm_ndarray &matrixA,
-         const dpctl::tensor::usm_ndarray &resultC,
+         const dpnp::tensor::usm_ndarray &matrixA,
+         const dpnp::tensor::usm_ndarray &resultC,
          const std::vector<sycl::event> &depends);
 
 extern void init_syrk_dispatch_vector(void);

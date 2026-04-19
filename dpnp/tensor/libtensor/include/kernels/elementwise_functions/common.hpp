@@ -48,18 +48,17 @@
 #include "utils/sycl_utils.hpp"
 
 #include "kernels/alignment.hpp"
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 
-namespace dpctl::tensor::kernels::elementwise_common
+namespace dpnp::tensor::kernels::elementwise_common
 {
-using dpctl::tensor::ssize_t;
-using dpctl::tensor::kernels::alignment_utils::
-    disabled_sg_loadstore_wrapper_krn;
-using dpctl::tensor::kernels::alignment_utils::is_aligned;
-using dpctl::tensor::kernels::alignment_utils::required_alignment;
+using dpnp::tensor::ssize_t;
+using dpnp::tensor::kernels::alignment_utils::disabled_sg_loadstore_wrapper_krn;
+using dpnp::tensor::kernels::alignment_utils::is_aligned;
+using dpnp::tensor::kernels::alignment_utils::required_alignment;
 
-using dpctl::tensor::sycl_utils::sub_group_load;
-using dpctl::tensor::sycl_utils::sub_group_store;
+using dpnp::tensor::sycl_utils::sub_group_load;
+using dpnp::tensor::sycl_utils::sub_group_store;
 
 /*! @brief Functor for unary function evaluation on contiguous array */
 template <typename argT,
@@ -374,7 +373,7 @@ sycl::event
 
         using resTy = typename UnaryOutputType<argTy>::value_type;
         using IndexerT =
-            typename dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            typename dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
         const IndexerT indexer{nd, arg_offset, res_offset, shape_and_strides};
 
@@ -867,7 +866,7 @@ sycl::event
         using resTy = typename BinaryOutputType<argTy1, argTy2>::value_type;
 
         using IndexerT =
-            typename dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+            typename dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;
 
         const IndexerT indexer{nd, arg1_offset, arg2_offset, res_offset,
                                shape_and_strides};
@@ -918,12 +917,12 @@ sycl::event binary_contig_matrix_contig_row_broadcast_impl(
 
     std::size_t n1_padded = n1 + max_sgSize;
     auto padded_vec_owner =
-        dpctl::tensor::alloc_utils::smart_malloc_device<argT2>(n1_padded,
-                                                               exec_q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<argT2>(n1_padded,
+                                                              exec_q);
     argT2 *padded_vec = padded_vec_owner.get();
 
     sycl::event make_padded_vec_ev =
-        dpctl::tensor::kernels::elementwise_detail::populate_padded_vector<
+        dpnp::tensor::kernels::elementwise_detail::populate_padded_vector<
             argT2>(exec_q, vec, n1, padded_vec, n1_padded, depends);
 
     // sub-group spans work-items [I, I + sgSize)
@@ -951,7 +950,7 @@ sycl::event binary_contig_matrix_contig_row_broadcast_impl(
             Impl(mat, padded_vec, res, n_elems, n1));
     });
 
-    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event tmp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {comp_ev}, padded_vec_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
@@ -993,12 +992,12 @@ sycl::event binary_contig_row_contig_matrix_broadcast_impl(
 
     std::size_t n1_padded = n1 + max_sgSize;
     auto padded_vec_owner =
-        dpctl::tensor::alloc_utils::smart_malloc_device<argT2>(n1_padded,
-                                                               exec_q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<argT2>(n1_padded,
+                                                              exec_q);
     argT2 *padded_vec = padded_vec_owner.get();
 
     sycl::event make_padded_vec_ev =
-        dpctl::tensor::kernels::elementwise_detail::populate_padded_vector<
+        dpnp::tensor::kernels::elementwise_detail::populate_padded_vector<
             argT2>(exec_q, vec, n1, padded_vec, n1_padded, depends);
 
     // sub-group spans work-items [I, I + sgSize)
@@ -1026,11 +1025,11 @@ sycl::event binary_contig_row_contig_matrix_broadcast_impl(
             Impl(padded_vec, mat, res, n_elems, n1));
     });
 
-    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event tmp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {comp_ev}, padded_vec_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
 
     return comp_ev;
 };
-} // namespace dpctl::tensor::kernels::elementwise_common
+} // namespace dpnp::tensor::kernels::elementwise_common

@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_accumulation_impl
+/// This file defines functions of dpnp.tensor._tensor_accumulation_impl
 //  extensions
 //===----------------------------------------------------------------------===//
 
@@ -51,19 +51,19 @@
 
 namespace py = pybind11;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 namespace impl
 {
 
-using dpctl::tensor::kernels::accumulators::accumulate_1d_contig_impl_fn_ptr_t;
+using dpnp::tensor::kernels::accumulators::accumulate_1d_contig_impl_fn_ptr_t;
 static accumulate_1d_contig_impl_fn_ptr_t
     cumsum_1d_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
 
-using dpctl::tensor::kernels::accumulators::accumulate_strided_impl_fn_ptr_t;
+using dpnp::tensor::kernels::accumulators::accumulate_strided_impl_fn_ptr_t;
 static accumulate_strided_impl_fn_ptr_t
     cumsum_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 
@@ -155,16 +155,16 @@ struct CumSum1DContigFactory
             using ScanOpT = CumSumScanOpT<dstTy>;
             static constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
-                using dpctl::tensor::kernels::accumulators::NoOpTransformer;
-                fnT fn = dpctl::tensor::kernels::accumulators::
+                using dpnp::tensor::kernels::accumulators::NoOpTransformer;
+                fnT fn = dpnp::tensor::kernels::accumulators::
                     accumulate_1d_contig_impl<srcTy, dstTy,
                                               NoOpTransformer<dstTy>, ScanOpT,
                                               include_initial>;
                 return fn;
             }
             else {
-                using dpctl::tensor::kernels::accumulators::CastTransformer;
-                fnT fn = dpctl::tensor::kernels::accumulators::
+                using dpnp::tensor::kernels::accumulators::CastTransformer;
+                fnT fn = dpnp::tensor::kernels::accumulators::
                     accumulate_1d_contig_impl<srcTy, dstTy,
                                               CastTransformer<srcTy, dstTy>,
                                               ScanOpT, include_initial>;
@@ -187,16 +187,16 @@ struct CumSum1DIncludeInitialContigFactory
             using ScanOpT = CumSumScanOpT<dstTy>;
             static constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
-                using dpctl::tensor::kernels::accumulators::NoOpTransformer;
-                fnT fn = dpctl::tensor::kernels::accumulators::
+                using dpnp::tensor::kernels::accumulators::NoOpTransformer;
+                fnT fn = dpnp::tensor::kernels::accumulators::
                     accumulate_1d_contig_impl<srcTy, dstTy,
                                               NoOpTransformer<dstTy>, ScanOpT,
                                               include_initial>;
                 return fn;
             }
             else {
-                using dpctl::tensor::kernels::accumulators::CastTransformer;
-                fnT fn = dpctl::tensor::kernels::accumulators::
+                using dpnp::tensor::kernels::accumulators::CastTransformer;
+                fnT fn = dpnp::tensor::kernels::accumulators::
                     accumulate_1d_contig_impl<srcTy, dstTy,
                                               CastTransformer<srcTy, dstTy>,
                                               ScanOpT, include_initial>;
@@ -219,16 +219,16 @@ struct CumSumStridedFactory
             using ScanOpT = CumSumScanOpT<dstTy>;
             static constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
-                using dpctl::tensor::kernels::accumulators::NoOpTransformer;
-                fnT fn = dpctl::tensor::kernels::accumulators::
+                using dpnp::tensor::kernels::accumulators::NoOpTransformer;
+                fnT fn = dpnp::tensor::kernels::accumulators::
                     accumulate_strided_impl<srcTy, dstTy,
                                             NoOpTransformer<dstTy>, ScanOpT,
                                             include_initial>;
                 return fn;
             }
             else {
-                using dpctl::tensor::kernels::accumulators::CastTransformer;
-                fnT fn = dpctl::tensor::kernels::accumulators::
+                using dpnp::tensor::kernels::accumulators::CastTransformer;
+                fnT fn = dpnp::tensor::kernels::accumulators::
                     accumulate_strided_impl<srcTy, dstTy,
                                             CastTransformer<srcTy, dstTy>,
                                             ScanOpT, include_initial>;
@@ -251,16 +251,16 @@ struct CumSumIncludeInitialStridedFactory
             using ScanOpT = CumSumScanOpT<dstTy>;
             static constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
-                using dpctl::tensor::kernels::accumulators::NoOpTransformer;
-                fnT fn = dpctl::tensor::kernels::accumulators::
+                using dpnp::tensor::kernels::accumulators::NoOpTransformer;
+                fnT fn = dpnp::tensor::kernels::accumulators::
                     accumulate_strided_impl<srcTy, dstTy,
                                             NoOpTransformer<dstTy>, ScanOpT,
                                             include_initial>;
                 return fn;
             }
             else {
-                using dpctl::tensor::kernels::accumulators::CastTransformer;
-                fnT fn = dpctl::tensor::kernels::accumulators::
+                using dpnp::tensor::kernels::accumulators::CastTransformer;
+                fnT fn = dpnp::tensor::kernels::accumulators::
                     accumulate_strided_impl<srcTy, dstTy,
                                             CastTransformer<srcTy, dstTy>,
                                             ScanOpT, include_initial>;
@@ -305,7 +305,7 @@ void populate_cumsum_dispatch_tables(void)
 
 void init_cumulative_sum(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
 
     using impl::populate_cumsum_dispatch_tables;
@@ -347,4 +347,4 @@ void init_cumulative_sum(py::module_ m)
           py::arg("arg_dtype"), py::arg("out_dtype"));
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

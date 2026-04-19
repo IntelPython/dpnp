@@ -27,14 +27,14 @@
 //*****************************************************************************
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #pragma once
 
 #include <cstddef>
 
-namespace dpctl::tensor
+namespace dpnp::tensor
 {
 typedef std::ptrdiff_t ssize_t;
-} // namespace dpctl::tensor
+} // namespace dpnp::tensor

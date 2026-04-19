@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_accumulation_impl
+/// This file defines functions of dpnp.tensor._tensor_accumulation_impl
 //  extensions
 //===----------------------------------------------------------------------===//
 
@@ -39,5 +39,5 @@
 
 PYBIND11_MODULE(_tensor_accumulation_impl, m)
 {
-    dpctl::tensor::py_internal::init_accumulator_functions(m);
+    dpnp::tensor::py_internal::init_accumulator_functions(m);
 }

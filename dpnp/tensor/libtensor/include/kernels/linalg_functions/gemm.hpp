@@ -47,17 +47,17 @@
 #include <utility>
 #include <vector>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/reductions.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels
+namespace dpnp::tensor::kernels
 {
 
-using dpctl::tensor::ssize_t;
+using dpnp::tensor::ssize_t;
 
 namespace gemm_detail
 {
@@ -104,7 +104,7 @@ void scale_gemm_nm_parameters(const std::size_t &local_mem_size,
 }
 } // namespace gemm_detail
 
-using dpctl::tensor::sycl_utils::choose_workgroup_size;
+using dpnp::tensor::sycl_utils::choose_workgroup_size;
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class gemm_seq_reduction_krn;
@@ -131,12 +131,12 @@ sycl::event single_reduction_for_gemm(sycl::queue &exec_q,
 {
     sycl::event red_ev;
     if (reduction_nelems < wg) {
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                NoOpIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<NoOpIndexerT,
+                                                                   ResIndexerT>;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
 
         const ResIndexerT res_iter_indexer{res_nd, 0, res_shapes_strides};
         const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
@@ -160,12 +160,12 @@ sycl::event single_reduction_for_gemm(sycl::queue &exec_q,
         });
     }
     else {
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-                NoOpIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<NoOpIndexerT,
+                                                                   ResIndexerT>;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
 
         const ResIndexerT res_iter_indexer{res_nd, 0, res_shapes_strides};
         const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
@@ -185,7 +185,7 @@ sycl::event single_reduction_for_gemm(sycl::queue &exec_q,
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
 
-        red_ev = dpctl::tensor::kernels::submit_no_atomic_reduction<
+        red_ev = dpnp::tensor::kernels::submit_no_atomic_reduction<
             T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
             gemm_tree_reduction_krn>(
             exec_q, tmp_tp, res_tp, identity_val, wg, iter_nelems,
@@ -212,11 +212,11 @@ sycl::event
 {
     sycl::event red_ev;
     if (reduction_nelems < wg) {
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
 
         static constexpr InputOutputIterIndexerT in_out_iter_indexer{
             NoOpIndexerT{}, NoOpIndexerT{}};
@@ -241,11 +241,11 @@ sycl::event
         });
     }
     else {
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
 
         static constexpr InputOutputIterIndexerT in_out_iter_indexer{
             NoOpIndexerT{}, NoOpIndexerT{}};
@@ -266,7 +266,7 @@ sycl::event
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
 
-        red_ev = dpctl::tensor::kernels::submit_no_atomic_reduction<
+        red_ev = dpnp::tensor::kernels::submit_no_atomic_reduction<
             T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
             gemm_tree_reduction_krn>(
             exec_q, tmp_tp, res_tp, identity_val, wg, iter_nelems,
@@ -296,11 +296,11 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
 {
     sycl::event first_reduction_ev;
     {
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
 
         static constexpr InputOutputIterIndexerT in_out_iter_indexer{
             NoOpIndexerT{}, NoOpIndexerT{}};
@@ -309,7 +309,7 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
         const ReductionIndexerT reduction_indexer{/* size */ reduction_nelems,
                                                   /* step */ iter_nelems};
 
-        first_reduction_ev = dpctl::tensor::kernels::submit_no_atomic_reduction<
+        first_reduction_ev = dpnp::tensor::kernels::submit_no_atomic_reduction<
             T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
             gemm_tree_reduction_krn>(
             exec_q, partially_reduced_tmp, partially_reduced_tmp2, identity_val,
@@ -330,12 +330,12 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
         assert(reduction_groups_ > 1);
 
         // keep reducing
-        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                         /* step */ reduction_groups_};
@@ -347,7 +347,7 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
         static constexpr ReductionIndexerT reduction_indexer{};
 
         sycl::event partial_reduction_ev =
-            dpctl::tensor::kernels::submit_no_atomic_reduction<
+            dpnp::tensor::kernels::submit_no_atomic_reduction<
                 T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
                 gemm_tree_reduction_krn>(
                 exec_q, temp_arg, temp2_arg, identity_val, wg, iter_nelems,
@@ -361,12 +361,12 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
     }
 
     // final reduction to res
-    using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-    using ResIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+    using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+    using ResIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
     using InputOutputIterIndexerT =
-        dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<InputIndexerT,
-                                                                ResIndexerT>;
-    using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<InputIndexerT,
+                                                               ResIndexerT>;
+    using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
     const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                     /* step */ remaining_reduction_nelems};
@@ -389,7 +389,7 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
     assert(reduction_groups == 1);
 
     sycl::event final_reduction_ev =
-        dpctl::tensor::kernels::submit_no_atomic_reduction<
+        dpnp::tensor::kernels::submit_no_atomic_reduction<
             T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
             gemm_tree_reduction_krn>(
             exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
@@ -418,11 +418,11 @@ sycl::event
                                    std::size_t reductions_per_wi,
                                    const std::vector<sycl::event> &depends)
 {
-    using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+    using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
     using InputOutputIterIndexerT =
-        dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<NoOpIndexerT,
-                                                                NoOpIndexerT>;
-    using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<NoOpIndexerT,
+                                                               NoOpIndexerT>;
+    using ReductionIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
 
     static constexpr InputOutputIterIndexerT in_out_iter_indexer{
         NoOpIndexerT{}, NoOpIndexerT{}};
@@ -430,7 +430,7 @@ sycl::event
                                               /* step */ iter_nelems};
 
     const sycl::event &first_reduction_ev =
-        dpctl::tensor::kernels::submit_no_atomic_reduction<
+        dpnp::tensor::kernels::submit_no_atomic_reduction<
             T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
             gemm_reduction_over_group_temps_contig_krn>(
             exec_q, partially_reduced_tmp, partially_reduced_tmp2, identity_val,
@@ -450,12 +450,12 @@ sycl::event
         assert(reduction_groups_ > 1);
 
         // keep reducing
-        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         // n * m = iter_nelems because essentially, this process
         // creates a stack of reduction_nelems 2D matrices and we reduce
@@ -470,7 +470,7 @@ sycl::event
         static constexpr ReductionIndexerT reduction_indexer{};
 
         sycl::event partial_reduction_ev =
-            dpctl::tensor::kernels::submit_no_atomic_reduction<
+            dpnp::tensor::kernels::submit_no_atomic_reduction<
                 T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
                 gemm_reduction_over_group_temps_contig_krn>(
                 exec_q, temp_arg, temp2_arg, identity_val, wg, iter_nelems,
@@ -485,12 +485,12 @@ sycl::event
 
     // final reduction to res
     {
-        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{
             /* size   */ iter_nelems,
@@ -511,7 +511,7 @@ sycl::event
         assert(reduction_groups == 1);
 
         sycl::event final_reduction_ev =
-            dpctl::tensor::kernels::submit_no_atomic_reduction<
+            dpnp::tensor::kernels::submit_no_atomic_reduction<
                 T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
                 gemm_reduction_over_group_temps_contig_krn>(
                 exec_q, temp_arg, res_tp, identity_val, wg, iter_nelems,
@@ -1422,14 +1422,14 @@ sycl::event gemm_impl(sycl::queue &exec_q,
     const rhsTy *rhs_tp = reinterpret_cast<const rhsTy *>(rhs_cp);
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
 
-    using OuterInnerIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+    using OuterInnerIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
     const OuterInnerIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
                                          lhs_shape_strides);
     const OuterInnerIndexerT rhs_indexer(inner_nd + rhs_outer_nd, 0,
                                          rhs_shape_strides);
     const OuterInnerIndexerT res_indexer(res_outer_nd, 0, res_shape_strides);
 
-    using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
+    using BatchIndexerT = dpnp::tensor::offset_utils::ThreeZeroOffsets_Indexer;
     static constexpr BatchIndexerT batch_indexer{};
 
     static constexpr std::size_t single_batch_nelems = 1;
@@ -1448,7 +1448,7 @@ sycl::event gemm_impl(sycl::queue &exec_q,
     sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using IndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+        using IndexerT = dpnp::tensor::offset_utils::StridedIndexer;
         const IndexerT res_indexer(res_outer_nd, 0, res_shape_strides);
         using InitKernelName = class gemm_init_krn<lhsTy, rhsTy, resTy>;
         cgh.parallel_for<InitKernelName>(
@@ -1510,12 +1510,12 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
     const rhsTy *rhs_tp = reinterpret_cast<const rhsTy *>(rhs_cp);
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
 
-    using OuterInnerIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+    using OuterInnerIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
     static constexpr OuterInnerIndexerT lhs_indexer{};
     static constexpr OuterInnerIndexerT rhs_indexer{};
     static constexpr OuterInnerIndexerT res_indexer{};
 
-    using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
+    using BatchIndexerT = dpnp::tensor::offset_utils::ThreeZeroOffsets_Indexer;
     static constexpr BatchIndexerT batch_indexer{};
 
     static constexpr std::size_t single_batch_nelems = 1;
@@ -1618,7 +1618,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
     const rhsTy *rhs_tp = reinterpret_cast<const rhsTy *>(rhs_cp);
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
 
-    using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+    using OuterInnerDimsIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
     const OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
                                              lhs_outer_inner_shapes_strides);
     const OuterInnerDimsIndexerT rhs_indexer(inner_nd + rhs_outer_nd, 0,
@@ -1626,7 +1626,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
     const OuterInnerDimsIndexerT res_indexer(res_outer_nd, 0,
                                              res_outer_shapes_strides);
     using BatchDimsIndexerT =
-        dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+        dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;
     const BatchDimsIndexerT batch_indexer(batch_nd, lhs_batch_offset,
                                           rhs_batch_offset, res_batch_offset,
                                           batch_shape_strides);
@@ -1645,7 +1645,7 @@ sycl::event gemm_batch_impl(sycl::queue &exec_q,
     sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using IndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+        using IndexerT = dpnp::tensor::offset_utils::StridedIndexer;
         const IndexerT res_indexer(batch_nd + res_outer_nd, res_batch_offset,
                                    res_shape_strides);
         using InitKernelName = class gemm_batch_init_krn<lhsTy, rhsTy, resTy>;
@@ -1720,13 +1720,13 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
         reinterpret_cast<const rhsTy *>(rhs_cp) + rhs_batch_offset;
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + res_batch_offset;
 
-    using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+    using OuterInnerDimsIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
     static constexpr OuterInnerDimsIndexerT lhs_indexer{};
     static constexpr OuterInnerDimsIndexerT rhs_indexer{};
     static constexpr OuterInnerDimsIndexerT res_indexer{};
 
-    using dpctl::tensor::offset_utils::Strided1DIndexer;
-    using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+    using dpnp::tensor::offset_utils::Strided1DIndexer;
+    using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
     using BatchDimsIndexerT =
         ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
                                      Strided1DIndexer>;
@@ -2299,7 +2299,7 @@ sycl::event
 
     if (k <= (delta_k * n_wi)) {
         using OuterInnerDimsIndexerT =
-            dpctl::tensor::offset_utils::StridedIndexer;
+            dpnp::tensor::offset_utils::StridedIndexer;
         const OuterInnerDimsIndexerT lhs_indexer(
             inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
         const OuterInnerDimsIndexerT rhs_indexer(
@@ -2307,7 +2307,7 @@ sycl::event
         const OuterInnerDimsIndexerT res_indexer(res_outer_nd, 0,
                                                  res_outer_shapes_strides);
         using BatchDimsIndexerT =
-            dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;
         const BatchDimsIndexerT batch_indexer(
             batch_nd, lhs_batch_offset, rhs_batch_offset, res_batch_offset,
             batch_shape_strides);
@@ -2353,23 +2353,23 @@ sycl::event
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     iter_nelems * reduction_nelems, exec_q);
             resTy *tmp = tmp_owner.get();
 
             using OuterInnerDimsIndexerT =
-                dpctl::tensor::offset_utils::StridedIndexer;
-            using TmpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                dpnp::tensor::offset_utils::StridedIndexer;
+            using TmpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             const OuterInnerDimsIndexerT lhs_indexer(
                 inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
             const OuterInnerDimsIndexerT rhs_indexer(
                 inner_nd + rhs_outer_nd, 0, rhs_outer_inner_shapes_strides);
             static constexpr TmpIndexerT res_indexer{};
 
-            using dpctl::tensor::offset_utils::Strided1DIndexer;
-            using dpctl::tensor::offset_utils::StridedIndexer;
-            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
-            using dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+            using dpnp::tensor::offset_utils::Strided1DIndexer;
+            using dpnp::tensor::offset_utils::StridedIndexer;
+            using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpnp::tensor::offset_utils::UnpackedStridedIndexer;
             using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
                 StridedIndexer, UnpackedStridedIndexer, Strided1DIndexer>;
             const StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
@@ -2398,8 +2398,8 @@ sycl::event
                 {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -2413,7 +2413,7 @@ sycl::event
 
             // get unique_ptr owning the temporary allocation
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     tmp_alloc_size, exec_q);
             // get raw USM pointer
             resTy *partially_reduced_tmp = tmp_owner.get();
@@ -2422,16 +2422,16 @@ sycl::event
             ;
 
             using OuterInnerDimsIndexerT =
-                dpctl::tensor::offset_utils::StridedIndexer;
-            using TmpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                dpnp::tensor::offset_utils::StridedIndexer;
+            using TmpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             const OuterInnerDimsIndexerT lhs_indexer(
                 inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
             const OuterInnerDimsIndexerT rhs_indexer(
                 inner_nd + rhs_outer_nd, 0, rhs_outer_inner_shapes_strides);
             static constexpr TmpIndexerT res_indexer{};
-            using dpctl::tensor::offset_utils::Strided1DIndexer;
-            using dpctl::tensor::offset_utils::StridedIndexer;
-            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpnp::tensor::offset_utils::Strided1DIndexer;
+            using dpnp::tensor::offset_utils::StridedIndexer;
+            using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
             using BatchDimsIndexerT =
                 ThreeOffsets_CombinedIndexer<StridedIndexer, StridedIndexer,
                                              Strided1DIndexer>;
@@ -2460,8 +2460,8 @@ sycl::event
                 {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -2595,7 +2595,7 @@ sycl::event
     // temp memory if only one group is needed
     if (k <= wi_delta_k) {
         using OuterInnerDimsIndexerT =
-            dpctl::tensor::offset_utils::StridedIndexer;
+            dpnp::tensor::offset_utils::StridedIndexer;
         const OuterInnerDimsIndexerT lhs_indexer(
             inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
         const OuterInnerDimsIndexerT rhs_indexer(
@@ -2603,7 +2603,7 @@ sycl::event
         const OuterInnerDimsIndexerT res_indexer(res_outer_nd, 0,
                                                  res_outer_shapes_strides);
         using BatchDimsIndexerT =
-            dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;
         const BatchDimsIndexerT batch_indexer(
             batch_nd, lhs_batch_offset, rhs_batch_offset, res_batch_offset,
             batch_shape_strides);
@@ -2643,23 +2643,23 @@ sycl::event
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     iter_nelems * reduction_nelems, exec_q);
             resTy *tmp = tmp_owner.get();
 
             using OuterInnerDimsIndexerT =
-                dpctl::tensor::offset_utils::StridedIndexer;
-            using TmpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                dpnp::tensor::offset_utils::StridedIndexer;
+            using TmpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             const OuterInnerDimsIndexerT lhs_indexer(
                 inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
             const OuterInnerDimsIndexerT rhs_indexer(
                 inner_nd + rhs_outer_nd, 0, rhs_outer_inner_shapes_strides);
             static constexpr TmpIndexerT res_indexer{};
 
-            using dpctl::tensor::offset_utils::Strided1DIndexer;
-            using dpctl::tensor::offset_utils::StridedIndexer;
-            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
-            using dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+            using dpnp::tensor::offset_utils::Strided1DIndexer;
+            using dpnp::tensor::offset_utils::StridedIndexer;
+            using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpnp::tensor::offset_utils::UnpackedStridedIndexer;
             using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
                 StridedIndexer, UnpackedStridedIndexer, Strided1DIndexer>;
             const StridedIndexer lhs_batch_indexer(batch_nd, lhs_batch_offset,
@@ -2688,8 +2688,8 @@ sycl::event
                 {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -2701,7 +2701,7 @@ sycl::event
                                /* first reduction temp */ reduction_groups);
 
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     tmp_alloc_size, exec_q);
 
             resTy *partially_reduced_tmp = tmp_owner.get();
@@ -2710,8 +2710,8 @@ sycl::event
             ;
 
             using OuterInnerDimsIndexerT =
-                dpctl::tensor::offset_utils::StridedIndexer;
-            using TmpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                dpnp::tensor::offset_utils::StridedIndexer;
+            using TmpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
             const OuterInnerDimsIndexerT lhs_indexer(
                 inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
@@ -2719,10 +2719,10 @@ sycl::event
                 inner_nd + rhs_outer_nd, 0, rhs_outer_inner_shapes_strides);
             static constexpr TmpIndexerT res_indexer{};
 
-            using dpctl::tensor::offset_utils::Strided1DIndexer;
-            using dpctl::tensor::offset_utils::StridedIndexer;
-            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
-            using dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+            using dpnp::tensor::offset_utils::Strided1DIndexer;
+            using dpnp::tensor::offset_utils::StridedIndexer;
+            using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpnp::tensor::offset_utils::UnpackedStridedIndexer;
             using BatchDimsIndexerT = ThreeOffsets_CombinedIndexer<
                 StridedIndexer, UnpackedStridedIndexer, Strided1DIndexer>;
 
@@ -2752,8 +2752,8 @@ sycl::event
                 {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -2785,7 +2785,7 @@ sycl::event gemm_batch_nm_impl(sycl::queue &exec_q,
                                std::vector<sycl::event> const &depends = {})
 {
 
-    using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+    using OuterInnerDimsIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
     const OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
                                              lhs_outer_inner_shapes_strides);
     const OuterInnerDimsIndexerT rhs_indexer(inner_nd + rhs_outer_nd, 0,
@@ -2794,7 +2794,7 @@ sycl::event gemm_batch_nm_impl(sycl::queue &exec_q,
                                              res_outer_shapes_strides);
 
     using BatchDimsIndexerT =
-        dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+        dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;
     const BatchDimsIndexerT batch_indexer(batch_nd, lhs_batch_offset,
                                           rhs_batch_offset, res_batch_offset,
                                           batch_shape_strides);
@@ -2857,7 +2857,7 @@ sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(depends);
 
-                using IndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+                using IndexerT = dpnp::tensor::offset_utils::StridedIndexer;
                 const IndexerT res_indexer(batch_nd + res_outer_nd,
                                            res_batch_offset, res_shape_strides);
                 using InitKernelName =
@@ -2872,7 +2872,7 @@ sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
     }
 
     if (max_nm < 64) {
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m < 4) {
                 static constexpr std::uint32_t m_groups_one = 1;
@@ -2909,7 +2909,7 @@ sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
         }
     }
     else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             static constexpr std::uint32_t m_groups_four = 4;
             return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, m_groups_four>(
@@ -2961,18 +2961,18 @@ sycl::event
     );
 
     if (k <= (delta_k * n_wi)) {
-        using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using OuterInnerDimsIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         static constexpr OuterInnerDimsIndexerT lhs_indexer{};
         static constexpr OuterInnerDimsIndexerT rhs_indexer{};
         static constexpr OuterInnerDimsIndexerT res_indexer{};
 
-        using dpctl::tensor::offset_utils::Strided1DIndexer;
-        using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+        using dpnp::tensor::offset_utils::Strided1DIndexer;
+        using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
         using BatchDimsIndexerT =
             ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
                                          Strided1DIndexer>;
 
-        using dpctl::tensor::offset_utils::Strided1DIndexer;
+        using dpnp::tensor::offset_utils::Strided1DIndexer;
         const BatchDimsIndexerT batch_indexer(
             Strided1DIndexer{/* size   */ batch_nelems,
                              /* step   */ n * k},
@@ -3018,17 +3018,17 @@ sycl::event
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     iter_nelems * reduction_nelems, exec_q);
             resTy *tmp = tmp_owner.get();
 
             using OuterInnerDimsIndexerT =
-                dpctl::tensor::offset_utils::NoOpIndexer;
+                dpnp::tensor::offset_utils::NoOpIndexer;
             static constexpr OuterInnerDimsIndexerT lhs_indexer{};
             static constexpr OuterInnerDimsIndexerT rhs_indexer{};
             static constexpr OuterInnerDimsIndexerT tmp_indexer{};
-            using dpctl::tensor::offset_utils::Strided1DIndexer;
-            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpnp::tensor::offset_utils::Strided1DIndexer;
+            using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
             using BatchDimsIndexerT =
                 ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
                                              Strided1DIndexer>;
@@ -3055,8 +3055,8 @@ sycl::event
                     preferred_reductions_per_wi, reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -3068,7 +3068,7 @@ sycl::event
                                /* first reduction temp */ reduction_groups);
 
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     tmp_alloc_size, exec_q);
 
             resTy *partially_reduced_tmp = tmp_owner.get();
@@ -3076,12 +3076,12 @@ sycl::event
                 partially_reduced_tmp + reduction_nelems * iter_nelems;
 
             using OuterInnerDimsIndexerT =
-                dpctl::tensor::offset_utils::NoOpIndexer;
+                dpnp::tensor::offset_utils::NoOpIndexer;
             static constexpr OuterInnerDimsIndexerT lhs_indexer{};
             static constexpr OuterInnerDimsIndexerT rhs_indexer{};
             static constexpr OuterInnerDimsIndexerT tmp_indexer{};
-            using dpctl::tensor::offset_utils::Strided1DIndexer;
-            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpnp::tensor::offset_utils::Strided1DIndexer;
+            using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
             using BatchDimsIndexerT =
                 ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
                                              Strided1DIndexer>;
@@ -3109,8 +3109,8 @@ sycl::event
                     reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -3150,13 +3150,13 @@ sycl::event
     // items in a column, so no need for allocating
     // temp memory if only one group is needed
     if (k <= wi_delta_k) {
-        using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using OuterInnerDimsIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         static constexpr OuterInnerDimsIndexerT lhs_indexer{};
         static constexpr OuterInnerDimsIndexerT rhs_indexer{};
         static constexpr OuterInnerDimsIndexerT res_indexer{};
 
-        using dpctl::tensor::offset_utils::Strided1DIndexer;
-        using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+        using dpnp::tensor::offset_utils::Strided1DIndexer;
+        using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
         using BatchDimsIndexerT =
             ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
                                          Strided1DIndexer>;
@@ -3204,19 +3204,19 @@ sycl::event
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     iter_nelems * reduction_nelems, exec_q);
 
             resTy *tmp = tmp_owner.get();
 
             using OuterInnerDimsIndexerT =
-                dpctl::tensor::offset_utils::NoOpIndexer;
+                dpnp::tensor::offset_utils::NoOpIndexer;
             static constexpr OuterInnerDimsIndexerT lhs_indexer{};
             static constexpr OuterInnerDimsIndexerT rhs_indexer{};
             static constexpr OuterInnerDimsIndexerT tmp_indexer{};
 
-            using dpctl::tensor::offset_utils::Strided1DIndexer;
-            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpnp::tensor::offset_utils::Strided1DIndexer;
+            using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
             using BatchDimsIndexerT =
                 ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
                                              Strided1DIndexer>;
@@ -3243,8 +3243,8 @@ sycl::event
                     preferred_reductions_per_wi, reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -3256,7 +3256,7 @@ sycl::event
                                /* first reduction temp */ reduction_groups);
 
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     tmp_alloc_size, exec_q);
 
             resTy *partially_reduced_tmp = tmp_owner.get();
@@ -3264,13 +3264,13 @@ sycl::event
                 partially_reduced_tmp + reduction_nelems * iter_nelems;
 
             using OuterInnerDimsIndexerT =
-                dpctl::tensor::offset_utils::NoOpIndexer;
+                dpnp::tensor::offset_utils::NoOpIndexer;
             static constexpr OuterInnerDimsIndexerT lhs_indexer{};
             static constexpr OuterInnerDimsIndexerT rhs_indexer{};
             static constexpr OuterInnerDimsIndexerT tmp_indexer{};
 
-            using dpctl::tensor::offset_utils::Strided1DIndexer;
-            using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+            using dpnp::tensor::offset_utils::Strided1DIndexer;
+            using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
             using BatchDimsIndexerT =
                 ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
                                              Strided1DIndexer>;
@@ -3299,8 +3299,8 @@ sycl::event
                     reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -3324,7 +3324,7 @@ sycl::event gemm_nm_impl(sycl::queue &exec_q,
                          const ssize_t *res_shape_strides,
                          std::vector<sycl::event> const &depends = {})
 {
-    using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+    using OuterInnerDimsIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
     const OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
                                              lhs_shape_strides);
     const OuterInnerDimsIndexerT rhs_indexer(inner_nd + rhs_outer_nd, 0,
@@ -3333,7 +3333,7 @@ sycl::event gemm_nm_impl(sycl::queue &exec_q,
                                              res_shape_strides);
 
     using BatchDimsIndexerT =
-        dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
+        dpnp::tensor::offset_utils::ThreeZeroOffsets_Indexer;
     static constexpr BatchDimsIndexerT batch_indexer{};
 
     static constexpr std::size_t single_batch_nelems = 1;
@@ -3359,7 +3359,7 @@ sycl::event
                               std::size_t m,
                               std::vector<sycl::event> const &depends = {})
 {
-    using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+    using OuterInnerDimsIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
     static constexpr OuterInnerDimsIndexerT lhs_indexer{};
     static constexpr OuterInnerDimsIndexerT rhs_indexer{};
     static constexpr OuterInnerDimsIndexerT res_indexer{};
@@ -3367,7 +3367,7 @@ sycl::event
     static constexpr std::size_t single_batch_nelems = 1;
     if (batch_nelems == single_batch_nelems) {
         using BatchDimsIndexerT =
-            dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
+            dpnp::tensor::offset_utils::ThreeZeroOffsets_Indexer;
         static constexpr BatchDimsIndexerT batch_indexer{};
 
         sycl::event gemm_ev = gemm_detail::_gemm_batch_nm_impl<
@@ -3379,13 +3379,13 @@ sycl::event
         return gemm_ev;
     }
     else {
-        using dpctl::tensor::offset_utils::Strided1DIndexer;
-        using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
+        using dpnp::tensor::offset_utils::Strided1DIndexer;
+        using dpnp::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
         using BatchDimsIndexerT =
             ThreeOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer,
                                          Strided1DIndexer>;
 
-        using dpctl::tensor::offset_utils::Strided1DIndexer;
+        using dpnp::tensor::offset_utils::Strided1DIndexer;
 
         const BatchDimsIndexerT batch_indexer(
             Strided1DIndexer{/* size   */ batch_nelems,
@@ -3444,7 +3444,7 @@ sycl::event
     }
 
     if (max_nm < 64) {
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m < 4) {
                 return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
@@ -3463,7 +3463,7 @@ sycl::event
         }
     }
     else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
                 exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
@@ -3525,12 +3525,12 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
         delta_n // modified by reference
     );
 
-    using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
+    using BatchIndexerT = dpnp::tensor::offset_utils::ThreeZeroOffsets_Indexer;
     static constexpr BatchIndexerT batch_indexer{};
 
     static constexpr std::size_t single_batch_nelems = 1;
 
-    using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+    using OuterInnerDimsIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
     const OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
                                              lhs_outer_inner_shapes_strides);
     const OuterInnerDimsIndexerT rhs_indexer(inner_nd + rhs_outer_nd, 0,
@@ -3578,11 +3578,11 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
 
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     iter_nelems * reduction_nelems, exec_q);
             resTy *tmp = tmp_owner.get();
 
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             static constexpr ResIndexerT res_indexer{};
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_k_step<
@@ -3599,8 +3599,8 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
                 res_shapes_strides, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
             return cleanup_host_task_event;
         }
         else {
@@ -3611,14 +3611,14 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
                                /* first reduction temp */ reduction_groups);
 
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     tmp_alloc_size, exec_q);
 
             resTy *partially_reduced_tmp = tmp_owner.get();
             resTy *partially_reduced_tmp2 =
                 partially_reduced_tmp + reduction_nelems * iter_nelems;
 
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             static constexpr ResIndexerT res_indexer{};
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_k_step<
@@ -3636,8 +3636,8 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
                 res_nd, 0, res_shapes_strides, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -3678,12 +3678,12 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
         wg_delta_m  // modified by reference
     );
 
-    using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
+    using BatchIndexerT = dpnp::tensor::offset_utils::ThreeZeroOffsets_Indexer;
     static constexpr BatchIndexerT batch_indexer{};
 
     static constexpr std::size_t single_batch_nelems = 1;
 
-    using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+    using OuterInnerDimsIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
     const OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
                                              lhs_outer_inner_shapes_strides);
     const OuterInnerDimsIndexerT rhs_indexer(inner_nd + rhs_outer_nd, 0,
@@ -3730,11 +3730,11 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     iter_nelems * reduction_nelems, exec_q);
             resTy *tmp = tmp_owner.get();
 
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             static constexpr ResIndexerT res_indexer{};
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_nm_step<
@@ -3751,8 +3751,8 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                 res_shapes_strides, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -3763,14 +3763,14 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                 iter_nelems * (/* temp */ reduction_nelems +
                                /* first reduction temp */ reduction_groups);
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     tmp_alloc_size, exec_q);
 
             resTy *partially_reduced_tmp = tmp_owner.get();
             resTy *partially_reduced_tmp2 =
                 partially_reduced_tmp + reduction_nelems * iter_nelems;
 
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             static constexpr ResIndexerT res_indexer{};
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_nm_step<
@@ -3788,8 +3788,8 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                 res_nd, 0, res_shapes_strides, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -3836,7 +3836,7 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(depends);
 
-                using IndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+                using IndexerT = dpnp::tensor::offset_utils::StridedIndexer;
                 const IndexerT res_indexer(res_nd, 0, res_shapes_strides);
                 using InitKernelName =
                     class gemm_tree_empty_krn<lhsTy, rhsTy, resTy>;
@@ -3850,7 +3850,7 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
     }
 
     if (max_nm < 64) {
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m < 4) {
                 return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
@@ -3876,7 +3876,7 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
         }
     }
     else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
                 exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd, lhs_outer_nd,
@@ -3919,12 +3919,12 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
         delta_n // modified by reference
     );
 
-    using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+    using OuterInnerDimsIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
     static constexpr OuterInnerDimsIndexerT lhs_indexer{};
     static constexpr OuterInnerDimsIndexerT rhs_indexer{};
     static constexpr OuterInnerDimsIndexerT res_indexer{};
 
-    using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
+    using BatchIndexerT = dpnp::tensor::offset_utils::ThreeZeroOffsets_Indexer;
     static constexpr BatchIndexerT batch_indexer{};
 
     static constexpr std::size_t single_batch_nelems = 1;
@@ -3968,7 +3968,7 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     iter_nelems * reduction_nelems, exec_q);
             resTy *tmp = tmp_owner.get();
 
@@ -3986,8 +3986,8 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
                     preferred_reductions_per_wi, reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
             return cleanup_host_task_event;
         }
         else {
@@ -3997,7 +3997,7 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
                 iter_nelems * (/* temp */ reduction_nelems +
                                /* first reduction temp */ reduction_groups);
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     tmp_alloc_size, exec_q);
 
             resTy *partially_reduced_tmp = tmp_owner.get();
@@ -4021,8 +4021,8 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
                     reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -4056,12 +4056,12 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
         wg_delta_m  // modified by reference
     );
 
-    using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+    using OuterInnerDimsIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
     static constexpr OuterInnerDimsIndexerT lhs_indexer{};
     static constexpr OuterInnerDimsIndexerT rhs_indexer{};
     static constexpr OuterInnerDimsIndexerT res_indexer{};
 
-    using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
+    using BatchIndexerT = dpnp::tensor::offset_utils::ThreeZeroOffsets_Indexer;
     static constexpr BatchIndexerT batch_indexer{};
 
     static constexpr std::size_t single_batch_nelems = 1;
@@ -4106,7 +4106,7 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     iter_nelems * reduction_nelems, exec_q);
             resTy *tmp = tmp_owner.get();
 
@@ -4125,8 +4125,8 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                     preferred_reductions_per_wi, reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
             return cleanup_host_task_event;
         }
         else {
@@ -4137,7 +4137,7 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                                /* first reduction temp */ reduction_groups);
 
             auto tmp_owner =
-                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
                     tmp_alloc_size, exec_q);
             resTy *partially_reduced_tmp = tmp_owner.get();
             resTy *partially_reduced_tmp2 =
@@ -4159,8 +4159,8 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                     reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
-                                                             tmp_owner);
+                dpnp::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                            tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -4201,7 +4201,7 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
     }
 
     if (max_nm < 64) {
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m < 4) {
                 return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
@@ -4218,7 +4218,7 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
         }
     }
     else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
                 exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
@@ -4230,4 +4230,4 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
     }
 }
 
-} // namespace dpctl::tensor::kernels
+} // namespace dpnp::tensor::kernels

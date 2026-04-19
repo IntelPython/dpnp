@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for dpctl.tensor.clip.
+/// This file defines kernels for dpnp.tensor.clip.
 //===---------------------------------------------------------------------===//
 
 #pragma once
@@ -42,34 +42,33 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl_tensor_types.hpp"
+#include "dpnp_tensor_types.hpp"
 #include "kernels/alignment.hpp"
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::clip
+namespace dpnp::tensor::kernels::clip
 {
 
-using dpctl::tensor::ssize_t;
-using namespace dpctl::tensor::offset_utils;
+using dpnp::tensor::ssize_t;
+using namespace dpnp::tensor::offset_utils;
 
-using dpctl::tensor::kernels::alignment_utils::
-    disabled_sg_loadstore_wrapper_krn;
-using dpctl::tensor::kernels::alignment_utils::is_aligned;
-using dpctl::tensor::kernels::alignment_utils::required_alignment;
+using dpnp::tensor::kernels::alignment_utils::disabled_sg_loadstore_wrapper_krn;
+using dpnp::tensor::kernels::alignment_utils::is_aligned;
+using dpnp::tensor::kernels::alignment_utils::required_alignment;
 
-using dpctl::tensor::sycl_utils::sub_group_load;
-using dpctl::tensor::sycl_utils::sub_group_store;
+using dpnp::tensor::sycl_utils::sub_group_load;
+using dpnp::tensor::sycl_utils::sub_group_store;
 
 template <typename T>
 T clip(const T &x, const T &min, const T &max)
 {
-    using dpctl::tensor::type_utils::is_complex;
+    using dpnp::tensor::type_utils::is_complex;
     if constexpr (is_complex<T>::value) {
-        using dpctl::tensor::math_utils::max_complex;
-        using dpctl::tensor::math_utils::min_complex;
+        using dpnp::tensor::math_utils::max_complex;
+        using dpnp::tensor::math_utils::min_complex;
         return min_complex(max_complex(x, min), max);
     }
     else if constexpr (std::is_floating_point_v<T> ||
@@ -114,7 +113,7 @@ public:
     {
         static constexpr std::uint8_t nelems_per_wi = n_vecs * vec_sz;
 
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (is_complex<T>::value || !enable_sg_loadstore) {
             const std::uint16_t sgSize =
                 ndit.get_sub_group().get_local_range()[0];
@@ -353,4 +352,4 @@ struct ClipContigFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::clip
+} // namespace dpnp::tensor::kernels::clip

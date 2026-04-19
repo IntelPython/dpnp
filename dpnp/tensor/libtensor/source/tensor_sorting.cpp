@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -45,11 +45,11 @@
 
 PYBIND11_MODULE(_tensor_sorting_impl, m)
 {
-    dpctl::tensor::py_internal::init_isin_functions(m);
-    dpctl::tensor::py_internal::init_merge_sort_functions(m);
-    dpctl::tensor::py_internal::init_merge_argsort_functions(m);
-    dpctl::tensor::py_internal::init_searchsorted_functions(m);
-    dpctl::tensor::py_internal::init_radix_sort_functions(m);
-    dpctl::tensor::py_internal::init_radix_argsort_functions(m);
-    dpctl::tensor::py_internal::init_topk_functions(m);
+    dpnp::tensor::py_internal::init_isin_functions(m);
+    dpnp::tensor::py_internal::init_merge_sort_functions(m);
+    dpnp::tensor::py_internal::init_merge_argsort_functions(m);
+    dpnp::tensor::py_internal::init_searchsorted_functions(m);
+    dpnp::tensor::py_internal::init_radix_sort_functions(m);
+    dpnp::tensor::py_internal::init_radix_argsort_functions(m);
+    dpnp::tensor::py_internal::init_topk_functions(m);
 }

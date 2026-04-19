@@ -44,7 +44,7 @@
 
 #include "../../elementwise_functions/simplify_iteration_space.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
@@ -55,7 +55,7 @@
 #include "ext/validation_utils.hpp"
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 using ext::common::value_type_of_t;
 using ext::validation::array_names;
@@ -108,7 +108,7 @@ sycl::event isclose_strided_scalar_call(sycl::queue &exec_q,
                                         py::ssize_t out_offset,
                                         const std::vector<sycl::event> &depends)
 {
-    using dpctl::tensor::type_utils::is_complex_v;
+    using dpnp::tensor::type_utils::is_complex_v;
     using scT = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
     const scT rtol = py::cast<scT>(py_rtol);
@@ -142,7 +142,7 @@ sycl::event isclose_contig_scalar_call(sycl::queue &q,
                                        char *out_p,
                                        const std::vector<sycl::event> &depends)
 {
-    using dpctl::tensor::type_utils::is_complex_v;
+    using dpnp::tensor::type_utils::is_complex_v;
     using scT = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
     const scT rtol = py::cast<scT>(py_rtol);
@@ -158,12 +158,12 @@ isclose_strided_scalar_fn_ptr_t
 isclose_contig_scalar_fn_ptr_t isclose_contig_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
-    py_isclose_scalar(const dpctl::tensor::usm_ndarray &a,
-                      const dpctl::tensor::usm_ndarray &b,
+    py_isclose_scalar(const dpnp::tensor::usm_ndarray &a,
+                      const dpnp::tensor::usm_ndarray &b,
                       const py::object &py_rtol,
                       const py::object &py_atol,
                       const py::object &py_equal_nan,
-                      const dpctl::tensor::usm_ndarray &res,
+                      const dpnp::tensor::usm_ndarray &res,
                       sycl::queue &exec_q,
                       const std::vector<sycl::event> &depends)
 {
@@ -204,7 +204,7 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(res, nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(res, nelems);
 
     const char *a_data = a.get_data();
     const char *b_data = b.get_data();
@@ -238,7 +238,7 @@ std::pair<sycl::event, sycl::event>
         auto comp_ev = contig_fn(exec_q, nelems, py_rtol, py_atol, py_equal_nan,
                                  a_data, b_data, res_data, depends);
         sycl::event ht_ev =
-            dpctl::utils::keep_args_alive(exec_q, {a, b, res}, {comp_ev});
+            dpnp::utils::keep_args_alive(exec_q, {a, b, res}, {comp_ev});
 
         return std::make_pair(ht_ev, comp_ev);
     }
@@ -278,7 +278,7 @@ std::pair<sycl::event, sycl::event>
                                  "data type");
     }
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
 
     std::vector<sycl::event> host_tasks{};
     host_tasks.reserve(2);
@@ -300,14 +300,13 @@ std::pair<sycl::event, sycl::event>
         a_data, a_offset, b_data, b_offset, res_data, res_offset, all_deps);
 
     // async free of shape_strides temporary
-    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event tmp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {comp_ev}, shape_strides_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
 
     return std::make_pair(
-        dpctl::utils::keep_args_alive(exec_q, {a, b, res}, host_tasks),
-        comp_ev);
+        dpnp::utils::keep_args_alive(exec_q, {a, b, res}, host_tasks), comp_ev);
 }
 
 /**

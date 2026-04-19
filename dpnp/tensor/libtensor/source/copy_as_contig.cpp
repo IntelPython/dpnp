@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #include <cstddef>
@@ -55,19 +55,19 @@
 #include "copy_as_contig.hpp"
 #include "simplify_iteration_space.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::copy_as_contig::
+using dpnp::tensor::kernels::copy_as_contig::
     as_c_contiguous_1d_batch_of_square_matrices_impl_fn_ptr_t;
-using dpctl::tensor::kernels::copy_as_contig::
+using dpnp::tensor::kernels::copy_as_contig::
     as_c_contiguous_array_impl_fn_ptr_t;
-using dpctl::tensor::kernels::copy_as_contig::
+using dpnp::tensor::kernels::copy_as_contig::
     as_c_contiguous_nd_batch_of_square_matrices_impl_fn_ptr_t;
-using dpctl::utils::keep_args_alive;
+using dpnp::utils::keep_args_alive;
 
 static as_c_contiguous_array_impl_fn_ptr_t
     as_c_contig_array_dispatch_vector[td_ns::num_types];
@@ -81,10 +81,10 @@ static as_c_contiguous_nd_batch_of_square_matrices_impl_fn_ptr_t
 void init_copy_as_contig_dispatch_vectors(void)
 {
 
-    using dpctl::tensor::kernels::copy_as_contig::
+    using dpnp::tensor::kernels::copy_as_contig::
         AsCContig1DBatchOfSquareMatricesFactory;
-    using dpctl::tensor::kernels::copy_as_contig::AsCContigFactory;
-    using dpctl::tensor::kernels::copy_as_contig::
+    using dpnp::tensor::kernels::copy_as_contig::AsCContigFactory;
+    using dpnp::tensor::kernels::copy_as_contig::
         AsCContigNDBatchOfSquareMatricesFactory;
     using td_ns::DispatchVectorBuilder;
 
@@ -135,14 +135,14 @@ std::size_t get_nelems(const std::vector<dimT> &shape)
 } // end of anonymous namespace
 
 std::pair<sycl::event, sycl::event>
-    py_as_c_contig_f2c(const dpctl::tensor::usm_ndarray &src,
-                       const dpctl::tensor::usm_ndarray &dst,
+    py_as_c_contig_f2c(const dpnp::tensor::usm_ndarray &src,
+                       const dpnp::tensor::usm_ndarray &dst,
                        sycl::queue &exec_q,
                        const std::vector<sycl::event> &depends);
 
 std::pair<sycl::event, sycl::event>
-    py_as_c_contig(const dpctl::tensor::usm_ndarray &src,
-                   const dpctl::tensor::usm_ndarray &dst,
+    py_as_c_contig(const dpnp::tensor::usm_ndarray &src,
+                   const dpnp::tensor::usm_ndarray &dst,
                    sycl::queue &exec_q,
                    const std::vector<sycl::event> &depends)
 {
@@ -181,16 +181,16 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Destination array must be C-contiguous");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
     // check that arrays do not overlap, and concurrent copying is safe.
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
@@ -238,7 +238,7 @@ std::pair<sycl::event, sycl::event>
 
     std::vector<sycl::event> host_task_events{};
     auto ptr_size_event_tuple =
-        dpctl::tensor::offset_utils::device_allocate_and_pack<py::ssize_t>(
+        dpnp::tensor::offset_utils::device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_shape, simplified_src_strides);
     auto shape_stride_owner = std::move(std::get<0>(ptr_size_event_tuple));
     const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_tuple);
@@ -257,8 +257,8 @@ std::pair<sycl::event, sycl::event>
                     dst.get_data(), all_depends);
 
     const auto &temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(exec_q, {ascontig_ev},
-                                                     shape_stride_owner);
+        dpnp::tensor::alloc_utils::async_smart_free(exec_q, {ascontig_ev},
+                                                    shape_stride_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),
@@ -266,14 +266,14 @@ std::pair<sycl::event, sycl::event>
 }
 
 std::pair<sycl::event, sycl::event>
-    py_as_f_contig_c2f(const dpctl::tensor::usm_ndarray &src,
-                       const dpctl::tensor::usm_ndarray &dst,
+    py_as_f_contig_c2f(const dpnp::tensor::usm_ndarray &src,
+                       const dpnp::tensor::usm_ndarray &dst,
                        sycl::queue &exec_q,
                        const std::vector<sycl::event> &depends);
 
 std::pair<sycl::event, sycl::event>
-    py_as_f_contig(const dpctl::tensor::usm_ndarray &src,
-                   const dpctl::tensor::usm_ndarray &dst,
+    py_as_f_contig(const dpnp::tensor::usm_ndarray &src,
+                   const dpnp::tensor::usm_ndarray &dst,
                    sycl::queue &exec_q,
                    const std::vector<sycl::event> &depends)
 {
@@ -312,16 +312,16 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Destination array must be F-contiguous");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
     // check that arrays do not overlap, and concurrent copying is safe.
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
@@ -372,7 +372,7 @@ std::pair<sycl::event, sycl::event>
 
     std::vector<sycl::event> host_task_events{};
     auto ptr_size_event_tuple =
-        dpctl::tensor::offset_utils::device_allocate_and_pack<py::ssize_t>(
+        dpnp::tensor::offset_utils::device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_shape, simplified_src_strides);
     auto shape_stride_owner = std::move(std::get<0>(ptr_size_event_tuple));
     const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_tuple);
@@ -391,8 +391,8 @@ std::pair<sycl::event, sycl::event>
                     dst.get_data(), all_depends);
 
     const auto &temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(exec_q, {ascontig_ev},
-                                                     shape_stride_owner);
+        dpnp::tensor::alloc_utils::async_smart_free(exec_q, {ascontig_ev},
+                                                    shape_stride_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),
@@ -400,8 +400,8 @@ std::pair<sycl::event, sycl::event>
 }
 
 std::pair<sycl::event, sycl::event>
-    py_as_c_contig_f2c(const dpctl::tensor::usm_ndarray &src,
-                       const dpctl::tensor::usm_ndarray &dst,
+    py_as_c_contig_f2c(const dpnp::tensor::usm_ndarray &src,
+                       const dpnp::tensor::usm_ndarray &dst,
                        sycl::queue &exec_q,
                        const std::vector<sycl::event> &depends)
 {
@@ -463,16 +463,16 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Destination array must be C-contiguous");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
     // check that arrays do not overlap, and concurrent copying is safe.
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
@@ -559,7 +559,7 @@ std::pair<sycl::event, sycl::event>
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_src_strides);
     auto packed_shape_strides_owner =
@@ -580,8 +580,8 @@ std::pair<sycl::event, sycl::event>
 
     // async free of shape_strides temporary
     sycl::event temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
-            exec_q, {ascontig_ev}, packed_shape_strides_owner);
+        dpnp::tensor::alloc_utils::async_smart_free(exec_q, {ascontig_ev},
+                                                    packed_shape_strides_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),
@@ -589,8 +589,8 @@ std::pair<sycl::event, sycl::event>
 }
 
 std::pair<sycl::event, sycl::event>
-    py_as_f_contig_c2f(const dpctl::tensor::usm_ndarray &src,
-                       const dpctl::tensor::usm_ndarray &dst,
+    py_as_f_contig_c2f(const dpnp::tensor::usm_ndarray &src,
+                       const dpnp::tensor::usm_ndarray &dst,
                        sycl::queue &exec_q,
                        const std::vector<sycl::event> &depends)
 {
@@ -640,16 +640,16 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Unexpected destination array layout");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
     // check that arrays do not overlap, and concurrent copying is safe.
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
@@ -750,7 +750,7 @@ std::pair<sycl::event, sycl::event>
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_src_strides);
     auto packed_shape_strides_owner =
@@ -771,12 +771,12 @@ std::pair<sycl::event, sycl::event>
 
     // async free of shape_strides
     sycl::event temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
-            exec_q, {ascontig_ev}, packed_shape_strides_owner);
+        dpnp::tensor::alloc_utils::async_smart_free(exec_q, {ascontig_ev},
+                                                    packed_shape_strides_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),
                           ascontig_ev);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal
