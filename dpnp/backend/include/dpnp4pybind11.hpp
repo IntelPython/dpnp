@@ -36,13 +36,11 @@
 #include "dpnp/tensor/_usmarray.h"
 #include "dpnp/tensor/_usmarray_api.h"
 
-#include <array>
 #include <cassert>
 #include <complex>
 #include <cstddef> // for std::size_t for C++ linkage
 #include <cstdint>
 #include <memory>
-#include <stddef.h> // for size_t for C linkage
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
