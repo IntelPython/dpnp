@@ -116,7 +116,7 @@ std::string _default_device_index_type(const sycl::device &) { return "i8"; }
 
 sycl::device _extract_device(const py::object &arg)
 {
-    auto const &api = dpctl::detail::dpctl_capi::get();
+    auto const &api = ::dpctl::detail::dpctl_capi::get();
 
     PyObject *source = arg.ptr();
     if (api.PySyclQueue_Check_(source)) {
