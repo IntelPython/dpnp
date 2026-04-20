@@ -206,7 +206,7 @@ def _batched_inv(a, res_type):
 
     _manager = dpu.SequentialOrderManager[a_sycl_queue]
 
-    # use DPCTL tensor function to fill the matrix array
+    # use DPNP tensor function to fill the matrix array
     # with content from the input array `a`
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_usm_arr,
@@ -457,7 +457,7 @@ def _batched_qr(a, mode="reduced"):
 
     _manager = dpu.SequentialOrderManager[a_sycl_queue]
 
-    # use DPCTL tensor function to fill the matrix array
+    # use DPNP tensor function to fill the matrix array
     # with content from the input array `a`
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_usm_arr,
@@ -527,7 +527,7 @@ def _batched_qr(a, mode="reduced"):
             order="C",
         )
 
-    # use DPCTL tensor function to fill the matrix array `q[..., :n, :]`
+    # use DPNP tensor function to fill the matrix array `q[..., :n, :]`
     # with content from the array `a_t` overwritten by geqrf_batch
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_t.get_array(),
@@ -982,7 +982,7 @@ def _lu_factor(a, res_type):
     # `a` must be copied because getrf destroys the input matrix
     a_h = dpnp.empty_like(a, order="C", dtype=res_type)
 
-    # use DPCTL tensor function to fill the сopy of the input array
+    # use DPNP tensor function to fill the сopy of the input array
     # from the input array
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_usm_arr,
@@ -1810,7 +1810,7 @@ def dpnp_cholesky_batch(a, upper_lower, res_type):
 
     _manager = dpu.SequentialOrderManager[a_sycl_queue]
 
-    # use DPCTL tensor function to fill the сopy of the input array
+    # use DPNP tensor function to fill the сopy of the input array
     # from the input array
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_usm_arr,
@@ -1892,7 +1892,7 @@ def dpnp_cholesky(a, upper):
 
     _manager = dpu.SequentialOrderManager[a_sycl_queue]
 
-    # use DPCTL tensor function to fill the сopy of the input array
+    # use DPNP tensor function to fill the сopy of the input array
     # from the input array
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_usm_arr,
@@ -2057,7 +2057,7 @@ def dpnp_eigh(a, UPLO="L", eigen_mode="V"):
         # allocate a memory with 'F' order for dpnp array of eigenvectors
         v = dpnp.empty_like(a, order="F", dtype=v_type)
 
-        # use DPCTL tensor function to fill the array of eigenvectors with
+        # use DPNP tensor function to fill the array of eigenvectors with
         # content of input array
         ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=a_usm_arr,
@@ -2136,7 +2136,7 @@ def dpnp_inv(a):
 
     _manager = dpu.SequentialOrderManager[a_sycl_queue]
 
-    # use DPCTL tensor function to fill the coefficient matrix array
+    # use DPNP tensor function to fill the coefficient matrix array
     # with content from the input array `a`
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_usm_arr,
@@ -2457,7 +2457,7 @@ def dpnp_qr(a, mode="reduced"):
 
     _manager = dpu.SequentialOrderManager[a_sycl_queue]
 
-    # use DPCTL tensor function to fill the matrix array
+    # use DPNP tensor function to fill the matrix array
     # with content from the input array `a`
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_usm_arr,
@@ -2516,7 +2516,7 @@ def dpnp_qr(a, mode="reduced"):
             order="C",
         )
 
-    # use DPCTL tensor function to fill the matrix array `q[:n]`
+    # use DPNP tensor function to fill the matrix array `q[:n]`
     # with content from the array `a_t` overwritten by geqrf
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_t.get_array(),
@@ -2583,7 +2583,7 @@ def dpnp_solve(a, b):
     _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
 
-    # use DPCTL tensor function to fill the сopy of the input array
+    # use DPNP tensor function to fill the сopy of the input array
     # from the input array
     ht_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_usm_arr,
@@ -2599,7 +2599,7 @@ def dpnp_solve(a, b):
     # these requirements.
     b_h = dpnp.empty_like(b, order="F", dtype=res_type, usm_type=res_usm_type)
 
-    # use DPCTL tensor function to fill the array of multiple dependent
+    # use DPNP tensor function to fill the array of multiple dependent
     # variables with content from the input array `b`
     ht_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=b_usm_arr,
@@ -2743,7 +2743,7 @@ def dpnp_svd(
 
     _manager = dpu.SequentialOrderManager[exec_q]
 
-    # use DPCTL tensor function to fill the сopy of the input array
+    # use DPNP tensor function to fill the сopy of the input array
     # from the input array
     ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=a_usm_arr,
