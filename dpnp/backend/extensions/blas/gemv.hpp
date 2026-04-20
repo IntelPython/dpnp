@@ -31,15 +31,15 @@
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
+#include "dpnp4pybind11.hpp"
 
 namespace dpnp::extensions::blas
 {
 extern std::pair<sycl::event, sycl::event>
     gemv(sycl::queue &exec_q,
-         const dpctl::tensor::usm_ndarray &matrixA,
-         const dpctl::tensor::usm_ndarray &vectorX,
-         const dpctl::tensor::usm_ndarray &vectorY,
+         const dpnp::tensor::usm_ndarray &matrixA,
+         const dpnp::tensor::usm_ndarray &vectorX,
+         const dpnp::tensor::usm_ndarray &vectorY,
          const bool transpose,
          const std::vector<sycl::event> &depends);
 

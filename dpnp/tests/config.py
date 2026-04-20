@@ -4,6 +4,7 @@ all_int_types = bool(os.getenv("DPNP_TEST_ALL_INT_TYPES", 0))
 float16_types = bool(os.getenv("DPNP_TEST_FLOAT_16", 0))
 complex_types = bool(os.getenv("DPNP_TEST_COMPLEX_TYPES", 0))
 bool_types = bool(os.getenv("DPNP_TEST_BOOL_TYPES", 0))
+skip_tensor_tests = bool(int(os.getenv("SKIP_TENSOR_TESTS", 0)))
 
 
 infra_warnings_enable = bool(os.getenv("DPNP_INFRA_WARNINGS_ENABLE", 0))

@@ -30,12 +30,12 @@
 
 #include <sycl/sycl.hpp>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_utils.hpp"
 
 namespace dpnp::kernels::bitwise_count
 {
-namespace tu_ns = dpctl::tensor::type_utils;
+namespace tu_ns = dpnp::tensor::type_utils;
 
 template <typename argT, typename resT>
 struct BitwiseCountFunctor

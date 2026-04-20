@@ -30,7 +30,7 @@
 #include <oneapi/mkl.hpp>
 #include <pybind11/pybind11.h>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
@@ -39,7 +39,7 @@
 
 namespace dpnp::extensions::lapack::gesvd_utils
 {
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
 namespace py = pybind11;
 
 // Converts a given character code (ord) to the corresponding
@@ -61,10 +61,10 @@ inline oneapi::mkl::jobsvd process_job(const std::int8_t job_val)
 }
 
 inline void common_gesvd_checks(sycl::queue &exec_q,
-                                const dpctl::tensor::usm_ndarray &a_array,
-                                const dpctl::tensor::usm_ndarray &out_s,
-                                const dpctl::tensor::usm_ndarray &out_u,
-                                const dpctl::tensor::usm_ndarray &out_vt,
+                                const dpnp::tensor::usm_ndarray &a_array,
+                                const dpnp::tensor::usm_ndarray &out_s,
+                                const dpnp::tensor::usm_ndarray &out_u,
+                                const dpnp::tensor::usm_ndarray &out_vt,
                                 const std::int8_t jobu_val,
                                 const std::int8_t jobvt_val,
                                 const int expected_a_u_vt_ndim,
@@ -121,23 +121,23 @@ inline void common_gesvd_checks(sycl::queue &exec_q,
     }
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {a_array, out_s, out_u, out_vt})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q,
+                                            {a_array, out_s, out_u, out_vt})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues.");
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(a_array, out_s) || overlap(a_array, out_u) ||
         overlap(a_array, out_vt) || overlap(out_s, out_u) ||
         overlap(out_s, out_vt) || overlap(out_u, out_vt)) {
         throw py::value_error("Arrays have overlapping segments of memory");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(a_array);
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out_s);
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out_u);
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out_vt);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(a_array);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(out_s);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(out_u);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(out_vt);
 
     const bool is_a_array_f_contig = a_array.is_f_contiguous();
     if (!is_a_array_f_contig) {
@@ -159,7 +159,7 @@ inline void common_gesvd_checks(sycl::queue &exec_q,
                               "must be C-contiguous");
     }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
     const int out_u_type_id =
@@ -176,10 +176,10 @@ inline void common_gesvd_checks(sycl::queue &exec_q,
 }
 
 // Check if the shape of input arrays for gesvd has any non-zero dimension.
-inline bool check_zeros_shape_gesvd(const dpctl::tensor::usm_ndarray &a_array,
-                                    const dpctl::tensor::usm_ndarray &out_s,
-                                    const dpctl::tensor::usm_ndarray &out_u,
-                                    const dpctl::tensor::usm_ndarray &out_vt,
+inline bool check_zeros_shape_gesvd(const dpnp::tensor::usm_ndarray &a_array,
+                                    const dpnp::tensor::usm_ndarray &out_s,
+                                    const dpnp::tensor::usm_ndarray &out_u,
+                                    const dpnp::tensor::usm_ndarray &out_vt,
                                     const std::int8_t jobu_val,
                                     const std::int8_t jobvt_val)
 {

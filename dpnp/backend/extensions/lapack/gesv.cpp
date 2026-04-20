@@ -34,7 +34,7 @@
 // utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_utils.hpp"
 
 #include "common_helpers.hpp"
@@ -46,9 +46,9 @@ namespace dpnp::extensions::lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
-namespace type_utils = dpctl::tensor::type_utils;
+namespace type_utils = dpnp::tensor::type_utils;
 
-using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+using dpnp::tensor::alloc_utils::sycl_free_noexcept;
 using ext::common::init_dispatch_vector;
 
 typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue &,
@@ -58,7 +58,7 @@ typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue &,
                                           char *,
                                           const std::vector<sycl::event> &);
 
-static gesv_impl_fn_ptr_t gesv_dispatch_vector[dpctl_td_ns::num_types];
+static gesv_impl_fn_ptr_t gesv_dispatch_vector[dpnp_td_ns::num_types];
 
 template <typename T>
 static sycl::event gesv_impl(sycl::queue &exec_q,
@@ -220,8 +220,8 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
 
 std::pair<sycl::event, sycl::event>
     gesv(sycl::queue &exec_q,
-         const dpctl::tensor::usm_ndarray &coeff_matrix,
-         const dpctl::tensor::usm_ndarray &dependent_vals,
+         const dpnp::tensor::usm_ndarray &coeff_matrix,
+         const dpnp::tensor::usm_ndarray &dependent_vals,
          const std::vector<sycl::event> &depends)
 {
     const int coeff_matrix_nd = coeff_matrix.get_ndim();
@@ -247,7 +247,7 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int coeff_matrix_type_id =
         array_types.typenum_to_lookup_id(coeff_matrix.get_typenum());
 
@@ -268,7 +268,7 @@ std::pair<sycl::event, sycl::event>
     sycl::event gesv_ev = gesv_fn(exec_q, n, nrhs, coeff_matrix_data,
                                   dependent_vals_data, depends);
 
-    sycl::event ht_ev = dpctl::utils::keep_args_alive(
+    sycl::event ht_ev = dpnp::utils::keep_args_alive(
         exec_q, {coeff_matrix, dependent_vals}, {gesv_ev});
 
     return std::make_pair(ht_ev, gesv_ev);

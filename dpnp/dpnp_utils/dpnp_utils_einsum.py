@@ -31,7 +31,6 @@ import itertools
 import operator
 import warnings
 
-import dpctl
 import numpy
 
 import dpnp
@@ -1023,7 +1022,7 @@ def dpnp_einsum(
     res_usm_type, exec_q = get_usm_allocations(arrays)
     if out is not None:
         dpnp.check_supported_arrays_type(out)
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
+        if dpnp.tensor.get_execution_queue((exec_q, out.sycl_queue)) is None:
             raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
