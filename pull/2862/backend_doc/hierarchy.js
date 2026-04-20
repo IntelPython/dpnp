@@ -40,7 +40,7 @@ var hierarchy =
     [ "dpnp::extensions::blas::types::DotTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::blas::DotuContigFactory< fnT, varT >", "structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html", null ],
     [ "dpnp::extensions::blas::types::DotuTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
-    [ "dpctl::detail::dpnp_capi", "classdpctl_1_1detail_1_1dpnp__capi.html", null ],
+    [ "dpnp::detail::dpnp_capi", "classdpnp_1_1detail_1_1dpnp__capi.html", null ],
     [ "dpnp_less_comp", "classdpnp__less__comp.html", null ],
     [ "DPNPC_ptr_adapter< _DataType >", "class_d_p_n_p_c__ptr__adapter.html", null ],
     [ "DPNPFuncData", "struct_d_p_n_p_func_data.html", null ],
@@ -106,7 +106,7 @@ var hierarchy =
     [ "statistics::histogram::NoWeights< T >", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
     [ "dpnp::kernels::choose::strides::NthStrideOffsetUnpacked", "structdpnp_1_1kernels_1_1choose_1_1strides_1_1_nth_stride_offset_unpacked.html", null ],
     [ "pybind11::object", null, [
-      [ "dpctl::tensor::usm_ndarray", "classdpctl_1_1tensor_1_1usm__ndarray.html", null ]
+      [ "dpnp::tensor::usm_ndarray", "classdpnp_1_1tensor_1_1usm__ndarray.html", null ]
     ] ],
     [ "ext::common::one_of< T, Rest >", "structext_1_1common_1_1one__of.html", null ],
     [ "ext::common::one_of< T, std::tuple< Top > >", "structext_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html", null ],

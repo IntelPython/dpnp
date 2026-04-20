@@ -1,14 +1,9 @@
 var annotated_dup =
 [
-    [ "dpctl", null, [
-      [ "detail", null, [
-        [ "dpnp_capi", "classdpctl_1_1detail_1_1dpnp__capi.html", null ]
-      ] ],
-      [ "tensor", null, [
-        [ "usm_ndarray", "classdpctl_1_1tensor_1_1usm__ndarray.html", "classdpctl_1_1tensor_1_1usm__ndarray" ]
-      ] ]
-    ] ],
     [ "dpnp", null, [
+      [ "detail", null, [
+        [ "dpnp_capi", "classdpnp_1_1detail_1_1dpnp__capi.html", null ]
+      ] ],
       [ "extensions", null, [
         [ "blas", null, [
           [ "types", null, [
@@ -179,6 +174,9 @@ var annotated_dup =
         [ "spacing", null, [
           [ "SpacingFunctor", "structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html", null ]
         ] ]
+      ] ],
+      [ "tensor", null, [
+        [ "usm_ndarray", "classdpnp_1_1tensor_1_1usm__ndarray.html", "classdpnp_1_1tensor_1_1usm__ndarray" ]
       ] ]
     ] ],
     [ "ext", null, [

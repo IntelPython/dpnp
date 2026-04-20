@@ -15,7 +15,7 @@ var searchData=
   ['dpnp_3a_3akernels_3a_3aerfs_12',['erfs',['../namespacedpnp_1_1kernels_1_1erfs.html',1,'dpnp::kernels']]],
   ['dpnp_3a_3akernels_3a_3ai0_13',['i0',['../namespacedpnp_1_1kernels_1_1i0.html',1,'dpnp::kernels']]],
   ['dpnp_3a_3akernels_3a_3ai0_3a_3aimpl_14',['impl',['../namespacedpnp_1_1kernels_1_1i0_1_1impl.html',1,'dpnp::kernels::i0']]],
-  ['dpnp_5fcapi_15',['dpnp_capi',['../classdpctl_1_1detail_1_1dpnp__capi.html',1,'dpctl::detail']]],
+  ['dpnp_5fcapi_15',['dpnp_capi',['../classdpnp_1_1detail_1_1dpnp__capi.html',1,'dpnp::detail']]],
   ['dpnp_5ffn_5finitval_16',['DPNP_FN_INITVAL',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aa3e8a4061dcef64562a635d8a9870611',1,'dpnp_iface_fptr.hpp']]],
   ['dpnp_5ffn_5finitval_5fext_17',['DPNP_FN_INITVAL_EXT',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558adddd48eebbd0f2d9af89499617eebe64',1,'dpnp_iface_fptr.hpp']]],
   ['dpnp_5ffn_5flast_18',['DPNP_FN_LAST',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aadc54195a4c41ac24ed1aa10f8e6f6a4',1,'dpnp_iface_fptr.hpp']]],
