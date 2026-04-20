@@ -36,6 +36,7 @@
 #include "dpnp/tensor/_usmarray.h"
 #include "dpnp/tensor/_usmarray_api.h"
 
+#include <array>
 #include <cassert>
 #include <complex>
 #include <cstddef> // for std::size_t for C++ linkage
@@ -555,6 +556,10 @@ namespace utils
 {
 namespace detail
 {
+// TODO: future version of dpctl will include a more general way of passing
+// shared_ptrs to keep_args_alive, so that future overload can be used here
+// instead of reimplementing keep_args_alive
+
 struct ManagedMemory
 {
     // TODO: do we need to check for memory here? Or can we assume only
