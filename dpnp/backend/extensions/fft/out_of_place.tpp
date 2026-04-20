@@ -46,7 +46,7 @@
 #include "fft_utils.hpp"
 #include "out_of_place.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 

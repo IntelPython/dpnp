@@ -44,7 +44,7 @@
 #include "fft_utils.hpp"
 #include "in_place.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/output_validation.hpp"
 
 namespace dpnp::extensions::fft

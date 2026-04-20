@@ -38,12 +38,10 @@
 
 #include <array>
 #include <cassert>
-#include <complex>
 #include <cstddef> // for std::size_t for C++ linkage
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -257,13 +255,12 @@ class usm_ndarray : public py::object
 public:
     PYBIND11_OBJECT(usm_ndarray, py::object, [](PyObject *o) -> bool {
         return PyObject_TypeCheck(
-                   o, ::dpnp::detail::dpnp_capi::get().PyUSMArrayType_) != 0;
+                   o, detail::dpnp_capi::get().PyUSMArrayType_) != 0;
     })
 
     usm_ndarray()
-        : py::object(
-              ::dpnp::detail::dpnp_capi::get().default_usm_ndarray_pyobj(),
-              borrowed_t{})
+        : py::object(detail::dpnp_capi::get().default_usm_ndarray_pyobj(),
+                     borrowed_t{})
     {
         if (!m_ptr)
             throw py::error_already_set();
@@ -426,7 +423,7 @@ public:
     int get_elemsize() const
     {
         int typenum = get_typenum();
-        auto const &api = ::dpnp::detail::dpnp_capi::get();
+        auto const &api = detail::dpnp_capi::get();
 
         // Lookup table for element sizes based on typenum
         if (typenum == api.UAR_BOOL_)
@@ -468,21 +465,21 @@ public:
     bool is_c_contiguous() const
     {
         int flags = get_flags();
-        auto const &api = ::dpnp::detail::dpnp_capi::get();
+        auto const &api = detail::dpnp_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_C_CONTIGUOUS_);
     }
 
     bool is_f_contiguous() const
     {
         int flags = get_flags();
-        auto const &api = ::dpnp::detail::dpnp_capi::get();
+        auto const &api = detail::dpnp_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_F_CONTIGUOUS_);
     }
 
     bool is_writable() const
     {
         int flags = get_flags();
-        auto const &api = ::dpnp::detail::dpnp_capi::get();
+        auto const &api = detail::dpnp_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_WRITABLE_);
     }
 
@@ -567,13 +564,13 @@ struct ManagedMemory
     static bool is_usm_managed_by_shared_ptr(const py::object &h)
     {
 
-        if (py::isinstance<dpctl::memory::usm_memory>(h)) {
+        if (py::isinstance<::dpctl::memory::usm_memory>(h)) {
             const auto &usm_memory_inst =
-                py::cast<dpctl::memory::usm_memory>(h);
+                py::cast<::dpctl::memory::usm_memory>(h);
             return usm_memory_inst.is_managed_by_smart_ptr();
         }
-        else if (py::isinstance<dpnp::tensor::usm_ndarray>(h)) {
-            const auto &usm_array_inst = py::cast<dpnp::tensor::usm_ndarray>(h);
+        else if (py::isinstance<tensor::usm_ndarray>(h)) {
+            const auto &usm_array_inst = py::cast<tensor::usm_ndarray>(h);
             return usm_array_inst.is_managed_by_smart_ptr();
         }
 
@@ -587,8 +584,8 @@ struct ManagedMemory
                 py::cast<dpctl::memory::usm_memory>(h);
             return usm_memory_inst.get_smart_ptr_owner();
         }
-        else if (py::isinstance<dpnp::tensor::usm_ndarray>(h)) {
-            const auto &usm_array_inst = py::cast<dpnp::tensor::usm_ndarray>(h);
+        else if (py::isinstance<tensor::usm_ndarray>(h)) {
+            const auto &usm_array_inst = py::cast<tensor::usm_ndarray>(h);
             return usm_array_inst.get_smart_ptr_owner();
         }
 
@@ -666,13 +663,14 @@ sycl::event keep_args_alive(sycl::queue &q,
     return host_task_ev;
 }
 
+// add to namespace for convenience
 using ::dpctl::utils::queues_are_compatible;
 
 /*! @brief Check if all allocation queues of usm_ndarrays are the same as
     the execution queue */
 template <std::size_t num>
 bool queues_are_compatible(const sycl::queue &exec_q,
-                           const ::dpnp::tensor::usm_ndarray (&arrs)[num])
+                           const tensor::usm_ndarray (&arrs)[num])
 {
     for (std::size_t i = 0; i < num; ++i) {
 
