@@ -553,9 +553,114 @@ private:
 
 namespace utils
 {
+namespace detail
+{
+struct ManagedMemory
+{
+    // TODO: do we need to check for memory here? Or can we assume only
+    // dpnp::tensor::usm_ndarray will be passed?
+    static bool is_usm_managed_by_shared_ptr(const py::object &h)
+    {
 
-// add these functions to dpnp::utils for convenience
-using ::dpctl::utils::keep_args_alive;
+        if (py::isinstance<dpctl::memory::usm_memory>(h)) {
+            const auto &usm_memory_inst =
+                py::cast<dpctl::memory::usm_memory>(h);
+            return usm_memory_inst.is_managed_by_smart_ptr();
+        }
+        else if (py::isinstance<dpnp::tensor::usm_ndarray>(h)) {
+            const auto &usm_array_inst = py::cast<dpnp::tensor::usm_ndarray>(h);
+            return usm_array_inst.is_managed_by_smart_ptr();
+        }
+
+        return false;
+    }
+
+    static const std::shared_ptr<void> &extract_shared_ptr(const py::object &h)
+    {
+        if (py::isinstance<dpctl::memory::usm_memory>(h)) {
+            const auto &usm_memory_inst =
+                py::cast<dpctl::memory::usm_memory>(h);
+            return usm_memory_inst.get_smart_ptr_owner();
+        }
+        else if (py::isinstance<dpnp::tensor::usm_ndarray>(h)) {
+            const auto &usm_array_inst = py::cast<dpnp::tensor::usm_ndarray>(h);
+            return usm_array_inst.get_smart_ptr_owner();
+        }
+
+        throw std::runtime_error(
+            "Attempted extraction of shared_ptr on an unrecognized type");
+    }
+};
+} // end of namespace detail
+
+template <std::size_t num>
+sycl::event keep_args_alive(sycl::queue &q,
+                            const py::object (&py_objs)[num],
+                            const std::vector<sycl::event> &depends = {})
+{
+    std::size_t n_objects_held = 0;
+    std::array<std::shared_ptr<py::handle>, num> shp_arr{};
+
+    std::size_t n_usm_owners_held = 0;
+    std::array<std::shared_ptr<void>, num> shp_usm{};
+
+    for (std::size_t i = 0; i < num; ++i) {
+        const auto &py_obj_i = py_objs[i];
+        if (detail::ManagedMemory::is_usm_managed_by_shared_ptr(py_obj_i)) {
+            const auto &shp =
+                detail::ManagedMemory::extract_shared_ptr(py_obj_i);
+            shp_usm[n_usm_owners_held] = shp;
+            ++n_usm_owners_held;
+        }
+        else {
+            shp_arr[n_objects_held] = std::make_shared<py::handle>(py_obj_i);
+            shp_arr[n_objects_held]->inc_ref();
+            ++n_objects_held;
+        }
+    }
+
+    bool use_depends = true;
+    sycl::event host_task_ev;
+
+    if (n_usm_owners_held > 0) {
+        host_task_ev = q.submit([&](sycl::handler &cgh) {
+            if (use_depends) {
+                cgh.depends_on(depends);
+                use_depends = false;
+            }
+            else {
+                cgh.depends_on(host_task_ev);
+            }
+            cgh.host_task([shp_usm = std::move(shp_usm)]() {
+                // no body, but shared pointers are captured in
+                // the lambda, ensuring that USM allocation is
+                // kept alive
+            });
+        });
+    }
+
+    if (n_objects_held > 0) {
+        host_task_ev = q.submit([&](sycl::handler &cgh) {
+            if (use_depends) {
+                cgh.depends_on(depends);
+                use_depends = false;
+            }
+            else {
+                cgh.depends_on(host_task_ev);
+            }
+            cgh.host_task([n_objects_held, shp_arr = std::move(shp_arr)]() {
+                py::gil_scoped_acquire acquire;
+
+                for (std::size_t i = 0; i < n_objects_held; ++i) {
+                    shp_arr[i]->dec_ref();
+                }
+            });
+        });
+    }
+
+    return host_task_ev;
+}
+
 using ::dpctl::utils::queues_are_compatible;
 
 /*! @brief Check if all allocation queues of usm_ndarrays are the same as
