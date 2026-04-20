@@ -95,8 +95,8 @@ find_package(Python 3.10...<3.15 REQUIRED COMPONENTS Development.Module NumPy)
 include(FetchContent)
 FetchContent_Declare(
     pybind11
-    URL https://github.com/pybind/pybind11/archive/refs/tags/v3.0.3.tar.gz
-    URL_HASH SHA256=787459e1e186ee82001759508fefa408373eae8a076ffe0078b126c6f8f0ec5e
+    URL https://github.com/pybind/pybind11/archive/refs/tags/v3.0.4.tar.gz
+    URL_HASH SHA256=e8b0737c226b0e48e30a0e2adc4f849babd5b14d6e08fd99d8a4fa6b0758ddde
     FIND_PACKAGE_ARGS NAMES pybind11
 )
 FetchContent_MakeAvailable(pybind11)
