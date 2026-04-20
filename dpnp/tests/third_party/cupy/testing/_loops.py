@@ -933,11 +933,23 @@ def numpy_cupy_equal(name="xp", sp_name=None, scipy_name=None):
                 return
 
             if cupy_result != numpy_result:
+                # Safely convert results to strings, handling device errors gracefully
+                # This prevents crashes when device is lost during error reporting
+                try:
+                    cupy_str = str(cupy_result)
+                except Exception as e:
+                    cupy_str = f"<Failed to format cupy result: {type(e).__name__}: {e}>"
+
+                try:
+                    numpy_str = str(numpy_result)
+                except Exception as e:
+                    numpy_str = f"<Failed to format numpy result: {type(e).__name__}: {e}>"
+
                 message = """Results are not equal:
 cupy: {}
 numpy: {}""".format(
-                    str(cupy_result),
-                    str(numpy_result),
+                    cupy_str,
+                    numpy_str,
                 )
                 raise AssertionError(message)
 
