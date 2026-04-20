@@ -34,21 +34,21 @@
 #include "dpnp4pybind11.hpp"
 #include <sycl/sycl.hpp>
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 std::pair<sycl::event, sycl::event>
-    py_as_c_contig(const dpctl::tensor::usm_ndarray &,
-                   const dpctl::tensor::usm_ndarray &,
+    py_as_c_contig(const dpnp::tensor::usm_ndarray &,
+                   const dpnp::tensor::usm_ndarray &,
                    sycl::queue &,
                    const std::vector<sycl::event> &);
 
 std::pair<sycl::event, sycl::event>
-    py_as_f_contig(const dpctl::tensor::usm_ndarray &,
-                   const dpctl::tensor::usm_ndarray &,
+    py_as_f_contig(const dpnp::tensor::usm_ndarray &,
+                   const dpnp::tensor::usm_ndarray &,
                    sycl::queue &,
                    const std::vector<sycl::event> &);
 
 void init_copy_as_contig_dispatch_vectors(void);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

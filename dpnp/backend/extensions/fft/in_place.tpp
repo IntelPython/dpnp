@@ -44,7 +44,7 @@
 #include "fft_utils.hpp"
 #include "in_place.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/output_validation.hpp"
 
 namespace dpnp::extensions::fft
@@ -56,7 +56,7 @@ namespace py = pybind11;
 template <mkl_dft::precision prec, mkl_dft::domain dom>
 std::pair<sycl::event, sycl::event>
     compute_fft_in_place(DescriptorWrapper<prec, dom> &descr,
-                         const dpctl::tensor::usm_ndarray &in_out,
+                         const dpnp::tensor::usm_ndarray &in_out,
                          const bool is_forward,
                          const std::vector<sycl::event> &depends)
 {
@@ -73,12 +73,12 @@ std::pair<sycl::event, sycl::event>
     }
 
     sycl::queue exec_q = descr.get_queue();
-    if (!dpctl::utils::queues_are_compatible(exec_q, {in_out.get_queue()})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {in_out.get_queue()})) {
         throw py::value_error("SYCL queue of the descriptor is not compatible "
                               "with the execution queue of input array.");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(in_out);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(in_out);
 
     // in-place is only used for c2c FFT at this time, passing true or false is
     // indifferent
@@ -113,7 +113,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     sycl::event args_ev =
-        dpctl::utils::keep_args_alive(exec_q, {in_out}, {fft_event});
+        dpnp::utils::keep_args_alive(exec_q, {in_out}, {fft_event});
 
     return std::make_pair(fft_event, args_ev);
 }

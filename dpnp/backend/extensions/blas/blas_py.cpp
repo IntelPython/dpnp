@@ -60,15 +60,15 @@ void init_dispatch_vectors_tables(void)
     blas_ns::init_syrk_dispatch_vector();
 }
 
-static dot_impl_fn_ptr_t dot_dispatch_vector[dpctl_td_ns::num_types];
-static dot_impl_fn_ptr_t dotc_dispatch_vector[dpctl_td_ns::num_types];
-static dot_impl_fn_ptr_t dotu_dispatch_vector[dpctl_td_ns::num_types];
+static dot_impl_fn_ptr_t dot_dispatch_vector[dpnp_td_ns::num_types];
+static dot_impl_fn_ptr_t dotc_dispatch_vector[dpnp_td_ns::num_types];
+static dot_impl_fn_ptr_t dotu_dispatch_vector[dpnp_td_ns::num_types];
 
 PYBIND11_MODULE(_blas_impl, m)
 {
     init_dispatch_vectors_tables();
 
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
 
     {

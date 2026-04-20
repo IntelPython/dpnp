@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #include <algorithm>
@@ -63,49 +63,49 @@
 #include "utils/type_dispatch.hpp"
 #include "utils/type_dispatch_building.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 static int dot_output_id_table[td_ns::num_types][td_ns::num_types];
 
-using dpctl::tensor::kernels::dot_product_impl_fn_ptr_t;
+using dpnp::tensor::kernels::dot_product_impl_fn_ptr_t;
 static dot_product_impl_fn_ptr_t dot_product_dispatch_table[td_ns::num_types]
                                                            [td_ns::num_types];
 
 static dot_product_impl_fn_ptr_t
     dot_product_temps_dispatch_table[td_ns::num_types][td_ns::num_types];
 
-using dpctl::tensor::kernels::dot_product_contig_impl_fn_ptr_t;
+using dpnp::tensor::kernels::dot_product_contig_impl_fn_ptr_t;
 static dot_product_contig_impl_fn_ptr_t
     dot_product_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 static dot_product_contig_impl_fn_ptr_t
     dot_product_contig_temps_dispatch_table[td_ns::num_types][td_ns::num_types];
 
-using dpctl::tensor::kernels::gemm_impl_fn_ptr_t;
+using dpnp::tensor::kernels::gemm_impl_fn_ptr_t;
 static gemm_impl_fn_ptr_t gemm_atomic_dispatch_table[td_ns::num_types]
                                                     [td_ns::num_types];
 
 static gemm_impl_fn_ptr_t gemm_temps_dispatch_table[td_ns::num_types]
                                                    [td_ns::num_types];
 
-using dpctl::tensor::kernels::gemm_contig_impl_fn_ptr_t;
+using dpnp::tensor::kernels::gemm_contig_impl_fn_ptr_t;
 static gemm_contig_impl_fn_ptr_t
     gemm_contig_atomic_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 static gemm_contig_impl_fn_ptr_t
     gemm_contig_temps_dispatch_table[td_ns::num_types][td_ns::num_types];
 
-using dpctl::tensor::kernels::gemm_batch_impl_fn_ptr_t;
+using dpnp::tensor::kernels::gemm_batch_impl_fn_ptr_t;
 static gemm_batch_impl_fn_ptr_t
     gemm_batch_atomic_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 static gemm_batch_impl_fn_ptr_t
     gemm_batch_temps_dispatch_table[td_ns::num_types][td_ns::num_types];
 
-using dpctl::tensor::kernels::gemm_batch_contig_impl_fn_ptr_t;
+using dpnp::tensor::kernels::gemm_batch_contig_impl_fn_ptr_t;
 static gemm_batch_contig_impl_fn_ptr_t
     gemm_batch_contig_atomic_dispatch_table[td_ns::num_types][td_ns::num_types];
 
@@ -193,22 +193,22 @@ void init_dot_atomic_support_vector(void)
 }
 
 std::pair<sycl::event, sycl::event>
-    py_dot(const dpctl::tensor::usm_ndarray &x1,
-           const dpctl::tensor::usm_ndarray &x2,
+    py_dot(const dpnp::tensor::usm_ndarray &x1,
+           const dpnp::tensor::usm_ndarray &x2,
            int batch_dims,
            int x1_outer_dims,
            int x2_outer_dims,
            int inner_dims,
-           const dpctl::tensor::usm_ndarray &dst,
+           const dpnp::tensor::usm_ndarray &dst,
            sycl::queue &exec_q,
            const std::vector<sycl::event> &depends)
 {
-    if (!dpctl::utils::queues_are_compatible(exec_q, {x1, x2, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {x1, x2, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     if (inner_dims == 0) {
         throw py::value_error("No inner dimension for dot");
@@ -274,9 +274,9 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("dst shape and size mismatch");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with x1 or x2
     if (overlap(dst, x1) || overlap(dst, x2)) {
         throw py::value_error("Result array overlaps with inputs");
@@ -350,7 +350,7 @@ std::pair<sycl::event, sycl::event>
                             zero_offset, // lhs reduction offset
                             zero_offset, // rhs reduction offset
                             depends);
-                return std::make_pair(dpctl::utils::keep_args_alive(
+                return std::make_pair(dpnp::utils::keep_args_alive(
                                           exec_q, {x1, x2, dst}, {dot_ev}),
                                       dot_ev);
             }
@@ -446,7 +446,7 @@ std::pair<sycl::event, sycl::event>
                                 inner_x1_offset,  // lhs reduction offset
                                 inner_x2_offset,  // rhs reduction offset
                                 depends);
-                    return std::make_pair(dpctl::utils::keep_args_alive(
+                    return std::make_pair(dpnp::utils::keep_args_alive(
                                               exec_q, {x1, x2, dst}, {dot_ev}),
                                           dot_ev);
                 }
@@ -467,7 +467,7 @@ std::pair<sycl::event, sycl::event>
             }
         }
 
-        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        using dpnp::tensor::offset_utils::device_allocate_and_pack;
         auto arrays_metainfo_packing_triple_ =
             device_allocate_and_pack<py::ssize_t>(
                 exec_q, host_task_events,
@@ -501,8 +501,8 @@ std::pair<sycl::event, sycl::event>
                inner_shape_stride, inner_x1_offset, inner_x2_offset, all_deps);
 
         sycl::event temp_cleanup_ev =
-            dpctl::tensor::alloc_utils::async_smart_free(exec_q, {dot_ev},
-                                                         tmp_alloc_owner);
+            dpnp::tensor::alloc_utils::async_smart_free(exec_q, {dot_ev},
+                                                        tmp_alloc_owner);
         host_task_events.push_back(temp_cleanup_ev);
     }
     else { // if (!call_vecdot)
@@ -522,7 +522,7 @@ std::pair<sycl::event, sycl::event>
                                 inner_nelems,    // k
                                 x2_outer_nelems, // m
                                 depends);
-                    return std::make_pair(dpctl::utils::keep_args_alive(
+                    return std::make_pair(dpnp::utils::keep_args_alive(
                                               exec_q, {x1, x2, dst}, {dot_ev}),
                                           dot_ev);
                 }
@@ -540,7 +540,7 @@ std::pair<sycl::event, sycl::event>
                         " and x2_typeid=" + std::to_string(x2_typeid));
                 }
             }
-            using dpctl::tensor::offset_utils::device_allocate_and_pack;
+            using dpnp::tensor::offset_utils::device_allocate_and_pack;
             auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
                 exec_q, host_task_events, x1_shape_vec, x1_strides_vec,
                 x2_shape_vec, x2_strides_vec, dst_shape_vec, dst_strides_vec);
@@ -570,7 +570,7 @@ std::pair<sycl::event, sycl::event>
                    x1_outer_dims + x2_outer_dims, dst_shape_strides, all_deps);
 
             sycl::event cleanup_tmp_allocations_ev =
-                dpctl::tensor::alloc_utils::async_smart_free(
+                dpnp::tensor::alloc_utils::async_smart_free(
                     exec_q, {dot_ev}, packed_shapes_strides_owner);
             host_task_events.push_back(cleanup_tmp_allocations_ev);
         }
@@ -598,7 +598,7 @@ std::pair<sycl::event, sycl::event>
                                 inner_nelems,    // k
                                 x2_outer_nelems, // m
                                 zero_offset, zero_offset, zero_offset, depends);
-                    return std::make_pair(dpctl::utils::keep_args_alive(
+                    return std::make_pair(dpnp::utils::keep_args_alive(
                                               exec_q, {x1, x2, dst}, {dot_ev}),
                                           dot_ev);
                 }
@@ -700,8 +700,8 @@ std::pair<sycl::event, sycl::event>
                                     x1_batch_offset, x2_batch_offset,
                                     dst_batch_offset, depends);
                         return std::make_pair(
-                            dpctl::utils::keep_args_alive(exec_q, {x1, x2, dst},
-                                                          {dot_ev}),
+                            dpnp::utils::keep_args_alive(exec_q, {x1, x2, dst},
+                                                         {dot_ev}),
                             dot_ev);
                     }
                 }
@@ -720,7 +720,7 @@ std::pair<sycl::event, sycl::event>
                         " and x2_typeid=" + std::to_string(x2_typeid));
                 }
             }
-            using dpctl::tensor::offset_utils::device_allocate_and_pack;
+            using dpnp::tensor::offset_utils::device_allocate_and_pack;
             auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
                 exec_q, host_task_events, simplified_batch_shape,
                 simplified_batch_x1_strides, simplified_batch_x2_strides,
@@ -767,13 +767,13 @@ std::pair<sycl::event, sycl::event>
                 dst_outer_shapes_strides, dst_full_shape_strides, all_deps);
 
             sycl::event cleanup_tmp_allocations_ev =
-                dpctl::tensor::alloc_utils::async_smart_free(
+                dpnp::tensor::alloc_utils::async_smart_free(
                     exec_q, {dot_ev}, packed_shapes_strides_owner);
             host_task_events.push_back(cleanup_tmp_allocations_ev);
         }
     }
     return std::make_pair(
-        dpctl::utils::keep_args_alive(exec_q, {x1, x2, dst}, host_task_events),
+        dpnp::utils::keep_args_alive(exec_q, {x1, x2, dst}, host_task_events),
         dot_ev);
 }
 
@@ -782,8 +782,8 @@ py::object py_dot_result_type(const py::dtype &input1_dtype,
                               const py::dtype &input2_dtype,
                               const output_typesT &output_types_table)
 {
-    int tn1 = input1_dtype.num(); // NumPy type numbers are the same as in dpctl
-    int tn2 = input2_dtype.num(); // NumPy type numbers are the same as in dpctl
+    int tn1 = input1_dtype.num(); // NumPy type numbers are the same as in dpnp
+    int tn2 = input2_dtype.num(); // NumPy type numbers are the same as in dpnp
     int src1_typeid = -1;
     int src2_typeid = -1;
 
@@ -831,4 +831,4 @@ void init_dot(py::module_ m)
     m.def("_dot_result_type", dot_result_type_pyapi, "");
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

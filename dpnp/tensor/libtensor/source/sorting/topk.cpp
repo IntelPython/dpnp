@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -54,10 +54,10 @@
 
 #include "topk.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 typedef sycl::event (*topk_impl_fn_ptr_t)(sycl::queue &,
                                           std::size_t,
@@ -103,17 +103,17 @@ sycl::event topk_caller(sycl::queue &exec_q,
                         const std::vector<sycl::event> &depends)
 {
     if constexpr (use_radix_sort<argTy>::value) {
-        using dpctl::tensor::kernels::topk_radix_impl;
+        using dpnp::tensor::kernels::topk_radix_impl;
         auto ascending = !largest;
         return topk_radix_impl<argTy, IndexTy>(exec_q, iter_nelems, axis_nelems,
                                                k, ascending, arg_cp, vals_cp,
                                                inds_cp, depends);
     }
     else {
-        using dpctl::tensor::kernels::topk_merge_impl;
+        using dpnp::tensor::kernels::topk_merge_impl;
         if (largest) {
             using CompTy =
-                typename dpctl::tensor::rich_comparisons::DescendingSorter<
+                typename dpnp::tensor::rich_comparisons::DescendingSorter<
                     argTy>::type;
             return topk_merge_impl<argTy, IndexTy, CompTy>(
                 exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
@@ -121,7 +121,7 @@ sycl::event topk_caller(sycl::queue &exec_q,
         }
         else {
             using CompTy =
-                typename dpctl::tensor::rich_comparisons::AscendingSorter<
+                typename dpnp::tensor::rich_comparisons::AscendingSorter<
                     argTy>::type;
             return topk_merge_impl<argTy, IndexTy, CompTy>(
                 exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
@@ -133,12 +133,12 @@ sycl::event topk_caller(sycl::queue &exec_q,
 } // namespace
 
 std::pair<sycl::event, sycl::event>
-    py_topk(const dpctl::tensor::usm_ndarray &src,
+    py_topk(const dpnp::tensor::usm_ndarray &src,
             std::optional<const int> trailing_dims_to_search,
             const std::size_t k,
             const bool largest,
-            const dpctl::tensor::usm_ndarray &vals,
-            const dpctl::tensor::usm_ndarray &inds,
+            const dpnp::tensor::usm_ndarray &vals,
+            const dpnp::tensor::usm_ndarray &inds,
             sycl::queue &exec_q,
             const std::vector<sycl::event> &depends)
 {
@@ -211,29 +211,29 @@ std::pair<sycl::event, sycl::event>
         }
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, vals, inds})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, vals, inds})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(vals);
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(inds);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(vals);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(inds);
 
     if ((iter_nelems == 0) || (axis_nelems == 0)) {
         // Nothing to do
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, vals) || overlap(src, inds)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(vals,
-                                                               k * iter_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(vals,
+                                                              k * iter_nelems);
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(inds,
-                                                               k * iter_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(inds,
+                                                              k * iter_nelems);
 
     int src_typenum = src.get_typenum();
     int vals_typenum = vals.get_typenum();
@@ -265,7 +265,7 @@ std::pair<sycl::event, sycl::event>
                vals.get_data(), inds.get_data(), depends);
 
         sycl::event keep_args_alive_ev =
-            dpctl::utils::keep_args_alive(exec_q, {src, vals, inds}, {comp_ev});
+            dpnp::utils::keep_args_alive(exec_q, {src, vals, inds}, {comp_ev});
 
         return std::make_pair(keep_args_alive_ev, comp_ev);
     }
@@ -300,4 +300,4 @@ void init_topk_functions(py::module_ m)
           py::arg("sycl_queue"), py::arg("depends") = py::list());
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

@@ -36,29 +36,28 @@
 
 #include <sycl/sycl.hpp>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "kernels/alignment.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 #include "utils/sycl_utils.hpp"
 
 namespace dpnp::extensions::py_internal::elementwise_common
 {
-using dpctl::tensor::kernels::alignment_utils::
-    disabled_sg_loadstore_wrapper_krn;
-using dpctl::tensor::kernels::alignment_utils::is_aligned;
-using dpctl::tensor::kernels::alignment_utils::required_alignment;
+using dpnp::tensor::kernels::alignment_utils::disabled_sg_loadstore_wrapper_krn;
+using dpnp::tensor::kernels::alignment_utils::is_aligned;
+using dpnp::tensor::kernels::alignment_utils::required_alignment;
 
-using dpctl::tensor::kernels::elementwise_common::select_lws;
+using dpnp::tensor::kernels::elementwise_common::select_lws;
 
-using dpctl::tensor::sycl_utils::sub_group_load;
-using dpctl::tensor::sycl_utils::sub_group_store;
+using dpnp::tensor::sycl_utils::sub_group_load;
+using dpnp::tensor::sycl_utils::sub_group_store;
 
 /**
  * @brief Functor for evaluation of a unary function with two output arrays on
  * contiguous arrays.
  *
  * @note It extends UnaryContigFunctor from
- * dpctl::tensor::kernels::elementwise_common namespace.
+ * dpnp::tensor::kernels::elementwise_common namespace.
  */
 template <typename argT,
           typename resT1,
@@ -275,7 +274,7 @@ public:
  * strided data.
  *
  * @note It extends UnaryStridedFunctor from
- * dpctl::tensor::kernels::elementwise_common namespace.
+ * dpnp::tensor::kernels::elementwise_common namespace.
  */
 template <typename argT,
           typename resT1,
@@ -318,7 +317,7 @@ public:
  * contiguous arrays.
  *
  * @note It extends BinaryContigFunctor from
- * dpctl::tensor::kernels::elementwise_common namespace.
+ * dpnp::tensor::kernels::elementwise_common namespace.
  */
 template <typename argT1,
           typename argT2,
@@ -471,7 +470,7 @@ public:
  * strided data.
  *
  * @note It extends BinaryStridedFunctor from
- * dpctl::tensor::kernels::elementwise_common namespace.
+ * dpnp::tensor::kernels::elementwise_common namespace.
  */
 template <typename argT1,
           typename argT2,
@@ -520,7 +519,7 @@ public:
  * on contiguous arrays.
  *
  * @note It extends unary_contig_impl from
- * dpctl::tensor::kernels::elementwise_common namespace.
+ * dpnp::tensor::kernels::elementwise_common namespace.
  */
 template <typename argTy,
           template <typename T> class UnaryTwoOutputsType,
@@ -601,7 +600,7 @@ sycl::event
  * on strided data.
  *
  * @note It extends unary_strided_impl from
- * dpctl::tensor::kernels::elementwise_common namespace.
+ * dpnp::tensor::kernels::elementwise_common namespace.
  */
 template <typename argTy,
           template <typename T> class UnaryTwoOutputsType,
@@ -634,7 +633,7 @@ sycl::event unary_two_outputs_strided_impl(
         using res1Ty = typename UnaryTwoOutputsType<argTy>::value_type1;
         using res2Ty = typename UnaryTwoOutputsType<argTy>::value_type2;
         using IndexerT =
-            typename dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+            typename dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;
 
         const IndexerT indexer{nd, arg_offset, res1_offset, res2_offset,
                                shape_and_strides};
@@ -657,7 +656,7 @@ sycl::event unary_two_outputs_strided_impl(
  * on contiguous arrays.
  *
  * @note It extends binary_contig_impl from
- * dpctl::tensor::kernels::elementwise_common namespace.
+ * dpnp::tensor::kernels::elementwise_common namespace.
  */
 template <
     typename argTy1,
@@ -750,7 +749,7 @@ sycl::event
  * on strided data.
  *
  * @note It extends binary_strided_impl from
- * dpctl::tensor::kernels::elementwise_common namespace.
+ * dpnp::tensor::kernels::elementwise_common namespace.
  */
 template <typename argTy1,
           typename argTy2,
@@ -791,7 +790,7 @@ sycl::event binary_two_outputs_strided_impl(
             typename BinaryTwoOutputsType<argTy1, argTy2>::value_type2;
 
         using IndexerT =
-            typename dpctl::tensor::offset_utils::FourOffsets_StridedIndexer;
+            typename dpnp::tensor::offset_utils::FourOffsets_StridedIndexer;
 
         const IndexerT indexer{nd,          arg1_offset, arg2_offset,
                                res1_offset, res2_offset, shape_and_strides};

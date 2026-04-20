@@ -40,25 +40,24 @@
 #include <sycl/sycl.hpp>
 #include <vector>
 
-#include "dpctl_tensor_types.hpp"
+#include "dpnp_tensor_types.hpp"
 #include "kernels/alignment.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::copy_and_cast
+namespace dpnp::tensor::kernels::copy_and_cast
 {
 
-using dpctl::tensor::ssize_t;
-using namespace dpctl::tensor::offset_utils;
+using dpnp::tensor::ssize_t;
+using namespace dpnp::tensor::offset_utils;
 
-using dpctl::tensor::kernels::alignment_utils::
-    disabled_sg_loadstore_wrapper_krn;
-using dpctl::tensor::kernels::alignment_utils::is_aligned;
-using dpctl::tensor::kernels::alignment_utils::required_alignment;
+using dpnp::tensor::kernels::alignment_utils::disabled_sg_loadstore_wrapper_krn;
+using dpnp::tensor::kernels::alignment_utils::is_aligned;
+using dpnp::tensor::kernels::alignment_utils::required_alignment;
 
-using dpctl::tensor::sycl_utils::sub_group_load;
-using dpctl::tensor::sycl_utils::sub_group_store;
+using dpnp::tensor::sycl_utils::sub_group_load;
+using dpnp::tensor::sycl_utils::sub_group_store;
 
 template <typename srcT, typename dstT, typename IndexerT>
 class copy_cast_generic_kernel;
@@ -82,7 +81,7 @@ public:
     Caster() = default;
     dstTy operator()(const srcTy &src) const
     {
-        using dpctl::tensor::type_utils::convert_impl;
+        using dpnp::tensor::type_utils::convert_impl;
         return convert_impl<dstTy, srcTy>(src);
     }
 };
@@ -177,8 +176,8 @@ sycl::event copy_and_cast_generic_impl(
     const std::vector<sycl::event> &depends,
     const std::vector<sycl::event> &additional_depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
-    dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<srcTy>(q);
 
     sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -244,7 +243,7 @@ public:
 
         static constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
 
-        using dpctl::tensor::type_utils::is_complex_v;
+        using dpnp::tensor::type_utils::is_complex_v;
         if constexpr (!enable_sg_loadstore || is_complex_v<srcT> ||
                       is_complex_v<dstT>) {
             std::uint16_t sgSize = ndit.get_sub_group().get_local_range()[0];
@@ -334,8 +333,8 @@ sycl::event copy_and_cast_contig_impl(sycl::queue &q,
                                       char *dst_cp,
                                       const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
-    dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<srcTy>(q);
 
     sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -472,8 +471,8 @@ sycl::event copy_and_cast_nd_specialized_impl(
     ssize_t dst_offset,
     const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
-    dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<srcTy>(q);
 
     sycl::event copy_and_cast_ev = q.submit([&](sycl::handler &cgh) {
         using IndexerT = TwoOffsets_FixedDimStridedIndexer<nd>;
@@ -624,8 +623,8 @@ void copy_and_cast_from_host_impl(
 {
     ssize_t nelems_range = src_max_nelem_offset - src_min_nelem_offset + 1;
 
-    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
-    dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<srcTy>(q);
 
     sycl::buffer<srcTy, 1> npy_buf(
         reinterpret_cast<const srcTy *>(host_src_p) + src_min_nelem_offset,
@@ -719,8 +718,8 @@ void copy_and_cast_from_host_contig_impl(
     ssize_t dst_offset,
     const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
-    dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<srcTy>(q);
 
     sycl::buffer<srcTy, 1> npy_buf(
         reinterpret_cast<const srcTy *>(host_src_p) + src_offset,
@@ -846,7 +845,7 @@ sycl::event
                                   char *dst_p,
                                   const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<Ty>(q);
 
     sycl::event copy_for_reshape_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -951,7 +950,7 @@ private:
 
     ssize_t compute_offset(ssize_t gid) const
     {
-        using dpctl::tensor::strides::CIndexer_vector;
+        using dpnp::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd_);
         ssize_t relative_offset_(0);
@@ -1047,7 +1046,7 @@ sycl::event copy_for_roll_strided_impl(sycl::queue &q,
                                        ssize_t dst_offset,
                                        const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<Ty>(q);
 
     sycl::event copy_for_roll_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -1131,7 +1130,7 @@ sycl::event copy_for_roll_contig_impl(sycl::queue &q,
                                       ssize_t dst_offset,
                                       const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<Ty>(q);
 
     sycl::event copy_for_roll_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -1216,7 +1215,7 @@ sycl::event copy_for_roll_ndshift_strided_impl(
     ssize_t dst_offset,
     const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<Ty>(q);
 
     sycl::event copy_for_roll_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -1270,4 +1269,4 @@ struct CopyForRollNDShiftFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::copy_and_cast
+} // namespace dpnp::tensor::kernels::copy_and_cast

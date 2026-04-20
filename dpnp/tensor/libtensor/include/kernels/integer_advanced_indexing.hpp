@@ -40,15 +40,15 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl_tensor_types.hpp"
+#include "dpnp_tensor_types.hpp"
 #include "utils/indexing_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::indexing
+namespace dpnp::tensor::kernels::indexing
 {
 
-using dpctl::tensor::ssize_t;
+using dpnp::tensor::ssize_t;
 
 template <typename ProjectorT,
           typename OrthogIndexer,
@@ -161,21 +161,21 @@ sycl::event take_impl(sycl::queue &q,
                       const ssize_t *ind_offsets,
                       const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<Ty>(q);
 
     sycl::event take_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         using OrthogIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
         const OrthogIndexerT orthog_indexer{nd, src_offset, dst_offset,
                                             orthog_shape_and_strides};
 
-        using NthStrideIndexerT = dpctl::tensor::offset_utils::NthStrideOffset;
+        using NthStrideIndexerT = dpnp::tensor::offset_utils::NthStrideOffset;
         const NthStrideIndexerT indices_indexer{ind_nd, ind_offsets,
                                                 ind_shape_and_strides};
 
-        using AxesIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+        using AxesIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
         const AxesIndexerT axes_indexer{ind_nd, 0,
                                         axes_shape_and_strides + (2 * k)};
 
@@ -308,21 +308,21 @@ sycl::event put_impl(sycl::queue &q,
                      const ssize_t *ind_offsets,
                      const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<Ty>(q);
 
     sycl::event put_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         using OrthogIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
         const OrthogIndexerT orthog_indexer{nd, dst_offset, val_offset,
                                             orthog_shape_and_strides};
 
-        using NthStrideIndexerT = dpctl::tensor::offset_utils::NthStrideOffset;
+        using NthStrideIndexerT = dpnp::tensor::offset_utils::NthStrideOffset;
         const NthStrideIndexerT indices_indexer{ind_nd, ind_offsets,
                                                 ind_shape_and_strides};
 
-        using AxesIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+        using AxesIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
         const AxesIndexerT axes_indexer{ind_nd, 0,
                                         axes_shape_and_strides + (2 * k)};
 
@@ -350,7 +350,7 @@ struct TakeWrapFactory
     {
         if constexpr (std::is_integral<indT>::value &&
                       !std::is_same<indT, bool>::value) {
-            using dpctl::tensor::indexing_utils::WrapIndex;
+            using dpnp::tensor::indexing_utils::WrapIndex;
             fnT fn = take_impl<WrapIndex<indT>, T, indT>;
             return fn;
         }
@@ -368,7 +368,7 @@ struct TakeClipFactory
     {
         if constexpr (std::is_integral<indT>::value &&
                       !std::is_same<indT, bool>::value) {
-            using dpctl::tensor::indexing_utils::ClipIndex;
+            using dpnp::tensor::indexing_utils::ClipIndex;
             fnT fn = take_impl<ClipIndex<indT>, T, indT>;
             return fn;
         }
@@ -386,7 +386,7 @@ struct PutWrapFactory
     {
         if constexpr (std::is_integral<indT>::value &&
                       !std::is_same<indT, bool>::value) {
-            using dpctl::tensor::indexing_utils::WrapIndex;
+            using dpnp::tensor::indexing_utils::WrapIndex;
             fnT fn = put_impl<WrapIndex<indT>, T, indT>;
             return fn;
         }
@@ -404,7 +404,7 @@ struct PutClipFactory
     {
         if constexpr (std::is_integral<indT>::value &&
                       !std::is_same<indT, bool>::value) {
-            using dpctl::tensor::indexing_utils::ClipIndex;
+            using dpnp::tensor::indexing_utils::ClipIndex;
             fnT fn = put_impl<ClipIndex<indT>, T, indT>;
             return fn;
         }
@@ -415,4 +415,4 @@ struct PutClipFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::indexing
+} // namespace dpnp::tensor::kernels::indexing

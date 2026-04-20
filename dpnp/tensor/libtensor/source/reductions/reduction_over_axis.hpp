@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_reductions_impl
+/// This file defines functions of dpnp.tensor._tensor_reductions_impl
 /// extension, specifically functions for reductions.
 //===---------------------------------------------------------------------===//
 
@@ -59,11 +59,11 @@
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 /* ====================== dtype supported ======================== */
 
@@ -80,9 +80,9 @@ bool py_reduction_dtype_supported(
     const CheckAtomicSupportFnT &check_atomic_support)
 {
     int arg_tn =
-        input_dtype.num(); // NumPy type numbers are the same as in dpctl
+        input_dtype.num(); // NumPy type numbers are the same as in dpnp
     int out_tn =
-        output_dtype.num(); // NumPy type numbers are the same as in dpctl
+        output_dtype.num(); // NumPy type numbers are the same as in dpnp
     int arg_typeid = -1;
     int out_typeid = -1;
 
@@ -141,9 +141,9 @@ bool py_tree_reduction_dtype_supported(const py::dtype &input_dtype,
                                        const fnT &temps_dispatch_table)
 {
     int arg_tn =
-        input_dtype.num(); // NumPy type numbers are the same as in dpctl
+        input_dtype.num(); // NumPy type numbers are the same as in dpnp
     int out_tn =
-        output_dtype.num(); // NumPy type numbers are the same as in dpctl
+        output_dtype.num(); // NumPy type numbers are the same as in dpnp
     int arg_typeid = -1;
     int out_typeid = -1;
 
@@ -172,9 +172,9 @@ bool py_tree_reduction_dtype_supported(const py::dtype &input_dtype,
  * support atomics */
 template <typename strided_fnT, typename contig_fnT, typename SupportAtomicFnT>
 std::pair<sycl::event, sycl::event> py_reduction_over_axis(
-    const dpctl::tensor::usm_ndarray &src,
+    const dpnp::tensor::usm_ndarray &src,
     int trailing_dims_to_reduce, // comp over this many trailing indexes
-    const dpctl::tensor::usm_ndarray &dst,
+    const dpnp::tensor::usm_ndarray &dst,
     sycl::queue &exec_q,
     const std::vector<sycl::event> &depends,
     const strided_fnT &atomic_dispatch_table,
@@ -211,12 +211,12 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
                               "dimensions of the input shape");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     std::size_t dst_nelems = dst.get_size();
 
@@ -230,17 +230,17 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     }
 
     // check that dst and src do not overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
-    namespace td_ns = dpctl::tensor::type_dispatch;
+    namespace td_ns = dpnp::tensor::type_dispatch;
     const auto &array_types = td_ns::usm_ndarray_types();
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
@@ -281,7 +281,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
                    zero_offset, // reduction_src_offset
                    depends);
 
-            sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+            sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                 exec_q, {src, dst}, {reduction_over_axis_contig_ev});
 
             return std::make_pair(keep_args_event,
@@ -313,7 +313,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
                    zero_offset, // reduction_src_offset
                    depends);
 
-            sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+            sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                 exec_q, {src, dst}, {reduction_over_axis_contig_ev});
 
             return std::make_pair(keep_args_event,
@@ -409,7 +409,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
                        dst.get_data(), iteration_src_offset,
                        iteration_dst_offset, reduction_src_offset, depends);
 
-                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                     exec_q, {src, dst}, {reduction_over_axis1_contig_ev});
 
                 return std::make_pair(keep_args_event,
@@ -432,7 +432,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
                        dst.get_data(), iteration_src_offset,
                        iteration_dst_offset, reduction_src_offset, depends);
 
-                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                     exec_q, {src, dst}, {reduction_over_axis0_contig_ev});
 
                 return std::make_pair(keep_args_event,
@@ -459,7 +459,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     }
 
     std::vector<sycl::event> host_task_events{};
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto arrays_metainfo_packing_triple_ =
         device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events,
@@ -490,12 +490,12 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
            reduction_nd, // number dimensions being reduced
            reduction_shape_stride, reduction_src_offset, all_deps);
 
-    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event temp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {reduction_ev}, tmp_alloc_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     sycl::event keep_args_event =
-        dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
+        dpnp::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
 
     return std::make_pair(keep_args_event, reduction_ev);
 }
@@ -506,9 +506,9 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
  * atomics */
 template <typename strided_fnT, typename contig_fnT>
 std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
-    const dpctl::tensor::usm_ndarray &src,
+    const dpnp::tensor::usm_ndarray &src,
     int trailing_dims_to_reduce, // comp over this many trailing indexes
-    const dpctl::tensor::usm_ndarray &dst,
+    const dpnp::tensor::usm_ndarray &dst,
     sycl::queue &exec_q,
     const std::vector<sycl::event> &depends,
     const strided_fnT &temps_dispatch_table,
@@ -541,12 +541,12 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
                               "dimensions of the input shape");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     std::size_t dst_nelems = dst.get_size();
 
@@ -560,17 +560,17 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
     }
 
     // check that dst and src do not overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
-    namespace td_ns = dpctl::tensor::type_dispatch;
+    namespace td_ns = dpnp::tensor::type_dispatch;
     const auto &array_types = td_ns::usm_ndarray_types();
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
@@ -596,7 +596,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
                    zero_offset, // reduction_src_offset
                    depends);
 
-            sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+            sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                 exec_q, {src, dst}, {reduction_over_axis_contig_ev});
 
             return std::make_pair(keep_args_event,
@@ -619,7 +619,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
                    zero_offset, // reduction_src_offset
                    depends);
 
-            sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+            sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                 exec_q, {src, dst}, {reduction_over_axis_contig_ev});
 
             return std::make_pair(keep_args_event,
@@ -706,7 +706,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
                        dst.get_data(), iteration_src_offset,
                        iteration_dst_offset, reduction_src_offset, depends);
 
-                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                     exec_q, {src, dst}, {reduction_over_axis1_contig_ev});
 
                 return std::make_pair(keep_args_event,
@@ -721,7 +721,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
                        dst.get_data(), iteration_src_offset,
                        iteration_dst_offset, reduction_src_offset, depends);
 
-                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                     exec_q, {src, dst}, {reduction_over_axis0_contig_ev});
 
                 return std::make_pair(keep_args_event,
@@ -736,7 +736,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
     }
 
     std::vector<sycl::event> host_task_events{};
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto arrays_metainfo_packing_triple_ =
         device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events,
@@ -766,12 +766,12 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
            reduction_nd, // number dimensions being reduced
            reduction_shape_stride, reduction_src_offset, all_deps);
 
-    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event temp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {reduction_ev}, tmp_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     sycl::event keep_args_event =
-        dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
+        dpnp::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
 
     return std::make_pair(keep_args_event, reduction_ev);
 }
@@ -779,9 +779,9 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
 /*! @brief Template implementing Python API for searching over an axis */
 template <typename strided_fnT, typename contig_fnT>
 std::pair<sycl::event, sycl::event> py_search_over_axis(
-    const dpctl::tensor::usm_ndarray &src,
+    const dpnp::tensor::usm_ndarray &src,
     int trailing_dims_to_reduce, // comp over this many trailing indexes
-    const dpctl::tensor::usm_ndarray &dst,
+    const dpnp::tensor::usm_ndarray &dst,
     sycl::queue &exec_q,
     const std::vector<sycl::event> &depends,
     const strided_fnT &strided_dispatch_table,
@@ -814,12 +814,12 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                               "dimensions of the input shape");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     std::size_t dst_nelems = dst.get_size();
 
@@ -833,17 +833,17 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
     }
 
     // check that dst and src do not overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
 
-    namespace td_ns = dpctl::tensor::type_dispatch;
+    namespace td_ns = dpnp::tensor::type_dispatch;
     const auto &array_types = td_ns::usm_ndarray_types();
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
@@ -868,7 +868,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                    zero_offset, // reduction_src_offset
                    depends);
 
-            sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+            sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                 exec_q, {src, dst}, {reduction_over_axis_contig_ev});
 
             return std::make_pair(keep_args_event,
@@ -890,7 +890,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                    zero_offset, // reduction_src_offset
                    depends);
 
-            sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+            sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                 exec_q, {src, dst}, {reduction_over_axis_contig_ev});
 
             return std::make_pair(keep_args_event,
@@ -975,7 +975,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                        dst.get_data(), iteration_src_offset,
                        iteration_dst_offset, reduction_src_offset, depends);
 
-                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                     exec_q, {src, dst}, {reduction_over_axis1_contig_ev});
 
                 return std::make_pair(keep_args_event,
@@ -990,7 +990,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                        dst.get_data(), iteration_src_offset,
                        iteration_dst_offset, reduction_src_offset, depends);
 
-                sycl::event keep_args_event = dpctl::utils::keep_args_alive(
+                sycl::event keep_args_event = dpnp::utils::keep_args_alive(
                     exec_q, {src, dst}, {reduction_over_axis0_contig_ev});
 
                 return std::make_pair(keep_args_event,
@@ -1006,7 +1006,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
 
     std::vector<sycl::event> host_task_events{};
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
 
     auto arrays_metainfo_packing_triple_ =
         device_allocate_and_pack<py::ssize_t>(
@@ -1036,12 +1036,12 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                       reduction_nd, // number dimensions being reduced
                       reduction_shape_stride, reduction_src_offset, all_deps);
 
-    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event temp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {comp_ev}, tmp_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     sycl::event keep_args_event =
-        dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
+        dpnp::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
 
     return std::make_pair(keep_args_event, comp_ev);
 }
@@ -1054,9 +1054,9 @@ template <typename contig_dispatchT,
           typename strided_dispatchT,
           typename atomic_support_fnT>
 std::pair<sycl::event, sycl::event>
-    py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
+    py_boolean_reduction(const dpnp::tensor::usm_ndarray &src,
                          int trailing_dims_to_reduce,
-                         const dpctl::tensor::usm_ndarray &dst,
+                         const dpnp::tensor::usm_ndarray &dst,
                          sycl::queue &exec_q,
                          const std::vector<sycl::event> &depends,
                          const contig_dispatchT &axis1_contig_dispatch_vector,
@@ -1090,12 +1090,12 @@ std::pair<sycl::event, sycl::event>
                               "dimensions of the input shape");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     std::size_t dst_nelems = dst.get_size();
 
@@ -1104,12 +1104,12 @@ std::pair<sycl::event, sycl::event>
         red_nelems *= static_cast<std::size_t>(src_shape_ptr[i]);
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(dst, src)) {
         throw py::value_error("Arrays are expected to have no memory overlap");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
 
     const char *src_data = src.get_data();
     char *dst_data = dst.get_data();
@@ -1153,7 +1153,7 @@ std::pair<sycl::event, sycl::event>
                zero_offset, zero_offset, depends);
 
         sycl::event keep_args_event =
-            dpctl::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
+            dpnp::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
 
         return std::make_pair(keep_args_event, red_ev);
     }
@@ -1167,7 +1167,7 @@ std::pair<sycl::event, sycl::event>
                zero_offset, zero_offset, depends);
 
         sycl::event keep_args_event =
-            dpctl::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
+            dpnp::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
 
         return std::make_pair(keep_args_event, red_ev);
     }
@@ -1244,7 +1244,7 @@ std::pair<sycl::event, sycl::event>
                    iter_src_offset, iter_dst_offset, red_src_offset, depends);
 
             sycl::event keep_args_event =
-                dpctl::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
+                dpnp::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
 
             return std::make_pair(keep_args_event, red_ev);
         }
@@ -1256,7 +1256,7 @@ std::pair<sycl::event, sycl::event>
                    iter_src_offset, iter_dst_offset, red_src_offset, depends);
 
             sycl::event keep_args_event =
-                dpctl::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
+                dpnp::utils::keep_args_alive(exec_q, {src, dst}, {red_ev});
 
             return std::make_pair(keep_args_event, red_ev);
         }
@@ -1266,7 +1266,7 @@ std::pair<sycl::event, sycl::event>
 
     std::vector<sycl::event> host_task_events{};
     auto iter_red_metadata_packing_triple_ =
-        dpctl::tensor::offset_utils::device_allocate_and_pack<py::ssize_t>(
+        dpnp::tensor::offset_utils::device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_iter_shape,
             simplified_iter_src_strides, simplified_iter_dst_strides,
             simplified_red_shape, simplified_red_src_strides);
@@ -1292,16 +1292,16 @@ std::pair<sycl::event, sycl::event>
            iter_shape_and_strides, iter_src_offset, iter_dst_offset,
            simplified_red_nd, red_shape_stride, red_src_offset, all_deps);
 
-    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event temp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {red_ev}, packed_shapes_strides_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     sycl::event keep_args_event =
-        dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
+        dpnp::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
 
     return std::make_pair(keep_args_event, red_ev);
 }
 
 extern void init_reduction_functions(py::module_ m);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

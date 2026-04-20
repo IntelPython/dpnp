@@ -33,7 +33,7 @@
 // utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_utils.hpp"
@@ -45,7 +45,7 @@ namespace dpnp::extensions::lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
-namespace type_utils = dpctl::tensor::type_utils;
+namespace type_utils = dpnp::tensor::type_utils;
 
 using ext::common::init_dispatch_vector;
 
@@ -59,7 +59,7 @@ typedef sycl::event (*ungqr_impl_fn_ptr_t)(sycl::queue &,
                                            std::vector<sycl::event> &,
                                            const std::vector<sycl::event> &);
 
-static ungqr_impl_fn_ptr_t ungqr_dispatch_vector[dpctl_td_ns::num_types];
+static ungqr_impl_fn_ptr_t ungqr_dispatch_vector[dpnp_td_ns::num_types];
 
 template <typename T>
 static sycl::event ungqr_impl(sycl::queue &exec_q,
@@ -130,7 +130,7 @@ static sycl::event ungqr_impl(sycl::queue &exec_q,
     if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
-            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
+            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
         }
         throw std::runtime_error(error_msg.str());
     }
@@ -139,7 +139,7 @@ static sycl::event ungqr_impl(sycl::queue &exec_q,
         cgh.depends_on(ungqr_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad]() {
-            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
+            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
         });
     });
     host_task_events.push_back(clean_up_event);
@@ -152,8 +152,8 @@ std::pair<sycl::event, sycl::event>
           const std::int64_t m,
           const std::int64_t n,
           const std::int64_t k,
-          const dpctl::tensor::usm_ndarray &a_array,
-          const dpctl::tensor::usm_ndarray &tau_array,
+          const dpnp::tensor::usm_ndarray &a_array,
+          const dpnp::tensor::usm_ndarray &tau_array,
           const std::vector<sycl::event> &depends)
 {
     const int a_array_nd = a_array.get_ndim();
@@ -172,12 +172,12 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q, {a_array, tau_array})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {a_array, tau_array})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(a_array, tau_array)) {
         throw py::value_error(
             "The input array and the array of Householder scalars "
@@ -207,7 +207,7 @@ std::pair<sycl::event, sycl::event>
                               " is expected.");
     }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
     int tau_array_type_id =
@@ -235,7 +235,7 @@ std::pair<sycl::event, sycl::event>
     sycl::event ungqr_ev = ungqr_fn(exec_q, m, n, k, a_array_data, lda,
                                     tau_array_data, host_task_events, depends);
 
-    sycl::event args_ev = dpctl::utils::keep_args_alive(
+    sycl::event args_ev = dpnp::utils::keep_args_alive(
         exec_q, {a_array, tau_array}, host_task_events);
 
     return std::make_pair(args_ev, ungqr_ev);

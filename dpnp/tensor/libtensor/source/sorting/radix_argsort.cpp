@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -47,7 +47,7 @@
 
 #include "utils/type_dispatch.hpp"
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/sorting/radix_sort.hpp"
 #include "kernels/sorting/sort_impl_fn_ptr_t.hpp"
 
@@ -55,15 +55,15 @@
 #include "radix_argsort.hpp"
 #include "radix_sort_support.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
-namespace impl_ns = dpctl::tensor::kernels::radix_sort_details;
+namespace td_ns = dpnp::tensor::type_dispatch;
+namespace impl_ns = dpnp::tensor::kernels::radix_sort_details;
 
-using dpctl::tensor::ssize_t;
-using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
+using dpnp::tensor::ssize_t;
+using dpnp::tensor::kernels::sort_contig_fn_ptr_t;
 
 static sort_contig_fn_ptr_t
     ascending_radix_argsort_contig_dispatch_table[td_ns::num_types]
@@ -87,7 +87,7 @@ sycl::event argsort_axis1_contig_caller(sycl::queue &q,
                                         ssize_t sort_res_offset,
                                         const std::vector<sycl::event> &depends)
 {
-    using dpctl::tensor::kernels::radix_argsort_axis1_contig_impl;
+    using dpnp::tensor::kernels::radix_argsort_axis1_contig_impl;
 
     return radix_argsort_axis1_contig_impl<T, I>(
         q, is_ascending, iter_nelems, sort_nelems, arg_cp, res_cp,
@@ -133,7 +133,7 @@ struct DescendingRadixArgSortContigFactory
 
 void init_radix_argsort_dispatch_tables(void)
 {
-    using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
+    using dpnp::tensor::kernels::sort_contig_fn_ptr_t;
 
     td_ns::DispatchTableBuilder<sort_contig_fn_ptr_t,
                                 AscendingRadixArgSortContigFactory,
@@ -154,9 +154,9 @@ void init_radix_argsort_functions(py::module_ m)
     init_radix_argsort_dispatch_tables();
 
     auto py_radix_argsort_ascending =
-        [](const dpctl::tensor::usm_ndarray &src,
+        [](const dpnp::tensor::usm_ndarray &src,
            const int trailing_dims_to_sort,
-           const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
+           const dpnp::tensor::usm_ndarray &dst, sycl::queue &exec_q,
            const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
         return py_argsort(src, trailing_dims_to_sort, dst, exec_q, depends,
@@ -167,9 +167,9 @@ void init_radix_argsort_functions(py::module_ m)
           py::arg("sycl_queue"), py::arg("depends") = py::list());
 
     auto py_radix_argsort_descending =
-        [](const dpctl::tensor::usm_ndarray &src,
+        [](const dpnp::tensor::usm_ndarray &src,
            const int trailing_dims_to_sort,
-           const dpctl::tensor::usm_ndarray &dst, sycl::queue &exec_q,
+           const dpnp::tensor::usm_ndarray &dst, sycl::queue &exec_q,
            const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
         return py_argsort(src, trailing_dims_to_sort, dst, exec_q, depends,
@@ -182,4 +182,4 @@ void init_radix_argsort_functions(py::module_ m)
     return;
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

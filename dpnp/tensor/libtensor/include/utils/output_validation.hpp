@@ -39,7 +39,7 @@
 
 #include "dpnp4pybind11.hpp"
 
-namespace dpctl::tensor::validation
+namespace dpnp::tensor::validation
 {
 namespace py = pybind11;
 
@@ -48,7 +48,7 @@ namespace py = pybind11;
     This should be called with an array before writing.*/
 struct CheckWritable
 {
-    static void throw_if_not_writable(const dpctl::tensor::usm_ndarray &arr)
+    static void throw_if_not_writable(const dpnp::tensor::usm_ndarray &arr)
     {
         if (!arr.is_writable()) {
             throw py::value_error("output array is read-only.");
@@ -64,7 +64,7 @@ struct CheckWritable
 struct AmpleMemory
 {
     template <typename T>
-    static void throw_if_not_ample(const dpctl::tensor::usm_ndarray &arr,
+    static void throw_if_not_ample(const dpnp::tensor::usm_ndarray &arr,
                                    T nelems)
     {
         auto arr_offsets = arr.get_minmax_offsets();
@@ -76,4 +76,4 @@ struct AmpleMemory
         return;
     }
 };
-} // namespace dpctl::tensor::validation
+} // namespace dpnp::tensor::validation

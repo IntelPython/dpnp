@@ -30,7 +30,7 @@
 ///
 /// \file
 /// This file declares Python API for implementation functions of
-/// dpctl.tensor.where
+/// dpnp.tensor.where
 //===---------------------------------------------------------------------===//
 
 #pragma once
@@ -41,17 +41,17 @@
 
 #include "dpnp4pybind11.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-    py_where(const dpctl::tensor::usm_ndarray &,
-             const dpctl::tensor::usm_ndarray &,
-             const dpctl::tensor::usm_ndarray &,
-             const dpctl::tensor::usm_ndarray &,
+    py_where(const dpnp::tensor::usm_ndarray &,
+             const dpnp::tensor::usm_ndarray &,
+             const dpnp::tensor::usm_ndarray &,
+             const dpnp::tensor::usm_ndarray &,
              sycl::queue &,
              const std::vector<sycl::event> &);
 
 extern void init_where_dispatch_tables(void);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

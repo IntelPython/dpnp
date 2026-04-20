@@ -49,14 +49,14 @@ TODO: Write proper Frobenius solver to account for holes, e.g.
    overlap( x_contig[::2], x_contig[1::2]) should give False,
    while this implementation gives True.
 */
-namespace dpctl::tensor::overlap
+namespace dpnp::tensor::overlap
 {
 namespace py = pybind11;
 
 struct MemoryOverlap
 {
-    bool operator()(dpctl::tensor::usm_ndarray ar1,
-                    dpctl::tensor::usm_ndarray ar2) const
+    bool operator()(dpnp::tensor::usm_ndarray ar1,
+                    dpnp::tensor::usm_ndarray ar2) const
     {
         const char *ar1_data = ar1.get_data();
 
@@ -110,8 +110,8 @@ struct MemoryOverlap
 
 struct SameLogicalTensors
 {
-    bool operator()(dpctl::tensor::usm_ndarray ar1,
-                    dpctl::tensor::usm_ndarray ar2) const
+    bool operator()(dpnp::tensor::usm_ndarray ar1,
+                    dpnp::tensor::usm_ndarray ar2) const
     {
         // Same ndim
         int nd1 = ar1.get_ndim();
@@ -154,4 +154,4 @@ struct SameLogicalTensors
         return true;
     }
 };
-} // namespace dpctl::tensor::overlap
+} // namespace dpnp::tensor::overlap

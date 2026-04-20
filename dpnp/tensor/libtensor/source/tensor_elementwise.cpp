@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_elementwise_impl
+/// This file defines functions of dpnp.tensor._tensor_elementwise_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 
@@ -41,5 +41,5 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(_tensor_elementwise_impl, m)
 {
-    dpctl::tensor::py_internal::init_elementwise_functions(m);
+    dpnp::tensor::py_internal::init_elementwise_functions(m);
 }

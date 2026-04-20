@@ -41,7 +41,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -49,7 +49,7 @@
 namespace dpnp::extensions::window
 {
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 typedef sycl::event (*window_fn_ptr_t)(sycl::queue &,
                                        char *,
@@ -62,7 +62,7 @@ sycl::event window_impl(sycl::queue &exec_q,
                         const std::size_t nelems,
                         const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<T>(exec_q);
+    dpnp::tensor::type_utils::validate_type_for_device<T>(exec_q);
 
     T *res = reinterpret_cast<T *>(result);
 
@@ -94,17 +94,17 @@ struct Factory
 template <typename funcPtrT>
 std::tuple<size_t, char *, funcPtrT>
     window_fn(sycl::queue &exec_q,
-              const dpctl::tensor::usm_ndarray &result,
+              const dpnp::tensor::usm_ndarray &result,
               const funcPtrT *window_dispatch_vector)
 {
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(result);
 
     const int nd = result.get_ndim();
     if (nd != 1) {
         throw py::value_error("Array should be 1d");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {result.get_queue()})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {result.get_queue()})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queue.");
     }
@@ -134,7 +134,7 @@ std::tuple<size_t, char *, funcPtrT>
 
 inline std::pair<sycl::event, sycl::event>
     py_window(sycl::queue &exec_q,
-              const dpctl::tensor::usm_ndarray &result,
+              const dpnp::tensor::usm_ndarray &result,
               const std::vector<sycl::event> &depends,
               const window_fn_ptr_t *window_dispatch_vector)
 {
@@ -147,7 +147,7 @@ inline std::pair<sycl::event, sycl::event>
 
     sycl::event window_ev = fn(exec_q, result_typeless_ptr, nelems, depends);
     sycl::event args_ev =
-        dpctl::utils::keep_args_alive(exec_q, {result}, {window_ev});
+        dpnp::utils::keep_args_alive(exec_q, {result}, {window_ev});
 
     return std::make_pair(args_ev, window_ev);
 }

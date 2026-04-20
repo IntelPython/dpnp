@@ -39,7 +39,7 @@
 
 #include "sycl_complex.hpp"
 
-namespace dpctl::tensor::kernels::detail
+namespace dpnp::tensor::kernels::detail
 {
 
 template <typename realT>
@@ -74,4 +74,4 @@ realT cabs(std::complex<realT> const &z)
     return res;
 }
 
-} // namespace dpctl::tensor::kernels::detail
+} // namespace dpnp::tensor::kernels::detail

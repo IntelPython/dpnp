@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_reductions_impl
+/// This file defines functions of dpnp.tensor._tensor_reductions_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 
@@ -40,7 +40,7 @@
 
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::py_internal::atomic_support
+namespace dpnp::tensor::py_internal::atomic_support
 {
 
 typedef bool (*atomic_support_fn_ptr_t)(const sycl::queue &, sycl::usm::alloc);
@@ -59,7 +59,7 @@ bool check_atomic_support(const sycl::queue &exec_q,
 {
     static constexpr bool atomic32 = (sizeof(T) == 4);
     static constexpr bool atomic64 = (sizeof(T) == 8);
-    using dpctl::tensor::type_utils::is_complex;
+    using dpnp::tensor::type_utils::is_complex;
     if constexpr ((!atomic32 && !atomic64) || is_complex<T>::value) {
         return fixed_decision<false>(exec_q, usm_alloc_type);
     }
@@ -95,7 +95,7 @@ struct ArithmeticAtomicSupportFactory
 {
     fnT get()
     {
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (std::is_floating_point_v<T> ||
                       std::is_same_v<T, sycl::half> || is_complex<T>::value) {
             // for real- and complex- floating point types, tree reduction has
@@ -140,4 +140,4 @@ struct ProductAtomicSupportFactory
 {
 };
 
-} // namespace dpctl::tensor::py_internal::atomic_support
+} // namespace dpnp::tensor::py_internal::atomic_support

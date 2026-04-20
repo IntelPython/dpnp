@@ -36,7 +36,7 @@
 #include <cstdint>
 #include <type_traits>
 
-namespace dpctl::tensor::kernels::vec_size_utils
+namespace dpnp::tensor::kernels::vec_size_utils
 {
 template <typename Ty1,
           typename ArgTy1,
@@ -67,4 +67,4 @@ struct ContigHyperparameterSetDefault : std::true_type
     static constexpr std::uint8_t vec_sz = vec_sz_v;
     static constexpr std::uint8_t n_vecs = n_vecs_v;
 };
-} // namespace dpctl::tensor::kernels::vec_size_utils
+} // namespace dpnp::tensor::kernels::vec_size_utils

@@ -29,14 +29,14 @@
 //===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #pragma once
 #include <pybind11/pybind11.h>
 #include <vector>
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
@@ -122,4 +122,4 @@ std::vector<py::ssize_t> _unravel_index_c(py::ssize_t,
 std::vector<py::ssize_t> _unravel_index_f(py::ssize_t,
                                           std::vector<py::ssize_t> const &);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

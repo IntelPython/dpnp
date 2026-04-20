@@ -46,20 +46,19 @@
 #include "utils/sycl_utils.hpp"
 
 #include "kernels/alignment.hpp"
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/elementwise_functions/common_detail.hpp"
 
-namespace dpctl::tensor::kernels::elementwise_common
+namespace dpnp::tensor::kernels::elementwise_common
 {
 
-using dpctl::tensor::ssize_t;
-using dpctl::tensor::kernels::alignment_utils::
-    disabled_sg_loadstore_wrapper_krn;
-using dpctl::tensor::kernels::alignment_utils::is_aligned;
-using dpctl::tensor::kernels::alignment_utils::required_alignment;
+using dpnp::tensor::ssize_t;
+using dpnp::tensor::kernels::alignment_utils::disabled_sg_loadstore_wrapper_krn;
+using dpnp::tensor::kernels::alignment_utils::is_aligned;
+using dpnp::tensor::kernels::alignment_utils::required_alignment;
 
-using dpctl::tensor::sycl_utils::sub_group_load;
-using dpctl::tensor::sycl_utils::sub_group_store;
+using dpnp::tensor::sycl_utils::sub_group_load;
+using dpnp::tensor::sycl_utils::sub_group_store;
 
 template <typename argT,
           typename resT,
@@ -392,7 +391,7 @@ sycl::event binary_inplace_strided_impl(
         cgh.depends_on(additional_depends);
 
         using IndexerT =
-            typename dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            typename dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
         const IndexerT indexer{nd, rhs_offset, lhs_offset, shape_and_strides};
 
@@ -434,13 +433,12 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
 
     std::size_t n1_padded = n1 + max_sgSize;
     auto padded_vec_owner =
-        dpctl::tensor::alloc_utils::smart_malloc_device<argT>(n1_padded,
-                                                              exec_q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<argT>(n1_padded, exec_q);
     argT *padded_vec = padded_vec_owner.get();
 
     sycl::event make_padded_vec_ev =
-        dpctl::tensor::kernels::elementwise_detail::populate_padded_vector<
-            argT>(exec_q, vec, n1, padded_vec, n1_padded, depends);
+        dpnp::tensor::kernels::elementwise_detail::populate_padded_vector<argT>(
+            exec_q, vec, n1, padded_vec, n1_padded, depends);
 
     // sub-group spans work-items [I, I + sgSize)
     // base = ndit.get_global_linear_id() - sg.get_local_id()[0]
@@ -466,11 +464,11 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
             Impl(padded_vec, mat, n_elems, n1));
     });
 
-    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event tmp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {comp_ev}, padded_vec_owner);
     host_tasks.push_back(tmp_cleanup_ev);
 
     return comp_ev;
 }
 
-} // namespace dpctl::tensor::kernels::elementwise_common
+} // namespace dpnp::tensor::kernels::elementwise_common

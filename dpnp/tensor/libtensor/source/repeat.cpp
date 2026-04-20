@@ -29,7 +29,7 @@
 //===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #include <algorithm>
@@ -53,49 +53,49 @@
 
 #include "simplify_iteration_space.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::repeat::repeat_by_sequence_fn_ptr_t;
+using dpnp::tensor::kernels::repeat::repeat_by_sequence_fn_ptr_t;
 static repeat_by_sequence_fn_ptr_t
     repeat_by_sequence_dispatch_vector[td_ns::num_types];
 
-using dpctl::tensor::kernels::repeat::repeat_by_sequence_1d_fn_ptr_t;
+using dpnp::tensor::kernels::repeat::repeat_by_sequence_1d_fn_ptr_t;
 static repeat_by_sequence_1d_fn_ptr_t
     repeat_by_sequence_1d_dispatch_vector[td_ns::num_types];
 
-using dpctl::tensor::kernels::repeat::repeat_by_scalar_fn_ptr_t;
+using dpnp::tensor::kernels::repeat::repeat_by_scalar_fn_ptr_t;
 static repeat_by_scalar_fn_ptr_t
     repeat_by_scalar_dispatch_vector[td_ns::num_types];
 
-using dpctl::tensor::kernels::repeat::repeat_by_scalar_1d_fn_ptr_t;
+using dpnp::tensor::kernels::repeat::repeat_by_scalar_1d_fn_ptr_t;
 static repeat_by_scalar_1d_fn_ptr_t
     repeat_by_scalar_1d_dispatch_vector[td_ns::num_types];
 
 void init_repeat_dispatch_vectors(void)
 {
-    using dpctl::tensor::kernels::repeat::RepeatSequenceFactory;
+    using dpnp::tensor::kernels::repeat::RepeatSequenceFactory;
     td_ns::DispatchVectorBuilder<repeat_by_sequence_fn_ptr_t,
                                  RepeatSequenceFactory, td_ns::num_types>
         dvb1;
     dvb1.populate_dispatch_vector(repeat_by_sequence_dispatch_vector);
 
-    using dpctl::tensor::kernels::repeat::RepeatSequence1DFactory;
+    using dpnp::tensor::kernels::repeat::RepeatSequence1DFactory;
     td_ns::DispatchVectorBuilder<repeat_by_sequence_1d_fn_ptr_t,
                                  RepeatSequence1DFactory, td_ns::num_types>
         dvb2;
     dvb2.populate_dispatch_vector(repeat_by_sequence_1d_dispatch_vector);
 
-    using dpctl::tensor::kernels::repeat::RepeatScalarFactory;
+    using dpnp::tensor::kernels::repeat::RepeatScalarFactory;
     td_ns::DispatchVectorBuilder<repeat_by_scalar_fn_ptr_t, RepeatScalarFactory,
                                  td_ns::num_types>
         dvb3;
     dvb3.populate_dispatch_vector(repeat_by_scalar_dispatch_vector);
 
-    using dpctl::tensor::kernels::repeat::RepeatScalar1DFactory;
+    using dpnp::tensor::kernels::repeat::RepeatScalar1DFactory;
     td_ns::DispatchVectorBuilder<repeat_by_scalar_1d_fn_ptr_t,
                                  RepeatScalar1DFactory, td_ns::num_types>
         dvb4;
@@ -103,10 +103,10 @@ void init_repeat_dispatch_vectors(void)
 }
 
 std::pair<sycl::event, sycl::event>
-    py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
-                          const dpctl::tensor::usm_ndarray &dst,
-                          const dpctl::tensor::usm_ndarray &reps,
-                          const dpctl::tensor::usm_ndarray &cumsum,
+    py_repeat_by_sequence(const dpnp::tensor::usm_ndarray &src,
+                          const dpnp::tensor::usm_ndarray &dst,
+                          const dpnp::tensor::usm_ndarray &reps,
+                          const dpnp::tensor::usm_ndarray &cumsum,
                           int axis,
                           sycl::queue &exec_q,
                           const std::vector<sycl::event> &depends)
@@ -136,13 +136,12 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Expecting `cumsum` array to be C-contiguous.");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {src, reps, cumsum, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, reps, cumsum, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     std::size_t reps_sz = reps.get_size();
     std::size_t cumsum_sz = cumsum.get_size();
@@ -178,10 +177,10 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         dst, orthog_nelems * dst_axis_nelems);
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with src or reps
     if (overlap(dst, src) || overlap(dst, reps) || overlap(dst, cumsum)) {
         throw py::value_error("Destination array overlaps with inputs");
@@ -245,7 +244,7 @@ std::pair<sycl::event, sycl::event>
             src_strides_vec = {0};
         }
 
-        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        using dpnp::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, src_shape_vec, src_strides_vec);
         auto packed_src_shape_strides_owner =
@@ -268,7 +267,7 @@ std::pair<sycl::event, sycl::event>
                reps_strides_vec[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {repeat_ev}, packed_src_shape_strides_owner);
         host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
@@ -316,7 +315,7 @@ std::pair<sycl::event, sycl::event>
             simplified_orthog_dst_strides, orthog_src_offset,
             orthog_dst_offset);
 
-        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        using dpnp::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_orthog_shape,
             simplified_orthog_src_strides, simplified_orthog_dst_strides);
@@ -346,22 +345,22 @@ std::pair<sycl::event, sycl::event>
                        reps_shape_vec[0], reps_strides_vec[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {repeat_ev}, packed_shapes_strides_owner);
         host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
 
-    sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
+    sycl::event py_obj_management_host_task_ev = dpnp::utils::keep_args_alive(
         exec_q, {src, reps, cumsum, dst}, host_task_events);
 
     return std::make_pair(py_obj_management_host_task_ev, repeat_ev);
 }
 
 std::pair<sycl::event, sycl::event>
-    py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
-                          const dpctl::tensor::usm_ndarray &dst,
-                          const dpctl::tensor::usm_ndarray &reps,
-                          const dpctl::tensor::usm_ndarray &cumsum,
+    py_repeat_by_sequence(const dpnp::tensor::usm_ndarray &src,
+                          const dpnp::tensor::usm_ndarray &dst,
+                          const dpnp::tensor::usm_ndarray &reps,
+                          const dpnp::tensor::usm_ndarray &cumsum,
                           sycl::queue &exec_q,
                           const std::vector<sycl::event> &depends)
 {
@@ -385,13 +384,12 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Expecting `cumsum` array to be C-contiguous.");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {src, reps, cumsum, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, reps, cumsum, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     std::size_t src_sz = src.get_size();
     std::size_t reps_sz = reps.get_size();
@@ -406,10 +404,10 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst,
-                                                               dst.get_size());
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst,
+                                                              dst.get_size());
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with src, cumsum, or reps
     if (overlap(dst, src) || overlap(dst, reps) || overlap(dst, cumsum)) {
         throw py::value_error("Destination array overlaps with inputs");
@@ -467,7 +465,7 @@ std::pair<sycl::event, sycl::event>
 
     auto fn = repeat_by_sequence_1d_dispatch_vector[src_typeid];
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, src_shape_vec, src_strides_vec);
     auto packed_src_shapes_strides_owner =
@@ -489,19 +487,19 @@ std::pair<sycl::event, sycl::event>
         reps_shape_vec[0], reps_strides_vec[0], all_deps);
 
     sycl::event cleanup_tmp_allocations_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
+        dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {repeat_ev}, packed_src_shapes_strides_owner);
     host_task_events.push_back(cleanup_tmp_allocations_ev);
 
-    sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
+    sycl::event py_obj_management_host_task_ev = dpnp::utils::keep_args_alive(
         exec_q, {src, reps, cumsum, dst}, host_task_events);
 
     return std::make_pair(py_obj_management_host_task_ev, repeat_ev);
 }
 
 std::pair<sycl::event, sycl::event>
-    py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
-                        const dpctl::tensor::usm_ndarray &dst,
+    py_repeat_by_scalar(const dpnp::tensor::usm_ndarray &src,
+                        const dpnp::tensor::usm_ndarray &dst,
                         const py::ssize_t reps,
                         int axis,
                         sycl::queue &exec_q,
@@ -519,12 +517,12 @@ std::pair<sycl::event, sycl::event>
                               "arrays is not consistent");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
@@ -557,10 +555,10 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         dst, orthog_nelems * (src_axis_nelems * reps));
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with src
     if (overlap(dst, src)) {
         throw py::value_error("Destination array overlaps with inputs");
@@ -602,7 +600,7 @@ std::pair<sycl::event, sycl::event>
             src_strides_vec = {0};
         }
 
-        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        using dpnp::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, src_shape_vec, src_strides_vec);
         auto packed_src_shape_strides_owner =
@@ -623,7 +621,7 @@ std::pair<sycl::event, sycl::event>
                        dst_strides_vec[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {repeat_ev}, packed_src_shape_strides_owner);
 
         host_task_events.push_back(cleanup_tmp_allocations_ev);
@@ -673,7 +671,7 @@ std::pair<sycl::event, sycl::event>
             simplified_orthog_dst_strides, orthog_src_offset,
             orthog_dst_offset);
 
-        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        using dpnp::tensor::offset_utils::device_allocate_and_pack;
         auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_orthog_shape,
             simplified_orthog_src_strides, simplified_orthog_dst_strides);
@@ -701,20 +699,20 @@ std::pair<sycl::event, sycl::event>
                        axis_dst_shape[0], axis_dst_stride[0], all_deps);
 
         sycl::event cleanup_tmp_allocations_ev =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {repeat_ev}, packed_shapes_strides_owner);
         host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
 
     sycl::event py_obj_management_host_task_ev =
-        dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
+        dpnp::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
 
     return std::make_pair(py_obj_management_host_task_ev, repeat_ev);
 }
 
 std::pair<sycl::event, sycl::event>
-    py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
-                        const dpctl::tensor::usm_ndarray &dst,
+    py_repeat_by_scalar(const dpnp::tensor::usm_ndarray &src,
+                        const dpnp::tensor::usm_ndarray &dst,
                         const py::ssize_t reps,
                         sycl::queue &exec_q,
                         const std::vector<sycl::event> &depends)
@@ -725,12 +723,12 @@ std::pair<sycl::event, sycl::event>
             "`dst` array must be 1-dimensional when repeating a full array");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     std::size_t src_sz = src.get_size();
     std::size_t dst_sz = dst.get_size();
@@ -745,10 +743,10 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst,
-                                                               src_sz * reps);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst,
+                                                              src_sz * reps);
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     // check that dst does not intersect with src
     if (overlap(dst, src)) {
         throw py::value_error("Destination array overlaps with inputs");
@@ -785,7 +783,7 @@ std::pair<sycl::event, sycl::event>
 
     auto fn = repeat_by_scalar_1d_dispatch_vector[src_typeid];
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, src_shape_vec, src_strides_vec);
     auto packed_src_shape_strides_owner =
@@ -806,14 +804,14 @@ std::pair<sycl::event, sycl::event>
                                dst_shape_vec[0], dst_strides_vec[0], all_deps);
 
     sycl::event cleanup_tmp_allocations_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
+        dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {repeat_ev}, packed_src_shape_strides_owner);
     host_task_events.push_back(cleanup_tmp_allocations_ev);
 
     sycl::event py_obj_management_host_task_ev =
-        dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
+        dpnp::utils::keep_args_alive(exec_q, {src, dst}, host_task_events);
 
     return std::make_pair(py_obj_management_host_task_ev, repeat_ev);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

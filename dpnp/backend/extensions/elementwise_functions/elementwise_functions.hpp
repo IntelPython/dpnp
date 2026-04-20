@@ -45,7 +45,7 @@
 #include "elementwise_functions_type_utils.hpp"
 #include "simplify_iteration_space.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "kernels/alignment.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
@@ -53,15 +53,15 @@
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
-static_assert(std::is_same_v<py::ssize_t, dpctl::tensor::ssize_t>);
+static_assert(std::is_same_v<py::ssize_t, dpnp::tensor::ssize_t>);
 
 namespace dpnp::extensions::py_internal
 {
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::alignment_utils::is_aligned;
-using dpctl::tensor::kernels::alignment_utils::required_alignment;
+using dpnp::tensor::kernels::alignment_utils::is_aligned;
+using dpnp::tensor::kernels::alignment_utils::required_alignment;
 
 using type_utils::_result_typeid;
 
@@ -70,8 +70,8 @@ template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT>
 std::pair<sycl::event, sycl::event>
-    py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
-                   const dpctl::tensor::usm_ndarray &dst,
+    py_unary_ufunc(const dpnp::tensor::usm_ndarray &src,
+                   const dpnp::tensor::usm_ndarray &dst,
                    sycl::queue &q,
                    const std::vector<sycl::event> &depends,
                    //
@@ -95,12 +95,12 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     // check that dimensions are the same
     int src_nd = src.get_ndim();
@@ -127,12 +127,12 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
     // check memory overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
+        dpnp::tensor::overlap::SameLogicalTensors();
     if (overlap(src, dst) && !same_logical_tensors(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
@@ -161,7 +161,7 @@ std::pair<sycl::event, sycl::event>
 
         auto comp_ev = contig_fn(q, src_nelems, src_data, dst_data, depends);
         sycl::event ht_ev =
-            dpctl::utils::keep_args_alive(q, {src, dst}, {comp_ev});
+            dpnp::utils::keep_args_alive(q, {src, dst}, {comp_ev});
 
         return std::make_pair(ht_ev, comp_ev);
     }
@@ -206,7 +206,7 @@ std::pair<sycl::event, sycl::event>
                       dst_data + dst_elem_size * dst_offset, depends);
 
         sycl::event ht_ev =
-            dpctl::utils::keep_args_alive(q, {src, dst}, {comp_ev});
+            dpnp::utils::keep_args_alive(q, {src, dst}, {comp_ev});
 
         return std::make_pair(ht_ev, comp_ev);
     }
@@ -220,7 +220,7 @@ std::pair<sycl::event, sycl::event>
             std::to_string(src_typeid));
     }
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
 
     std::vector<sycl::event> host_tasks{};
     host_tasks.reserve(2);
@@ -237,14 +237,13 @@ std::pair<sycl::event, sycl::event>
                    dst_data, dst_offset, depends, {copy_shape_ev});
 
     // async free of shape_strides temporary
-    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event tmp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         q, {strided_fn_ev}, shape_strides_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
 
     return std::make_pair(
-        dpctl::utils::keep_args_alive(q, {src, dst}, host_tasks),
-        strided_fn_ev);
+        dpnp::utils::keep_args_alive(q, {src, dst}, host_tasks), strided_fn_ev);
 }
 
 /*! @brief Template implementing Python API for querying of type support by
@@ -253,7 +252,7 @@ template <typename output_typesT>
 py::object py_unary_ufunc_result_type(const py::dtype &input_dtype,
                                       const output_typesT &output_types)
 {
-    int tn = input_dtype.num(); // NumPy type numbers are the same as in dpctl
+    int tn = input_dtype.num(); // NumPy type numbers are the same as in dpnp
     int src_typeid = -1;
 
     auto array_types = td_ns::usm_ndarray_types();
@@ -287,9 +286,9 @@ template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT>
 std::pair<sycl::event, sycl::event>
-    py_unary_two_outputs_ufunc(const dpctl::tensor::usm_ndarray &src,
-                               const dpctl::tensor::usm_ndarray &dst1,
-                               const dpctl::tensor::usm_ndarray &dst2,
+    py_unary_two_outputs_ufunc(const dpnp::tensor::usm_ndarray &src,
+                               const dpnp::tensor::usm_ndarray &dst1,
+                               const dpnp::tensor::usm_ndarray &dst2,
                                sycl::queue &q,
                                const std::vector<sycl::event> &depends,
                                //
@@ -316,13 +315,13 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(q, {src, dst1, dst2})) {
+    if (!dpnp::utils::queues_are_compatible(q, {src, dst1, dst2})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst1);
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst2);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst1);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst2);
 
     // check that dimensions are the same
     int src_nd = src.get_ndim();
@@ -351,15 +350,13 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst1,
-                                                               src_nelems);
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst2,
-                                                               src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst1, src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst2, src_nelems);
 
     // check memory overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
+        dpnp::tensor::overlap::SameLogicalTensors();
     if ((overlap(src, dst1) && !same_logical_tensors(src, dst1)) ||
         (overlap(src, dst2) && !same_logical_tensors(src, dst2)) ||
         (overlap(dst1, dst2) && !same_logical_tensors(dst1, dst2))) {
@@ -397,7 +394,7 @@ std::pair<sycl::event, sycl::event>
         auto comp_ev =
             contig_fn(q, src_nelems, src_data, dst1_data, dst2_data, depends);
         sycl::event ht_ev =
-            dpctl::utils::keep_args_alive(q, {src, dst1, dst2}, {comp_ev});
+            dpnp::utils::keep_args_alive(q, {src, dst1, dst2}, {comp_ev});
 
         return std::make_pair(ht_ev, comp_ev);
     }
@@ -448,7 +445,7 @@ std::pair<sycl::event, sycl::event>
                       dst2_data + dst2_elem_size * dst2_offset, depends);
 
         sycl::event ht_ev =
-            dpctl::utils::keep_args_alive(q, {src, dst1, dst2}, {comp_ev});
+            dpnp::utils::keep_args_alive(q, {src, dst1, dst2}, {comp_ev});
 
         return std::make_pair(ht_ev, comp_ev);
     }
@@ -462,7 +459,7 @@ std::pair<sycl::event, sycl::event>
             std::to_string(src_typeid));
     }
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
 
     std::vector<sycl::event> host_tasks{};
     host_tasks.reserve(2);
@@ -479,13 +476,13 @@ std::pair<sycl::event, sycl::event>
         dst1_offset, dst2_data, dst2_offset, depends, {copy_shape_ev});
 
     // async free of shape_strides temporary
-    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event tmp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         q, {strided_fn_ev}, shape_strides_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
 
     return std::make_pair(
-        dpctl::utils::keep_args_alive(q, {src, dst1, dst2}, host_tasks),
+        dpnp::utils::keep_args_alive(q, {src, dst1, dst2}, host_tasks),
         strided_fn_ev);
 }
 
@@ -498,7 +495,7 @@ std::pair<py::object, py::object>
     py_unary_two_outputs_ufunc_result_type(const py::dtype &input_dtype,
                                            const output_typesT &output_types)
 {
-    int tn = input_dtype.num(); // NumPy type numbers are the same as in dpctl
+    int tn = input_dtype.num(); // NumPy type numbers are the same as in dpnp
     int src_typeid = -1;
 
     auto array_types = td_ns::usm_ndarray_types();
@@ -550,9 +547,9 @@ template <typename output_typesT,
           typename contig_matrix_row_dispatchT,
           typename contig_row_matrix_dispatchT>
 std::pair<sycl::event, sycl::event> py_binary_ufunc(
-    const dpctl::tensor::usm_ndarray &src1,
-    const dpctl::tensor::usm_ndarray &src2,
-    const dpctl::tensor::usm_ndarray &dst, // dst = op(src1, src2), elementwise
+    const dpnp::tensor::usm_ndarray &src1,
+    const dpnp::tensor::usm_ndarray &src2,
+    const dpnp::tensor::usm_ndarray &dst, // dst = op(src1, src2), elementwise
     sycl::queue &exec_q,
     const std::vector<sycl::event> &depends,
     //
@@ -582,12 +579,12 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     }
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src1, src2, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src1, src2, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     // check shapes, broadcasting is assumed done by caller
     // check that dimensions are the same
@@ -617,11 +614,11 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
+        dpnp::tensor::overlap::SameLogicalTensors();
     if ((overlap(src1, dst) && !same_logical_tensors(src1, dst)) ||
         (overlap(src2, dst) && !same_logical_tensors(src2, dst))) {
         throw py::value_error("Arrays index overlapping segments of memory");
@@ -653,7 +650,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         if (contig_fn != nullptr) {
             auto comp_ev = contig_fn(exec_q, src_nelems, src1_data, 0,
                                      src2_data, 0, dst_data, 0, depends);
-            sycl::event ht_ev = dpctl::utils::keep_args_alive(
+            sycl::event ht_ev = dpnp::utils::keep_args_alive(
                 exec_q, {src1, src2, dst}, {comp_ev});
 
             return std::make_pair(ht_ev, comp_ev);
@@ -697,7 +694,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                 auto comp_ev = contig_fn(exec_q, src_nelems, src1_data,
                                          src1_offset, src2_data, src2_offset,
                                          dst_data, dst_offset, depends);
-                sycl::event ht_ev = dpctl::utils::keep_args_alive(
+                sycl::event ht_ev = dpnp::utils::keep_args_alive(
                     exec_q, {src1, src2, dst}, {comp_ev});
 
                 return std::make_pair(ht_ev, comp_ev);
@@ -735,7 +732,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                             depends);
 
                         return std::make_pair(
-                            dpctl::utils::keep_args_alive(
+                            dpnp::utils::keep_args_alive(
                                 exec_q, {src1, src2, dst}, host_tasks),
                             comp_ev);
                     }
@@ -767,7 +764,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                             depends);
 
                         return std::make_pair(
-                            dpctl::utils::keep_args_alive(
+                            dpnp::utils::keep_args_alive(
                                 exec_q, {src1, src2, dst}, host_tasks),
                             comp_ev);
                     }
@@ -786,7 +783,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
             " and src2_typeid=" + std::to_string(src2_typeid));
     }
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_tasks, simplified_shape, simplified_src1_strides,
         simplified_src2_strides, simplified_dst_strides);
@@ -800,13 +797,13 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         src2_data, src2_offset, dst_data, dst_offset, depends, {copy_shape_ev});
 
     // async free of shape_strides temporary
-    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event tmp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {strided_fn_ev}, shape_strides_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
 
     return std::make_pair(
-        dpctl::utils::keep_args_alive(exec_q, {src1, src2, dst}, host_tasks),
+        dpnp::utils::keep_args_alive(exec_q, {src1, src2, dst}, host_tasks),
         strided_fn_ev);
 }
 
@@ -816,8 +813,8 @@ py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
                                        const py::dtype &input2_dtype,
                                        const output_typesT &output_types_table)
 {
-    int tn1 = input1_dtype.num(); // NumPy type numbers are the same as in dpctl
-    int tn2 = input2_dtype.num(); // NumPy type numbers are the same as in dpctl
+    int tn1 = input1_dtype.num(); // NumPy type numbers are the same as in dpnp
+    int tn2 = input2_dtype.num(); // NumPy type numbers are the same as in dpnp
     int src1_typeid = -1;
     int src2_typeid = -1;
 
@@ -856,10 +853,10 @@ template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT>
 std::pair<sycl::event, sycl::event>
-    py_binary_two_outputs_ufunc(const dpctl::tensor::usm_ndarray &src1,
-                                const dpctl::tensor::usm_ndarray &src2,
-                                const dpctl::tensor::usm_ndarray &dst1,
-                                const dpctl::tensor::usm_ndarray &dst2,
+    py_binary_two_outputs_ufunc(const dpnp::tensor::usm_ndarray &src1,
+                                const dpnp::tensor::usm_ndarray &src2,
+                                const dpnp::tensor::usm_ndarray &dst1,
+                                const dpnp::tensor::usm_ndarray &dst2,
                                 sycl::queue &exec_q,
                                 const std::vector<sycl::event> &depends,
                                 //
@@ -889,14 +886,13 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {src1, src2, dst1, dst2})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src1, src2, dst1, dst2})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst1);
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst2);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst1);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst2);
 
     // check shapes, broadcasting is assumed done by caller
     // check that dimensions are the same
@@ -933,15 +929,13 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst1,
-                                                               src_nelems);
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst2,
-                                                               src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst1, src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst2, src_nelems);
 
     // check memory overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
+        dpnp::tensor::overlap::SameLogicalTensors();
     if ((overlap(src1, dst1) && !same_logical_tensors(src1, dst1)) ||
         (overlap(src1, dst2) && !same_logical_tensors(src1, dst2)) ||
         (overlap(src2, dst1) && !same_logical_tensors(src2, dst1)) ||
@@ -981,7 +975,7 @@ std::pair<sycl::event, sycl::event>
             auto comp_ev =
                 contig_fn(exec_q, src_nelems, src1_data, 0, src2_data, 0,
                           dst1_data, 0, dst2_data, 0, depends);
-            sycl::event ht_ev = dpctl::utils::keep_args_alive(
+            sycl::event ht_ev = dpnp::utils::keep_args_alive(
                 exec_q, {src1, src2, dst1, dst2}, {comp_ev});
 
             return std::make_pair(ht_ev, comp_ev);
@@ -1029,7 +1023,7 @@ std::pair<sycl::event, sycl::event>
                 contig_fn(exec_q, src_nelems, src1_data, src1_offset, src2_data,
                           src2_offset, dst1_data, dst1_offset, dst2_data,
                           dst2_offset, depends);
-            sycl::event ht_ev = dpctl::utils::keep_args_alive(
+            sycl::event ht_ev = dpnp::utils::keep_args_alive(
                 exec_q, {src1, src2, dst1, dst2}, {comp_ev});
 
             return std::make_pair(ht_ev, comp_ev);
@@ -1046,7 +1040,7 @@ std::pair<sycl::event, sycl::event>
             " and src2_typeid=" + std::to_string(src2_typeid));
     }
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_tasks, simplified_shape, simplified_src1_strides,
         simplified_src2_strides, simplified_dst1_strides,
@@ -1062,11 +1056,11 @@ std::pair<sycl::event, sycl::event>
                    dst2_data, dst2_offset, depends, {copy_shape_ev});
 
     // async free of shape_strides temporary
-    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event tmp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {strided_fn_ev}, shape_strides_owner);
     host_tasks.push_back(tmp_cleanup_ev);
 
-    return std::make_pair(dpctl::utils::keep_args_alive(
+    return std::make_pair(dpnp::utils::keep_args_alive(
                               exec_q, {src1, src2, dst1, dst2}, host_tasks),
                           strided_fn_ev);
 }
@@ -1081,8 +1075,8 @@ std::pair<py::object, py::object> py_binary_two_outputs_ufunc_result_type(
     const py::dtype &input2_dtype,
     const output_typesT &output_types_table)
 {
-    int tn1 = input1_dtype.num(); // NumPy type numbers are the same as in dpctl
-    int tn2 = input2_dtype.num(); // NumPy type numbers are the same as in dpctl
+    int tn1 = input1_dtype.num(); // NumPy type numbers are the same as in dpnp
+    int tn2 = input2_dtype.num(); // NumPy type numbers are the same as in dpnp
     int src1_typeid = -1;
     int src2_typeid = -1;
 
@@ -1129,8 +1123,8 @@ template <typename output_typesT,
           typename strided_dispatchT,
           typename contig_row_matrix_dispatchT>
 std::pair<sycl::event, sycl::event>
-    py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
-                            const dpctl::tensor::usm_ndarray &rhs,
+    py_binary_inplace_ufunc(const dpnp::tensor::usm_ndarray &lhs,
+                            const dpnp::tensor::usm_ndarray &rhs,
                             sycl::queue &exec_q,
                             const std::vector<sycl::event> &depends,
                             //
@@ -1140,7 +1134,7 @@ std::pair<sycl::event, sycl::event>
                             const contig_row_matrix_dispatchT
                                 &contig_row_matrix_broadcast_dispatch_table)
 {
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(lhs);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(lhs);
 
     // check type_nums
     int rhs_typenum = rhs.get_typenum();
@@ -1158,7 +1152,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(exec_q, {rhs, lhs})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {rhs, lhs})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
@@ -1189,12 +1183,12 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(lhs, rhs_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(lhs, rhs_nelems);
 
     // check memory overlap
     auto const &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+        dpnp::tensor::overlap::SameLogicalTensors();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(rhs, lhs) && !same_logical_tensors(rhs, lhs)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
@@ -1220,7 +1214,7 @@ std::pair<sycl::event, sycl::event>
             auto comp_ev = contig_fn(exec_q, rhs_nelems, rhs_data, 0, lhs_data,
                                      0, depends);
             sycl::event ht_ev =
-                dpctl::utils::keep_args_alive(exec_q, {rhs, lhs}, {comp_ev});
+                dpnp::utils::keep_args_alive(exec_q, {rhs, lhs}, {comp_ev});
 
             return std::make_pair(ht_ev, comp_ev);
         }
@@ -1258,8 +1252,8 @@ std::pair<sycl::event, sycl::event>
                 auto comp_ev =
                     contig_fn(exec_q, rhs_nelems, rhs_data, rhs_offset,
                               lhs_data, lhs_offset, depends);
-                sycl::event ht_ev = dpctl::utils::keep_args_alive(
-                    exec_q, {rhs, lhs}, {comp_ev});
+                sycl::event ht_ev =
+                    dpnp::utils::keep_args_alive(exec_q, {rhs, lhs}, {comp_ev});
 
                 return std::make_pair(ht_ev, comp_ev);
             }
@@ -1281,7 +1275,7 @@ std::pair<sycl::event, sycl::event>
                         exec_q, host_tasks, n0, n1, rhs_data, rhs_offset,
                         lhs_data, lhs_offset, depends);
 
-                    return std::make_pair(dpctl::utils::keep_args_alive(
+                    return std::make_pair(dpnp::utils::keep_args_alive(
                                               exec_q, {lhs, rhs}, host_tasks),
                                           comp_ev);
                 }
@@ -1299,7 +1293,7 @@ std::pair<sycl::event, sycl::event>
             " and lhs_typeid=" + std::to_string(lhs_typeid));
     }
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_tasks, simplified_shape, simplified_rhs_strides,
         simplified_lhs_strides);
@@ -1313,13 +1307,13 @@ std::pair<sycl::event, sycl::event>
                    lhs_data, lhs_offset, depends, {copy_shape_ev});
 
     // async free of shape_strides temporary
-    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event tmp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {strided_fn_ev}, shape_strides_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
 
     return std::make_pair(
-        dpctl::utils::keep_args_alive(exec_q, {rhs, lhs}, host_tasks),
+        dpnp::utils::keep_args_alive(exec_q, {rhs, lhs}, host_tasks),
         strided_fn_ev);
 }
 } // namespace dpnp::extensions::py_internal

@@ -43,11 +43,11 @@
 
 #include <sycl/sycl.hpp>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "utils/strided_iters.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 
-namespace dpctl::tensor::offset_utils
+namespace dpnp::tensor::offset_utils
 {
 namespace detail
 {
@@ -91,7 +91,7 @@ std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&...vs)
 } // namespace detail
 
 template <typename indT, typename... Vs>
-std::tuple<std::unique_ptr<indT, dpctl::tensor::alloc_utils::USMDeleter>,
+std::tuple<std::unique_ptr<indT, dpnp::tensor::alloc_utils::USMDeleter>,
            std::size_t,
            sycl::event>
     device_allocate_and_pack(sycl::queue &q,
@@ -99,7 +99,7 @@ std::tuple<std::unique_ptr<indT, dpctl::tensor::alloc_utils::USMDeleter>,
                              Vs &&...vs)
 {
 
-    using dpctl::tensor::alloc_utils::usm_host_allocator;
+    using dpnp::tensor::alloc_utils::usm_host_allocator;
 
     // memory transfer optimization, use USM-host for temporary speeds up
     // transfer to device, especially on dGPUs
@@ -115,7 +115,7 @@ std::tuple<std::unique_ptr<indT, dpctl::tensor::alloc_utils::USMDeleter>,
 
     auto sz = packed_shape_strides_owner->size();
     auto shape_strides_owner =
-        dpctl::tensor::alloc_utils::smart_malloc_device<indT>(sz, q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<indT>(sz, q);
     indT *shape_strides = shape_strides_owner.get();
 
     sycl::event copy_ev =
@@ -140,7 +140,7 @@ struct NoOpIndexer
     constexpr std::size_t operator()(std::size_t gid) const { return gid; }
 };
 
-using dpctl::tensor::ssize_t;
+using dpnp::tensor::ssize_t;
 
 /* @brief Indexer with shape and strides arrays of same size are packed */
 struct StridedIndexer
@@ -167,7 +167,7 @@ private:
 
     ssize_t compute_offset(ssize_t gid) const
     {
-        using dpctl::tensor::strides::CIndexer_vector;
+        using dpnp::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd);
         ssize_t relative_offset(0);
@@ -209,7 +209,7 @@ private:
 
     ssize_t compute_offset(ssize_t gid) const
     {
-        using dpctl::tensor::strides::CIndexer_vector;
+        using dpnp::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd);
         ssize_t relative_offset(0);
@@ -339,7 +339,7 @@ private:
 
     TwoOffsets<ssize_t> compute_offsets(ssize_t gid) const
     {
-        using dpctl::tensor::strides::CIndexer_vector;
+        using dpnp::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd);
         ssize_t relative_first_offset(0);
@@ -446,7 +446,7 @@ private:
 
     ThreeOffsets<ssize_t> compute_offsets(ssize_t gid) const
     {
-        using dpctl::tensor::strides::CIndexer_vector;
+        using dpnp::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd);
         ssize_t relative_first_offset(0);
@@ -576,7 +576,7 @@ private:
 
     FourOffsets<ssize_t> compute_offsets(ssize_t gid) const
     {
-        using dpctl::tensor::strides::CIndexer_vector;
+        using dpnp::tensor::strides::CIndexer_vector;
 
         CIndexer_vector _ind(nd);
         ssize_t relative_first_offset(0);
@@ -635,7 +635,7 @@ struct NthStrideOffset
     }
 
 private:
-    dpctl::tensor::strides::CIndexer_vector<ssize_t> _ind;
+    dpnp::tensor::strides::CIndexer_vector<ssize_t> _ind;
 
     int nd;
     ssize_t const *offsets;
@@ -655,7 +655,7 @@ struct FixedDimStridedIndexer
     }
     std::size_t operator()(std::size_t gid) const
     {
-        dpctl::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
+        dpnp::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
             std::move(_ind));
         local_indexer.set(gid);
         auto mi = local_indexer.get();
@@ -670,7 +670,7 @@ struct FixedDimStridedIndexer
     }
 
 private:
-    dpctl::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
+    dpnp::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
 
     std::array<ssize_t, nd> strides;
     ssize_t starting_offset;
@@ -693,7 +693,7 @@ struct TwoOffsets_FixedDimStridedIndexer
 
     TwoOffsets<ssize_t> operator()(std::size_t gid) const
     {
-        dpctl::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
+        dpnp::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
             std::move(_ind));
         local_indexer.set(gid);
         auto mi = local_indexer.get();
@@ -715,7 +715,7 @@ struct TwoOffsets_FixedDimStridedIndexer
     }
 
 private:
-    dpctl::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
+    dpnp::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
 
     std::array<ssize_t, nd> strides1;
     std::array<ssize_t, nd> strides2;
@@ -744,7 +744,7 @@ struct ThreeOffsets_FixedDimStridedIndexer
 
     ThreeOffsets<ssize_t> operator()(std::size_t gid) const
     {
-        dpctl::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
+        dpnp::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
             std::move(_ind));
         local_indexer.set(gid);
         auto mi = local_indexer.get();
@@ -773,7 +773,7 @@ struct ThreeOffsets_FixedDimStridedIndexer
     }
 
 private:
-    dpctl::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
+    dpnp::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
 
     std::array<ssize_t, nd> strides1;
     std::array<ssize_t, nd> strides2;
@@ -785,4 +785,4 @@ private:
 
 static_assert(
     sycl::is_device_copyable_v<ThreeOffsets_FixedDimStridedIndexer<1>>);
-} // namespace dpctl::tensor::offset_utils
+} // namespace dpnp::tensor::offset_utils

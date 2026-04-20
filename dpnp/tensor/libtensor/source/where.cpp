@@ -30,7 +30,7 @@
 ///
 /// \file
 /// This file defines Python API for implementation functions of
-/// dpctl.tensor.where
+/// dpnp.tensor.where
 //===---------------------------------------------------------------------===//
 
 #include <cassert>
@@ -54,38 +54,37 @@
 #include "simplify_iteration_space.hpp"
 #include "where.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::search::where_contig_impl_fn_ptr_t;
-using dpctl::tensor::kernels::search::where_strided_impl_fn_ptr_t;
+using dpnp::tensor::kernels::search::where_contig_impl_fn_ptr_t;
+using dpnp::tensor::kernels::search::where_strided_impl_fn_ptr_t;
 
 static where_contig_impl_fn_ptr_t where_contig_dispatch_table[td_ns::num_types]
                                                              [td_ns::num_types];
 static where_strided_impl_fn_ptr_t
     where_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 
-using dpctl::utils::keep_args_alive;
+using dpnp::utils::keep_args_alive;
 
 std::pair<sycl::event, sycl::event>
-    py_where(const dpctl::tensor::usm_ndarray &condition,
-             const dpctl::tensor::usm_ndarray &x1,
-             const dpctl::tensor::usm_ndarray &x2,
-             const dpctl::tensor::usm_ndarray &dst,
+    py_where(const dpnp::tensor::usm_ndarray &condition,
+             const dpnp::tensor::usm_ndarray &x1,
+             const dpnp::tensor::usm_ndarray &x2,
+             const dpnp::tensor::usm_ndarray &dst,
              sycl::queue &exec_q,
              const std::vector<sycl::event> &depends)
 {
 
-    if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {x1, x2, condition, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {x1, x2, condition, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     int nd = condition.get_ndim();
     int x1_nd = x1.get_ndim();
@@ -124,9 +123,9 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event{}, sycl::event{});
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
+        dpnp::tensor::overlap::SameLogicalTensors();
     if ((overlap(dst, condition) && !same_logical_tensors(dst, condition)) ||
         (overlap(dst, x1) && !same_logical_tensors(dst, x1)) ||
         (overlap(dst, x2) && !same_logical_tensors(dst, x2))) {
@@ -148,7 +147,7 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Value arrays must have the same data type");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, nelems);
 
     char *cond_data = condition.get_data();
     char *x1_data = x1.get_data();
@@ -211,7 +210,7 @@ std::pair<sycl::event, sycl::event>
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events,
         // common shape and strides
@@ -235,8 +234,8 @@ std::pair<sycl::event, sycl::event>
 
     // free packed temporaries
     sycl::event temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
-            exec_q, {where_ev}, packed_shape_strides_owner);
+        dpnp::tensor::alloc_utils::async_smart_free(exec_q, {where_ev},
+                                                    packed_shape_strides_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     sycl::event arg_cleanup_ev =
@@ -248,17 +247,17 @@ std::pair<sycl::event, sycl::event>
 void init_where_dispatch_tables(void)
 {
     using namespace td_ns;
-    using dpctl::tensor::kernels::search::WhereContigFactory;
+    using dpnp::tensor::kernels::search::WhereContigFactory;
     DispatchTableBuilder<where_contig_impl_fn_ptr_t, WhereContigFactory,
                          num_types>
         dtb1;
     dtb1.populate_dispatch_table(where_contig_dispatch_table);
 
-    using dpctl::tensor::kernels::search::WhereStridedFactory;
+    using dpnp::tensor::kernels::search::WhereStridedFactory;
     DispatchTableBuilder<where_strided_impl_fn_ptr_t, WhereStridedFactory,
                          num_types>
         dtb2;
     dtb2.populate_dispatch_table(where_strided_dispatch_table);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

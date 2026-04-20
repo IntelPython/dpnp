@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -53,13 +53,13 @@
 #include "merge_argsort.hpp"
 #include "py_argsort_common.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
+using dpnp::tensor::kernels::sort_contig_fn_ptr_t;
 static sort_contig_fn_ptr_t
     ascending_argsort_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
 static sort_contig_fn_ptr_t
@@ -73,10 +73,10 @@ struct AscendingArgSortContigFactory
     {
         if constexpr (std::is_same_v<IndexTy, std::int64_t> ||
                       std::is_same_v<IndexTy, std::int32_t>) {
-            using dpctl::tensor::rich_comparisons::AscendingSorter;
+            using dpnp::tensor::rich_comparisons::AscendingSorter;
             using Comp = typename AscendingSorter<argTy>::type;
 
-            using dpctl::tensor::kernels::stable_argsort_axis1_contig_impl;
+            using dpnp::tensor::kernels::stable_argsort_axis1_contig_impl;
             return stable_argsort_axis1_contig_impl<argTy, IndexTy, Comp>;
         }
         else {
@@ -92,10 +92,10 @@ struct DescendingArgSortContigFactory
     {
         if constexpr (std::is_same_v<IndexTy, std::int64_t> ||
                       std::is_same_v<IndexTy, std::int32_t>) {
-            using dpctl::tensor::rich_comparisons::DescendingSorter;
+            using dpnp::tensor::rich_comparisons::DescendingSorter;
             using Comp = typename DescendingSorter<argTy>::type;
 
-            using dpctl::tensor::kernels::stable_argsort_axis1_contig_impl;
+            using dpnp::tensor::kernels::stable_argsort_axis1_contig_impl;
             return stable_argsort_axis1_contig_impl<argTy, IndexTy, Comp>;
         }
         else {
@@ -106,7 +106,7 @@ struct DescendingArgSortContigFactory
 
 void init_merge_argsort_dispatch_tables(void)
 {
-    using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
+    using dpnp::tensor::kernels::sort_contig_fn_ptr_t;
 
     td_ns::DispatchTableBuilder<sort_contig_fn_ptr_t,
                                 AscendingArgSortContigFactory, td_ns::num_types>
@@ -123,9 +123,9 @@ void init_merge_argsort_functions(py::module_ m)
 {
     init_merge_argsort_dispatch_tables();
 
-    auto py_argsort_ascending = [](const dpctl::tensor::usm_ndarray &src,
+    auto py_argsort_ascending = [](const dpnp::tensor::usm_ndarray &src,
                                    const int trailing_dims_to_sort,
-                                   const dpctl::tensor::usm_ndarray &dst,
+                                   const dpnp::tensor::usm_ndarray &dst,
                                    sycl::queue &exec_q,
                                    const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
@@ -136,9 +136,9 @@ void init_merge_argsort_functions(py::module_ m)
           py::arg("trailing_dims_to_sort"), py::arg("dst"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    auto py_argsort_descending = [](const dpctl::tensor::usm_ndarray &src,
+    auto py_argsort_descending = [](const dpnp::tensor::usm_ndarray &src,
                                     const int trailing_dims_to_sort,
-                                    const dpctl::tensor::usm_ndarray &dst,
+                                    const dpnp::tensor::usm_ndarray &dst,
                                     sycl::queue &exec_q,
                                     const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
@@ -152,4 +152,4 @@ void init_merge_argsort_functions(py::module_ m)
     return;
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

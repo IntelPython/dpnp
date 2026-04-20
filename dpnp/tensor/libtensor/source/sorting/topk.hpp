@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -39,9 +39,9 @@
 
 namespace py = pybind11;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern void init_topk_functions(py::module_);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

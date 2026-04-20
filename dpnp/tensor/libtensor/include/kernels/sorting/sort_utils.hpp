@@ -41,7 +41,7 @@
 
 #include <sycl/sycl.hpp>
 
-namespace dpctl::tensor::kernels::sort_utils_detail
+namespace dpnp::tensor::kernels::sort_utils_detail
 {
 
 namespace syclexp = sycl::ext::oneapi::experimental;
@@ -141,4 +141,4 @@ sycl::event map_back_impl(sycl::queue &exec_q,
     return map_back_ev;
 }
 
-} // namespace dpctl::tensor::kernels::sort_utils_detail
+} // namespace dpnp::tensor::kernels::sort_utils_detail

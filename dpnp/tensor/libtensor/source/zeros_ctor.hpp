@@ -29,7 +29,7 @@
 //===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #pragma once
@@ -40,14 +40,14 @@
 
 #include "dpnp4pybind11.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-    usm_ndarray_zeros(const dpctl::tensor::usm_ndarray &dst,
+    usm_ndarray_zeros(const dpnp::tensor::usm_ndarray &dst,
                       sycl::queue &exec_q,
                       const std::vector<sycl::event> &depends = {});
 
 extern void init_zeros_ctor_dispatch_vectors(void);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

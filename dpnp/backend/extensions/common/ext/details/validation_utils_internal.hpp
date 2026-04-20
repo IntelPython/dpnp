@@ -36,7 +36,7 @@
 #include "ext/validation_utils.hpp"
 #include "utils/memory_overlap.hpp"
 
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 namespace common = ext::common;
 
 namespace ext::validation
@@ -118,9 +118,9 @@ inline void check_no_overlap(const array_ptr &input,
         return;
     }
 
-    const auto &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    const auto &overlap = dpnp::tensor::overlap::MemoryOverlap();
     const auto &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
+        dpnp::tensor::overlap::SameLogicalTensors();
 
     if (overlap(*input, *output) && !same_logical_tensors(*input, *output)) {
         throw py::value_error(name_of(input, names) +

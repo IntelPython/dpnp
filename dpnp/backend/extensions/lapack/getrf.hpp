@@ -37,15 +37,15 @@ namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
     getrf(sycl::queue &exec_q,
-          const dpctl::tensor::usm_ndarray &a_array,
-          const dpctl::tensor::usm_ndarray &ipiv_array,
+          const dpnp::tensor::usm_ndarray &a_array,
+          const dpnp::tensor::usm_ndarray &ipiv_array,
           py::list dev_info,
           const std::vector<sycl::event> &depends = {});
 
 extern std::pair<sycl::event, sycl::event>
     getrf_batch(sycl::queue &exec_q,
-                const dpctl::tensor::usm_ndarray &a_array,
-                const dpctl::tensor::usm_ndarray &ipiv_array,
+                const dpnp::tensor::usm_ndarray &a_array,
+                const dpnp::tensor::usm_ndarray &ipiv_array,
                 py::list dev_info,
                 std::int64_t m,
                 std::int64_t n,

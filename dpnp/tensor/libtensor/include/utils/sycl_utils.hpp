@@ -46,7 +46,7 @@
 
 #include "math_utils.hpp"
 
-namespace dpctl::tensor::sycl_utils
+namespace dpnp::tensor::sycl_utils
 {
 namespace detail
 {
@@ -335,7 +335,7 @@ struct Maximum
     T operator()(const T &x, const T &y) const
     {
         if constexpr (detail::IsComplex<T>::value) {
-            using dpctl::tensor::math_utils::max_complex;
+            using dpnp::tensor::math_utils::max_complex;
             return max_complex<T>(x, y);
         }
         else if constexpr (std::is_floating_point_v<T> ||
@@ -359,7 +359,7 @@ struct Minimum
     T operator()(const T &x, const T &y) const
     {
         if constexpr (detail::IsComplex<T>::value) {
-            using dpctl::tensor::math_utils::min_complex;
+            using dpnp::tensor::math_utils::min_complex;
             return min_complex<T>(x, y);
         }
         else if constexpr (std::is_floating_point_v<T> ||
@@ -481,7 +481,7 @@ struct LogSumExp
 {
     T operator()(const T &x, const T &y) const
     {
-        using dpctl::tensor::math_utils::logaddexp;
+        using dpnp::tensor::math_utils::logaddexp;
         return logaddexp<T>(x, y);
     }
 };
@@ -671,4 +671,4 @@ std::enable_if_t<
     return;
 #endif
 }
-} // namespace dpctl::tensor::sycl_utils
+} // namespace dpnp::tensor::sycl_utils

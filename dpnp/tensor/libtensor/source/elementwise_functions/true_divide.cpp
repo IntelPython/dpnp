@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_elementwise_impl
+/// This file defines functions of dpnp.tensor._tensor_elementwise_impl
 /// extension, specifically functions for elementwise operations.
 //===---------------------------------------------------------------------===//
 
@@ -63,13 +63,13 @@
 #include "kernels/elementwise_functions/common_inplace.hpp"
 #include "kernels/elementwise_functions/true_divide.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+namespace ew_cmn_ns = dpnp::tensor::kernels::elementwise_common;
 using ew_cmn_ns::binary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
@@ -82,7 +82,7 @@ using ew_cmn_ns::binary_inplace_strided_impl_fn_ptr_t;
 // B08: ===== DIVIDE (x1, x2)
 namespace impl
 {
-namespace true_divide_fn_ns = dpctl::tensor::kernels::true_divide;
+namespace true_divide_fn_ns = dpnp::tensor::kernels::true_divide;
 
 static binary_contig_impl_fn_ptr_t
     true_divide_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -218,13 +218,13 @@ sycl::event divide_by_scalar(sycl::queue &exec_q,
         cgh.depends_on(depends);
 
         using BinOpT =
-            dpctl::tensor::kernels::true_divide::TrueDivideFunctor<T, scalarT,
-                                                                   T>;
+            dpnp::tensor::kernels::true_divide::TrueDivideFunctor<T, scalarT,
+                                                                  T>;
 
         auto op = BinOpT();
 
         using IndexerT =
-            typename dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            typename dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
 
         const IndexerT two_offsets_indexer{nd, arg_offset, res_offset,
                                            shape_and_strides};
@@ -246,9 +246,9 @@ sycl::event divide_by_scalar(sycl::queue &exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
+    py_divide_by_scalar(const dpnp::tensor::usm_ndarray &src,
                         double scalar,
-                        const dpctl::tensor::usm_ndarray &dst,
+                        const dpnp::tensor::usm_ndarray &dst,
                         sycl::queue &exec_q,
                         const std::vector<sycl::event> &depends = {})
 {
@@ -265,12 +265,12 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
     // check shapes, broadcasting is assumed done by caller
     // check that dimensions are the same
     int dst_nd = dst.get_ndim();
@@ -297,11 +297,11 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
+        dpnp::tensor::overlap::SameLogicalTensors();
     if ((overlap(src, dst) && !same_logical_tensors(src, dst))) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
@@ -392,7 +392,7 @@ std::pair<sycl::event, sycl::event>
         dst_offset = 0;
     }
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_tasks, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
@@ -412,20 +412,20 @@ std::pair<sycl::event, sycl::event>
            scalar_alloc, dst_data, dst_offset, all_deps);
 
     // async free of shape_strides temporary
-    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event tmp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {div_ev}, shape_strides_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
 
     return std::make_pair(
-        dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_tasks), div_ev);
+        dpnp::utils::keep_args_alive(exec_q, {src, dst}, host_tasks), div_ev);
 }
 
 } // namespace impl
 
 void init_divide(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
     {
         impl::populate_true_divide_dispatch_tables();
@@ -497,4 +497,4 @@ void init_divide(py::module_ m)
     }
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

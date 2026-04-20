@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -40,12 +40,12 @@
 
 #include <sycl/sycl.hpp>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 
-namespace dpctl::tensor::kernels
+namespace dpnp::tensor::kernels
 {
 
-using dpctl::tensor::ssize_t;
+using dpnp::tensor::ssize_t;
 
 typedef sycl::event (*sort_contig_fn_ptr_t)(sycl::queue &,
                                             std::size_t,
@@ -58,4 +58,4 @@ typedef sycl::event (*sort_contig_fn_ptr_t)(sycl::queue &,
                                             ssize_t,
                                             const std::vector<sycl::event> &);
 
-} // namespace dpctl::tensor::kernels
+} // namespace dpnp::tensor::kernels

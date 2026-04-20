@@ -42,7 +42,7 @@
 
 namespace statistics::histogram
 {
-using dpctl::tensor::usm_ndarray;
+using dpnp::tensor::usm_ndarray;
 
 using ext::common::AtomicOp;
 using ext::common::IsNan;
@@ -301,8 +301,8 @@ void submit_histogram(const T *in,
 }
 
 void validate(const usm_ndarray &sample,
-              const std::optional<const dpctl::tensor::usm_ndarray> &bins,
-              const std::optional<const dpctl::tensor::usm_ndarray> &weights,
+              const std::optional<const dpnp::tensor::usm_ndarray> &bins,
+              const std::optional<const dpnp::tensor::usm_ndarray> &weights,
               const usm_ndarray &histogram);
 
 std::uint32_t get_local_hist_copies_count(std::uint32_t loc_mem_size_in_items,

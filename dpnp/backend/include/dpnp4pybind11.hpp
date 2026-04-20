@@ -28,8 +28,8 @@
 
 #pragma once
 
-// Include dpctl C-API headers
-#include "dpctl_capi.h"
+// Include for dpctl_capi struct and casters
+#include "dpctl4pybind11.hpp"
 
 // Include generated Cython headers for usm_ndarray
 // (struct definition and constants only)
@@ -38,13 +38,10 @@
 
 #include <array>
 #include <cassert>
-#include <complex>
 #include <cstddef> // for std::size_t for C++ linkage
 #include <cstdint>
 #include <memory>
-#include <stddef.h> // for size_t for C linkage
 #include <stdexcept>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -54,12 +51,13 @@
 
 namespace py = pybind11;
 
-namespace dpctl
+namespace dpnp
 {
 namespace detail
 {
 // Lookup a type according to its size, and return a value corresponding to the
 // NumPy typenum.
+
 template <typename Concrete>
 constexpr int platform_typeid_lookup()
 {
@@ -74,56 +72,10 @@ constexpr int platform_typeid_lookup(int I, Ints... Is)
                : platform_typeid_lookup<Concrete, Ts...>(Is...);
 }
 
-class dpctl_capi
+class dpnp_capi
 {
 public:
-    // dpctl type objects
-    PyTypeObject *Py_SyclDeviceType_;
-    PyTypeObject *PySyclDeviceType_;
-    PyTypeObject *Py_SyclContextType_;
-    PyTypeObject *PySyclContextType_;
-    PyTypeObject *Py_SyclEventType_;
-    PyTypeObject *PySyclEventType_;
-    PyTypeObject *Py_SyclQueueType_;
-    PyTypeObject *PySyclQueueType_;
-    PyTypeObject *Py_MemoryType_;
-    PyTypeObject *PyMemoryUSMDeviceType_;
-    PyTypeObject *PyMemoryUSMSharedType_;
-    PyTypeObject *PyMemoryUSMHostType_;
     PyTypeObject *PyUSMArrayType_;
-    PyTypeObject *PySyclProgramType_;
-    PyTypeObject *PySyclKernelType_;
-
-    DPCTLSyclDeviceRef (*SyclDevice_GetDeviceRef_)(PySyclDeviceObject *);
-    PySyclDeviceObject *(*SyclDevice_Make_)(DPCTLSyclDeviceRef);
-
-    DPCTLSyclContextRef (*SyclContext_GetContextRef_)(PySyclContextObject *);
-    PySyclContextObject *(*SyclContext_Make_)(DPCTLSyclContextRef);
-
-    DPCTLSyclEventRef (*SyclEvent_GetEventRef_)(PySyclEventObject *);
-    PySyclEventObject *(*SyclEvent_Make_)(DPCTLSyclEventRef);
-
-    DPCTLSyclQueueRef (*SyclQueue_GetQueueRef_)(PySyclQueueObject *);
-    PySyclQueueObject *(*SyclQueue_Make_)(DPCTLSyclQueueRef);
-
-    // memory
-    DPCTLSyclUSMRef (*Memory_GetUsmPointer_)(Py_MemoryObject *);
-    void *(*Memory_GetOpaquePointer_)(Py_MemoryObject *);
-    DPCTLSyclContextRef (*Memory_GetContextRef_)(Py_MemoryObject *);
-    DPCTLSyclQueueRef (*Memory_GetQueueRef_)(Py_MemoryObject *);
-    size_t (*Memory_GetNumBytes_)(Py_MemoryObject *);
-    PyObject *(*Memory_Make_)(DPCTLSyclUSMRef,
-                              size_t,
-                              DPCTLSyclQueueRef,
-                              PyObject *);
-
-    // program
-    DPCTLSyclKernelRef (*SyclKernel_GetKernelRef_)(PySyclKernelObject *);
-    PySyclKernelObject *(*SyclKernel_Make_)(DPCTLSyclKernelRef, const char *);
-
-    DPCTLSyclKernelBundleRef (*SyclProgram_GetKernelBundleRef_)(
-        PySyclProgramObject *);
-    PySyclProgramObject *(*SyclProgram_Make_)(DPCTLSyclKernelBundleRef);
 
     int USM_ARRAY_C_CONTIGUOUS_;
     int USM_ARRAY_F_CONTIGUOUS_;
@@ -135,49 +87,15 @@ public:
     int UAR_INT8_, UAR_UINT8_, UAR_INT16_, UAR_UINT16_, UAR_INT32_, UAR_UINT32_,
         UAR_INT64_, UAR_UINT64_;
 
-    bool PySyclDevice_Check_(PyObject *obj) const
-    {
-        return PyObject_TypeCheck(obj, PySyclDeviceType_) != 0;
-    }
-    bool PySyclContext_Check_(PyObject *obj) const
-    {
-        return PyObject_TypeCheck(obj, PySyclContextType_) != 0;
-    }
-    bool PySyclEvent_Check_(PyObject *obj) const
-    {
-        return PyObject_TypeCheck(obj, PySyclEventType_) != 0;
-    }
-    bool PySyclQueue_Check_(PyObject *obj) const
-    {
-        return PyObject_TypeCheck(obj, PySyclQueueType_) != 0;
-    }
-    bool PySyclKernel_Check_(PyObject *obj) const
-    {
-        return PyObject_TypeCheck(obj, PySyclKernelType_) != 0;
-    }
-    bool PySyclProgram_Check_(PyObject *obj) const
-    {
-        return PyObject_TypeCheck(obj, PySyclProgramType_) != 0;
-    }
-
-    ~dpctl_capi()
-    {
-        as_usm_memory_.reset();
-        default_usm_ndarray_.reset();
-        default_usm_memory_.reset();
-        default_sycl_queue_.reset();
-    };
+    ~dpnp_capi() { default_usm_ndarray_.reset(); };
 
     static auto &get()
     {
-        static dpctl_capi api{};
+        static dpnp_capi api{};
         return api;
     }
 
-    py::object default_sycl_queue_pyobj() { return *default_sycl_queue_; }
-    py::object default_usm_memory_pyobj() { return *default_usm_memory_; }
     py::object default_usm_ndarray_pyobj() { return *default_usm_ndarray_; }
-    py::object as_usm_memory_pyobj() { return *as_usm_memory_; }
 
 private:
     struct Deleter
@@ -198,29 +116,10 @@ private:
         }
     };
 
-    std::shared_ptr<py::object> default_sycl_queue_;
-    std::shared_ptr<py::object> default_usm_memory_;
     std::shared_ptr<py::object> default_usm_ndarray_;
-    std::shared_ptr<py::object> as_usm_memory_;
 
-    dpctl_capi()
-        : Py_SyclDeviceType_(nullptr), PySyclDeviceType_(nullptr),
-          Py_SyclContextType_(nullptr), PySyclContextType_(nullptr),
-          Py_SyclEventType_(nullptr), PySyclEventType_(nullptr),
-          Py_SyclQueueType_(nullptr), PySyclQueueType_(nullptr),
-          Py_MemoryType_(nullptr), PyMemoryUSMDeviceType_(nullptr),
-          PyMemoryUSMSharedType_(nullptr), PyMemoryUSMHostType_(nullptr),
-          PyUSMArrayType_(nullptr), PySyclProgramType_(nullptr),
-          PySyclKernelType_(nullptr), SyclDevice_GetDeviceRef_(nullptr),
-          SyclDevice_Make_(nullptr), SyclContext_GetContextRef_(nullptr),
-          SyclContext_Make_(nullptr), SyclEvent_GetEventRef_(nullptr),
-          SyclEvent_Make_(nullptr), SyclQueue_GetQueueRef_(nullptr),
-          SyclQueue_Make_(nullptr), Memory_GetUsmPointer_(nullptr),
-          Memory_GetOpaquePointer_(nullptr), Memory_GetContextRef_(nullptr),
-          Memory_GetQueueRef_(nullptr), Memory_GetNumBytes_(nullptr),
-          Memory_Make_(nullptr), SyclKernel_GetKernelRef_(nullptr),
-          SyclKernel_Make_(nullptr), SyclProgram_GetKernelBundleRef_(nullptr),
-          SyclProgram_Make_(nullptr), USM_ARRAY_C_CONTIGUOUS_(0),
+    dpnp_capi()
+        : PyUSMArrayType_(nullptr), USM_ARRAY_C_CONTIGUOUS_(0),
           USM_ARRAY_F_CONTIGUOUS_(0), USM_ARRAY_WRITABLE_(0), UAR_BOOL_(-1),
           UAR_BYTE_(-1), UAR_UBYTE_(-1), UAR_SHORT_(-1), UAR_USHORT_(-1),
           UAR_INT_(-1), UAR_UINT_(-1), UAR_LONG_(-1), UAR_ULONG_(-1),
@@ -228,62 +127,13 @@ private:
           UAR_DOUBLE_(-1), UAR_CFLOAT_(-1), UAR_CDOUBLE_(-1),
           UAR_TYPE_SENTINEL_(-1), UAR_HALF_(-1), UAR_INT8_(-1), UAR_UINT8_(-1),
           UAR_INT16_(-1), UAR_UINT16_(-1), UAR_INT32_(-1), UAR_UINT32_(-1),
-          UAR_INT64_(-1), UAR_UINT64_(-1), default_sycl_queue_{},
-          default_usm_memory_{}, default_usm_ndarray_{}, as_usm_memory_{}
+          UAR_INT64_(-1), UAR_UINT64_(-1), default_usm_ndarray_{}
 
     {
-        // Import dpctl C-API
-        // (device, context, event, queue, memory, program)
-        import_dpctl();
         // Import dpnp tensor module for PyUSMArrayType
         import_dpnp__tensor___usmarray();
 
-        // Python type objects for classes implemented by dpctl
-        this->Py_SyclDeviceType_ = &Py_SyclDeviceType;
-        this->PySyclDeviceType_ = &PySyclDeviceType;
-        this->Py_SyclContextType_ = &Py_SyclContextType;
-        this->PySyclContextType_ = &PySyclContextType;
-        this->Py_SyclEventType_ = &Py_SyclEventType;
-        this->PySyclEventType_ = &PySyclEventType;
-        this->Py_SyclQueueType_ = &Py_SyclQueueType;
-        this->PySyclQueueType_ = &PySyclQueueType;
-        this->Py_MemoryType_ = &Py_MemoryType;
-        this->PyMemoryUSMDeviceType_ = &PyMemoryUSMDeviceType;
-        this->PyMemoryUSMSharedType_ = &PyMemoryUSMSharedType;
-        this->PyMemoryUSMHostType_ = &PyMemoryUSMHostType;
         this->PyUSMArrayType_ = &PyUSMArrayType;
-        this->PySyclProgramType_ = &PySyclProgramType;
-        this->PySyclKernelType_ = &PySyclKernelType;
-
-        // SyclDevice API
-        this->SyclDevice_GetDeviceRef_ = SyclDevice_GetDeviceRef;
-        this->SyclDevice_Make_ = SyclDevice_Make;
-
-        // SyclContext API
-        this->SyclContext_GetContextRef_ = SyclContext_GetContextRef;
-        this->SyclContext_Make_ = SyclContext_Make;
-
-        // SyclEvent API
-        this->SyclEvent_GetEventRef_ = SyclEvent_GetEventRef;
-        this->SyclEvent_Make_ = SyclEvent_Make;
-
-        // SyclQueue API
-        this->SyclQueue_GetQueueRef_ = SyclQueue_GetQueueRef;
-        this->SyclQueue_Make_ = SyclQueue_Make;
-
-        // dpctl.memory API
-        this->Memory_GetUsmPointer_ = Memory_GetUsmPointer;
-        this->Memory_GetOpaquePointer_ = Memory_GetOpaquePointer;
-        this->Memory_GetContextRef_ = Memory_GetContextRef;
-        this->Memory_GetQueueRef_ = Memory_GetQueueRef;
-        this->Memory_GetNumBytes_ = Memory_GetNumBytes;
-        this->Memory_Make_ = Memory_Make;
-
-        // dpctl.program API
-        this->SyclKernel_GetKernelRef_ = SyclKernel_GetKernelRef;
-        this->SyclKernel_Make_ = SyclKernel_Make;
-        this->SyclProgram_GetKernelBundleRef_ = SyclProgram_GetKernelBundleRef;
-        this->SyclProgram_Make_ = SyclProgram_Make;
 
         // constants
         this->USM_ARRAY_C_CONTIGUOUS_ = USM_ARRAY_C_CONTIGUOUS;
@@ -327,27 +177,8 @@ private:
                                    unsigned long long, unsigned int>(
                 UAR_ULONG, UAR_ULONGLONG, UAR_UINT);
 
-        // create shared pointers to python objects used in type-casters
-        // for dpctl::memory::usm_memory and dpctl::tensor::usm_ndarray
-        sycl::queue q_{};
-        PySyclQueueObject *py_q_tmp =
-            SyclQueue_Make(reinterpret_cast<DPCTLSyclQueueRef>(&q_));
-        const py::object &py_sycl_queue = py::reinterpret_steal<py::object>(
-            reinterpret_cast<PyObject *>(py_q_tmp));
-
-        default_sycl_queue_ = std::shared_ptr<py::object>(
-            new py::object(py_sycl_queue), Deleter{});
-
-        py::module_ mod_memory = py::module_::import("dpctl.memory");
-        const py::object &py_as_usm_memory = mod_memory.attr("as_usm_memory");
-        as_usm_memory_ = std::shared_ptr<py::object>(
-            new py::object{py_as_usm_memory}, Deleter{});
-
-        auto mem_kl = mod_memory.attr("MemoryUSMHost");
-        const py::object &py_default_usm_memory =
-            mem_kl(1, py::arg("queue") = py_sycl_queue);
-        default_usm_memory_ = std::shared_ptr<py::object>(
-            new py::object{py_default_usm_memory}, Deleter{});
+        py::object py_default_usm_memory =
+            ::dpctl::detail::dpctl_capi::get().default_usm_memory_pyobj();
 
         py::module_ mod_usmarray = py::module_::import("dpnp.tensor._usmarray");
         auto tensor_kl = mod_usmarray.attr("usm_ndarray");
@@ -360,478 +191,12 @@ private:
             new py::object{py_default_usm_ndarray}, Deleter{});
     }
 
-    dpctl_capi(dpctl_capi const &) = default;
-    dpctl_capi &operator=(dpctl_capi const &) = default;
-    dpctl_capi &operator=(dpctl_capi &&) = default;
+    dpnp_capi(dpnp_capi const &) = default;
+    dpnp_capi &operator=(dpnp_capi const &) = default;
+    dpnp_capi &operator=(dpnp_capi &&) = default;
 
-}; // struct dpctl_capi
+}; // struct dpnp_capi
 } // namespace detail
-} // namespace dpctl
-
-namespace pybind11::detail
-{
-#define DPCTL_TYPE_CASTER(type, py_name)                                       \
-protected:                                                                     \
-    std::unique_ptr<type> value;                                               \
-                                                                               \
-public:                                                                        \
-    static constexpr auto name = py_name;                                      \
-    template <                                                                 \
-        typename T_,                                                           \
-        ::pybind11::detail::enable_if_t<                                       \
-            std::is_same<type, ::pybind11::detail::remove_cv_t<T_>>::value,    \
-            int> = 0>                                                          \
-    static ::pybind11::handle cast(T_ *src,                                    \
-                                   ::pybind11::return_value_policy policy,     \
-                                   ::pybind11::handle parent)                  \
-    {                                                                          \
-        if (!src)                                                              \
-            return ::pybind11::none().release();                               \
-        if (policy == ::pybind11::return_value_policy::take_ownership) {       \
-            auto h = cast(std::move(*src), policy, parent);                    \
-            delete src;                                                        \
-            return h;                                                          \
-        }                                                                      \
-        return cast(*src, policy, parent);                                     \
-    }                                                                          \
-    operator type *()                                                          \
-    {                                                                          \
-        return value.get();                                                    \
-    } /* NOLINT(bugprone-macro-parentheses) */                                 \
-    operator type &()                                                          \
-    {                                                                          \
-        return *value;                                                         \
-    } /* NOLINT(bugprone-macro-parentheses) */                                 \
-    operator type &&() &&                                                      \
-    {                                                                          \
-        return std::move(*value);                                              \
-    } /* NOLINT(bugprone-macro-parentheses) */                                 \
-    template <typename T_>                                                     \
-    using cast_op_type = ::pybind11::detail::movable_cast_op_type<T_>
-
-/* This type caster associates ``sycl::queue`` C++ class with
- * :class:`dpctl.SyclQueue` for the purposes of generation of
- * Python bindings by pybind11.
- */
-template <>
-struct type_caster<sycl::queue>
-{
-public:
-    bool load(handle src, bool)
-    {
-        PyObject *source = src.ptr();
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        if (api.PySyclQueue_Check_(source)) {
-            DPCTLSyclQueueRef QRef = api.SyclQueue_GetQueueRef_(
-                reinterpret_cast<PySyclQueueObject *>(source));
-            value = std::make_unique<sycl::queue>(
-                *(reinterpret_cast<sycl::queue *>(QRef)));
-            return true;
-        }
-        else {
-            throw py::type_error(
-                "Input is of unexpected type, expected dpctl.SyclQueue");
-        }
-    }
-
-    static handle cast(sycl::queue src, return_value_policy, handle)
-    {
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        auto tmp =
-            api.SyclQueue_Make_(reinterpret_cast<DPCTLSyclQueueRef>(&src));
-        return handle(reinterpret_cast<PyObject *>(tmp));
-    }
-
-    DPCTL_TYPE_CASTER(sycl::queue, _("dpctl.SyclQueue"));
-};
-
-/* This type caster associates ``sycl::device`` C++ class with
- * :class:`dpctl.SyclDevice` for the purposes of generation of
- * Python bindings by pybind11.
- */
-template <>
-struct type_caster<sycl::device>
-{
-public:
-    bool load(handle src, bool)
-    {
-        PyObject *source = src.ptr();
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        if (api.PySyclDevice_Check_(source)) {
-            DPCTLSyclDeviceRef DRef = api.SyclDevice_GetDeviceRef_(
-                reinterpret_cast<PySyclDeviceObject *>(source));
-            value = std::make_unique<sycl::device>(
-                *(reinterpret_cast<sycl::device *>(DRef)));
-            return true;
-        }
-        else {
-            throw py::type_error(
-                "Input is of unexpected type, expected dpctl.SyclDevice");
-        }
-    }
-
-    static handle cast(sycl::device src, return_value_policy, handle)
-    {
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        auto tmp =
-            api.SyclDevice_Make_(reinterpret_cast<DPCTLSyclDeviceRef>(&src));
-        return handle(reinterpret_cast<PyObject *>(tmp));
-    }
-
-    DPCTL_TYPE_CASTER(sycl::device, _("dpctl.SyclDevice"));
-};
-
-/* This type caster associates ``sycl::context`` C++ class with
- * :class:`dpctl.SyclContext` for the purposes of generation of
- * Python bindings by pybind11.
- */
-template <>
-struct type_caster<sycl::context>
-{
-public:
-    bool load(handle src, bool)
-    {
-        PyObject *source = src.ptr();
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        if (api.PySyclContext_Check_(source)) {
-            DPCTLSyclContextRef CRef = api.SyclContext_GetContextRef_(
-                reinterpret_cast<PySyclContextObject *>(source));
-            value = std::make_unique<sycl::context>(
-                *(reinterpret_cast<sycl::context *>(CRef)));
-            return true;
-        }
-        else {
-            throw py::type_error(
-                "Input is of unexpected type, expected dpctl.SyclContext");
-        }
-    }
-
-    static handle cast(sycl::context src, return_value_policy, handle)
-    {
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        auto tmp =
-            api.SyclContext_Make_(reinterpret_cast<DPCTLSyclContextRef>(&src));
-        return handle(reinterpret_cast<PyObject *>(tmp));
-    }
-
-    DPCTL_TYPE_CASTER(sycl::context, _("dpctl.SyclContext"));
-};
-
-/* This type caster associates ``sycl::event`` C++ class with
- * :class:`dpctl.SyclEvent` for the purposes of generation of
- * Python bindings by pybind11.
- */
-template <>
-struct type_caster<sycl::event>
-{
-public:
-    bool load(handle src, bool)
-    {
-        PyObject *source = src.ptr();
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        if (api.PySyclEvent_Check_(source)) {
-            DPCTLSyclEventRef ERef = api.SyclEvent_GetEventRef_(
-                reinterpret_cast<PySyclEventObject *>(source));
-            value = std::make_unique<sycl::event>(
-                *(reinterpret_cast<sycl::event *>(ERef)));
-            return true;
-        }
-        else {
-            throw py::type_error(
-                "Input is of unexpected type, expected dpctl.SyclEvent");
-        }
-    }
-
-    static handle cast(sycl::event src, return_value_policy, handle)
-    {
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        auto tmp =
-            api.SyclEvent_Make_(reinterpret_cast<DPCTLSyclEventRef>(&src));
-        return handle(reinterpret_cast<PyObject *>(tmp));
-    }
-
-    DPCTL_TYPE_CASTER(sycl::event, _("dpctl.SyclEvent"));
-};
-
-/* This type caster associates ``sycl::kernel`` C++ class with
- * :class:`dpctl.program.SyclKernel` for the purposes of generation of
- * Python bindings by pybind11.
- */
-template <>
-struct type_caster<sycl::kernel>
-{
-public:
-    bool load(handle src, bool)
-    {
-        PyObject *source = src.ptr();
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        if (api.PySyclKernel_Check_(source)) {
-            DPCTLSyclKernelRef KRef = api.SyclKernel_GetKernelRef_(
-                reinterpret_cast<PySyclKernelObject *>(source));
-            value = std::make_unique<sycl::kernel>(
-                *(reinterpret_cast<sycl::kernel *>(KRef)));
-            return true;
-        }
-        else {
-            throw py::type_error("Input is of unexpected type, expected "
-                                 "dpctl.program.SyclKernel");
-        }
-    }
-
-    static handle cast(sycl::kernel src, return_value_policy, handle)
-    {
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        auto tmp =
-            api.SyclKernel_Make_(reinterpret_cast<DPCTLSyclKernelRef>(&src),
-                                 "dpctl4pybind11_kernel");
-        return handle(reinterpret_cast<PyObject *>(tmp));
-    }
-
-    DPCTL_TYPE_CASTER(sycl::kernel, _("dpctl.program.SyclKernel"));
-};
-
-/* This type caster associates
- * ``sycl::kernel_bundle<sycl::bundle_state::executable>`` C++ class with
- * :class:`dpctl.program.SyclProgram` for the purposes of generation of
- * Python bindings by pybind11.
- */
-template <>
-struct type_caster<sycl::kernel_bundle<sycl::bundle_state::executable>>
-{
-public:
-    bool load(handle src, bool)
-    {
-        PyObject *source = src.ptr();
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        if (api.PySyclProgram_Check_(source)) {
-            DPCTLSyclKernelBundleRef KBRef =
-                api.SyclProgram_GetKernelBundleRef_(
-                    reinterpret_cast<PySyclProgramObject *>(source));
-            value = std::make_unique<
-                sycl::kernel_bundle<sycl::bundle_state::executable>>(
-                *(reinterpret_cast<
-                    sycl::kernel_bundle<sycl::bundle_state::executable> *>(
-                    KBRef)));
-            return true;
-        }
-        else {
-            throw py::type_error("Input is of unexpected type, expected "
-                                 "dpctl.program.SyclProgram");
-        }
-    }
-
-    static handle cast(sycl::kernel_bundle<sycl::bundle_state::executable> src,
-                       return_value_policy,
-                       handle)
-    {
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        auto tmp = api.SyclProgram_Make_(
-            reinterpret_cast<DPCTLSyclKernelBundleRef>(&src));
-        return handle(reinterpret_cast<PyObject *>(tmp));
-    }
-
-    DPCTL_TYPE_CASTER(sycl::kernel_bundle<sycl::bundle_state::executable>,
-                      _("dpctl.program.SyclProgram"));
-};
-
-/* This type caster associates
- * ``sycl::half`` C++ class with Python :class:`float` for the purposes
- * of generation of Python bindings by pybind11.
- */
-template <>
-struct type_caster<sycl::half>
-{
-public:
-    bool load(handle src, bool convert)
-    {
-        double py_value;
-
-        if (!src) {
-            return false;
-        }
-
-        PyObject *source = src.ptr();
-
-        if (convert || PyFloat_Check(source)) {
-            py_value = PyFloat_AsDouble(source);
-        }
-        else {
-            return false;
-        }
-
-        bool py_err = (py_value == double(-1)) && PyErr_Occurred();
-
-        if (py_err) {
-            PyErr_Clear();
-            if (convert && (PyNumber_Check(source) != 0)) {
-                auto tmp = reinterpret_steal<object>(PyNumber_Float(source));
-                return load(tmp, false);
-            }
-            return false;
-        }
-        value = static_cast<sycl::half>(py_value);
-        return true;
-    }
-
-    static handle cast(sycl::half src, return_value_policy, handle)
-    {
-        return PyFloat_FromDouble(static_cast<double>(src));
-    }
-
-    PYBIND11_TYPE_CASTER(sycl::half, _("float"));
-};
-} // namespace pybind11::detail
-
-namespace dpctl
-{
-namespace memory
-{
-// since PYBIND11_OBJECT_CVT uses error_already_set without namespace,
-// this allows to avoid compilation error
-using pybind11::error_already_set;
-
-class usm_memory : public py::object
-{
-public:
-    PYBIND11_OBJECT_CVT(
-        usm_memory,
-        py::object,
-        [](PyObject *o) -> bool {
-            return PyObject_TypeCheck(
-                       o, ::dpctl::detail::dpctl_capi::get().Py_MemoryType_) !=
-                   0;
-        },
-        [](PyObject *o) -> PyObject * { return as_usm_memory(o); })
-
-    usm_memory()
-        : py::object(
-              ::dpctl::detail::dpctl_capi::get().default_usm_memory_pyobj(),
-              borrowed_t{})
-    {
-        if (!m_ptr)
-            throw py::error_already_set();
-    }
-
-    /*! @brief Create usm_memory object from shared pointer that manages
-     *  lifetime of the USM allocation.
-     */
-    usm_memory(void *usm_ptr,
-               std::size_t nbytes,
-               const sycl::queue &q,
-               std::shared_ptr<void> shptr)
-    {
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        DPCTLSyclUSMRef usm_ref = reinterpret_cast<DPCTLSyclUSMRef>(usm_ptr);
-        auto q_uptr = std::make_unique<sycl::queue>(q);
-        DPCTLSyclQueueRef QRef =
-            reinterpret_cast<DPCTLSyclQueueRef>(q_uptr.get());
-
-        auto vacuous_destructor = []() {};
-        py::capsule mock_owner(vacuous_destructor);
-
-        // create memory object owned by mock_owner, it is a new reference
-        PyObject *_memory =
-            api.Memory_Make_(usm_ref, nbytes, QRef, mock_owner.ptr());
-        auto ref_count_decrementer = [](PyObject *o) noexcept { Py_DECREF(o); };
-
-        using py_uptrT =
-            std::unique_ptr<PyObject, decltype(ref_count_decrementer)>;
-
-        if (!_memory) {
-            throw py::error_already_set();
-        }
-
-        auto memory_uptr = py_uptrT(_memory, ref_count_decrementer);
-        std::shared_ptr<void> *opaque_ptr = new std::shared_ptr<void>(shptr);
-
-        Py_MemoryObject *memobj = reinterpret_cast<Py_MemoryObject *>(_memory);
-        // replace mock_owner capsule as the owner
-        memobj->refobj = Py_None;
-        // set opaque ptr field, usm_memory now knowns that USM is managed
-        // by smart pointer
-        memobj->_opaque_ptr = reinterpret_cast<void *>(opaque_ptr);
-
-        // _memory will delete created copies of sycl::queue, and
-        // std::shared_ptr and the deleter of the shared_ptr<void> is
-        // supposed to free the USM allocation
-        m_ptr = _memory;
-        q_uptr.release();
-        memory_uptr.release();
-    }
-
-    sycl::queue get_queue() const
-    {
-        Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        DPCTLSyclQueueRef QRef = api.Memory_GetQueueRef_(mem_obj);
-        sycl::queue *obj_q = reinterpret_cast<sycl::queue *>(QRef);
-        return *obj_q;
-    }
-
-    char *get_pointer() const
-    {
-        Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        DPCTLSyclUSMRef MRef = api.Memory_GetUsmPointer_(mem_obj);
-        return reinterpret_cast<char *>(MRef);
-    }
-
-    std::size_t get_nbytes() const
-    {
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);
-        return api.Memory_GetNumBytes_(mem_obj);
-    }
-
-    bool is_managed_by_smart_ptr() const
-    {
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);
-        const void *opaque_ptr = api.Memory_GetOpaquePointer_(mem_obj);
-
-        return bool(opaque_ptr);
-    }
-
-    const std::shared_ptr<void> &get_smart_ptr_owner() const
-    {
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);
-        void *opaque_ptr = api.Memory_GetOpaquePointer_(mem_obj);
-
-        if (opaque_ptr) {
-            auto shptr_ptr =
-                reinterpret_cast<std::shared_ptr<void> *>(opaque_ptr);
-            return *shptr_ptr;
-        }
-        else {
-            throw std::runtime_error(
-                "Memory object does not have smart pointer "
-                "managing lifetime of USM allocation");
-        }
-    }
-
-protected:
-    static PyObject *as_usm_memory(PyObject *o)
-    {
-        if (o == nullptr) {
-            PyErr_SetString(PyExc_ValueError,
-                            "cannot create a usm_memory from a nullptr");
-            return nullptr;
-        }
-
-        auto converter =
-            ::dpctl::detail::dpctl_capi::get().as_usm_memory_pyobj();
-
-        py::object res;
-        try {
-            res = converter(py::handle(o));
-        } catch (const py::error_already_set &e) {
-            return nullptr;
-        }
-        return res.ptr();
-    }
-};
-} // end namespace memory
 
 namespace tensor
 {
@@ -890,13 +255,12 @@ class usm_ndarray : public py::object
 public:
     PYBIND11_OBJECT(usm_ndarray, py::object, [](PyObject *o) -> bool {
         return PyObject_TypeCheck(
-                   o, ::dpctl::detail::dpctl_capi::get().PyUSMArrayType_) != 0;
+                   o, detail::dpnp_capi::get().PyUSMArrayType_) != 0;
     })
 
     usm_ndarray()
-        : py::object(
-              ::dpctl::detail::dpctl_capi::get().default_usm_ndarray_pyobj(),
-              borrowed_t{})
+        : py::object(detail::dpnp_capi::get().default_usm_ndarray_pyobj(),
+                     borrowed_t{})
     {
         if (!m_ptr)
             throw py::error_already_set();
@@ -1028,8 +392,8 @@ public:
         Py_MemoryObject *mem_obj =
             reinterpret_cast<Py_MemoryObject *>(raw_ar->base_);
 
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        DPCTLSyclQueueRef QRef = api.Memory_GetQueueRef_(mem_obj);
+        auto const &dpctl_api = ::dpctl::detail::dpctl_capi::get();
+        DPCTLSyclQueueRef QRef = dpctl_api.Memory_GetQueueRef_(mem_obj);
         return *(reinterpret_cast<sycl::queue *>(QRef));
     }
 
@@ -1039,8 +403,8 @@ public:
         Py_MemoryObject *mem_obj =
             reinterpret_cast<Py_MemoryObject *>(raw_ar->base_);
 
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        DPCTLSyclQueueRef QRef = api.Memory_GetQueueRef_(mem_obj);
+        auto const &dpctl_api = ::dpctl::detail::dpctl_capi::get();
+        DPCTLSyclQueueRef QRef = dpctl_api.Memory_GetQueueRef_(mem_obj);
         return reinterpret_cast<sycl::queue *>(QRef)->get_device();
     }
 
@@ -1059,7 +423,7 @@ public:
     int get_elemsize() const
     {
         int typenum = get_typenum();
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        auto const &api = detail::dpnp_capi::get();
 
         // Lookup table for element sizes based on typenum
         if (typenum == api.UAR_BOOL_)
@@ -1101,21 +465,21 @@ public:
     bool is_c_contiguous() const
     {
         int flags = get_flags();
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        auto const &api = detail::dpnp_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_C_CONTIGUOUS_);
     }
 
     bool is_f_contiguous() const
     {
         int flags = get_flags();
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        auto const &api = detail::dpnp_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_F_CONTIGUOUS_);
     }
 
     bool is_writable() const
     {
         int flags = get_flags();
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        auto const &api = detail::dpnp_capi::get();
         return static_cast<bool>(flags & api.USM_ARRAY_WRITABLE_);
     }
 
@@ -1136,14 +500,14 @@ public:
         PyUSMArrayObject *raw_ar = usm_array_ptr();
         PyObject *usm_data = raw_ar->base_;
 
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
-        if (!PyObject_TypeCheck(usm_data, api.Py_MemoryType_)) {
+        auto const &dpctl_api = ::dpctl::detail::dpctl_capi::get();
+        if (!PyObject_TypeCheck(usm_data, dpctl_api.Py_MemoryType_)) {
             return false;
         }
 
         Py_MemoryObject *mem_obj =
             reinterpret_cast<Py_MemoryObject *>(usm_data);
-        const void *opaque_ptr = api.Memory_GetOpaquePointer_(mem_obj);
+        const void *opaque_ptr = dpctl_api.Memory_GetOpaquePointer_(mem_obj);
 
         return bool(opaque_ptr);
     }
@@ -1153,9 +517,9 @@ public:
         PyUSMArrayObject *raw_ar = usm_array_ptr();
         PyObject *usm_data = raw_ar->base_;
 
-        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        auto const &dpctl_api = ::dpctl::detail::dpctl_capi::get();
 
-        if (!PyObject_TypeCheck(usm_data, api.Py_MemoryType_)) {
+        if (!PyObject_TypeCheck(usm_data, dpctl_api.Py_MemoryType_)) {
             throw std::runtime_error(
                 "usm_ndarray object does not have Memory object "
                 "managing lifetime of USM allocation");
@@ -1163,7 +527,7 @@ public:
 
         Py_MemoryObject *mem_obj =
             reinterpret_cast<Py_MemoryObject *>(usm_data);
-        void *opaque_ptr = api.Memory_GetOpaquePointer_(mem_obj);
+        void *opaque_ptr = dpctl_api.Memory_GetOpaquePointer_(mem_obj);
 
         if (opaque_ptr) {
             auto shptr_ptr =
@@ -1189,19 +553,24 @@ namespace utils
 {
 namespace detail
 {
+// TODO: future version of dpctl will include a more general way of passing
+// shared_ptrs to keep_args_alive, so that future overload can be used here
+// instead of reimplementing keep_args_alive
+
 struct ManagedMemory
 {
-
+    // TODO: do we need to check for memory here? Or can we assume only
+    // dpnp::tensor::usm_ndarray will be passed?
     static bool is_usm_managed_by_shared_ptr(const py::object &h)
     {
-        if (py::isinstance<dpctl::memory::usm_memory>(h)) {
+
+        if (py::isinstance<::dpctl::memory::usm_memory>(h)) {
             const auto &usm_memory_inst =
-                py::cast<dpctl::memory::usm_memory>(h);
+                py::cast<::dpctl::memory::usm_memory>(h);
             return usm_memory_inst.is_managed_by_smart_ptr();
         }
-        else if (py::isinstance<dpctl::tensor::usm_ndarray>(h)) {
-            const auto &usm_array_inst =
-                py::cast<dpctl::tensor::usm_ndarray>(h);
+        else if (py::isinstance<tensor::usm_ndarray>(h)) {
+            const auto &usm_array_inst = py::cast<tensor::usm_ndarray>(h);
             return usm_array_inst.is_managed_by_smart_ptr();
         }
 
@@ -1215,9 +584,8 @@ struct ManagedMemory
                 py::cast<dpctl::memory::usm_memory>(h);
             return usm_memory_inst.get_smart_ptr_owner();
         }
-        else if (py::isinstance<dpctl::tensor::usm_ndarray>(h)) {
-            const auto &usm_array_inst =
-                py::cast<dpctl::tensor::usm_ndarray>(h);
+        else if (py::isinstance<tensor::usm_ndarray>(h)) {
+            const auto &usm_array_inst = py::cast<tensor::usm_ndarray>(h);
             return usm_array_inst.get_smart_ptr_owner();
         }
 
@@ -1295,26 +663,14 @@ sycl::event keep_args_alive(sycl::queue &q,
     return host_task_ev;
 }
 
-/*! @brief Check if all allocation queues are the same as the
-    execution queue */
-template <std::size_t num>
-bool queues_are_compatible(const sycl::queue &exec_q,
-                           const sycl::queue (&alloc_qs)[num])
-{
-    for (std::size_t i = 0; i < num; ++i) {
+// add to namespace for convenience
+using ::dpctl::utils::queues_are_compatible;
 
-        if (exec_q != alloc_qs[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-/*! @brief Check if all allocation queues of usm_ndarays are the same as
+/*! @brief Check if all allocation queues of usm_ndarrays are the same as
     the execution queue */
 template <std::size_t num>
 bool queues_are_compatible(const sycl::queue &exec_q,
-                           const ::dpctl::tensor::usm_ndarray (&arrs)[num])
+                           const tensor::usm_ndarray (&arrs)[num])
 {
     for (std::size_t i = 0; i < num; ++i) {
 
@@ -1325,4 +681,4 @@ bool queues_are_compatible(const sycl::queue &exec_q,
     return true;
 }
 } // end namespace utils
-} // end namespace dpctl
+} // end namespace dpnp

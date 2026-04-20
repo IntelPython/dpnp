@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_reductions_impl
+/// This file defines functions of dpnp.tensor._tensor_reductions_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 
@@ -38,9 +38,9 @@
 
 namespace py = pybind11;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern void init_argmin(py::module_ m);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

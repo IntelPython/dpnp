@@ -30,7 +30,7 @@
 ///
 /// \file
 /// This file defines Python API for implementation functions of
-/// dpctl.tensor.clip
+/// dpnp.tensor.clip
 //===---------------------------------------------------------------------===//
 
 #include <cassert>
@@ -53,14 +53,14 @@
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::clip::clip_contig_impl_fn_ptr_t;
-using dpctl::tensor::kernels::clip::clip_strided_impl_fn_ptr_t;
+using dpnp::tensor::kernels::clip::clip_contig_impl_fn_ptr_t;
+using dpnp::tensor::kernels::clip::clip_strided_impl_fn_ptr_t;
 
 static clip_contig_impl_fn_ptr_t clip_contig_dispatch_vector[td_ns::num_types];
 static clip_strided_impl_fn_ptr_t
@@ -69,36 +69,36 @@ static clip_strided_impl_fn_ptr_t
 void init_clip_dispatch_vectors(void)
 {
     using namespace td_ns;
-    using dpctl::tensor::kernels::clip::ClipContigFactory;
+    using dpnp::tensor::kernels::clip::ClipContigFactory;
     DispatchVectorBuilder<clip_contig_impl_fn_ptr_t, ClipContigFactory,
                           num_types>
         dvb1;
     dvb1.populate_dispatch_vector(clip_contig_dispatch_vector);
 
-    using dpctl::tensor::kernels::clip::ClipStridedFactory;
+    using dpnp::tensor::kernels::clip::ClipStridedFactory;
     DispatchVectorBuilder<clip_strided_impl_fn_ptr_t, ClipStridedFactory,
                           num_types>
         dvb2;
     dvb2.populate_dispatch_vector(clip_strided_dispatch_vector);
 }
 
-using dpctl::utils::keep_args_alive;
+using dpnp::utils::keep_args_alive;
 
 std::pair<sycl::event, sycl::event>
-    py_clip(const dpctl::tensor::usm_ndarray &src,
-            const dpctl::tensor::usm_ndarray &min,
-            const dpctl::tensor::usm_ndarray &max,
-            const dpctl::tensor::usm_ndarray &dst,
+    py_clip(const dpnp::tensor::usm_ndarray &src,
+            const dpnp::tensor::usm_ndarray &min,
+            const dpnp::tensor::usm_ndarray &max,
+            const dpnp::tensor::usm_ndarray &dst,
             sycl::queue &exec_q,
             const std::vector<sycl::event> &depends)
 {
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, min, max, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, min, max, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     int nd = src.get_ndim();
     int min_nd = min.get_ndim();
@@ -137,9 +137,9 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event{}, sycl::event{});
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
+        dpnp::tensor::overlap::SameLogicalTensors();
     if ((overlap(dst, src) && !same_logical_tensors(dst, src)) ||
         (overlap(dst, min) && !same_logical_tensors(dst, min)) ||
         (overlap(dst, max) && !same_logical_tensors(dst, max))) {
@@ -163,7 +163,7 @@ std::pair<sycl::event, sycl::event>
                               "have the same data type");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, nelems);
 
     char *src_data = src.get_data();
     char *min_data = min.get_data();
@@ -226,7 +226,7 @@ std::pair<sycl::event, sycl::event>
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events,
         // common shape and strides
@@ -250,8 +250,8 @@ std::pair<sycl::event, sycl::event>
 
     // free packed temporaries
     sycl::event temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
-            exec_q, {clip_ev}, packed_shape_strides_owner);
+        dpnp::tensor::alloc_utils::async_smart_free(exec_q, {clip_ev},
+                                                    packed_shape_strides_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     sycl::event arg_cleanup_ev =
@@ -260,4 +260,4 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(arg_cleanup_ev, clip_ev);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

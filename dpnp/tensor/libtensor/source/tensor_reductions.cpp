@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_reductions_impl
+/// This file defines functions of dpnp.tensor._tensor_reductions_impl
 /// extension.
 //===---------------------------------------------------------------------===//
 
@@ -39,5 +39,5 @@
 
 PYBIND11_MODULE(_tensor_reductions_impl, m)
 {
-    dpctl::tensor::py_internal::init_reduction_functions(m);
+    dpnp::tensor::py_internal::init_reduction_functions(m);
 }

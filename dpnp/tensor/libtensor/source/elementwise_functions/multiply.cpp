@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_elementwise_impl
+/// This file defines functions of dpnp.tensor._tensor_elementwise_impl
 /// extension, specifically functions for elementwise operations.
 //===---------------------------------------------------------------------===//
 
@@ -51,13 +51,13 @@
 #include "kernels/elementwise_functions/common_inplace.hpp"
 #include "kernels/elementwise_functions/multiply.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+namespace ew_cmn_ns = dpnp::tensor::kernels::elementwise_common;
 using ew_cmn_ns::binary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
@@ -71,7 +71,7 @@ using ew_cmn_ns::binary_inplace_strided_impl_fn_ptr_t;
 namespace impl
 {
 
-namespace multiply_fn_ns = dpctl::tensor::kernels::multiply;
+namespace multiply_fn_ns = dpnp::tensor::kernels::multiply;
 
 static binary_contig_impl_fn_ptr_t
     multiply_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -176,7 +176,7 @@ void populate_multiply_dispatch_tables(void)
 
 void init_multiply(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
     {
         impl::populate_multiply_dispatch_tables();
@@ -241,4 +241,4 @@ void init_multiply(py::module_ m)
     }
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

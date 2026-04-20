@@ -49,12 +49,12 @@
 #include "utils/math_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 
-namespace dpctl::tensor::kernels::logaddexp
+namespace dpnp::tensor::kernels::logaddexp
 {
-using dpctl::tensor::ssize_t;
-namespace td_ns = dpctl::tensor::type_dispatch;
+using dpnp::tensor::ssize_t;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 template <typename argT1, typename argT2, typename resT>
 struct LogAddExpFunctor
@@ -64,7 +64,7 @@ struct LogAddExpFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        using dpctl::tensor::math_utils::logaddexp;
+        using dpnp::tensor::math_utils::logaddexp;
         return logaddexp<resT>(in1, in2);
     }
 
@@ -83,7 +83,7 @@ struct LogAddExpFunctor
                          impl_finite<resT>(-sycl::fabs(diff[i]));
             }
             else {
-                using dpctl::tensor::math_utils::logaddexp;
+                using dpnp::tensor::math_utils::logaddexp;
                 res[i] = logaddexp<resT>(in1[i], in2[i]);
             }
         }
@@ -142,7 +142,7 @@ struct LogAddExpOutputType
 namespace hyperparam_detail
 {
 
-namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+namespace vsu_ns = dpnp::tensor::kernels::vec_size_utils;
 
 using vsu_ns::BinaryContigHyperparameterSetEntry;
 using vsu_ns::ContigHyperparameterSetDefault;
@@ -260,4 +260,4 @@ struct LogAddExpStridedFactory
 template <typename argT1, typename argT2, typename resT>
 class logaddexp_matrix_row_broadcast_sg_krn;
 
-} // namespace dpctl::tensor::kernels::logaddexp
+} // namespace dpnp::tensor::kernels::logaddexp

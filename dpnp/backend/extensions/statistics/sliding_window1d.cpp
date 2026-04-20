@@ -36,14 +36,14 @@
 // utils extension header
 #include "ext/validation_utils.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 
 #include "sliding_window1d.hpp"
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-using dpctl::tensor::usm_ndarray;
-using dpctl_td_ns::typenum_t;
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
+using dpnp::tensor::usm_ndarray;
+using dpnp_td_ns::typenum_t;
 
 using ext::validation::array_names;
 using ext::validation::array_ptr;

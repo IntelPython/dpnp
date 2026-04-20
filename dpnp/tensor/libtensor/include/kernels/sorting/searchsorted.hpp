@@ -39,14 +39,14 @@
 
 #include <sycl/sycl.hpp>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/sorting/search_sorted_detail.hpp"
 #include "utils/offset_utils.hpp"
 
-namespace dpctl::tensor::kernels
+namespace dpnp::tensor::kernels
 {
 
-using dpctl::tensor::ssize_t;
+using dpnp::tensor::ssize_t;
 
 template <typename argTy,
           typename indTy,
@@ -157,7 +157,7 @@ sycl::event searchsorted_contig_impl(sycl::queue &exec_q,
 
         sycl::range<1> gRange(needles_nelems);
 
-        using TrivialIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using TrivialIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         static constexpr TrivialIndexerT hay_indexer{};
         static constexpr TrivialIndexerT needles_indexer{};
@@ -222,18 +222,18 @@ sycl::event searchsorted_strided_impl(
 
         sycl::range<1> gRange(needles_nelems);
 
-        using HayIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using HayIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
         const HayIndexerT hay_indexer(
             /* offset */ hay_offset,
             /* size   */ hay_nelems,
             /* step   */ hay_stride);
 
-        using NeedlesIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+        using NeedlesIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
         const ssize_t *needles_shape_strides = packed_shape_strides;
         const NeedlesIndexerT needles_indexer(needles_nd, needles_offset,
                                               needles_shape_strides);
         using PositionsIndexerT =
-            dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+            dpnp::tensor::offset_utils::UnpackedStridedIndexer;
 
         const ssize_t *positions_shape = packed_shape_strides;
         const ssize_t *positions_strides =
@@ -255,4 +255,4 @@ sycl::event searchsorted_strided_impl(
     return comp_ev;
 }
 
-} // namespace dpctl::tensor::kernels
+} // namespace dpnp::tensor::kernels

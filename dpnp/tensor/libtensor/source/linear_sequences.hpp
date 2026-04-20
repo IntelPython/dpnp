@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===---------------------------------------------------------------------===//
 
 #pragma once
@@ -43,24 +43,24 @@
 
 namespace py = pybind11;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern std::pair<sycl::event, sycl::event> usm_ndarray_linear_sequence_step(
     const py::object &start,
     const py::object &dt,
-    const dpctl::tensor::usm_ndarray &dst,
+    const dpnp::tensor::usm_ndarray &dst,
     sycl::queue &exec_q,
     const std::vector<sycl::event> &depends = {});
 
 extern std::pair<sycl::event, sycl::event> usm_ndarray_linear_sequence_affine(
     const py::object &start,
     const py::object &end,
-    const dpctl::tensor::usm_ndarray &dst,
+    const dpnp::tensor::usm_ndarray &dst,
     bool include_endpoint,
     sycl::queue &exec_q,
     const std::vector<sycl::event> &depends = {});
 
 extern void init_linear_sequences_dispatch_vectors(void);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #pragma once
@@ -43,15 +43,15 @@
 
 namespace py = pybind11;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern void copy_numpy_ndarray_into_usm_ndarray(
     const py::array &npy_src,
-    const dpctl::tensor::usm_ndarray &dst,
+    const dpnp::tensor::usm_ndarray &dst,
     sycl::queue &exec_q,
     const std::vector<sycl::event> &depends = {});
 
 extern void init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables(void);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

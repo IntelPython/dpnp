@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -58,15 +58,15 @@
 #include "simplify_iteration_space.hpp"
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace detail
 {
 
-using dpctl::tensor::kernels::searchsorted_contig_impl_fp_ptr_t;
+using dpnp::tensor::kernels::searchsorted_contig_impl_fp_ptr_t;
 
 static searchsorted_contig_impl_fp_ptr_t
     left_side_searchsorted_contig_impl[td_ns::num_types][td_ns::num_types];
@@ -84,8 +84,8 @@ struct LeftSideSearchSortedContigFactory
         if constexpr (std::is_same_v<indTy, std::int32_t> ||
                       std::is_same_v<indTy, std::int64_t>) {
             static constexpr bool left_side_search(true);
-            using dpctl::tensor::kernels::searchsorted_contig_impl;
-            using dpctl::tensor::rich_comparisons::AscendingSorter;
+            using dpnp::tensor::kernels::searchsorted_contig_impl;
+            using dpnp::tensor::rich_comparisons::AscendingSorter;
 
             using Compare = typename AscendingSorter<argTy>::type;
 
@@ -109,8 +109,8 @@ struct RightSideSearchSortedContigFactory
                       std::is_same_v<indTy, std::int64_t>) {
             static constexpr bool right_side_search(false);
 
-            using dpctl::tensor::kernels::searchsorted_contig_impl;
-            using dpctl::tensor::rich_comparisons::AscendingSorter;
+            using dpnp::tensor::kernels::searchsorted_contig_impl;
+            using dpnp::tensor::rich_comparisons::AscendingSorter;
 
             using Compare = typename AscendingSorter<argTy>::type;
 
@@ -123,7 +123,7 @@ struct RightSideSearchSortedContigFactory
     }
 };
 
-using dpctl::tensor::kernels::searchsorted_strided_impl_fp_ptr_t;
+using dpnp::tensor::kernels::searchsorted_strided_impl_fp_ptr_t;
 
 static searchsorted_strided_impl_fp_ptr_t
     left_side_searchsorted_strided_impl[td_ns::num_types][td_ns::num_types];
@@ -141,8 +141,8 @@ struct LeftSideSearchSortedStridedFactory
         if constexpr (std::is_same_v<indTy, std::int32_t> ||
                       std::is_same_v<indTy, std::int64_t>) {
             static constexpr bool left_side_search(true);
-            using dpctl::tensor::kernels::searchsorted_strided_impl;
-            using dpctl::tensor::rich_comparisons::AscendingSorter;
+            using dpnp::tensor::kernels::searchsorted_strided_impl;
+            using dpnp::tensor::rich_comparisons::AscendingSorter;
 
             using Compare = typename AscendingSorter<argTy>::type;
 
@@ -165,8 +165,8 @@ struct RightSideSearchSortedStridedFactory
         if constexpr (std::is_same_v<indTy, std::int32_t> ||
                       std::is_same_v<indTy, std::int64_t>) {
             static constexpr bool right_side_search(false);
-            using dpctl::tensor::kernels::searchsorted_strided_impl;
-            using dpctl::tensor::rich_comparisons::AscendingSorter;
+            using dpnp::tensor::kernels::searchsorted_strided_impl;
+            using dpnp::tensor::rich_comparisons::AscendingSorter;
 
             using Compare = typename AscendingSorter<argTy>::type;
 
@@ -213,9 +213,9 @@ void init_searchsorted_dispatch_table(void)
 
 /*! @brief search for needle from needles in sorted hay */
 std::pair<sycl::event, sycl::event>
-    py_searchsorted(const dpctl::tensor::usm_ndarray &hay,
-                    const dpctl::tensor::usm_ndarray &needles,
-                    const dpctl::tensor::usm_ndarray &positions,
+    py_searchsorted(const dpnp::tensor::usm_ndarray &hay,
+                    const dpnp::tensor::usm_ndarray &needles,
+                    const dpnp::tensor::usm_ndarray &positions,
                     sycl::queue &exec_q,
                     const bool search_left_side,
                     const std::vector<sycl::event> &depends)
@@ -252,21 +252,21 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check that positions is ample enough
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(positions,
-                                                               needles_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(positions,
+                                                              needles_nelems);
 
     // check that positions is writable
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(positions);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(positions);
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {hay, needles, positions})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q,
+                                            {hay, needles, positions})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
     // if output array overlaps with input arrays, race condition results
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(positions, hay) || overlap(positions, needles)) {
         throw py::value_error("Destination array overlaps with input.");
     }
@@ -339,8 +339,8 @@ std::pair<sycl::event, sycl::event>
                    depends);
 
             return std::make_pair(
-                dpctl::utils::keep_args_alive(exec_q, {hay, needles, positions},
-                                              {comp_ev}),
+                dpnp::utils::keep_args_alive(exec_q, {hay, needles, positions},
+                                             {comp_ev}),
                 comp_ev);
         }
     }
@@ -379,7 +379,7 @@ std::pair<sycl::event, sycl::event>
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
 
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events,
@@ -419,11 +419,11 @@ std::pair<sycl::event, sycl::event>
 
     // free packed temporaries
     sycl::event temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
-            exec_q, {comp_ev}, packed_shape_strides_owner);
+        dpnp::tensor::alloc_utils::async_smart_free(exec_q, {comp_ev},
+                                                    packed_shape_strides_owner);
 
     host_task_events.push_back(temporaries_cleanup_ev);
-    const sycl::event &ht_ev = dpctl::utils::keep_args_alive(
+    const sycl::event &ht_ev = dpnp::utils::keep_args_alive(
         exec_q, {hay, needles, positions}, host_task_events);
 
     return std::make_pair(ht_ev, comp_ev);
@@ -433,9 +433,9 @@ std::pair<sycl::event, sycl::event>
  *         hay[pos] <= needle < hay[pos + 1]
  */
 std::pair<sycl::event, sycl::event>
-    py_searchsorted_left(const dpctl::tensor::usm_ndarray &hay,
-                         const dpctl::tensor::usm_ndarray &needles,
-                         const dpctl::tensor::usm_ndarray &positions,
+    py_searchsorted_left(const dpnp::tensor::usm_ndarray &hay,
+                         const dpnp::tensor::usm_ndarray &needles,
+                         const dpnp::tensor::usm_ndarray &positions,
                          sycl::queue &exec_q,
                          const std::vector<sycl::event> &depends)
 {
@@ -447,9 +447,9 @@ std::pair<sycl::event, sycl::event>
  *         hay[pos] < needle <= hay[pos + 1]
  */
 std::pair<sycl::event, sycl::event>
-    py_searchsorted_right(const dpctl::tensor::usm_ndarray &hay,
-                          const dpctl::tensor::usm_ndarray &needles,
-                          const dpctl::tensor::usm_ndarray &positions,
+    py_searchsorted_right(const dpnp::tensor::usm_ndarray &hay,
+                          const dpnp::tensor::usm_ndarray &needles,
+                          const dpnp::tensor::usm_ndarray &positions,
                           sycl::queue &exec_q,
                           const std::vector<sycl::event> &depends)
 {
@@ -470,4 +470,4 @@ void init_searchsorted_functions(py::module_ m)
           py::arg("depends") = py::list());
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

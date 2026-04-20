@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #include "linalg_functions/dot.hpp"
@@ -37,5 +37,5 @@
 
 PYBIND11_MODULE(_tensor_linalg_impl, m)
 {
-    dpctl::tensor::py_internal::init_dot(m);
+    dpnp::tensor::py_internal::init_dot(m);
 }

@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -51,12 +51,12 @@
 #include "merge_sort.hpp"
 #include "py_sort_common.hpp"
 
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
-using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
+using dpnp::tensor::kernels::sort_contig_fn_ptr_t;
 static sort_contig_fn_ptr_t
     ascending_sort_contig_dispatch_vector[td_ns::num_types];
 static sort_contig_fn_ptr_t
@@ -67,10 +67,10 @@ struct AscendingSortContigFactory
 {
     fnT get()
     {
-        using dpctl::tensor::rich_comparisons::AscendingSorter;
+        using dpnp::tensor::rich_comparisons::AscendingSorter;
         using Comp = typename AscendingSorter<argTy>::type;
 
-        using dpctl::tensor::kernels::stable_sort_axis1_contig_impl;
+        using dpnp::tensor::kernels::stable_sort_axis1_contig_impl;
         return stable_sort_axis1_contig_impl<argTy, Comp>;
     }
 };
@@ -80,17 +80,17 @@ struct DescendingSortContigFactory
 {
     fnT get()
     {
-        using dpctl::tensor::rich_comparisons::DescendingSorter;
+        using dpnp::tensor::rich_comparisons::DescendingSorter;
         using Comp = typename DescendingSorter<argTy>::type;
 
-        using dpctl::tensor::kernels::stable_sort_axis1_contig_impl;
+        using dpnp::tensor::kernels::stable_sort_axis1_contig_impl;
         return stable_sort_axis1_contig_impl<argTy, Comp>;
     }
 };
 
 void init_merge_sort_dispatch_vectors(void)
 {
-    using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
+    using dpnp::tensor::kernels::sort_contig_fn_ptr_t;
 
     td_ns::DispatchVectorBuilder<sort_contig_fn_ptr_t,
                                  AscendingSortContigFactory, td_ns::num_types>
@@ -107,9 +107,9 @@ void init_merge_sort_functions(py::module_ m)
 {
     init_merge_sort_dispatch_vectors();
 
-    auto py_sort_ascending = [](const dpctl::tensor::usm_ndarray &src,
+    auto py_sort_ascending = [](const dpnp::tensor::usm_ndarray &src,
                                 const int trailing_dims_to_sort,
-                                const dpctl::tensor::usm_ndarray &dst,
+                                const dpnp::tensor::usm_ndarray &dst,
                                 sycl::queue &exec_q,
                                 const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
@@ -120,9 +120,9 @@ void init_merge_sort_functions(py::module_ m)
           py::arg("trailing_dims_to_sort"), py::arg("dst"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
 
-    auto py_sort_descending = [](const dpctl::tensor::usm_ndarray &src,
+    auto py_sort_descending = [](const dpnp::tensor::usm_ndarray &src,
                                  const int trailing_dims_to_sort,
-                                 const dpctl::tensor::usm_ndarray &dst,
+                                 const dpnp::tensor::usm_ndarray &dst,
                                  sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends)
         -> std::pair<sycl::event, sycl::event> {
@@ -136,4 +136,4 @@ void init_merge_sort_functions(py::module_ m)
     return;
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

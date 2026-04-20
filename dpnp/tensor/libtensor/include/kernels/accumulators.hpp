@@ -44,20 +44,20 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl_tensor_types.hpp"
+#include "dpnp_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::accumulators
+namespace dpnp::tensor::kernels::accumulators
 {
 
-namespace su_ns = dpctl::tensor::sycl_utils;
+namespace su_ns = dpnp::tensor::sycl_utils;
 
-using dpctl::tensor::ssize_t;
-using namespace dpctl::tensor::offset_utils;
+using dpnp::tensor::ssize_t;
+using namespace dpnp::tensor::offset_utils;
 
 template <typename T>
 T ceiling_quotient(T n, T m)
@@ -95,7 +95,7 @@ struct CastTransformer
 
     dstTy operator()(const srcTy &val) const
     {
-        using dpctl::tensor::type_utils::convert_impl;
+        using dpnp::tensor::type_utils::convert_impl;
         return convert_impl<dstTy, srcTy>(val);
     }
 };
@@ -662,10 +662,10 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
 
     static constexpr std::size_t _iter_nelems = 1;
 
-    using IterIndexerT = dpctl::tensor::offset_utils::TwoZeroOffsets_Indexer;
+    using IterIndexerT = dpnp::tensor::offset_utils::TwoZeroOffsets_Indexer;
     static constexpr IterIndexerT _no_op_iter_indexer{};
 
-    using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+    using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
     static constexpr NoOpIndexerT _no_op_indexer{};
 
     std::size_t n_groups;
@@ -692,8 +692,8 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
 
         // allocate
         auto temp_owner =
-            dpctl::tensor::alloc_utils::smart_malloc_device<outputT>(temp_size,
-                                                                     exec_q);
+            dpnp::tensor::alloc_utils::smart_malloc_device<outputT>(temp_size,
+                                                                    exec_q);
         outputT *temp = temp_owner.get();
 
         std::vector<detail::stack_t<outputT>> stack{};
@@ -743,7 +743,7 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
                 dependent_event);
         }
 
-        sycl::event free_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        sycl::event free_ev = dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {dependent_event}, temp_owner);
 
         host_tasks.push_back(free_ev);
@@ -776,7 +776,7 @@ sycl::event
     const srcT *src_data_ptr = reinterpret_cast<const srcT *>(src);
     dstT *dst_data_ptr = reinterpret_cast<dstT *>(dst);
 
-    using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+    using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
     static constexpr NoOpIndexerT flat_indexer{};
     static constexpr transformerT transformer{};
 
@@ -954,8 +954,8 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
         su_ns::Identity<ScanOpT, outputT>::value;
 
     using IterIndexerT =
-        dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
-            InpIterIndexerT, OutIterIndexerT>;
+        dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<InpIterIndexerT,
+                                                               OutIterIndexerT>;
     const IterIndexerT iter_indexer{inp_iter_indexer, out_iter_indexer};
 
     std::size_t acc_groups;
@@ -982,7 +982,7 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
 
         // allocate
         auto temp_owner =
-            dpctl::tensor::alloc_utils::smart_malloc_device<outputT>(
+            dpnp::tensor::alloc_utils::smart_malloc_device<outputT>(
                 iter_nelems * temp_size, exec_q);
         outputT *temp = temp_owner.get();
 
@@ -993,7 +993,7 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
         outputT *src = output;
         outputT *local_scans = temp;
 
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         static constexpr NoOpIndexerT _no_op_indexer{};
         using NoOpTransformerT = NoOpTransformer<outputT>;
         static constexpr NoOpTransformerT _no_op_transformer{};
@@ -1002,12 +1002,12 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
         {
             std::size_t src_size = acc_groups - 1;
             using LocalScanIndexerT =
-                dpctl::tensor::offset_utils::Strided1DIndexer;
+                dpnp::tensor::offset_utils::Strided1DIndexer;
             const LocalScanIndexerT scan_iter_indexer{/* size */ iter_nelems,
                                                       /* step */ src_size};
 
             using IterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     OutIterIndexerT, LocalScanIndexerT>;
             const IterIndexerT iter_indexer_{out_iter_indexer,
                                              scan_iter_indexer};
@@ -1031,7 +1031,7 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             std::size_t src_size = acc_groups_ - 1;
 
             using LocalScanIndexerT =
-                dpctl::tensor::offset_utils::Strided1DIndexer;
+                dpnp::tensor::offset_utils::Strided1DIndexer;
             const LocalScanIndexerT scan1_iter_indexer{
                 /* size */ iter_nelems,
                 /* step */ size_to_update};
@@ -1039,7 +1039,7 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                                                        /* step */ src_size};
 
             using IterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     LocalScanIndexerT, LocalScanIndexerT>;
             const IterIndexerT iter_indexer_{scan1_iter_indexer,
                                              scan2_iter_indexer};
@@ -1100,7 +1100,7 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                     dependent_event);
         }
 
-        sycl::event free_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        sycl::event free_ev = dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {dependent_event}, temp_owner);
         host_tasks.push_back(free_ev);
     }
@@ -1146,12 +1146,12 @@ sycl::event
     const srcT *src_data_ptr = reinterpret_cast<const srcT *>(src);
     dstT *dst_data_ptr = reinterpret_cast<dstT *>(dst);
 
-    using InpIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+    using InpIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
     const InpIndexerT inp_axis_indexer{acc_nd, 0, acc_shape_strides};
     const InpIndexerT inp_iter_indexer{iter_nd, inp_iter_offset,
                                        iter_shape_strides};
 
-    using OutIndexerT = dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+    using OutIndexerT = dpnp::tensor::offset_utils::UnpackedStridedIndexer;
     const OutIndexerT out_axis_indexer{acc_nd, 0, acc_shape_strides,
                                        acc_shape_strides + 2 * acc_nd};
     const OutIndexerT out_iter_indexer{iter_nd, out_iter_offset,
@@ -1213,7 +1213,7 @@ std::size_t cumsum_val_contig_impl(sycl::queue &q,
     const maskT *mask_data_ptr = reinterpret_cast<const maskT *>(mask);
     cumsumT *cumsum_data_ptr = reinterpret_cast<cumsumT *>(cumsum);
 
-    using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+    using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
     static constexpr NoOpIndexerT flat_indexer{};
     static constexpr transformerT transformer{};
 
@@ -1248,7 +1248,7 @@ std::size_t cumsum_val_contig_impl(sycl::queue &q,
     cumsumT *last_elem = cumsum_data_ptr + (n_elems - 1);
 
     auto host_usm_owner =
-        dpctl::tensor::alloc_utils::smart_malloc_host<cumsumT>(1, q);
+        dpnp::tensor::alloc_utils::smart_malloc_host<cumsumT>(1, q);
     cumsumT *last_elem_host_usm = host_usm_owner.get();
 
     sycl::event copy_e = q.submit([&](sycl::handler &cgh) {
@@ -1330,7 +1330,7 @@ std::size_t
     const maskT *mask_data_ptr = reinterpret_cast<const maskT *>(mask);
     cumsumT *cumsum_data_ptr = reinterpret_cast<cumsumT *>(cumsum);
 
-    using StridedIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+    using StridedIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
     const StridedIndexerT strided_indexer{nd, 0, shape_strides};
     static constexpr transformerT transformer{};
 
@@ -1366,7 +1366,7 @@ std::size_t
     cumsumT *last_elem = cumsum_data_ptr + (n_elems - 1);
 
     auto host_usm_owner =
-        dpctl::tensor::alloc_utils::smart_malloc_host<cumsumT>(1, q);
+        dpnp::tensor::alloc_utils::smart_malloc_host<cumsumT>(1, q);
     cumsumT *last_elem_host_usm = host_usm_owner.get();
 
     sycl::event copy_e = q.submit([&](sycl::handler &cgh) {
@@ -1424,4 +1424,4 @@ struct Cumsum1DStridedFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::accumulators
+} // namespace dpnp::tensor::kernels::accumulators

@@ -37,13 +37,13 @@
 // utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_utils.hpp"
 
 namespace dpnp::extensions::lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
-namespace type_utils = dpctl::tensor::type_utils;
+namespace type_utils = dpnp::tensor::type_utils;
 
 using ext::common::init_dispatch_table;
 
@@ -104,7 +104,7 @@ static sycl::event heevd_impl(sycl::queue &exec_q,
     if (info != 0) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
-            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
+            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
         }
         throw std::runtime_error(error_msg.str());
     }
@@ -113,7 +113,7 @@ static sycl::event heevd_impl(sycl::queue &exec_q,
         cgh.depends_on(heevd_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad]() {
-            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
+            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
         });
     });
 
@@ -139,11 +139,11 @@ using evd::evd_impl_fn_ptr_t;
 
 void init_heevd(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
 
-    static evd_impl_fn_ptr_t heevd_dispatch_table[dpctl_td_ns::num_types]
-                                                 [dpctl_td_ns::num_types];
+    static evd_impl_fn_ptr_t heevd_dispatch_table[dpnp_td_ns::num_types]
+                                                 [dpnp_td_ns::num_types];
 
     {
         init_dispatch_table<evd_impl_fn_ptr_t, HeevdContigFactory>(

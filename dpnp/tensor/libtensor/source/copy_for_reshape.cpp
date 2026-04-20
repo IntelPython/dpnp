@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
 #include <iterator>
@@ -49,14 +49,14 @@
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::kernels::copy_and_cast::copy_for_reshape_fn_ptr_t;
-using dpctl::utils::keep_args_alive;
+using dpnp::tensor::kernels::copy_and_cast::copy_for_reshape_fn_ptr_t;
+using dpnp::utils::keep_args_alive;
 
 // define static vector
 static copy_for_reshape_fn_ptr_t
@@ -72,8 +72,8 @@ static copy_for_reshape_fn_ptr_t
  *     dst[np.multi_index(i, dst.shape)] = src[np.multi_index(i, src.shape)]
  */
 std::pair<sycl::event, sycl::event>
-    copy_usm_ndarray_for_reshape(const dpctl::tensor::usm_ndarray &src,
-                                 const dpctl::tensor::usm_ndarray &dst,
+    copy_usm_ndarray_for_reshape(const dpnp::tensor::usm_ndarray &src,
+                                 const dpnp::tensor::usm_ndarray &dst,
                                  sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends)
 {
@@ -101,15 +101,15 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, src_nelems);
 
     // check same contexts
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     if (src_nelems == 1) {
         // handle special case of 1-element array
@@ -141,7 +141,7 @@ std::pair<sycl::event, sycl::event>
     host_task_events.reserve(2);
 
     // shape_strides = [src_shape, src_strides, dst_shape, dst_strides]
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, src_shape, src_strides, dst_shape,
         dst_strides);
@@ -161,7 +161,7 @@ std::pair<sycl::event, sycl::event>
            dst_data, all_deps);
 
     sycl::event temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
+        dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {copy_for_reshape_event}, shape_strides_owner);
 
     host_task_events.push_back(temporaries_cleanup_ev);
@@ -173,7 +173,7 @@ std::pair<sycl::event, sycl::event>
 void init_copy_for_reshape_dispatch_vectors(void)
 {
     using namespace td_ns;
-    using dpctl::tensor::kernels::copy_and_cast::CopyForReshapeGenericFactory;
+    using dpnp::tensor::kernels::copy_and_cast::CopyForReshapeGenericFactory;
 
     DispatchVectorBuilder<copy_for_reshape_fn_ptr_t,
                           CopyForReshapeGenericFactory, num_types>
@@ -181,4 +181,4 @@ void init_copy_for_reshape_dispatch_vectors(void)
     dvb.populate_dispatch_vector(copy_for_reshape_generic_dispatch_vector);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

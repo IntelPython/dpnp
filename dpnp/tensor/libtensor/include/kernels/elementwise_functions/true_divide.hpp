@@ -45,19 +45,19 @@
 #include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 #include "kernels/elementwise_functions/common_inplace.hpp"
 
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::true_divide
+namespace dpnp::tensor::kernels::true_divide
 {
 
-using dpctl::tensor::ssize_t;
-namespace td_ns = dpctl::tensor::type_dispatch;
-namespace tu_ns = dpctl::tensor::type_utils;
+using dpnp::tensor::ssize_t;
+namespace td_ns = dpnp::tensor::type_dispatch;
+namespace tu_ns = dpnp::tensor::type_utils;
 
 template <typename argT1, typename argT2, typename resT>
 struct TrueDivideFunctor
@@ -106,7 +106,7 @@ struct TrueDivideFunctor
             return tmp;
         }
         else {
-            using dpctl::tensor::type_utils::vec_cast;
+            using dpnp::tensor::type_utils::vec_cast;
 
             return vec_cast<resT, typename decltype(tmp)::element_type, vec_sz>(
                 tmp);
@@ -186,7 +186,7 @@ struct TrueDivideOutputType
 namespace hyperparam_detail
 {
 
-namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+namespace vsu_ns = dpnp::tensor::kernels::vec_size_utils;
 
 using vsu_ns::BinaryContigHyperparameterSetEntry;
 using vsu_ns::ContigHyperparameterSetDefault;
@@ -357,9 +357,9 @@ struct TrueDivideContigMatrixContigRowBroadcastFactory
         }
         else {
             using resT = typename TrueDivideOutputType<T1, T2>::value_type;
-            if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
-                          dpctl::tensor::type_utils::is_complex<T2>::value ||
-                          dpctl::tensor::type_utils::is_complex<resT>::value) {
+            if constexpr (dpnp::tensor::type_utils::is_complex<T1>::value ||
+                          dpnp::tensor::type_utils::is_complex<T2>::value ||
+                          dpnp::tensor::type_utils::is_complex<resT>::value) {
                 fnT fn = nullptr;
                 return fn;
             }
@@ -406,9 +406,9 @@ struct TrueDivideContigRowContigMatrixBroadcastFactory
         }
         else {
             using resT = typename TrueDivideOutputType<T1, T2>::value_type;
-            if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
-                          dpctl::tensor::type_utils::is_complex<T2>::value ||
-                          dpctl::tensor::type_utils::is_complex<resT>::value) {
+            if constexpr (dpnp::tensor::type_utils::is_complex<T1>::value ||
+                          dpnp::tensor::type_utils::is_complex<T2>::value ||
+                          dpnp::tensor::type_utils::is_complex<resT>::value) {
                 fnT fn = nullptr;
                 return fn;
             }
@@ -646,8 +646,8 @@ struct TrueDivideInplaceRowMatrixBroadcastFactory
             return fn;
         }
         else {
-            if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
-                          dpctl::tensor::type_utils::is_complex<T2>::value) {
+            if constexpr (dpnp::tensor::type_utils::is_complex<T1>::value ||
+                          dpnp::tensor::type_utils::is_complex<T2>::value) {
                 fnT fn = nullptr;
                 return fn;
             }
@@ -659,4 +659,4 @@ struct TrueDivideInplaceRowMatrixBroadcastFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::true_divide
+} // namespace dpnp::tensor::kernels::true_divide

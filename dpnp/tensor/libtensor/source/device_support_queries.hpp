@@ -28,7 +28,7 @@
 //===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #pragma once
@@ -37,7 +37,7 @@
 #include "dpnp4pybind11.hpp"
 #include <pybind11/pybind11.h>
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 extern std::string default_device_fp_type(const py::object &);
@@ -47,4 +47,4 @@ extern std::string default_device_bool_type(const py::object &);
 extern std::string default_device_complex_type(const py::object &);
 extern std::string default_device_index_type(const py::object &);
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

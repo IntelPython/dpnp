@@ -31,7 +31,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace dpctl::tensor::kernels::alignment_utils
+namespace dpnp::tensor::kernels::alignment_utils
 {
 inline constexpr std::size_t required_alignment = 64UL;
 
@@ -43,4 +43,4 @@ bool is_aligned(Ptr p)
 
 template <typename KernelName>
 class disabled_sg_loadstore_wrapper_krn;
-} // namespace dpctl::tensor::kernels::alignment_utils
+} // namespace dpnp::tensor::kernels::alignment_utils

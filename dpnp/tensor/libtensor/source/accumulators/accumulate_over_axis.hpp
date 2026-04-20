@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_accumulation_impl
+/// This file defines functions of dpnp.tensor._tensor_accumulation_impl
 //  extensions
 //===----------------------------------------------------------------------===//
 
@@ -59,17 +59,17 @@
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 template <typename strided_fnT, typename contig_fnT>
 std::pair<sycl::event, sycl::event>
-    py_accumulate_over_axis(const dpctl::tensor::usm_ndarray &src,
+    py_accumulate_over_axis(const dpnp::tensor::usm_ndarray &src,
                             const int trailing_dims_to_accumulate,
-                            const dpctl::tensor::usm_ndarray &dst,
+                            const dpnp::tensor::usm_ndarray &dst,
                             sycl::queue &exec_q,
                             std::vector<sycl::event> const &depends,
                             const strided_fnT &strided_dispatch_table,
@@ -111,23 +111,23 @@ std::pair<sycl::event, sycl::event>
             "Destination shape does not match the input shape");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     if ((iter_nelems == 0) || (acc_nelems == 0)) {
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         dst, acc_nelems * iter_nelems);
 
     const char *src_data = src.get_data();
@@ -155,8 +155,7 @@ std::pair<sycl::event, sycl::event>
                                 host_task_events, depends);
 
         return std::make_pair(
-            dpctl::utils::keep_args_alive(exec_q, {src, dst}, {acc_ev}),
-            acc_ev);
+            dpnp::utils::keep_args_alive(exec_q, {src, dst}, {acc_ev}), acc_ev);
     }
 
     auto src_shape_vec = src.get_shape_vector();
@@ -209,7 +208,7 @@ std::pair<sycl::event, sycl::event>
         throw std::runtime_error("Datatypes are not supported");
     }
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_iter_shape,
         simplified_iter_src_strides, simplified_iter_dst_strides, acc_shape,
@@ -234,19 +233,19 @@ std::pair<sycl::event, sycl::event>
         iter_shape_and_strides, iter_src_offset, iter_dst_offset, acc_nd,
         acc_shapes_and_strides, dst_data, host_task_events, all_deps);
 
-    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event temp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {acc_ev}, packed_shapes_and_strides_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     return std::make_pair(
-        dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_task_events),
+        dpnp::utils::keep_args_alive(exec_q, {src, dst}, host_task_events),
         acc_ev);
 }
 
 template <typename strided_fnT, typename contig_fnT>
 std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
-    const dpctl::tensor::usm_ndarray &src,
-    const dpctl::tensor::usm_ndarray &dst,
+    const dpnp::tensor::usm_ndarray &src,
+    const dpnp::tensor::usm_ndarray &dst,
     sycl::queue &exec_q,
     std::vector<sycl::event> const &depends,
     const strided_fnT &strided_dispatch_table,
@@ -291,23 +290,23 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
             "Destination shape does not match the input shape");
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     if ((iter_nelems == 0) || (acc_nelems == 0)) {
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         dst, acc_nelems * iter_nelems);
 
     const char *src_data = src.get_data();
@@ -335,8 +334,7 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
                                 host_task_events, depends);
 
         return std::make_pair(
-            dpctl::utils::keep_args_alive(exec_q, {src, dst}, {acc_ev}),
-            acc_ev);
+            dpnp::utils::keep_args_alive(exec_q, {src, dst}, {acc_ev}), acc_ev);
     }
 
     auto src_shape_vec = src.get_shape_vector();
@@ -387,7 +385,7 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
         throw std::runtime_error("Datatypes are not supported");
     }
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
     auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_iter_shape,
         simplified_iter_src_strides, simplified_iter_dst_strides, acc_shape,
@@ -412,12 +410,12 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
         iter_shape_and_strides, iter_src_offset, iter_dst_offset, acc_nd,
         acc_shapes_and_strides, dst_data, host_task_events, all_deps);
 
-    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event temp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         exec_q, {acc_ev}, packed_shapes_and_strides_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     return std::make_pair(
-        dpctl::utils::keep_args_alive(exec_q, {src, dst}, host_task_events),
+        dpnp::utils::keep_args_alive(exec_q, {src, dst}, host_task_events),
         acc_ev);
 }
 
@@ -429,9 +427,9 @@ bool py_accumulate_dtype_supported(const py::dtype &input_dtype,
                                    const fnT &dispatch_table)
 {
     int arg_tn =
-        input_dtype.num(); // NumPy type numbers are the same as in dpctl
+        input_dtype.num(); // NumPy type numbers are the same as in dpnp
     int out_tn =
-        output_dtype.num(); // NumPy type numbers are the same as in dpctl
+        output_dtype.num(); // NumPy type numbers are the same as in dpnp
     int arg_typeid = -1;
     int out_typeid = -1;
 
@@ -458,4 +456,4 @@ bool py_accumulate_dtype_supported(const py::dtype &input_dtype,
     return (fn != nullptr);
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

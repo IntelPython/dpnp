@@ -29,7 +29,7 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for dpctl.tensor.where.
+/// This file defines kernels for dpnp.tensor.where.
 //===---------------------------------------------------------------------===//
 
 #pragma once
@@ -40,25 +40,24 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl_tensor_types.hpp"
+#include "dpnp_tensor_types.hpp"
 #include "kernels/alignment.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::search
+namespace dpnp::tensor::kernels::search
 {
 
-using dpctl::tensor::ssize_t;
-using namespace dpctl::tensor::offset_utils;
+using dpnp::tensor::ssize_t;
+using namespace dpnp::tensor::offset_utils;
 
-using dpctl::tensor::kernels::alignment_utils::
-    disabled_sg_loadstore_wrapper_krn;
-using dpctl::tensor::kernels::alignment_utils::is_aligned;
-using dpctl::tensor::kernels::alignment_utils::required_alignment;
+using dpnp::tensor::kernels::alignment_utils::disabled_sg_loadstore_wrapper_krn;
+using dpnp::tensor::kernels::alignment_utils::is_aligned;
+using dpnp::tensor::kernels::alignment_utils::required_alignment;
 
-using dpctl::tensor::sycl_utils::sub_group_load;
-using dpctl::tensor::sycl_utils::sub_group_store;
+using dpnp::tensor::sycl_utils::sub_group_load;
+using dpnp::tensor::sycl_utils::sub_group_store;
 
 template <typename T, typename condT, typename IndexerT>
 class where_strided_kernel;
@@ -94,7 +93,7 @@ public:
     {
         static constexpr std::uint8_t nelems_per_wi = n_vecs * vec_sz;
 
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (!enable_sg_loadstore || is_complex<condT>::value ||
                       is_complex<T>::value) {
             const std::uint16_t sgSize =
@@ -106,7 +105,7 @@ public:
                 (gid / sgSize) * (nelems_per_sg - sgSize) + gid;
             const std::size_t end = std::min(nelems, start + nelems_per_sg);
             for (std::size_t offset = start; offset < end; offset += sgSize) {
-                using dpctl::tensor::type_utils::convert_impl;
+                using dpnp::tensor::type_utils::convert_impl;
                 const bool check = convert_impl<bool, condT>(cond_p[offset]);
                 dst_p[offset] = check ? x1_p[offset] : x2_p[offset];
             }
@@ -252,7 +251,7 @@ public:
         std::size_t gid = id[0];
         auto offsets = indexer(static_cast<ssize_t>(gid));
 
-        using dpctl::tensor::type_utils::convert_impl;
+        using dpnp::tensor::type_utils::convert_impl;
         bool check =
             convert_impl<bool, condT>(cond_p[offsets.get_first_offset()]);
 
@@ -333,4 +332,4 @@ struct WhereContigFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::search
+} // namespace dpnp::tensor::kernels::search

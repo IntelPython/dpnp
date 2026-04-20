@@ -47,7 +47,7 @@
 #include "ext/common.hpp"
 #include "kernels/indexing/choose.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/indexing_utils.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
@@ -62,9 +62,9 @@ namespace py = pybind11;
 
 namespace impl
 {
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-using dpctl::tensor::ssize_t;
+using dpnp::tensor::ssize_t;
 
 typedef sycl::event (*choose_fn_ptr_t)(sycl::queue &,
                                        size_t,
@@ -98,7 +98,7 @@ sycl::event choose_impl(sycl::queue &q,
                         const ssize_t *chc_offsets,
                         const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<Ty>(q);
 
     const indTy *ind_tp = reinterpret_cast<const indTy *>(ind_cp);
     Ty *dst_tp = reinterpret_cast<Ty *>(dst_cp);
@@ -107,7 +107,7 @@ sycl::event choose_impl(sycl::queue &q,
         cgh.depends_on(depends);
 
         using InOutIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
         const InOutIndexerT ind_out_indexer{nd, ind_offset, dst_offset,
                                             shape_and_strides};
 
@@ -149,7 +149,7 @@ struct ChooseFactory
 namespace detail
 {
 using host_ptrs_allocator_t =
-    dpctl::tensor::alloc_utils::usm_host_allocator<char *>;
+    dpnp::tensor::alloc_utils::usm_host_allocator<char *>;
 using ptrs_t = std::vector<char *, host_ptrs_allocator_t>;
 using host_ptrs_shp_t = std::shared_ptr<ptrs_t>;
 
@@ -166,7 +166,7 @@ host_ptrs_shp_t make_host_ptrs(sycl::queue &exec_q,
 }
 
 using host_sz_allocator_t =
-    dpctl::tensor::alloc_utils::usm_host_allocator<py::ssize_t>;
+    dpnp::tensor::alloc_utils::usm_host_allocator<py::ssize_t>;
 using sz_t = std::vector<py::ssize_t, host_sz_allocator_t>;
 using host_sz_shp_t = std::shared_ptr<sz_t>;
 
@@ -253,19 +253,20 @@ sycl::event async_shp_free(sycl::queue &exec_q,
     return shared_ptr_cleanup_ev;
 }
 
-// copied from dpctl, remove if a similar utility is ever exposed
-std::vector<dpctl::tensor::usm_ndarray> parse_py_chcs(const sycl::queue &q,
-                                                      const py::object &py_chcs)
+// was copied from dpctl
+// TODO: remove by consolidating with tensor post-migration
+std::vector<dpnp::tensor::usm_ndarray> parse_py_chcs(const sycl::queue &q,
+                                                     const py::object &py_chcs)
 {
     py::ssize_t chc_count = py::len(py_chcs);
-    std::vector<dpctl::tensor::usm_ndarray> res;
+    std::vector<dpnp::tensor::usm_ndarray> res;
     res.reserve(chc_count);
 
     for (py::ssize_t i = 0; i < chc_count; ++i) {
         py::object el_i = py_chcs[py::cast(i)];
-        dpctl::tensor::usm_ndarray arr_i =
-            py::cast<dpctl::tensor::usm_ndarray>(el_i);
-        if (!dpctl::utils::queues_are_compatible(q, {arr_i})) {
+        dpnp::tensor::usm_ndarray arr_i =
+            py::cast<dpnp::tensor::usm_ndarray>(el_i);
+        if (!dpnp::utils::queues_are_compatible(q, {arr_i})) {
             throw py::value_error("Choice allocation queue is not compatible "
                                   "with execution queue");
         }
@@ -277,14 +278,14 @@ std::vector<dpctl::tensor::usm_ndarray> parse_py_chcs(const sycl::queue &q,
 } // namespace detail
 
 std::pair<sycl::event, sycl::event>
-    py_choose(const dpctl::tensor::usm_ndarray &src,
+    py_choose(const dpnp::tensor::usm_ndarray &src,
               const py::object &py_chcs,
-              const dpctl::tensor::usm_ndarray &dst,
+              const dpnp::tensor::usm_ndarray &dst,
               uint8_t mode,
               sycl::queue &exec_q,
               const std::vector<sycl::event> &depends)
 {
-    std::vector<dpctl::tensor::usm_ndarray> chcs =
+    std::vector<dpnp::tensor::usm_ndarray> chcs =
         detail::parse_py_chcs(exec_q, py_chcs);
 
     // Python list max size must fit into py_ssize_t
@@ -298,9 +299,9 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Mode must be 0 or 1.");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
-    const dpctl::tensor::usm_ndarray chc_rep = chcs[0];
+    const dpnp::tensor::usm_ndarray chc_rep = chcs[0];
 
     int nd = src.get_ndim();
     int dst_nd = dst.get_ndim();
@@ -329,12 +330,12 @@ std::pair<sycl::event, sycl::event>
     char *src_data = src.get_data();
     char *dst_data = dst.get_data();
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         throw py::value_error("Array memory overlap.");
     }
@@ -357,7 +358,7 @@ std::pair<sycl::event, sycl::event>
         throw py::type_error("Output and choice data types are not the same.");
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, nelems);
 
     std::vector<char *> chc_ptrs;
     chc_ptrs.reserve(n_chcs);
@@ -369,7 +370,7 @@ std::pair<sycl::event, sycl::event>
     std::vector<py::ssize_t> chc_strides(n_chcs * sh_nelems, 0);
 
     for (auto i = 0; i < n_chcs; ++i) {
-        dpctl::tensor::usm_ndarray chc_ = chcs[i];
+        dpnp::tensor::usm_ndarray chc_ = chcs[i];
 
         // ndim, type, and shape are checked against the first array
         if (i > 0) {
@@ -417,7 +418,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     auto packed_chc_ptrs =
-        dpctl::tensor::alloc_utils::smart_malloc_device<char *>(n_chcs, exec_q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<char *>(n_chcs, exec_q);
 
     // packed_shapes_strides = [common shape,
     //                          src.strides,
@@ -426,12 +427,12 @@ std::pair<sycl::event, sycl::event>
     //                          ...,
     //                          chcs[n_chcs].strides]
     auto packed_shapes_strides =
-        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
+        dpnp::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
             (3 + n_chcs) * sh_nelems, exec_q);
 
     auto packed_chc_offsets =
-        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(n_chcs,
-                                                                     exec_q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(n_chcs,
+                                                                    exec_q);
 
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
@@ -481,21 +482,21 @@ std::pair<sycl::event, sycl::event>
 
     // async_smart_free releases owners
     sycl::event temporaries_cleanup_ev =
-        dpctl::tensor::alloc_utils::async_smart_free(
+        dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {choose_generic_ev}, packed_chc_ptrs, packed_shapes_strides,
             packed_chc_offsets);
 
     host_task_events.push_back(temporaries_cleanup_ev);
 
-    using dpctl::utils::keep_args_alive;
+    using dpnp::utils::keep_args_alive;
     sycl::event arg_cleanup_ev =
         keep_args_alive(exec_q, {src, py_chcs, dst}, host_task_events);
 
     return std::make_pair(arg_cleanup_ev, choose_generic_ev);
 }
 
-using dpctl::tensor::indexing_utils::ClipIndex;
-using dpctl::tensor::indexing_utils::WrapIndex;
+using dpnp::tensor::indexing_utils::ClipIndex;
+using dpnp::tensor::indexing_utils::WrapIndex;
 
 template <typename fnT, typename IndT, typename T>
 using ChooseWrapFactory = ChooseFactory<fnT, IndT, T, WrapIndex<IndT>>;

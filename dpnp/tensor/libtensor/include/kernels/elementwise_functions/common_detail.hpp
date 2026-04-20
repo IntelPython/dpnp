@@ -37,7 +37,7 @@
 
 #include <sycl/sycl.hpp>
 
-namespace dpctl::tensor::kernels::elementwise_detail
+namespace dpnp::tensor::kernels::elementwise_detail
 {
 template <typename T>
 class populate_padded_vec_krn;
@@ -66,4 +66,4 @@ sycl::event
 
     return populate_padded_vec_ev;
 }
-} // namespace dpctl::tensor::kernels::elementwise_detail
+} // namespace dpnp::tensor::kernels::elementwise_detail

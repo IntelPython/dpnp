@@ -41,9 +41,9 @@
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
-namespace dpctl::tensor::py_internal::type_utils
+namespace dpnp::tensor::py_internal::type_utils
 {
 
 /*! @brief Produce dtype from a type number */
@@ -53,4 +53,4 @@ extern py::dtype _dtype_from_typenum(td_ns::typenum_t);
  *         argument and the mapping table */
 extern int _result_typeid(int, const int *);
 
-} // namespace dpctl::tensor::py_internal::type_utils
+} // namespace dpnp::tensor::py_internal::type_utils

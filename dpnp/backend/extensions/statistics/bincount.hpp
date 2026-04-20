@@ -35,7 +35,7 @@
 
 #include "ext/dispatch_table.hpp"
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
 
 namespace statistics::histogram
 {
@@ -55,11 +55,11 @@ struct Bincount
     Bincount();
 
     std::tuple<sycl::event, sycl::event>
-        call(const dpctl::tensor::usm_ndarray &input,
+        call(const dpnp::tensor::usm_ndarray &input,
              const uint64_t min,
              const uint64_t max,
-             const std::optional<const dpctl::tensor::usm_ndarray> &weights,
-             dpctl::tensor::usm_ndarray &output,
+             const std::optional<const dpnp::tensor::usm_ndarray> &weights,
+             dpnp::tensor::usm_ndarray &output,
              const std::vector<sycl::event> &depends);
 };
 

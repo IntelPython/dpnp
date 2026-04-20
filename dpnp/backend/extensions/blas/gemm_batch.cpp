@@ -33,7 +33,7 @@
 // utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
@@ -45,7 +45,7 @@ namespace dpnp::extensions::blas
 {
 namespace mkl_blas = oneapi::mkl::blas;
 namespace py = pybind11;
-namespace type_utils = dpctl::tensor::type_utils;
+namespace type_utils = dpnp::tensor::type_utils;
 
 using ext::common::init_dispatch_table;
 
@@ -70,7 +70,7 @@ typedef sycl::event (*gemm_batch_impl_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 static gemm_batch_impl_fn_ptr_t
-    gemm_batch_dispatch_table[dpctl_td_ns::num_types][dpctl_td_ns::num_types];
+    gemm_batch_dispatch_table[dpnp_td_ns::num_types][dpnp_td_ns::num_types];
 
 template <typename Tab, typename Tc>
 static sycl::event gemm_batch_impl(sycl::queue &exec_q,
@@ -212,9 +212,9 @@ void standardize_strides_to_zero(std::vector<py::ssize_t> &strides,
 
 std::tuple<sycl::event, sycl::event, bool>
     gemm_batch(sycl::queue &exec_q,
-               const dpctl::tensor::usm_ndarray &matrixA,
-               const dpctl::tensor::usm_ndarray &matrixB,
-               const dpctl::tensor::usm_ndarray &resultC,
+               const dpnp::tensor::usm_ndarray &matrixA,
+               const dpnp::tensor::usm_ndarray &matrixB,
+               const dpnp::tensor::usm_ndarray &resultC,
                const std::vector<sycl::event> &depends = {})
 {
     const int matrixA_nd = matrixA.get_ndim();
@@ -225,7 +225,7 @@ std::tuple<sycl::event, sycl::event, bool>
         throw py::value_error("The given arrays have incorrect dimensions.");
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(matrixA, resultC)) {
         throw py::value_error("Input array 1 and output array are overlapping "
                               "segments of memory");
@@ -235,7 +235,7 @@ std::tuple<sycl::event, sycl::event, bool>
                               "segments of memory");
     }
 
-    if (!dpctl::utils::queues_are_compatible(
+    if (!dpnp::utils::queues_are_compatible(
             exec_q,
             {matrixA.get_queue(), matrixB.get_queue(), resultC.get_queue()})) {
         throw py::value_error(
@@ -262,9 +262,9 @@ std::tuple<sycl::event, sycl::event, bool>
                               "the number of columns in result array.");
     }
     const std::int64_t src_nelems = batch_size * m * n;
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(resultC,
-                                                               src_nelems);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(resultC,
+                                                              src_nelems);
 
     std::vector<py::ssize_t> a_stride = matrixA.get_strides_vector();
     std::vector<py::ssize_t> b_stride = matrixB.get_strides_vector();
@@ -374,7 +374,7 @@ std::tuple<sycl::event, sycl::event, bool>
         throw py::value_error("matrixA and matrixB must be of the same type.");
     }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int matrixAB_type_id =
         array_types.typenum_to_lookup_id(matrixA_typenum);
     const int resultC_type_id =
@@ -397,7 +397,7 @@ std::tuple<sycl::event, sycl::event, bool>
                       strideb, stridec, transA, transB, a_typeless_ptr,
                       b_typeless_ptr, r_typeless_ptr, is_row_major, depends);
 
-    sycl::event args_ev = dpctl::utils::keep_args_alive(
+    sycl::event args_ev = dpnp::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, {gemm_batch_ev});
 
     return std::make_tuple(args_ev, gemm_batch_ev, is_row_major);

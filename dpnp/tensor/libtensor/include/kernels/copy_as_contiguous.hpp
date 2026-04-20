@@ -40,17 +40,17 @@
 #include <sycl/sycl.hpp>
 #include <vector>
 
-#include "dpctl_tensor_types.hpp"
+#include "dpnp_tensor_types.hpp"
 #include "kernels/alignment.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels::copy_as_contig
+namespace dpnp::tensor::kernels::copy_as_contig
 {
 
-using dpctl::tensor::ssize_t;
-using dpctl::tensor::sycl_utils::sub_group_store;
+using dpnp::tensor::ssize_t;
+using dpnp::tensor::sycl_utils::sub_group_store;
 
 template <typename T,
           typename IndexerT,
@@ -81,7 +81,7 @@ public:
 
         static constexpr std::uint8_t elems_per_wi = vec_sz * n_vecs;
 
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (!enable_sg_loadstore || is_complex<T>::value) {
             const std::uint16_t sgSize =
                 ndit.get_sub_group().get_max_local_range()[0];
@@ -211,21 +211,21 @@ sycl::event
                                        char *dst_p,
                                        const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<T>(exec_q);
+    dpnp::tensor::type_utils::validate_type_for_device<T>(exec_q);
 
     const T *src_tp = reinterpret_cast<const T *>(src_p);
     T *dst_tp = reinterpret_cast<T *>(dst_p);
 
-    using IndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+    using IndexerT = dpnp::tensor::offset_utils::StridedIndexer;
     const IndexerT src_indexer(nd, ssize_t(0), shape_and_strides);
 
     static constexpr std::uint8_t vec_sz = 4u;
     static constexpr std::uint8_t n_vecs = 2u;
 
-    using dpctl::tensor::kernels::alignment_utils::
+    using dpnp::tensor::kernels::alignment_utils::
         disabled_sg_loadstore_wrapper_krn;
-    using dpctl::tensor::kernels::alignment_utils::is_aligned;
-    using dpctl::tensor::kernels::alignment_utils::required_alignment;
+    using dpnp::tensor::kernels::alignment_utils::is_aligned;
+    using dpnp::tensor::kernels::alignment_utils::required_alignment;
 
     sycl::event copy_ev;
     if (is_aligned<required_alignment>(dst_p)) {
@@ -288,7 +288,7 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
     ssize_t dst_ld,
     const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<T>(exec_q);
+    dpnp::tensor::type_utils::validate_type_for_device<T>(exec_q);
 
     const T *src_tp = reinterpret_cast<const T *>(src_p);
     T *dst_tp = reinterpret_cast<T *>(dst_p);
@@ -537,8 +537,8 @@ sycl::event as_c_contiguous_1d_batch_of_square_matrices_impl(
     ssize_t dst_ld,
     const std::vector<sycl::event> &depends)
 {
-    using dpctl::tensor::offset_utils::Strided1DIndexer;
-    using dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer;
+    using dpnp::tensor::offset_utils::Strided1DIndexer;
+    using dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer;
     using BatchIndexerT =
         TwoOffsets_CombinedIndexer<Strided1DIndexer, Strided1DIndexer>;
 
@@ -590,9 +590,9 @@ sycl::event as_c_contiguous_nd_batch_of_square_matrices_impl(
     ssize_t dst_ld,
     const std::vector<sycl::event> &depends)
 {
-    using SrcIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
-    using DstIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-    using dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer;
+    using SrcIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
+    using DstIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+    using dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer;
     using BatchIndexerT = TwoOffsets_CombinedIndexer<SrcIndexerT, DstIndexerT>;
 
     static constexpr ssize_t zero_offset{0};
@@ -633,4 +633,4 @@ struct AsCContigNDBatchOfSquareMatricesFactory
 {
     fnT get() { return as_c_contiguous_nd_batch_of_square_matrices_impl<T>; }
 };
-} // namespace dpctl::tensor::kernels::copy_as_contig
+} // namespace dpnp::tensor::kernels::copy_as_contig

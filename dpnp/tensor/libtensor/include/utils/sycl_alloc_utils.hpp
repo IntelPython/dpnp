@@ -44,7 +44,7 @@
 
 #include <sycl/sycl.hpp>
 
-namespace dpctl::tensor::alloc_utils
+namespace dpnp::tensor::alloc_utils
 {
 template <typename T>
 class usm_host_allocator : public sycl::usm_allocator<T, sycl::usm::alloc::host>
@@ -220,4 +220,4 @@ sycl::event async_smart_free(sycl::queue &exec_q,
 
     return ht_e;
 }
-} // namespace dpctl::tensor::alloc_utils
+} // namespace dpnp::tensor::alloc_utils

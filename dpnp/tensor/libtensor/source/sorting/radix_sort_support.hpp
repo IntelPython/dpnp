@@ -29,7 +29,7 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// This file defines functions of dpnp.tensor._tensor_sorting_impl
 /// extension.
 //===----------------------------------------------------------------------===//
 
@@ -40,7 +40,7 @@
 
 #include <sycl/sycl.hpp>
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 template <typename Ty, typename ArgTy>
@@ -75,4 +75,4 @@ struct RadixSortSupportVector
     static constexpr bool is_defined = resolver_t::is_defined;
 };
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal

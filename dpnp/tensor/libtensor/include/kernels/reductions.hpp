@@ -46,18 +46,18 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl_tensor_types.hpp"
+#include "dpnp_tensor_types.hpp"
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
-namespace dpctl::tensor::kernels
+namespace dpnp::tensor::kernels
 {
 
-using dpctl::tensor::ssize_t;
-namespace su_ns = dpctl::tensor::sycl_utils;
+using dpnp::tensor::ssize_t;
+namespace su_ns = dpnp::tensor::sycl_utils;
 
 namespace reduction_detail
 {
@@ -135,7 +135,7 @@ public:
             const ssize_t inp_reduction_offset = inp_reduced_dims_indexer_(m);
             const ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
-            using dpctl::tensor::type_utils::convert_impl;
+            using dpnp::tensor::type_utils::convert_impl;
             outT val;
             if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
                           su_ns::IsLogicalOr<outT, ReductionOp>::value) {
@@ -225,7 +225,7 @@ public:
                 inp_reduced_dims_indexer_(arg_reduce_gid);
             auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
-            using dpctl::tensor::type_utils::convert_impl;
+            using dpnp::tensor::type_utils::convert_impl;
             outT val;
             if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
                           su_ns::IsLogicalOr<outT, ReductionOp>::value) {
@@ -358,7 +358,7 @@ public:
                 inp_reduced_dims_indexer_(arg_reduce_gid);
             auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
-            using dpctl::tensor::type_utils::convert_impl;
+            using dpnp::tensor::type_utils::convert_impl;
             outT val;
             if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
                           su_ns::IsLogicalOr<outT, ReductionOp>::value) {
@@ -479,7 +479,7 @@ public:
                     inp_reduced_dims_indexer_(arg_reduce_gid);
                 auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
-                using dpctl::tensor::type_utils::convert_impl;
+                using dpnp::tensor::type_utils::convert_impl;
                 outT val;
                 if constexpr (su_ns::IsLogicalAnd<outT, ReductionOp>::value ||
                               su_ns::IsLogicalOr<outT, ReductionOp>::value) {
@@ -589,7 +589,7 @@ public:
                     inp_reduced_dims_indexer_(arg_reduce_gid);
                 auto inp_offset = inp_iter_offset + inp_reduction_offset;
 
-                using dpctl::tensor::type_utils::convert_impl;
+                using dpnp::tensor::type_utils::convert_impl;
                 outT val;
                 if constexpr (std::is_same_v<ReductionOp,
                                              sycl::logical_and<outT>> ||
@@ -752,7 +752,7 @@ typedef sycl::event (*reduction_strided_impl_fn_ptr)(
     ssize_t,
     const std::vector<sycl::event> &);
 
-using dpctl::tensor::sycl_utils::choose_workgroup_size;
+using dpnp::tensor::sycl_utils::choose_workgroup_size;
 
 template <typename argTy, typename resTy, typename ReductionOpT>
 sycl::event reduction_over_group_with_atomics_strided_impl(
@@ -784,8 +784,8 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
 
     if (reduction_nelems < wg) {
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
 
         const InputOutputIterIndexerT in_out_iter_indexer{
             iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
@@ -804,8 +804,7 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
     }
     else {
         sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
-            using IndexerT =
-                dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+            using IndexerT = dpnp::tensor::offset_utils::UnpackedStridedIndexer;
 
             const ssize_t *const &res_shape = iter_shape_and_strides;
             const ssize_t *const &res_strides =
@@ -825,8 +824,8 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
         });
 
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
 
         const InputOutputIterIndexerT in_out_iter_indexer{
             iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
@@ -895,10 +894,10 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
     std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIterIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIterIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = NoOpIndexerT;
 
@@ -922,10 +921,10 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
         sycl::event res_init_ev = exec_q.fill<resTy>(
             res_tp, resTy(identity_val), iter_nelems, depends);
 
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        using RowsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
+        using RowsIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 RowsIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = NoOpIndexerT;
 
@@ -985,11 +984,11 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
     std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
 
         const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                           NoOpIndexerT{}};
@@ -1010,10 +1009,10 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
         sycl::event res_init_ev = exec_q.fill<resTy>(
             res_tp, resTy(identity_val), iter_nelems, depends);
 
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        using ColsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
+        using ColsIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = ColsIndexerT;
 
@@ -1161,8 +1160,7 @@ sycl::event reduction_over_group_temps_strided_impl(
 
     if (reduction_nelems == 0) {
         sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
-            using IndexerT =
-                dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+            using IndexerT = dpnp::tensor::offset_utils::UnpackedStridedIndexer;
 
             const ssize_t *const &res_shape = iter_shape_and_strides;
             const ssize_t *const &res_strides =
@@ -1190,8 +1188,8 @@ sycl::event reduction_over_group_temps_strided_impl(
 
     if (reduction_nelems < wg) {
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
 
         const InputOutputIterIndexerT in_out_iter_indexer{
             iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
@@ -1219,8 +1217,8 @@ sycl::event reduction_over_group_temps_strided_impl(
         // can output directly to res
 
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
 
         const InputOutputIterIndexerT in_out_iter_indexer{
             iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
@@ -1261,7 +1259,7 @@ sycl::event reduction_over_group_temps_strided_impl(
 
         const std::size_t tmp_alloc_size =
             iter_nelems * (reduction_groups + second_iter_reduction_groups_);
-        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+        auto tmp_owner = dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
             tmp_alloc_size, exec_q);
 
         resTy *partially_reduced_tmp = tmp_owner.get();
@@ -1271,13 +1269,13 @@ sycl::event reduction_over_group_temps_strided_impl(
 
         sycl::event first_reduction_ev;
         {
-            using InputIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT =
-                dpctl::tensor::offset_utils::StridedIndexer;
+                dpnp::tensor::offset_utils::StridedIndexer;
 
             // Only 2*iter_nd entries describing shape and strides of
             // iterated dimensions of input array from
@@ -1319,13 +1317,13 @@ sycl::event reduction_over_group_temps_strided_impl(
             sycl::event partial_reduction_ev;
             {
                 using InputIndexerT =
-                    dpctl::tensor::offset_utils::Strided1DIndexer;
-                using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                    dpnp::tensor::offset_utils::Strided1DIndexer;
+                using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
                 using InputOutputIterIndexerT =
-                    dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                    dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                         InputIndexerT, ResIndexerT>;
                 using ReductionIndexerT =
-                    dpctl::tensor::offset_utils::NoOpIndexer;
+                    dpnp::tensor::offset_utils::NoOpIndexer;
 
                 const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                                 /* step */ reduction_groups_};
@@ -1350,12 +1348,12 @@ sycl::event reduction_over_group_temps_strided_impl(
         }
 
         // final reduction to res
-        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+        using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::UnpackedStridedIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                         /* step */ remaining_reduction_nelems};
@@ -1385,7 +1383,7 @@ sycl::event reduction_over_group_temps_strided_impl(
             in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {final_reduction_ev}, tmp_owner);
 
         // FIXME: do not return host-task event
@@ -1428,10 +1426,10 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
     std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIterIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIterIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = NoOpIndexerT;
 
@@ -1461,10 +1459,10 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
         // Perform reduction using one 1 work-group per iteration,
         // can output directly to res
 
-        using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIterIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIterIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = NoOpIndexerT;
 
@@ -1508,7 +1506,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
 
         const std::size_t tmp_alloc_size =
             iter_nelems * (reduction_groups + second_iter_reduction_groups_);
-        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+        auto tmp_owner = dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
             tmp_alloc_size, exec_q);
         resTy *partially_reduced_tmp = tmp_owner.get();
         resTy *partially_reduced_tmp2 =
@@ -1516,10 +1514,10 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
 
         sycl::event first_reduction_ev;
         {
-            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            using RowsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
+            using RowsIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     RowsIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = NoOpIndexerT;
 
@@ -1554,12 +1552,12 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             assert(reduction_groups_ > 1);
 
             // keep reducing
-            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     InputIndexerT, ResIndexerT>;
-            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
             const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                             /* step */ reduction_groups_};
@@ -1583,12 +1581,12 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
         }
 
         // final reduction to res
-        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                         /* step */ remaining_reduction_nelems};
@@ -1615,7 +1613,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {final_reduction_ev}, tmp_owner);
 
         // FIXME: do not return host-task event
@@ -1658,11 +1656,11 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
     std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
 
         const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                           NoOpIndexerT{}};
@@ -1689,10 +1687,10 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         // Perform reduction using one 1 work-group per iteration,
         // can output directly to res
 
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        using ColsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
+        using ColsIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = ColsIndexerT;
 
@@ -1738,7 +1736,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         const std::size_t tmp_alloc_size =
             iter_nelems * (reduction_groups + second_iter_reduction_groups_);
 
-        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+        auto tmp_owner = dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
             tmp_alloc_size, exec_q);
 
         resTy *partially_reduced_tmp = tmp_owner.get();
@@ -1747,10 +1745,10 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
 
         sycl::event first_reduction_ev;
         {
-            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            using ColsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
+            using ColsIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     NoOpIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = ColsIndexerT;
 
@@ -1786,12 +1784,12 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             assert(reduction_groups_ > 1);
 
             // keep reducing
-            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     InputIndexerT, ResIndexerT>;
-            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
             const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                             /* step */ reduction_groups_};
@@ -1815,12 +1813,12 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         }
 
         // final reduction to res
-        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                         /* step */ remaining_reduction_nelems};
@@ -1847,7 +1845,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {final_reduction_ev}, tmp_owner);
 
         // FIXME: do not return host-task event
@@ -1921,9 +1919,9 @@ public:
             }
             else {
                 if constexpr (su_ns::IsMinimum<argT, ReductionOp>::value) {
-                    using dpctl::tensor::type_utils::is_complex;
+                    using dpnp::tensor::type_utils::is_complex;
                     if constexpr (is_complex<argT>::value) {
-                        using dpctl::tensor::math_utils::less_complex;
+                        using dpnp::tensor::math_utils::less_complex;
                         // less_complex always returns false for NaNs, so check
                         if (less_complex<argT>(val, red_val) ||
                             std::isnan(std::real(val)) ||
@@ -1947,9 +1945,9 @@ public:
                     }
                 }
                 else if constexpr (su_ns::IsMaximum<argT, ReductionOp>::value) {
-                    using dpctl::tensor::type_utils::is_complex;
+                    using dpnp::tensor::type_utils::is_complex;
                     if constexpr (is_complex<argT>::value) {
-                        using dpctl::tensor::math_utils::greater_complex;
+                        using dpnp::tensor::math_utils::greater_complex;
                         if (greater_complex<argT>(val, red_val) ||
                             std::isnan(std::real(val)) ||
                             std::isnan(std::imag(val))) {
@@ -2231,9 +2229,9 @@ public:
                 }
                 else {
                     if constexpr (su_ns::IsMinimum<argT, ReductionOp>::value) {
-                        using dpctl::tensor::type_utils::is_complex;
+                        using dpnp::tensor::type_utils::is_complex;
                         if constexpr (is_complex<argT>::value) {
-                            using dpctl::tensor::math_utils::less_complex;
+                            using dpnp::tensor::math_utils::less_complex;
                             // less_complex always returns false for NaNs, so
                             // check
                             if (less_complex<argT>(val, local_red_val) ||
@@ -2277,9 +2275,9 @@ public:
                     }
                     else if constexpr (su_ns::IsMaximum<argT,
                                                         ReductionOp>::value) {
-                        using dpctl::tensor::type_utils::is_complex;
+                        using dpnp::tensor::type_utils::is_complex;
                         if constexpr (is_complex<argT>::value) {
-                            using dpctl::tensor::math_utils::greater_complex;
+                            using dpnp::tensor::math_utils::greater_complex;
                             if (greater_complex<argT>(val, local_red_val) ||
                                 std::isnan(std::real(val)) ||
                                 std::isnan(std::imag(val))) {
@@ -2328,7 +2326,7 @@ public:
         argT red_val_over_wg = su_ns::custom_reduce_over_group(
             work_group, local_mem_, local_red_val, reduction_op_);
 
-        using dpctl::tensor::type_utils::is_complex;
+        using dpnp::tensor::type_utils::is_complex;
         if constexpr (is_complex<argT>::value) {
             // equality does not hold for NaNs, so check here
             local_idx = (red_val_over_wg == local_red_val ||
@@ -2517,8 +2515,7 @@ sycl::event search_over_group_temps_strided_impl(
 
     if (reduction_nelems == 0) {
         sycl::event res_init_ev = exec_q.submit([&](sycl::handler &cgh) {
-            using IndexerT =
-                dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+            using IndexerT = dpnp::tensor::offset_utils::UnpackedStridedIndexer;
 
             const ssize_t *const &res_shape = iter_shape_and_strides;
             const ssize_t *const &res_strides =
@@ -2545,8 +2542,8 @@ sycl::event search_over_group_temps_strided_impl(
 
     if (reduction_nelems < wg) {
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
 
         const InputOutputIterIndexerT in_out_iter_indexer{
             iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
@@ -2581,8 +2578,8 @@ sycl::event search_over_group_temps_strided_impl(
         // can output directly to res
 
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
+            dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
 
         const InputOutputIterIndexerT in_out_iter_indexer{
             iter_nd, iter_arg_offset, iter_res_offset, iter_shape_and_strides};
@@ -2625,7 +2622,7 @@ sycl::event search_over_group_temps_strided_impl(
 
         const std::size_t tmp_alloc_size =
             iter_nelems * (reduction_groups + second_iter_reduction_groups_);
-        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+        auto tmp_owner = dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
             tmp_alloc_size, exec_q);
 
         resTy *partially_reduced_tmp = tmp_owner.get();
@@ -2633,7 +2630,7 @@ sycl::event search_over_group_temps_strided_impl(
             partially_reduced_tmp + reduction_groups * iter_nelems;
 
         auto val_tmp_owner =
-            dpctl::tensor::alloc_utils::smart_malloc_device<argTy>(
+            dpnp::tensor::alloc_utils::smart_malloc_device<argTy>(
                 tmp_alloc_size, exec_q);
 
         argTy *partially_reduced_vals_tmp = val_tmp_owner.get();
@@ -2642,13 +2639,13 @@ sycl::event search_over_group_temps_strided_impl(
 
         sycl::event first_reduction_ev;
         {
-            using InputIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpnp::tensor::offset_utils::StridedIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT =
-                dpctl::tensor::offset_utils::StridedIndexer;
+                dpnp::tensor::offset_utils::StridedIndexer;
 
             // Only 2*iter_nd entries describing shape and strides of iterated
             // dimensions of input array from iter_shape_and_strides are going
@@ -2692,12 +2689,12 @@ sycl::event search_over_group_temps_strided_impl(
             assert(reduction_groups_ > 1);
 
             // keep reducing
-            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     InputIndexerT, ResIndexerT>;
-            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
             const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                             /* step */ reduction_groups_};
@@ -2724,12 +2721,12 @@ sycl::event search_over_group_temps_strided_impl(
         }
 
         // final reduction to res
-        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::UnpackedStridedIndexer;
+        using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::UnpackedStridedIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                         /* step */ remaining_reduction_nelems};
@@ -2761,7 +2758,7 @@ sycl::event search_over_group_temps_strided_impl(
                 reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {final_reduction_ev}, tmp_owner, val_tmp_owner);
 
         // FIXME: do not return host-task event
@@ -2820,10 +2817,10 @@ sycl::event search_axis1_over_group_temps_contig_impl(
     std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIterIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIterIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = NoOpIndexerT;
 
@@ -2859,10 +2856,10 @@ sycl::event search_axis1_over_group_temps_contig_impl(
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
         // Perform reduction using one 1 work-group per iteration,
         // can output directly to res
-        using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIterIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIterIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = NoOpIndexerT;
 
@@ -2908,14 +2905,14 @@ sycl::event search_axis1_over_group_temps_contig_impl(
 
         const std::size_t tmp_alloc_size =
             iter_nelems * (reduction_groups + second_iter_reduction_groups_);
-        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+        auto tmp_owner = dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
             tmp_alloc_size, exec_q);
         resTy *partially_reduced_tmp = tmp_owner.get();
         resTy *partially_reduced_tmp2 =
             partially_reduced_tmp + reduction_groups * iter_nelems;
 
         auto val_tmp_owner =
-            dpctl::tensor::alloc_utils::smart_malloc_device<argTy>(
+            dpnp::tensor::alloc_utils::smart_malloc_device<argTy>(
                 tmp_alloc_size, exec_q);
         argTy *partially_reduced_vals_tmp = val_tmp_owner.get();
         argTy *partially_reduced_vals_tmp2 =
@@ -2924,10 +2921,10 @@ sycl::event search_axis1_over_group_temps_contig_impl(
         sycl::event first_reduction_ev;
         {
             using InputIterIndexerT =
-                dpctl::tensor::offset_utils::Strided1DIndexer;
-            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+                dpnp::tensor::offset_utils::Strided1DIndexer;
+            using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     InputIterIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = NoOpIndexerT;
 
@@ -2967,12 +2964,12 @@ sycl::event search_axis1_over_group_temps_contig_impl(
             assert(reduction_groups_ > 1);
 
             // keep reducing
-            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     InputIndexerT, ResIndexerT>;
-            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
             const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                             /* step */ reduction_groups_};
@@ -2999,12 +2996,12 @@ sycl::event search_axis1_over_group_temps_contig_impl(
         }
 
         // final reduction to res
-        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                         /* step */ remaining_reduction_nelems};
@@ -3033,7 +3030,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                 reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {final_reduction_ev}, tmp_owner, val_tmp_owner);
 
         // FIXME: do not return host-task event
@@ -3081,11 +3078,11 @@ sycl::event search_axis0_over_group_temps_contig_impl(
     std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
 
         const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                           NoOpIndexerT{}};
@@ -3123,10 +3120,10 @@ sycl::event search_axis0_over_group_temps_contig_impl(
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
         // Perform reduction using one 1 work-group per iteration,
         // can output directly to res
-        using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        using ColsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+        using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
+        using ColsIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = ColsIndexerT;
 
@@ -3173,7 +3170,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
 
         const std::size_t tmp_alloc_size =
             iter_nelems * (reduction_groups + second_iter_reduction_groups_);
-        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+        auto tmp_owner = dpnp::tensor::alloc_utils::smart_malloc_device<resTy>(
             tmp_alloc_size, exec_q);
 
         resTy *partially_reduced_tmp = tmp_owner.get();
@@ -3181,7 +3178,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
             partially_reduced_tmp + reduction_groups * iter_nelems;
 
         auto vals_tmp_owner =
-            dpctl::tensor::alloc_utils::smart_malloc_device<argTy>(
+            dpnp::tensor::alloc_utils::smart_malloc_device<argTy>(
                 tmp_alloc_size, exec_q);
         argTy *partially_reduced_vals_tmp = vals_tmp_owner.get();
         argTy *partially_reduced_vals_tmp2 =
@@ -3189,10 +3186,10 @@ sycl::event search_axis0_over_group_temps_contig_impl(
 
         sycl::event first_reduction_ev;
         {
-            using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            using ColsIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
+            using NoOpIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
+            using ColsIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     NoOpIndexerT, NoOpIndexerT>;
             using ReductionIndexerT = ColsIndexerT;
 
@@ -3234,12 +3231,12 @@ sycl::event search_axis0_over_group_temps_contig_impl(
             assert(reduction_groups_ > 1);
 
             // keep reducing
-            using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-            using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+            using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
             using InputOutputIterIndexerT =
-                dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+                dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                     InputIndexerT, ResIndexerT>;
-            using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+            using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
             const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                             /* step */ reduction_groups_};
@@ -3266,12 +3263,12 @@ sycl::event search_axis0_over_group_temps_contig_impl(
         }
 
         // final reduction to res
-        using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
-        using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using InputIndexerT = dpnp::tensor::offset_utils::Strided1DIndexer;
+        using ResIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
         using InputOutputIterIndexerT =
-            dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
+            dpnp::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 InputIndexerT, ResIndexerT>;
-        using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
+        using ReductionIndexerT = dpnp::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                         /* step */ remaining_reduction_nelems};
@@ -3300,7 +3297,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                 reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            dpctl::tensor::alloc_utils::async_smart_free(
+            dpnp::tensor::alloc_utils::async_smart_free(
                 exec_q, {final_reduction_ev}, tmp_owner, vals_tmp_owner);
 
         // FIXME: do not return host-task event
@@ -3310,4 +3307,4 @@ sycl::event search_axis0_over_group_temps_contig_impl(
     }
 }
 
-} // namespace dpctl::tensor::kernels
+} // namespace dpnp::tensor::kernels

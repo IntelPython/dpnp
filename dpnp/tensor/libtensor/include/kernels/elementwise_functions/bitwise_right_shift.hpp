@@ -43,17 +43,17 @@
 
 #include "vec_size_util.hpp"
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 #include "kernels/elementwise_functions/common_inplace.hpp"
 
 #include "utils/type_dispatch_building.hpp"
 
-namespace dpctl::tensor::kernels::bitwise_right_shift
+namespace dpnp::tensor::kernels::bitwise_right_shift
 {
 
-using dpctl::tensor::ssize_t;
-namespace td_ns = dpctl::tensor::type_dispatch;
+using dpnp::tensor::ssize_t;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 template <typename argT1, typename argT2, typename resT>
 struct BitwiseRightShiftFunctor
@@ -182,7 +182,7 @@ struct BitwiseRightShiftOutputType
 namespace hyperparam_detail
 {
 
-namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+namespace vsu_ns = dpnp::tensor::kernels::vec_size_utils;
 
 using vsu_ns::BinaryContigHyperparameterSetEntry;
 using vsu_ns::ContigHyperparameterSetDefault;
@@ -484,4 +484,4 @@ struct BitwiseRightShiftInplaceStridedFactory
     }
 };
 
-} // namespace dpctl::tensor::kernels::bitwise_right_shift
+} // namespace dpnp::tensor::kernels::bitwise_right_shift

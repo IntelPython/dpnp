@@ -36,7 +36,7 @@
 
 #include <cstddef>
 
-namespace dpctl::tensor::kernels::search_sorted_detail
+namespace dpnp::tensor::kernels::search_sorted_detail
 {
 
 template <typename T>
@@ -116,4 +116,4 @@ std::size_t upper_bound_indexed_impl(const Acc acc,
                                     acc_indexer);
 }
 
-} // namespace dpctl::tensor::kernels::search_sorted_detail
+} // namespace dpnp::tensor::kernels::search_sorted_detail

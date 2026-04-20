@@ -298,7 +298,7 @@ def _batched_lu_solve(lu, piv, b, res_type, trans=0):
     # oneMKL LAPACK getrs_batch overwrites `lu`
     lu_h = dpnp.empty_like(lu, order="F", dtype=res_type, usm_type=res_usm_type)
 
-    # use DPCTL tensor function to fill the сopy of the input array
+    # use DPNP tensor function to fill the сopy of the input array
     # from the input array
     ht_ev, lu_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=lu_usm_arr,
@@ -741,7 +741,7 @@ def dpnp_lu_solve(lu, piv, b, trans=0, overwrite_b=False, check_finite=True):
     # oneMKL LAPACK getrs_batch overwrites `lu`.
     lu_h = dpnp.empty_like(lu, order="F", dtype=res_type, usm_type=res_usm_type)
 
-    # use DPCTL tensor function to fill the сopy of the input array
+    # use DPNP tensor function to fill the сopy of the input array
     # from the input array
     ht_ev, lu_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
         src=lu_usm_arr,

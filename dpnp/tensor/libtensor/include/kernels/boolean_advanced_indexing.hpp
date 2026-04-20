@@ -41,15 +41,15 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl_tensor_types.hpp"
+#include "dpnp_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 
-namespace dpctl::tensor::kernels::indexing
+namespace dpnp::tensor::kernels::indexing
 {
 
-using dpctl::tensor::ssize_t;
-using namespace dpctl::tensor::offset_utils;
+using dpnp::tensor::ssize_t;
+using namespace dpnp::tensor::offset_utils;
 
 template <typename OrthogIndexerT,
           typename MaskedSrcIndexerT,
@@ -850,4 +850,4 @@ sycl::event non_zero_indexes_impl(sycl::queue &exec_q,
     return comp_ev;
 }
 
-} // namespace dpctl::tensor::kernels::indexing
+} // namespace dpnp::tensor::kernels::indexing

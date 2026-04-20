@@ -29,7 +29,7 @@
 //===--------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines functions of dpctl.tensor._tensor_impl extensions
+/// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
 #include <algorithm>
@@ -43,7 +43,7 @@
 #include "simplify_iteration_space.hpp"
 #include "utils/strided_iters.hpp"
 
-namespace dpctl::tensor::py_internal
+namespace dpnp::tensor::py_internal
 {
 
 namespace py = pybind11;
@@ -56,7 +56,7 @@ void simplify_iteration_space_1(int &nd,
                                 std::vector<py::ssize_t> &simplified_strides,
                                 py::ssize_t &offset)
 {
-    using dpctl::tensor::strides::simplify_iteration_stride;
+    using dpnp::tensor::strides::simplify_iteration_stride;
     if (nd > 1) {
         // Simplify iteration space to reduce dimensionality
         // and improve access pattern
@@ -107,7 +107,7 @@ void simplify_iteration_space(int &nd,
                               py::ssize_t &src_offset,
                               py::ssize_t &dst_offset)
 {
-    using dpctl::tensor::strides::simplify_iteration_two_strides;
+    using dpnp::tensor::strides::simplify_iteration_two_strides;
     if (nd > 1) {
         // Simplify iteration space to reduce dimensionality
         // and improve access pattern
@@ -187,7 +187,7 @@ void simplify_iteration_space_3(
     py::ssize_t &src2_offset,
     py::ssize_t &dst_offset)
 {
-    using dpctl::tensor::strides::simplify_iteration_three_strides;
+    using dpnp::tensor::strides::simplify_iteration_three_strides;
     if (nd > 1) {
         // Simplify iteration space to reduce dimensionality
         // and improve access pattern
@@ -285,7 +285,7 @@ void simplify_iteration_space_4(
     py::ssize_t &src3_offset,
     py::ssize_t &dst_offset)
 {
-    using dpctl::tensor::strides::simplify_iteration_four_strides;
+    using dpnp::tensor::strides::simplify_iteration_four_strides;
     if (nd > 1) {
         // Simplify iteration space to reduce dimensionality
         // and improve access pattern
@@ -383,7 +383,7 @@ void compact_iteration_space(int &nd,
                              std::vector<py::ssize_t> &compact_shape,
                              std::vector<py::ssize_t> &compact_strides)
 {
-    using dpctl::tensor::strides::compact_iteration;
+    using dpnp::tensor::strides::compact_iteration;
     if (nd > 1) {
         // Compact iteration space to reduce dimensionality
         // and improve access pattern
@@ -539,4 +539,4 @@ std::vector<py::ssize_t> _unravel_index_f(py::ssize_t flat_index,
     return mi;
 }
 
-} // namespace dpctl::tensor::py_internal
+} // namespace dpnp::tensor::py_internal
