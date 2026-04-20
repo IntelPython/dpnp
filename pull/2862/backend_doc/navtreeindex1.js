@@ -193,6 +193,7 @@ var NAVTREEINDEX1 =
 "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html":[2,0,0,2,26,0],
 "structdpnp_1_1kernels_1_1sinc_1_1_sinc_functor.html":[2,0,0,2,27,0],
 "structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html":[2,0,0,2,29,0],
+"structdpnp_1_1utils_1_1detail_1_1_managed_memory.html":[2,0,0,4,0,0],
 "structengine__struct.html":[2,0,8],
 "structext_1_1common_1_1_atomic_op.html":[2,0,1,0,0],
 "structext_1_1common_1_1_is_nan.html":[2,0,1,0,4],
