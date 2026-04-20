@@ -1,22 +1,9 @@
 var annotated_dup =
 [
-    [ "dpctl", null, [
-      [ "detail", null, [
-        [ "dpctl_capi", "classdpctl_1_1detail_1_1dpctl__capi.html", null ]
-      ] ],
-      [ "memory", null, [
-        [ "usm_memory", "classdpctl_1_1memory_1_1usm__memory.html", "classdpctl_1_1memory_1_1usm__memory" ]
-      ] ],
-      [ "tensor", null, [
-        [ "usm_ndarray", "classdpctl_1_1tensor_1_1usm__ndarray.html", "classdpctl_1_1tensor_1_1usm__ndarray" ]
-      ] ],
-      [ "utils", null, [
-        [ "detail", null, [
-          [ "ManagedMemory", "structdpctl_1_1utils_1_1detail_1_1_managed_memory.html", null ]
-        ] ]
-      ] ]
-    ] ],
     [ "dpnp", null, [
+      [ "detail", null, [
+        [ "dpnp_capi", "classdpnp_1_1detail_1_1dpnp__capi.html", null ]
+      ] ],
       [ "extensions", null, [
         [ "blas", null, [
           [ "types", null, [
@@ -187,6 +174,14 @@ var annotated_dup =
         [ "spacing", null, [
           [ "SpacingFunctor", "structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html", null ]
         ] ]
+      ] ],
+      [ "tensor", null, [
+        [ "usm_ndarray", "classdpnp_1_1tensor_1_1usm__ndarray.html", "classdpnp_1_1tensor_1_1usm__ndarray" ]
+      ] ],
+      [ "utils", null, [
+        [ "detail", null, [
+          [ "ManagedMemory", "structdpnp_1_1utils_1_1detail_1_1_managed_memory.html", null ]
+        ] ]
       ] ]
     ] ],
     [ "ext", null, [
@@ -205,17 +200,6 @@ var annotated_dup =
         [ "value_type_of_impl", "structext_1_1common_1_1value__type__of__impl.html", null ],
         [ "value_type_of_impl< T, false >", "structext_1_1common_1_1value__type__of__impl_3_01_t_00_01false_01_4.html", null ],
         [ "value_type_of_impl< T, true >", "structext_1_1common_1_1value__type__of__impl_3_01_t_00_01true_01_4.html", null ]
-      ] ]
-    ] ],
-    [ "pybind11", null, [
-      [ "detail", null, [
-        [ "type_caster< sycl::context >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1context_01_4.html", null ],
-        [ "type_caster< sycl::device >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1device_01_4.html", null ],
-        [ "type_caster< sycl::event >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1event_01_4.html", null ],
-        [ "type_caster< sycl::half >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1half_01_4.html", null ],
-        [ "type_caster< sycl::kernel >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1kernel_01_4.html", null ],
-        [ "type_caster< sycl::kernel_bundle< sycl::bundle_state::executable > >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1kernel__bundle_3_01sycl_1_1bundle__state_1_1executable_01_4_01_4.html", null ],
-        [ "type_caster< sycl::queue >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1queue_01_4.html", null ]
       ] ]
     ] ],
     [ "statistics", null, [

@@ -40,7 +40,7 @@ var hierarchy =
     [ "dpnp::extensions::blas::types::DotTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::blas::DotuContigFactory< fnT, varT >", "structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html", null ],
     [ "dpnp::extensions::blas::types::DotuTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
-    [ "dpctl::detail::dpctl_capi", "classdpctl_1_1detail_1_1dpctl__capi.html", null ],
+    [ "dpnp::detail::dpnp_capi", "classdpnp_1_1detail_1_1dpnp__capi.html", null ],
     [ "dpnp_less_comp", "classdpnp__less__comp.html", null ],
     [ "DPNPC_ptr_adapter< _DataType >", "class_d_p_n_p_c__ptr__adapter.html", null ],
     [ "DPNPFuncData", "struct_d_p_n_p_func_data.html", null ],
@@ -100,15 +100,14 @@ var hierarchy =
     [ "dpnp::kernels::ldexp::LdexpFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ],
     [ "ext::common::Less< T >", "structext_1_1common_1_1_less.html", null ],
     [ "dpnp::kernels::logaddexp2::Logaddexp2Functor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ],
-    [ "dpctl::utils::detail::ManagedMemory", "structdpctl_1_1utils_1_1detail_1_1_managed_memory.html", null ],
+    [ "dpnp::utils::detail::ManagedMemory", "structdpnp_1_1utils_1_1detail_1_1_managed_memory.html", null ],
     [ "dpnp::kernels::modf::ModfFunctor< argT, fractT, intT >", "structdpnp_1_1kernels_1_1modf_1_1_modf_functor.html", null ],
     [ "dpnp::kernels::nan_to_num::NanToNumContigFunctor< T, scT, vec_sz, n_vecs, enable_sg_loadstore >", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html", null ],
     [ "dpnp::kernels::nan_to_num::NanToNumFunctor< T, scT, InOutIndexerT >", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor.html", null ],
     [ "statistics::histogram::NoWeights< T >", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
     [ "dpnp::kernels::choose::strides::NthStrideOffsetUnpacked", "structdpnp_1_1kernels_1_1choose_1_1strides_1_1_nth_stride_offset_unpacked.html", null ],
     [ "pybind11::object", null, [
-      [ "dpctl::memory::usm_memory", "classdpctl_1_1memory_1_1usm__memory.html", null ],
-      [ "dpctl::tensor::usm_ndarray", "classdpctl_1_1tensor_1_1usm__ndarray.html", null ]
+      [ "dpnp::tensor::usm_ndarray", "classdpnp_1_1tensor_1_1usm__ndarray.html", null ]
     ] ],
     [ "ext::common::one_of< T, Rest >", "structext_1_1common_1_1one__of.html", null ],
     [ "ext::common::one_of< T, std::tuple< Top > >", "structext_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html", null ],
@@ -141,13 +140,6 @@ var hierarchy =
     [ "std::true_type", null, [
       [ "dpnp::extensions::py_internal::type_dispatch::DefaultTwoResultsEntry< Ty >", "structdpnp_1_1extensions_1_1py__internal_1_1type__dispatch_1_1_default_two_results_entry.html", null ]
     ] ],
-    [ "pybind11::detail::type_caster< sycl::context >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1context_01_4.html", null ],
-    [ "pybind11::detail::type_caster< sycl::device >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1device_01_4.html", null ],
-    [ "pybind11::detail::type_caster< sycl::event >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1event_01_4.html", null ],
-    [ "pybind11::detail::type_caster< sycl::half >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1half_01_4.html", null ],
-    [ "pybind11::detail::type_caster< sycl::kernel >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1kernel_01_4.html", null ],
-    [ "pybind11::detail::type_caster< sycl::kernel_bundle< sycl::bundle_state::executable > >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1kernel__bundle_3_01sycl_1_1bundle__state_1_1executable_01_4_01_4.html", null ],
-    [ "pybind11::detail::type_caster< sycl::queue >", "structpybind11_1_1detail_1_1type__caster_3_01sycl_1_1queue_01_4.html", null ],
     [ "dpnp::extensions::py_internal::elementwise_common::UnaryTwoOutputsContigFunctor< argT, resT1, resT2, UnaryTwoOutputsOpT, vec_sz, n_vecs, enable_sg_loadstore >", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_unary_two_outputs_contig_functor.html", null ],
     [ "dpnp::extensions::py_internal::elementwise_common::UnaryTwoOutputsStridedFunctor< argT, resT1, resT2, IndexerT, UnaryTwoOutputsOpT >", "structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_unary_two_outputs_strided_functor.html", null ],
     [ "statistics::histogram::UncachedData< T, Dims >", "structstatistics_1_1histogram_1_1_uncached_data.html", null ],

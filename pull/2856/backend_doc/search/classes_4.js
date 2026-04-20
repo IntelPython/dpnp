@@ -12,7 +12,7 @@ var searchData=
   ['dottypepairsupportfactory_9',['DotTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
   ['dotucontigfactory_10',['DotuContigFactory',['../structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html',1,'dpnp::extensions::blas']]],
   ['dotutypepairsupportfactory_11',['DotuTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
-  ['dpctl_5fcapi_12',['dpctl_capi',['../classdpctl_1_1detail_1_1dpctl__capi.html',1,'dpctl::detail']]],
+  ['dpnp_5fcapi_12',['dpnp_capi',['../classdpnp_1_1detail_1_1dpnp__capi.html',1,'dpnp::detail']]],
   ['dpnp_5fless_5fcomp_13',['dpnp_less_comp',['../classdpnp__less__comp.html',1,'']]],
   ['dpnpc_5fptr_5fadapter_14',['DPNPC_ptr_adapter',['../class_d_p_n_p_c__ptr__adapter.html',1,'']]],
   ['dpnpfuncdata_15',['DPNPFuncData',['../struct_d_p_n_p_func_data.html',1,'']]]

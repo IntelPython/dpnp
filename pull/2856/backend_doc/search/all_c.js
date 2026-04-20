@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['managedmemory_0',['ManagedMemory',['../structdpctl_1_1utils_1_1detail_1_1_managed_memory.html',1,'dpctl::utils::detail']]],
+  ['managedmemory_0',['ManagedMemory',['../structdpnp_1_1utils_1_1detail_1_1_managed_memory.html',1,'dpnp::utils::detail']]],
   ['mcg59_5fdelete_1',['MCG59_Delete',['../group___b_a_c_k_e_n_d___a_p_i.html#gad658fb513fc4ab24115573d8bdbf38df',1,'dpnp_random_state.hpp']]],
   ['mcg59_5finitscalarseed_2',['MCG59_InitScalarSeed',['../group___b_a_c_k_e_n_d___a_p_i.html#ga8d41fc0affbac587992402c23ff9b930',1,'dpnp_random_state.hpp']]],
   ['mcg59_5fstruct_3',['mcg59_struct',['../structmcg59__struct.html',1,'']]],
