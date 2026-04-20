@@ -30,11 +30,13 @@
 
 #include <algorithm>
 
-#include "ext/common.hpp"
-#include "utils/type_dispatch.hpp"
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+#include "ext/common.hpp"
+#include "utils/type_dispatch.hpp"
+
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
 
 namespace ext::common
 {
@@ -89,36 +91,36 @@ inline size_t get_local_mem_size_in_bytes(const sycl::device &device,
 
 inline pybind11::dtype dtype_from_typenum(int dst_typenum)
 {
-    dpctl_td_ns::typenum_t dst_typenum_t =
-        static_cast<dpctl_td_ns::typenum_t>(dst_typenum);
+    dpnp_td_ns::typenum_t dst_typenum_t =
+        static_cast<dpnp_td_ns::typenum_t>(dst_typenum);
     switch (dst_typenum_t) {
-    case dpctl_td_ns::typenum_t::BOOL:
+    case dpnp_td_ns::typenum_t::BOOL:
         return py::dtype("?");
-    case dpctl_td_ns::typenum_t::INT8:
+    case dpnp_td_ns::typenum_t::INT8:
         return py::dtype("i1");
-    case dpctl_td_ns::typenum_t::UINT8:
+    case dpnp_td_ns::typenum_t::UINT8:
         return py::dtype("u1");
-    case dpctl_td_ns::typenum_t::INT16:
+    case dpnp_td_ns::typenum_t::INT16:
         return py::dtype("i2");
-    case dpctl_td_ns::typenum_t::UINT16:
+    case dpnp_td_ns::typenum_t::UINT16:
         return py::dtype("u2");
-    case dpctl_td_ns::typenum_t::INT32:
+    case dpnp_td_ns::typenum_t::INT32:
         return py::dtype("i4");
-    case dpctl_td_ns::typenum_t::UINT32:
+    case dpnp_td_ns::typenum_t::UINT32:
         return py::dtype("u4");
-    case dpctl_td_ns::typenum_t::INT64:
+    case dpnp_td_ns::typenum_t::INT64:
         return py::dtype("i8");
-    case dpctl_td_ns::typenum_t::UINT64:
+    case dpnp_td_ns::typenum_t::UINT64:
         return py::dtype("u8");
-    case dpctl_td_ns::typenum_t::HALF:
+    case dpnp_td_ns::typenum_t::HALF:
         return py::dtype("f2");
-    case dpctl_td_ns::typenum_t::FLOAT:
+    case dpnp_td_ns::typenum_t::FLOAT:
         return py::dtype("f4");
-    case dpctl_td_ns::typenum_t::DOUBLE:
+    case dpnp_td_ns::typenum_t::DOUBLE:
         return py::dtype("f8");
-    case dpctl_td_ns::typenum_t::CFLOAT:
+    case dpnp_td_ns::typenum_t::CFLOAT:
         return py::dtype("c8");
-    case dpctl_td_ns::typenum_t::CDOUBLE:
+    case dpnp_td_ns::typenum_t::CDOUBLE:
         return py::dtype("c16");
     default:
         throw py::value_error("Unrecognized dst_typeid");

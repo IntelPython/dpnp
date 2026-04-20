@@ -31,23 +31,23 @@
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
+#include "dpnp4pybind11.hpp"
 
 namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
     getrs(sycl::queue &exec_q,
-          const dpctl::tensor::usm_ndarray &a_array,
-          const dpctl::tensor::usm_ndarray &ipiv_array,
-          const dpctl::tensor::usm_ndarray &b_array,
+          const dpnp::tensor::usm_ndarray &a_array,
+          const dpnp::tensor::usm_ndarray &ipiv_array,
+          const dpnp::tensor::usm_ndarray &b_array,
           const oneapi::mkl::transpose trans,
           const std::vector<sycl::event> &depends = {});
 
 extern std::pair<sycl::event, sycl::event>
     getrs_batch(sycl::queue &exec_q,
-                const dpctl::tensor::usm_ndarray &a_array,
-                const dpctl::tensor::usm_ndarray &ipiv_array,
-                const dpctl::tensor::usm_ndarray &b_array,
+                const dpnp::tensor::usm_ndarray &a_array,
+                const dpnp::tensor::usm_ndarray &ipiv_array,
+                const dpnp::tensor::usm_ndarray &b_array,
                 const oneapi::mkl::transpose trans,
                 const std::int64_t n,
                 const std::int64_t nrhs,

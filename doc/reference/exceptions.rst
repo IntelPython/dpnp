@@ -20,7 +20,7 @@ Exceptions
 .. exception:: DLPackCreationError
 
    Given when constructing DLPack capsule from either :class:`dpnp.ndarray` or
-   :class:`dpctl.tensor.usm_ndarray` based on a USM allocation
+   :class:`dpnp.tensor.usm_ndarray` based on a USM allocation
    on a partitioned SYCL device.
 
    .. rubric:: Examples

@@ -6,6 +6,7 @@
 # http://www.sphinx-doc.org/en/master/config
 
 from datetime import datetime
+from urllib.parse import urljoin
 
 from sphinx.ext.autodoc import FunctionDocumenter
 from sphinx.ext.napoleon import NumpyDocstring, docstring
@@ -231,6 +232,9 @@ documenter.can_document_member = _can_document_member
 
 autosummary_generate = True
 
+_DPCTL_021_BASE = "https://intelpython.github.io/dpctl/0.21.1/"
+_DPCTL_021_INV = urljoin(_DPCTL_021_BASE, "objects.inv")
+
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
@@ -302,3 +306,65 @@ def _parse_returns_section_patched(self, section: str) -> list[str]:
 
 
 NumpyDocstring._parse_returns_section = _parse_returns_section_patched
+
+
+# TODO: Remove once dpnp.tensor docs are generated in dpnp
+def _load_dpctl_tensor_inventory(app):
+    """Load dpctl 0.21.1 inventory for dpnp.tensor fallback only."""
+    from sphinx.ext.intersphinx import fetch_inventory
+    from sphinx.util import logging
+
+    logger = logging.getLogger(__name__)
+
+    try:
+        inv = fetch_inventory(app, _DPCTL_021_BASE, _DPCTL_021_INV)
+    except Exception as exc:
+        logger.warning(
+            "Failed to load dpctl 0.21.1 inventory from %s: %s",
+            _DPCTL_021_INV,
+            exc,
+        )
+        inv = {}
+
+    app.builder.env._dpctl_tensor_021_inventory = inv
+
+
+# TODO: Remove once dpnp.tensor docs are generated in dpnp
+def _resolve_dpnp_tensor_refs(app, env, node, contnode):
+    """Resolve dpnp.tensor.* references to dpctl 0.21.1 documentation.
+
+    This temporary workaround is needed because dpnp.tensor documentation
+    is not generated yet, while the corresponding API is still documented
+    in dpctl 0.21.1.
+    """
+    from docutils import nodes as docutils_nodes
+
+    target = node.get("reftarget", "")
+    if not target.startswith("dpnp.tensor"):
+        return None
+
+    dpctl_target = target.replace("dpnp.tensor", "dpctl.tensor", 1)
+    dpctl_tensor_inv = getattr(env, "_dpctl_tensor_021_inventory", {})
+
+    for _objtype, objects in dpctl_tensor_inv.items():
+        if dpctl_target not in objects:
+            continue
+
+        item = objects[dpctl_target]
+        location = item.uri
+        if location.endswith("$"):
+            location = location[:-1] + dpctl_target
+
+        refuri = urljoin(_DPCTL_021_BASE, location)
+        newnode = docutils_nodes.reference(
+            "", "", internal=False, refuri=refuri
+        )
+        newnode += contnode.deepcopy()
+        return newnode
+
+    return None
+
+
+def setup(app):
+    app.connect("builder-inited", _load_dpctl_tensor_inventory, priority=400)
+    app.connect("missing-reference", _resolve_dpnp_tensor_refs, priority=400)

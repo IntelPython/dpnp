@@ -31,14 +31,14 @@
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
+#include "dpnp4pybind11.hpp"
 
 namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
     getri_batch(sycl::queue &exec_q,
-                const dpctl::tensor::usm_ndarray &a_array,
-                const dpctl::tensor::usm_ndarray &ipiv_array,
+                const dpnp::tensor::usm_ndarray &a_array,
+                const dpnp::tensor::usm_ndarray &ipiv_array,
                 py::list dev_info,
                 std::int64_t n,
                 std::int64_t stride_a,

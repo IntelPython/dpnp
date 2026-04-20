@@ -34,7 +34,7 @@
 // utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
@@ -48,7 +48,7 @@ namespace dpnp::extensions::blas
 {
 namespace mkl_blas = oneapi::mkl::blas;
 namespace py = pybind11;
-namespace type_utils = dpctl::tensor::type_utils;
+namespace type_utils = dpnp::tensor::type_utils;
 
 using ext::common::init_dispatch_vector;
 
@@ -63,7 +63,7 @@ typedef sycl::event (*syrk_impl_fn_ptr_t)(sycl::queue &,
                                           const bool,
                                           const std::vector<sycl::event> &);
 
-static syrk_impl_fn_ptr_t syrk_dispatch_vector[dpctl_td_ns::num_types];
+static syrk_impl_fn_ptr_t syrk_dispatch_vector[dpnp_td_ns::num_types];
 
 template <typename T>
 constexpr void copy_to_lower_triangle(T *res,
@@ -230,8 +230,8 @@ static sycl::event syrk_impl(sycl::queue &exec_q,
 
 std::pair<sycl::event, sycl::event>
     syrk(sycl::queue &exec_q,
-         const dpctl::tensor::usm_ndarray &matrixA,
-         const dpctl::tensor::usm_ndarray &resultC,
+         const dpnp::tensor::usm_ndarray &matrixA,
+         const dpnp::tensor::usm_ndarray &resultC,
          const std::vector<sycl::event> &depends)
 {
     const int matrixA_nd = matrixA.get_ndim();
@@ -241,13 +241,13 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("The given arrays have incorrect dimensions.");
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(matrixA, resultC)) {
         throw py::value_error("Input and output matrices are overlapping "
                               "segments of memory");
     }
 
-    if (!dpctl::utils::queues_are_compatible(
+    if (!dpnp::utils::queues_are_compatible(
             exec_q, {matrixA.get_queue(), resultC.get_queue()})) {
         throw py::value_error(
             "USM allocations are not compatible with the execution queue.");
@@ -305,9 +305,9 @@ std::pair<sycl::event, sycl::event>
 
     const std::int64_t lda = is_row_major ? k : n;
     const std::int64_t ldc = n;
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(resultC,
-                                                               src_nelems);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(resultC);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(resultC,
+                                                              src_nelems);
 
     const int matrixA_typenum = matrixA.get_typenum();
     const int resultC_typenum = resultC.get_typenum();
@@ -315,7 +315,7 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Given arrays must be of the same type.");
     }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int type_id = array_types.typenum_to_lookup_id(matrixA_typenum);
     syrk_impl_fn_ptr_t syrk_fn = syrk_dispatch_vector[type_id];
     if (syrk_fn == nullptr) {
@@ -331,7 +331,7 @@ std::pair<sycl::event, sycl::event>
                                   r_typeless_ptr, ldc, is_row_major, depends);
 
     sycl::event args_ev =
-        dpctl::utils::keep_args_alive(exec_q, {matrixA, resultC}, {syrk_ev});
+        dpnp::utils::keep_args_alive(exec_q, {matrixA, resultC}, {syrk_ev});
 
     return std::make_pair(args_ev, syrk_ev);
 }

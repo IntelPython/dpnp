@@ -29,9 +29,10 @@
 #pragma once
 
 #include <oneapi/mkl.hpp>
+
 #include <pybind11/pybind11.h>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
@@ -50,14 +51,14 @@ typedef sycl::event (*dot_impl_fn_ptr_t)(sycl::queue &,
                                          char *,
                                          const std::vector<sycl::event> &);
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
 namespace py = pybind11;
 
 std::pair<sycl::event, sycl::event>
     dot_func(sycl::queue &exec_q,
-             const dpctl::tensor::usm_ndarray &vectorX,
-             const dpctl::tensor::usm_ndarray &vectorY,
-             const dpctl::tensor::usm_ndarray &result,
+             const dpnp::tensor::usm_ndarray &vectorX,
+             const dpnp::tensor::usm_ndarray &vectorY,
+             const dpnp::tensor::usm_ndarray &result,
              const std::vector<sycl::event> &depends,
              const dot_impl_fn_ptr_t *dot_dispatch_vector)
 {
@@ -83,7 +84,7 @@ std::pair<sycl::event, sycl::event>
             ", but a 0-dimensional array is expected.");
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(vectorX, result)) {
         throw py::value_error(
             "The first input array and output array are overlapping "
@@ -95,7 +96,7 @@ std::pair<sycl::event, sycl::event>
             "segments of memory");
     }
 
-    if (!dpctl::utils::queues_are_compatible(
+    if (!dpnp::utils::queues_are_compatible(
             exec_q,
             {vectorX.get_queue(), vectorY.get_queue(), result.get_queue()})) {
         throw py::value_error(
@@ -103,9 +104,9 @@ std::pair<sycl::event, sycl::event>
     }
 
     const int src_nelems = 1;
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(result,
-                                                               src_nelems);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(result);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(result,
+                                                              src_nelems);
 
     const py::ssize_t x_size = vectorX.get_size();
     const py::ssize_t y_size = vectorY.get_size();
@@ -124,7 +125,7 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Given arrays must be of the same type.");
     }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int type_id = array_types.typenum_to_lookup_id(vectorX_typenum);
 
     dot_impl_fn_ptr_t dot_fn = dot_dispatch_vector[type_id];
@@ -162,7 +163,7 @@ std::pair<sycl::event, sycl::event>
     sycl::event dot_ev = dot_fn(exec_q, n, x_typeless_ptr, incx, y_typeless_ptr,
                                 incy, r_typeless_ptr, depends);
 
-    sycl::event args_ev = dpctl::utils::keep_args_alive(
+    sycl::event args_ev = dpnp::utils::keep_args_alive(
         exec_q, {vectorX, vectorY, result}, {dot_ev});
 
     return std::make_pair(args_ev, dot_ev);

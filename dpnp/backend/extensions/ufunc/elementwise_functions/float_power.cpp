@@ -30,21 +30,25 @@
 #include <type_traits>
 #include <vector>
 
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
 
 #include "float_power.hpp"
 
 // utils extension header
 #include "ext/common.hpp"
 
-// include a local copy of elementwise common header from dpctl tensor:
-// dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
-// TODO: replace by including dpctl header once available
+// include a local copy of elementwise common header from dpnp tensor:
+// dpnp/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
+// TODO: replace by consolidating with tensor post-migration
 #include "../../elementwise_functions/elementwise_functions.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 
 namespace dpnp::extensions::ufunc
@@ -54,7 +58,7 @@ namespace py_int = dpnp::extensions::py_internal;
 
 namespace impl
 {
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 using ext::common::init_dispatch_table;
 

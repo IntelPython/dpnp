@@ -32,12 +32,12 @@
 
 #include <sycl/sycl.hpp>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "utils/strided_iters.hpp"
 
 namespace dpnp::kernels::choose
 {
-using dpctl::tensor::ssize_t;
+using dpnp::tensor::ssize_t;
 
 template <typename ProjectorT,
           typename IndOutIndexerT,
@@ -90,7 +90,7 @@ public:
 
 namespace strides
 {
-using dpctl::tensor::strides::CIndexer_vector;
+using dpnp::tensor::strides::CIndexer_vector;
 
 struct NthStrideOffsetUnpacked
 {
