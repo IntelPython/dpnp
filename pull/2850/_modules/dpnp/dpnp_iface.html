@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.20.0dev6+10.g11faed9f011 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.20.0dev6+13.g25c18a438d2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8c47bae6"></script>
+      <script src="../../_static/documentation_options.js?v=9251c41d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tensor.html">Tensor (<code class="docutils literal notranslate"><span class="pre">dpnp.tensor</span></code>)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development information</span></p>
 <ul>
@@ -125,26 +126,27 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># pylint: disable=protected-access</span>
+<span class="c1"># pylint: disable=no-name-in-module</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._device</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_queue_device</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
-
 <span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_descriptor</span><span class="p">,</span>
     <span class="n">map_dtype_to_device</span><span class="p">,</span>
     <span class="n">use_origin_backend</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tensor._device</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_queue_device</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">are_same_logical_tensors</span><span class="p">(</span><span class="n">ar1</span><span class="p">,</span> <span class="n">ar2</span><span class="p">):</span>
@@ -229,7 +231,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">as_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return :class:`dpctl.tensor.usm_ndarray` from input object `a`.</span>
+<span class="sd">    Return :class:`dpnp.tensor.usm_ndarray` from input object `a`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -246,7 +248,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 <span class="sd">        If the value is ``None``, returned array is created on the same device</span>
 <span class="sd">        as `a`.</span>
@@ -267,7 +269,7 @@
 <span class="sd">    out : usm_ndarray</span>
 <span class="sd">        A dpctl USM ndarray from input array or scalar `a`.</span>
 <span class="sd">        If `a` is instance of :class:`dpnp.ndarray`</span>
-<span class="sd">        or :class:`dpctl.tensor.usm_ndarray`, no array allocation will be done</span>
+<span class="sd">        or :class:`dpnp.tensor.usm_ndarray`, no array allocation will be done</span>
 <span class="sd">        and `dtype`, `device`, `usm_type`, `sycl_queue` keywords</span>
 <span class="sd">        will be ignored.</span>
 
@@ -343,7 +345,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return ``True`` if each array has either type of scalar,</span>
-<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">    :class:`dpnp.ndarray` or :class:`dpnp.tensor.usm_ndarray`.</span>
 <span class="sd">    But if any array has unsupported type, ``TypeError`` will be raised.</span>
 
 <span class="sd">    Parameters</span>
@@ -405,7 +407,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 <span class="sd">        The value ``None`` is interpreted as to use a default device.</span>
 
@@ -494,7 +496,7 @@
     <span class="k">if</span> <span class="n">queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">copy_when_nondefault_queue</span><span class="p">:</span>
         <span class="n">default_queue</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">()</span>
         <span class="n">queue_is_default</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">([</span><span class="n">queue</span><span class="p">,</span> <span class="n">default_queue</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">dpt</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">([</span><span class="n">queue</span><span class="p">,</span> <span class="n">default_queue</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">queue_is_default</span><span class="p">:</span>
             <span class="n">ext_obj</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">default_queue</span><span class="p">)</span>
@@ -524,7 +526,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_normalized_queue_device</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Utility to process complementary keyword arguments &#39;device&#39; and &#39;sycl_queue&#39;</span>
-<span class="sd">    in subsequent calls of functions from `dpctl.tensor` module.</span>
+<span class="sd">    in subsequent calls of functions from `dpnp.tensor` module.</span>
 
 <span class="sd">    If both arguments &#39;device&#39; and &#39;sycl_queue&#39; have default value ``None``</span>
 <span class="sd">    and &#39;obj&#39; has `sycl_queue` attribute, it assumes that Compute Follows Data</span>
@@ -535,7 +537,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    obj : object, optional</span>
 <span class="sd">        A python object. Can be an instance of `dpnp_array`,</span>
-<span class="sd">        `dpctl.tensor.usm_ndarray`, an object representing SYCL USM allocation</span>
+<span class="sd">        `dpnp.tensor.usm_ndarray`, an object representing SYCL USM allocation</span>
 <span class="sd">        and implementing `__sycl_usm_array_interface__` protocol, an instance</span>
 <span class="sd">        of `numpy.ndarray`, an object supporting Python buffer protocol,</span>
 <span class="sd">        a Python scalar, or a (possibly nested) sequence of Python scalars.</span>
@@ -552,7 +554,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 <span class="sd">        The value ``None`` is interpreted as to use the same device as `obj`.</span>
 
@@ -562,7 +564,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    sycl_queue: dpctl.SyclQueue</span>
 <span class="sd">        A :class:`dpctl.SyclQueue` object normalized by</span>
-<span class="sd">        `normalize_queue_device` call of `dpctl.tensor` module invoked with</span>
+<span class="sd">        `normalize_queue_device` call of `dpnp.tensor` module invoked with</span>
 <span class="sd">        `device` and `sycl_queue` values. If both incoming `device` and</span>
 <span class="sd">        `sycl_queue` are ``None`` and `obj` has `sycl_queue` attribute,</span>
 <span class="sd">        the normalization will be performed for `obj.sycl_queue` value.</span>
@@ -630,13 +632,13 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return :class:`dpctl.tensor.usm_ndarray` from input array `a`.</span>
+<span class="sd">    Return :class:`dpnp.tensor.usm_ndarray` from input array `a`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array of supported type :class:`dpnp.ndarray`</span>
-<span class="sd">        or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">        or :class:`dpnp.tensor.usm_ndarray`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -661,13 +663,13 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return scalar or :class:`dpctl.tensor.usm_ndarray` from input object `a`.</span>
+<span class="sd">    Return scalar or :class:`dpnp.tensor.usm_ndarray` from input object `a`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {scalar, dpnp_array, usm_ndarray}</span>
 <span class="sd">        Input of any supported type: scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">        or :class:`dpctl.tensor.usm_ndarray`.</span>
+<span class="sd">        or :class:`dpnp.tensor.usm_ndarray`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -724,7 +726,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return ``True`` if `a` is a scalar or an array of either</span>
-<span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` type,</span>
+<span class="sd">    :class:`dpnp.ndarray` or :class:`dpnp.tensor.usm_ndarray` type,</span>
 <span class="sd">    ``False`` otherwise.</span>
 
 <span class="sd">    Parameters</span>
@@ -746,7 +748,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return ``True`` if an array of either type :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray` type, ``False`` otherwise.</span>
+<span class="sd">    or :class:`dpnp.tensor.usm_ndarray` type, ``False`` otherwise.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
