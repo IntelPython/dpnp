@@ -10,9 +10,10 @@ var searchData=
   ['gesvtypepairsupportfactory_7',['GesvTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_gesv_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
   ['get_5fdpnp_5ffunction_5fptr_8',['get_dpnp_function_ptr',['../group___b_a_c_k_e_n_d___a_p_i.html#ga257d96b384892c9c961137fa8f870a11',1,'dpnp_iface_fptr.hpp']]],
   ['get_5fdpnp_5ffunction_5fptr1_9',['get_dpnp_function_ptr1',['../group___b_a_c_k_e_n_d___a_p_i.html#gaeeb8d26a2589aecf1c30a64be90f6d92',1,'dpnp_iface_fptr.hpp']]],
-  ['getrfbatchtypepairsupportfactory_10',['GetrfBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
-  ['getrftypepairsupportfactory_11',['GetrfTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
-  ['getribatchtypepairsupportfactory_12',['GetriBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
-  ['getrsbatchtypepairsupportfactory_13',['GetrsBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
-  ['getrstypepairsupportfactory_14',['GetrsTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]]
+  ['get_5fusm_5fdata_10',['get_usm_data',['../classdpnp_1_1tensor_1_1usm__ndarray.html#a9d731b1fdcffd44734156a32b6599730',1,'dpnp::tensor::usm_ndarray']]],
+  ['getrfbatchtypepairsupportfactory_11',['GetrfBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['getrftypepairsupportfactory_12',['GetrfTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['getribatchtypepairsupportfactory_13',['GetriBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['getrsbatchtypepairsupportfactory_14',['GetrsBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['getrstypepairsupportfactory_15',['GetrsTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]]
 ];

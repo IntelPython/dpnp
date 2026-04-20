@@ -136,13 +136,13 @@ $(function(){initNavTree('extensions_2statistics_2sliding__window1d_8hpp_source.
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &lt;sycl/sycl.hpp&gt;</span></div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#include &quot;dpctl4pybind11.hpp&quot;</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#include &quot;dpnp4pybind11.hpp&quot;</span></div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#include &quot;kernels/statistics/sliding_window1d.hpp&quot;</span></div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">namespace </span>statistics::sliding_window1d</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>{</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">using </span>dpctl::tensor::usm_ndarray;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">using </span><a class="code hl_class" href="classdpnp_1_1tensor_1_1usm__ndarray.html">dpnp::tensor::usm_ndarray</a>;</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, std::u<span class="keywordtype">int</span>32_t Size&gt;</div>
 <div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
@@ -584,6 +584,7 @@ $(function(){initNavTree('extensions_2statistics_2sliding__window1d_8hpp_source.
 <div class="line"><a id="l00472" name="l00472"></a><span class="lineno">  472</span>} <span class="comment">// namespace statistics::sliding_window1d</span></div>
 <div class="ttc" id="aclassdpnp_1_1kernels_1_1sliding__window1d_1_1_sliding_window1d_functor_html"><div class="ttname"><a href="classdpnp_1_1kernels_1_1sliding__window1d_1_1_sliding_window1d_functor.html">dpnp::kernels::sliding_window1d::SlidingWindow1dFunctor</a></div><div class="ttdef"><b>Definition</b> <a href="kernels_2statistics_2sliding__window1d_8hpp_source.html#l00101">sliding_window1d.hpp:102</a></div></div>
 <div class="ttc" id="aclassdpnp_1_1kernels_1_1sliding__window1d_1_1_sliding_window1d_small_functor_html"><div class="ttname"><a href="classdpnp_1_1kernels_1_1sliding__window1d_1_1_sliding_window1d_small_functor.html">dpnp::kernels::sliding_window1d::SlidingWindow1dSmallFunctor</a></div><div class="ttdef"><b>Definition</b> <a href="kernels_2statistics_2sliding__window1d_8hpp_source.html#l00197">sliding_window1d.hpp:198</a></div></div>
+<div class="ttc" id="aclassdpnp_1_1tensor_1_1usm__ndarray_html"><div class="ttname"><a href="classdpnp_1_1tensor_1_1usm__ndarray.html">dpnp::tensor::usm_ndarray</a></div><div class="ttdef"><b>Definition</b> <a href="dpnp4pybind11_8hpp_source.html#l00253">dpnp4pybind11.hpp:254</a></div></div>
 <div class="ttc" id="aclassstatistics_1_1sliding__window1d_1_1___registry_data_storage_html"><div class="ttname"><a href="classstatistics_1_1sliding__window1d_1_1___registry_data_storage.html">statistics::sliding_window1d::_RegistryDataStorage</a></div><div class="ttdef"><b>Definition</b> <a href="#l00046">sliding_window1d.hpp:47</a></div></div>
 <div class="ttc" id="aclassstatistics_1_1sliding__window1d_1_1_padded_span_html"><div class="ttname"><a href="classstatistics_1_1sliding__window1d_1_1_padded_span.html">statistics::sliding_window1d::PaddedSpan</a></div><div class="ttdef"><b>Definition</b> <a href="#l00397">sliding_window1d.hpp:398</a></div></div>
 <div class="ttc" id="aclassstatistics_1_1sliding__window1d_1_1_span_html"><div class="ttname"><a href="classstatistics_1_1sliding__window1d_1_1_span.html">statistics::sliding_window1d::Span</a></div><div class="ttdef"><b>Definition</b> <a href="#l00369">sliding_window1d.hpp:370</a></div></div>
