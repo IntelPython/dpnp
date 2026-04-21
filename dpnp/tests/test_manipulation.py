@@ -1,6 +1,5 @@
 import itertools
 
-import dpctl.tensor as dpt
 import numpy
 import pytest
 from numpy.testing import (
@@ -10,6 +9,7 @@ from numpy.testing import (
 )
 
 import dpnp
+import dpnp.tensor as dpt
 from dpnp.exceptions import AxisError
 
 from .helper import (

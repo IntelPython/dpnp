@@ -111,7 +111,7 @@ def bartlett(M, *, device=None, usm_type=None, sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -205,7 +205,7 @@ def blackman(M, *, device=None, usm_type=None, sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -296,7 +296,7 @@ def hamming(M, *, device=None, usm_type=None, sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -380,7 +380,7 @@ def hanning(M, *, device=None, usm_type=None, sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -466,7 +466,7 @@ def kaiser(M, beta, *, device=None, usm_type=None, sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.

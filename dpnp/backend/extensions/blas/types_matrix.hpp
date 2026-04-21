@@ -30,11 +30,11 @@
 
 #include <type_traits>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 
-// dpctl namespace for operations with types
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+// namespace for operations with types
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
 
 namespace dpnp::extensions::blas::types
 {
@@ -48,11 +48,11 @@ namespace dpnp::extensions::blas::types
 template <typename T>
 struct DotTypePairSupportFactory
 {
-    static constexpr bool is_defined = std::disjunction<
-        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
-        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
-        // fall-through
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
+    static constexpr bool is_defined =
+        std::disjunction<dpnp_td_ns::TypePairDefinedEntry<T, float, T, float>,
+                         dpnp_td_ns::TypePairDefinedEntry<T, double, T, double>,
+                         // fall-through
+                         dpnp_td_ns::NotDefinedEntry>::is_defined;
 };
 
 /**
@@ -65,17 +65,17 @@ struct DotTypePairSupportFactory
 template <typename T>
 struct DotcTypePairSupportFactory
 {
-    static constexpr bool is_defined = std::disjunction<
-        dpctl_td_ns::TypePairDefinedEntry<T,
-                                          std::complex<float>,
-                                          T,
-                                          std::complex<float>>,
-        dpctl_td_ns::TypePairDefinedEntry<T,
-                                          std::complex<double>,
-                                          T,
-                                          std::complex<double>>,
-        // fall-through
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
+    static constexpr bool is_defined =
+        std::disjunction<dpnp_td_ns::TypePairDefinedEntry<T,
+                                                          std::complex<float>,
+                                                          T,
+                                                          std::complex<float>>,
+                         dpnp_td_ns::TypePairDefinedEntry<T,
+                                                          std::complex<double>,
+                                                          T,
+                                                          std::complex<double>>,
+                         // fall-through
+                         dpnp_td_ns::NotDefinedEntry>::is_defined;
 };
 
 /**
@@ -88,17 +88,17 @@ struct DotcTypePairSupportFactory
 template <typename T>
 struct DotuTypePairSupportFactory
 {
-    static constexpr bool is_defined = std::disjunction<
-        dpctl_td_ns::TypePairDefinedEntry<T,
-                                          std::complex<float>,
-                                          T,
-                                          std::complex<float>>,
-        dpctl_td_ns::TypePairDefinedEntry<T,
-                                          std::complex<double>,
-                                          T,
-                                          std::complex<double>>,
-        // fall-through
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
+    static constexpr bool is_defined =
+        std::disjunction<dpnp_td_ns::TypePairDefinedEntry<T,
+                                                          std::complex<float>,
+                                                          T,
+                                                          std::complex<float>>,
+                         dpnp_td_ns::TypePairDefinedEntry<T,
+                                                          std::complex<double>,
+                                                          T,
+                                                          std::complex<double>>,
+                         // fall-through
+                         dpnp_td_ns::NotDefinedEntry>::is_defined;
 };
 
 /**
@@ -114,23 +114,23 @@ struct GemmTypePairSupportFactory
 {
     static constexpr bool is_defined = std::disjunction<
 #if !defined(USE_ONEMATH)
-        dpctl_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, std::int32_t>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, float>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, std::int32_t>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, float>,
 #endif // USE_ONEMATH
-        dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, float>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, sycl::half>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab, float, Tc, float>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab, double, Tc, double>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab,
-                                          std::complex<float>,
-                                          Tc,
-                                          std::complex<float>>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab,
-                                          std::complex<double>,
-                                          Tc,
-                                          std::complex<double>>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, float>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, sycl::half>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, float, Tc, float>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, double, Tc, double>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab,
+                                         std::complex<float>,
+                                         Tc,
+                                         std::complex<float>>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab,
+                                         std::complex<double>,
+                                         Tc,
+                                         std::complex<double>>,
         // fall-through
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
+        dpnp_td_ns::NotDefinedEntry>::is_defined;
 };
 
 /**
@@ -146,23 +146,23 @@ struct GemmBatchTypePairSupportFactory
 {
     static constexpr bool is_defined = std::disjunction<
 #if !defined(USE_ONEMATH)
-        dpctl_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, std::int32_t>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, float>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, std::int32_t>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, std::int8_t, Tc, float>,
 #endif // USE_ONEMATH
-        dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, float>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, sycl::half>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab, float, Tc, float>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab, double, Tc, double>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab,
-                                          std::complex<float>,
-                                          Tc,
-                                          std::complex<float>>,
-        dpctl_td_ns::TypePairDefinedEntry<Tab,
-                                          std::complex<double>,
-                                          Tc,
-                                          std::complex<double>>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, float>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, sycl::half, Tc, sycl::half>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, float, Tc, float>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab, double, Tc, double>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab,
+                                         std::complex<float>,
+                                         Tc,
+                                         std::complex<float>>,
+        dpnp_td_ns::TypePairDefinedEntry<Tab,
+                                         std::complex<double>,
+                                         Tc,
+                                         std::complex<double>>,
         // fall-through
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
+        dpnp_td_ns::NotDefinedEntry>::is_defined;
 };
 
 /**
@@ -175,19 +175,19 @@ struct GemmBatchTypePairSupportFactory
 template <typename T>
 struct GemvTypePairSupportFactory
 {
-    static constexpr bool is_defined = std::disjunction<
-        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
-        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
-        dpctl_td_ns::TypePairDefinedEntry<T,
-                                          std::complex<float>,
-                                          T,
-                                          std::complex<float>>,
-        dpctl_td_ns::TypePairDefinedEntry<T,
-                                          std::complex<double>,
-                                          T,
-                                          std::complex<double>>,
-        // fall-through
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
+    static constexpr bool is_defined =
+        std::disjunction<dpnp_td_ns::TypePairDefinedEntry<T, float, T, float>,
+                         dpnp_td_ns::TypePairDefinedEntry<T, double, T, double>,
+                         dpnp_td_ns::TypePairDefinedEntry<T,
+                                                          std::complex<float>,
+                                                          T,
+                                                          std::complex<float>>,
+                         dpnp_td_ns::TypePairDefinedEntry<T,
+                                                          std::complex<double>,
+                                                          T,
+                                                          std::complex<double>>,
+                         // fall-through
+                         dpnp_td_ns::NotDefinedEntry>::is_defined;
 };
 
 /**
@@ -200,18 +200,18 @@ struct GemvTypePairSupportFactory
 template <typename T>
 struct SyrkTypePairSupportFactory
 {
-    static constexpr bool is_defined = std::disjunction<
-        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
-        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
-        dpctl_td_ns::TypePairDefinedEntry<T,
-                                          std::complex<float>,
-                                          T,
-                                          std::complex<float>>,
-        dpctl_td_ns::TypePairDefinedEntry<T,
-                                          std::complex<double>,
-                                          T,
-                                          std::complex<double>>,
-        // fall-through
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
+    static constexpr bool is_defined =
+        std::disjunction<dpnp_td_ns::TypePairDefinedEntry<T, float, T, float>,
+                         dpnp_td_ns::TypePairDefinedEntry<T, double, T, double>,
+                         dpnp_td_ns::TypePairDefinedEntry<T,
+                                                          std::complex<float>,
+                                                          T,
+                                                          std::complex<float>>,
+                         dpnp_td_ns::TypePairDefinedEntry<T,
+                                                          std::complex<double>,
+                                                          T,
+                                                          std::complex<double>>,
+                         // fall-through
+                         dpnp_td_ns::NotDefinedEntry>::is_defined;
 };
 } // namespace dpnp::extensions::blas::types

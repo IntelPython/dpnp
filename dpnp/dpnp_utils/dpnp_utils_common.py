@@ -29,9 +29,8 @@
 
 from collections.abc import Iterable
 
-import dpctl.tensor._type_utils as dtu
-
 import dpnp
+import dpnp.tensor._type_utils as dtu
 from dpnp.dpnp_utils import map_dtype_to_device
 
 __all__ = [

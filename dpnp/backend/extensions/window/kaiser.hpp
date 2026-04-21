@@ -30,7 +30,7 @@
 
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
+#include <dpnp4pybind11.hpp>
 #include <pybind11/pybind11.h>
 
 namespace dpnp::extensions::window
@@ -40,7 +40,7 @@ namespace py = pybind11;
 extern std::pair<sycl::event, sycl::event>
     py_kaiser(sycl::queue &exec_q,
               const py::object &beta,
-              const dpctl::tensor::usm_ndarray &result,
+              const dpnp::tensor::usm_ndarray &result,
               const std::vector<sycl::event> &depends);
 
 extern void init_kaiser_dispatch_vectors(void);

@@ -50,7 +50,7 @@ namespace py = pybind11;
 using ext::common::init_dispatch_vector;
 using window_ns::window_fn_ptr_t;
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
 
 template <typename fnT, typename T>
 using BartlettFactory =
@@ -68,14 +68,14 @@ template <typename fnT, typename T>
 using HanningFactory =
     window_ns::Factory<fnT, T, dpnp::kernels::hanning::HanningFunctor>;
 
-static window_fn_ptr_t bartlett_dispatch_vector[dpctl_td_ns::num_types];
-static window_fn_ptr_t blackman_dispatch_vector[dpctl_td_ns::num_types];
-static window_fn_ptr_t hamming_dispatch_vector[dpctl_td_ns::num_types];
-static window_fn_ptr_t hanning_dispatch_vector[dpctl_td_ns::num_types];
+static window_fn_ptr_t bartlett_dispatch_vector[dpnp_td_ns::num_types];
+static window_fn_ptr_t blackman_dispatch_vector[dpnp_td_ns::num_types];
+static window_fn_ptr_t hamming_dispatch_vector[dpnp_td_ns::num_types];
+static window_fn_ptr_t hanning_dispatch_vector[dpnp_td_ns::num_types];
 
 PYBIND11_MODULE(_window_impl, m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
 
     {

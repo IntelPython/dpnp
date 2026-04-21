@@ -35,22 +35,22 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-// dpctl tensor headers
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
+
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 
 #include "histogram.hpp"
 #include "histogram_common.hpp"
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-using dpctl::tensor::usm_ndarray;
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
+using dpnp::tensor::usm_ndarray;
 
 using namespace statistics::histogram;
 using namespace ext::common;
 
 namespace
 {
-
 template <typename T, typename DataStorage>
 struct HistogramEdges
 {
@@ -222,10 +222,10 @@ Histogram::Histogram() : dispatch_table("sample", "histogram")
 }
 
 std::tuple<sycl::event, sycl::event>
-    Histogram::call(const dpctl::tensor::usm_ndarray &sample,
-                    const dpctl::tensor::usm_ndarray &bins,
-                    std::optional<const dpctl::tensor::usm_ndarray> &weights,
-                    dpctl::tensor::usm_ndarray &histogram,
+    Histogram::call(const dpnp::tensor::usm_ndarray &sample,
+                    const dpnp::tensor::usm_ndarray &bins,
+                    std::optional<const dpnp::tensor::usm_ndarray> &weights,
+                    dpnp::tensor::usm_ndarray &histogram,
                     const std::vector<sycl::event> &depends)
 {
     validate(sample, bins, weights, histogram);
@@ -251,12 +251,12 @@ std::tuple<sycl::event, sycl::event>
 
     sycl::event args_ev;
     if (weights.has_value()) {
-        args_ev = dpctl::utils::keep_args_alive(
+        args_ev = dpnp::utils::keep_args_alive(
             exec_q, {sample, bins, weights.value(), histogram}, {ev});
     }
     else {
-        args_ev = dpctl::utils::keep_args_alive(
-            exec_q, {sample, bins, histogram}, {ev});
+        args_ev = dpnp::utils::keep_args_alive(exec_q,
+                                               {sample, bins, histogram}, {ev});
     }
 
     return {args_ev, ev};
@@ -272,10 +272,10 @@ void statistics::histogram::populate_histogram(py::module_ m)
 
     auto hist_func =
         [histp = hist.get()](
-            const dpctl::tensor::usm_ndarray &sample,
-            const dpctl::tensor::usm_ndarray &bins,
-            std::optional<const dpctl::tensor::usm_ndarray> &weights,
-            dpctl::tensor::usm_ndarray &histogram,
+            const dpnp::tensor::usm_ndarray &sample,
+            const dpnp::tensor::usm_ndarray &bins,
+            std::optional<const dpnp::tensor::usm_ndarray> &weights,
+            dpnp::tensor::usm_ndarray &histogram,
             const std::vector<sycl::event> &depends) {
             return histp->call(sample, bins, weights, histogram, depends);
         };

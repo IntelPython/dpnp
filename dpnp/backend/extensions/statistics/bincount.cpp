@@ -34,7 +34,7 @@
 #include "bincount.hpp"
 #include "histogram_common.hpp"
 
-using dpctl::tensor::usm_ndarray;
+using dpnp::tensor::usm_ndarray;
 
 using namespace statistics::histogram;
 using namespace ext::common;
@@ -161,14 +161,14 @@ Bincount::Bincount() : dispatch_table("sample", "histogram")
 }
 
 std::tuple<sycl::event, sycl::event> Bincount::call(
-    const dpctl::tensor::usm_ndarray &sample,
+    const dpnp::tensor::usm_ndarray &sample,
     const uint64_t min,
     const uint64_t max,
-    const std::optional<const dpctl::tensor::usm_ndarray> &weights,
-    dpctl::tensor::usm_ndarray &histogram,
+    const std::optional<const dpnp::tensor::usm_ndarray> &weights,
+    dpnp::tensor::usm_ndarray &histogram,
     const std::vector<sycl::event> &depends)
 {
-    validate(sample, std::optional<const dpctl::tensor::usm_ndarray>(), weights,
+    validate(sample, std::optional<const dpnp::tensor::usm_ndarray>(), weights,
              histogram);
 
     if (sample.get_size() == 0) {
@@ -190,12 +190,12 @@ std::tuple<sycl::event, sycl::event> Bincount::call(
 
     sycl::event args_ev;
     if (weights.has_value()) {
-        args_ev = dpctl::utils::keep_args_alive(
+        args_ev = dpnp::utils::keep_args_alive(
             exec_q, {sample, weights.value(), histogram}, {ev});
     }
     else {
         args_ev =
-            dpctl::utils::keep_args_alive(exec_q, {sample, histogram}, {ev});
+            dpnp::utils::keep_args_alive(exec_q, {sample, histogram}, {ev});
     }
 
     return {args_ev, ev};
@@ -211,9 +211,9 @@ void statistics::histogram::populate_bincount(py::module_ m)
 
     auto bincount_func =
         [bincountp = bincount.get()](
-            const dpctl::tensor::usm_ndarray &sample, int64_t min, int64_t max,
-            std::optional<const dpctl::tensor::usm_ndarray> &weights,
-            dpctl::tensor::usm_ndarray &histogram,
+            const dpnp::tensor::usm_ndarray &sample, int64_t min, int64_t max,
+            std::optional<const dpnp::tensor::usm_ndarray> &weights,
+            dpnp::tensor::usm_ndarray &histogram,
             const std::vector<sycl::event> &depends) {
             return bincountp->call(sample, min, max, weights, histogram,
                                    depends);
