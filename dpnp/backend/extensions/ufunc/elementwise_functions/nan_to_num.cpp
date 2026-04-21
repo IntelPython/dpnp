@@ -38,16 +38,17 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
+#include "dpnp4pybind11.hpp"
 
 #include "kernels/elementwise_functions/nan_to_num.hpp"
 
 #include "../../elementwise_functions/simplify_iteration_space.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
@@ -59,7 +60,7 @@
 #include "ext/common.hpp"
 
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 using ext::common::value_type_of;
 
@@ -101,7 +102,7 @@ sycl::event nan_to_num_strided_call(sycl::queue &exec_q,
                                     py::ssize_t dst_offset,
                                     const std::vector<sycl::event> &depends)
 {
-    using dpctl::tensor::type_utils::is_complex_v;
+    using dpnp::tensor::type_utils::is_complex_v;
     using scT = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
     const scT nan_v = py::cast<const scT>(py_nan);
@@ -136,7 +137,7 @@ sycl::event nan_to_num_contig_call(sycl::queue &exec_q,
                                    char *dst_p,
                                    const std::vector<sycl::event> &depends)
 {
-    using dpctl::tensor::type_utils::is_complex_v;
+    using dpnp::tensor::type_utils::is_complex_v;
     using scT = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
     const scT nan_v = py::cast<const scT>(py_nan);
@@ -150,16 +151,16 @@ sycl::event nan_to_num_contig_call(sycl::queue &exec_q,
     return to_num_contig_ev;
 }
 
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 nan_to_num_fn_ptr_t nan_to_num_dispatch_vector[td_ns::num_types];
 nan_to_num_contig_fn_ptr_t nan_to_num_contig_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
-    py_nan_to_num(const dpctl::tensor::usm_ndarray &src,
+    py_nan_to_num(const dpnp::tensor::usm_ndarray &src,
                   const py::object &py_nan,
                   const py::object &py_posinf,
                   const py::object &py_neginf,
-                  const dpctl::tensor::usm_ndarray &dst,
+                  const dpnp::tensor::usm_ndarray &dst,
                   sycl::queue &q,
                   const std::vector<sycl::event> &depends)
 {
@@ -174,12 +175,12 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Array data types are not the same.");
     }
 
-    if (!dpctl::utils::queues_are_compatible(q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(q, {src, dst})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
     const int src_nd = src.get_ndim();
     if (src_nd != dst.get_ndim()) {
@@ -201,12 +202,12 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, nelems);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, nelems);
 
     // check memory overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
+        dpnp::tensor::overlap::SameLogicalTensors();
     if (overlap(src, dst) && !same_logical_tensors(src, dst)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
@@ -236,7 +237,7 @@ std::pair<sycl::event, sycl::event>
         auto comp_ev = contig_fn(q, nelems, py_nan, py_posinf, py_neginf,
                                  src_data, dst_data, depends);
         sycl::event ht_ev =
-            dpctl::utils::keep_args_alive(q, {src, dst}, {comp_ev});
+            dpnp::utils::keep_args_alive(q, {src, dst}, {comp_ev});
 
         return std::make_pair(ht_ev, comp_ev);
     }
@@ -283,7 +284,7 @@ std::pair<sycl::event, sycl::event>
                       dst_data + dst_elem_size * dst_offset, depends);
 
         sycl::event ht_ev =
-            dpctl::utils::keep_args_alive(q, {src, dst}, {comp_ev});
+            dpnp::utils::keep_args_alive(q, {src, dst}, {comp_ev});
 
         return std::make_pair(ht_ev, comp_ev);
     }
@@ -296,7 +297,7 @@ std::pair<sycl::event, sycl::event>
             std::to_string(src_typeid));
     }
 
-    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    using dpnp::tensor::offset_utils::device_allocate_and_pack;
 
     std::vector<sycl::event> host_tasks{};
     host_tasks.reserve(2);
@@ -318,13 +319,13 @@ std::pair<sycl::event, sycl::event>
            src_offset, dst_data, dst_offset, all_deps);
 
     // async free of shape_strides temporary
-    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+    sycl::event tmp_cleanup_ev = dpnp::tensor::alloc_utils::async_smart_free(
         q, {comp_ev}, shape_strides_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
 
     return std::make_pair(
-        dpctl::utils::keep_args_alive(q, {src, dst}, host_tasks), comp_ev);
+        dpnp::utils::keep_args_alive(q, {src, dst}, host_tasks), comp_ev);
 }
 
 /**

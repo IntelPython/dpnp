@@ -30,7 +30,7 @@
 
 #include <pybind11/pybind11.h>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
@@ -41,12 +41,12 @@
 
 namespace dpnp::extensions::lapack::gesv_utils
 {
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
 namespace py = pybind11;
 
 inline void common_gesv_checks(sycl::queue &exec_q,
-                               const dpctl::tensor::usm_ndarray &coeff_matrix,
-                               const dpctl::tensor::usm_ndarray &dependent_vals,
+                               const dpnp::tensor::usm_ndarray &coeff_matrix,
+                               const dpnp::tensor::usm_ndarray &dependent_vals,
                                const py::ssize_t *coeff_matrix_shape,
                                const py::ssize_t *dependent_vals_shape,
                                const int expected_coeff_matrix_ndim,
@@ -93,20 +93,20 @@ inline void common_gesv_checks(sycl::queue &exec_q,
     }
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {coeff_matrix, dependent_vals})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q,
+                                            {coeff_matrix, dependent_vals})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues.");
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(coeff_matrix, dependent_vals)) {
         throw py::value_error(
             "The arrays of coefficients and dependent variables "
             "are overlapping segments of memory.");
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(
         dependent_vals);
 
     const bool is_coeff_matrix_f_contig = coeff_matrix.is_f_contiguous();
@@ -121,7 +121,7 @@ inline void common_gesv_checks(sycl::queue &exec_q,
                               "must be F-contiguous.");
     }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int coeff_matrix_type_id =
         array_types.typenum_to_lookup_id(coeff_matrix.get_typenum());
     const int dependent_vals_type_id =
@@ -161,7 +161,7 @@ inline void handle_lapack_exc(sycl::queue &exec_q,
         const auto threshold =
             std::numeric_limits<ThresholdType>::epsilon() * 100;
         if (std::abs(host_U) < threshold) {
-            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+            using dpnp::tensor::alloc_utils::sycl_free_noexcept;
 
             if (scratchpad != nullptr)
                 sycl_free_noexcept(scratchpad, exec_q);

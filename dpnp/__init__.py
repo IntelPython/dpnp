@@ -28,7 +28,6 @@
 
 import os
 import sys
-import warnings
 
 mypath = os.path.dirname(os.path.realpath(__file__))
 
@@ -61,10 +60,7 @@ if sys.platform == "win32":  # pragma: no cover
                 [os.getenv("PATH", ""), dll_path]
             )
 
-# Borrowed from DPCTL
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", DeprecationWarning)
-    from dpctl.tensor import __array_api_version__, DLDeviceType
+from .tensor import __array_api_version__, DLDeviceType
 
 from .dpnp_array import dpnp_array as ndarray
 from .dpnp_array_api_info import __array_namespace_info__

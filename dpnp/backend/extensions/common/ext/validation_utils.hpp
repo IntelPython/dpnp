@@ -32,13 +32,16 @@
 #include <unordered_map>
 #include <vector>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
+
+// dpnp tensor headers
+#include "utils/type_dispatch.hpp"
 
 namespace ext::validation
 {
-using array_ptr = const dpctl::tensor::usm_ndarray *;
+using array_ptr = const dpnp::tensor::usm_ndarray *;
 using array_names = std::unordered_map<array_ptr, std::string>;
-using dpctl::tensor::type_dispatch::typenum_t;
+using dpnp::tensor::type_dispatch::typenum_t;
 
 std::string name_of(const array_ptr &arr, const array_names &names);
 

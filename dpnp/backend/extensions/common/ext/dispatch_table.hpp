@@ -39,7 +39,7 @@
 
 #include "ext/common.hpp"
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
 namespace py = pybind11;
 
 namespace ext::common
@@ -69,9 +69,9 @@ template <typename T, typename Rest>
 constexpr bool one_of_v = one_of<T, Rest>::value;
 
 template <typename FnT>
-using Table = FnT[dpctl_td_ns::num_types];
+using Table = FnT[dpnp_td_ns::num_types];
 template <typename FnT>
-using Table2 = Table<FnT>[dpctl_td_ns::num_types];
+using Table2 = Table<FnT>[dpnp_td_ns::num_types];
 
 using TypeId = int32_t;
 using TypesPair = std::pair<TypeId, TypeId>;
@@ -119,7 +119,7 @@ struct TableBuilder
     };
 
     using type =
-        dpctl_td_ns::DispatchVectorBuilder<FnT, impl, dpctl_td_ns::num_types>;
+        dpnp_td_ns::DispatchVectorBuilder<FnT, impl, dpnp_td_ns::num_types>;
 };
 
 template <typename FnT,
@@ -145,7 +145,7 @@ struct TableBuilder2
     };
 
     using type =
-        dpctl_td_ns::DispatchTableBuilder<FnT, impl, dpctl_td_ns::num_types>;
+        dpnp_td_ns::DispatchTableBuilder<FnT, impl, dpnp_td_ns::num_types>;
 };
 
 template <typename FnT>
@@ -166,7 +166,7 @@ public:
 
     FnT get_unsafe(int _typenum) const
     {
-        auto array_types = dpctl_td_ns::usm_ndarray_types();
+        auto array_types = dpnp_td_ns::usm_ndarray_types();
         const int type_id = array_types.typenum_to_lookup_id(_typenum);
 
         return table[type_id];
@@ -177,7 +177,7 @@ public:
         auto fn = get_unsafe(_typenum);
 
         if (fn == nullptr) {
-            auto array_types = dpctl_td_ns::usm_ndarray_types();
+            auto array_types = dpnp_td_ns::usm_ndarray_types();
             const int _type_id = array_types.typenum_to_lookup_id(_typenum);
 
             py::dtype _dtype = dtype_from_typenum(_type_id);
@@ -208,7 +208,7 @@ public:
 private:
     void populate_supported_types()
     {
-        for (int i = 0; i < dpctl_td_ns::num_types; ++i) {
+        for (int i = 0; i < dpnp_td_ns::num_types; ++i) {
             if (table[i] != nullptr) {
                 supported_types.emplace_back(dtype_from_typenum(i));
             }
@@ -242,7 +242,7 @@ public:
 
     FnT get_unsafe(int first_typenum, int second_typenum) const
     {
-        auto array_types = dpctl_td_ns::usm_ndarray_types();
+        auto array_types = dpnp_td_ns::usm_ndarray_types();
         const int first_type_id =
             array_types.typenum_to_lookup_id(first_typenum);
         const int second_type_id =
@@ -256,7 +256,7 @@ public:
         auto fn = get_unsafe(first_typenum, second_typenum);
 
         if (fn == nullptr) {
-            auto array_types = dpctl_td_ns::usm_ndarray_types();
+            auto array_types = dpnp_td_ns::usm_ndarray_types();
             const int first_type_id =
                 array_types.typenum_to_lookup_id(first_typenum);
             const int second_type_id =
@@ -338,8 +338,8 @@ private:
         SupportedTypesSet second_supported_types_set;
         SupportedTypesSet2 all_supported_types_set;
 
-        for (int i = 0; i < dpctl_td_ns::num_types; ++i) {
-            for (int j = 0; j < dpctl_td_ns::num_types; ++j) {
+        for (int i = 0; i < dpnp_td_ns::num_types; ++i) {
+            for (int j = 0; j < dpnp_td_ns::num_types; ++j) {
                 if (table[i][j] != nullptr) {
                     all_supported_types_set.emplace(i, j);
                     first_supported_types_set.emplace(i);

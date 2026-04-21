@@ -26,21 +26,22 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include "dpctl4pybind11.hpp"
-
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+
 #include <sycl/sycl.hpp>
+
+#include "dpnp4pybind11.hpp"
 
 #include "elementwise_functions_type_utils.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 
 namespace dpnp::extensions::py_internal::type_utils
 {
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 py::dtype _dtype_from_typenum(td_ns::typenum_t dst_typenum_t)
 {

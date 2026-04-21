@@ -28,18 +28,18 @@
 
 #pragma once
 
-#include "dpctl4pybind11.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
-// dpctl tensor headers
+#include "dpnp4pybind11.hpp"
+
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 
 namespace dpnp::extensions::py_internal::type_utils
 {
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 /*! @brief Produce dtype from a type number */
 extern py::dtype _dtype_from_typenum(td_ns::typenum_t);
