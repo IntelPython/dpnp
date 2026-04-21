@@ -384,7 +384,7 @@ def test_pyx_capi_make_from_memory():
     c_tuple = (ctypes.c_ssize_t * 2)(n0, n1)
     mem = dpm.MemoryUSMShared(n0 * n1 * 4, queue=q)
     typenum = dpt.dtype("single").num
-    any_usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
+    any_usm_ndarray = dpt.empty((), dtype="i4", sycl_queue=q)
     make_from_memory_fn = _pyx_capi_fnptr_to_callable(
         any_usm_ndarray,
         "UsmNDArray_MakeSimpleFromMemory",
@@ -455,7 +455,7 @@ def test_pyx_capi_set_writable_flag():
 
 def test_pyx_capi_make_from_ptr():
     q = get_queue_or_skip()
-    usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
+    usm_ndarray = dpt.empty((), dtype="i4", sycl_queue=q)
     make_from_ptr = _pyx_capi_fnptr_to_callable(
         usm_ndarray,
         "UsmNDArray_MakeSimpleFromPtr",
@@ -491,7 +491,7 @@ def test_pyx_capi_make_from_ptr():
 
 def test_pyx_capi_make_general():
     q = get_queue_or_skip()
-    usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
+    usm_ndarray = dpt.empty((), dtype="i4", sycl_queue=q)
     make_from_ptr = _pyx_capi_fnptr_to_callable(
         usm_ndarray,
         "UsmNDArray_MakeFromPtr",
@@ -561,7 +561,7 @@ def test_pyx_capi_make_general():
         mat,
     )
     assert isinstance(sc, dpt.usm_ndarray)
-    assert sc.shape == tuple()
+    assert sc.shape == ()
     assert sc.dtype == mat.dtype
     assert sc.sycl_queue == q
     assert sc._pointer == mat._pointer
@@ -593,7 +593,7 @@ def test_pyx_capi_make_general():
 
 def test_pyx_capi_make_fns_invalid_typenum():
     q = get_queue_or_skip()
-    usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
+    usm_ndarray = dpt.empty((), dtype="i4", sycl_queue=q)
 
     make_simple_from_ptr = _pyx_capi_fnptr_to_callable(
         usm_ndarray,
@@ -846,7 +846,7 @@ def test_properties(dt):
         V.mT
 
 
-@pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
+@pytest.mark.parametrize("shape", [(), (1,), (1, 1), (1, 1, 1)])
 @pytest.mark.parametrize("dtype", ["|b1", "|u2", "|f4", "|i8"])
 class TestCopyScalar:
     @pytest.mark.parametrize("func", [bool, float, int, complex])
@@ -909,7 +909,7 @@ def test_index_noninteger():
 @pytest.mark.parametrize(
     "ind",
     [
-        tuple(),
+        (),
         (None,),
         (
             None,
@@ -1219,7 +1219,7 @@ def test_pyx_capi_check_constants():
 
 
 @pytest.mark.parametrize(
-    "shape", [tuple(), (1,), (5,), (2, 3), (2, 3, 4), (2, 2, 2, 2, 2)]
+    "shape", [(), (1,), (5,), (2, 3), (2, 3, 4), (2, 2, 2, 2, 2)]
 )
 @pytest.mark.parametrize(
     "dtype",
@@ -1339,7 +1339,7 @@ def test_setitem_broadcasting_empty_dst_edge_case():
     broadasting rule, hence no exception"""
     get_queue_or_skip()
     dst = dpt.ones(1, dtype="i8")[0:0]
-    src = dpt.ones(tuple(), dtype="i8")
+    src = dpt.ones((), dtype="i8")
     dst[...] = src
 
 
@@ -1511,7 +1511,7 @@ def test_len():
     assert len(X) == 1
     X = dpt.usm_ndarray((2, 1), "i4")
     assert len(X) == 2
-    X = dpt.usm_ndarray(tuple(), "i4")
+    X = dpt.usm_ndarray((), "i4")
     with pytest.raises(TypeError):
         len(X)
 
@@ -1901,19 +1901,19 @@ def test_full_cmplx128():
     dtype = "c16"
     skip_if_dtype_not_supported(dtype, q)
     fill_v = 1 + 1j
-    X = dpt.full(tuple(), fill_value=fill_v, dtype=dtype, sycl_queue=q)
+    X = dpt.full((), fill_value=fill_v, dtype=dtype, sycl_queue=q)
     assert np.array_equal(
-        dpt.asnumpy(X), np.full(tuple(), fill_value=fill_v, dtype=dtype)
+        dpt.asnumpy(X), np.full((), fill_value=fill_v, dtype=dtype)
     )
     fill_v = 0 + 1j
-    X = dpt.full(tuple(), fill_value=fill_v, dtype=dtype, sycl_queue=q)
+    X = dpt.full((), fill_value=fill_v, dtype=dtype, sycl_queue=q)
     assert np.array_equal(
-        dpt.asnumpy(X), np.full(tuple(), fill_value=fill_v, dtype=dtype)
+        dpt.asnumpy(X), np.full((), fill_value=fill_v, dtype=dtype)
     )
     fill_v = 0 + 0j
-    X = dpt.full(tuple(), fill_value=fill_v, dtype=dtype, sycl_queue=q)
+    X = dpt.full((), fill_value=fill_v, dtype=dtype, sycl_queue=q)
     assert np.array_equal(
-        dpt.asnumpy(X), np.full(tuple(), fill_value=fill_v, dtype=dtype)
+        dpt.asnumpy(X), np.full((), fill_value=fill_v, dtype=dtype)
     )
 
 
@@ -2188,7 +2188,7 @@ def test_empty_like(dt, usm_kind):
     assert X.usm_type == Y.usm_type
     assert X.sycl_queue == Y.sycl_queue
 
-    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    X = dpt.empty((), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.empty_like(X)
     assert X.shape == Y.shape
     assert X.dtype == Y.dtype
@@ -2228,7 +2228,7 @@ def test_zeros_like(dt, usm_kind):
     assert X.sycl_queue == Y.sycl_queue
     assert np.allclose(dpt.asnumpy(Y), np.zeros(X.shape, dtype=X.dtype))
 
-    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    X = dpt.empty((), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.zeros_like(X)
     assert X.shape == Y.shape
     assert X.dtype == Y.dtype
@@ -2261,7 +2261,7 @@ def test_ones_like(dt, usm_kind):
     assert X.sycl_queue == Y.sycl_queue
     assert np.allclose(dpt.asnumpy(Y), np.ones(X.shape, dtype=X.dtype))
 
-    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    X = dpt.empty((), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.ones_like(X)
     assert X.shape == Y.shape
     assert X.dtype == Y.dtype
@@ -2295,7 +2295,7 @@ def test_full_like(dt, usm_kind):
     assert X.sycl_queue == Y.sycl_queue
     assert np.allclose(dpt.asnumpy(Y), np.ones(X.shape, dtype=X.dtype))
 
-    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    X = dpt.empty((), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.full_like(X, fill_v)
     assert X.shape == Y.shape
     assert X.dtype == Y.dtype
@@ -2551,7 +2551,7 @@ def test_common_arg_validation():
 
 def test_flags():
     try:
-        x = dpt.empty(tuple(), dtype="i4")
+        x = dpt.empty((), dtype="i4")
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     f = x.flags
