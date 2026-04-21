@@ -35,7 +35,7 @@
 namespace dpnp::extensions::py_internal::type_dispatch
 {
 /**
- * Extends dpctl::tensor::type_dispatch::TypeMapResultEntry helper structure
+ * Extends dpnp::tensor::type_dispatch::TypeMapResultEntry helper structure
  * with support of the two result types.
  */
 template <typename Ty,
@@ -49,7 +49,7 @@ struct TypeMapTwoResultsEntry : std::bool_constant<std::is_same_v<Ty, ArgTy>>
 };
 
 /**
- * Extends dpctl::tensor::type_dispatch::BinaryTypeMapResultEntry helper
+ * Extends dpnp::tensor::type_dispatch::BinaryTypeMapResultEntry helper
  * structure with support of the two result types.
  */
 template <typename Ty1,
@@ -67,7 +67,7 @@ struct BinaryTypeMapTwoResultsEntry
 };
 
 /**
- * Extends dpctl::tensor::type_dispatch::DefaultResultEntry helper structure
+ * Extends dpnp::tensor::type_dispatch::DefaultResultEntry helper structure
  * with support of the two result types.
  */
 template <typename Ty = void>

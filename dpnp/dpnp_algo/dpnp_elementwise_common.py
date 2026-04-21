@@ -29,29 +29,31 @@
 import warnings
 from functools import wraps
 
-import dpctl.tensor as dpt
-import dpctl.tensor._copy_utils as dtc
-import dpctl.tensor._tensor_impl as dti
-import dpctl.tensor._type_utils as dtu
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._elementwise_common import (
-    BinaryElementwiseFunc,
-    UnaryElementwiseFunc,
-)
-from dpctl.tensor._scalar_utils import (
-    _get_dtype,
-    _get_shape,
-    _validate_dtype,
-)
 
 import dpnp
 import dpnp.backend.extensions.vm._vm_impl as vmi
+
+# pylint: disable=no-name-in-module
+import dpnp.tensor as dpt
+import dpnp.tensor._copy_utils as dtc
+import dpnp.tensor._tensor_impl as dti
+import dpnp.tensor._type_utils as dtu
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.dpnp_utils.dpnp_utils_common import (
     find_buf_dtype_3out,
     find_buf_dtype_4out,
+)
+from dpnp.tensor._elementwise_common import (
+    BinaryElementwiseFunc,
+    UnaryElementwiseFunc,
+)
+from dpnp.tensor._scalar_utils import (
+    _get_dtype,
+    _get_shape,
+    _validate_dtype,
 )
 
 __all__ = [
@@ -117,7 +119,7 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
             sycl_dev - The :class:`dpctl.SyclDevice` where the function
                 evaluation is carried out.
         The function is invoked when the argument of the unary function
-        requires casting, e.g. the argument of `dpctl.tensor.log` is an
+        requires casting, e.g. the argument of `dpnp.tensor.log` is an
         array with integral data type.
 
     """
@@ -135,7 +137,7 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
         def _call_func(src, dst, sycl_queue, depends=None):
             """
             A callback to register in UnaryElementwiseFunc class of
-            dpctl.tensor
+            dpnp.tensor
             """
 
             if depends is None:
@@ -449,7 +451,7 @@ class DPNPUnaryTwoOutputsFunc(UnaryElementwiseFunc):
                     f"Expected output shape is {x.shape}, got {res.shape}"
                 )
 
-            if dpu.get_execution_queue((exec_q, res.sycl_queue)) is None:
+            if dpt.get_execution_queue((exec_q, res.sycl_queue)) is None:
                 raise dpnp.exceptions.ExecutionPlacementError(
                     "Input and output allocation queues are not compatible"
                 )
@@ -586,7 +588,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 evaluation is carried out.
         The function is only called when both arguments of the binary
         function require casting, e.g. both arguments of
-        `dpctl.tensor.logaddexp` are arrays with integral data type.
+        `dpnp.tensor.logaddexp` are arrays with integral data type.
     weak_type_resolver : {None, callable}, optional
         Function to influence type promotion behavior for Python scalar types
         of this binary function. The function takes 3 arguments:
@@ -613,7 +615,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         def _call_func(src1, src2, dst, sycl_queue, depends=None):
             """
             A callback to register in UnaryElementwiseFunc class of
-            dpctl.tensor
+            dpnp.tensor
             """
 
             if depends is None:
@@ -1060,7 +1062,7 @@ class DPNPBinaryTwoOutputsFunc(BinaryElementwiseFunc):
                     f"Expected output shape is {res_shape}, got {res.shape}"
                 )
 
-            if dpu.get_execution_queue((exec_q, res.sycl_queue)) is None:
+            if dpt.get_execution_queue((exec_q, res.sycl_queue)) is None:
                 raise dpnp.exceptions.ExecutionPlacementError(
                     "Input and output allocation queues are not compatible"
                 )

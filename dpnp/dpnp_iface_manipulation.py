@@ -45,14 +45,10 @@ import warnings
 from typing import NamedTuple
 
 import dpctl
-import dpctl.tensor as dpt
 import numpy
-from dpctl.tensor._numpy_helper import (
-    normalize_axis_index,
-    normalize_axis_tuple,
-)
 
 import dpnp
+import dpnp.tensor as dpt
 
 from .dpnp_array import dpnp_array
 
@@ -60,6 +56,10 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_pad import dpnp_pad
 from .exceptions import AxisError
+from .tensor._numpy_helper import (
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 
 class InsertDeleteParams(NamedTuple):
@@ -692,7 +692,7 @@ def asarray_chkfinite(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -791,7 +791,7 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     a : array_like
         Input data, in any form that can be converted to an array.
         This includes an instance of :class:`dpnp.ndarray` or
-        :class:`dpctl.tensor.usm_ndarray`, an object representing
+        :class:`dpnp.tensor.usm_ndarray`, an object representing
         SYCL USM allocation and implementing `__sycl_usm_array_interface__`
         protocol, an instance of :class:`numpy.ndarray`, an object supporting
         Python buffer protocol, a Python scalar, or a (possibly nested)
@@ -808,7 +808,7 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.

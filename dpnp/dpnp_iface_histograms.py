@@ -53,6 +53,7 @@ from dpnp.dpnp_utils.dpnp_utils_common import (
     result_type_for_device,
     to_supported_dtypes,
 )
+from dpnp.tensor import get_coerced_usm_type, get_execution_queue
 
 # pylint: disable=no-name-in-module
 from .dpnp_utils import get_usm_allocations
@@ -87,10 +88,10 @@ def _ravel_check_a_and_weights(a, weights):
     if weights is not None:
         # check that `weights` array has supported type
         dpnp.check_supported_arrays_type(weights)
-        usm_type = dpu.get_coerced_usm_type([usm_type, weights.usm_type])
+        usm_type = get_coerced_usm_type([usm_type, weights.usm_type])
 
         # check that arrays have the same allocation queue
-        if dpu.get_execution_queue([a.sycl_queue, weights.sycl_queue]) is None:
+        if get_execution_queue([a.sycl_queue, weights.sycl_queue]) is None:
             raise ValueError(
                 "a and weights must be allocated on the same SYCL queue"
             )
@@ -173,7 +174,7 @@ def _get_bin_edges(a, bins, range, usm_type):
 
     elif numpy.ndim(bins) == 1:
         if dpnp.is_supported_array_type(bins):
-            if dpu.get_execution_queue([a.sycl_queue, bins.sycl_queue]) is None:
+            if get_execution_queue([a.sycl_queue, bins.sycl_queue]) is None:
                 raise ValueError(
                     "a and bins must be allocated on the same SYCL queue"
                 )

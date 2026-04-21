@@ -26,21 +26,22 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl
-import dpctl.tensor as dpt
-import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import (
-    normalize_axis_index,
-    normalize_axis_tuple,
-)
 
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
+
+# pylint: disable=no-name-in-module
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_impl as ti
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.exceptions import AxisError, ExecutionPlacementError
+from dpnp.tensor._numpy_helper import (
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 __all__ = [
     "dpnp_cross",
@@ -692,7 +693,7 @@ def _validate_out_array(out, exec_q):
     """Validate out is supported array and has correct queue."""
     if out is not None:
         dpnp.check_supported_arrays_type(out)
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
+        if dpt.get_execution_queue((exec_q, out.sycl_queue)) is None:
             raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
@@ -769,7 +770,7 @@ def dpnp_dot(a, b, /, out=None, *, casting="same_kind", conjugate=False):
 
     The routine that is used to perform the main calculation
     depends on input arrays data type: 1) For integer and boolean data types,
-    `dpctl.tensor.vecdot` form the Data Parallel Control library is used,
+    `dpnp.tensor.vecdot` form the Data Parallel Control library is used,
     2) For real-valued floating point data types, `dot` routines from
     BLAS library of OneMKL are used, and 3) For complex data types,
     `dotu` or `dotc` routines from BLAS library of OneMKL are used.
@@ -817,7 +818,7 @@ def dpnp_dot(a, b, /, out=None, *, casting="same_kind", conjugate=False):
         _manager.add_event_pair(ht_ev, dot_ev)
     else:
         # oneapi::mkl::blas::dot does not support integer dtypes,
-        # so using dpctl.tensor.vecdot instead
+        # so using dpnp.tensor.vecdot instead
         a_usm = dpnp.get_usm_ndarray(a)
         b_usm = dpnp.get_usm_ndarray(b)
         result = dpnp_array._create_from_usm_ndarray(dpt.vecdot(a_usm, b_usm))
@@ -1116,7 +1117,7 @@ def dpnp_multiplication(
             else:
                 # oneapi::mkl::blas::gemm/gemv do not support integer dtypes,
                 # except for special cases determined in `_gemm_special_case`,
-                # use dpctl.tensor.matmul for unsupported cases
+                # use dpnp.tensor.matmul for unsupported cases
 
                 # `dpt.matmul` does not support `casting` kwarg.
                 # We may need to change input dtypes based on given `casting`.

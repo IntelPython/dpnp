@@ -34,7 +34,7 @@
 // utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_utils.hpp"
 
 #include "common_helpers.hpp"
@@ -46,7 +46,7 @@ namespace dpnp::extensions::lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
-namespace type_utils = dpctl::tensor::type_utils;
+namespace type_utils = dpnp::tensor::type_utils;
 
 using ext::common::init_dispatch_table;
 
@@ -67,7 +67,7 @@ typedef sycl::event (*gesvd_batch_impl_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 static gesvd_batch_impl_fn_ptr_t
-    gesvd_batch_dispatch_table[dpctl_td_ns::num_types][dpctl_td_ns::num_types];
+    gesvd_batch_dispatch_table[dpnp_td_ns::num_types][dpnp_td_ns::num_types];
 
 template <typename T, typename RealT>
 static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
@@ -199,7 +199,7 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
     if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
-            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
+            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
         }
         throw std::runtime_error(error_msg.str());
     }
@@ -210,7 +210,7 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
         }
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad]() {
-            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
+            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
         });
     });
 
@@ -221,10 +221,10 @@ std::pair<sycl::event, sycl::event>
     gesvd_batch(sycl::queue &exec_q,
                 const std::int8_t jobu_val,
                 const std::int8_t jobvt_val,
-                const dpctl::tensor::usm_ndarray &a_array,
-                const dpctl::tensor::usm_ndarray &out_s,
-                const dpctl::tensor::usm_ndarray &out_u,
-                const dpctl::tensor::usm_ndarray &out_vt,
+                const dpnp::tensor::usm_ndarray &a_array,
+                const dpnp::tensor::usm_ndarray &out_s,
+                const dpnp::tensor::usm_ndarray &out_u,
+                const dpnp::tensor::usm_ndarray &out_vt,
                 const std::vector<sycl::event> &depends)
 {
     constexpr int expected_a_u_vt_ndim = 3;
@@ -242,7 +242,7 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
     const int out_s_type_id =
@@ -280,7 +280,7 @@ std::pair<sycl::event, sycl::event>
         gesvd_batch_fn(exec_q, jobu, jobvt, m, n, batch_size, a_array_data, lda,
                        out_s_data, out_u_data, ldu, out_vt_data, ldvt, depends);
 
-    sycl::event ht_ev = dpctl::utils::keep_args_alive(
+    sycl::event ht_ev = dpnp::utils::keep_args_alive(
         exec_q, {a_array, out_s, out_u, out_vt}, {gesvd_ev});
 
     return std::make_pair(ht_ev, gesvd_ev);

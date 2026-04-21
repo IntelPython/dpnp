@@ -97,6 +97,10 @@ def pytest_configure(config):
     # Equivalent to norecursedirs = tests_perf
     config.addinivalue_line("norecursedirs", "tests_perf")
 
+    # Equivalent to norecursedirs = tests/tensor (conditional)
+    if dtype_config.skip_tensor_tests:
+        config.addinivalue_line("norecursedirs", "tests/tensor")
+
     # Register pytest markers
     config.addinivalue_line(
         "markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')"

@@ -40,25 +40,21 @@ it contains:
 """
 
 # pylint: disable=protected-access
+# pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
 
 
 import builtins
 import warnings
 
-import dpctl.tensor as dpt
-import dpctl.tensor._tensor_elementwise_impl as ti
-import dpctl.tensor._type_utils as dtu
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import (
-    normalize_axis_index,
-    normalize_axis_tuple,
-)
-from dpctl.tensor._type_utils import _acceptance_fn_divide
 
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_elementwise_impl as ti
+import dpnp.tensor._type_utils as dtu
 
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPI0,
@@ -85,6 +81,10 @@ from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_linearalgebra import dpnp_cross
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 from .exceptions import ExecutionPlacementError
+from .tensor._numpy_helper import (
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 
 def _get_max_min(dtype):
@@ -273,9 +273,9 @@ def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
     if not dpnp.is_supported_array_type(arg):
         arg = dpnp.asarray(arg, usm_type=usm_type, sycl_queue=ary_sycl_queue)
     else:
-        usm_type = dpu.get_coerced_usm_type([usm_type, arg.usm_type])
+        usm_type = dpt.get_coerced_usm_type([usm_type, arg.usm_type])
         # check that arrays have the same allocation queue
-        if dpu.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
+        if dpt.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
             raise ExecutionPlacementError(
                 f"ary and {arg_name} must be allocated on the same SYCL queue"
             )
@@ -307,7 +307,7 @@ def _validate_interp_param(param, name, exec_q, usm_type, dtype=None):
                 f"a {name} value must be 0-dimensional, "
                 f"but got {param.ndim}-dim"
             )
-        if dpu.get_execution_queue([exec_q, param.sycl_queue]) is None:
+        if dpt.get_execution_queue([exec_q, param.sycl_queue]) is None:
             raise ValueError(
                 f"input arrays and {name} must be allocated "
                 "on the same SYCL queue"
@@ -1564,7 +1564,7 @@ divide = DPNPBinaryFunc(
     mkl_fn_to_call="_mkl_div_to_call",
     mkl_impl_fn="_div",
     binary_inplace_fn=ti._divide_inplace,
-    acceptance_fn=_acceptance_fn_divide,
+    acceptance_fn=dtu._acceptance_fn_divide,
 )
 
 
@@ -2724,7 +2724,7 @@ def gradient(f, *varargs, axis=None, edge_order=1):
         if dpnp.isscalar(ax_dx):
             usm_type = f.usm_type
         else:
-            usm_type = dpu.get_coerced_usm_type([f.usm_type, ax_dx.usm_type])
+            usm_type = dpt.get_coerced_usm_type([f.usm_type, ax_dx.usm_type])
         out = dpnp.empty_like(f, dtype=otype, usm_type=usm_type)
 
         # spacing for the current axis

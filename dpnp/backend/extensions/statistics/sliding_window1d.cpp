@@ -29,16 +29,21 @@
 #include <string>
 #include <vector>
 
-#include "dpctl4pybind11.hpp"
-#include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
 
+#include "dpnp4pybind11.hpp"
+
+// utils extension header
 #include "ext/validation_utils.hpp"
+
+// dpnp tensor headers
+#include "utils/type_dispatch.hpp"
+
 #include "sliding_window1d.hpp"
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-using dpctl::tensor::usm_ndarray;
-using dpctl_td_ns::typenum_t;
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
+using dpnp::tensor::usm_ndarray;
+using dpnp_td_ns::typenum_t;
 
 using ext::validation::array_names;
 using ext::validation::array_ptr;
@@ -48,7 +53,6 @@ using ext::validation::name_of;
 
 namespace statistics::sliding_window1d
 {
-
 void validate(const usm_ndarray &a,
               const usm_ndarray &v,
               const usm_ndarray &out,
@@ -89,5 +93,4 @@ void validate(const usm_ndarray &a,
             std::to_string(expected_output_size) + ")");
     }
 }
-
 } // namespace statistics::sliding_window1d
