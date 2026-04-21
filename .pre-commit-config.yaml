@@ -127,8 +127,8 @@ repos:
     rev: v1.7.12
     hooks:
     -   id: actionlint
--   repo: https://github.com/BlankSpruce/gersemi
-    rev: 0.26.1
+-   repo: https://github.com/BlankSpruce/gersemi-pre-commit
+    rev: 0.27.2
     hooks:
     -   id: gersemi
         exclude: "dpnp/backend/cmake/Modules/"
