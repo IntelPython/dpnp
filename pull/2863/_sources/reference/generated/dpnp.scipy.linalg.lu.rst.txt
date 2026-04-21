@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.linalg.lu
+====================
+
+.. currentmodule:: dpnp.scipy.linalg
+
+
+
+.. autofunction:: lu
