@@ -3265,7 +3265,7 @@ class TestMatrixRank:
             if expected.ndim == 0:
                 expected = numpy.array(0)
         else:
-            result = numpy.linalg.matrix_rank(a)
+            expected = numpy.linalg.matrix_rank(a)
         assert_array_equal(result, expected, strict=True)
 
         # Also test with hermitian=True
