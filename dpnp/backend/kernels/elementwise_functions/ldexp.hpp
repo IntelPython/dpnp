@@ -30,7 +30,7 @@
 
 #include <sycl/sycl.hpp>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/math_utils.hpp"
 #include "utils/type_utils.hpp"
 

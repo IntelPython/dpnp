@@ -35,13 +35,13 @@
 
 #include <sycl/sycl.hpp>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "kernels/elementwise_functions/sycl_complex.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpnp::kernels::sinc
 {
-namespace tu_ns = dpctl::tensor::type_utils;
+namespace tu_ns = dpnp::tensor::type_utils;
 
 namespace impl
 {

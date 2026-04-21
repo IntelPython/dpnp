@@ -39,9 +39,8 @@ it contains:
 
 """
 
-import dpctl.tensor as dpt
-
 import dpnp
+import dpnp.tensor as dpt
 
 
 def count_nonzero(a, axis=None, *, keepdims=False, out=None):

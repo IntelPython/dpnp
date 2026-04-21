@@ -33,7 +33,7 @@
 // utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
@@ -45,7 +45,7 @@ namespace dpnp::extensions::blas
 {
 namespace mkl_blas = oneapi::mkl::blas;
 namespace py = pybind11;
-namespace type_utils = dpctl::tensor::type_utils;
+namespace type_utils = dpnp::tensor::type_utils;
 
 using ext::common::init_dispatch_vector;
 
@@ -62,7 +62,7 @@ typedef sycl::event (*gemv_impl_fn_ptr_t)(sycl::queue &,
                                           const bool,
                                           const std::vector<sycl::event> &);
 
-static gemv_impl_fn_ptr_t gemv_dispatch_vector[dpctl_td_ns::num_types];
+static gemv_impl_fn_ptr_t gemv_dispatch_vector[dpnp_td_ns::num_types];
 
 template <typename T>
 static sycl::event gemv_impl(sycl::queue &exec_q,
@@ -143,9 +143,9 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
 
 std::pair<sycl::event, sycl::event>
     gemv(sycl::queue &exec_q,
-         const dpctl::tensor::usm_ndarray &matrixA,
-         const dpctl::tensor::usm_ndarray &vectorX,
-         const dpctl::tensor::usm_ndarray &vectorY,
+         const dpnp::tensor::usm_ndarray &matrixA,
+         const dpnp::tensor::usm_ndarray &vectorX,
+         const dpnp::tensor::usm_ndarray &vectorY,
          const bool transpose,
          const std::vector<sycl::event> &depends)
 {
@@ -157,7 +157,7 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("The arrays have incorrect dimensions.");
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(matrixA, vectorY)) {
         throw py::value_error("Input matrix and output vector are overlapping "
                               "segments of memory");
@@ -167,7 +167,7 @@ std::pair<sycl::event, sycl::event>
                               "segments of memory");
     }
 
-    if (!dpctl::utils::queues_are_compatible(
+    if (!dpnp::utils::queues_are_compatible(
             exec_q,
             {matrixA.get_queue(), vectorX.get_queue(), vectorY.get_queue()})) {
         throw py::value_error(
@@ -259,9 +259,9 @@ std::pair<sycl::event, sycl::event>
 #endif // USE_ONEMATH_CUBLAS
 
     const std::int64_t lda = is_row_major ? n : m;
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(vectorY);
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(vectorY,
-                                                               src_nelems);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(vectorY);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(vectorY,
+                                                              src_nelems);
 
     const int matrixA_typenum = matrixA.get_typenum();
     const int vectorX_typenum = vectorX.get_typenum();
@@ -272,7 +272,7 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Given arrays must be of the same type.");
     }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int type_id = array_types.typenum_to_lookup_id(matrixA_typenum);
 
     gemv_impl_fn_ptr_t gemv_fn = gemv_dispatch_vector[type_id];
@@ -303,7 +303,7 @@ std::pair<sycl::event, sycl::event>
         gemv_fn(exec_q, transA, m, n, a_typeless_ptr, lda, x_typeless_ptr, incx,
                 y_typeless_ptr, incy, is_row_major, depends);
 
-    sycl::event args_ev = dpctl::utils::keep_args_alive(
+    sycl::event args_ev = dpnp::utils::keep_args_alive(
         exec_q, {matrixA, vectorX, vectorY}, {gemv_ev});
 
     return std::make_pair(args_ev, gemv_ev);

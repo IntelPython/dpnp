@@ -34,15 +34,15 @@
 #include <vector>
 
 #include <oneapi/mkl.hpp>
+#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
-#include <pybind11/pybind11.h>
+#include "dpnp4pybind11.hpp"
 
 // utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/type_dispatch.hpp"
 
@@ -61,14 +61,14 @@ static_assert(INTEL_MKL_VERSION >= __INTEL_MKL_2023_2_0_VERSION_REQUIRED,
 
 namespace ext_ns = ext::common;
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 namespace dpnp::extensions::vm::py_internal
 {
 template <typename output_typesT, typename contig_dispatchT>
 bool need_to_call_unary_ufunc(sycl::queue &exec_q,
-                              const dpctl::tensor::usm_ndarray &src,
-                              const dpctl::tensor::usm_ndarray &dst,
+                              const dpnp::tensor::usm_ndarray &src,
+                              const dpnp::tensor::usm_ndarray &dst,
                               const output_typesT &output_type_vec,
                               const contig_dispatchT &contig_dispatch_vector)
 {
@@ -92,7 +92,7 @@ bool need_to_call_unary_ufunc(sycl::queue &exec_q,
     }
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         return false;
     }
 
@@ -137,7 +137,7 @@ bool need_to_call_unary_ufunc(sycl::queue &exec_q,
     }
 
     // check memory overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst)) {
         return false;
     }
@@ -161,9 +161,9 @@ bool need_to_call_unary_ufunc(sycl::queue &exec_q,
 template <typename output_typesT, typename contig_dispatchT>
 bool need_to_call_unary_two_outputs_ufunc(
     sycl::queue &exec_q,
-    const dpctl::tensor::usm_ndarray &src,
-    const dpctl::tensor::usm_ndarray &dst1,
-    const dpctl::tensor::usm_ndarray &dst2,
+    const dpnp::tensor::usm_ndarray &src,
+    const dpnp::tensor::usm_ndarray &dst1,
+    const dpnp::tensor::usm_ndarray &dst2,
     const output_typesT &output_type_vec,
     const contig_dispatchT &contig_dispatch_vector)
 {
@@ -191,7 +191,7 @@ bool need_to_call_unary_two_outputs_ufunc(
     }
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src, dst1, dst2})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst1, dst2})) {
         return false;
     }
 
@@ -243,7 +243,7 @@ bool need_to_call_unary_two_outputs_ufunc(
     }
 
     // check memory overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src, dst1) || overlap(src, dst2) || overlap(dst1, dst2)) {
         return false;
     }
@@ -268,9 +268,9 @@ bool need_to_call_unary_two_outputs_ufunc(
 
 template <typename output_typesT, typename contig_dispatchT>
 bool need_to_call_binary_ufunc(sycl::queue &exec_q,
-                               const dpctl::tensor::usm_ndarray &src1,
-                               const dpctl::tensor::usm_ndarray &src2,
-                               const dpctl::tensor::usm_ndarray &dst,
+                               const dpnp::tensor::usm_ndarray &src1,
+                               const dpnp::tensor::usm_ndarray &src2,
+                               const dpnp::tensor::usm_ndarray &dst,
                                const output_typesT &output_type_table,
                                const contig_dispatchT &contig_dispatch_table)
 {
@@ -301,7 +301,7 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
     }
 
     // check that queues are compatible
-    if (!dpctl::utils::queues_are_compatible(exec_q, {src1, src2, dst})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q, {src1, src2, dst})) {
         return false;
     }
 
@@ -348,7 +348,7 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
     }
 
     // check memory overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(src1, dst) || overlap(src2, dst)) {
         return false;
     }

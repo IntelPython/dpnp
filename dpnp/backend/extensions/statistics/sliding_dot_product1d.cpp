@@ -33,25 +33,27 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-// dpctl tensor headers
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
+
+// utils extension header
+#include "ext/common.hpp"
+
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 
-#include "ext/common.hpp"
 #include "sliding_dot_product1d.hpp"
 #include "sliding_window1d.hpp"
 
 // #include <iostream>
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-using dpctl::tensor::usm_ndarray;
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
+using dpnp::tensor::usm_ndarray;
 
 using namespace statistics::sliding_window1d;
 using namespace ext::common;
 
 namespace
 {
-
 template <typename T>
 struct SlidingDotProductF
 {
@@ -117,9 +119,9 @@ SlidingDotProduct1d::SlidingDotProduct1d() : dispatch_table("a")
 }
 
 std::tuple<sycl::event, sycl::event>
-    SlidingDotProduct1d::call(const dpctl::tensor::usm_ndarray &a,
-                              const dpctl::tensor::usm_ndarray &v,
-                              dpctl::tensor::usm_ndarray &out,
+    SlidingDotProduct1d::call(const dpnp::tensor::usm_ndarray &a,
+                              const dpnp::tensor::usm_ndarray &v,
+                              dpnp::tensor::usm_ndarray &out,
                               const size_t l_pad,
                               const size_t r_pad,
                               const std::vector<sycl::event> &depends)
@@ -136,7 +138,7 @@ std::tuple<sycl::event, sycl::event>
                         a.get_shape(0), v.get_shape(0), l_pad, r_pad, depends);
 
     sycl::event args_ev;
-    args_ev = dpctl::utils::keep_args_alive(exec_q, {a, v, out}, {ev});
+    args_ev = dpnp::utils::keep_args_alive(exec_q, {a, v, out}, {ev});
 
     return {args_ev, ev};
 }
@@ -150,9 +152,9 @@ void statistics::sliding_window1d::populate_sliding_dot_product1d(py::module_ m)
     sdp.reset(new SlidingDotProduct1d());
 
     auto sdp_func = [sdpp =
-                         sdp.get()](const dpctl::tensor::usm_ndarray &a,
-                                    const dpctl::tensor::usm_ndarray &v,
-                                    dpctl::tensor::usm_ndarray &out,
+                         sdp.get()](const dpnp::tensor::usm_ndarray &a,
+                                    const dpnp::tensor::usm_ndarray &v,
+                                    dpnp::tensor::usm_ndarray &out,
                                     const size_t l_pad, const size_t r_pad,
                                     const std::vector<sycl::event> &depends) {
         return sdpp->call(a, v, out, l_pad, r_pad, depends);

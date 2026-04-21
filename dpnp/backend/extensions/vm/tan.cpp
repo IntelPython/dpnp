@@ -35,17 +35,20 @@
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+#include "dpnp4pybind11.hpp"
 
 #include "common.hpp"
 #include "tan.hpp"
 
-// include a local copy of elementwise common header from dpctl tensor:
-// dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
-// TODO: replace by including dpctl header once available
+// include a local copy of elementwise common header from dpnp tensor:
+// dpnp/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
+// TODO: replace by consolidating with tensor post-migration
 #include "../elementwise_functions/elementwise_functions.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "kernels/elementwise_functions/common.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -54,13 +57,13 @@ namespace dpnp::extensions::vm
 {
 namespace py = pybind11;
 namespace py_int = dpnp::extensions::py_internal;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 namespace impl
 {
-namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+namespace ew_cmn_ns = dpnp::tensor::kernels::elementwise_common;
 namespace mkl_vm = oneapi::mkl::vm; // OneMKL namespace with VM functions
-namespace tu_ns = dpctl::tensor::type_utils;
+namespace tu_ns = dpnp::tensor::type_utils;
 
 /**
  * @brief A factory to define pairs of supported types for which
@@ -112,7 +115,7 @@ MACRO_POPULATE_DISPATCH_VECTORS(tan);
 
 void init_tan(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
 
     impl::populate_dispatch_vectors();

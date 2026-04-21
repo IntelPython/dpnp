@@ -41,10 +41,8 @@ it contains:
 
 from collections.abc import Sequence
 
-import dpctl.tensor as dpt
-from dpctl.tensor._numpy_helper import normalize_axis_index
-
 import dpnp
+import dpnp.tensor as dpt
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
@@ -54,6 +52,7 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import (
     map_dtype_to_device,
 )
+from .tensor._numpy_helper import normalize_axis_index
 
 
 def _wrap_sort_argsort(
@@ -65,7 +64,7 @@ def _wrap_sort_argsort(
     descending=False,
     stable=True,
 ):
-    """Wrap a sorting call from dpctl.tensor interface."""
+    """Wrap a sorting call from dpnp.tensor interface."""
 
     if order is not None:
         raise NotImplementedError(

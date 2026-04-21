@@ -29,9 +29,13 @@
 #include <type_traits>
 #include <vector>
 
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
 
 #include "erf_funcs.hpp"
 #include "kernels/elementwise_functions/erf.hpp"
@@ -39,12 +43,12 @@
 // utils extension header
 #include "ext/common.hpp"
 
-// include a local copy of elementwise common header from dpctl tensor:
-// dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
-// TODO: replace by including dpctl header once available
+// include a local copy of elementwise common header from dpnp tensor:
+// dpnp/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
+// TODO: replace by consolidating with tensor post-migration
 #include "../../elementwise_functions/elementwise_functions.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "kernels/elementwise_functions/common.hpp"
 #include "utils/type_dispatch.hpp"
 
@@ -57,8 +61,8 @@ using ext::common::init_dispatch_vector;
 
 namespace impl
 {
-namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace ew_cmn_ns = dpnp::tensor::kernels::elementwise_common;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 /**
  * @brief A factory to define pairs of supported types for which
@@ -197,7 +201,7 @@ static void populate(py::module_ m,
     init_dispatch_vector<unary_strided_impl_fn_ptr_t, stridedFactoryT>(
         strided_dispatch_vector);
 
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     auto pyapi = [&, contig_dispatch_vector, strided_dispatch_vector](
                      const arrayT &src, const arrayT &dst, sycl::queue &exec_q,
                      const std::vector<sycl::event> &depends = {}) {

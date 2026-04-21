@@ -30,20 +30,24 @@
 #include <type_traits>
 #include <vector>
 
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
 
 #include "fmod.hpp"
 #include "kernels/elementwise_functions/fmod.hpp"
 #include "populate.hpp"
 
-// include a local copy of elementwise common header from dpctl tensor:
-// dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
-// TODO: replace by including dpctl header once available
+// include a local copy of elementwise common header from dpnp tensor:
+// dpnp/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
+// TODO: replace by consolidating with tensor post-migration
 #include "../../elementwise_functions/elementwise_functions.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "kernels/elementwise_functions/common.hpp"
 #include "utils/type_dispatch.hpp"
 
@@ -51,11 +55,11 @@ namespace dpnp::extensions::ufunc
 {
 namespace py = pybind11;
 namespace py_int = dpnp::extensions::py_internal;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 namespace impl
 {
-namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+namespace ew_cmn_ns = dpnp::tensor::kernels::elementwise_common;
 
 /**
  * @brief A factory to define pairs of supported types for which
@@ -160,7 +164,7 @@ MACRO_POPULATE_DISPATCH_TABLES(fmod);
 
 void init_fmod(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
     {
         impl::populate_fmod_dispatch_tables();

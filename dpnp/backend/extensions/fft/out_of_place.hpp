@@ -28,10 +28,13 @@
 
 #pragma once
 
+#include <utility>
+#include <vector>
+
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
+#include "dpnp4pybind11.hpp"
 
 namespace dpnp::extensions::fft
 {
@@ -40,8 +43,8 @@ namespace mkl_dft = oneapi::mkl::dft;
 template <mkl_dft::precision prec, mkl_dft::domain dom>
 std::pair<sycl::event, sycl::event>
     compute_fft_out_of_place(DescriptorWrapper<prec, dom> &descr,
-                             const dpctl::tensor::usm_ndarray &in,
-                             const dpctl::tensor::usm_ndarray &out,
+                             const dpnp::tensor::usm_ndarray &in,
+                             const dpnp::tensor::usm_ndarray &out,
                              const bool is_forward,
                              const std::vector<sycl::event> &depends);
 
