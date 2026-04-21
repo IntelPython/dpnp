@@ -31,7 +31,7 @@
 #include <oneapi/mkl.hpp>
 #include <pybind11/pybind11.h>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 
 #include "common_helpers.hpp"
@@ -50,7 +50,7 @@ typedef sycl::event (*evd_impl_fn_ptr_t)(sycl::queue &,
                                          char *,
                                          const std::vector<sycl::event> &);
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
 namespace py = pybind11;
 
 template <typename dispatchT>
@@ -58,8 +58,8 @@ std::pair<sycl::event, sycl::event>
     evd_func(sycl::queue &exec_q,
              const std::int8_t jobz,
              const std::int8_t upper_lower,
-             const dpctl::tensor::usm_ndarray &eig_vecs,
-             const dpctl::tensor::usm_ndarray &eig_vals,
+             const dpnp::tensor::usm_ndarray &eig_vecs,
+             const dpnp::tensor::usm_ndarray &eig_vals,
              const std::vector<sycl::event> &depends,
              const dispatchT &evd_dispatch_table)
 {
@@ -84,7 +84,7 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int eig_vecs_type_id =
         array_types.typenum_to_lookup_id(eig_vecs.get_typenum());
     const int eig_vals_type_id =
@@ -110,7 +110,7 @@ std::pair<sycl::event, sycl::event>
                                 eig_vals_data, depends);
 
     sycl::event ht_ev =
-        dpctl::utils::keep_args_alive(exec_q, {eig_vecs, eig_vals}, {evd_ev});
+        dpnp::utils::keep_args_alive(exec_q, {eig_vecs, eig_vals}, {evd_ev});
 
     return std::make_pair(ht_ev, evd_ev);
 }

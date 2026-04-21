@@ -35,7 +35,7 @@
 namespace dpnp::extensions::blas
 {
 namespace mkl_blas = oneapi::mkl::blas;
-namespace type_utils = dpctl::tensor::type_utils;
+namespace type_utils = dpnp::tensor::type_utils;
 
 template <typename T>
 static sycl::event dotc_impl(sycl::queue &exec_q,

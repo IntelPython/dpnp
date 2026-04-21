@@ -37,7 +37,7 @@
 #include <cstring>
 #include <stdexcept>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/sycl_alloc_utils.hpp"
 
 namespace dpnp::extensions::lapack::helper
@@ -87,7 +87,7 @@ inline std::int64_t *alloc_ipiv(const std::int64_t n, sycl::queue &exec_q)
         }
     } catch (sycl::exception const &e) {
         if (ipiv != nullptr)
-            dpctl::tensor::alloc_utils::sycl_free_noexcept(ipiv, exec_q);
+            dpnp::tensor::alloc_utils::sycl_free_noexcept(ipiv, exec_q);
         throw std::runtime_error(
             std::string(
                 "Unexpected SYCL exception caught during ipiv allocation: ") +
@@ -131,7 +131,7 @@ inline T *alloc_scratchpad(std::int64_t scratchpad_size, sycl::queue &exec_q)
         }
     } catch (sycl::exception const &e) {
         if (scratchpad != nullptr) {
-            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
+            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
         }
         throw std::runtime_error(std::string("Unexpected SYCL exception caught "
                                              "during scratchpad allocation: ") +

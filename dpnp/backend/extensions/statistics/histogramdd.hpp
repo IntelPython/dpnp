@@ -31,7 +31,9 @@
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
+
+// utils extension header
 #include "ext/dispatch_table.hpp"
 
 namespace statistics::histogram
@@ -55,11 +57,11 @@ struct Histogramdd
     Histogramdd();
 
     std::tuple<sycl::event, sycl::event>
-        call(const dpctl::tensor::usm_ndarray &input,
-             const dpctl::tensor::usm_ndarray &bins_edges,
-             const dpctl::tensor::usm_ndarray &bins_edges_count,
-             const std::optional<const dpctl::tensor::usm_ndarray> &weights,
-             dpctl::tensor::usm_ndarray &output,
+        call(const dpnp::tensor::usm_ndarray &input,
+             const dpnp::tensor::usm_ndarray &bins_edges,
+             const dpnp::tensor::usm_ndarray &bins_edges_count,
+             const std::optional<const dpnp::tensor::usm_ndarray> &weights,
+             dpnp::tensor::usm_ndarray &output,
              const std::vector<sycl::event> &depends);
 };
 

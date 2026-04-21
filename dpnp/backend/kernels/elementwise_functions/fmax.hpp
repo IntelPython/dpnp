@@ -30,14 +30,14 @@
 
 #include <sycl/sycl.hpp>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/math_utils.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpnp::kernels::fmax
 {
-namespace mu_ns = dpctl::tensor::math_utils;
-namespace tu_ns = dpctl::tensor::type_utils;
+namespace mu_ns = dpnp::tensor::math_utils;
+namespace tu_ns = dpnp::tensor::type_utils;
 
 template <typename argT1, typename argT2, typename resT>
 struct FmaxFunctor

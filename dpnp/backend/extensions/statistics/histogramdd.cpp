@@ -35,7 +35,7 @@
 #include "histogram_common.hpp"
 #include "histogramdd.hpp"
 
-using dpctl::tensor::usm_ndarray;
+using dpnp::tensor::usm_ndarray;
 
 using namespace statistics::histogram;
 using namespace ext::common;
@@ -273,11 +273,11 @@ Histogramdd::Histogramdd() : dispatch_table("sample", "histogram")
 }
 
 std::tuple<sycl::event, sycl::event> Histogramdd::call(
-    const dpctl::tensor::usm_ndarray &sample,
-    const dpctl::tensor::usm_ndarray &bins_edges,
-    const dpctl::tensor::usm_ndarray &bins_edges_count,
-    const std::optional<const dpctl::tensor::usm_ndarray> &weights,
-    dpctl::tensor::usm_ndarray &histogram,
+    const dpnp::tensor::usm_ndarray &sample,
+    const dpnp::tensor::usm_ndarray &bins_edges,
+    const dpnp::tensor::usm_ndarray &bins_edges_count,
+    const std::optional<const dpnp::tensor::usm_ndarray> &weights,
+    dpnp::tensor::usm_ndarray &histogram,
     const std::vector<sycl::event> &depends)
 {
     validate(sample, bins_edges, weights, histogram);
@@ -314,13 +314,13 @@ std::tuple<sycl::event, sycl::event> Histogramdd::call(
 
     sycl::event args_ev;
     if (weights.has_value()) {
-        args_ev = dpctl::utils::keep_args_alive(
+        args_ev = dpnp::utils::keep_args_alive(
             exec_q,
             {sample, bins_edges, bins_edges_count, weights.value(), histogram},
             {ev});
     }
     else {
-        args_ev = dpctl::utils::keep_args_alive(
+        args_ev = dpnp::utils::keep_args_alive(
             exec_q, {sample, bins_edges, bins_edges_count, histogram}, {ev});
     }
 
@@ -337,11 +337,11 @@ void statistics::histogram::populate_histogramdd(py::module_ m)
 
     auto hist_func =
         [histp = histdd.get()](
-            const dpctl::tensor::usm_ndarray &sample,
-            const dpctl::tensor::usm_ndarray &bins,
-            const dpctl::tensor::usm_ndarray &bins_count,
-            const std::optional<const dpctl::tensor::usm_ndarray> &weights,
-            dpctl::tensor::usm_ndarray &histogram,
+            const dpnp::tensor::usm_ndarray &sample,
+            const dpnp::tensor::usm_ndarray &bins,
+            const dpnp::tensor::usm_ndarray &bins_count,
+            const std::optional<const dpnp::tensor::usm_ndarray> &weights,
+            dpnp::tensor::usm_ndarray &histogram,
             const std::vector<sycl::event> &depends) {
             return histp->call(sample, bins, bins_count, weights, histogram,
                                depends);
