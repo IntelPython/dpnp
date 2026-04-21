@@ -30,17 +30,21 @@
 #include <type_traits>
 #include <vector>
 
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
 
 #include "divmod.hpp"
 #include "kernels/elementwise_functions/divmod.hpp"
 #include "populate.hpp"
 
-// include a local copy of elementwise common header from dpctl tensor:
-// dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
-// TODO: replace by including dpctl header once available
+// include a local copy of elementwise common header from dpnp tensor:
+// dpnp/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
+// TODO: replace by consolidating with tensor post-migration
 #include "../../elementwise_functions/elementwise_functions.hpp"
 
 #include "../../elementwise_functions/common.hpp"
@@ -49,7 +53,7 @@
 // utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "kernels/elementwise_functions/common.hpp"
 #include "utils/type_dispatch.hpp"
 
@@ -62,7 +66,7 @@ namespace impl
 {
 namespace ew_cmn_ns = dpnp::extensions::py_internal::elementwise_common;
 namespace td_int_ns = py_int::type_dispatch;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 using dpnp::kernels::divmod::DivmodFunctor;
 
@@ -140,7 +144,7 @@ MACRO_POPULATE_DISPATCH_2OUTS_TABLES(divmod);
 
 void init_divmod(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
     {
         impl::populate_divmod_dispatch_tables();

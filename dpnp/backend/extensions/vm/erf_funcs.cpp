@@ -34,17 +34,20 @@
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+#include "dpnp4pybind11.hpp"
 
 #include "common.hpp"
 #include "erf_funcs.hpp"
 
-// include a local copy of elementwise common header from dpctl tensor:
-// dpctl/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
-// TODO: replace by including dpctl header once available
+// include a local copy of elementwise common header from dpnp tensor:
+// dpnp/tensor/libtensor/source/elementwise_functions/elementwise_functions.hpp
+// TODO: replace by consolidating with tensor post-migration
 #include "../elementwise_functions/elementwise_functions.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "kernels/elementwise_functions/common.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -53,15 +56,15 @@ namespace dpnp::extensions::vm
 {
 namespace py = pybind11;
 namespace py_int = dpnp::extensions::py_internal;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 using ext::common::init_dispatch_vector;
 
 namespace impl
 {
-namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+namespace ew_cmn_ns = dpnp::tensor::kernels::elementwise_common;
 namespace mkl_vm = oneapi::mkl::vm; // OneMKL namespace with VM functions
-namespace tu_ns = dpctl::tensor::type_utils;
+namespace tu_ns = dpnp::tensor::type_utils;
 
 /**
  * @brief A factory to define pairs of supported types for which
@@ -146,7 +149,7 @@ static void populate(py::module_ m,
     init_dispatch_vector<unary_contig_impl_fn_ptr_t, factoryT>(
         contig_dispatch_vector);
 
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     auto pyapi = [&, contig_dispatch_vector](
                      sycl::queue &exec_q, const arrayT &src, const arrayT &dst,
                      const std::vector<sycl::event> &depends = {}) {
@@ -163,7 +166,7 @@ static void populate(py::module_ m,
 
 void init_erf_funcs(py::module_ m)
 {
-    using arrayT = dpctl::tensor::usm_ndarray;
+    using arrayT = dpnp::tensor::usm_ndarray;
     using impl::output_typeid_vector;
 
     init_dispatch_vector<int, impl::TypeMapFactory>(output_typeid_vector);

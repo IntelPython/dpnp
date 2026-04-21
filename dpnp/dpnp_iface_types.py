@@ -37,10 +37,10 @@ This module provides public type interface file for the library
 import functools
 
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 
 import dpnp
+import dpnp.tensor as dpt
 
 from .dpnp_array import dpnp_array
 

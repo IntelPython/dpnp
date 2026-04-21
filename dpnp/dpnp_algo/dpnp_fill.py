@@ -28,17 +28,17 @@
 
 from numbers import Number
 
-import dpctl.tensor as dpt
 import dpctl.utils as dpu
-from dpctl.tensor._ctors import _cast_fill_val
-from dpctl.tensor._tensor_impl import (
+
+import dpnp
+import dpnp.tensor as dpt
+from dpnp.exceptions import ExecutionPlacementError
+from dpnp.tensor._ctors import _cast_fill_val
+from dpnp.tensor._tensor_impl import (
     _copy_usm_ndarray_into_usm_ndarray,
     _full_usm_ndarray,
     _zeros_usm_ndarray,
 )
-
-import dpnp
-from dpnp.exceptions import ExecutionPlacementError
 
 
 def dpnp_fill(arr, val):
@@ -50,7 +50,7 @@ def dpnp_fill(arr, val):
         val = dpnp.get_usm_ndarray(val)
         if val.shape != ():
             raise ValueError("`val` must be a scalar or 0D-array")
-        if dpu.get_execution_queue((exec_q, val.sycl_queue)) is None:
+        if dpt.get_execution_queue((exec_q, val.sycl_queue)) is None:
             raise ExecutionPlacementError(
                 "Input arrays have incompatible queues."
             )

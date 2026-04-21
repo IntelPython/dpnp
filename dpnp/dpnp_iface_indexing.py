@@ -44,18 +44,17 @@ it contains:
 import operator
 from collections.abc import Iterable
 
-import dpctl.tensor as dpt
-import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._copy_utils import _nonzero_impl
-from dpctl.tensor._indexing_functions import _get_indexing_mode
-from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
 
 # pylint: disable=no-name-in-module
 import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
+
+# pylint: disable=no-name-in-module
+import dpnp.tensor as dpt
+import dpnp.tensor._tensor_impl as ti
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
@@ -64,6 +63,9 @@ from .dpnp_algo import (
 from .dpnp_array import dpnp_array
 from .dpnp_utils import call_origin, get_usm_allocations
 from .exceptions import ExecutionPlacementError
+from .tensor._copy_utils import _nonzero_impl
+from .tensor._indexing_functions import _get_indexing_mode
+from .tensor._numpy_helper import normalize_axis_index
 
 
 def _ravel_multi_index_checks(multi_index, dims, order):
@@ -99,7 +101,7 @@ def _build_choices_list(choices):
     list of arrays. If a single array of dimension greater than one, the array
     will be unstacked.
 
-    Returns a list of :class:`dpctl.tensor.usm_ndarray`s.
+    Returns a list of :class:`dpnp.tensor.usm_ndarray`s.
     """
 
     if dpnp.is_supported_array_type(choices):
@@ -129,7 +131,7 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
                 f"got {out.dtype}"
             )
 
-        if dpu.get_execution_queue((q, out.sycl_queue)) is None:
+        if dpt.get_execution_queue((q, out.sycl_queue)) is None:
             raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
@@ -291,7 +293,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
                 f"Output array of type {x.dtype} is needed, " f"got {out.dtype}"
             )
 
-        if dpu.get_execution_queue((q, out.sycl_queue)) is None:
+        if dpt.get_execution_queue((q, out.sycl_queue)) is None:
             raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
@@ -445,7 +447,7 @@ def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1044,7 +1046,7 @@ def indices(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -1308,7 +1310,7 @@ def mask_indices(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2321,7 +2323,7 @@ def tril_indices(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
@@ -2538,7 +2540,7 @@ def triu_indices(
         `device` can be ``None``, a oneAPI filter selector string, an instance
         of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
         device, an instance of :class:`dpctl.SyclQueue`, or a
-        :class:`dpctl.tensor.Device` object returned by
+        :class:`dpnp.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.

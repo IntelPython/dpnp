@@ -1,9 +1,9 @@
-import dpctl.tensor as dpt
 import numpy
 import pytest
 
 import dpnp
 import dpnp.memory as dpm
+import dpnp.tensor as dpt
 
 
 class IntUsmData(dpt.usm_ndarray):

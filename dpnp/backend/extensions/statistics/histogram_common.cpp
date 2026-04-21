@@ -31,18 +31,21 @@
 #include <string>
 #include <vector>
 
-#include "dpctl4pybind11.hpp"
-#include "utils/type_dispatch.hpp"
-
 #include <pybind11/pybind11.h>
+
+#include "dpnp4pybind11.hpp"
 
 #include "histogram_common.hpp"
 
+// utils extension header
 #include "ext/validation_utils.hpp"
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-using dpctl::tensor::usm_ndarray;
-using dpctl_td_ns::typenum_t;
+// dpnp tensor headers
+#include "utils/type_dispatch.hpp"
+
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
+using dpnp::tensor::usm_ndarray;
+using dpnp_td_ns::typenum_t;
 
 using ext::common::CeilDiv;
 
@@ -57,10 +60,9 @@ using ext::validation::name_of;
 
 namespace statistics::histogram
 {
-
 void validate(const usm_ndarray &sample,
-              const std::optional<const dpctl::tensor::usm_ndarray> &bins,
-              const std::optional<const dpctl::tensor::usm_ndarray> &weights,
+              const std::optional<const dpnp::tensor::usm_ndarray> &bins,
+              const std::optional<const dpnp::tensor::usm_ndarray> &weights,
               const usm_ndarray &histogram)
 {
     auto exec_q = sample.get_queue();
@@ -163,7 +165,7 @@ void validate(const usm_ndarray &sample,
                                   std::to_string(histogram.get_size()));
         }
 
-        auto array_types = dpctl_td_ns::usm_ndarray_types();
+        auto array_types = dpnp_td_ns::usm_ndarray_types();
         auto hist_type = static_cast<typenum_t>(
             array_types.typenum_to_lookup_id(histogram.get_typenum()));
         if (histogram.get_elemsize() == 8 && hist_type != typenum_t::CFLOAT) {

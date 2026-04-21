@@ -27,16 +27,26 @@
 //*****************************************************************************
 
 #pragma once
+
+#include <cstddef>
+#include <cstdint>
 #include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
+#include <pybind11/pybind11.h>
+
+#include "dpnp4pybind11.hpp"
 
 #include "common.hpp"
 #include "fft_utils.hpp"
-// dpctl tensor headers
+#include "out_of_place.hpp"
+
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 
@@ -49,8 +59,8 @@ namespace py = pybind11;
 template <mkl_dft::precision prec, mkl_dft::domain dom>
 std::pair<sycl::event, sycl::event>
     compute_fft_out_of_place(DescriptorWrapper<prec, dom> &descr,
-                             const dpctl::tensor::usm_ndarray &in,
-                             const dpctl::tensor::usm_ndarray &out,
+                             const dpnp::tensor::usm_ndarray &in,
+                             const dpnp::tensor::usm_ndarray &out,
                              const bool is_forward,
                              const std::vector<sycl::event> &depends)
 {
@@ -73,16 +83,16 @@ std::pair<sycl::event, sycl::event>
             "The input and output arrays must have the same dimension.");
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     auto const &same_logical_tensors =
-        dpctl::tensor::overlap::SameLogicalTensors();
+        dpnp::tensor::overlap::SameLogicalTensors();
     if (overlap(in, out) && !same_logical_tensors(in, out)) {
         throw py::value_error(
             "The input and output arrays are overlapping segments of memory");
     }
 
     sycl::queue exec_q = descr.get_queue();
-    if (!dpctl::utils::queues_are_compatible(
+    if (!dpnp::utils::queues_are_compatible(
             exec_q, {in.get_queue(), out.get_queue()})) {
         throw py::value_error("USM allocations are not compatible with the "
                               "execution queue of the descriptor.");
@@ -125,8 +135,8 @@ std::pair<sycl::event, sycl::event>
     }
 
     const std::size_t n_elems = in_size * N;
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out);
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(out, n_elems);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(out);
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(out, n_elems);
 
     sycl::event fft_event = {};
     std::stringstream error_msg;
@@ -164,7 +174,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     sycl::event args_ev =
-        dpctl::utils::keep_args_alive(exec_q, {in, out}, {fft_event});
+        dpnp::utils::keep_args_alive(exec_q, {in, out}, {fft_event});
 
     return std::make_pair(fft_event, args_ev);
 }

@@ -33,6 +33,12 @@ if [ -z "${PYTHON}" ]; then
     PYTHON=$PREFIX/bin/python
 fi
 
+# Skip tensor tests by default to avoid OOM in conda builds.
+# Set SKIP_TENSOR_TESTS=0 to run them on machines with enough memory.
+if [ -z "${SKIP_TENSOR_TESTS}" ]; then
+    export SKIP_TENSOR_TESTS=1
+fi
+
 set -e
 
 $PYTHON -c "import dpnp; print(dpnp.__version__)"

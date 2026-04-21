@@ -36,14 +36,14 @@
 // utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpnp::extensions::window
 {
 namespace py = pybind11;
-namespace td_ns = dpctl::tensor::type_dispatch;
+namespace td_ns = dpnp::tensor::type_dispatch;
 
 typedef sycl::event (*kaiser_fn_ptr_t)(sycl::queue &,
                                        char *,
@@ -62,7 +62,7 @@ sycl::event kaiser_impl(sycl::queue &exec_q,
                         const py::object &py_beta,
                         const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<T>(exec_q);
+    dpnp::tensor::type_utils::validate_type_for_device<T>(exec_q);
 
     T *res = reinterpret_cast<T *>(result);
     const T beta = py::cast<const T>(py_beta);
@@ -96,7 +96,7 @@ struct KaiserFactory
 std::pair<sycl::event, sycl::event>
     py_kaiser(sycl::queue &exec_q,
               const py::object &py_beta,
-              const dpctl::tensor::usm_ndarray &result,
+              const dpnp::tensor::usm_ndarray &result,
               const std::vector<sycl::event> &depends)
 {
     auto [nelems, result_typeless_ptr, kaiser_fn] =
@@ -109,7 +109,7 @@ std::pair<sycl::event, sycl::event>
     sycl::event kaiser_ev =
         kaiser_fn(exec_q, result_typeless_ptr, nelems, py_beta, depends);
     sycl::event args_ev =
-        dpctl::utils::keep_args_alive(exec_q, {result}, {kaiser_ev});
+        dpnp::utils::keep_args_alive(exec_q, {result}, {kaiser_ev});
 
     return std::make_pair(args_ev, kaiser_ev);
 }
