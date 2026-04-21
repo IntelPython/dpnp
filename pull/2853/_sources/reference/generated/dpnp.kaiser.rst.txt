@@ -1,0 +1,10 @@
+﻿
+
+dpnp.kaiser
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: kaiser
