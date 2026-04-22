@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.20.0] - MM/DD/2026
+## [0.20.0] - 2026-04-22
 
 This release introduces a major architectural change: the Array API-compliant tensor implementation has been migrated from `dpctl.tensor` into `dpnp.tensor`, simplifying maintenance, reducing cross-project dependencies, and allows the tensor implementation to evolve within `dpnp`.
 This release changes the license from `BSD-2-Clause` to `BSD-3-Clause`.
