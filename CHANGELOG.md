@@ -61,6 +61,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * `dpnp` uses pybind11 3.0.3 [#2834](https://github.com/IntelPython/dpnp/pull/2834)
 * Disabled `dpnp.tensor` tests by default in `conda build --test` to prevent OOM failures during package testing. Set `SKIP_TENSOR_TESTS=0` to re-enable them on systems with enough memory [#2860](https://github.com/IntelPython/dpnp/pull/2860)
 * `dpnp` uses pybind11 3.0.4 [#2865](https://github.com/IntelPython/dpnp/pull/2865)
+* Added explicit type check of `k` keyword in `dpnp.triu_indices` [#2855](https://github.com/IntelPython/dpnp/pull/2855)
 
 ### Deprecated
 
