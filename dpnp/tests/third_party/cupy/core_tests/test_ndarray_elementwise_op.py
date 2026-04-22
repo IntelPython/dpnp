@@ -625,11 +625,11 @@ class TestArrayElementwiseOp:
         b = xp.array([[3, 1, 4], [-1, -5, -9]], numpy.int8).view(bool)
         return op(a, b)
 
-    @testing.with_requires("dpctl>=0.22.0dev0")
+    @testing.with_requires("dpctl>=0.22.0")
     def test_add_array_boolarray(self):
         self.check_array_boolarray_op(operator.add)
 
-    @testing.with_requires("dpctl>=0.22.0dev0")
+    @testing.with_requires("dpctl>=0.22.0")
     def test_iadd_array_boolarray(self):
         self.check_array_boolarray_op(operator.iadd)
 
