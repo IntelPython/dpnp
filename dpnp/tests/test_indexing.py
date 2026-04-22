@@ -1172,6 +1172,7 @@ def test_triu_indices(n, k, m):
     assert_array_equal(expected, result)
 
 
+@testing.with_requires("numpy>=2.3.0")
 @pytest.mark.parametrize("k", [3.2, dpnp.bool(0), numpy.array(3.14)])
 def test_triu_indices_error(k):
     with pytest.raises(
