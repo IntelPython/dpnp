@@ -26,16 +26,12 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <cstdint>
-#include <tuple>
-#include <vector>
-
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include <sycl/sycl.hpp>
-
-#include <dpctl4pybind11.hpp>
+#include <cstdint>
+#include <tuple>
+#include <vector>
 
 #include "gemv.hpp"
 
@@ -84,9 +80,9 @@ PYBIND11_MODULE(_sparse_impl, m)
     m.def(
         "_sparse_gemv_init",
         [](sycl::queue &exec_q, const int trans,
-           const dpctl::tensor::usm_ndarray &row_ptr,
-           const dpctl::tensor::usm_ndarray &col_ind,
-           const dpctl::tensor::usm_ndarray &values,
+           const dpnp::tensor::usm_ndarray &row_ptr,
+           const dpnp::tensor::usm_ndarray &col_ind,
+           const dpnp::tensor::usm_ndarray &values,
            const std::int64_t num_rows, const std::int64_t num_cols,
            const std::int64_t nnz, const std::vector<sycl::event> &depends)
             -> std::tuple<std::uintptr_t, int, sycl::event> {
@@ -119,8 +115,8 @@ PYBIND11_MODULE(_sparse_impl, m)
         "_sparse_gemv_compute",
         [](sycl::queue &exec_q, const std::uintptr_t handle_ptr,
            const int val_type_id, const int trans, const double alpha,
-           const dpctl::tensor::usm_ndarray &x, const double beta,
-           const dpctl::tensor::usm_ndarray &y, const std::int64_t num_rows,
+           const dpnp::tensor::usm_ndarray &x, const double beta,
+           const dpnp::tensor::usm_ndarray &y, const std::int64_t num_rows,
            const std::int64_t num_cols,
            const std::vector<sycl::event> &depends) -> sycl::event {
             return sparse_gemv_compute(exec_q, handle_ptr, val_type_id, trans,

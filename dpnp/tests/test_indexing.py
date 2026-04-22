@@ -1,10 +1,8 @@
 import functools
 
 import dpctl
-import dpctl.tensor as dpt
 import numpy
 import pytest
-from dpctl.tensor._type_utils import _to_device_supported_dtype
 from numpy.testing import (
     assert_,
     assert_array_equal,
@@ -14,8 +12,10 @@ from numpy.testing import (
 )
 
 import dpnp
+import dpnp.tensor as dpt
 from dpnp.dpnp_array import dpnp_array
 from dpnp.exceptions import AxisError, ExecutionPlacementError
+from dpnp.tensor._type_utils import _to_device_supported_dtype
 
 from .helper import (
     generate_random_numpy_array,
@@ -1170,6 +1170,15 @@ def test_triu_indices(n, k, m):
     result = dpnp.triu_indices(n, k, m)
     expected = numpy.triu_indices(n, k, m)
     assert_array_equal(expected, result)
+
+
+@testing.with_requires("numpy>=2.3.0")
+@pytest.mark.parametrize("k", [3.2, dpnp.bool(0), numpy.array(3.14)])
+def test_triu_indices_error(k):
+    with pytest.raises(
+        TypeError, match="`k` must be a integer data type, but got"
+    ):
+        dpnp.triu_indices(n=4, k=k)
 
 
 @pytest.mark.parametrize("k", [-3, -2, -1, 0, 1, 2, 3])

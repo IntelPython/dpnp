@@ -34,9 +34,9 @@
 #include <vector>
 
 #include <sycl/sycl.hpp>
-// dpctl tensor headers
+// dpnp tensor headers
 #include "kernels/alignment.hpp"
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/elementwise_functions/sycl_complex.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
@@ -119,11 +119,11 @@ public:
     void operator()(sycl::id<1> wid) const
     {
         const auto &three_offsets_ = three_offsets_indexer_(wid.get(0));
-        const dpctl::tensor::ssize_t &inp1_offset =
+        const dpnp::tensor::ssize_t &inp1_offset =
             three_offsets_.get_first_offset();
-        const dpctl::tensor::ssize_t &inp2_offset =
+        const dpnp::tensor::ssize_t &inp2_offset =
             three_offsets_.get_second_offset();
-        const dpctl::tensor::ssize_t &out_offset =
+        const dpnp::tensor::ssize_t &out_offset =
             three_offsets_.get_third_offset();
 
         out_[out_offset] =
@@ -167,7 +167,7 @@ public:
         /* Each work-item processes vec_sz elements, contiguous in memory */
         /* NOTE: work-group size must be divisible by sub-group size */
 
-        using dpctl::tensor::type_utils::is_complex_v;
+        using dpnp::tensor::type_utils::is_complex_v;
         if constexpr (enable_sg_loadstore && !is_complex_v<T>) {
             auto sg = ndit.get_sub_group();
             const std::uint16_t sgSize = sg.get_max_local_range()[0];
@@ -176,8 +176,8 @@ public:
                                 sg.get_group_id()[0] * sgSize);
 
             if (base + elems_per_wi * sgSize < nelems_) {
-                using dpctl::tensor::sycl_utils::sub_group_load;
-                using dpctl::tensor::sycl_utils::sub_group_store;
+                using dpnp::tensor::sycl_utils::sub_group_load;
+                using dpnp::tensor::sycl_utils::sub_group_store;
 #pragma unroll
                 for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
                     const std::size_t offset = base + it * sgSize;
@@ -234,19 +234,19 @@ sycl::event
     isclose_strided_scalar_impl(sycl::queue &exec_q,
                                 const int nd,
                                 std::size_t nelems,
-                                const dpctl::tensor::ssize_t *shape_strides,
+                                const dpnp::tensor::ssize_t *shape_strides,
                                 const scT rtol,
                                 const scT atol,
                                 const bool equal_nan,
                                 const char *a_cp,
-                                const dpctl::tensor::ssize_t a_offset,
+                                const dpnp::tensor::ssize_t a_offset,
                                 const char *b_cp,
-                                const dpctl::tensor::ssize_t b_offset,
+                                const dpnp::tensor::ssize_t b_offset,
                                 char *out_cp,
-                                const dpctl::tensor::ssize_t out_offset,
+                                const dpnp::tensor::ssize_t out_offset,
                                 const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<T>(exec_q);
+    dpnp::tensor::type_utils::validate_type_for_device<T>(exec_q);
 
     const T *a_tp = reinterpret_cast<const T *>(a_cp);
     const T *b_tp = reinterpret_cast<const T *>(b_cp);
@@ -255,7 +255,7 @@ sycl::event
     resTy *out_tp = reinterpret_cast<resTy *>(out_cp);
 
     using IndexerT =
-        typename dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
+        typename dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;
     const IndexerT indexer{nd, a_offset, b_offset, out_offset, shape_strides};
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
@@ -306,8 +306,8 @@ sycl::event
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using dpctl::tensor::kernels::alignment_utils::is_aligned;
-        using dpctl::tensor::kernels::alignment_utils::required_alignment;
+        using dpnp::tensor::kernels::alignment_utils::is_aligned;
+        using dpnp::tensor::kernels::alignment_utils::required_alignment;
         if (is_aligned<required_alignment>(a_tp) &&
             is_aligned<required_alignment>(b_tp) &&
             is_aligned<required_alignment>(out_tp)) {

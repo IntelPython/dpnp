@@ -31,22 +31,22 @@
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
+#include "dpnp4pybind11.hpp"
 
 namespace dpnp::extensions::blas
 {
 extern std::tuple<sycl::event, sycl::event, bool>
     gemm(sycl::queue &exec_q,
-         const dpctl::tensor::usm_ndarray &matrixA,
-         const dpctl::tensor::usm_ndarray &matrixB,
-         const dpctl::tensor::usm_ndarray &resultC,
+         const dpnp::tensor::usm_ndarray &matrixA,
+         const dpnp::tensor::usm_ndarray &matrixB,
+         const dpnp::tensor::usm_ndarray &resultC,
          const std::vector<sycl::event> &depends);
 
 extern std::tuple<sycl::event, sycl::event, bool>
     gemm_batch(sycl::queue &exec_q,
-               const dpctl::tensor::usm_ndarray &matrixA,
-               const dpctl::tensor::usm_ndarray &matrixB,
-               const dpctl::tensor::usm_ndarray &resultC,
+               const dpnp::tensor::usm_ndarray &matrixA,
+               const dpnp::tensor::usm_ndarray &matrixB,
+               const dpnp::tensor::usm_ndarray &resultC,
                const std::vector<sycl::event> &depends);
 
 extern void init_gemm_dispatch_table(void);

@@ -62,14 +62,20 @@ set_target_properties(
 
 target_include_directories(
     ${python_module_name}
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../common
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../common
+        ${CMAKE_SOURCE_DIR}/dpnp/backend/include
+        ${CMAKE_SOURCE_DIR}/dpnp/tensor/libtensor/include
 )
 
 # treat below headers as system to suppress the warnings there during the build
 target_include_directories(
     ${python_module_name}
     SYSTEM
-    PRIVATE ${SYCL_INCLUDE_DIR} ${Dpctl_INCLUDE_DIRS} ${Dpctl_TENSOR_INCLUDE_DIR}
+    PRIVATE
+        ${SYCL_INCLUDE_DIR}
+        ${Dpctl_INCLUDE_DIRS}
+        ${CMAKE_BINARY_DIR} # For generated Cython headers
 )
 
 if(WIN32)

@@ -32,13 +32,13 @@
 
 #include "simplify_iteration_space.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/strided_iters.hpp"
 
 namespace dpnp::extensions::py_internal
 {
 namespace py = pybind11;
-namespace st_ns = dpctl::tensor::strides;
+namespace st_ns = dpnp::tensor::strides;
 
 void simplify_iteration_space(int &nd,
                               const py::ssize_t *const &shape,
@@ -227,7 +227,7 @@ void simplify_iteration_space_4(
     py::ssize_t &src3_offset,
     py::ssize_t &dst_offset)
 {
-    using dpctl::tensor::strides::simplify_iteration_four_strides;
+    using dpnp::tensor::strides::simplify_iteration_four_strides;
     if (nd > 1) {
         // Simplify iteration space to reduce dimensionality
         // and improve access pattern

@@ -36,7 +36,7 @@
 #include "utils/type_dispatch.hpp"
 
 // dpctl namespace alias for type dispatch utilities
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+namespace dpctl_td_ns = dpnp::tensor::type_dispatch;
 
 namespace dpnp::extensions::sparse::types
 {

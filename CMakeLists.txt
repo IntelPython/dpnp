@@ -37,10 +37,21 @@ project(
 )
 
 option(DPNP_GENERATE_COVERAGE "Enable build DPNP with coverage instrumentation" OFF)
+option(
+    DPNP_TENSOR_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS
+    "Build dpnp tensor pybind11 offloading extensions with coverage instrumentation"
+    OFF
+)
 option(DPNP_BACKEND_TESTS "Enable building of DPNP backend test suite" OFF)
 option(
     DPNP_WITH_REDIST
     "Build DPNP assuming DPC++ redistributable is installed into Python prefix"
+    OFF
+)
+option(
+    DPNP_TENSOR_OFFLOAD_COMPRESS
+    "Build dpnp tensor using offload section compression feature of DPC++ to reduce \
+size of shared object with offloading sections"
     OFF
 )
 
@@ -95,8 +106,8 @@ find_package(Python 3.10...<3.15 REQUIRED COMPONENTS Development.Module NumPy)
 include(FetchContent)
 FetchContent_Declare(
     pybind11
-    URL https://github.com/pybind/pybind11/archive/refs/tags/v3.0.3.tar.gz
-    URL_HASH SHA256=787459e1e186ee82001759508fefa408373eae8a076ffe0078b126c6f8f0ec5e
+    URL https://github.com/pybind/pybind11/archive/refs/tags/v3.0.4.tar.gz
+    URL_HASH SHA256=74b6a2c2b4573a400cafb6ecbf60c98df300cd3d0041296b913d02b2cbbb2676
     FIND_PACKAGE_ARGS NAMES pybind11
 )
 FetchContent_MakeAvailable(pybind11)
@@ -106,7 +117,6 @@ find_package(Cython REQUIRED)
 
 find_package(Dpctl REQUIRED)
 message(STATUS "Dpctl_INCLUDE_DIR=" ${Dpctl_INCLUDE_DIR})
-message(STATUS "Dpctl_TENSOR_INCLUDE_DIR=" ${Dpctl_TENSOR_INCLUDE_DIR})
 
 option(DPNP_USE_ONEMATH "Build DPNP with oneMath" OFF)
 set(DPNP_TARGET_CUDA

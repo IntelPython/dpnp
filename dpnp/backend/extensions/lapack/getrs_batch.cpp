@@ -36,7 +36,7 @@
 // utils extension header
 #include "ext/common.hpp"
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_utils.hpp"
@@ -49,7 +49,7 @@ namespace dpnp::extensions::lapack
 {
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
-namespace type_utils = dpctl::tensor::type_utils;
+namespace type_utils = dpnp::tensor::type_utils;
 
 using ext::common::init_dispatch_vector;
 
@@ -71,7 +71,7 @@ typedef sycl::event (*getrs_batch_impl_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 static getrs_batch_impl_fn_ptr_t
-    getrs_batch_dispatch_vector[dpctl_td_ns::num_types];
+    getrs_batch_dispatch_vector[dpnp_td_ns::num_types];
 
 template <typename T>
 static sycl::event getrs_batch_impl(sycl::queue &exec_q,
@@ -146,7 +146,7 @@ static sycl::event getrs_batch_impl(sycl::queue &exec_q,
         // consistent with non-batched LAPACK behavior.
         is_exception_caught = false;
         if (scratchpad != nullptr) {
-            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
+            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
         }
         throw LinAlgError("The solve could not be completed.");
     } catch (mkl_lapack::exception const &e) {
@@ -165,8 +165,8 @@ static sycl::event getrs_batch_impl(sycl::queue &exec_q,
         else if (info > 0) {
             is_exception_caught = false;
             if (scratchpad != nullptr) {
-                dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad,
-                                                               exec_q);
+                dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad,
+                                                              exec_q);
             }
             throw LinAlgError("The solve could not be completed.");
         }
@@ -184,7 +184,7 @@ static sycl::event getrs_batch_impl(sycl::queue &exec_q,
     if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
-            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
+            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
         }
 
         throw std::runtime_error(error_msg.str());
@@ -194,7 +194,7 @@ static sycl::event getrs_batch_impl(sycl::queue &exec_q,
         cgh.depends_on(getrs_batch_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad]() {
-            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
+            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
         });
     });
     host_task_events.push_back(clean_up_event);
@@ -203,9 +203,9 @@ static sycl::event getrs_batch_impl(sycl::queue &exec_q,
 
 std::pair<sycl::event, sycl::event>
     getrs_batch(sycl::queue &exec_q,
-                const dpctl::tensor::usm_ndarray &a_array,
-                const dpctl::tensor::usm_ndarray &ipiv_array,
-                const dpctl::tensor::usm_ndarray &b_array,
+                const dpnp::tensor::usm_ndarray &a_array,
+                const dpnp::tensor::usm_ndarray &ipiv_array,
+                const dpnp::tensor::usm_ndarray &b_array,
                 oneapi::mkl::transpose trans,
                 std::int64_t n,
                 std::int64_t nrhs,
@@ -252,13 +252,13 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(exec_q,
-                                             {a_array, b_array, ipiv_array})) {
+    if (!dpnp::utils::queues_are_compatible(exec_q,
+                                            {a_array, b_array, ipiv_array})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(a_array, b_array)) {
         throw py::value_error("The LU-factorized and right-hand sides arrays "
                               "are overlapping segments of memory");
@@ -283,7 +283,7 @@ std::pair<sycl::event, sycl::event>
                               "must be contiguous");
     }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
     int b_array_type_id =
@@ -302,11 +302,11 @@ std::pair<sycl::event, sycl::event>
             "of the input matrix");
     }
 
-    auto ipiv_types = dpctl_td_ns::usm_ndarray_types();
+    auto ipiv_types = dpnp_td_ns::usm_ndarray_types();
     int ipiv_array_type_id =
         ipiv_types.typenum_to_lookup_id(ipiv_array.get_typenum());
 
-    if (ipiv_array_type_id != static_cast<int>(dpctl_td_ns::typenum_t::INT64)) {
+    if (ipiv_array_type_id != static_cast<int>(dpnp_td_ns::typenum_t::INT64)) {
         throw py::value_error("The type of 'ipiv_array' must be int64");
     }
 
@@ -324,7 +324,7 @@ std::pair<sycl::event, sycl::event>
         exec_q, trans, n, nrhs, a_array_data, lda, stride_a, ipiv, stride_ipiv,
         b_array_data, ldb, stride_b, batch_size, host_task_events, depends);
 
-    sycl::event args_ev = dpctl::utils::keep_args_alive(
+    sycl::event args_ev = dpnp::utils::keep_args_alive(
         exec_q, {a_array, b_array, ipiv_array}, host_task_events);
 
     return std::make_pair(args_ev, getrs_batch_ev);

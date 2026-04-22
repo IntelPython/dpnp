@@ -28,14 +28,10 @@
 
 #pragma once
 
-#include <cstdint>
-#include <tuple>
-#include <vector>
-
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
+#include "dpnp4pybind11.hpp"
 
 namespace dpnp::extensions::sparse
 {
@@ -69,9 +65,9 @@ namespace dpnp::extensions::sparse
 extern std::tuple<std::uintptr_t, int, sycl::event>
     sparse_gemv_init(sycl::queue &exec_q,
                      const int trans,
-                     const dpctl::tensor::usm_ndarray &row_ptr,
-                     const dpctl::tensor::usm_ndarray &col_ind,
-                     const dpctl::tensor::usm_ndarray &values,
+                     const dpnp::tensor::usm_ndarray &row_ptr,
+                     const dpnp::tensor::usm_ndarray &col_ind,
+                     const dpnp::tensor::usm_ndarray &values,
                      const std::int64_t num_rows,
                      const std::int64_t num_cols,
                      const std::int64_t nnz,
@@ -103,9 +99,9 @@ extern sycl::event sparse_gemv_compute(sycl::queue &exec_q,
                                        const int val_type_id,
                                        const int trans,
                                        const double alpha,
-                                       const dpctl::tensor::usm_ndarray &x,
+                                       const dpnp::tensor::usm_ndarray &x,
                                        const double beta,
-                                       const dpctl::tensor::usm_ndarray &y,
+                                       const dpnp::tensor::usm_ndarray &y,
                                        const std::int64_t num_rows,
                                        const std::int64_t num_cols,
                                        const std::vector<sycl::event> &depends);

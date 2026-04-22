@@ -52,7 +52,7 @@ namespace dpnp::extensions::sparse
 
 namespace mkl_sparse = oneapi::mkl::sparse;
 namespace py = pybind11;
-namespace type_utils = dpctl::tensor::type_utils;
+namespace type_utils = dpnp::tensor::type_utils;
 
 using ext::common::init_dispatch_table;
 
@@ -206,9 +206,9 @@ static oneapi::mkl::transpose decode_trans(const int trans)
 std::tuple<std::uintptr_t, int, sycl::event>
     sparse_gemv_init(sycl::queue &exec_q,
                      const int trans,
-                     const dpctl::tensor::usm_ndarray &row_ptr,
-                     const dpctl::tensor::usm_ndarray &col_ind,
-                     const dpctl::tensor::usm_ndarray &values,
+                     const dpnp::tensor::usm_ndarray &row_ptr,
+                     const dpnp::tensor::usm_ndarray &col_ind,
+                     const dpnp::tensor::usm_ndarray &values,
                      const std::int64_t num_rows,
                      const std::int64_t num_cols,
                      const std::int64_t nnz,
@@ -265,9 +265,9 @@ sycl::event sparse_gemv_compute(sycl::queue &exec_q,
                                 const int val_type_id,
                                 const int trans,
                                 const double alpha,
-                                const dpctl::tensor::usm_ndarray &x,
+                                const dpnp::tensor::usm_ndarray &x,
                                 const double beta,
-                                const dpctl::tensor::usm_ndarray &y,
+                                const dpnp::tensor::usm_ndarray &y,
                                 const std::int64_t num_rows,
                                 const std::int64_t num_cols,
                                 const std::vector<sycl::event> &depends)
@@ -283,12 +283,12 @@ sycl::event sparse_gemv_compute(sycl::queue &exec_q,
             "sparse_gemv_compute: USM allocations are not compatible with the "
             "execution queue.");
 
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
     if (overlap(x, y))
         throw py::value_error(
             "sparse_gemv_compute: x and y are overlapping memory segments.");
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(y);
+    dpnp::tensor::validation::CheckWritable::throw_if_not_writable(y);
 
     // Shape validation: op(A) is (num_rows, num_cols) for trans=N,
     // (num_cols, num_rows) for trans={T,C}.
@@ -304,7 +304,7 @@ sycl::event sparse_gemv_compute(sycl::queue &exec_q,
         throw py::value_error(
             "sparse_gemv_compute: y length does not match operator rows.");
 
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         y, static_cast<std::size_t>(op_rows));
 
     // Dtype verification: x, y, and the handle's value type must all match.
