@@ -90,6 +90,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Ensured device aware dtype handling in `dpnp.identity` and `dpnp.gradient` [#2835](https://github.com/IntelPython/dpnp/pull/2835)
 * Fixed `dpnp.tensor.round` to use device-aware output dtype for boolean input [#2851](https://github.com/IntelPython/dpnp/pull/2851)
 * Resolved a deadlock in `dpnp.linalg.qr` by releasing the GIL before OneMKL `orgqr` call to prevent host tasks contention [#2850](https://github.com/IntelPython/dpnp/pull/2850)
+* Fixed `dpnp.linalg.matrix_rank` to properly handle an empty input array [#2853](https://github.com/IntelPython/dpnp/pull/2853)
 
 ### Security
 
