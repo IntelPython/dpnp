@@ -430,6 +430,14 @@ def is_arl_or_mtl(device=None):
     return _get_dev_mask(device) == 0x7D00
 
 
+def is_bmg(device=None):
+    """
+    Return True if a test is running on Arc Battlemage (B-Series) GPU device,
+    False otherwise.
+    """
+    return _get_dev_mask(device) == 0xE200
+
+
 def is_cpu_device(device=None):
     """
     Return True if a test is running on CPU device, False otherwise.

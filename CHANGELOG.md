@@ -4,8 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.20.0] - MM/DD/2026
+## [0.21.0] - MM/DD/2026
 
+### Added
+
+### Changed
+* Changed `dpnp.meshgrid` to return a tuple instead of a list, aligning with NumPy 2.5+ behavior and 2025.12 version of the Python array API standard [#2854](https://github.com/IntelPython/dpnp/pull/2854)
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [0.20.0] - 2026-04-22
+
+This release introduces a major architectural change: the Array API-compliant tensor implementation has been migrated from `dpctl.tensor` into `dpnp.tensor`, simplifying maintenance, reducing cross-project dependencies, and allows the tensor implementation to evolve within `dpnp`.
 This release changes the license from `BSD-2-Clause` to `BSD-3-Clause`.
 This release achieves `dpnp` compatibility with Python 3.14 and enables distributing `dpnp` packages with the latest Python version.
 Also, that release drops support for Python 3.9, making Python 3.10 the minimum required version.
@@ -27,7 +44,8 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added implementation of `dpnp.divmod` [#2674](https://github.com/IntelPython/dpnp/pull/2674)
 * Added implementation of `dpnp.isin` function [#2595](https://github.com/IntelPython/dpnp/pull/2595)
 * Added implementation of `dpnp.scipy.linalg.lu` (SciPy-compatible) [#2787](https://github.com/IntelPython/dpnp/pull/2787)
-* Added support for ndarray subclassing via `dpnp.ndarray.view` method with `type` parameter [#2815](https://github.com/IntelPython/dpnp/issues/2815)
+* Added support for ndarray subclassing via `dpnp.ndarray.view` method with `type` parameter [#2815](https://github.com/IntelPython/dpnp/pull/2815)
+* Migrated tensor implementation from `dpctl.tensor` into `dpnp.tensor`, making `dpnp` the primary owner of the Array API-compliant tensor layer [#2856](https://github.com/IntelPython/dpnp/pull/2856)
 
 ### Changed
 
@@ -57,7 +75,9 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Updated QR tests to avoid element-wise comparisons for `raw` and `r` modes [#2785](https://github.com/IntelPython/dpnp/pull/2785)
 * Moved all SYCL kernel functors from `backend/extensions/` to a unified `backend/kernels/` directory hierarchy [#2816](https://github.com/IntelPython/dpnp/pull/2816)
 * `dpnp` uses pybind11 3.0.3 [#2834](https://github.com/IntelPython/dpnp/pull/2834)
-* Changed `dpnp.meshgrid` to return a tuple instead of a list, aligning with NumPy 2.5+ behavior and 2025.12 version of the Python array API standard [#2854](https://github.com/IntelPython/dpnp/pull/2854)
+* Disabled `dpnp.tensor` tests by default in `conda build --test` to prevent OOM failures during package testing. Set `SKIP_TENSOR_TESTS=0` to re-enable them on systems with enough memory [#2860](https://github.com/IntelPython/dpnp/pull/2860)
+* `dpnp` uses pybind11 3.0.4 [#2865](https://github.com/IntelPython/dpnp/pull/2865)
+* Added explicit type check of `k` keyword in `dpnp.triu_indices` [#2855](https://github.com/IntelPython/dpnp/pull/2855)
 
 ### Deprecated
 
@@ -85,8 +105,9 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Resolved an issue with strides calculation in `dpnp.diagonal` to return correct values for empty diagonals [#2814](https://github.com/IntelPython/dpnp/pull/2814)
 * Fixed test tolerance issues for float16 intermediate precision that became visible when testing against conda-forge's NumPy [#2828](https://github.com/IntelPython/dpnp/pull/2828)
 * Ensured device aware dtype handling in `dpnp.identity` and `dpnp.gradient` [#2835](https://github.com/IntelPython/dpnp/pull/2835)
-
-### Security
+* Fixed `dpnp.tensor.round` to use device-aware output dtype for boolean input [#2851](https://github.com/IntelPython/dpnp/pull/2851)
+* Resolved a deadlock in `dpnp.linalg.qr` by releasing the GIL before OneMKL `orgqr` call to prevent host tasks contention [#2850](https://github.com/IntelPython/dpnp/pull/2850)
+* Fixed `dpnp.linalg.matrix_rank` to properly handle an empty input array [#2853](https://github.com/IntelPython/dpnp/pull/2853)
 
 
 ## [0.19.1] - 2025-11-27

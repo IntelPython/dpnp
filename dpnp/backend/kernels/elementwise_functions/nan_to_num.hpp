@@ -34,9 +34,9 @@
 #include <vector>
 
 #include <sycl/sycl.hpp>
-// dpctl tensor headers
+// dpnp tensor headers
 #include "kernels/alignment.hpp"
-#include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/dpnp_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
@@ -78,10 +78,10 @@ public:
     void operator()(sycl::id<1> wid) const
     {
         const auto &offsets_ = inp_out_indexer_(wid.get(0));
-        const dpctl::tensor::ssize_t &inp_offset = offsets_.get_first_offset();
-        const dpctl::tensor::ssize_t &out_offset = offsets_.get_second_offset();
+        const dpnp::tensor::ssize_t &inp_offset = offsets_.get_first_offset();
+        const dpnp::tensor::ssize_t &out_offset = offsets_.get_second_offset();
 
-        using dpctl::tensor::type_utils::is_complex_v;
+        using dpnp::tensor::type_utils::is_complex_v;
         if constexpr (is_complex_v<T>) {
             using realT = typename T::value_type;
             static_assert(std::is_same_v<realT, scT>);
@@ -129,7 +129,7 @@ public:
         /* Each work-item processes vec_sz elements, contiguous in memory */
         /* NOTE: work-group size must be divisible by sub-group size */
 
-        using dpctl::tensor::type_utils::is_complex_v;
+        using dpnp::tensor::type_utils::is_complex_v;
         if constexpr (enable_sg_loadstore && !is_complex_v<T>) {
             auto sg = ndit.get_sub_group();
             const std::uint16_t sgSize = sg.get_max_local_range()[0];
@@ -138,8 +138,8 @@ public:
                                 sg.get_group_id()[0] * sgSize);
 
             if (base + elems_per_wi * sgSize < nelems_) {
-                using dpctl::tensor::sycl_utils::sub_group_load;
-                using dpctl::tensor::sycl_utils::sub_group_store;
+                using dpnp::tensor::sycl_utils::sub_group_load;
+                using dpnp::tensor::sycl_utils::sub_group_store;
 #pragma unroll
                 for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
                     const std::size_t offset = base + it * sgSize;
@@ -197,23 +197,23 @@ template <typename T, typename scT>
 sycl::event nan_to_num_strided_impl(sycl::queue &q,
                                     const size_t nelems,
                                     const int nd,
-                                    const dpctl::tensor::ssize_t *shape_strides,
+                                    const dpnp::tensor::ssize_t *shape_strides,
                                     const scT nan,
                                     const scT posinf,
                                     const scT neginf,
                                     const char *in_cp,
-                                    const dpctl::tensor::ssize_t in_offset,
+                                    const dpnp::tensor::ssize_t in_offset,
                                     char *out_cp,
-                                    const dpctl::tensor::ssize_t out_offset,
+                                    const dpnp::tensor::ssize_t out_offset,
                                     const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+    dpnp::tensor::type_utils::validate_type_for_device<T>(q);
 
     const T *in_tp = reinterpret_cast<const T *>(in_cp);
     T *out_tp = reinterpret_cast<T *>(out_cp);
 
     using InOutIndexerT =
-        typename dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
+        typename dpnp::tensor::offset_utils::TwoOffsets_StridedIndexer;
     const InOutIndexerT indexer{nd, in_offset, out_offset, shape_strides};
 
     sycl::event comp_ev = q.submit([&](sycl::handler &cgh) {
@@ -258,8 +258,8 @@ sycl::event nan_to_num_contig_impl(sycl::queue &exec_q,
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using dpctl::tensor::kernels::alignment_utils::is_aligned;
-        using dpctl::tensor::kernels::alignment_utils::required_alignment;
+        using dpnp::tensor::kernels::alignment_utils::is_aligned;
+        using dpnp::tensor::kernels::alignment_utils::required_alignment;
         if (is_aligned<required_alignment>(in_tp) &&
             is_aligned<required_alignment>(out_tp)) {
             constexpr bool enable_sg_loadstore = true;

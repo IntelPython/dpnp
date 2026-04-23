@@ -51,9 +51,9 @@ struct SlidingDotProduct1d
     SlidingDotProduct1d();
 
     std::tuple<sycl::event, sycl::event>
-        call(const dpctl::tensor::usm_ndarray &a,
-             const dpctl::tensor::usm_ndarray &v,
-             dpctl::tensor::usm_ndarray &output,
+        call(const dpnp::tensor::usm_ndarray &a,
+             const dpnp::tensor::usm_ndarray &v,
+             dpnp::tensor::usm_ndarray &output,
              const size_t l_pad,
              const size_t r_pad,
              const std::vector<sycl::event> &depends);

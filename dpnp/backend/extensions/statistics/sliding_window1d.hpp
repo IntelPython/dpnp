@@ -34,13 +34,13 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
+#include "dpnp4pybind11.hpp"
 
 #include "kernels/statistics/sliding_window1d.hpp"
 
 namespace statistics::sliding_window1d
 {
-using dpctl::tensor::usm_ndarray;
+using dpnp::tensor::usm_ndarray;
 
 template <typename T, std::uint32_t Size>
 class _RegistryDataStorage
