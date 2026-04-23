@@ -67,8 +67,17 @@ public:
 
     static backend_sycl &get()
     {
+#ifdef _WIN32
+        // TODO: remove once MKLD-19835 is resolved
+        // mt19937 (oneMKL 2026.0) destructor crashes during DLL_PROCESS_DETACH
+        // on Windows (Battlemage/Level Zero). Use a heap-allocated
+        // process-lifetime singleton to skip destructor; OS reclaims memory.
+        static backend_sycl *backend = new backend_sycl{};
+        return *backend;
+#else
         static backend_sycl backend{};
         return backend;
+#endif
     }
 
     static sycl::queue &get_queue()
