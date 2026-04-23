@@ -377,7 +377,7 @@ jobs:
           MAMBA_NO_LOW_SPEED_LIMIT: 1
 
       - name: Install OCL CPU RT from Intel channel
-        run: mamba install intel-opencl-rt=*=intel_* ${{ env.channels-list }}
+        run: mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} intel-opencl-rt=*=intel_* ${{ env.channels-list }}
 
       - name: List installed packages
         run: mamba list
