@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.random.RandomState.randn
+=============================
+
+.. currentmodule:: dpnp.random
+
+method
+
+.. automethod:: RandomState.randn
