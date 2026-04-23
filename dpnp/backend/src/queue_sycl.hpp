@@ -67,7 +67,7 @@ public:
 
     static backend_sycl &get()
     {
-#ifdef _WIN32
+#if defined(_WIN32) && INTEL_MKL_VERSION == 20260000
         // TODO: remove once MKLD-19835 is resolved
         // mt19937 (oneMKL 2026.0) destructor crashes during DLL_PROCESS_DETACH
         // on Windows (Battlemage/Level Zero). Use a heap-allocated
