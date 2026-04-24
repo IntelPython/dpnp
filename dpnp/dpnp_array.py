@@ -59,8 +59,16 @@ def _unwrap_index_element(x):
 
     if isinstance(x, dpnp_array):
         return x.get_array()
-    if isinstance(x, (range, list)):
+    if isinstance(x, range):
         return numpy.asarray(x, dtype=numpy.intp)
+    if isinstance(x, list):
+        # keep boolean lists as boolean
+        arr = numpy.asarray(x)
+        # cast empty lists (float64 in NumPy) to intp
+        # for correct tensor indexing
+        if arr.size == 0:
+            arr = arr.astype(numpy.intp)
+        return arr
     return x
 
 
@@ -77,10 +85,8 @@ def _get_unwrapped_index_key(key):
     if isinstance(key, tuple):
         if any(isinstance(x, (dpnp_array, range, list)) for x in key):
             return tuple(_unwrap_index_element(x) for x in key)
-    elif isinstance(key, dpnp_array):
-        return key.get_array()
-    elif isinstance(key, (range, list)):
-        return numpy.asarray(key, dtype=numpy.intp)
+    elif isinstance(key, (dpnp_array, range, list)):
+        return _unwrap_index_element(key)
     return key
 
 
