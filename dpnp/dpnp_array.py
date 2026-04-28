@@ -57,6 +57,8 @@ def _unwrap_index_element(x):
 
     """
 
+    if isinstance(x, dpt.usm_ndarray):
+        return x
     if isinstance(x, dpnp_array):
         return x.get_array()
     if isinstance(x, range):
@@ -83,11 +85,8 @@ def _get_unwrapped_index_key(key):
     """
 
     if isinstance(key, tuple):
-        if any(isinstance(x, (dpnp_array, range, list)) for x in key):
-            return tuple(_unwrap_index_element(x) for x in key)
-    elif isinstance(key, (dpnp_array, range, list)):
-        return _unwrap_index_element(key)
-    return key
+        return tuple(_unwrap_index_element(x) for x in key)
+    return _unwrap_index_element(key)
 
 
 # pylint: disable=too-many-public-methods
