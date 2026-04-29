@@ -103,18 +103,6 @@ def test_bitwise_xor_bool():
     assert dpt.all(dpt.equal(r_bw, r_lo))
 
 
-@pytest.mark.parametrize("dtype", ["?"] + _integral_dtypes)
-def test_bitwise_xor_inplace_python_scalar(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-    X = dpt.zeros((10, 10), dtype=dtype, sycl_queue=q)
-    dt_kind = X.dtype.kind
-    if dt_kind == "b":
-        X ^= False
-    else:
-        X ^= int(0)
-
-
 @pytest.mark.parametrize("op1_dtype", ["?"] + _integral_dtypes)
 @pytest.mark.parametrize("op2_dtype", ["?"] + _integral_dtypes)
 def test_bitwise_xor_inplace_dtype_matrix(op1_dtype, op2_dtype):

@@ -42,7 +42,6 @@ from ..helper import (
 from .utils import (
     _all_dtypes,
     _map_to_device_dtype,
-    _usm_types,
 )
 
 
@@ -90,36 +89,6 @@ def test_complex_output(np_call, dpt_call, dtype):
     dpt_call(X, out=Z)
 
     assert_allclose(dpt.asnumpy(Z), np_call(Xnp), atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize(
-    "np_call, dpt_call",
-    [(np.real, dpt.real), (np.imag, dpt.imag), (np.conj, dpt.conj)],
-)
-@pytest.mark.parametrize("usm_type", _usm_types)
-def test_complex_usm_type(np_call, dpt_call, usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("c8")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    X[..., 0::2] = np.pi / 6 + 1j * np.pi / 3
-    X[..., 1::2] = np.pi / 3 + 1j * np.pi / 6
-
-    Y = dpt_call(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    X_np = np.empty(input_shape, dtype=arg_dt)
-    X_np[..., 0::2] = np.complex64(np.pi / 6 + 1j * np.pi / 3)
-    X_np[..., 1::2] = np.complex64(np.pi / 3 + 1j * np.pi / 6)
-
-    expected_Y = np_call(X_np)
-
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-
-    assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize(

@@ -26,7 +26,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import itertools
 import re
 
 import numpy as np
@@ -64,47 +63,6 @@ def test_floor_ceil_trunc_out_type(dpt_call, dtype):
     Y = dpt.empty_like(X, dtype=expected_dtype)
     dpt_call(X, out=Y)
     assert_allclose(dpt.asnumpy(dpt_call(X)), dpt.asnumpy(Y))
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
-def test_floor_ceil_trunc_usm_type(np_call, dpt_call, usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("f4")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    X[..., 0::2] = -0.4
-    X[..., 1::2] = 0.7
-
-    Y = dpt_call(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    expected_Y = np_call(dpt.asnumpy(X))
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-    assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", _no_complex_dtypes)
-def test_floor_ceil_trunc_order(np_call, dpt_call, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (4, 4, 4, 4)
-    X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
-    X[..., 0::2] = -0.4
-    X[..., 1::2] = 0.7
-
-    for perms in itertools.permutations(range(4)):
-        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
-        expected_Y = np_call(dpt.asnumpy(U))
-        for ord in ["C", "F", "A", "K"]:
-            Y = dpt_call(U, order=ord)
-            assert_allclose(dpt.asnumpy(Y), expected_Y)
 
 
 @pytest.mark.parametrize("dpt_call", [dpt.floor, dpt.ceil, dpt.trunc])

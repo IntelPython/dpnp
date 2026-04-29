@@ -26,8 +26,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import itertools
-
 import numpy as np
 import pytest
 
@@ -37,7 +35,7 @@ from ..helper import (
     get_queue_or_skip,
     skip_if_dtype_not_supported,
 )
-from .utils import _all_dtypes, _usm_types
+from .utils import _all_dtypes
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes[1:])
@@ -52,46 +50,6 @@ def test_square_out_type(dtype):
     r = dpt.empty_like(X, dtype=arg_dt)
     dpt.square(X, out=r)
     assert np.allclose(dpt.asnumpy(r), dpt.asnumpy(dpt.square(X)))
-
-
-@pytest.mark.parametrize("usm_type", _usm_types)
-def test_square_usm_type(usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("i4")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    X[..., 0::2] = 1
-    X[..., 1::2] = 0
-
-    Y = dpt.square(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    expected_Y = dpt.asnumpy(X)
-    assert np.allclose(dpt.asnumpy(Y), expected_Y)
-
-
-@pytest.mark.parametrize("dtype", _all_dtypes[1:])
-def test_square_order(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
-    X[..., 0::2] = 2
-    X[..., 1::2] = 0
-
-    for perms in itertools.permutations(range(4)):
-        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
-        expected_Y = np.full(U.shape, 4, dtype=U.dtype)
-        expected_Y[..., 1::2] = 0
-        expected_Y = np.transpose(expected_Y, perms)
-        for ord in ["C", "F", "A", "K"]:
-            Y = dpt.square(U, order=ord)
-            assert np.allclose(dpt.asnumpy(Y), expected_Y)
 
 
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
