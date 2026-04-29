@@ -4,7 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.20.0] - MM/DD/2026
+## [0.21.0] - MM/DD/2026
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+* Fixed incorrect in-place advanced indexing for 4D arrays when using `range` or `list` as index keys [#2872](https://github.com/IntelPython/dpnp/pull/2872)
+
+### Security
+
+
+## [0.20.0] - 2026-04-22
 
 This release introduces a major architectural change: the Array API-compliant tensor implementation has been migrated from `dpctl.tensor` into `dpnp.tensor`, simplifying maintenance, reducing cross-project dependencies, and allows the tensor implementation to evolve within `dpnp`.
 This release changes the license from `BSD-2-Clause` to `BSD-3-Clause`.
@@ -28,7 +45,7 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added implementation of `dpnp.divmod` [#2674](https://github.com/IntelPython/dpnp/pull/2674)
 * Added implementation of `dpnp.isin` function [#2595](https://github.com/IntelPython/dpnp/pull/2595)
 * Added implementation of `dpnp.scipy.linalg.lu` (SciPy-compatible) [#2787](https://github.com/IntelPython/dpnp/pull/2787)
-* Added support for ndarray subclassing via `dpnp.ndarray.view` method with `type` parameter [#2815](https://github.com/IntelPython/dpnp/issues/2815)
+* Added support for ndarray subclassing via `dpnp.ndarray.view` method with `type` parameter [#2815](https://github.com/IntelPython/dpnp/pull/2815)
 * Migrated tensor implementation from `dpctl.tensor` into `dpnp.tensor`, making `dpnp` the primary owner of the Array API-compliant tensor layer [#2856](https://github.com/IntelPython/dpnp/pull/2856)
 * Added implementation of `dpnp.scipy.sparse.linalg import LinearOperator, cg, gmres, minres` [#2841](https://github.com/IntelPython/dpnp/pull/2841)
 
@@ -93,8 +110,6 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Fixed `dpnp.tensor.round` to use device-aware output dtype for boolean input [#2851](https://github.com/IntelPython/dpnp/pull/2851)
 * Resolved a deadlock in `dpnp.linalg.qr` by releasing the GIL before OneMKL `orgqr` call to prevent host tasks contention [#2850](https://github.com/IntelPython/dpnp/pull/2850)
 * Fixed `dpnp.linalg.matrix_rank` to properly handle an empty input array [#2853](https://github.com/IntelPython/dpnp/pull/2853)
-
-### Security
 
 
 ## [0.19.1] - 2025-11-27

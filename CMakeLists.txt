@@ -31,7 +31,7 @@ cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
 project(
     dpnp
-    VERSION 0.20
+    VERSION 0.21
     LANGUAGES CXX
     DESCRIPTION "NumPy-like API accelerated by SYCL."
 )
