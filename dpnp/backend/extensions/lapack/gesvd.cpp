@@ -27,6 +27,7 @@
 //*****************************************************************************
 
 #include <stdexcept>
+#include <utility>
 
 #include <pybind11/pybind11.h>
 
@@ -49,37 +50,39 @@ namespace type_utils = dpnp::tensor::type_utils;
 
 using ext::common::init_dispatch_table;
 
-typedef sycl::event (*gesvd_impl_fn_ptr_t)(sycl::queue &,
-                                           const oneapi::mkl::jobsvd,
-                                           const oneapi::mkl::jobsvd,
-                                           const std::int64_t,
-                                           const std::int64_t,
-                                           char *,
-                                           const std::int64_t,
-                                           char *,
-                                           char *,
-                                           const std::int64_t,
-                                           char *,
-                                           const std::int64_t,
-                                           const std::vector<sycl::event> &);
+typedef std::pair<sycl::event, sycl::event> (*gesvd_impl_fn_ptr_t)(
+    sycl::queue &,
+    const oneapi::mkl::jobsvd,
+    const oneapi::mkl::jobsvd,
+    const std::int64_t,
+    const std::int64_t,
+    char *,
+    const std::int64_t,
+    char *,
+    char *,
+    const std::int64_t,
+    char *,
+    const std::int64_t,
+    const std::vector<sycl::event> &);
 
 static gesvd_impl_fn_ptr_t gesvd_dispatch_table[dpnp_td_ns::num_types]
                                                [dpnp_td_ns::num_types];
 
 template <typename T, typename RealT>
-static sycl::event gesvd_impl(sycl::queue &exec_q,
-                              const oneapi::mkl::jobsvd jobu,
-                              const oneapi::mkl::jobsvd jobvt,
-                              const std::int64_t m,
-                              const std::int64_t n,
-                              char *in_a,
-                              const std::int64_t lda,
-                              char *out_s,
-                              char *out_u,
-                              const std::int64_t ldu,
-                              char *out_vt,
-                              const std::int64_t ldvt,
-                              const std::vector<sycl::event> &depends)
+static std::pair<sycl::event, sycl::event>
+    gesvd_impl(sycl::queue &exec_q,
+               const oneapi::mkl::jobsvd jobu,
+               const oneapi::mkl::jobsvd jobvt,
+               const std::int64_t m,
+               const std::int64_t n,
+               char *in_a,
+               const std::int64_t lda,
+               char *out_s,
+               char *out_u,
+               const std::int64_t ldu,
+               char *out_vt,
+               const std::int64_t ldvt,
+               const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
     type_utils::validate_type_for_device<RealT>(exec_q);
@@ -148,7 +151,7 @@ static sycl::event gesvd_impl(sycl::queue &exec_q,
         });
     });
 
-    return ht_ev;
+    return std::make_pair(ht_ev, gesvd_event);
 }
 
 std::pair<sycl::event, sycl::event>
@@ -207,14 +210,14 @@ std::pair<sycl::event, sycl::event>
     const oneapi::mkl::jobsvd jobu = gesvd_utils::process_job(jobu_val);
     const oneapi::mkl::jobsvd jobvt = gesvd_utils::process_job(jobvt_val);
 
-    sycl::event gesvd_ev =
+    auto [ht_ev, gesvd_ev] =
         gesvd_fn(exec_q, jobu, jobvt, m, n, a_array_data, lda, out_s_data,
                  out_u_data, ldu, out_vt_data, ldvt, depends);
 
-    sycl::event ht_ev = dpnp::utils::keep_args_alive(
-        exec_q, {a_array, out_s, out_u, out_vt}, {gesvd_ev});
+    sycl::event py_refcount_ev = dpnp::utils::keep_args_alive(
+        exec_q, {a_array, out_s, out_u, out_vt}, {ht_ev, gesvd_ev});
 
-    return std::make_pair(ht_ev, gesvd_ev);
+    return std::make_pair(py_refcount_ev, gesvd_ev);
 }
 
 template <typename fnT, typename T, typename RealT>
