@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Fixed `conda build` command syntax in GitHub workflows and documentation to use `conda-build` [#2888](https://github.com/IntelPython/dpnp/pull/2888)
+
 ### Security
 
 
