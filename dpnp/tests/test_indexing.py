@@ -1,3 +1,4 @@
+import array
 import functools
 
 import dpctl
@@ -405,6 +406,41 @@ class TestIndexing:
         np_a = numpy.arange(24).reshape(2, 3, 4)
         dp_a = dpnp.arange(24).reshape(2, 3, 4)
         assert_array_equal(dp_a[idx], np_a[idx])
+
+    def test_buffer_protocol_getitem(self):
+        inds = array.array("l")
+        inds.frombytes(numpy.arange(3).tobytes())
+        np_a = numpy.arange(12).reshape(3, 4)
+        dp_a = dpnp.arange(12).reshape(3, 4)
+        assert_array_equal(dp_a[inds], np_a[inds])
+
+    def test_buffer_protocol_paired_index(self):
+        inds = array.array("l")
+        inds.frombytes(numpy.arange(3).tobytes())
+        np_a = numpy.arange(12).reshape(3, 4)
+        dp_a = dpnp.arange(12).reshape(3, 4)
+        assert_array_equal(dp_a[inds, inds], np_a[inds, inds])
+
+    def test_buffer_protocol_setitem(self):
+        inds = array.array("l")
+        inds.frombytes(numpy.arange(3).tobytes())
+        np_a = numpy.arange(12).reshape(3, 4)
+        dp_a = dpnp.arange(12).reshape(3, 4)
+        np_a[inds, inds] = 0
+        dp_a[inds, inds] = 0
+        assert_array_equal(dp_a, np_a)
+
+    def test_memoryview_getitem(self):
+        inds = memoryview(array.array("l", [0, 1, 2]))
+        np_a = numpy.arange(12).reshape(3, 4)
+        dp_a = dpnp.arange(12).reshape(3, 4)
+        assert_array_equal(dp_a[inds], np_a[inds])
+
+    def test_bytearray_getitem(self):
+        inds = bytearray(b"\x00\x01\x02")
+        np_a = numpy.arange(10)
+        dp_a = dpnp.arange(10)
+        assert_array_equal(dp_a[inds], np_a[inds])
 
 
 class TestIx:
