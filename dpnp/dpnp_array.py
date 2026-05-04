@@ -52,8 +52,9 @@ def _unwrap_index_element(x):
     """
     Unwrap a single index element for the tensor indexing layer.
 
-    Converts dpnp arrays to usm_ndarray and array-like objects (range, list)
-    to numpy arrays with intp dtype for NumPy-compatible advanced indexing.
+    Converts dpnp arrays to usm_ndarray and array-like objects (range, list,
+    buffer protocol objects) to numpy arrays for NumPy-compatible advanced
+    indexing.
 
     """
 
@@ -71,6 +72,16 @@ def _unwrap_index_element(x):
         if arr.size == 0:
             arr = arr.astype(numpy.intp)
         return arr
+    if isinstance(x, numpy.ndarray):
+        return x
+    # convert buffer protocol objects (array.array, memoryview, etc.)
+    try:
+        mv = memoryview(x)
+    except TypeError:
+        return x
+    # 0-d buffers are handled by the tensor layer
+    if mv.ndim > 0:
+        return numpy.asarray(x)
     return x
 
 
