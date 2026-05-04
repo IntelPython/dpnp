@@ -61,7 +61,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -71,7 +71,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -159,7 +159,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -169,7 +169,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -257,7 +257,7 @@ jobs:
       - name: Run tensor tests
         if: env.rerun-tests-on-failure == 'true'
         id: run_tests_tensor_linux
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
@@ -321,7 +321,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -331,7 +331,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -439,7 +439,7 @@ jobs:
       - name: Run tensor tests
         if: env.rerun-tests-on-failure == 'true'
         id: run_tests_tensor_win
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
@@ -493,7 +493,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -503,7 +503,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -578,7 +578,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -588,7 +588,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -696,7 +696,7 @@ jobs:
 
       - name: Post result to PR
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork }}
-        uses: mshick/add-pr-comment@64b8e914979889d746c99dea15a76e77ef64580a # v3.10.0.8.3.10.0
+        uses: mshick/add-pr-comment@8e4927817251f1ff60c001f04568532b38e0b4a0 # v3.11.0.8.3.11.0
         with:
           message-id: array_api_results
           message: |
@@ -727,7 +727,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -737,7 +737,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
