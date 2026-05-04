@@ -46,16 +46,18 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt update
 
-      - name: Install latest Intel OneAPI
+      # Pinned to OneAPI 2025.3 to match the version used to build dpctl packages.
+      # TODO: remove pinning once dpctl is built with the latest OneAPI.
+      - name: Install Intel OneAPI 2025.3
         if: env.oneapi-pkgs-env == ''
         run: |
-          sudo apt install hwloc                           \
-                           intel-oneapi-mkl                \
-                           intel-oneapi-umf                \
-                           intel-oneapi-mkl-devel          \
-                           intel-oneapi-tbb-devel          \
-                           intel-oneapi-libdpstd-devel     \
-                           intel-oneapi-compiler-dpcpp-cpp
+          sudo apt install hwloc                                   \
+                           intel-oneapi-mkl-2025.3                 \
+                           intel-oneapi-umf-1.0                    \
+                           intel-oneapi-mkl-devel-2025.3           \
+                           intel-oneapi-tbb-devel-2022.3           \
+                           intel-oneapi-libdpstd-devel-2022.10     \
+                           intel-oneapi-compiler-dpcpp-cpp-2025.3
 
       - name: Checkout repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
