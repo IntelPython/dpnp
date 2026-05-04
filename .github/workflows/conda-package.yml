@@ -88,6 +88,68 @@ jobs:
           echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\\\" '/' >> "$GITHUB_ENV"
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> "$GITHUB_ENV"
 
+      - name: Full conda debug
+        shell: bash -el {0}
+        run: |
+          set +e
+
+          echo "=== BASIC ENV ==="
+          echo "CONDA=$CONDA"
+          echo "CONDA_PREFIX=$CONDA_PREFIX"
+          echo "CONDA_DEFAULT_ENV=$CONDA_DEFAULT_ENV"
+          echo "PATH=$PATH"
+          echo
+
+          echo "=== BINARIES ==="
+          which conda
+          which python
+          which conda-build
+          ls -l "$CONDA_PREFIX/bin/conda"* || true
+          echo
+
+          echo "=== VERSIONS ==="
+          conda --version
+          python --version
+          conda-build --version
+          echo
+
+          echo "=== CONDA INFO ==="
+          conda info
+          echo
+          conda info --envs
+          echo
+
+          echo "=== RELEVANT PACKAGES ==="
+          conda list --show-channel-urls | grep -E "^(conda|conda-build|conda-libmamba-solver|libmamba|libmambapy|menuinst|pluggy|python|pip|setuptools|libexpat)[[:space:]]" || true
+          echo
+
+          echo "=== CONDA BUILD IMPORT ==="
+          python -c "import sys; print(sys.executable)"
+          python -c "import conda_build; print(conda_build.__file__)"
+          echo
+
+          echo "=== CONDA SUBCOMMANDS ==="
+          conda commands || true
+          echo
+
+          echo "=== CHECK conda build ==="
+          conda build --help
+          echo "conda build exit code: $?"
+          echo
+
+          echo "=== CHECK conda-build executable ==="
+          conda-build --help
+          echo "conda-build exit code: $?"
+          echo
+
+          echo "=== CHECK python -m conda_build ==="
+          python -m conda_build --help
+          echo "python -m conda_build exit code: $?"
+          echo
+
+          echo "=== EXPLICIT SPEC DIFF INPUT ==="
+          conda list --explicit | grep -E "conda|conda-build|python|pip|setuptools|libexpat|menuinst|pluggy|libmamba" || true
+
       - name: Build conda package
         id: build_conda_pkg
         continue-on-error: true
