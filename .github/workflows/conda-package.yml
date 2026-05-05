@@ -91,15 +91,15 @@ jobs:
       - name: Build conda package
         id: build_conda_pkg
         continue-on-error: true
-        run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
+        run: conda-build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
         env:
-          MAX_BUILD_CMPL_MKL_VERSION: '2026.0a0'
+          MAX_BUILD_CMPL_MKL_VERSION: '2027.0a0'
 
       - name: ReBuild conda package
         if: steps.build_conda_pkg.outcome == 'failure'
-        run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
+        run: conda-build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
         env:
-          MAX_BUILD_CMPL_MKL_VERSION: '2026.0a0'
+          MAX_BUILD_CMPL_MKL_VERSION: '2027.0a0'
 
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
