@@ -4,7 +4,12 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64, numpy_version
+from dpnp.tests.helper import (
+    has_support_aspect64,
+    is_lts_driver,
+    is_win_platform,
+    numpy_version,
+)
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -113,6 +118,14 @@ class TestMisc:
     @testing.for_dtypes(["e", "f", "d", "F", "D"])
     @testing.numpy_cupy_array_equal()
     def check_binary_nan(self, name, xp, dtype):
+        if (
+            not is_win_platform()
+            and not is_lts_driver()
+            and name == "minimum"
+            and dtype == numpy.float16
+        ):
+            pytest.skip("GSD-12679")
+
         a = xp.array(
             [-3, numpy.nan, -1, numpy.nan, 0, numpy.nan, 2], dtype=dtype
         )
