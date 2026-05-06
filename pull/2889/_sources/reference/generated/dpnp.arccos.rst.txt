@@ -1,0 +1,10 @@
+﻿
+
+dpnp.arccos
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: arccos
