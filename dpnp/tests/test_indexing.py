@@ -353,6 +353,59 @@ class TestIndexing:
         arr[slices] = 10
         assert_equal(arr, 10.0, strict=False)
 
+    @pytest.mark.parametrize(
+        "idx",
+        [
+            (range(2), range(2)),
+            ([0, 1], [0, 1]),
+        ],
+        ids=["range", "list"],
+    )
+    def test_array_like_index_getitem(self, idx):
+        np_a = numpy.arange(36).reshape(2, 2, 3, 3)
+        dp_a = dpnp.arange(36).reshape(2, 2, 3, 3)
+        assert_array_equal(dp_a[idx], np_a[idx])
+
+    @pytest.mark.parametrize(
+        "idx",
+        [
+            (range(2), range(2)),
+            ([0, 1], [0, 1]),
+        ],
+        ids=["range", "list"],
+    )
+    def test_array_like_index_setitem(self, idx):
+        np_a = numpy.arange(36).reshape(2, 2, 3, 3)
+        dp_a = dpnp.arange(36).reshape(2, 2, 3, 3)
+        np_a[idx] = 0
+        dp_a[idx] = 0
+        assert_array_equal(dp_a, np_a)
+
+    def test_array_like_index_inplace_add(self):
+        np_a = numpy.arange(36).reshape(2, 2, 3, 3)
+        dp_a = dpnp.arange(36).reshape(2, 2, 3, 3)
+        np_tmp = -numpy.ones((2, 3, 3), dtype=numpy.intp)
+        dp_tmp = -dpnp.ones((2, 3, 3), dtype=numpy.intp)
+
+        np_a[range(2), range(2)] += 2 * np_tmp
+        dp_a[range(2), range(2)] += 2 * dp_tmp
+        assert_array_equal(dp_a, np_a)
+
+    @pytest.mark.parametrize(
+        "idx",
+        [
+            range(2),
+            [0, 1],
+            range(0),
+            [],
+        ],
+        ids=["range", "list", "empty_range", "empty_list"],
+    )
+    def test_array_like_single_index(self, idx):
+        np_a = numpy.arange(24).reshape(2, 3, 4)
+        dp_a = dpnp.arange(24).reshape(2, 3, 4)
+        assert_array_equal(dp_a[idx], np_a[idx])
+
 
 class TestIx:
     @pytest.mark.parametrize(
