@@ -11,6 +11,7 @@ from numpy.testing import (
 import dpnp
 
 from .helper import (
+    LTS_VERSION,
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_abs_array,
@@ -21,6 +22,10 @@ from .helper import (
     get_integer_dtypes,
     get_integer_float_dtypes,
     has_support_aspect64,
+    is_bmg,
+    is_lnl,
+    is_lts_driver,
+    is_win_platform,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -487,6 +492,12 @@ class TestHistogram:
         with assert_raises(ValueError):
             dpnp.histogram(v, weights=w)
 
+    @pytest.mark.skipif(
+        not is_win_platform()
+        and not is_lts_driver(version=LTS_VERSION.V1_6)
+        and (is_lnl() or is_bmg()),
+        reason="SAT-8135",
+    )
     @pytest.mark.parametrize(
         "bins_count",
         [10, 10**2, 10**3, 10**4, 10**5, 10**6],
@@ -585,6 +596,12 @@ class TestBincount:
         w = xp.arange(5, dtype=dt)
         assert_raises((TypeError, ValueError), xp.bincount, v, weights=w)
 
+    @pytest.mark.skipif(
+        not is_win_platform()
+        and not is_lts_driver(version=LTS_VERSION.V1_6)
+        and (is_lnl() or is_bmg()),
+        reason="SAT-8135",
+    )
     @pytest.mark.parametrize(
         "bins_count",
         [10, 10**2, 10**3, 10**4, 10**5, 10**6],
@@ -851,6 +868,12 @@ class TestHistogramDd:
         with assert_raises(ValueError):
             dpnp.histogramdd(v, weights=w)
 
+    @pytest.mark.skipif(
+        not is_win_platform()
+        and not is_lts_driver(version=LTS_VERSION.V1_6)
+        and (is_lnl() or is_bmg()),
+        reason="SAT-8135",
+    )
     @pytest.mark.parametrize(
         "bins_count",
         [10, 10**2, 10**3, 10**4, 10**5, 10**6],
@@ -1092,6 +1115,12 @@ class TestHistogram2d:
         y = xp.linspace(0.0, 1.0, num=20)
         assert_raises(ValueError, xp.histogram2d, x, y)
 
+    @pytest.mark.skipif(
+        not is_win_platform()
+        and not is_lts_driver(version=LTS_VERSION.V1_6)
+        and (is_lnl() or is_bmg()),
+        reason="SAT-8135",
+    )
     @pytest.mark.parametrize(
         "bins_count",
         [10, 10**2, 10**3],
