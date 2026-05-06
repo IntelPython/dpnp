@@ -13,7 +13,6 @@ from . import config
 
 
 class LTS_VERSION(Enum):
-    V1_3 = "1.3"
     V1_6 = "1.6"
 
 
@@ -489,7 +488,7 @@ def is_lnl(device=None):
     return _get_dev_mask(device) == 0x6400
 
 
-def is_lts_driver(version=LTS_VERSION.V1_3, device=None):
+def is_lts_driver(version=LTS_VERSION.V1_6, device=None):
     """
     Return True if a test is running on a GPU device with LTS driver version,
     False otherwise.
