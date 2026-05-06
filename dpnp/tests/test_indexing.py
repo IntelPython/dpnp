@@ -442,6 +442,30 @@ class TestIndexing:
         dp_a = dpnp.arange(10)
         assert_array_equal(dp_a[inds], np_a[inds])
 
+    @pytest.mark.parametrize(
+        "idx",
+        [
+            1.0,
+            1 + 0j,
+            numpy.float64(1.0),
+            numpy.complex128(1.0),
+            "a",
+            [0.5, 1.5],
+        ],
+        ids=[
+            "float",
+            "complex",
+            "np.float64",
+            "np.complex128",
+            "str",
+            "float_list",
+        ],
+    )
+    def test_invalid_index(self, idx):
+        dp_a = dpnp.arange(12).reshape(3, 4)
+        with pytest.raises((IndexError, TypeError)):
+            dp_a[idx]
+
 
 class TestIx:
     @pytest.mark.parametrize(
