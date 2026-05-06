@@ -38,6 +38,8 @@ elements stored in a USM allocation on a SYCL device.
 
 import warnings
 
+import numpy
+
 import dpnp
 import dpnp.tensor as dpt
 import dpnp.tensor._type_utils as dtu
@@ -46,24 +48,45 @@ from . import memory as dpm
 from .exceptions import AxisError
 
 
+def _unwrap_index_element(x):
+    """
+    Unwrap a single index element for the tensor indexing layer.
+
+    Converts dpnp arrays to usm_ndarray and array-like objects (range, list)
+    to numpy arrays with intp dtype for NumPy-compatible advanced indexing.
+
+    """
+
+    if isinstance(x, dpt.usm_ndarray):
+        return x
+    if isinstance(x, dpnp_array):
+        return x.get_array()
+    if isinstance(x, range):
+        return numpy.asarray(x, dtype=numpy.intp)
+    if isinstance(x, list):
+        # keep boolean lists as boolean
+        arr = numpy.asarray(x)
+        # cast empty lists (float64 in NumPy) to intp
+        # for correct tensor indexing
+        if arr.size == 0:
+            arr = arr.astype(numpy.intp)
+        return arr
+    return x
+
+
 def _get_unwrapped_index_key(key):
     """
     Get an unwrapped index key.
 
     Return a key where each nested instance of DPNP array is unwrapped into
-    USM ndarray for further processing in DPCTL advanced indexing functions.
+    USM ndarray, and array-like objects (range, list) are converted to numpy
+    arrays for further processing in advanced indexing functions.
 
     """
 
     if isinstance(key, tuple):
-        if any(isinstance(x, dpnp_array) for x in key):
-            # create a new tuple from the input key with unwrapped DPNP arrays
-            return tuple(
-                x.get_array() if isinstance(x, dpnp_array) else x for x in key
-            )
-    elif isinstance(key, dpnp_array):
-        return key.get_array()
-    return key
+        return tuple(_unwrap_index_element(x) for x in key)
+    return _unwrap_index_element(key)
 
 
 # pylint: disable=too-many-public-methods
