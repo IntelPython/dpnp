@@ -82,9 +82,9 @@ PYBIND11_MODULE(_sparse_impl, m)
         [](sycl::queue &exec_q, const int trans,
            const dpnp::tensor::usm_ndarray &row_ptr,
            const dpnp::tensor::usm_ndarray &col_ind,
-           const dpnp::tensor::usm_ndarray &values,
-           const std::int64_t num_rows, const std::int64_t num_cols,
-           const std::int64_t nnz, const std::vector<sycl::event> &depends)
+           const dpnp::tensor::usm_ndarray &values, const std::int64_t num_rows,
+           const std::int64_t num_cols, const std::int64_t nnz,
+           const std::vector<sycl::event> &depends)
             -> std::tuple<std::uintptr_t, int, sycl::event> {
             return sparse_gemv_init(exec_q, trans, row_ptr, col_ind, values,
                                     num_rows, num_cols, nnz, depends);
