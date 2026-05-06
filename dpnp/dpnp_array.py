@@ -54,35 +54,29 @@ def _unwrap_index_element(x):
 
     Converts dpnp arrays to usm_ndarray and array-like objects (range, list,
     buffer protocol objects) to numpy arrays for NumPy-compatible advanced
-    indexing.
+    indexing. Scalars and slices pass through to the tensor layer.
 
     """
 
-    if isinstance(x, dpt.usm_ndarray):
+    if (
+        x is None
+        or x is Ellipsis
+        or isinstance(x, (dpt.usm_ndarray, slice, numpy.ndarray))
+    ):
         return x
     if isinstance(x, dpnp_array):
         return x.get_array()
-    if isinstance(x, range):
-        return numpy.asarray(x, dtype=numpy.intp)
-    if isinstance(x, list):
-        # keep boolean lists as boolean
-        arr = numpy.asarray(x)
-        # cast empty lists (float64 in NumPy) to intp
-        # for correct tensor indexing
-        if arr.size == 0:
-            arr = arr.astype(numpy.intp)
-        return arr
-    if isinstance(x, numpy.ndarray):
+    # scalars (int, bool, numpy scalars) pass through to the tensor layer
+    if isinstance(x, (int, numpy.generic)):
         return x
-    # convert buffer protocol objects (array.array, memoryview, etc.)
-    try:
-        mv = memoryview(x)
-    except TypeError:
-        return x
-    # 0-d buffers are handled by the tensor layer
-    if mv.ndim > 0:
-        return numpy.asarray(x)
-    return x
+
+    # convert array-like objects (range, list, buffer protocol) to numpy
+    arr = numpy.asarray(x)
+    # cast empty arrays (float64 in NumPy) to intp
+    # for correct tensor indexing
+    if arr.size == 0 and arr.dtype.kind == "f":
+        arr = arr.astype(numpy.intp)
+    return arr
 
 
 def _get_unwrapped_index_key(key):
