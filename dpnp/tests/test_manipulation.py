@@ -2081,7 +2081,7 @@ class TestBroadcast:
 
     def test_broadcast_incompatible_shapes_2d(self):
         # Test incompatible 2D shapes
-        a = dpnp.array([[1, 2, 3]])
+        a = dpnp.array([[1, 2, 3], [4, 5, 6]])
         b = dpnp.array([[1], [2], [3], [4]])
 
         with pytest.raises(ValueError):
