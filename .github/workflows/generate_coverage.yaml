@@ -109,10 +109,14 @@ jobs:
       # with a newer version of the DPC++ compiler).
       # Installing dpctl via the pip manager has no such limitation, as the package has no
       # run dependency on the DPC++ RT pip package, so this is why the step is necessary here.
+      # - name: Install dpctl
+      #   if: env.oneapi-pkgs-env == ''
+      #   run: |
+      #     pip install -r ${{ env.dpctl-pkg-txt }}
+      # TODO: renmove pinning once CMPLRLLVM-75178 is resolved and released
       - name: Install dpctl
-        if: env.oneapi-pkgs-env == ''
         run: |
-          pip install -r ${{ env.dpctl-pkg-txt }}
+          pip install dpctl==0.21.1
 
       - name: Conda info
         run: |
