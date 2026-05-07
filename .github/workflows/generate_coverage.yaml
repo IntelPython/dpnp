@@ -46,9 +46,9 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt update
 
-      # Pinned to OneAPI 2025.3 to match the version used to build dpctl packages.
-      # TODO: remove pinning once dpctl is built with the latest OneAPI.
-      - name: Install Intel OneAPI 2025.3
+      # Pinned to OneAPI 2025.3 due to known 2026.0 DPC++ compiler issue with Segfault during the sycl-post-link
+      # TODO: renmove once CMPLRLLVM-75178 is resolved and released
+      - name: Install Intel OneAPI
         if: env.oneapi-pkgs-env == ''
         run: |
           sudo apt install hwloc                                   \
