@@ -73,18 +73,6 @@ import dpnp.backend.extensions.blas._blas_impl as bi
 
 from ._interface import IdentityOperator, LinearOperator, aslinearoperator
 
-# ---------------------------------------------------------------------------
-# oneMKL sparse SpMV hook -- cached-handle API
-# ---------------------------------------------------------------------------
-
-try:
-    from dpnp.backend.extensions.sparse import _sparse_impl as _si
-
-    _HAS_SPARSE_IMPL = True
-except ImportError:
-    _si = None
-    _HAS_SPARSE_IMPL = False
-
 _SUPPORTED_DTYPES = frozenset("fdFD")
 
 
@@ -112,11 +100,15 @@ class _CachedSpMV:
     Parameters
     ----------
     A : dpnp CSR sparse matrix
+    si : dpnp.backend.extensions.sparse._sparse_impl module
+        Passed in from _make_fast_matvec to keep the import lazy and
+        avoid a circular import during dpnp package initialization.
     trans : int  0=N, 1=T, 2=C  (fixed at construction)
     """
 
     __slots__ = (
         "_A",
+        "_si",
         "_exec_q",
         "_handle",
         "_trans",
@@ -129,8 +121,9 @@ class _CachedSpMV:
         "_val_type_id",
     )
 
-    def __init__(self, A, trans: int = 0):
+    def __init__(self, A, si, trans: int = 0):
         self._A = A  # keep alive so USM pointers stay valid
+        self._si = si
         self._trans = int(trans)
         self._nrows = int(A.shape[0])
         self._ncols = int(A.shape[1])
@@ -154,7 +147,7 @@ class _CachedSpMV:
         # init_matrix_handle + set_csr_data + optimize_gemv (once).
         # We must wait on optimize_gemv before any compute call can run;
         # this is the only place __init__/__call__ blocks.
-        handle, val_type_id, ev = _si._sparse_gemv_init(
+        handle, val_type_id, ev = self._si._sparse_gemv_init(
             self._exec_q,
             self._trans,
             A.indptr,
@@ -177,7 +170,7 @@ class _CachedSpMV:
         # Do NOT wait on the event -- subsequent dpnp ops on the same
         # queue will serialize behind it automatically. Blocking here
         # throws away async overlap and dominates small-problem runtime.
-        _si._sparse_gemv_compute(
+        self._si._sparse_gemv_compute(
             self._exec_q,
             self._handle,
             self._val_type_id,
@@ -196,9 +189,10 @@ class _CachedSpMV:
         # Guard against partial construction: _handle may not be set if
         # __init__ raised before the assignment.
         handle = getattr(self, "_handle", None)
-        if handle is not None and _si is not None:
+        si = getattr(self, "_si", None)
+        if handle is not None and si is not None:
             try:
-                _si._sparse_gemv_release(self._exec_q, handle, [])
+                si._sparse_gemv_release(self._exec_q, handle, [])
             except Exception:
                 pass
             self._handle = None
@@ -207,11 +201,12 @@ class _CachedSpMV:
 class _CachedSpMVPair:
     """Holds forward and (lazily built) adjoint cached SpMV handles."""
 
-    __slots__ = ("forward", "_A", "_adjoint")
+    __slots__ = ("forward", "_A", "_si", "_adjoint")
 
-    def __init__(self, A):
-        self.forward = _CachedSpMV(A, trans=0)
+    def __init__(self, A, si):
         self._A = A
+        self._si = si
+        self.forward = _CachedSpMV(A, si, trans=0)
         self._adjoint = None
 
     def matvec(self, x):
@@ -219,12 +214,14 @@ class _CachedSpMVPair:
         return self.forward(x)
 
     def rmatvec(self, x):
-        """Return the data type of the operator."""
+        """Apply the conjugate-transpose operator to vector x."""
         if self._adjoint is None:
             # Build conjtrans handle on first use. For real dtypes
             # this is equivalent to trans=1.
             is_cpx = dpnp.issubdtype(self._A.data.dtype, dpnp.complexfloating)
-            self._adjoint = _CachedSpMV(self._A, trans=2 if is_cpx else 1)
+            self._adjoint = _CachedSpMV(
+                self._A, self._si, trans=2 if is_cpx else 1
+            )
         return self._adjoint(x)
 
 
@@ -245,7 +242,13 @@ def _make_fast_matvec(A):
     except (ImportError, AttributeError):
         return None
 
-    if not _HAS_SPARSE_IMPL:
+    # Lazy backend import -- mirrors cupyx/scipy/sparse/linalg/_iterative.py,
+    # which imports cusparse inside this function. Keeping the import out of
+    # module scope avoids re-entering the partially-initialized dpnp package
+    # while dpnp/__init__.py is still executing `from . import scipy as scipy`.
+    try:
+        from dpnp.backend.extensions.sparse import _sparse_impl as _si
+    except ImportError:
         return None
 
     # Only build the cached handle for supported dtypes.
@@ -253,7 +256,7 @@ def _make_fast_matvec(A):
         return None
 
     try:
-        return _CachedSpMVPair(A)
+        return _CachedSpMVPair(A, _si)
     except Exception:
         return None
 
