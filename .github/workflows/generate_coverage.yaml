@@ -116,7 +116,7 @@ jobs:
       # TODO: renmove pinning once CMPLRLLVM-75178 is resolved and released
       - name: Install dpctl
         run: |
-          pip install dpctl==0.21.1
+          pip install dpctl>=0.23.0dev0 --index-url https://pypi.anaconda.org/dppy/label/coverage/simple
 
       - name: Conda info
         run: |
