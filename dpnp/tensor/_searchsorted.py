@@ -171,9 +171,6 @@ def searchsorted(
     dt1, dt2 = _resolve_weak_types_all_py_ints(x1_dt, x2_dt, sycl_dev)
     dt = _to_device_supported_dtype(dpt.result_type(dt1, dt2), sycl_dev)
 
-    if not isinstance(x2, usm_ndarray):
-        x2 = dpt.asarray(x2, dtype=dt2, usm_type=res_usm_type, sycl_queue=q)
-
     # get submitted events again in case some were added by sorter handling
     dep_evs = _manager.submitted_events
     if x1_dt != dt:
@@ -182,7 +179,9 @@ def searchsorted(
         _manager.add_event_pair(ht_ev, ev)
         x1 = x1_buf
 
-    if x2.dtype != dt:
+    if not isinstance(x2, usm_ndarray):
+        x2 = dpt.asarray(x2, dtype=dt, usm_type=res_usm_type, sycl_queue=q)
+    elif x2_dt != dt:
         x2_buf = _empty_like_orderK(x2, dt)
         ht_ev, ev = ti_copy(src=x2, dst=x2_buf, sycl_queue=q, depends=dep_evs)
         _manager.add_event_pair(ht_ev, ev)
