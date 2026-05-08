@@ -28,7 +28,6 @@
 
 from typing import Literal
 
-import dpctl
 import dpctl.utils as du
 
 import dpnp.tensor as dpt
@@ -141,7 +140,7 @@ def searchsorted(
 
     _manager = du.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
-    ev = dpctl.SyclEvent()
+    x1_deps = dep_evs
     if sorter is not None:
         if not isdtype(sorter.dtype, "integral"):
             raise ValueError(
@@ -166,16 +165,16 @@ def searchsorted(
             depends=dep_evs,
         )
         x1 = res
+        x1_deps = [ev]
         _manager.add_event_pair(ht_ev, ev)
 
     dt1, dt2 = _resolve_weak_types_all_py_ints(x1_dt, x2_dt, sycl_dev)
     dt = _to_device_supported_dtype(dpt.result_type(dt1, dt2), sycl_dev)
 
-    # get submitted events again in case some were added by sorter handling
-    dep_evs = _manager.submitted_events
     if x1_dt != dt:
         x1_buf = _empty_like_orderK(x1, dt)
-        ht_ev, ev = ti_copy(src=x1, dst=x1_buf, sycl_queue=q, depends=dep_evs)
+        # get the submitted events again to ensure the copy waits take call
+        ht_ev, ev = ti_copy(src=x1, dst=x1_buf, sycl_queue=q, depends=x1_deps)
         _manager.add_event_pair(ht_ev, ev)
         x1 = x1_buf
 
