@@ -1,0 +1,10 @@
+﻿
+
+dpnp.cumulative\_sum
+====================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: cumulative_sum
