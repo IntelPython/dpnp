@@ -711,7 +711,7 @@ def minres(
 
     if beta1 < 0:
         raise ValueError("indefinite preconditioner")
-    elif beta1 == 0:
+    if beta1 == 0:
         return (x, 0)
 
     beta1 = dpnp.sqrt(beta1)

@@ -44,6 +44,8 @@ skbuild.setup(
         "dpnp.random",
         "dpnp.scipy",
         "dpnp.scipy.linalg",
+        "dpnp.scipy.sparse",
+        "dpnp.scipy.sparse.linalg",
         "dpnp.scipy.special",
     ],
     package_data={
