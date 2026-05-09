@@ -46,16 +46,18 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt update
 
-      - name: Install latest Intel OneAPI
+      # Pinned to OneAPI 2025.3 due to known 2026.0 DPC++ compiler issue with Segfault during the sycl-post-link
+      # TODO: renmove once CMPLRLLVM-75178 is resolved and released
+      - name: Install Intel OneAPI
         if: env.oneapi-pkgs-env == ''
         run: |
-          sudo apt install hwloc                           \
-                           intel-oneapi-mkl                \
-                           intel-oneapi-umf                \
-                           intel-oneapi-mkl-devel          \
-                           intel-oneapi-tbb-devel          \
-                           intel-oneapi-libdpstd-devel     \
-                           intel-oneapi-compiler-dpcpp-cpp
+          sudo apt install hwloc                                   \
+                           intel-oneapi-mkl-2025.3                 \
+                           intel-oneapi-umf-1.0                    \
+                           intel-oneapi-mkl-devel-2025.3           \
+                           intel-oneapi-tbb-devel-2022.3           \
+                           intel-oneapi-libdpstd-devel-2022.10     \
+                           intel-oneapi-compiler-dpcpp-cpp-2025.3
 
       - name: Checkout repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -107,10 +109,14 @@ jobs:
       # with a newer version of the DPC++ compiler).
       # Installing dpctl via the pip manager has no such limitation, as the package has no
       # run dependency on the DPC++ RT pip package, so this is why the step is necessary here.
+      # - name: Install dpctl
+      #   if: env.oneapi-pkgs-env == ''
+      #   run: |
+      #     pip install -r ${{ env.dpctl-pkg-txt }}
+      # TODO: renmove pinning once CMPLRLLVM-75178 is resolved and released
       - name: Install dpctl
-        if: env.oneapi-pkgs-env == ''
         run: |
-          pip install -r ${{ env.dpctl-pkg-txt }}
+          pip install dpctl>=0.23.0dev0 --index-url https://pypi.anaconda.org/dppy/label/coverage/simple
 
       - name: Conda info
         run: |
