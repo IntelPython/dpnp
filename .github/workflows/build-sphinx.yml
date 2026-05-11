@@ -13,6 +13,7 @@ env:
   GH_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
   GH_EVENT_PUSH_UPSTREAM: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' &&
                               github.event.ref == 'refs/heads/master' && github.event.repository && !github.event.repository.fork }}
+  GH_EVENT_PR_OPEN: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
   PUBLISH_DIR: doc/_build/html/
 
 defaults:
@@ -202,7 +203,7 @@ jobs:
 
       # Upload artifact for fork PRs
       - name: Upload docs artifact (Fork PRs)
-        if: steps.check_fork.outputs.is_fork == 'true' && github.event.action != 'closed'
+        if: env.GH_EVENT_PR_OPEN == 'true' && steps.check_fork.outputs.is_fork == 'true'
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
         with:
           name: pr-${{ github.event.number }}-docs
@@ -224,7 +225,7 @@ jobs:
 
       # The step is only used to build docs while pushing to PR branch
       - name: Publish pull-request docs
-        if: github.event_name == 'pull_request' && github.event.action != 'closed' && steps.check_fork.outputs.is_fork == 'false'
+        if: env.GH_EVENT_PR_OPEN == 'true' && steps.check_fork.outputs.is_fork == 'false'
         uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -241,7 +242,7 @@ jobs:
       # Note: Fork PRs have read-only GITHUB_TOKEN and cannot post comments
       # See: https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#workflows-in-forked-repositories
       - name: Comment with URL to published pull-request docs
-        if: github.event_name == 'pull_request' && github.event.action != 'closed' && steps.check_fork.outputs.is_fork == 'false'
+        if: env.GH_EVENT_PR_OPEN == 'true' && steps.check_fork.outputs.is_fork == 'false'
         env:
           PR_NUM: ${{ github.event.number }}
         uses: mshick/add-pr-comment@8e4927817251f1ff60c001f04568532b38e0b4a0 # v3.11.0.8.3.11.0
