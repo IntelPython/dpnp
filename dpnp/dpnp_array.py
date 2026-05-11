@@ -74,7 +74,7 @@ def _unwrap_index_element(x):
     arr = numpy.asarray(x)
     # cast empty arrays (float64 in NumPy) to intp
     # for correct tensor indexing
-    if arr.size == 0 and arr.dtype.kind == "f":
+    if arr.size == 0:
         arr = arr.astype(numpy.intp)
     return arr
 
