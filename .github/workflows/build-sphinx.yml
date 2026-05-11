@@ -237,57 +237,18 @@ jobs:
           user_name: ${{ env.GH_BOT_NAME }}
           user_email: ${{ env.GH_BOT_EMAIL }}
 
-      # Prepare documentation preview comment based on PR type
-      - name: Prepare docs preview comment
-        if: github.event_name == 'pull_request' && github.event.action != 'closed'
-        id: docs_comment
+      # The step is only used to build docs while pushing to PR branch
+      # Note: Fork PRs have read-only GITHUB_TOKEN and cannot post comments
+      # See: https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#workflows-in-forked-repositories
+      - name: Comment with URL to published pull-request docs
+        if: github.event_name == 'pull_request' && github.event.action != 'closed' && steps.check_fork.outputs.is_fork == 'false'
         env:
           PR_NUM: ${{ github.event.number }}
-          IS_FORK: ${{ steps.check_fork.outputs.is_fork }}
-        run: |
-          if [ "$IS_FORK" == "true" ]; then
-            # Fork PR - provide artifact download instructions
-            cat << 'EOF' >> "$GITHUB_OUTPUT"
-          message<<COMMENT_EOF
-          📚 **Documentation Preview (Fork PR)**
-
-          Your docs have been built successfully! For security reasons, fork PRs cannot automatically publish to GitHub Pages.
-
-          **To view your docs:**
-          ```bash
-          gh run download ${{ github.run_id }} -R ${{ github.repository }} -n pr-${{ env.PR_NUM }}-docs
-          cd pr-${{ env.PR_NUM }}-docs
-          python -m http.server 8000
-          # Open http://localhost:8000 in your browser
-          ```
-
-          **Alternative: Manual download**
-          1. Download artifact `pr-${{ env.PR_NUM }}-docs` from [this workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) (scroll to "Artifacts" section)
-          2. Extract the ZIP file and open `index.html` in your browser
-
-          <details>
-          <summary>Why can't fork PRs publish automatically?</summary>
-
-          Fork PRs run with restricted permissions to prevent malicious code from modifying the repository or accessing secrets. This is a GitHub security feature to protect open source projects.
-          </details>
-          COMMENT_EOF
-          EOF
-          else
-            # Upstream PR - provide direct URL
-            cat << 'EOF' >> "$GITHUB_OUTPUT"
-          message<<COMMENT_EOF
-          View rendered docs @ https://intelpython.github.io/dpnp/pull/${{ env.PR_NUM }}/index.html
-          COMMENT_EOF
-          EOF
-          fi
-
-      # Comment on PR with docs preview
-      - name: Comment with docs preview
-        if: github.event_name == 'pull_request' && github.event.action != 'closed'
         uses: mshick/add-pr-comment@8e4927817251f1ff60c001f04568532b38e0b4a0 # v3.11.0.8.3.11.0
         with:
-          message-id: docs_preview
-          message: ${{ steps.docs_comment.outputs.message }}
+          message-id: url_to_docs
+          message: |
+            View rendered docs @ https://intelpython.github.io/dpnp/pull/${{ env.PR_NUM }}/index.html
           allow-repeats: false
 
   # The job is only used to build docs when PR is closed (action from PR branch)
