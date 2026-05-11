@@ -36,6 +36,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <stdexcept>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -47,10 +48,12 @@
 #include <pybind11/stl.h>
 
 #include "kernels/sorting/topk.hpp"
+#include "kernels/sorting/topk_radix_select.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/rich_comparisons.hpp"
 #include "utils/type_dispatch.hpp"
+#include "utils/type_utils.hpp"
 
 #include "topk.hpp"
 
@@ -67,70 +70,232 @@ typedef sycl::event (*topk_impl_fn_ptr_t)(sycl::queue &,
                                           const char *,
                                           char *,
                                           char *,
+                                          py::ssize_t,
+                                          py::ssize_t,
+                                          py::ssize_t,
+                                          py::ssize_t,
+                                          py::ssize_t,
+                                          py::ssize_t,
                                           const std::vector<sycl::event> &);
 
 static topk_impl_fn_ptr_t topk_dispatch_vector[td_ns::num_types];
 
-namespace
+// runtime dispatch heuristics
+//   * sg_topk (single group per row using radix-select algorithm)
+//   * mg_topk (multiple groups per row using radix-select with kth-value pass)
+//   * topk_merge (full merge-sort, take first k)
+//   * topk_radix (full radix-sort, take first k)
+namespace topk_dispatch
 {
 
-template <typename T, typename = void>
-struct use_radix_sort : public std::false_type
+// based on thresholds from Torch, which this kernel was adapted from
+// experimentally confirmed
+inline bool use_multi_group_gpu(std::size_t iter_size, std::size_t axis_size)
 {
+    using u32max = std::numeric_limits<std::uint32_t>;
+    if (iter_size > u32max::max() || axis_size > u32max::max())
+        return false;
+    return (iter_size <= 20 && axis_size >= 20000) ||
+           (iter_size > 20 && iter_size <= 40 && axis_size >= 10000) ||
+           (iter_size > 40 && iter_size <= 80 && axis_size >= 8000) ||
+           (iter_size > 80 && iter_size < 200 && axis_size >= 5000) ||
+           (iter_size >= 200 && iter_size < 800 && axis_size >= 3000) ||
+           (iter_size >= 800 && iter_size <= 4000 && axis_size >= 800) ||
+           (iter_size > 4000 && axis_size >= 400);
+}
+
+// CPU multi-group threshold: experimentally determined that mg_topk dominates
+// at much smaller N than on GPU
+inline bool use_multi_group_cpu(std::size_t iter_size, std::size_t axis_size)
+{
+    using u32max = std::numeric_limits<std::uint32_t>;
+    if (iter_size > u32max::max() || axis_size > u32max::max())
+        return false;
+    return (iter_size <= 4 && axis_size >= 2000) ||
+           (iter_size > 4 && iter_size <= 20 && axis_size >= 1000) ||
+           (iter_size > 20 && iter_size <= 100 && axis_size >= 500) ||
+           (iter_size > 100 && axis_size >= 200);
+}
+
+// detect iGPU. Assume discrete with macro undefined as merge implementation
+// will only be worse at very large array sizes, often not suitable for
+// iGPU anyway
+inline bool is_integrated_gpu(const sycl::device &dev)
+{
+#ifdef SYCL_EXT_ONEAPI_DEVICE_IS_INTEGRATED_GPU
+    return dev.has(sycl::aspect::ext_oneapi_is_integrated_gpu);
+#else
+    return false;
+#endif
+}
+
+// on discrete GPUs, the merge implementation scales better than on integrated
+// GPU and always beats out mg_topk
+template <typename T>
+inline bool use_merge_gpu(std::size_t iter_size,
+                          std::size_t axis_size,
+                          const sycl::device &dev)
+{
+    if (iter_size > 4)
+        return false;
+    if (axis_size < 20000)
+        return false;
+    if (!is_integrated_gpu(dev))
+        return true;
+    // experimentally determined thresholds for integrated GPUs
+    if constexpr (std::is_integral_v<T>)
+        return axis_size < 600000;
+    else
+        return axis_size < 200000;
+}
+
+// on CPU, the heuristic shifts in favor of merge at smaller sizes
+// but in favor of single-group radix-select at larger numbers of slices
+//   float:  merge wins 5K–200K
+//   int32:  merge wins 5K–500K
+//   int64:  merge wins 5K–100K
+template <typename T>
+inline bool use_merge_cpu(std::size_t iter_size, std::size_t axis_size)
+{
+    if (iter_size > 4)
+        return false;
+    if (axis_size < 5000)
+        return false;
+    if constexpr (std::is_floating_point_v<T> || std::is_same_v<T, sycl::half>)
+        return axis_size < 200000;
+    // size of type is an important factor from CPU experiments
+    else if constexpr (sizeof(T) >= 8)
+        return axis_size < 100000;
+    else
+        return axis_size < 500000;
+}
+
+enum class TopKImpl
+{
+    SgTopK,
+    MgTopK,
+    Merge,
+    Radix,
 };
 
 template <typename T>
-struct use_radix_sort<
-    T,
-    std::enable_if_t<std::disjunction<std::is_same<T, bool>,
-                                      std::is_same<T, std::uint8_t>,
-                                      std::is_same<T, std::int8_t>,
-                                      std::is_same<T, std::uint16_t>,
-                                      std::is_same<T, std::int16_t>>::value>>
-    : public std::true_type
+inline TopKImpl dispatch(std::size_t iter_size,
+                         std::size_t axis_size,
+                         const sycl::device &dev)
 {
-};
-
-template <typename argTy, typename IndexTy>
-sycl::event topk_caller(sycl::queue &exec_q,
-                        std::size_t iter_nelems, // number of sub-arrays
-                        std::size_t axis_nelems, // size of each sub-array
-                        std::size_t k,
-                        bool largest,
-                        const char *arg_cp,
-                        char *vals_cp,
-                        char *inds_cp,
-                        const std::vector<sycl::event> &depends)
-{
-    if constexpr (use_radix_sort<argTy>::value) {
-        using dpnp::tensor::kernels::topk_radix_impl;
-        auto ascending = !largest;
-        return topk_radix_impl<argTy, IndexTy>(exec_q, iter_nelems, axis_nelems,
-                                               k, ascending, arg_cp, vals_cp,
-                                               inds_cp, depends);
+    // use radix sort for small integral types
+    if constexpr (std::is_same_v<T, bool> || std::is_same_v<T, std::uint8_t> ||
+                  std::is_same_v<T, std::int8_t> ||
+                  std::is_same_v<T, std::uint16_t> ||
+                  std::is_same_v<T, std::int16_t>) {
+        return TopKImpl::Radix;
     }
     else {
-        using dpnp::tensor::kernels::topk_merge_impl;
+        if (dev.is_cpu()) {
+            if (!use_multi_group_cpu(iter_size, axis_size))
+                return TopKImpl::SgTopK;
+            if (use_merge_cpu<T>(iter_size, axis_size))
+                return TopKImpl::Merge;
+        }
+        else {
+            if (!use_multi_group_gpu(iter_size, axis_size))
+                return TopKImpl::SgTopK;
+            if (use_merge_gpu<T>(iter_size, axis_size, dev))
+                return TopKImpl::Merge;
+        }
+        return TopKImpl::MgTopK;
+    }
+}
+
+template <typename argTy, typename IndexTy>
+sycl::event topk_dispatch_fn(sycl::queue &exec_q,
+                             std::size_t iter_nelems,
+                             std::size_t axis_nelems,
+                             std::size_t k,
+                             bool largest,
+                             const char *arg_cp,
+                             char *vals_cp,
+                             char *inds_cp,
+                             py::ssize_t iter_arg_offset,
+                             py::ssize_t iter_vals_offset,
+                             py::ssize_t iter_inds_offset,
+                             py::ssize_t axis_arg_offset,
+                             py::ssize_t axis_vals_offset,
+                             py::ssize_t axis_inds_offset,
+                             const std::vector<sycl::event> &depends)
+{
+    using dpnp::tensor::type_utils::is_complex_v;
+
+    if constexpr (is_complex_v<argTy>) {
         if (largest) {
             using CompTy =
-                typename dpnp::tensor::rich_comparisons::DescendingSorter<
-                    argTy>::type;
-            return topk_merge_impl<argTy, IndexTy, CompTy>(
+                typename rich_comparisons::DescendingSorter<argTy>::type;
+            return kernels::topk_merge_impl<argTy, IndexTy, CompTy>(
                 exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
                 depends);
         }
         else {
             using CompTy =
-                typename dpnp::tensor::rich_comparisons::AscendingSorter<
-                    argTy>::type;
-            return topk_merge_impl<argTy, IndexTy, CompTy>(
+                typename rich_comparisons::AscendingSorter<argTy>::type;
+            return kernels::topk_merge_impl<argTy, IndexTy, CompTy>(
                 exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
                 depends);
         }
     }
+    else {
+        TopKImpl impl =
+            dispatch<argTy>(iter_nelems, axis_nelems, exec_q.get_device());
+        switch (impl) {
+        case TopKImpl::SgTopK:
+        {
+            using dpnp::tensor::kernels::topk_radix_select_single_group_impl;
+            return topk_radix_select_single_group_impl<argTy, IndexTy>(
+                exec_q, iter_nelems, axis_nelems, k, largest, arg_cp, vals_cp,
+                inds_cp, iter_arg_offset, iter_vals_offset, iter_inds_offset,
+                axis_arg_offset, axis_vals_offset, axis_inds_offset, depends);
+        }
+        case TopKImpl::MgTopK:
+        {
+            using dpnp::tensor::kernels::topk_radix_select_multi_group_impl;
+            return topk_radix_select_multi_group_impl<argTy, IndexTy>(
+                exec_q, iter_nelems, axis_nelems, k, largest, arg_cp, vals_cp,
+                inds_cp, iter_arg_offset, iter_vals_offset, iter_inds_offset,
+                axis_arg_offset, axis_vals_offset, axis_inds_offset, depends);
+        }
+        case TopKImpl::Merge:
+        {
+            using dpnp::tensor::kernels::topk_merge_impl;
+            if (largest) {
+                using CompTy =
+                    typename rich_comparisons::DescendingSorter<argTy>::type;
+                return topk_merge_impl<argTy, IndexTy, CompTy>(
+                    exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp,
+                    inds_cp, depends);
+            }
+            else {
+                using CompTy =
+                    typename rich_comparisons::AscendingSorter<argTy>::type;
+                return topk_merge_impl<argTy, IndexTy, CompTy>(
+                    exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp,
+                    inds_cp, depends);
+            }
+        }
+        case TopKImpl::Radix:
+        {
+            using dpnp::tensor::kernels::topk_radix_impl;
+            const bool ascending = !largest;
+            return topk_radix_impl<argTy, IndexTy>(
+                exec_q, iter_nelems, axis_nelems, k, ascending, arg_cp, vals_cp,
+                inds_cp, depends);
+        }
+        default:
+            throw std::runtime_error(
+                "topk_dispatch_fn received an unexpected value");
+        }
+    }
 }
 
-} // namespace
+} // namespace topk_dispatch
 
 std::pair<sycl::event, sycl::event>
     py_topk(const dpnp::tensor::usm_ndarray &src,
@@ -258,11 +423,15 @@ std::pair<sycl::event, sycl::event>
     bool is_inds_c_contig = inds.is_c_contiguous();
 
     if (is_src_c_contig && is_vals_c_contig && is_inds_c_contig) {
+        // zero offsets for contiguous implementation
+        static constexpr py::ssize_t zero_offset{0};
+
         auto fn = topk_dispatch_vector[src_typeid];
 
         sycl::event comp_ev =
             fn(exec_q, iter_nelems, axis_nelems, k, largest, src.get_data(),
-               vals.get_data(), inds.get_data(), depends);
+               vals.get_data(), inds.get_data(), zero_offset, zero_offset,
+               zero_offset, zero_offset, zero_offset, zero_offset, depends);
 
         sycl::event keep_args_alive_ev =
             dpnp::utils::keep_args_alive(exec_q, {src, vals, inds}, {comp_ev});
@@ -279,7 +448,7 @@ struct TopKFactory
     fnT get()
     {
         using IdxT = std::int64_t;
-        return topk_caller<T, IdxT>;
+        return topk_dispatch::topk_dispatch_fn<T, IdxT>;
     }
 };
 
