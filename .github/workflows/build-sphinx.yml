@@ -11,8 +11,6 @@ permissions: read-all
 env:
   GH_BOT_NAME: 'github-actions[bot]'
   GH_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
-  GH_EVENT_OPEN_PR_UPSTREAM: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' &&
-                                 github.event.pull_request.head.repo && !github.event.pull_request.head.repo.fork }}
   GH_EVENT_PUSH_UPSTREAM: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' &&
                               github.event.ref == 'refs/heads/master' && github.event.repository && !github.event.repository.fork }}
   PUBLISH_DIR: doc/_build/html/
@@ -226,7 +224,7 @@ jobs:
 
       # The step is only used to build docs while pushing to PR branch
       - name: Publish pull-request docs
-        if: env.GH_EVENT_OPEN_PR_UPSTREAM == 'true' && steps.check_fork.outputs.is_fork == 'false'
+        if: github.event_name == 'pull_request' && github.event.action != 'closed' && steps.check_fork.outputs.is_fork == 'false'
         uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
