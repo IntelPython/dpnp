@@ -191,6 +191,26 @@ jobs:
       - name: Copy backend docs
         run: cp -r dpnp/backend/doc/html ${{ env.PUBLISH_DIR }}/backend_doc
 
+      # Detect if this is a fork PR
+      - name: Check if fork PR
+        id: check_fork
+        run: |
+          IS_FORK="false"
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.event.pull_request.head.repo.fork }}" == "true" ]; then
+            IS_FORK="true"
+          fi
+          echo "is_fork=$IS_FORK" >> "$GITHUB_OUTPUT"
+          echo "Is fork PR: $IS_FORK"
+
+      # Upload artifact for fork PRs
+      - name: Upload docs artifact (Fork PRs)
+        if: steps.check_fork.outputs.is_fork == 'true' && github.event.action != 'closed'
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: pr-${{ github.event.number }}-docs
+          path: ${{ env.PUBLISH_DIR }}
+          retention-days: 30
+
       # The step is only used to build docs while pushing a PR to "master"
       - name: Deploy docs
         if: env.GH_EVENT_PUSH_UPSTREAM == 'true'
@@ -206,7 +226,7 @@ jobs:
 
       # The step is only used to build docs while pushing to PR branch
       - name: Publish pull-request docs
-        if: env.GH_EVENT_OPEN_PR_UPSTREAM == 'true'
+        if: env.GH_EVENT_OPEN_PR_UPSTREAM == 'true' && steps.check_fork.outputs.is_fork == 'false'
         uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
