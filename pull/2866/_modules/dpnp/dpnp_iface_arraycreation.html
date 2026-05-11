@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.20.0dev6+18.g359e1ffb69c documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.21.0dev0+24.g495b0e7432c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=729efaa1"></script>
+      <script src="../../_static/documentation_options.js?v=440cc29f"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -3858,8 +3858,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">_k</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">if</span> <span class="n">_k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># pylint: disable=raise-missing-from</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`k` must be a integer data type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
