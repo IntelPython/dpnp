@@ -13,7 +13,6 @@ from . import config
 
 
 class LTS_VERSION(Enum):
-    V1_3 = "1.3"
     V1_6 = "1.6"
 
 
@@ -430,6 +429,14 @@ def is_arl_or_mtl(device=None):
     return _get_dev_mask(device) == 0x7D00
 
 
+def is_bmg(device=None):
+    """
+    Return True if a test is running on Arc Battlemage (B-Series) GPU device,
+    False otherwise.
+    """
+    return _get_dev_mask(device) == 0xE200
+
+
 def is_cpu_device(device=None):
     """
     Return True if a test is running on CPU device, False otherwise.
@@ -481,7 +488,7 @@ def is_lnl(device=None):
     return _get_dev_mask(device) == 0x6400
 
 
-def is_lts_driver(version=LTS_VERSION.V1_3, device=None):
+def is_lts_driver(version=LTS_VERSION.V1_6, device=None):
     """
     Return True if a test is running on a GPU device with LTS driver version,
     False otherwise.

@@ -104,12 +104,6 @@ cdef bint _is_boolean(object x) except *:
             return f in "?"
         else:
             return False
-    if callable(getattr(x, "__bool__", None)):
-        try:
-            x.__bool__()
-        except (TypeError, ValueError):
-            return False
-        return True
     return False
 
 
