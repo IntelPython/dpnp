@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Updated `searchsorted` implementations to align with the 2025.12 array API spec [gh-2902](https://github.com/IntelPython/dpnp/pull/2902)
+
 ### Deprecated
 
 ### Removed
