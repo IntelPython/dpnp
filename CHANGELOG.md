@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added C API functions for `tensor.usm_ndarray` setters and getters to avoid ABI breakage if `tensor.usm_ndarray` is modified [gh-2866](https://github.com/IntelPython/dpnp/pull/2866)
+
 ### Changed
 
 ### Deprecated
