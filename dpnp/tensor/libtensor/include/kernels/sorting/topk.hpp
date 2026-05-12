@@ -474,9 +474,9 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
     IndexTy *workspace = workspace_owner.get();
     IndexTy *tmp_tp = workspace + padded_total_nelems;
 
-    using IdentityProjT = radix_sort_details::IdentityProj;
+    using IdentityProjT = radix_sort_detail::IdentityProj;
     using IndexedProjT =
-        radix_sort_details::IndexedProj<IndexTy, argTy, IdentityProjT>;
+        radix_sort_detail::IndexedProj<IndexTy, argTy, IdentityProjT>;
     const IndexedProjT proj_op{arg_tp};
 
     using IotaKernelName = topk_iota_krn<argTy, IndexTy>;
@@ -487,7 +487,7 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
         exec_q, workspace, total_nelems, depends);
 
     sycl::event radix_sort_ev =
-        radix_sort_details::parallel_radix_sort_impl<IndexTy, IndexedProjT>(
+        radix_sort_detail::parallel_radix_sort_impl<IndexTy, IndexedProjT>(
             exec_q, iter_nelems, axis_nelems, workspace, tmp_tp, proj_op,
             ascending, {iota_ev});
 

@@ -55,7 +55,7 @@
 namespace dpnp::tensor::kernels
 {
 
-namespace radix_sort_details
+namespace radix_sort_detail
 {
 
 template <std::uint32_t, bool, typename... TrailingNames>
@@ -1771,7 +1771,7 @@ private:
     ProjT value_projector;
 };
 
-} // namespace radix_sort_details
+} // namespace radix_sort_detail
 
 using dpnp::tensor::ssize_t;
 
@@ -1798,11 +1798,11 @@ sycl::event
     argTy *res_tp =
         reinterpret_cast<argTy *>(res_cp) + iter_res_offset + sort_res_offset;
 
-    using Proj = radix_sort_details::IdentityProj;
+    using Proj = radix_sort_detail::IdentityProj;
     static constexpr Proj proj_op{};
 
     sycl::event radix_sort_ev =
-        radix_sort_details::parallel_radix_sort_impl<argTy, Proj>(
+        radix_sort_detail::parallel_radix_sort_impl<argTy, Proj>(
             exec_q, iter_nelems, sort_nelems, arg_tp, res_tp, proj_op,
             sort_ascending, depends);
 
@@ -1846,9 +1846,9 @@ sycl::event
     // get raw USM pointer
     IndexTy *workspace = workspace_owner.get();
 
-    using IdentityProjT = radix_sort_details::IdentityProj;
+    using IdentityProjT = radix_sort_detail::IdentityProj;
     using IndexedProjT =
-        radix_sort_details::IndexedProj<IndexTy, argTy, IdentityProjT>;
+        radix_sort_detail::IndexedProj<IndexTy, argTy, IdentityProjT>;
     const IndexedProjT proj_op{arg_tp};
 
     using IotaKernelName = radix_argsort_iota_krn<argTy, IndexTy>;
@@ -1859,7 +1859,7 @@ sycl::event
         exec_q, workspace, total_nelems, depends);
 
     sycl::event radix_sort_ev =
-        radix_sort_details::parallel_radix_sort_impl<IndexTy, IndexedProjT>(
+        radix_sort_detail::parallel_radix_sort_impl<IndexTy, IndexedProjT>(
             exec_q, iter_nelems, sort_nelems, workspace, res_tp, proj_op,
             sort_ascending, {iota_ev});
 

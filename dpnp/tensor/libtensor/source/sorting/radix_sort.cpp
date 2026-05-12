@@ -59,7 +59,7 @@ namespace dpnp::tensor::py_internal
 
 namespace py = pybind11;
 namespace td_ns = dpnp::tensor::type_dispatch;
-namespace impl_ns = dpnp::tensor::kernels::radix_sort_details;
+namespace impl_ns = dpnp::tensor::kernels::radix_sort_detail;
 
 using dpnp::tensor::ssize_t;
 using dpnp::tensor::kernels::sort_contig_fn_ptr_t;
