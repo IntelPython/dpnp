@@ -26,6 +26,11 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+# distutils: language = c++
+# cython: language_level=3
+
+import numpy as np
+
 # these typenum values are aligned to values in NumPy
 cdef:
     int UAR_BOOL = 0  # pragma: no cover
