@@ -46,7 +46,6 @@ from ._print import usm_ndarray_repr, usm_ndarray_str
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
 from cpython.mem cimport PyMem_Free
-from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
 from . cimport _dlpack as c_dlpack
 
@@ -56,9 +55,55 @@ from . import _flags
 from ._dlpack import get_build_dlpack_version
 from ._tensor_impl import default_device_fp_type
 
-include "_stride_utils.pxi"
-include "_types.pxi"
-include "_slicing.pxi"
+from ._slicing cimport *
+from ._stride_utils cimport (
+    ERROR_INCORRECT_ORDER,
+    ERROR_INTERNAL,
+    ERROR_MALLOC,
+    ERROR_UNEXPECTED_STRIDES,
+    _c_contig_strides,
+    _f_contig_strides,
+    _from_input_shape_strides,
+    _make_int_tuple,
+    _make_reversed_int_tuple,
+    _swap_last_two,
+    shape_to_elem_count,
+)
+from ._types cimport (
+    _make_typestr,
+    descr_to_typenum,
+    dtype_to_typenum,
+    type_bytesize,
+    typenum_from_format,
+)
+
+from ._slicing import _basic_slice_meta
+
+
+# Local storage for `cdef public api` constants
+# declared in _usmarray.pxd
+cdef int USM_ARRAY_C_CONTIGUOUS = 1
+cdef int USM_ARRAY_F_CONTIGUOUS = 2
+cdef int USM_ARRAY_WRITABLE = 4
+
+cdef:
+    int UAR_BOOL = 0
+    int UAR_BYTE = 1
+    int UAR_UBYTE = 2
+    int UAR_SHORT = 3
+    int UAR_USHORT = 4
+    int UAR_INT = 5
+    int UAR_UINT = 6
+    int UAR_LONG = 7
+    int UAR_ULONG = 8
+    int UAR_LONGLONG = 9
+    int UAR_ULONGLONG = 10
+    int UAR_FLOAT = 11
+    int UAR_DOUBLE = 12
+    int UAR_CFLOAT = 14
+    int UAR_CDOUBLE = 15
+    int UAR_TYPE_SENTINEL = 17
+    int UAR_HALF = 23
 
 
 class DLDeviceType(IntEnum):
