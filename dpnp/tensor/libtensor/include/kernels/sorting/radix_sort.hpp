@@ -49,6 +49,7 @@
 
 #include "kernels/dpnp_tensor_types.hpp"
 #include "kernels/sorting/sort_utils.hpp"
+#include "radix_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 
 namespace dpnp::tensor::kernels
@@ -245,35 +246,6 @@ std::uint64_t order_preserving_cast(FloatT val)
     return (uint_val ^ mask);
 }
 
-//-----------------
-// bucket functions
-//-----------------
-
-template <typename T>
-constexpr std::size_t number_of_bits_in_type()
-{
-    constexpr std::size_t type_bits =
-        (sizeof(T) * std::numeric_limits<unsigned char>::digits);
-    return type_bits;
-}
-
-// the number of buckets (size of radix bits) in T
-template <typename T>
-constexpr std::uint32_t number_of_buckets_in_type(std::uint32_t radix_bits)
-{
-    constexpr std::size_t type_bits = number_of_bits_in_type<T>();
-    return (type_bits + radix_bits - 1) / radix_bits;
-}
-
-// get bits value (bucket) in a certain radix position
-template <std::uint32_t radix_mask, typename T>
-std::uint32_t get_bucket_id(T val, std::uint32_t radix_offset)
-{
-    static_assert(std::is_unsigned_v<T>);
-
-    return (val >> radix_offset) & T(radix_mask);
-}
-
 //--------------------------------
 // count kernel (single iteration)
 //--------------------------------
@@ -347,7 +319,8 @@ sycl::event
                         order_preserving_cast</*is_ascending*/ true>(
                             proj_op(vals_ptr[val_iter_offset + val_id]));
                     const std::uint32_t bucket_id =
-                        get_bucket_id<radix_mask>(val, radix_offset);
+                        radix_utils::get_bucket_id<radix_mask>(val,
+                                                               radix_offset);
 
                     // increment counter for this bit bucket
                     ++counts_arr[bucket_id];
@@ -362,7 +335,8 @@ sycl::event
                         order_preserving_cast</*is_ascending*/ false>(
                             proj_op(vals_ptr[val_iter_offset + val_id]));
                     const std::uint32_t bucket_id =
-                        get_bucket_id<radix_mask>(val, radix_offset);
+                        radix_utils::get_bucket_id<radix_mask>(val,
+                                                               radix_offset);
 
                     // increment counter for this bit bucket
                     ++counts_arr[bucket_id];
@@ -828,7 +802,8 @@ sycl::event
                         order_preserving_cast</*is_ascending*/ true>(
                             proj_op(in_val));
                     std::uint32_t bucket_id =
-                        get_bucket_id<radix_mask>(mapped_val, radix_offset);
+                        radix_utils::get_bucket_id<radix_mask>(mapped_val,
+                                                               radix_offset);
 
                     OffsetT new_offset_id = 0;
                     for (std::uint32_t radix_state_id = 0;
@@ -856,7 +831,8 @@ sycl::event
                         order_preserving_cast</*is_ascending*/ false>(
                             proj_op(in_val));
                     std::uint32_t bucket_id =
-                        get_bucket_id<radix_mask>(mapped_val, radix_offset);
+                        radix_utils::get_bucket_id<radix_mask>(mapped_val,
+                                                               radix_offset);
 
                     OffsetT new_offset_id = 0;
                     for (std::uint32_t radix_state_id = 0;
@@ -888,8 +864,8 @@ sycl::event
                                   proj_val)
                             : order_preserving_cast</*is_ascending*/ false>(
                                   proj_val);
-                    bucket_id =
-                        get_bucket_id<radix_mask>(mapped_val, radix_offset);
+                    bucket_id = radix_utils::get_bucket_id<radix_mask>(
+                        mapped_val, radix_offset);
                 }
 
                 OffsetT new_offset_id = 0;
@@ -1003,8 +979,9 @@ struct parallel_radix_sort_iteration_step
         // states, for scanning to work correctly
 
         const std::size_t rounded_down_count_wg_size =
-            std::size_t{1} << (number_of_bits_in_type<std::size_t>() -
-                               sycl::clz(count_wg_size) - 1);
+            std::size_t{1}
+            << (radix_utils::number_of_bits_in_type<std::size_t>() -
+                sycl::clz(count_wg_size) - 1);
         count_wg_size =
             sycl::max(rounded_down_count_wg_size, std::size_t(radix_states));
 
@@ -1330,7 +1307,7 @@ private:
                         std::uint16_t begin_bit = 0;
 
                         static constexpr std::uint16_t end_bit =
-                            number_of_bits_in_type<KeyT>();
+                            radix_utils::number_of_bits_in_type<KeyT>();
 
                         // copy from input array into values
 #pragma unroll
@@ -1378,7 +1355,8 @@ private:
 
                                         const std::uint16_t bin =
                                             (id < n)
-                                                ? get_bucket_id<bin_mask>(
+                                                ? radix_utils::get_bucket_id<
+                                                      bin_mask>(
                                                       order_preserving_cast<
                                                           /* is_ascending */
                                                           true>(
@@ -1414,7 +1392,8 @@ private:
 
                                         const std::uint16_t bin =
                                             (id < n)
-                                                ? get_bucket_id<bin_mask>(
+                                                ? radix_utils::get_bucket_id<
+                                                      bin_mask>(
                                                       order_preserving_cast<
                                                           /* is_ascending */
                                                           false>(
@@ -1663,7 +1642,7 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
     }
     else {
         static constexpr std::uint32_t radix_iters =
-            number_of_buckets_in_type<KeyT>(radix_bits);
+            radix_utils::number_of_buckets_in_type<KeyT>(radix_bits);
         static constexpr std::uint32_t radix_states = std::uint32_t(1)
                                                       << radix_bits;
 

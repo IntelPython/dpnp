@@ -1,25 +1,35 @@
-//=== topk.hpp -  Implementation of topk kernels       ---*-C++-*--/===//
+//*****************************************************************************
+// Copyright (c) 2026, Intel Corporation
+// All rights reserved.
 //
-//                      Data Parallel Control (dpctl)
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// - Neither the name of the copyright holder nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
 //
-// Copyright 2020-2024 Intel Corporation
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+// THE POSSIBILITY OF SUCH DAMAGE.
+//*****************************************************************************
 //
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines kernels for tensor topk operation using radix select.
+/// This file defines kernels for tensor topk using radix select algorithm.
 //===----------------------------------------------------------------------===//
 
 #pragma once
@@ -32,290 +42,25 @@
 #include <vector>
 
 #include "kernels/dpnp_tensor_types.hpp"
-#include "merge_sort.hpp"
-#include "radix_sort.hpp"
+#include "radix_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include <sycl/ext/oneapi/sub_group_mask.hpp>
 
-namespace dpnp
+namespace dpnp::tensor::kernels
 {
-namespace tensor
-{
-
-namespace kernels
-{
-
 namespace topk_detail
 {
 
-template <typename T> T quotient_ceil(T n, T m) { return (n + m - 1) / m; }
-
-template <bool is_ascending, typename T, typename Enable = void>
-struct RadixTypeConfig
+template <typename T>
+T quotient_ceil(T n, T m)
 {
-};
+    return (n + m - 1) / m;
+}
 
-template <bool is_ascending> struct RadixTypeConfig<is_ascending, bool>
+template <typename AccT>
+auto get_accessor_pointer(const AccT &acc)
 {
-    typedef bool RadixType;
-
-    static inline RadixType encode(bool val)
-    {
-        if constexpr (is_ascending)
-            return val;
-        else
-            return !val;
-    }
-
-    static inline bool decode(RadixType val)
-    {
-        if constexpr (is_ascending)
-            return val;
-        else
-            return !val;
-    }
-};
-
-template <bool is_ascending, typename UIntT>
-struct RadixTypeConfig<is_ascending,
-                       UIntT,
-                       std::enable_if_t<std::is_unsigned_v<UIntT>>>
-{
-    typedef UIntT RadixType;
-
-    static inline RadixType encode(UIntT val)
-    {
-        if constexpr (is_ascending) {
-            return val;
-        }
-        else {
-            // bitwise invert
-            return (~val);
-        }
-    }
-
-    static inline UIntT decode(RadixType val)
-    {
-        if constexpr (is_ascending) {
-            return val;
-        }
-        else {
-            // bitwise invert
-            return (~val);
-        }
-    }
-};
-
-template <bool is_ascending, typename IntT>
-struct RadixTypeConfig<
-    is_ascending,
-    IntT,
-    std::enable_if_t<std::is_integral_v<IntT> && std::is_signed_v<IntT>>>
-{
-    typedef std::make_unsigned_t<IntT> RadixType;
-
-    static inline RadixType encode(IntT val)
-    {
-        // ascending_mask: 100..0
-        constexpr RadixType ascending_mask =
-            (RadixType(1) << std::numeric_limits<IntT>::digits);
-        // descending_mask: 011..1
-        constexpr RadixType descending_mask =
-            (std::numeric_limits<RadixType>::max() >> 1);
-
-        constexpr RadixType mask =
-            (is_ascending) ? ascending_mask : descending_mask;
-        const RadixType uint_val = sycl::bit_cast<RadixType>(val);
-
-        return (uint_val ^ mask);
-    }
-
-    static inline IntT decode(RadixType val)
-    {
-        // ascending_mask: 100..0
-        constexpr RadixType ascending_mask =
-            (RadixType(1) << std::numeric_limits<IntT>::digits);
-        // descending_mask: 011..1
-        constexpr RadixType descending_mask =
-            (std::numeric_limits<RadixType>::max() >> 1);
-
-        constexpr RadixType mask =
-            (is_ascending) ? ascending_mask : descending_mask;
-        const IntT int_val = sycl::bit_cast<IntT>(val);
-
-        return (int_val ^ mask);
-    }
-};
-
-template <bool is_ascending> struct RadixTypeConfig<is_ascending, sycl::half>
-{
-    typedef std::uint16_t RadixType;
-
-    static inline RadixType encode(sycl::half val)
-    {
-        const RadixType uint_val = sycl::bit_cast<RadixType>(
-            (sycl::isnan(val)) ? std::numeric_limits<sycl::half>::quiet_NaN()
-                               : val);
-        RadixType mask;
-
-        // test the sign bit of the original value
-        const bool zero_fp_sign_bit = (RadixType(0) == (uint_val >> 15));
-
-        constexpr RadixType zero_mask = RadixType(0x8000u);
-        constexpr RadixType nonzero_mask = RadixType(0xFFFFu);
-
-        constexpr RadixType inv_zero_mask = static_cast<RadixType>(~zero_mask);
-        constexpr RadixType inv_nonzero_mask =
-            static_cast<RadixType>(~nonzero_mask);
-
-        if constexpr (is_ascending) {
-            mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
-        }
-        else {
-            mask = (zero_fp_sign_bit) ? (inv_zero_mask) : (inv_nonzero_mask);
-        }
-
-        return (uint_val ^ mask);
-    }
-
-    static inline sycl::half decode(RadixType uint_val)
-    {
-        RadixType mask;
-
-        // test the sign bit of the original value
-        const bool zero_fp_sign_bit = (RadixType(0) == (uint_val >> 15));
-
-        constexpr RadixType nonzero_mask = RadixType(0x8000u);
-        constexpr RadixType zero_mask = RadixType(0xFFFFu);
-
-        constexpr RadixType inv_nonzero_mask =
-            static_cast<RadixType>(~nonzero_mask);
-        constexpr RadixType inv_zero_mask = static_cast<RadixType>(~zero_mask);
-
-        if constexpr (is_ascending) {
-            mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
-        }
-        else {
-            mask = (zero_fp_sign_bit) ? (inv_zero_mask) : (inv_nonzero_mask);
-        }
-
-        const RadixType masked = uint_val ^ mask;
-        return sycl::bit_cast<sycl::half>(masked);
-    }
-};
-
-template <bool is_ascending, typename FloatT>
-struct RadixTypeConfig<
-    is_ascending,
-    FloatT,
-    std::enable_if_t<std::is_floating_point_v<FloatT> &&
-                     sizeof(FloatT) == sizeof(std::uint32_t)>>
-{
-    typedef std::uint32_t RadixType;
-
-    static inline RadixType encode(FloatT val)
-    {
-        RadixType uint_val = sycl::bit_cast<RadixType>(
-            (sycl::isnan(val)) ? std::numeric_limits<FloatT>::quiet_NaN()
-                               : val);
-
-        RadixType mask;
-
-        // test the sign bit of the original value
-        const bool zero_fp_sign_bit = (RadixType(0) == (uint_val >> 31));
-
-        constexpr RadixType zero_mask = RadixType(0x80000000u);
-        constexpr RadixType nonzero_mask = RadixType(0xFFFFFFFFu);
-
-        if constexpr (is_ascending)
-            mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
-        else
-            mask = (zero_fp_sign_bit) ? (~zero_mask) : (~nonzero_mask);
-
-        return (uint_val ^ mask);
-    }
-
-    static inline FloatT decode(RadixType uint_val)
-    {
-        RadixType mask;
-
-        // test the sign bit of the original value
-        const bool zero_fp_sign_bit = (RadixType(0) == (uint_val >> 31));
-
-        constexpr RadixType zero_mask = RadixType(0xFFFFFFFFu);
-        constexpr RadixType nonzero_mask = RadixType(0x80000000u);
-
-        if constexpr (is_ascending)
-            mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
-        else
-            mask = (zero_fp_sign_bit) ? (~zero_mask) : (~nonzero_mask);
-
-        const RadixType masked = uint_val ^ mask;
-        return sycl::bit_cast<FloatT>(masked);
-    }
-};
-
-template <bool is_ascending, typename FloatT>
-struct RadixTypeConfig<
-    is_ascending,
-    FloatT,
-    std::enable_if_t<std::is_floating_point_v<FloatT> &&
-                     sizeof(FloatT) == sizeof(std::uint64_t)>>
-{
-    typedef std::uint64_t RadixType;
-
-    static inline RadixType encode(FloatT val)
-    {
-
-        RadixType uint_val = sycl::bit_cast<RadixType>(
-            (sycl::isnan(val)) ? std::numeric_limits<FloatT>::quiet_NaN()
-                               : val);
-        RadixType mask;
-
-        // test the sign bit of the original value
-        const bool zero_fp_sign_bit = (RadixType(0) == (uint_val >> 63));
-
-        constexpr RadixType zero_mask = RadixType(0x8000000000000000u);
-        constexpr RadixType nonzero_mask = RadixType(0xFFFFFFFFFFFFFFFFu);
-
-        if constexpr (is_ascending)
-            mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
-        else
-            mask = (zero_fp_sign_bit) ? (~zero_mask) : (~nonzero_mask);
-
-        return (uint_val ^ mask);
-    }
-
-    static inline FloatT decode(RadixType uint_val)
-    {
-        RadixType mask;
-
-        // test the sign bit of the original value
-        const bool zero_fp_sign_bit = (RadixType(0) == (uint_val >> 63));
-
-        constexpr RadixType zero_mask = RadixType(0xFFFFFFFFFFFFFFFFu);
-        constexpr RadixType nonzero_mask = RadixType(0x8000000000000000u);
-
-        if constexpr (is_ascending)
-            mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
-        else
-            mask = (zero_fp_sign_bit) ? (~zero_mask) : (~nonzero_mask);
-
-        const RadixType masked = uint_val ^ mask;
-        return sycl::bit_cast<FloatT>(masked);
-    }
-};
-
-template <std::uint32_t radix_mask, typename T>
-T set_bucket_id(T val, T insert, std::uint32_t radix_offset)
-{
-    static_assert(std::is_unsigned_v<T>);
-
-    T m = radix_mask;
-    insert &= m;
-    insert <<= radix_offset;
-    m <<= radix_offset;
-    return (val & ~m) | insert;
+    return acc.template get_multi_ptr<sycl::access::decorated::no>().get();
 }
 
 std::uint32_t mask_from_subgroup_ballot(sycl::sub_group sg, bool vote)
@@ -357,11 +102,10 @@ void count_radix(sycl::nd_item<1> &it,
 
     auto g = it.get_sub_group();
     for (std::size_t i = idx; i < axis_nelems;) {
-        BitwiseT val = RadixTypeConfig<true, T>::encode(data[i]);
+        BitwiseT val = radix_utils::RadixTypeConfig<true, T>::encode(data[i]);
         bool has_val = ((val & desired_mask) == desired);
         BitwiseT digit_in_radix =
-            kernels::radix_sort_details::get_bucket_id<radix_mask>(val,
-                                                                   radix_pos);
+            radix_utils::get_bucket_id<radix_mask>(val, radix_pos);
 #pragma unroll
         for (std::size_t j = 0; j < radix_states; ++j) {
             bool vote = has_val && (digit_in_radix == j);
@@ -409,17 +153,14 @@ T find_pattern(sycl::nd_item<1> &it,
 
     std::size_t lws = static_cast<std::size_t>(it.get_local_range(0));
     std::size_t n_iters =
-        topk_detail::quotient_ceil<std::size_t>(axis_nelems,
-                                                               lws) *
-        lws;
+        topk_detail::quotient_ceil<std::size_t>(axis_nelems, lws) * lws;
     bool found = false;
     for (std::size_t i = lid; i < n_iters; i += lws) {
         bool in_range = (i < axis_nelems);
         T v = in_range ? data[i] : T(0);
 
-        if (in_range &&
-            ((RadixTypeConfig<true, T>::encode(v) & desired_mask) == desired))
-        {
+        if (in_range && ((radix_utils::RadixTypeConfig<true, T>::encode(v) &
+                          desired_mask) == desired)) {
             found = true;
             slm[0] = v;
         }
@@ -464,9 +205,9 @@ void radix_select(sycl::nd_item<1> &it,
 
         auto found_unique = [&](int i, CountT count) -> bool {
             if (count == 1 && k_to_find == 1) {
-                desired = set_bucket_id<radix_mask, BitwiseT>(desired, i,
-                                                              radix_offset);
-                desired_mask = set_bucket_id<radix_mask, BitwiseT>(
+                desired = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
+                    desired, i, radix_offset);
+                desired_mask = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
                     desired_mask, radix_mask, radix_offset);
 
                 top_k = find_pattern<T, BitwiseT>(it, data, axis_nelems,
@@ -479,9 +220,9 @@ void radix_select(sycl::nd_item<1> &it,
 
         auto found_non_unique = [&](int i, CountT count) -> bool {
             if (count >= k_to_find) {
-                desired = set_bucket_id<radix_mask, BitwiseT>(desired, i,
-                                                              radix_offset);
-                desired_mask = set_bucket_id<radix_mask, BitwiseT>(
+                desired = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
+                    desired, i, radix_offset);
+                desired_mask = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
                     desired_mask, radix_mask, radix_offset);
 
                 return true;
@@ -518,20 +259,19 @@ void radix_select(sycl::nd_item<1> &it,
     else {
         // signed int avoids overflow, radix_offset implicitly cast to uint32_t
         for (int radix_offset =
-                 kernels::radix_sort_details::number_of_bits_in_type<T>() -
-                 radix_bits;
-             radix_offset >= 0; radix_offset -= radix_bits)
-        {
+                 radix_utils::number_of_bits_in_type<T>() - radix_bits;
+             radix_offset >= 0; radix_offset -= radix_bits) {
             count_radix<T, BitwiseT, CountT, radix_states, radix_mask>(
                 it, data, counts.data(), radix_count_slm, desired, desired_mask,
                 radix_offset, axis_nelems);
 
             auto found_unique = [&](int i, CountT count) -> bool {
                 if (count == 1 && k_to_find == 1) {
-                    desired = set_bucket_id<radix_mask, BitwiseT>(desired, i,
-                                                                  radix_offset);
-                    desired_mask = set_bucket_id<radix_mask, BitwiseT>(
-                        desired_mask, radix_mask, radix_offset);
+                    desired = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
+                        desired, i, radix_offset);
+                    desired_mask =
+                        radix_utils::set_bucket_id<radix_mask, BitwiseT>(
+                            desired_mask, radix_mask, radix_offset);
 
                     top_k = find_pattern<T, BitwiseT>(it, data, axis_nelems,
                                                       top_k_val_slm, desired,
@@ -543,10 +283,11 @@ void radix_select(sycl::nd_item<1> &it,
 
             auto found_non_unique = [&](int i, CountT count) -> bool {
                 if (count >= k_to_find) {
-                    desired = set_bucket_id<radix_mask, BitwiseT>(desired, i,
-                                                                  radix_offset);
-                    desired_mask = set_bucket_id<radix_mask, BitwiseT>(
-                        desired_mask, radix_mask, radix_offset);
+                    desired = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
+                        desired, i, radix_offset);
+                    desired_mask =
+                        radix_utils::set_bucket_id<radix_mask, BitwiseT>(
+                            desired_mask, radix_mask, radix_offset);
 
                     return true;
                 }
@@ -580,7 +321,7 @@ void radix_select(sycl::nd_item<1> &it,
             }
         } // end radix_offset loop
     }
-    top_k = RadixTypeConfig<true, T>::decode(desired);
+    top_k = radix_utils::RadixTypeConfig<true, T>::decode(desired);
 }
 
 } // namespace topk_detail
@@ -588,9 +329,11 @@ void radix_select(sycl::nd_item<1> &it,
 namespace sg_topk
 {
 
-template <typename T, bool HaveKthVals = false> class topk_krn;
+template <typename T, bool HaveKthVals = false>
+class topk_krn;
 
-template <typename T, typename IndexT, bool HaveKthVals = false> struct TopK
+template <typename T, typename IndexT, bool HaveKthVals = false>
+struct TopK
 {
     static constexpr std::uint32_t radix_bits = 2;
     static constexpr std::uint32_t radix_states = 1 << radix_bits;
@@ -598,7 +341,8 @@ template <typename T, typename IndexT, bool HaveKthVals = false> struct TopK
 
     using CountT = std::uint32_t;
 
-    template <typename LocAccT1, typename LocAccT2> class TopKFunctor
+    template <typename LocAccT1, typename LocAccT2>
+    class TopKFunctor
     {
     private:
         const T *inp = nullptr;
@@ -647,23 +391,19 @@ template <typename T, typename IndexT, bool HaveKthVals = false> struct TopK
                 top_k_val = T(0);
                 topk_detail::radix_select<
                     T,
-                    typename topk_detail::RadixTypeConfig<true, T>::RadixType,
+                    typename radix_utils::RadixTypeConfig<true, T>::RadixType,
                     CountT, radix_bits, radix_states, radix_mask>(
                     it, inp_start, k, largest, axis_nelems,
-                    kernels::radix_sort_details::get_accessor_pointer(
-                        radix_count_slm),
-                    kernels::radix_sort_details::get_accessor_pointer(
-                        top_k_val_slm),
+                    topk_detail::get_accessor_pointer(radix_count_slm),
+                    topk_detail::get_accessor_pointer(top_k_val_slm),
                     top_k_val);
             }
             auto top_k_converted =
-                topk_detail::RadixTypeConfig<true, T>::encode(top_k_val);
+                radix_utils::RadixTypeConfig<true, T>::encode(top_k_val);
 
             std::size_t lws = it.get_local_range(0);
             std::size_t n_iters =
-                topk_detail::quotient_ceil<std::size_t>(
-                    axis_nelems, lws) *
-                lws;
+                topk_detail::quotient_ceil<std::size_t>(axis_nelems, lws) * lws;
             std::size_t write_idx_start(0);
 
             for (std::size_t i = it.get_local_id(0); i < n_iters; i += lws) {
@@ -671,7 +411,7 @@ template <typename T, typename IndexT, bool HaveKthVals = false> struct TopK
                 T v = in_range ? inp_start[i] : T(0);
 
                 auto v_converted =
-                    topk_detail::RadixTypeConfig<true, T>::encode(v);
+                    radix_utils::RadixTypeConfig<true, T>::encode(v);
                 bool has_top_k;
                 if (largest) {
                     has_top_k = in_range && (v_converted > top_k_converted);
@@ -702,7 +442,7 @@ template <typename T, typename IndexT, bool HaveKthVals = false> struct TopK
                 bool in_range = (i < axis_nelems);
                 T v = in_range ? inp_start[i] : T(0);
                 auto v_converted =
-                    topk_detail::RadixTypeConfig<true, T>::encode(v);
+                    radix_utils::RadixTypeConfig<true, T>::encode(v);
                 bool has_top_k = in_range && (v_converted == top_k_converted);
 
                 auto wg = it.get_group();
@@ -731,15 +471,15 @@ template <typename T, typename IndexT, bool HaveKthVals = false> struct TopK
     };
 
     static sycl::event
-    submit_top_k(sycl::queue &exec_q,
-                 const T *arg,
-                 std::size_t axis_nelems,
-                 std::size_t k,
-                 bool largest,
-                 std::size_t iter_nelems,
-                 T *top_k,
-                 IndexT *indices,
-                 const std::vector<sycl::event> &depends = {})
+        submit_top_k(sycl::queue &exec_q,
+                     const T *arg,
+                     std::size_t axis_nelems,
+                     std::size_t k,
+                     bool largest,
+                     std::size_t iter_nelems,
+                     T *top_k,
+                     IndexT *indices,
+                     const std::vector<sycl::event> &depends = {})
     {
         using KernelName = topk_krn<T>;
         const auto &kernel_id = sycl::get_kernel_id<KernelName>();
@@ -764,8 +504,8 @@ template <typename T, typename IndexT, bool HaveKthVals = false> struct TopK
         static constexpr std::size_t radix_counts_slm_sz = radix_states;
         static constexpr std::size_t top_k_val_slm_sz = 1;
         if (device_local_memory_size - safety_margin <
-            sizeof(CountT) * radix_counts_slm_sz + sizeof(T) * top_k_val_slm_sz)
-        {
+            sizeof(CountT) * radix_counts_slm_sz +
+                sizeof(T) * top_k_val_slm_sz) {
             throw std::runtime_error("Insufficient resources");
         }
 
@@ -783,8 +523,8 @@ template <typename T, typename IndexT, bool HaveKthVals = false> struct TopK
             cgh.depends_on(depends);
 
             std::size_t lws = std::min(
-                topk_detail::quotient_ceil<std::size_t>(
-                    axis_nelems, preferred_wg_sz) *
+                topk_detail::quotient_ceil<std::size_t>(axis_nelems,
+                                                        preferred_wg_sz) *
                     preferred_wg_sz,
                 dev.get_info<sycl::info::device::max_work_group_size>());
 
@@ -809,16 +549,16 @@ template <typename T, typename IndexT, bool HaveKthVals = false> struct TopK
 
     template <bool b = HaveKthVals, std::enable_if_t<b, bool> = true>
     static sycl::event
-    submit_top_k(sycl::queue &exec_q,
-                 const T *arg,
-                 std::size_t axis_nelems,
-                 std::size_t k,
-                 bool largest,
-                 std::size_t iter_nelems,
-                 T *top_k,
-                 IndexT *indices,
-                 T *kth_vals,
-                 const std::vector<sycl::event> &depends = {})
+        submit_top_k(sycl::queue &exec_q,
+                     const T *arg,
+                     std::size_t axis_nelems,
+                     std::size_t k,
+                     bool largest,
+                     std::size_t iter_nelems,
+                     T *top_k,
+                     IndexT *indices,
+                     T *kth_vals,
+                     const std::vector<sycl::event> &depends = {})
     {
         using KernelName = topk_krn<T, HaveKthVals>;
         const auto &kernel_id = sycl::get_kernel_id<KernelName>();
@@ -844,8 +584,8 @@ template <typename T, typename IndexT, bool HaveKthVals = false> struct TopK
             cgh.depends_on(depends);
 
             std::size_t lws = std::min(
-                topk_detail::quotient_ceil<std::size_t>(
-                    axis_nelems, preferred_wg_sz) *
+                topk_detail::quotient_ceil<std::size_t>(axis_nelems,
+                                                        preferred_wg_sz) *
                     preferred_wg_sz,
                 dev.get_info<sycl::info::device::max_work_group_size>());
 
@@ -911,8 +651,6 @@ private:
     LocAccT slm_counters;
     LocAccT slm_cumsum;
 
-
-
 public:
     RadixFindKthValuesFunctor(const T *inp_,
                               std::size_t axis_nelems_,
@@ -969,14 +707,13 @@ public:
             std::size_t idx =
                 wg_idx_in_axis * items_per_wg + i * wi_per_group + lid;
             if (idx < axis_nelems) {
-                BitwiseT val = topk_detail::RadixTypeConfig<true, T>::encode(
+                BitwiseT val = radix_utils::RadixTypeConfig<true, T>::encode(
                     inp_start[idx]);
                 bool has_val =
                     ((val & desired_mask) == (desired & desired_mask));
 
                 BitwiseT digit =
-                    kernels::radix_sort_details::get_bucket_id<radix_mask>(
-                        val, current_bit);
+                    radix_utils::get_bucket_id<radix_mask>(val, current_bit);
                 if (has_val) {
                     sycl::atomic_ref<std::uint32_t, sycl::memory_order::relaxed,
                                      sycl::memory_scope::device,
@@ -1013,9 +750,8 @@ public:
                                  sycl::memory_scope::device,
                                  sycl::access::address_space::global_space>
                     loc_sem_ref(axis_groups_done[iter_idx]);
-                std::uint32_t axis_groups_done_old =
-                    loc_sem_ref.fetch_add(std::uint32_t(1),
-                    sycl::memory_order::acq_rel);
+                std::uint32_t axis_groups_done_old = loc_sem_ref.fetch_add(
+                    std::uint32_t(1), sycl::memory_order::acq_rel);
                 last_group_done = (axis_groups_done_old == axis_groups - 1);
             }
         }
@@ -1051,9 +787,8 @@ public:
                                                         : slm_cumsum[lid - 1];
 
             if (digit_count_cumsum_left < k_to_find &&
-                k_to_find <= digit_count_cumsum)
-            {
-                desired = topk_detail::set_bucket_id<radix_mask, BitwiseT>(
+                k_to_find <= digit_count_cumsum) {
+                desired = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
                     desired, lid, current_bit);
                 desires[iter_idx] = desired;
                 if (current_bit > 0) {
@@ -1063,7 +798,7 @@ public:
                 else {
                     // if last pass, update kth value
                     kth_values[iter_idx] =
-                        topk_detail::RadixTypeConfig<true, T>::decode(desired);
+                        radix_utils::RadixTypeConfig<true, T>::decode(desired);
                 }
             }
         }
@@ -1090,10 +825,9 @@ int get_items_per_thread(std::uint64_t iter_nelems,
     // ensure every EU has work
     int groups_per_mp =
         std::min(regs_per_mp / REGS_PER_BLOCK, max_groups_per_mp);
-    std::int64_t elems_per_wi =
-        topk_detail::quotient_ceil<std::int64_t>(
-            static_cast<std::int64_t>(axis_nelems * iter_nelems),
-            static_cast<std::int64_t>(mpc * groups_per_mp * wi_per_group));
+    std::int64_t elems_per_wi = topk_detail::quotient_ceil<std::int64_t>(
+        static_cast<std::int64_t>(axis_nelems * iter_nelems),
+        static_cast<std::int64_t>(mpc * groups_per_mp * wi_per_group));
 
     // enforce a ceiling on axis_groups to bound the histogram reduction
     constexpr int TARGET_MAX_GROUPS = 32;
@@ -1108,27 +842,28 @@ int get_items_per_thread(std::uint64_t iter_nelems,
     return elems_per_wi;
 }
 
-template <typename T> class radix_select_find_kth_vals_krn;
+template <typename T>
+class radix_select_find_kth_vals_krn;
 
 template <typename T, typename BitwiseT>
-sycl::event
-submit_radix_find_kth_vals(sycl::queue &exec_q,
-                           sycl::nd_range<1> range,
-                           std::size_t iter_nelems,
-                           std::size_t axis_nelems,
-                           std::size_t elems_per_wi,
-                           std::size_t axis_groups,
-                           // input array memory
-                           const T *arg_tp,
-                           // output
-                           T *kth_values,
-                           // temporary memory
-                           std::uint32_t *ks_to_find,
-                           std::uint32_t *axis_groups_done,
-                           BitwiseT *desired,
-                           std::int16_t *counts,
-                           const std::vector<sycl::event> &depends,
-                           const std::vector<sycl::event> &additional_depends)
+sycl::event submit_radix_find_kth_vals(
+    sycl::queue &exec_q,
+    sycl::nd_range<1> range,
+    std::size_t iter_nelems,
+    std::size_t axis_nelems,
+    std::size_t elems_per_wi,
+    std::size_t axis_groups,
+    // input array memory
+    const T *arg_tp,
+    // output
+    T *kth_values,
+    // temporary memory
+    std::uint32_t *ks_to_find,
+    std::uint32_t *axis_groups_done,
+    BitwiseT *desired,
+    std::int16_t *counts,
+    const std::vector<sycl::event> &depends,
+    const std::vector<sycl::event> &additional_depends)
 {
     using KernelName = radix_select_find_kth_vals_krn<T>;
 
@@ -1157,10 +892,8 @@ submit_radix_find_kth_vals(sycl::queue &exec_q,
         bool used_deps = false;
         BitwiseT desired_mask = 0;
         for (int current_bit =
-                 kernels::radix_sort_details::number_of_bits_in_type<T>() -
-                 radix_bits;
-             current_bit >= 0; current_bit -= radix_bits)
-        {
+                 radix_utils::number_of_bits_in_type<T>() - radix_bits;
+             current_bit >= 0; current_bit -= radix_bits) {
             sycl::event launch_ev = exec_q.submit([&](sycl::handler &cgh) {
                 if (!used_deps) {
                     cgh.depends_on(depends);
@@ -1183,7 +916,7 @@ submit_radix_find_kth_vals(sycl::queue &exec_q,
                                kth_values, slm_counters, slm_cumsum));
             });
             last_launch_ev = launch_ev;
-            desired_mask = topk_detail::set_bucket_id<radix_mask, BitwiseT>(
+            desired_mask = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
                 desired_mask, radix_mask, current_bit);
         }
     }
@@ -1205,8 +938,8 @@ sycl::event submit_top_k_radix_select_multi_group(
     static_assert(std::is_same_v<IndexTy, std::int64_t>);
 
     auto const &dev = exec_q.get_device();
-    if (dev.get_info<sycl::info::device::max_work_group_size>() < wi_per_group)
-    {
+    if (dev.get_info<sycl::info::device::max_work_group_size>() <
+        wi_per_group) {
         throw std::runtime_error("maximum work group size insufficient for "
                                  "submit_top_k_radix_select_multi_group");
     }
@@ -1223,10 +956,9 @@ sycl::event submit_top_k_radix_select_multi_group(
     int elems_per_group = elems_per_wi * wi_per_group;
 
     using BitwiseT =
-        typename topk_detail::RadixTypeConfig<true, argTy>::RadixType;
+        typename radix_utils::RadixTypeConfig<true, argTy>::RadixType;
     std::uint32_t axis_groups =
-        topk_detail::quotient_ceil<std::uint32_t>(
-            axis_nelems, elems_per_group);
+        topk_detail::quotient_ceil<std::uint32_t>(axis_nelems, elems_per_group);
     std::uint32_t n_groups = iter_nelems * axis_groups;
 
     // find kth vals kernel required SLM
@@ -1239,27 +971,32 @@ sycl::event submit_top_k_radix_select_multi_group(
 
     // allocate temp for kth values
     auto kth_values_owner =
-        dpnp::tensor::alloc_utils::smart_malloc_device<argTy>(
-            iter_nelems, exec_q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<argTy>(iter_nelems,
+                                                              exec_q);
     argTy *kth_values = kth_values_owner.get();
 
     // allocate temp for axis_groups_done
     auto axis_groups_done_owner =
-        dpnp::tensor::alloc_utils::smart_malloc_device<std::uint32_t>(iter_nelems, exec_q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<std::uint32_t>(
+            iter_nelems, exec_q);
     std::uint32_t *axis_groups_done = axis_groups_done_owner.get();
 
     // allocate temp for ks_to_find
     auto ks_to_find_owner =
-        dpnp::tensor::alloc_utils::smart_malloc_device<std::uint32_t>(iter_nelems, exec_q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<std::uint32_t>(
+            iter_nelems, exec_q);
     std::uint32_t *ks_to_find = ks_to_find_owner.get();
 
     // allocate temp for desired
-    auto desired_owner = dpnp::tensor::alloc_utils::smart_malloc_device<BitwiseT>(iter_nelems, exec_q);
+    auto desired_owner =
+        dpnp::tensor::alloc_utils::smart_malloc_device<BitwiseT>(iter_nelems,
+                                                                 exec_q);
     BitwiseT *desired = desired_owner.get();
 
     // allocate temp for counts
     auto counts_owner =
-        dpnp::tensor::alloc_utils::smart_malloc_device<std::int16_t>(n_groups * radix_states, exec_q);
+        dpnp::tensor::alloc_utils::smart_malloc_device<std::int16_t>(
+            n_groups * radix_states, exec_q);
     std::int16_t *counts = counts_owner.get();
 
     sycl::event populate_axis_groups_done_ev = exec_q.fill<std::uint32_t>(
@@ -1292,7 +1029,8 @@ sycl::event submit_top_k_radix_select_multi_group(
             inds_tp, kth_values, {find_kth_vals_ev});
 
     sycl::event temp_free_event = dpnp::tensor::alloc_utils::async_smart_free(
-        exec_q, {topk_with_kth_vals_ev}, kth_values_owner, axis_groups_done_owner, ks_to_find_owner, desired_owner, counts_owner);
+        exec_q, {topk_with_kth_vals_ev}, kth_values_owner,
+        axis_groups_done_owner, ks_to_find_owner, desired_owner, counts_owner);
 
     return temp_free_event;
 }
@@ -1366,6 +1104,4 @@ sycl::event topk_radix_select_multi_group_impl(
         depends);
 }
 
-} // end of namespace kernels
-} // end of namespace tensor
-} // end of namespace dpnp
+} // end of namespace dpnp::tensor::kernels
