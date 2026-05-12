@@ -851,6 +851,9 @@ int get_items_per_thread(std::uint64_t iter_nelems,
 template <typename T>
 class radix_select_find_kth_vals_krn;
 
+template <typename T>
+class radix_select_init_krn;
+
 template <typename T, typename BitwiseT>
 sycl::event submit_radix_find_kth_vals(
     sycl::queue &exec_q,
@@ -1012,20 +1015,23 @@ sycl::event submit_top_k_radix_select_multi_group(
             n_groups * radix_states, exec_q);
     std::int16_t *counts = counts_owner.get();
 
-    sycl::event populate_axis_groups_done_ev = exec_q.fill<std::uint32_t>(
-        axis_groups_done, std::uint32_t(0), iter_nelems, depends);
-
     std::uint32_t k_to_find =
         largest ? static_cast<std::uint32_t>(axis_nelems - k + 1)
                 : static_cast<std::uint32_t>(k);
-    sycl::event fill_ks_to_find_ev =
-        exec_q.fill<std::uint32_t>(ks_to_find, k_to_find, iter_nelems, depends);
 
-    sycl::event desired_init_ev =
-        exec_q.fill<BitwiseT>(desired, BitwiseT(0), iter_nelems, depends);
+    sycl::event init_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.parallel_for<radix_select_init_krn<argTy>>(
+            sycl::range<1>(iter_nelems),
+            [=](sycl::id<1> idx) {
+                std::size_t i = idx[0];
+                axis_groups_done[i] = std::uint32_t(0);
+                ks_to_find[i] = k_to_find;
+                desired[i] = BitwiseT(0);
+            });
+    });
 
-    const std::vector<sycl::event> other_depends = {
-        populate_axis_groups_done_ev, fill_ks_to_find_ev, desired_init_ev};
+    const std::vector<sycl::event> other_depends = {init_ev};
 
     auto gRange = sycl::range<1>(n_groups * wi_per_group);
     auto lRange = sycl::range<1>(wi_per_group);
