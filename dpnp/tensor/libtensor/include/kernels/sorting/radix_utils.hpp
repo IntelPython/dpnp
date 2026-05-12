@@ -41,6 +41,10 @@
 namespace dpnp::tensor::kernels::radix_utils
 {
 
+//----------------------------------------------------------
+// bitwise order-preserving conversions to unsigned integers
+//----------------------------------------------------------
+
 template <bool is_ascending, typename T, typename Enable = void>
 struct RadixTypeConfig
 {

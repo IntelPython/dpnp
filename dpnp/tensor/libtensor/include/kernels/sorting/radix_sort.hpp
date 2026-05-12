@@ -112,140 +112,6 @@ std::uint32_t ceil_log2(SizeT n)
     return exp;
 }
 
-//----------------------------------------------------------
-// bitwise order-preserving conversions to unsigned integers
-//----------------------------------------------------------
-
-template <bool is_ascending>
-bool order_preserving_cast(bool val)
-{
-    if constexpr (is_ascending)
-        return val;
-    else
-        return !val;
-}
-
-template <bool is_ascending,
-          typename UIntT,
-          std::enable_if_t<std::is_unsigned_v<UIntT>, int> = 0>
-UIntT order_preserving_cast(UIntT val)
-{
-    if constexpr (is_ascending) {
-        return val;
-    }
-    else {
-        // bitwise invert
-        return (~val);
-    }
-}
-
-template <bool is_ascending,
-          typename IntT,
-          std::enable_if_t<std::is_integral_v<IntT> && std::is_signed_v<IntT>,
-                           int> = 0>
-std::make_unsigned_t<IntT> order_preserving_cast(IntT val)
-{
-    using UIntT = std::make_unsigned_t<IntT>;
-    const UIntT uint_val = sycl::bit_cast<UIntT>(val);
-
-    if constexpr (is_ascending) {
-        // ascending_mask: 100..0
-        static constexpr UIntT ascending_mask =
-            (UIntT(1) << std::numeric_limits<IntT>::digits);
-        return (uint_val ^ ascending_mask);
-    }
-    else {
-        // descending_mask: 011..1
-        static constexpr UIntT descending_mask =
-            (std::numeric_limits<UIntT>::max() >> 1);
-        return (uint_val ^ descending_mask);
-    }
-}
-
-template <bool is_ascending>
-std::uint16_t order_preserving_cast(sycl::half val)
-{
-    using UIntT = std::uint16_t;
-
-    const UIntT uint_val = sycl::bit_cast<UIntT>(
-        (sycl::isnan(val)) ? std::numeric_limits<sycl::half>::quiet_NaN()
-                           : val);
-    UIntT mask;
-
-    // test the sign bit of the original value
-    const bool zero_fp_sign_bit = (UIntT(0) == (uint_val >> 15));
-
-    static constexpr UIntT zero_mask = UIntT(0x8000u);
-    static constexpr UIntT nonzero_mask = UIntT(0xFFFFu);
-
-    static constexpr UIntT inv_zero_mask = static_cast<UIntT>(~zero_mask);
-    static constexpr UIntT inv_nonzero_mask = static_cast<UIntT>(~nonzero_mask);
-
-    if constexpr (is_ascending) {
-        mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
-    }
-    else {
-        mask = (zero_fp_sign_bit) ? (inv_zero_mask) : (inv_nonzero_mask);
-    }
-
-    return (uint_val ^ mask);
-}
-
-template <bool is_ascending,
-          typename FloatT,
-          std::enable_if_t<std::is_floating_point_v<FloatT> &&
-                               sizeof(FloatT) == sizeof(std::uint32_t),
-                           int> = 0>
-std::uint32_t order_preserving_cast(FloatT val)
-{
-    using UIntT = std::uint32_t;
-
-    UIntT uint_val = sycl::bit_cast<UIntT>(
-        (sycl::isnan(val)) ? std::numeric_limits<FloatT>::quiet_NaN() : val);
-
-    UIntT mask;
-
-    // test the sign bit of the original value
-    const bool zero_fp_sign_bit = (UIntT(0) == (uint_val >> 31));
-
-    static constexpr UIntT zero_mask = UIntT(0x80000000u);
-    static constexpr UIntT nonzero_mask = UIntT(0xFFFFFFFFu);
-
-    if constexpr (is_ascending)
-        mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
-    else
-        mask = (zero_fp_sign_bit) ? (~zero_mask) : (~nonzero_mask);
-
-    return (uint_val ^ mask);
-}
-
-template <bool is_ascending,
-          typename FloatT,
-          std::enable_if_t<std::is_floating_point_v<FloatT> &&
-                               sizeof(FloatT) == sizeof(std::uint64_t),
-                           int> = 0>
-std::uint64_t order_preserving_cast(FloatT val)
-{
-    using UIntT = std::uint64_t;
-
-    UIntT uint_val = sycl::bit_cast<UIntT>(
-        (sycl::isnan(val)) ? std::numeric_limits<FloatT>::quiet_NaN() : val);
-    UIntT mask;
-
-    // test the sign bit of the original value
-    const bool zero_fp_sign_bit = (UIntT(0) == (uint_val >> 63));
-
-    static constexpr UIntT zero_mask = UIntT(0x8000000000000000u);
-    static constexpr UIntT nonzero_mask = UIntT(0xFFFFFFFFFFFFFFFFu);
-
-    if constexpr (is_ascending)
-        mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
-    else
-        mask = (zero_fp_sign_bit) ? (~zero_mask) : (~nonzero_mask);
-
-    return (uint_val ^ mask);
-}
-
 //--------------------------------
 // count kernel (single iteration)
 //--------------------------------
@@ -310,13 +176,14 @@ sycl::event
             // count array
             const std::size_t seg_end =
                 sycl::min(seg_start + elems_per_segment, n);
+            using KeyT = std::invoke_result_t<Proj, ValueT>;
             if (is_ascending) {
                 for (std::size_t val_id = seg_start + lid; val_id < seg_end;
                      val_id += wg_size) {
                     // get the bucket for the bit-ordered input value,
                     // applying the offset and mask for radix bits
-                    const auto val =
-                        order_preserving_cast</*is_ascending*/ true>(
+                    const auto val = radix_utils::
+                        RadixTypeConfig</*is_ascending*/ true, KeyT>::encode(
                             proj_op(vals_ptr[val_iter_offset + val_id]));
                     const std::uint32_t bucket_id =
                         radix_utils::get_bucket_id<radix_mask>(val,
@@ -331,8 +198,8 @@ sycl::event
                      val_id += wg_size) {
                     // get the bucket for the bit-ordered input value,
                     // applying the offset and mask for radix bits
-                    const auto val =
-                        order_preserving_cast</*is_ascending*/ false>(
+                    const auto val = radix_utils::
+                        RadixTypeConfig</*is_ascending*/ false, KeyT>::encode(
                             proj_op(vals_ptr[val_iter_offset + val_id]));
                     const std::uint32_t bucket_id =
                         radix_utils::get_bucket_id<radix_mask>(val,
@@ -787,6 +654,8 @@ sycl::event
             const std::uint32_t tail_size = (seg_end - seg_start) % sg_size;
             seg_end -= tail_size;
 
+            using KeyT = std::invoke_result_t<ProjT, ValueT>;
+
             const PeerHelper peer_prefix_hlp(ndit, peer_temp);
 
             // find offsets for the same values within a segment and fill the
@@ -798,9 +667,8 @@ sycl::event
 
                     // get the bucket for the bit-ordered input value, applying
                     // the offset and mask for radix bits
-                    const auto mapped_val =
-                        order_preserving_cast</*is_ascending*/ true>(
-                            proj_op(in_val));
+                    const auto mapped_val = radix_utils::RadixTypeConfig<
+                        /*is_ascending*/ true, KeyT>::encode(proj_op(in_val));
                     std::uint32_t bucket_id =
                         radix_utils::get_bucket_id<radix_mask>(mapped_val,
                                                                radix_offset);
@@ -827,9 +695,8 @@ sycl::event
 
                     // get the bucket for the bit-ordered input value, applying
                     // the offset and mask for radix bits
-                    const auto mapped_val =
-                        order_preserving_cast</*is_ascending*/ false>(
-                            proj_op(in_val));
+                    const auto mapped_val = radix_utils::RadixTypeConfig<
+                        /*is_ascending*/ false, KeyT>::encode(proj_op(in_val));
                     std::uint32_t bucket_id =
                         radix_utils::get_bucket_id<radix_mask>(mapped_val,
                                                                radix_offset);
@@ -860,10 +727,11 @@ sycl::event
                     const auto proj_val = proj_op(in_val);
                     const auto mapped_val =
                         (is_ascending)
-                            ? order_preserving_cast</*is_ascending*/ true>(
-                                  proj_val)
-                            : order_preserving_cast</*is_ascending*/ false>(
-                                  proj_val);
+                            ? radix_utils::RadixTypeConfig<
+                                  /*is_ascending*/ true, KeyT>::encode(proj_val)
+                            : radix_utils::RadixTypeConfig<
+                                  /*is_ascending*/ false,
+                                  KeyT>::encode(proj_val);
                     bucket_id = radix_utils::get_bucket_id<radix_mask>(
                         mapped_val, radix_offset);
                 }
@@ -1357,10 +1225,12 @@ private:
                                             (id < n)
                                                 ? radix_utils::get_bucket_id<
                                                       bin_mask>(
-                                                      order_preserving_cast<
-                                                          /* is_ascending */
-                                                          true>(
-                                                          proj_op(values[i])),
+                                                      radix_utils::
+                                                          RadixTypeConfig<
+                                                              /* is_ascending */
+                                                              true, KeyT>::
+                                                              encode(proj_op(
+                                                                  values[i])),
                                                       begin_bit)
                                                 : default_out_of_range_bin_id;
 
@@ -1394,10 +1264,12 @@ private:
                                             (id < n)
                                                 ? radix_utils::get_bucket_id<
                                                       bin_mask>(
-                                                      order_preserving_cast<
-                                                          /* is_ascending */
-                                                          false>(
-                                                          proj_op(values[i])),
+                                                      radix_utils::
+                                                          RadixTypeConfig<
+                                                              /* is_ascending */
+                                                              false, KeyT>::
+                                                              encode(proj_op(
+                                                                  values[i])),
                                                       begin_bit)
                                                 : default_out_of_range_bin_id;
 
