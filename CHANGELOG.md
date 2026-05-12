@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Replaced `.pxi` includes in `dpnp.tensor` with modular `.pxd`/`.pyx` Cython imports[#2913](https://github.com/IntelPython/dpnp/pull/2913)
+
 ### Deprecated
 
 ### Removed
