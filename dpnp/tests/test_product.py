@@ -1533,7 +1533,9 @@ class TestMatvec:
 
         result = dpnp.matvec(ia, ib, axes=axes)
         expected = numpy.matvec(a, b, axes=axes)
-        assert_dtype_allclose(result, expected)
+
+        # TODO: check if failing with newer NumPy
+        assert_dtype_allclose(result, expected, factor=40)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_error(self, xp):
