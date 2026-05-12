@@ -29,7 +29,7 @@
 # distutils: language = c++
 # cython: language_level=3
 
-from cpython.mem cimport PyMem_Malloc
+from cpython.mem cimport PyMem_Free, PyMem_Malloc
 from cpython.ref cimport Py_INCREF
 from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
