@@ -47,8 +47,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "kernels/sorting/topk.hpp"
 #include "kernels/sorting/topk_radix_select.hpp"
+#include "kernels/sorting/topk_sort.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/rich_comparisons.hpp"
