@@ -341,7 +341,12 @@ T set_bucket_id(T val, T insert, std::uint32_t radix_offset)
     insert &= m;
     insert <<= radix_offset;
     m <<= radix_offset;
-    return (val & ~m) | insert;
+    if constexpr (std::is_same_v<T, bool>) {
+        return (val & !m) | insert;
+    }
+    else {
+        return (val & ~m) | insert;
+    }
 }
 
 } // namespace dpnp::tensor::kernels::radix_utils

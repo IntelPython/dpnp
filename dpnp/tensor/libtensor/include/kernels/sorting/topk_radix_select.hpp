@@ -89,7 +89,7 @@ void count_radix(sycl::nd_item<1> &it,
                  std::size_t axis_nelems)
 {
 #pragma unroll
-    for (int i = 0; i < radix_states; ++i) {
+    for (std::uint32_t i = 0; i < radix_states; ++i) {
         counts[i] = 0;
     }
 
@@ -194,17 +194,17 @@ void radix_select(sycl::nd_item<1> &it,
     BitwiseT desired(0);
     BitwiseT desired_mask(0);
 
-    int k_to_find = k;
+    CountT k_to_find = static_cast<CountT>(k);
 
     if constexpr (std::is_same_v<BitwiseT, bool>) {
-        constexpr int radix_offset(0);
+        constexpr std::uint32_t radix_offset(0);
 
         count_radix<T, BitwiseT, CountT, radix_states, radix_mask>(
             it, data, counts.data(), radix_count_slm, desired, desired_mask,
             radix_offset, axis_nelems);
 
-        auto found_unique = [&](int i, CountT count) -> bool {
-            if (count == 1 && k_to_find == 1) {
+        auto found_unique = [&](std::uint32_t i, CountT count) -> bool {
+            if (count == CountT(1) && k_to_find == CountT(1)) {
                 desired = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
                     desired, i, radix_offset);
                 desired_mask = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
@@ -218,7 +218,7 @@ void radix_select(sycl::nd_item<1> &it,
             return false;
         };
 
-        auto found_non_unique = [&](int i, CountT count) -> bool {
+        auto found_non_unique = [&](std::uint32_t i, CountT count) -> bool {
             if (count >= k_to_find) {
                 desired = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
                     desired, i, radix_offset);
@@ -233,7 +233,7 @@ void radix_select(sycl::nd_item<1> &it,
 
         if (largest) {
 #pragma unroll
-            for (int i = radix_states - 1; i >= 0; --i) {
+            for (std::uint32_t i = radix_states; i-- > 0;) {
                 CountT count = counts[i];
                 if (found_unique(i, count)) {
                     return;
@@ -245,8 +245,8 @@ void radix_select(sycl::nd_item<1> &it,
         }
         else {
 #pragma unroll
-            for (int i = 0; i < radix_states; ++i) {
-                int count = counts[i];
+            for (std::uint32_t i = 0; i < radix_states; ++i) {
+                CountT count = counts[i];
                 if (found_unique(i, count)) {
                     return;
                 }
@@ -259,19 +259,21 @@ void radix_select(sycl::nd_item<1> &it,
     else {
         // signed int avoids overflow, radix_offset implicitly cast to uint32_t
         for (int radix_offset =
-                 radix_utils::number_of_bits_in_type<T>() - radix_bits;
-             radix_offset >= 0; radix_offset -= radix_bits) {
+                 static_cast<int>(radix_utils::number_of_bits_in_type<T>()) -
+                 static_cast<int>(radix_bits);
+             radix_offset >= 0; radix_offset -= static_cast<int>(radix_bits)) {
             count_radix<T, BitwiseT, CountT, radix_states, radix_mask>(
                 it, data, counts.data(), radix_count_slm, desired, desired_mask,
-                radix_offset, axis_nelems);
+                static_cast<std::uint32_t>(radix_offset), axis_nelems);
 
-            auto found_unique = [&](int i, CountT count) -> bool {
-                if (count == 1 && k_to_find == 1) {
+            auto found_unique = [&](std::uint32_t i, CountT count) -> bool {
+                if (count == CountT(1) && k_to_find == CountT(1)) {
                     desired = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
-                        desired, i, radix_offset);
+                        desired, i, static_cast<std::uint32_t>(radix_offset));
                     desired_mask =
                         radix_utils::set_bucket_id<radix_mask, BitwiseT>(
-                            desired_mask, radix_mask, radix_offset);
+                            desired_mask, radix_mask,
+                            static_cast<std::uint32_t>(radix_offset));
 
                     top_k = find_pattern<T, BitwiseT>(it, data, axis_nelems,
                                                       top_k_val_slm, desired,
@@ -281,13 +283,14 @@ void radix_select(sycl::nd_item<1> &it,
                 return false;
             };
 
-            auto found_non_unique = [&](int i, CountT count) -> bool {
+            auto found_non_unique = [&](std::uint32_t i, CountT count) -> bool {
                 if (count >= k_to_find) {
                     desired = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
-                        desired, i, radix_offset);
+                        desired, i, static_cast<std::uint32_t>(radix_offset));
                     desired_mask =
                         radix_utils::set_bucket_id<radix_mask, BitwiseT>(
-                            desired_mask, radix_mask, radix_offset);
+                            desired_mask, radix_mask,
+                            static_cast<std::uint32_t>(radix_offset));
 
                     return true;
                 }
@@ -297,7 +300,7 @@ void radix_select(sycl::nd_item<1> &it,
 
             if (largest) {
 #pragma unroll
-                for (int i = radix_states - 1; i >= 0; --i) {
+                for (std::uint32_t i = radix_states; i-- > 0;) {
                     CountT count = counts[i];
                     if (found_unique(i, count)) {
                         return;
@@ -309,8 +312,8 @@ void radix_select(sycl::nd_item<1> &it,
             }
             else {
 #pragma unroll
-                for (int i = 0; i < radix_states; ++i) {
-                    int count = counts[i];
+                for (std::uint32_t i = 0; i < radix_states; ++i) {
+                    CountT count = counts[i];
                     if (found_unique(i, count)) {
                         return;
                     }
@@ -420,15 +423,16 @@ struct TopK
                     has_top_k = in_range && (v_converted < top_k_converted);
                 }
                 auto wg = it.get_group();
-                int index = sycl::inclusive_scan_over_group(
-                    wg, static_cast<int>(has_top_k), sycl::plus<int>{});
-                int carry = sycl::group_broadcast(
+                std::size_t index = sycl::inclusive_scan_over_group(
+                    wg, static_cast<std::size_t>(has_top_k),
+                    sycl::plus<std::size_t>{});
+                std::size_t carry = sycl::group_broadcast(
                     wg, index, wg.get_local_linear_range() - 1);
-                index -= static_cast<int>(
+                index -= static_cast<std::size_t>(
                     has_top_k); // turn inclusive scan exclusive
 
                 if (has_top_k) {
-                    int write_idx = write_idx_start + index;
+                    std::size_t write_idx = write_idx_start + index;
 
                     top_k_start[write_idx] = v;
                     indices_start[write_idx] = i;
@@ -446,15 +450,16 @@ struct TopK
                 bool has_top_k = in_range && (v_converted == top_k_converted);
 
                 auto wg = it.get_group();
-                int index = sycl::inclusive_scan_over_group(
-                    wg, static_cast<int>(has_top_k), sycl::plus<int>{});
-                int carry = sycl::group_broadcast(
+                std::size_t index = sycl::inclusive_scan_over_group(
+                    wg, static_cast<std::size_t>(has_top_k),
+                    sycl::plus<std::size_t>{});
+                std::size_t carry = sycl::group_broadcast(
                     wg, index, wg.get_local_linear_range() - 1);
-                index -= static_cast<int>(
+                index -= static_cast<std::size_t>(
                     has_top_k); // turn inclusive scan exclusive
 
                 if (has_top_k && index < top_k_remaining) {
-                    int write_idx = write_idx_start + index;
+                    std::size_t write_idx = write_idx_start + index;
 
                     top_k_start[write_idx] = v;
                     indices_start[write_idx] = i;
@@ -695,9 +700,9 @@ public:
 
         sycl::group_barrier(it.get_group());
 
-        int elems_per_wi =
+        std::size_t elems_per_wi =
             (wg_idx_in_axis + 1 < axis_groups)
-                ? base_items_per_thread
+                ? static_cast<std::size_t>(base_items_per_thread)
                 : topk_detail::quotient_ceil<std::size_t>(
                       axis_nelems - wg_idx_in_axis * items_per_wg,
                       wi_per_group);
@@ -713,7 +718,8 @@ public:
                     ((val & desired_mask) == (desired & desired_mask));
 
                 BitwiseT digit =
-                    radix_utils::get_bucket_id<radix_mask>(val, current_bit);
+                    radix_utils::get_bucket_id<radix_mask>(
+                        val, static_cast<std::uint32_t>(current_bit));
                 if (has_val) {
                     sycl::atomic_ref<std::uint32_t, sycl::memory_order::relaxed,
                                      sycl::memory_scope::device,
@@ -766,7 +772,7 @@ public:
 
         if (lid < radix_states && axis_groups > 1) {
             digit_count = 0;
-            for (int gr = 0; gr < axis_groups; ++gr) {
+            for (std::uint32_t gr = 0; gr < axis_groups; ++gr) {
                 digit_count +=
                     counts[(iter_idx * axis_groups + gr) * radix_states + lid];
             }
@@ -789,7 +795,7 @@ public:
             if (digit_count_cumsum_left < k_to_find &&
                 k_to_find <= digit_count_cumsum) {
                 desired = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
-                    desired, lid, current_bit);
+                    desired, lid, static_cast<std::uint32_t>(current_bit));
                 desires[iter_idx] = desired;
                 if (current_bit > 0) {
                     // if not last pass, update ks_to_find
@@ -883,8 +889,10 @@ sycl::event submit_radix_find_kth_vals(
                 range,
                 RadixFindKthValuesFunctor<T, BitwiseT, LocAccT>(
                     arg_tp, axis_nelems, ks_to_find, iter_nelems, current_bit,
-                    elems_per_wi, axis_groups, BitwiseT(0), axis_groups_done,
-                    desired, counts, kth_values, slm_counters, slm_cumsum));
+                    static_cast<int>(elems_per_wi),
+                    static_cast<std::uint32_t>(axis_groups), BitwiseT(0),
+                    axis_groups_done, desired, counts, kth_values,
+                    slm_counters, slm_cumsum));
         });
         last_launch_ev = launch_ev;
     }
@@ -892,8 +900,9 @@ sycl::event submit_radix_find_kth_vals(
         bool used_deps = false;
         BitwiseT desired_mask = 0;
         for (int current_bit =
-                 radix_utils::number_of_bits_in_type<T>() - radix_bits;
-             current_bit >= 0; current_bit -= radix_bits) {
+                 static_cast<int>(radix_utils::number_of_bits_in_type<T>()) -
+                 static_cast<int>(radix_bits);
+             current_bit >= 0; current_bit -= static_cast<int>(radix_bits)) {
             sycl::event launch_ev = exec_q.submit([&](sycl::handler &cgh) {
                 if (!used_deps) {
                     cgh.depends_on(depends);
@@ -911,13 +920,16 @@ sycl::event submit_radix_find_kth_vals(
                 cgh.parallel_for<KernelName>(
                     range, RadixFindKthValuesFunctor<T, BitwiseT, LocAccT>(
                                arg_tp, axis_nelems, ks_to_find, iter_nelems,
-                               current_bit, elems_per_wi, axis_groups,
+                               current_bit,
+                               static_cast<int>(elems_per_wi),
+                               static_cast<std::uint32_t>(axis_groups),
                                desired_mask, axis_groups_done, desired, counts,
                                kth_values, slm_counters, slm_cumsum));
             });
             last_launch_ev = launch_ev;
             desired_mask = radix_utils::set_bucket_id<radix_mask, BitwiseT>(
-                desired_mask, radix_mask, current_bit);
+                desired_mask, radix_mask,
+                static_cast<std::uint32_t>(current_bit));
         }
     }
     return last_launch_ev;
@@ -953,13 +965,14 @@ sycl::event submit_top_k_radix_select_multi_group(
     auto const &ctx = exec_q.get_context();
 
     int elems_per_wi = get_items_per_thread(iter_nelems, axis_nelems, dev);
-    int elems_per_group = elems_per_wi * wi_per_group;
+    std::size_t elems_per_group =
+        static_cast<std::size_t>(elems_per_wi) * wi_per_group;
 
     using BitwiseT =
         typename radix_utils::RadixTypeConfig<true, argTy>::RadixType;
     std::uint32_t axis_groups =
         topk_detail::quotient_ceil<std::uint32_t>(axis_nelems, elems_per_group);
-    std::uint32_t n_groups = iter_nelems * axis_groups;
+    std::size_t n_groups = iter_nelems * static_cast<std::size_t>(axis_groups);
 
     // find kth vals kernel required SLM
     const std::size_t find_kth_vals_slm_size =
@@ -1019,7 +1032,8 @@ sycl::event submit_top_k_radix_select_multi_group(
     auto ndRange = sycl::nd_range<1>{gRange, lRange};
 
     sycl::event find_kth_vals_ev = submit_radix_find_kth_vals(
-        exec_q, ndRange, iter_nelems, axis_nelems, elems_per_wi, axis_groups,
+        exec_q, ndRange, iter_nelems, axis_nelems,
+        static_cast<std::size_t>(elems_per_wi), axis_groups,
         arg_tp, kth_values, ks_to_find, axis_groups_done, desired, counts,
         depends, other_depends);
 
