@@ -185,3 +185,31 @@ def test_expm1_special_cases():
     tol = dpt.finfo(X.dtype).resolution
     with np.errstate(invalid="ignore"):
         assert_allclose(dpt.asnumpy(dpt.expm1(X)), res, atol=tol, rtol=tol)
+
+
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_expm1_zero_special_cases(dtype):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = [
+        complex(+0.0, +0.0),
+        complex(-0.0, +0.0),
+        complex(+0.0, -0.0),
+        complex(-0.0, -0.0),
+    ]
+    expected = [
+        complex(0.0, 0.0),
+        complex(0.0, 0.0),
+        complex(0.0, -0.0),
+        complex(0.0, -0.0),
+    ]
+
+    xf = dpt.asarray(x, dtype=dtype, sycl_queue=q)
+    Y = dpt.asnumpy(dpt.expm1(xf))
+
+    for i in range(len(x)):
+        assert Y[i].real == expected[i].real
+        assert Y[i].imag == expected[i].imag
+        assert not np.signbit(Y[i].real)
+        assert np.signbit(Y[i].imag) == np.signbit(expected[i].imag)

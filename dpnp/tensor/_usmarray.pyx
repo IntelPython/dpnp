@@ -55,7 +55,13 @@ from . import _flags
 from ._dlpack import get_build_dlpack_version
 from ._tensor_impl import default_device_fp_type
 
-from ._slicing cimport *
+from ._slicing cimport (
+    _is_buffer,
+    _is_boolean,
+    _is_integral,
+    _slice_len,
+)
+from ._slicing import _basic_slice_meta
 from ._stride_utils cimport (
     ERROR_INCORRECT_ORDER,
     ERROR_INTERNAL,
@@ -76,8 +82,6 @@ from ._types cimport (
     type_bytesize,
     typenum_from_format,
 )
-
-from ._slicing import _basic_slice_meta
 
 
 # Local storage for `cdef public api` constants
