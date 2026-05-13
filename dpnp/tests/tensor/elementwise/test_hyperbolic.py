@@ -200,3 +200,24 @@ def test_hyper_real_special_cases(np_call, dpt_call, dtype):
 
     tol = 8 * dpt.finfo(dtype).resolution
     assert_allclose(dpt.asnumpy(dpt_call(yf)), Y_np, atol=tol, rtol=tol)
+
+
+@pytest.mark.parametrize("dtype", ["c8", "c16"])
+def test_acosh_zero_nan(dtype):
+    # check acosh(0 + NaN j) = NaN ± πj/2
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = [complex(+0.0, np.nan), complex(-0.0, np.nan)]
+
+    xf = np.array(x, dtype=dtype)
+    yf = dpt.asarray(xf, dtype=dtype, sycl_queue=q)
+
+    with np.errstate(all="ignore"):
+        Y_np = np.arccosh(xf)
+
+    Y_dpt = dpt.asnumpy(dpt.acosh(yf))
+
+    for i in range(len(x)):
+        assert np.isnan(Y_np[i].real) == np.isnan(Y_dpt[i].real)
+        assert_allclose(abs(Y_dpt[i].imag), abs(Y_np[i].imag), atol=1e-6)
