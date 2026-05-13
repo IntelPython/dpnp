@@ -1924,7 +1924,8 @@ def test_meshgrid():
     assert n == len(Znp)
     for i in range(n):
         assert np.array_equal(dpt.asnumpy(Z[i]), Znp[i])
-    assert dpt.meshgrid() == []
+    assert isinstance(Z, tuple)
+    assert dpt.meshgrid() == ()
     # dimension > 1 must raise ValueError
     with pytest.raises(ValueError):
         dpt.meshgrid(dpt.usm_ndarray((4, 4)))
