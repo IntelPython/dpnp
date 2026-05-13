@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+* Changed `dpnp.meshgrid` and `dpnp.tensor.meshgrid` to return a tuple instead of a list, aligning with NumPy 2.5+ behavior and 2025.12 version of the Python array API standard [#2854](https://github.com/IntelPython/dpnp/pull/2854)
 
 ### Deprecated
 
