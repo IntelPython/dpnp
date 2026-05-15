@@ -32,27 +32,28 @@
 cimport dpctl
 
 
-cdef public api int USM_ARRAY_C_CONTIGUOUS
-cdef public api int USM_ARRAY_F_CONTIGUOUS
-cdef public api int USM_ARRAY_WRITABLE
+cdef extern from "usm_ndarray_constants.h":
+    int USM_ARRAY_C_CONTIGUOUS
+    int USM_ARRAY_F_CONTIGUOUS
+    int USM_ARRAY_WRITABLE
 
-cdef public api int UAR_BOOL
-cdef public api int UAR_BYTE
-cdef public api int UAR_UBYTE
-cdef public api int UAR_SHORT
-cdef public api int UAR_USHORT
-cdef public api int UAR_INT
-cdef public api int UAR_UINT
-cdef public api int UAR_LONG
-cdef public api int UAR_ULONG
-cdef public api int UAR_LONGLONG
-cdef public api int UAR_ULONGLONG
-cdef public api int UAR_FLOAT
-cdef public api int UAR_DOUBLE
-cdef public api int UAR_CFLOAT
-cdef public api int UAR_CDOUBLE
-cdef public api int UAR_TYPE_SENTINEL
-cdef public api int UAR_HALF
+    int UAR_BOOL
+    int UAR_BYTE
+    int UAR_UBYTE
+    int UAR_SHORT
+    int UAR_USHORT
+    int UAR_INT
+    int UAR_UINT
+    int UAR_LONG
+    int UAR_ULONG
+    int UAR_LONGLONG
+    int UAR_ULONGLONG
+    int UAR_FLOAT
+    int UAR_DOUBLE
+    int UAR_CFLOAT
+    int UAR_CDOUBLE
+    int UAR_TYPE_SENTINEL
+    int UAR_HALF
 
 
 cdef api class usm_ndarray [object PyUSMArrayObject, type PyUSMArrayType]:

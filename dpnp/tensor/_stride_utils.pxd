@@ -29,14 +29,15 @@
 # distutils: language = c++
 # cython: language_level=3
 
+cdef extern from "usm_ndarray_constants.h":
+    int USM_ARRAY_C_CONTIGUOUS
+    int USM_ARRAY_F_CONTIGUOUS
+    int USM_ARRAY_WRITABLE
+
 cdef int ERROR_MALLOC
 cdef int ERROR_INTERNAL
 cdef int ERROR_INCORRECT_ORDER
 cdef int ERROR_UNEXPECTED_STRIDES
-
-cdef int USM_ARRAY_C_CONTIGUOUS
-cdef int USM_ARRAY_F_CONTIGUOUS
-cdef int USM_ARRAY_WRITABLE
 
 cdef Py_ssize_t shape_to_elem_count(int nd, Py_ssize_t *shape_arr)
 

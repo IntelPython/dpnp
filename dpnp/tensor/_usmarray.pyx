@@ -56,12 +56,14 @@ from ._dlpack import get_build_dlpack_version
 from ._tensor_impl import default_device_fp_type
 
 from ._slicing cimport (
-    _is_buffer,
     _is_boolean,
+    _is_buffer,
     _is_integral,
     _slice_len,
 )
+
 from ._slicing import _basic_slice_meta
+
 from ._stride_utils cimport (
     ERROR_INCORRECT_ORDER,
     ERROR_INTERNAL,
@@ -82,32 +84,6 @@ from ._types cimport (
     type_bytesize,
     typenum_from_format,
 )
-
-
-# Local storage for `cdef public api` constants
-# declared in _usmarray.pxd
-cdef int USM_ARRAY_C_CONTIGUOUS = 1
-cdef int USM_ARRAY_F_CONTIGUOUS = 2
-cdef int USM_ARRAY_WRITABLE = 4
-
-cdef:
-    int UAR_BOOL = 0
-    int UAR_BYTE = 1
-    int UAR_UBYTE = 2
-    int UAR_SHORT = 3
-    int UAR_USHORT = 4
-    int UAR_INT = 5
-    int UAR_UINT = 6
-    int UAR_LONG = 7
-    int UAR_ULONG = 8
-    int UAR_LONGLONG = 9
-    int UAR_ULONGLONG = 10
-    int UAR_FLOAT = 11
-    int UAR_DOUBLE = 12
-    int UAR_CFLOAT = 14
-    int UAR_CDOUBLE = 15
-    int UAR_TYPE_SENTINEL = 17
-    int UAR_HALF = 23
 
 
 class DLDeviceType(IntEnum):

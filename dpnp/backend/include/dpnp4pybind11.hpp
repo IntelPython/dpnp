@@ -32,9 +32,10 @@
 #include "dpctl4pybind11.hpp"
 
 // Include generated Cython headers for usm_ndarray
-// (struct definition and constants only)
 #include "dpnp/tensor/_usmarray.h"
 #include "dpnp/tensor/_usmarray_api.h"
+// Include usm_ndarray constants (flags, type numbers)
+#include "../../tensor/include/usm_ndarray_constants.h"
 
 #include <array>
 #include <cassert>
@@ -135,7 +136,7 @@ private:
 
         this->PyUSMArrayType_ = &PyUSMArrayType;
 
-        // constants
+        // constants from usm_ndarray_constants.h
         this->USM_ARRAY_C_CONTIGUOUS_ = USM_ARRAY_C_CONTIGUOUS;
         this->USM_ARRAY_F_CONTIGUOUS_ = USM_ARRAY_F_CONTIGUOUS;
         this->USM_ARRAY_WRITABLE_ = USM_ARRAY_WRITABLE;

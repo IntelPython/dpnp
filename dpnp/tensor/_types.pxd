@@ -29,23 +29,24 @@
 # distutils: language = c++
 # cython: language_level=3
 
-cdef int UAR_BOOL
-cdef int UAR_BYTE
-cdef int UAR_UBYTE
-cdef int UAR_SHORT
-cdef int UAR_USHORT
-cdef int UAR_INT
-cdef int UAR_UINT
-cdef int UAR_LONG
-cdef int UAR_ULONG
-cdef int UAR_LONGLONG
-cdef int UAR_ULONGLONG
-cdef int UAR_FLOAT
-cdef int UAR_DOUBLE
-cdef int UAR_CFLOAT
-cdef int UAR_CDOUBLE
-cdef int UAR_TYPE_SENTINEL
-cdef int UAR_HALF
+cdef extern from "usm_ndarray_constants.h":
+    int UAR_BOOL
+    int UAR_BYTE
+    int UAR_UBYTE
+    int UAR_SHORT
+    int UAR_USHORT
+    int UAR_INT
+    int UAR_UINT
+    int UAR_LONG
+    int UAR_ULONG
+    int UAR_LONGLONG
+    int UAR_ULONGLONG
+    int UAR_FLOAT
+    int UAR_DOUBLE
+    int UAR_CFLOAT
+    int UAR_CDOUBLE
+    int UAR_TYPE_SENTINEL
+    int UAR_HALF
 
 cdef int type_bytesize(int typenum)
 
