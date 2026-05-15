@@ -217,6 +217,5 @@ def test_acosh_zero_nan(dtype):
 
     Y_dpt = dpt.asnumpy(dpt.acosh(yf))
 
-    pi_half = np.full(len(x), np.pi / 2, dtype=xf.real.dtype)
-    assert np.all(np.isnan(Y_dpt.real))
-    assert_allclose(abs(Y_dpt.imag), pi_half, atol=1e-6)
+    assert np.isnan(Y_dpt.real).all()
+    assert_allclose(np.abs(Y_dpt.imag), np.pi / 2, atol=1e-6, strict=False)
