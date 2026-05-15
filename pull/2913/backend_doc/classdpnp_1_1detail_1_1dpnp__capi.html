@@ -120,6 +120,34 @@ Static Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ab0c4c943a46e91c73282ac9e3bf6f819" id="r_ab0c4c943a46e91c73282ac9e3bf6f819"><td class="memItemLeft" align="right" valign="top">PyTypeObject *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab0c4c943a46e91c73282ac9e3bf6f819">PyUSMArrayType_</a></td></tr>
 <tr class="separator:ab0c4c943a46e91c73282ac9e3bf6f819"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08774a11fe1a7f86030c5b423b22e6d3" id="r_a08774a11fe1a7f86030c5b423b22e6d3"><td class="memItemLeft" align="right" valign="top">char *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a08774a11fe1a7f86030c5b423b22e6d3">UsmNDArray_GetData_</a> )(PyUSMArrayObject *)</td></tr>
+<tr class="separator:a08774a11fe1a7f86030c5b423b22e6d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75125f0db3cee3b1a6bc1bb8a8f1886a" id="r_a75125f0db3cee3b1a6bc1bb8a8f1886a"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75125f0db3cee3b1a6bc1bb8a8f1886a">UsmNDArray_GetNDim_</a> )(PyUSMArrayObject *)</td></tr>
+<tr class="separator:a75125f0db3cee3b1a6bc1bb8a8f1886a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae65cc3b221753ba444b599c9a9eeca57" id="r_ae65cc3b221753ba444b599c9a9eeca57"><td class="memItemLeft" align="right" valign="top">py::ssize_t *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae65cc3b221753ba444b599c9a9eeca57">UsmNDArray_GetShape_</a> )(PyUSMArrayObject *)</td></tr>
+<tr class="separator:ae65cc3b221753ba444b599c9a9eeca57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a914a5d02f0958ce74cd80b56c24ab8fc" id="r_a914a5d02f0958ce74cd80b56c24ab8fc"><td class="memItemLeft" align="right" valign="top">py::ssize_t *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a914a5d02f0958ce74cd80b56c24ab8fc">UsmNDArray_GetStrides_</a> )(PyUSMArrayObject *)</td></tr>
+<tr class="separator:a914a5d02f0958ce74cd80b56c24ab8fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a197f1db7aa1dfba53387464b43ef8d" id="r_a5a197f1db7aa1dfba53387464b43ef8d"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a197f1db7aa1dfba53387464b43ef8d">UsmNDArray_GetTypenum_</a> )(PyUSMArrayObject *)</td></tr>
+<tr class="separator:a5a197f1db7aa1dfba53387464b43ef8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c26b78089a1cb81a77e343abe4c8866" id="r_a9c26b78089a1cb81a77e343abe4c8866"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c26b78089a1cb81a77e343abe4c8866">UsmNDArray_GetElementSize_</a> )(PyUSMArrayObject *)</td></tr>
+<tr class="separator:a9c26b78089a1cb81a77e343abe4c8866"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab81ebe289a20141d1ceec03c146f8c56" id="r_ab81ebe289a20141d1ceec03c146f8c56"><td class="memItemLeft" align="right" valign="top">int(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab81ebe289a20141d1ceec03c146f8c56">UsmNDArray_GetFlags_</a> )(PyUSMArrayObject *)</td></tr>
+<tr class="separator:ab81ebe289a20141d1ceec03c146f8c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a736676dd5ccefc3d781e9e85949b0fde" id="r_a736676dd5ccefc3d781e9e85949b0fde"><td class="memItemLeft" align="right" valign="top">DPCTLSyclQueueRef(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a736676dd5ccefc3d781e9e85949b0fde">UsmNDArray_GetQueueRef_</a> )(PyUSMArrayObject *)</td></tr>
+<tr class="separator:a736676dd5ccefc3d781e9e85949b0fde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70bf16396bdd13035ea47dc8c07aaa2d" id="r_a70bf16396bdd13035ea47dc8c07aaa2d"><td class="memItemLeft" align="right" valign="top">py::ssize_t(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70bf16396bdd13035ea47dc8c07aaa2d">UsmNDArray_GetOffset_</a> )(PyUSMArrayObject *)</td></tr>
+<tr class="separator:a70bf16396bdd13035ea47dc8c07aaa2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabb3d392a51321c573a2ca2c6c9b216b" id="r_aabb3d392a51321c573a2ca2c6c9b216b"><td class="memItemLeft" align="right" valign="top">PyObject *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabb3d392a51321c573a2ca2c6c9b216b">UsmNDArray_GetUSMData_</a> )(PyUSMArrayObject *)</td></tr>
+<tr class="separator:aabb3d392a51321c573a2ca2c6c9b216b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12cf0f3442ee9fd5988d301e52e67f3e" id="r_a12cf0f3442ee9fd5988d301e52e67f3e"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a12cf0f3442ee9fd5988d301e52e67f3e">UsmNDArray_SetWritableFlag_</a> )(PyUSMArrayObject *, int)</td></tr>
+<tr class="separator:a12cf0f3442ee9fd5988d301e52e67f3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fefbe680624a404afa130ac1c92ef39" id="r_a5fefbe680624a404afa130ac1c92ef39"><td class="memItemLeft" align="right" valign="top">PyObject *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5fefbe680624a404afa130ac1c92ef39">UsmNDArray_MakeSimpleFromMemory_</a> )(int, const py::ssize_t *, int, Py_MemoryObject *, py::ssize_t, char)</td></tr>
+<tr class="separator:a5fefbe680624a404afa130ac1c92ef39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa379bf79dee6a44b52b4278a9e528dc4" id="r_aa379bf79dee6a44b52b4278a9e528dc4"><td class="memItemLeft" align="right" valign="top">PyObject *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa379bf79dee6a44b52b4278a9e528dc4">UsmNDArray_MakeSimpleFromPtr_</a> )(size_t, int, DPCTLSyclUSMRef, DPCTLSyclQueueRef, PyObject *)</td></tr>
+<tr class="separator:aa379bf79dee6a44b52b4278a9e528dc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c5d2b5fac98ea07304ffed274bf304c" id="r_a6c5d2b5fac98ea07304ffed274bf304c"><td class="memItemLeft" align="right" valign="top">PyObject *(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c5d2b5fac98ea07304ffed274bf304c">UsmNDArray_MakeFromPtr_</a> )(int, const py::ssize_t *, int, const py::ssize_t *, DPCTLSyclUSMRef, DPCTLSyclQueueRef, py::ssize_t, PyObject *)</td></tr>
+<tr class="separator:a6c5d2b5fac98ea07304ffed274bf304c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7adf59fab4618f476e8a9bc7e6d9d9e3" id="r_a7adf59fab4618f476e8a9bc7e6d9d9e3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7adf59fab4618f476e8a9bc7e6d9d9e3">USM_ARRAY_C_CONTIGUOUS_</a></td></tr>
 <tr class="separator:a7adf59fab4618f476e8a9bc7e6d9d9e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35f36b4ac90e0ab9b52ede63cf190a9e" id="r_a35f36b4ac90e0ab9b52ede63cf190a9e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35f36b4ac90e0ab9b52ede63cf190a9e">USM_ARRAY_F_CONTIGUOUS_</a></td></tr>
@@ -179,7 +207,7 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00075">75</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00076">76</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="acc2aef8a2edc277c24a1130b72fcbde3" name="acc2aef8a2edc277c24a1130b72fcbde3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acc2aef8a2edc277c24a1130b72fcbde3">&#9670;&#160;</a></span>~dpnp_capi()</h2>
@@ -204,7 +232,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00090">90</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00122">122</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -232,7 +260,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00098">98</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00130">130</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -259,7 +287,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00092">92</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00124">124</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -276,7 +304,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00078">78</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00079">79</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -292,7 +320,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00083">83</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00115">115</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -308,7 +336,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00083">83</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00115">115</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -324,7 +352,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00085">85</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00117">117</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -340,7 +368,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00085">85</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00117">117</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -356,7 +384,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00085">85</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00117">117</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -372,7 +400,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00085">85</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00117">117</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -388,7 +416,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00086">86</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00118">118</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -404,7 +432,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00087">87</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00119">119</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -420,7 +448,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00087">87</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00119">119</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -436,7 +464,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00088">88</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00120">120</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -452,7 +480,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00087">87</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00119">119</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -468,7 +496,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00083">83</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00115">115</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -484,7 +512,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00084">84</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00116">116</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -500,7 +528,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00084">84</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00116">116</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -516,7 +544,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00083">83</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00115">115</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -532,7 +560,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00085">85</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00117">117</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -548,7 +576,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00083">83</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00115">115</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -564,7 +592,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00087">87</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00119">119</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -580,7 +608,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00087">87</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00119">119</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -596,7 +624,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00088">88</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00120">120</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -612,7 +640,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00087">87</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00119">119</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -628,7 +656,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00084">84</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00116">116</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -644,7 +672,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00084">84</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00116">116</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -660,7 +688,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00084">84</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00116">116</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -676,7 +704,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00083">83</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00115">115</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -692,7 +720,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00080">80</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00112">112</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -708,7 +736,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00081">81</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00113">113</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
@@ -724,7 +752,231 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00114">114</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a08774a11fe1a7f86030c5b423b22e6d3" name="a08774a11fe1a7f86030c5b423b22e6d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08774a11fe1a7f86030c5b423b22e6d3">&#9670;&#160;</a></span>UsmNDArray_GetData_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char *(* dpnp::detail::dpnp_capi::UsmNDArray_GetData_) (PyUSMArrayObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00081">81</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a9c26b78089a1cb81a77e343abe4c8866" name="a9c26b78089a1cb81a77e343abe4c8866"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c26b78089a1cb81a77e343abe4c8866">&#9670;&#160;</a></span>UsmNDArray_GetElementSize_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* dpnp::detail::dpnp_capi::UsmNDArray_GetElementSize_) (PyUSMArrayObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00086">86</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ab81ebe289a20141d1ceec03c146f8c56" name="ab81ebe289a20141d1ceec03c146f8c56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab81ebe289a20141d1ceec03c146f8c56">&#9670;&#160;</a></span>UsmNDArray_GetFlags_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* dpnp::detail::dpnp_capi::UsmNDArray_GetFlags_) (PyUSMArrayObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00087">87</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a75125f0db3cee3b1a6bc1bb8a8f1886a" name="a75125f0db3cee3b1a6bc1bb8a8f1886a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75125f0db3cee3b1a6bc1bb8a8f1886a">&#9670;&#160;</a></span>UsmNDArray_GetNDim_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* dpnp::detail::dpnp_capi::UsmNDArray_GetNDim_) (PyUSMArrayObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 <p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00082">82</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a70bf16396bdd13035ea47dc8c07aaa2d" name="a70bf16396bdd13035ea47dc8c07aaa2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70bf16396bdd13035ea47dc8c07aaa2d">&#9670;&#160;</a></span>UsmNDArray_GetOffset_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">py::ssize_t(* dpnp::detail::dpnp_capi::UsmNDArray_GetOffset_) (PyUSMArrayObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00089">89</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a736676dd5ccefc3d781e9e85949b0fde" name="a736676dd5ccefc3d781e9e85949b0fde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a736676dd5ccefc3d781e9e85949b0fde">&#9670;&#160;</a></span>UsmNDArray_GetQueueRef_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DPCTLSyclQueueRef(* dpnp::detail::dpnp_capi::UsmNDArray_GetQueueRef_) (PyUSMArrayObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00088">88</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ae65cc3b221753ba444b599c9a9eeca57" name="ae65cc3b221753ba444b599c9a9eeca57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae65cc3b221753ba444b599c9a9eeca57">&#9670;&#160;</a></span>UsmNDArray_GetShape_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">py::ssize_t *(* dpnp::detail::dpnp_capi::UsmNDArray_GetShape_) (PyUSMArrayObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00083">83</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a914a5d02f0958ce74cd80b56c24ab8fc" name="a914a5d02f0958ce74cd80b56c24ab8fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a914a5d02f0958ce74cd80b56c24ab8fc">&#9670;&#160;</a></span>UsmNDArray_GetStrides_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">py::ssize_t *(* dpnp::detail::dpnp_capi::UsmNDArray_GetStrides_) (PyUSMArrayObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00084">84</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a5a197f1db7aa1dfba53387464b43ef8d" name="a5a197f1db7aa1dfba53387464b43ef8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a197f1db7aa1dfba53387464b43ef8d">&#9670;&#160;</a></span>UsmNDArray_GetTypenum_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int(* dpnp::detail::dpnp_capi::UsmNDArray_GetTypenum_) (PyUSMArrayObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00085">85</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="aabb3d392a51321c573a2ca2c6c9b216b" name="aabb3d392a51321c573a2ca2c6c9b216b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabb3d392a51321c573a2ca2c6c9b216b">&#9670;&#160;</a></span>UsmNDArray_GetUSMData_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PyObject *(* dpnp::detail::dpnp_capi::UsmNDArray_GetUSMData_) (PyUSMArrayObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00090">90</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a6c5d2b5fac98ea07304ffed274bf304c" name="a6c5d2b5fac98ea07304ffed274bf304c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c5d2b5fac98ea07304ffed274bf304c">&#9670;&#160;</a></span>UsmNDArray_MakeFromPtr_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PyObject *(* dpnp::detail::dpnp_capi::UsmNDArray_MakeFromPtr_) (int, const py::ssize_t *, int, const py::ssize_t *, DPCTLSyclUSMRef, DPCTLSyclQueueRef, py::ssize_t, PyObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00103">103</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a5fefbe680624a404afa130ac1c92ef39" name="a5fefbe680624a404afa130ac1c92ef39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5fefbe680624a404afa130ac1c92ef39">&#9670;&#160;</a></span>UsmNDArray_MakeSimpleFromMemory_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PyObject *(* dpnp::detail::dpnp_capi::UsmNDArray_MakeSimpleFromMemory_) (int, const py::ssize_t *, int, Py_MemoryObject *, py::ssize_t, char)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00092">92</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="aa379bf79dee6a44b52b4278a9e528dc4" name="aa379bf79dee6a44b52b4278a9e528dc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa379bf79dee6a44b52b4278a9e528dc4">&#9670;&#160;</a></span>UsmNDArray_MakeSimpleFromPtr_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PyObject *(* dpnp::detail::dpnp_capi::UsmNDArray_MakeSimpleFromPtr_) (size_t, int, DPCTLSyclUSMRef, DPCTLSyclQueueRef, PyObject *)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00098">98</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a12cf0f3442ee9fd5988d301e52e67f3e" name="a12cf0f3442ee9fd5988d301e52e67f3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12cf0f3442ee9fd5988d301e52e67f3e">&#9670;&#160;</a></span>UsmNDArray_SetWritableFlag_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void(* dpnp::detail::dpnp_capi::UsmNDArray_SetWritableFlag_) (PyUSMArrayObject *, int)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="dpnp4pybind11_8hpp_source.html#l00091">91</a> of file <a class="el" href="dpnp4pybind11_8hpp_source.html">dpnp4pybind11.hpp</a>.</p>
 
 </div>
 </div>
