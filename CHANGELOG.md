@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Fixed incorrect in-place advanced indexing for 4D arrays when using `range` or `list` as index keys [#2872](https://github.com/IntelPython/dpnp/pull/2872)
 * Fixed `conda build` command syntax in GitHub workflows and documentation to use `conda-build` [#2888](https://github.com/IntelPython/dpnp/pull/2888)
+* Fixed missing `libtensor` headers in the installed `dpnp` package [#2915](https://github.com/IntelPython/dpnp/pull/2915)
 
 ### Security
 
