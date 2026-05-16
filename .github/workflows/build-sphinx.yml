@@ -194,7 +194,7 @@ jobs:
       # The step is only used to build docs while pushing a PR to "master"
       - name: Deploy docs
         if: env.GH_EVENT_PUSH_UPSTREAM == 'true'
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.PUBLISH_DIR }}
@@ -207,7 +207,7 @@ jobs:
       # The step is only used to build docs while pushing to PR branch
       - name: Publish pull-request docs
         if: env.GH_EVENT_OPEN_PR_UPSTREAM == 'true'
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.PUBLISH_DIR }}
