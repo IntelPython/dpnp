@@ -4,16 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.21.0] - MM/DD/2026
+## [0.21.0] - 2026-MM-DD
+
+This release is compatible with NumPy 2.4.5.
 
 ### Added
 
 * Added C API functions for `dpnp.tensor.usm_ndarray` setters and getters to avoid ABI breakage if `dpnp.tensor.usm_ndarray` is modified [gh-2866](https://github.com/IntelPython/dpnp/pull/2866)
 
 ### Changed
-* Changed `dpnp.meshgrid` and `dpnp.tensor.meshgrid` to return a tuple instead of a list, aligning with NumPy 2.5+ behavior and 2025.12 version of the Python array API standard [#2854](https://github.com/IntelPython/dpnp/pull/2854)
 
+* Changed `dpnp.meshgrid` and `dpnp.tensor.meshgrid` to return a tuple instead of a list, aligning with NumPy 2.5+ behavior and 2025.12 version of the Python array API standard [#2854](https://github.com/IntelPython/dpnp/pull/2854)
 * Updated `searchsorted` implementations to align with the 2025.12 array API spec [gh-2902](https://github.com/IntelPython/dpnp/pull/2902)
+* Updated tests to align with NumPy 2.4.5 compatibility [gh-2920](https://github.com/IntelPython/dpnp/pull/2920)
 
 ### Deprecated
 
@@ -23,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Fixed incorrect in-place advanced indexing for 4D arrays when using `range` or `list` as index keys [#2872](https://github.com/IntelPython/dpnp/pull/2872)
 * Fixed `conda build` command syntax in GitHub workflows and documentation to use `conda-build` [#2888](https://github.com/IntelPython/dpnp/pull/2888)
+* Fixed incorrect `dpnp.tensor.acosh` result for `complex(±0, NaN)` special case to match the Python Array API specification [#2914](https://github.com/IntelPython/dpnp/pull/2914)
 
 ### Security
 
