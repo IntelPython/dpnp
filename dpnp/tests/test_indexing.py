@@ -661,10 +661,11 @@ class TestPut:
         dpnp.put(ia, [1, 2, 3], [], mode=mode)
         assert_array_equal(ia, a)
 
-    # TODO: enable test for numpy also since 2.0
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
-    def test_empty_input(self, mode):
-        empty = dpnp.asarray(list())
+    def test_empty_input(self, xp, mode):
+        empty = xp.asarray(list())
         with pytest.raises(IndexError):
             empty.put(1, 1, mode=mode)
 
