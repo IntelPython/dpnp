@@ -72,6 +72,7 @@ class TestAngle:
 
 
 class TestConj:
+    @testing.with_requires("numpy!=2.4.5")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_conj(self, dtype):
         a = generate_random_numpy_array(20, dtype)
@@ -1674,15 +1675,13 @@ class TestSinc:
         flag = dt in [numpy.int8, numpy.int16, numpy.uint8, numpy.uint16]
         assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
-    # TODO: add a proper NumPy version once resolved
-    @testing.with_requires("numpy>=2.0.0")
+    @testing.with_requires("numpy>=2.3.0")
     def test_zero_fp16(self):
         a = numpy.array([0.0], dtype=numpy.float16)
         ia = dpnp.array(a)
 
         result = dpnp.sinc(ia)
-        # expected = numpy.sinc(a) # numpy returns NaN, but expected 1.0
-        expected = numpy.ones_like(a)
+        expected = numpy.sinc(a)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
