@@ -25,7 +25,7 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Docs
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 90
 
     permissions:
