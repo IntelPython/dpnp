@@ -290,8 +290,7 @@ class TestCond:
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
-    # TODO: uncomment once numpy 2.3.3 release is published
-    # @testing.with_requires("numpy>=2.3.3")
+    @testing.with_requires("numpy>=2.3.3")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
@@ -305,9 +304,6 @@ class TestCond:
 
         result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
-        # TODO: remove when numpy#29333 is released
-        if numpy_version() < "2.3.3":
-            expected = expected.real
         assert_dtype_allclose(result, expected, factor=16)
 
     @pytest.mark.parametrize("p", _norms)
