@@ -3238,8 +3238,7 @@ class TestMatrixRank:
             ValueError, dpnp.linalg.matrix_rank, a_dp, tol=1e-06, rtol=1e-04
         )
 
-    # TODO: use below fixture when NumPy 2.5 is released
-    # @testing.with_requires("numpy>=2.5")
+    @testing.with_requires("numpy>=2.4.5")
     @pytest.mark.parametrize(
         "shape",
         [
@@ -3258,14 +3257,7 @@ class TestMatrixRank:
         ia = dpnp.array(a)
 
         result = dpnp.linalg.matrix_rank(ia)
-        if numpy_version() < "2.5.0":  # TODO: remove
-            # Expected behavior: rank of empty matrix is 0
-            # For stacked matrices, return array of zeros
-            expected = numpy.zeros(shape[:-2], dtype=numpy.intp)
-            if expected.ndim == 0:
-                expected = numpy.array(0)
-        else:
-            expected = numpy.linalg.matrix_rank(a)
+        expected = numpy.linalg.matrix_rank(a)
         assert_array_equal(result, expected, strict=True)
 
         # Also test with hermitian=True
