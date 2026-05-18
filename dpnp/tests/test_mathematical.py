@@ -72,6 +72,7 @@ class TestAngle:
 
 
 class TestConj:
+    @testing.with_requires("numpy!=2.4.5")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_conj(self, dtype):
         a = generate_random_numpy_array(20, dtype)
