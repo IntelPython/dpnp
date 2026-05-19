@@ -290,8 +290,7 @@ class TestCond:
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
-    # TODO: uncomment once numpy 2.3.3 release is published
-    # @testing.with_requires("numpy>=2.3.3")
+    @testing.with_requires("numpy>=2.3.3")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
@@ -305,9 +304,6 @@ class TestCond:
 
         result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
-        # TODO: remove when numpy#29333 is released
-        if numpy_version() < "2.3.3":
-            expected = expected.real
         assert_dtype_allclose(result, expected, factor=16)
 
     @pytest.mark.parametrize("p", _norms)
@@ -3238,8 +3234,7 @@ class TestMatrixRank:
             ValueError, dpnp.linalg.matrix_rank, a_dp, tol=1e-06, rtol=1e-04
         )
 
-    # TODO: use below fixture when NumPy 2.5 is released
-    # @testing.with_requires("numpy>=2.5")
+    @testing.with_requires("numpy>=2.4.5")
     @pytest.mark.parametrize(
         "shape",
         [
@@ -3258,14 +3253,7 @@ class TestMatrixRank:
         ia = dpnp.array(a)
 
         result = dpnp.linalg.matrix_rank(ia)
-        if numpy_version() < "2.5.0":  # TODO: remove
-            # Expected behavior: rank of empty matrix is 0
-            # For stacked matrices, return array of zeros
-            expected = numpy.zeros(shape[:-2], dtype=numpy.intp)
-            if expected.ndim == 0:
-                expected = numpy.array(0)
-        else:
-            expected = numpy.linalg.matrix_rank(a)
+        expected = numpy.linalg.matrix_rank(a)
         assert_array_equal(result, expected, strict=True)
 
         # Also test with hermitian=True
