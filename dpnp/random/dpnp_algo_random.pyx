@@ -1524,7 +1524,6 @@ cpdef utils.dpnp_descriptor dpnp_rng_multivariate_normal(
     """
 
     dtype = dpnp.float64
-    cdef int dimen
     cdef size_t mean_size
     cdef size_t cov_size
 
@@ -1561,13 +1560,6 @@ cpdef utils.dpnp_descriptor dpnp_rng_multivariate_normal(
             usm_type=result_usm_type,
             sycl_queue=result_sycl_queue,
         )
-    )
-
-    cdef c_dpctl.SyclQueue q = (
-        <c_dpctl.SyclQueue> result_sycl_queue
-    )
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = (
-        q.get_queue_ref()
     )
 
     func = (
@@ -2474,7 +2466,6 @@ cpdef utils.dpnp_descriptor dpnp_rng_weibull(
 
     """
 
-    dtype = dpnp.float64
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_weibull_c_1out_t func
