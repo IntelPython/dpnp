@@ -39,11 +39,9 @@ and the rest of the library
 
 import numbers
 
-import dpctl
 import numpy
 
 import dpnp
-import dpnp.config as config
 from dpnp.dpnp_array import dpnp_array
 
 cimport dpctl as c_dpctl
