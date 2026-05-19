@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.ndarray.tobytes
+====================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.tobytes
