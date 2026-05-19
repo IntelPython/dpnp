@@ -84,8 +84,9 @@ def _get_unwrapped_index_key(key):
     Get an unwrapped index key.
 
     Return a key where each nested instance of DPNP array is unwrapped into
-    USM ndarray, and array-like objects (range, list) are converted to numpy
-    arrays for further processing in advanced indexing functions.
+    USM ndarray, and array-like objects (range, list, buffer protocol objects)
+    are converted to numpy arrays for further processing in advanced
+    indexing functions.
 
     """
 
