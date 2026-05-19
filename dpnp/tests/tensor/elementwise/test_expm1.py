@@ -147,6 +147,7 @@ def test_expm1_special_cases():
     num_finite = 1.0
     vals = [
         complex(0.0, 0.0),
+        complex(-0.0, 0.0),
         complex(num_finite, dpt.inf),
         complex(num_finite, dpt.nan),
         complex(dpt.inf, 0.0),
@@ -166,6 +167,7 @@ def test_expm1_special_cases():
     res = np.asarray(
         [
             complex(0.0, 0.0),
+            complex(0.0, 0.0),
             c_nan,
             c_nan,
             complex(np.inf, 0.0),
@@ -184,4 +186,11 @@ def test_expm1_special_cases():
 
     tol = dpt.finfo(X.dtype).resolution
     with np.errstate(invalid="ignore"):
-        assert_allclose(dpt.asnumpy(dpt.expm1(X)), res, atol=tol, rtol=tol)
+        Y = dpt.asnumpy(dpt.expm1(X))
+        assert_allclose(Y, res, atol=tol, rtol=tol)
+
+    # assert_allclose treats +0 == -0
+    # verify sign bits for zero cases
+    for i in (0, 1):
+        assert not np.signbit(Y[i].real)
+        assert not np.signbit(Y[i].imag)
