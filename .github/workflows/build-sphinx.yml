@@ -24,7 +24,7 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Docs
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 90
 
     permissions:
@@ -70,13 +70,6 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt update
 
-      - name: Update libstdc++-dev
-        run: |
-          sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
-          sudo apt remove -y libstdc++-10-dev
-          sudo apt autoremove
-          sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
-
       - name: Install Intel OneAPI
         if: env.oneapi-pkgs-env == ''
         run: |
@@ -97,7 +90,7 @@ jobs:
         run: |
           sudo add-apt-repository ppa:graphics-drivers/ppa
           sudo apt-get update
-          sudo apt-get install -y libnvidia-gl-450
+          sudo apt-get install -y libnvidia-gl-550
           sudo apt-get install -y nvidia-cuda-toolkit clinfo
 
       - name: Checkout repo
