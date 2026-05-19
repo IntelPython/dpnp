@@ -54,6 +54,7 @@ skbuild.setup(
             "dpnp_backend_c.dll",
             "tensor/libtensor/include/kernels/*.h*",
             "tensor/libtensor/include/kernels/*/*.h*",
+            "tensor/libtensor/include/utils/*.h*",
             "tests/*.*",
             "tests/tensor/*.py",
             "tests/tensor/*/*.py",
