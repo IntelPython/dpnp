@@ -27,6 +27,7 @@ This release is compatible with NumPy 2.4.5.
 * Fixed incorrect in-place advanced indexing for 4D arrays when using `range` or `list` as index keys [#2872](https://github.com/IntelPython/dpnp/pull/2872)
 * Fixed `conda build` command syntax in GitHub workflows and documentation to use `conda-build` [#2888](https://github.com/IntelPython/dpnp/pull/2888)
 * Fixed incorrect `dpnp.tensor.acosh` result for `complex(±0, NaN)` special case to match the Python Array API specification [#2914](https://github.com/IntelPython/dpnp/pull/2914)
+* Fixed fork PR documentation workflow failures by implementing conditional publishing strategy: upstream PRs publish to GitHub Pages with comment, fork PRs upload artifacts [#2910](https://github.com/IntelPython/dpnp/pull/2910)
 
 ### Security
 

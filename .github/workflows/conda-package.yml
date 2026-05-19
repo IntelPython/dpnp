@@ -457,7 +457,7 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
-        os: [ubuntu-22.04, windows-2022]
+        os: [ubuntu-latest, windows-2022]
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -537,11 +537,7 @@ jobs:
       # Needed to add a comment to a pull request's issue
       pull-requests: write
 
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
-
-    runs-on:  ${{ matrix.os }}
+    runs-on:  ubuntu-latest
     timeout-minutes: 15
 
     defaults:
@@ -707,7 +703,7 @@ jobs:
 
     needs: [upload]
 
-    runs-on: 'ubuntu-latest'
+    runs-on: ubuntu-latest
     timeout-minutes: 10
 
     defaults:
