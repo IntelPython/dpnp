@@ -42,11 +42,11 @@
 
 #include <sycl/sycl.hpp>
 
+#include "common.hpp"
 #include "complex_math.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpnp_tensor_types.hpp"
-#include "kernels/elementwise_functions/common.hpp"
 
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
