@@ -41,6 +41,12 @@ Additional items versus the previous version
 * _isshape accepts numpy integer types, not just Python int
 """
 
+# Math-heavy module: single-letter and CamelCase identifiers such as
+# A, B, M, N, X, V, H are part of the published linear-algebra API and
+# mirror SciPy/CuPy verbatim, so the snake_case rule is intentionally
+# relaxed for the whole file.
+# pylint: disable=invalid-name
+
 from __future__ import annotations
 
 import warnings
@@ -90,19 +96,18 @@ class LinearOperator:
     def __new__(cls, *args, **kwargs):
         if cls is LinearOperator:
             return super().__new__(_CustomLinearOperator)
-        else:
-            obj = super().__new__(cls)
-            if (
-                type(obj)._matvec is LinearOperator._matvec
-                and type(obj)._matmat is LinearOperator._matmat
-            ):
-                warnings.warn(
-                    "LinearOperator subclass should implement at least one of "
-                    "_matvec and _matmat.",
-                    RuntimeWarning,
-                    stacklevel=2,
-                )
-            return obj
+        obj = super().__new__(cls)
+        if (
+            type(obj)._matvec is LinearOperator._matvec
+            and type(obj)._matmat is LinearOperator._matmat
+        ):
+            warnings.warn(
+                "LinearOperator subclass should implement at least one of "
+                "_matvec and _matmat.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        return obj
 
     def __init__(self, dtype, shape):
         if dtype is not None:
@@ -186,19 +191,19 @@ class LinearOperator:
         return self._rmatmat(X)
 
     def dot(self, x):
+        """Dispatch to matvec / matmat / scalar-scale / product."""
         if isinstance(x, LinearOperator):
             return _ProductLinearOperator(self, x)
-        elif dpnp.isscalar(x):
+        if dpnp.isscalar(x):
             return _ScaledLinearOperator(self, x)
-        else:
-            x = dpnp.asarray(x)
-            if x.ndim == 1 or (x.ndim == 2 and x.shape[1] == 1):
-                return self.matvec(x)
-            elif x.ndim == 2:
-                return self.matmat(x)
-            raise ValueError(
-                f"expected 1-D or 2-D array or LinearOperator, got {x!r}"
-            )
+        x = dpnp.asarray(x)
+        if x.ndim == 1 or (x.ndim == 2 and x.shape[1] == 1):
+            return self.matvec(x)
+        if x.ndim == 2:
+            return self.matmat(x)
+        raise ValueError(
+            f"expected 1-D or 2-D array or LinearOperator, got {x!r}"
+        )
 
     def __call__(self, x):
         return self * x
@@ -347,15 +352,19 @@ class _TransposedLinearOperator(LinearOperator):
         self.args = (A,)
 
     def _matvec(self, x):
+        # pylint: disable=protected-access
         return dpnp.conj(self.A._rmatvec(dpnp.conj(x)))
 
     def _rmatvec(self, x):
+        # pylint: disable=protected-access
         return dpnp.conj(self.A._matvec(dpnp.conj(x)))
 
     def _matmat(self, X):
+        # pylint: disable=protected-access
         return dpnp.conj(self.A._rmatmat(dpnp.conj(X)))
 
     def _rmatmat(self, X):
+        # pylint: disable=protected-access
         return dpnp.conj(self.A._matmat(dpnp.conj(X)))
 
     def _transpose(self):
@@ -487,6 +496,10 @@ class MatrixLinearOperator(LinearOperator):
 
 
 class _AdjointMatrixOperator(MatrixLinearOperator):
+    # super().__init__() is intentionally skipped: this operator stores its
+    # own (adjoint-derived) A, shape and dtype, and must NOT re-validate
+    # shape via the base ``MatrixLinearOperator.__init__`` path.
+    # pylint: disable=super-init-not-called
     def __init__(self, adjoint):
         self.A = dpnp.conj(adjoint.A.T)
         self.__adjoint = adjoint
@@ -495,6 +508,7 @@ class _AdjointMatrixOperator(MatrixLinearOperator):
 
     @property
     def dtype(self):
+        """Inherit dtype from the wrapped operator."""
         return self.__adjoint.dtype
 
     def _adjoint(self):
@@ -540,6 +554,9 @@ def aslinearoperator(A) -> LinearOperator:
         return A
 
     try:
+        # Lazy import: dpnp.scipy.sparse may import this module during
+        # package initialisation, so we cannot import it at module scope.
+        # pylint: disable=import-outside-toplevel
         from dpnp.scipy.sparse import issparse
 
         if issparse(A):

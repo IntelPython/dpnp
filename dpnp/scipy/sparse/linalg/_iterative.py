@@ -61,6 +61,13 @@ does not register the pair) a ValueError is raised by the C++ layer.
 _make_fast_matvec catches this and falls back to A.dot(x).
 """
 
+# Math-heavy module: single-letter and CamelCase identifiers such as
+# A, M, X, V, H, Ap, Ax, Anorm, Acond, Vj, A_op, M_op, fast_mv_M,
+# _orig_M are part of the published numerical-linear-algebra API and
+# mirror SciPy/CuPy verbatim, so the snake_case rule is intentionally
+# relaxed for the whole file.
+# pylint: disable=invalid-name
+
 from __future__ import annotations
 
 from typing import Callable
@@ -69,6 +76,10 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
+
+# _blas_impl is a compiled (.so / .pyd) C-extension produced by the
+# dpnp build; pylint cannot statically introspect its exported symbols.
+# pylint: disable-next=no-name-in-module
 import dpnp.backend.extensions.blas._blas_impl as bi
 
 from ._interface import IdentityOperator, LinearOperator, aslinearoperator
@@ -89,6 +100,7 @@ def _check_dtype(dtype, name: str) -> None:
         )
 
 
+# pylint: disable-next=too-many-instance-attributes
 class _CachedSpMV:
     """
     Wrap a CSR matrix with a persistent oneMKL matrix_handle.
@@ -147,6 +159,7 @@ class _CachedSpMV:
         # init_matrix_handle + set_csr_data + optimize_gemv (once).
         # We must wait on optimize_gemv before any compute call can run;
         # this is the only place __init__/__call__ blocks.
+        # pylint: disable-next=protected-access
         handle, val_type_id, ev = self._si._sparse_gemv_init(
             self._exec_q,
             self._trans,
@@ -170,6 +183,7 @@ class _CachedSpMV:
         # Do NOT wait on the event -- subsequent dpnp ops on the same
         # queue will serialize behind it automatically. Blocking here
         # throws away async overlap and dominates small-problem runtime.
+        # pylint: disable-next=protected-access
         self._si._sparse_gemv_compute(
             self._exec_q,
             self._handle,
@@ -191,9 +205,13 @@ class _CachedSpMV:
         handle = getattr(self, "_handle", None)
         si = getattr(self, "_si", None)
         if handle is not None and si is not None:
+            # The release call may raise any backend-specific error during
+            # interpreter shutdown; we deliberately swallow everything to
+            # avoid noisy errors from __del__.
             try:
+                # pylint: disable-next=protected-access
                 si._sparse_gemv_release(self._exec_q, handle, [])
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 pass
             self._handle = None
 
@@ -235,6 +253,9 @@ def _make_fast_matvec(A):
       - any other C++ exception during handle initialisation
     """
     try:
+        # Lazy import: dpnp.scipy.sparse may import this module during
+        # package initialisation, so a top-level import would deadlock.
+        # pylint: disable-next=import-outside-toplevel
         from dpnp.scipy import sparse as _sp
 
         if not (_sp.issparse(A) and A.format == "csr"):
@@ -247,6 +268,7 @@ def _make_fast_matvec(A):
     # module scope avoids re-entering the partially-initialized dpnp package
     # while dpnp/__init__.py is still executing `from . import scipy as scipy`.
     try:
+        # pylint: disable-next=import-outside-toplevel
         from dpnp.backend.extensions.sparse import _sparse_impl as _si
     except ImportError:
         return None
@@ -255,12 +277,16 @@ def _make_fast_matvec(A):
     if _np_dtype(A.data.dtype).char not in _SUPPORTED_DTYPES:
         return None
 
+    # The C++ dispatch may raise any backend-specific error if the
+    # value/index dtype combination is not registered; in that case we
+    # transparently fall back to the generic A.dot() path.
     try:
         return _CachedSpMVPair(A, _si)
-    except Exception:
+    except Exception:  # pylint: disable=broad-exception-caught
         return None
 
 
+# pylint: disable-next=too-many-locals,too-many-branches,too-many-statements
 def _make_system(A, M, x0, b):
     """Validate and prepare (A_op, M_op, x, b, dtype) on device.
 
@@ -368,6 +394,7 @@ def _get_atol(b_norm: float, atol, rtol: float) -> float:
     return max(atol, float(rtol) * float(b_norm))
 
 
+# pylint: disable-next=too-many-locals,too-many-statements
 def cg(
     A,
     b,
@@ -467,6 +494,7 @@ def cg(
     return x, int(info)
 
 
+# pylint: disable-next=too-many-locals,too-many-statements,too-many-branches
 def gmres(
     A,
     b,
@@ -600,6 +628,7 @@ def gmres(
     return mx, info
 
 
+# pylint: disable-next=too-many-locals,too-many-branches,too-many-statements
 def minres(
     A,
     b,
@@ -938,6 +967,10 @@ def _make_compute_hu(V):
         _manager = dpu.SequentialOrderManager[exec_q]
 
         # Pass 1: h = Vj^T @ u  (real) or  h = (Vj^T @ u) then conj  (complex)
+        # bi._gemv is the only exported entry point of the compiled BLAS
+        # extension; pylint flags the leading underscore but it is the
+        # public C-binding contract.
+        # pylint: disable-next=protected-access
         ht1, ev1 = bi._gemv(
             exec_q,
             Vj_usm,
@@ -957,6 +990,7 @@ def _make_compute_hu(V):
         # No fused AXPY available, so we still allocate tmp.
         tmp = dpnp.empty_like(u)
         tmp_usm = dpnp.get_usm_ndarray(tmp)
+        # pylint: disable-next=protected-access
         ht2, ev2 = bi._gemv(
             exec_q,
             Vj_usm,
