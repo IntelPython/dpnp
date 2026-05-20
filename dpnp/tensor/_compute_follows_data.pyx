@@ -33,7 +33,7 @@
 """Compute-follows-data utilities for execution queue and USM type management.
 
 This module provides utilities to determine execution placement and USM
-types when combining arrays under the compute-follows-data paradigm.
+allocation types when combining arrays under the compute-follows-data paradigm.
 """
 
 
