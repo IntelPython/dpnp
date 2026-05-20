@@ -1441,7 +1441,7 @@ def linspace(
 
 def meshgrid(*arrays, indexing="xy"):
     """
-    Creates list of :class:`dpctl.tensor.usm_ndarray` coordinate matrices
+    Creates tuple of :class:`dpctl.tensor.usm_ndarray` coordinate matrices
     from vectors.
 
     Args:
@@ -1456,8 +1456,8 @@ def meshgrid(*arrays, indexing="xy"):
             keyword has no effect and should be ignored. Default: ``"xy"``
 
     Returns:
-        List[array]:
-            list of ``N`` arrays, where ``N`` is the number of
+        Tuple[array]:
+            tuple of ``N`` arrays, where ``N`` is the number of
             provided one-dimensional input arrays. Each returned array must
             have rank ``N``.
             For a set of ``n`` vectors with lengths ``N0``, ``N1``, ``N2``, ...
@@ -1495,7 +1495,7 @@ def meshgrid(*arrays, indexing="xy"):
         )
     n = len(arrays)
     if n == 0:
-        return []
+        return ()
 
     sh = (-1,) + (1,) * (n - 1)
 
@@ -1511,7 +1511,7 @@ def meshgrid(*arrays, indexing="xy"):
 
     output = dpt.broadcast_arrays(*res)
 
-    return output
+    return tuple(output)
 
 
 def ones(

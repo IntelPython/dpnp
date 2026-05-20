@@ -3111,7 +3111,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
         )
 
     if ndim < 1:
-        return []
+        return ()
 
     s0 = (1,) * ndim
     output = [
@@ -3132,7 +3132,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     if copy:
         output = [dpt.copy(x) for x in output]
 
-    return [dpnp_array._create_from_usm_ndarray(x) for x in output]
+    return tuple(dpnp_array._create_from_usm_ndarray(x) for x in output)
 
 
 class MGridClass:

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 import numpy
@@ -226,7 +228,6 @@ class TestCorrelate:
 
 
 @testing.parameterize(*testing.product({"mode": ["valid", "same", "full"]}))
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestCorrelateInvalid(unittest.TestCase):
 
     @testing.with_requires("numpy>=1.18")

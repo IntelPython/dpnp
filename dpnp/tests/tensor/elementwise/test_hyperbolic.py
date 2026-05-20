@@ -38,7 +38,9 @@ from ..helper import (
 )
 from .utils import (
     _all_dtypes,
+    _complex_fp_dtypes,
     _map_to_device_dtype,
+    _real_fp_dtypes,
 )
 
 _hyper_funcs = [(np.sinh, dpt.sinh), (np.cosh, dpt.cosh), (np.tanh, dpt.tanh)]
@@ -65,7 +67,7 @@ def test_hyper_out_type(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+@pytest.mark.parametrize("dtype", _real_fp_dtypes)
 def test_hyper_real_contig(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -96,7 +98,7 @@ def test_hyper_real_contig(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["c8", "c16"])
+@pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 def test_hyper_complex_contig(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -123,7 +125,7 @@ def test_hyper_complex_contig(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+@pytest.mark.parametrize("dtype", _real_fp_dtypes)
 def test_hyper_real_strided(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -157,7 +159,7 @@ def test_hyper_real_strided(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["c8", "c16"])
+@pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 def test_hyper_complex_strided(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -185,7 +187,7 @@ def test_hyper_complex_strided(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+@pytest.mark.parametrize("dtype", _real_fp_dtypes)
 def test_hyper_real_special_cases(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -200,3 +202,20 @@ def test_hyper_real_special_cases(np_call, dpt_call, dtype):
 
     tol = 8 * dpt.finfo(dtype).resolution
     assert_allclose(dpt.asnumpy(dpt_call(yf)), Y_np, atol=tol, rtol=tol)
+
+
+@pytest.mark.parametrize("dtype", _complex_fp_dtypes)
+def test_acosh_zero_nan(dtype):
+    # check acosh(±0 + NaN j) = NaN ± π/2 j (Array API spec)
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    x = [complex(+0.0, np.nan), complex(-0.0, np.nan)]
+
+    xf = np.array(x, dtype=dtype)
+    yf = dpt.asarray(xf, dtype=dtype, sycl_queue=q)
+
+    Y_dpt = dpt.asnumpy(dpt.acosh(yf))
+
+    assert np.isnan(Y_dpt.real).all()
+    assert_allclose(np.abs(Y_dpt.imag), np.pi / 2, atol=1e-6, strict=False)
