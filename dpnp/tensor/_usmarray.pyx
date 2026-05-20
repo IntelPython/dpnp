@@ -378,6 +378,20 @@ cdef class usm_ndarray:
         elif isinstance(buffer, (str, bytes)):
             if isinstance(buffer, bytes):
                 buffer = buffer.decode("UTF-8")
+            if strides is not None and ary_min_displacement < 0:
+                self._cleanup()
+                raise ValueError(
+                    "strides={} result in a negative memory displacement "
+                    "and are not allowed when allocating new "
+                    "memory".format(strides))
+            if strides is not None and (
+                (ary_max_displacement - ary_min_displacement + 1) > ary_nelems
+            ):
+                self._cleanup()
+                raise ValueError(
+                    "strides={} is incompatible with shape={} when "
+                    "allocating new memory because the memory footprint "
+                    "exceeds the number of elements".format(strides, shape))
             _offset = -ary_min_displacement
             if (buffer == "shared"):
                 _buffer = dpmem.MemoryUSMShared(ary_nbytes,
