@@ -54,6 +54,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.linalg.svd(..., hermitian=True)` returning a non-unitary `vh` for singular input arrays due to a zero sign appearing [#2954](https://github.com/IntelPython/dpnp/pull/2954)
 * Fixed scalar conversion of size-one `dpnp.tensor.usm_ndarray` (e.g. `int()`, `float()`, indexing) which failed with NumPy 2.5 after the in-place `ndarray.shape` assignment was deprecated [#2958](https://github.com/IntelPython/dpnp/pull/2958)
 * Fixed `dpnp.mgrid` and `dpnp.ogrid` to return consistent results between single-slice and tuple-of-slices syntax when the step is a complex number with a non-integer magnitude (e.g. `2.5j`) [#2971](https://github.com/IntelPython/dpnp/pull/2971)
+* Fixed `dpnp.tensor.acosh` and `dpnp.tensor.acos` returning infinity for complex numbers with large negative real parts [#2928](https://github.com/IntelPython/dpnp/pull/2928)
 
 ### Security
 
