@@ -26,6 +26,8 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import ctypes
+
 import dpctl
 import numpy as np
 import pytest
@@ -36,6 +38,30 @@ from .helper import (
     get_queue_or_skip,
     skip_if_dtype_not_supported,
 )
+
+_integer_dtypes = [
+    "i1",
+    "u1",
+    "i2",
+    "u2",
+    "i4",
+    "u4",
+    "i8",
+    "u8",
+]
+
+_floating_dtypes = [
+    "f2",
+    "f4",
+    "f8",
+]
+
+_complex_dtypes = [
+    "c8",
+    "c16",
+]
+
+_all_dtypes = ["?"] + _integer_dtypes + _floating_dtypes + _complex_dtypes
 
 
 def _check(hay_stack, needles, needles_np):
@@ -103,19 +129,7 @@ def test_searchsorted_strided_bool():
     )
 
 
-@pytest.mark.parametrize(
-    "idt",
-    [
-        dpt.int8,
-        dpt.uint8,
-        dpt.int16,
-        dpt.uint16,
-        dpt.int32,
-        dpt.uint32,
-        dpt.int64,
-        dpt.uint64,
-    ],
-)
+@pytest.mark.parametrize("idt", _integer_dtypes)
 def test_searchsorted_contig_int(idt):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(idt, q)
@@ -135,19 +149,7 @@ def test_searchsorted_contig_int(idt):
     )
 
 
-@pytest.mark.parametrize(
-    "idt",
-    [
-        dpt.int8,
-        dpt.uint8,
-        dpt.int16,
-        dpt.uint16,
-        dpt.int32,
-        dpt.uint32,
-        dpt.int64,
-        dpt.uint64,
-    ],
-)
+@pytest.mark.parametrize("idt", _integer_dtypes)
 def test_searchsorted_strided_int(idt):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(idt, q)
@@ -174,12 +176,12 @@ def _add_extended_fp(array):
     array[-1] = dpt.nan
 
 
-@pytest.mark.parametrize("idt", [dpt.float16, dpt.float32, dpt.float64])
-def test_searchsorted_contig_fp(idt):
+@pytest.mark.parametrize("fdt", _floating_dtypes)
+def test_searchsorted_contig_fp(fdt):
     q = get_queue_or_skip()
-    skip_if_dtype_not_supported(idt, q)
+    skip_if_dtype_not_supported(fdt, q)
 
-    dt = dpt.dtype(idt)
+    dt = dpt.dtype(fdt)
 
     hay_stack = dpt.linspace(0, 1, num=255, dtype=dt, endpoint=True)
     _add_extended_fp(hay_stack)
@@ -195,12 +197,12 @@ def test_searchsorted_contig_fp(idt):
     )
 
 
-@pytest.mark.parametrize("idt", [dpt.float16, dpt.float32, dpt.float64])
-def test_searchsorted_strided_fp(idt):
+@pytest.mark.parametrize("fdt", _floating_dtypes)
+def test_searchsorted_strided_fp(fdt):
     q = get_queue_or_skip()
-    skip_if_dtype_not_supported(idt, q)
+    skip_if_dtype_not_supported(fdt, q)
 
-    dt = dpt.dtype(idt)
+    dt = dpt.dtype(fdt)
 
     hay_stack = dpt.repeat(
         dpt.linspace(0, 1, num=255, dtype=dt, endpoint=True), 4
@@ -243,12 +245,12 @@ def _add_extended_cfp(array):
     return dpt.sort(dpt.concat((ev, array)))
 
 
-@pytest.mark.parametrize("idt", [dpt.complex64, dpt.complex128])
-def test_searchsorted_contig_cfp(idt):
+@pytest.mark.parametrize("cdt", _complex_dtypes)
+def test_searchsorted_contig_cfp(cdt):
     q = get_queue_or_skip()
-    skip_if_dtype_not_supported(idt, q)
+    skip_if_dtype_not_supported(cdt, q)
 
-    dt = dpt.dtype(idt)
+    dt = dpt.dtype(cdt)
 
     hay_stack = dpt.linspace(0, 1, num=255, dtype=dt, endpoint=True)
     hay_stack = _add_extended_cfp(hay_stack)
@@ -263,12 +265,12 @@ def test_searchsorted_contig_cfp(idt):
     )
 
 
-@pytest.mark.parametrize("idt", [dpt.complex64, dpt.complex128])
-def test_searchsorted_strided_cfp(idt):
+@pytest.mark.parametrize("cdt", _complex_dtypes)
+def test_searchsorted_strided_cfp(cdt):
     q = get_queue_or_skip()
-    skip_if_dtype_not_supported(idt, q)
+    skip_if_dtype_not_supported(cdt, q)
 
-    dt = dpt.dtype(idt)
+    dt = dpt.dtype(cdt)
 
     hay_stack = dpt.repeat(
         dpt.linspace(0, 1, num=255, dtype=dt, endpoint=True), 4
@@ -315,7 +317,7 @@ def test_searchsorted_validation():
         x1 = dpt.arange(10, dtype="i4")
     except dpctl.SyclDeviceCreationError:
         pytest.skip("Default device could not be created")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         dpt.searchsorted(x1, None)
     with pytest.raises(TypeError):
         dpt.searchsorted(x1, x1, sorter=dict())
@@ -405,3 +407,19 @@ def test_searchsorted_strided_scalar_needle():
     needles = dpt.asarray(needles_np)
 
     _check(hay_stack, needles, needles_np)
+
+
+@pytest.mark.parametrize(
+    "py_zero",
+    [bool(0), int(0), float(0), complex(0), np.float32(0), ctypes.c_int(0)],
+)
+@pytest.mark.parametrize("dt", _all_dtypes)
+def test_searchsorted_py_scalars(py_zero, dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    x = dpt.zeros(10, dtype=dt, sycl_queue=q)
+
+    r1 = dpt.searchsorted(x, py_zero)
+    assert isinstance(r1, dpt.usm_ndarray)
+    assert r1.shape == ()
