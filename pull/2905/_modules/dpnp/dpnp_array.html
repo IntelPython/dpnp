@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.21.0dev0+15.gee99b102770 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.21.0dev0+45.gc6ed8b92f8e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=979775ec"></script>
+      <script src="../../_static/documentation_options.js?v=b33eb8f7"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -138,26 +138,31 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Unwrap a single index element for the tensor indexing layer.</span>
 
-<span class="sd">    Converts dpnp arrays to usm_ndarray and array-like objects (range, list)</span>
-<span class="sd">    to numpy arrays with intp dtype for NumPy-compatible advanced indexing.</span>
+<span class="sd">    Converts dpnp arrays to usm_ndarray and array-like objects (range, list,</span>
+<span class="sd">    buffer protocol objects) to numpy arrays for NumPy-compatible advanced</span>
+<span class="sd">    indexing. Scalars and slices pass through to the tensor layer.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="ow">or</span> <span class="n">x</span> <span class="ow">is</span> <span class="bp">Ellipsis</span>
+        <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">,</span> <span class="nb">slice</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">))</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">range</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="c1"># keep boolean lists as boolean</span>
-        <span class="n">arr</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="c1"># cast empty lists (float64 in NumPy) to intp</span>
-        <span class="c1"># for correct tensor indexing</span>
-        <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">arr</span>
-    <span class="k">return</span> <span class="n">x</span>
+    <span class="c1"># scalars (int, bool, numpy scalars) pass through to the tensor layer</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">generic</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="c1"># convert array-like objects (range, list, buffer protocol) to numpy</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="c1"># cast empty arrays (float64 in NumPy) to intp</span>
+    <span class="c1"># for correct tensor indexing</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">arr</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_unwrapped_index_key</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
@@ -165,8 +170,9 @@
 <span class="sd">    Get an unwrapped index key.</span>
 
 <span class="sd">    Return a key where each nested instance of DPNP array is unwrapped into</span>
-<span class="sd">    USM ndarray, and array-like objects (range, list) are converted to numpy</span>
-<span class="sd">    arrays for further processing in advanced indexing functions.</span>
+<span class="sd">    USM ndarray, and array-like objects (range, list, buffer protocol objects)</span>
+<span class="sd">    are converted to numpy arrays for further processing in advanced</span>
+<span class="sd">    indexing functions.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
