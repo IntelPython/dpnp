@@ -181,4 +181,78 @@ T casin(const T &in)
     // reverse result back: swap real and imaginary parts
     return T{std::imag(w), std::real(w)};
 }
+
+template <typename T>
+T catanh(const T &in)
+{
+    using realT = typename T::value_type;
+
+    static constexpr realT pio2 = realT(pi) / realT(2); // PI/2
+
+    const realT x = std::real(in);
+    const realT y = std::imag(in);
+
+    if (std::isnan(x)) {
+        // atanh(NaN + I*+-Inf) = sign(NaN)*0 + I*+-PI/2
+        if (std::isinf(y)) {
+            const realT res_re = sycl::copysign(realT(0), x);
+            const realT res_im = sycl::copysign(pio2, y);
+            return T{res_re, res_im};
+        }
+
+        // all other cases involving NaN return NaN + I*NaN
+        return T{q_nan<realT>, q_nan<realT>};
+    }
+
+    if (std::isnan(y)) {
+        // atanh(+-Inf + I*NaN) = +-0 + I*NaN
+        if (std::isinf(x)) {
+            const realT res_re = sycl::copysign(realT(0), x);
+            return T{res_re, q_nan<realT>};
+        }
+
+        // atanh(+-0 + I*NaN) = +-0 + I*NaN
+        if (x == realT(0)) {
+            return T{x, q_nan<realT>};
+        }
+
+        // all other cases involving NaN return NaN + I*NaN
+        return T{q_nan<realT>, q_nan<realT>};
+    }
+
+    /*
+     * For large x or y including atanh(+-Inf + I*+-Inf) = 0 + I*+-PI/2
+     * The sign of PI/2 depends on the sign of imaginary part of the input.
+     *
+     * exprm_ns::atanh(x) is based on calculating log((1 + x) / (1 - x)) / 2,
+     * so r_eps = 1/eps is appropriate precision loss point.
+     */
+    const realT r_eps = realT(1) / std::numeric_limits<realT>::epsilon();
+    if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
+        const realT res_re = realT(0);
+        const realT res_im = sycl::copysign(pio2, y);
+        return T{res_re, res_im};
+    }
+
+    // ordinary cases
+    return exprm_ns::atanh(exprm_ns::complex<realT>(in));
+}
+
+template <typename T>
+T catan(const T &in)
+{
+    /*
+     * catan(z) = reverse(catanh(reverse(z))),
+     * where reverse(x + I*y) = y + I*x = I*conj(z)
+     */
+
+    // reverse(z): swap real and imaginary parts
+    T reversed{std::imag(in), std::real(in)};
+
+    // compute atanh of reversed input
+    T w = catanh(reversed);
+
+    // reverse result back: swap real and imaginary parts
+    return T{std::imag(w), std::real(w)};
+}
 } // namespace dpnp::tensor::kernels::complex_math
