@@ -221,7 +221,9 @@ def test_acosh_zero_nan(dtype):
     assert_allclose(np.abs(Y_dpt.imag), np.pi / 2, atol=1e-6, strict=False)
 
 
-@pytest.mark.parametrize("np_call, dpt_call", [(np.arccosh, dpt.acosh)])
+@pytest.mark.parametrize(
+    "np_call, dpt_call", [(np.arcsinh, dpt.asinh), (np.arccosh, dpt.acosh)]
+)
 # @pytest.mark.parametrize("np_call, dpt_call", _inv_hyper_funcs)
 @pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 def test_inv_hyper_large_negative_real(np_call, dpt_call, dtype):
@@ -258,7 +260,9 @@ def test_inv_hyper_large_negative_real(np_call, dpt_call, dtype):
     assert_allclose(dpt.asnumpy(result), expected, atol=tol, rtol=tol)
 
 
-@pytest.mark.parametrize("np_call, dpt_call", [(np.arccosh, dpt.acosh)])
+@pytest.mark.parametrize(
+    "np_call, dpt_call", [(np.arcsinh, dpt.asinh), (np.arccosh, dpt.acosh)]
+)
 # @pytest.mark.parametrize("np_call, dpt_call", _inv_hyper_funcs)
 @pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 @pytest.mark.parametrize("magnitude", [4e7, 9e7, 1e8, 4.45e8])

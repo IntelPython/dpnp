@@ -236,7 +236,9 @@ def test_trig_real_special_cases(np_call, dpt_call, dtype):
     assert_allclose(dpt.asnumpy(Y), Y_np, atol=tol, rtol=tol)
 
 
-@pytest.mark.parametrize("np_call, dpt_call", [(np.arccos, dpt.acos)])
+@pytest.mark.parametrize(
+    "np_call, dpt_call", [(np.arcsin, dpt.asin), (np.arccos, dpt.acos)]
+)
 # @pytest.mark.parametrize("np_call, dpt_call", _inv_trig_funcs)
 @pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 def test_inv_trig_large_negative_real(np_call, dpt_call, dtype):
