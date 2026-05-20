@@ -23,7 +23,6 @@ from .helper import (
     get_integer_float_dtypes,
     get_unsigned_dtypes,
     has_support_aspect64,
-    numpy_version,
 )
 from .third_party.cupy import testing
 
@@ -90,16 +89,15 @@ class TestSize:
 
         assert dpnp.size(ia, 1) == numpy.size(a, 1)
 
-    # TODO: include commented code in the test when numpy-2.4 is released
-    # @testing.with_requires("numpy>=2.4")
-    def test_size_tuple(self):
+    @testing.with_requires("numpy>=2.4.0")
+    @pytest.mark.parametrize("axis", [(), (0,), (1,), (0, 1)])
+    def test_size_tuple(self, axis):
         a = [[1, 2, 3], [4, 5, 6]]
         ia = dpnp.array(a)
 
-        assert dpnp.size(ia, ()) == 1  # numpy.size(a, ())
-        assert dpnp.size(ia, (0,)) == 2  # numpy.size(a, (0,))
-        assert dpnp.size(ia, (1,)) == 3  # numpy.size(a, (1,))
-        assert dpnp.size(ia, (0, 1)) == 6  # numpy.size(a, (0, 1))
+        result = dpnp.size(ia, axis=axis)
+        expected = numpy.size(a, axis=axis)
+        assert result == expected
 
 
 class TestAppend:
@@ -1891,8 +1889,7 @@ class TestUnique:
         expected = numpy.unique(a, **eq_nan_kwd)
         assert_array_equal(result, expected)
 
-    # TODO: uncomment once numpy 2.4.0 release is published
-    # @testing.with_requires("numpy>=2.4.0")
+    @testing.with_requires("numpy>=2.4.0")
     @pytest.mark.parametrize("axis", [0, -1])
     def test_1d_equal_nan_axis(self, axis):
         a = numpy.array([numpy.nan, 0, 0, numpy.nan])
@@ -1900,16 +1897,11 @@ class TestUnique:
 
         result = dpnp.unique(ia, axis=axis, equal_nan=True)
         expected = numpy.unique(a, axis=axis, equal_nan=True)
-        # TODO: remove when numpy#29372 is released
-        if numpy_version() < "2.4.0":
-            expected = numpy.array([0.0, numpy.nan])
         assert_array_equal(result, expected)
 
-    # TODO: uncomment once numpy 2.4.0 release is published
-    # @testing.with_requires("numpy>=2.4.0")
+    @testing.with_requires("numpy>=2.4.0")
     @pytest.mark.parametrize("equal_nan", [True, False])
-    # @pytest.mark.parametrize("xp", [numpy, dpnp])
-    @pytest.mark.parametrize("xp", [dpnp])
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_1d_axis_float_raises_typeerror(self, xp, equal_nan):
         a = xp.array([xp.nan, 0, 0, xp.nan])
         with pytest.raises(TypeError, match="integer argument expected"):

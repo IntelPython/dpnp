@@ -71,7 +71,7 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.13'] # no dpctl package on PyPI with enabled python 3.14 support
-        os: [ubuntu-22.04] # windows-2022 - no DFT support for Windows in oneMKL
+        os: [ubuntu-latest] # windows-2022 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
@@ -188,7 +188,7 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.13'] # no dpctl package on PyPI with enabled python 3.14 support
-        os: [ubuntu-22.04] # windows-2022 - no DFT support for Windows in oneMKL
+        os: [ubuntu-latest] # windows-2022 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60

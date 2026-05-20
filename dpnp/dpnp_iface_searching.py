@@ -373,15 +373,13 @@ def searchsorted(a, v, side="left", sorter=None):
 
     """
 
-    usm_a = dpnp.get_usm_ndarray(a)
-    if dpnp.isscalar(v):
-        usm_v = dpt.asarray(v, sycl_queue=a.sycl_queue, usm_type=a.usm_type)
-    else:
-        usm_v = dpnp.get_usm_ndarray(v)
+    a = dpnp.get_usm_ndarray(a)
+    if not dpnp.isscalar(v):
+        v = dpnp.get_usm_ndarray(v)
 
-    usm_sorter = None if sorter is None else dpnp.get_usm_ndarray(sorter)
+    sorter = None if sorter is None else dpnp.get_usm_ndarray(sorter)
     return dpnp_array._create_from_usm_ndarray(
-        dpt.searchsorted(usm_a, usm_v, side=side, sorter=usm_sorter)
+        dpt.searchsorted(a, v, side=side, sorter=sorter)
     )
 
 
