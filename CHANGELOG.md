@@ -11,6 +11,7 @@ This release is compatible with NumPy 2.4.5.
 ### Added
 
 * Added C API functions for `dpnp.tensor.usm_ndarray` setters and getters to avoid ABI breakage if `dpnp.tensor.usm_ndarray` is modified [gh-2866](https://github.com/IntelPython/dpnp/pull/2866)
+* Added support for buffer protocol objects as advanced index keys in `dpnp.ndarray` [#2889](https://github.com/IntelPython/dpnp/pull/2889)
 
 ### Changed
 
@@ -28,6 +29,7 @@ This release is compatible with NumPy 2.4.5.
 * Fixed `conda build` command syntax in GitHub workflows and documentation to use `conda-build` [#2888](https://github.com/IntelPython/dpnp/pull/2888)
 * Fixed incorrect `dpnp.tensor.acosh` result for `complex(±0, NaN)` special case to match the Python Array API specification [#2914](https://github.com/IntelPython/dpnp/pull/2914)
 * Fixed fork PR documentation workflow failures by implementing conditional publishing strategy: upstream PRs publish to GitHub Pages with comment, fork PRs upload artifacts [#2910](https://github.com/IntelPython/dpnp/pull/2910)
+* Fixed missing `libtensor` headers in the installed `dpnp` package [#2915](https://github.com/IntelPython/dpnp/pull/2915)
 
 ### Security
 

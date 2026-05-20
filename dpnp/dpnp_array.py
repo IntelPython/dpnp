@@ -52,26 +52,31 @@ def _unwrap_index_element(x):
     """
     Unwrap a single index element for the tensor indexing layer.
 
-    Converts dpnp arrays to usm_ndarray and array-like objects (range, list)
-    to numpy arrays with intp dtype for NumPy-compatible advanced indexing.
+    Converts dpnp arrays to usm_ndarray and array-like objects (range, list,
+    buffer protocol objects) to numpy arrays for NumPy-compatible advanced
+    indexing. Scalars and slices pass through to the tensor layer.
 
     """
 
-    if isinstance(x, dpt.usm_ndarray):
+    if (
+        x is None
+        or x is Ellipsis
+        or isinstance(x, (dpt.usm_ndarray, slice, numpy.ndarray))
+    ):
         return x
     if isinstance(x, dpnp_array):
         return x.get_array()
-    if isinstance(x, range):
-        return numpy.asarray(x, dtype=numpy.intp)
-    if isinstance(x, list):
-        # keep boolean lists as boolean
-        arr = numpy.asarray(x)
-        # cast empty lists (float64 in NumPy) to intp
-        # for correct tensor indexing
-        if arr.size == 0:
-            arr = arr.astype(numpy.intp)
-        return arr
-    return x
+    # scalars (int, bool, numpy scalars) pass through to the tensor layer
+    if isinstance(x, (int, numpy.generic)):
+        return x
+
+    # convert array-like objects (range, list, buffer protocol) to numpy
+    arr = numpy.asarray(x)
+    # cast empty arrays (float64 in NumPy) to intp
+    # for correct tensor indexing
+    if arr.size == 0:
+        arr = arr.astype(numpy.intp)
+    return arr
 
 
 def _get_unwrapped_index_key(key):
@@ -79,8 +84,9 @@ def _get_unwrapped_index_key(key):
     Get an unwrapped index key.
 
     Return a key where each nested instance of DPNP array is unwrapped into
-    USM ndarray, and array-like objects (range, list) are converted to numpy
-    arrays for further processing in advanced indexing functions.
+    USM ndarray, and array-like objects (range, list, buffer protocol objects)
+    are converted to numpy arrays for further processing in advanced
+    indexing functions.
 
     """
 
