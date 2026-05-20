@@ -236,10 +236,7 @@ def test_trig_real_special_cases(np_call, dpt_call, dtype):
     assert_allclose(dpt.asnumpy(Y), Y_np, atol=tol, rtol=tol)
 
 
-@pytest.mark.parametrize(
-    "np_call, dpt_call", [(np.arcsin, dpt.asin), (np.arccos, dpt.acos)]
-)
-# @pytest.mark.parametrize("np_call, dpt_call", _inv_trig_funcs)
+@pytest.mark.parametrize("np_call, dpt_call", _inv_trig_funcs)
 @pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 def test_inv_trig_large_negative_real(np_call, dpt_call, dtype):
     """
@@ -254,14 +251,19 @@ def test_inv_trig_large_negative_real(np_call, dpt_call, dtype):
     skip_if_dtype_not_supported(dtype, q)
 
     # input values that previously returned infinity
-    thr = np.sqrt(1 / dpt.finfo(dtype).eps) / 2
+    thr1 = 1 / dpt.finfo(dtype).eps  # acos, asin
+    thr2 = np.sqrt(thr1) / 2  # atan
     x = [
         complex(-4e7, 1.0),  # Boundary of bug zone
         complex(-9e7, 1.0),  # Middle of bug zone
         complex(-1e8, 1.0),  # Upper range
         complex(-4.45712982e8, 1.0),  # Original reported value
-        complex(thr, 1.0),  # Exact threshold value
-        complex(np.nextafter(thr, np.inf), 1.0),  # Next after threshold
+        # Exact threshold values
+        complex(thr1, 1.0),
+        complex(thr2, 1.0),
+        # Next values after threshold
+        complex(np.nextafter(thr1, np.inf), 1.0),
+        complex(np.nextafter(thr2, np.inf), 1.0),
     ]
 
     xf = np.asarray(x, dtype=dtype)

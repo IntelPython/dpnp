@@ -221,10 +221,7 @@ def test_acosh_zero_nan(dtype):
     assert_allclose(np.abs(Y_dpt.imag), np.pi / 2, atol=1e-6, strict=False)
 
 
-@pytest.mark.parametrize(
-    "np_call, dpt_call", [(np.arcsinh, dpt.asinh), (np.arccosh, dpt.acosh)]
-)
-# @pytest.mark.parametrize("np_call, dpt_call", _inv_hyper_funcs)
+@pytest.mark.parametrize("np_call, dpt_call", _inv_hyper_funcs)
 @pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 def test_inv_hyper_large_negative_real(np_call, dpt_call, dtype):
     """
@@ -239,14 +236,19 @@ def test_inv_hyper_large_negative_real(np_call, dpt_call, dtype):
     skip_if_dtype_not_supported(dtype, q)
 
     # input values that previously returned infinity
-    thr = np.sqrt(1 / dpt.finfo(dtype).eps) / 2
+    thr1 = 1 / dpt.finfo(dtype).eps  # acosh, asinh
+    thr2 = np.sqrt(thr1) / 2  # atanh
     x = [
         complex(-4e7, 1.0),  # Boundary of bug zone
         complex(-9e7, 1.0),  # Middle of bug zone
         complex(-1e8, 1.0),  # Upper range
         complex(-4.45712982e8, 1.0),  # Original reported value
-        complex(thr, 1.0),  # Exact threshold value
-        complex(np.nextafter(thr, np.inf), 1.0),  # Next after threshold
+        # Exact threshold values
+        complex(thr1, 1.0),
+        complex(thr2, 1.0),
+        # Next values after threshold
+        complex(np.nextafter(thr1, np.inf), 1.0),
+        complex(np.nextafter(thr2, np.inf), 1.0),
     ]
 
     xf = np.asarray(x, dtype=dtype)
@@ -260,10 +262,7 @@ def test_inv_hyper_large_negative_real(np_call, dpt_call, dtype):
     assert_allclose(dpt.asnumpy(result), expected, atol=tol, rtol=tol)
 
 
-@pytest.mark.parametrize(
-    "np_call, dpt_call", [(np.arcsinh, dpt.asinh), (np.arccosh, dpt.acosh)]
-)
-# @pytest.mark.parametrize("np_call, dpt_call", _inv_hyper_funcs)
+@pytest.mark.parametrize("np_call, dpt_call", _inv_hyper_funcs)
 @pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 @pytest.mark.parametrize("magnitude", [4e7, 9e7, 1e8, 4.45e8])
 def test_inv_hyper_all_quadrants_large(np_call, dpt_call, dtype, magnitude):
@@ -278,11 +277,19 @@ def test_inv_hyper_all_quadrants_large(np_call, dpt_call, dtype, magnitude):
     skip_if_dtype_not_supported(dtype, q)
 
     # input values with four quadrants with large magnitude
+    thr1 = 1 / dpt.finfo(dtype).eps  # acosh, asinh
+    thr2 = np.sqrt(thr1) / 2  # atanh
     x = [
-        complex(magnitude, 1.0),  # +Re, +Im
-        complex(-magnitude, 1.0),  # -Re, +Im (bug zone)
-        complex(magnitude, -1.0),  # +Re, -Im
-        complex(-magnitude, -1.0),  # -Re, -Im (bug zone)
+        complex(-4e7, 1.0),  # Boundary of bug zone
+        complex(-9e7, 1.0),  # Middle of bug zone
+        complex(-1e8, 1.0),  # Upper range
+        complex(-4.45712982e8, 1.0),  # Original reported value
+        # Exact threshold values
+        complex(thr1, 1.0),
+        complex(thr2, 1.0),
+        # Next values after threshold
+        complex(np.nextafter(thr1, np.inf), 1.0),
+        complex(np.nextafter(thr2, np.inf), 1.0),
     ]
 
     xf = np.asarray(x, dtype=dtype)
