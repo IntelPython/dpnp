@@ -85,10 +85,10 @@ T cacos(const T &in)
     /*
      * For large x or y including acos(+-Inf + I*+-Inf).
      * exprm_ns::acos(x) is based on calculating log(x + sqrt(x^2 - 1)),
-     * so r_eps = sqrt(1/eps) is appropriate precision loss point.
+     * so r_eps = sqrt(1/eps)/2 is appropriate precision loss point.
      */
     const realT r_eps =
-        sycl::sqrt(realT(1) / std::numeric_limits<realT>::epsilon());
+        sycl::sqrt(realT(1) / std::numeric_limits<realT>::epsilon()) / 2;
     if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
         sycl_complexT log_in = exprm_ns::log(sycl_complexT(in));
 
