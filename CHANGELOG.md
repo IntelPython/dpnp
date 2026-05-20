@@ -30,6 +30,7 @@ This release is compatible with NumPy 2.4.5.
 * Fixed incorrect `dpnp.tensor.acosh` result for `complex(±0, NaN)` special case to match the Python Array API specification [#2914](https://github.com/IntelPython/dpnp/pull/2914)
 * Fixed fork PR documentation workflow failures by implementing conditional publishing strategy: upstream PRs publish to GitHub Pages with comment, fork PRs upload artifacts [#2910](https://github.com/IntelPython/dpnp/pull/2910)
 * Fixed missing `libtensor` headers in the installed `dpnp` package [#2915](https://github.com/IntelPython/dpnp/pull/2915)
+* Fixed missing strides validation in `dpnp.tensor.usm_ndarray` constructor when allocating new memory [#2927](https://github.com/IntelPython/dpnp/pull/2927)
 
 ### Security
 
