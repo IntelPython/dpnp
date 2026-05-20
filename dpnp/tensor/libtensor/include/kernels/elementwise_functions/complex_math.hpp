@@ -45,13 +45,14 @@ namespace dpnp::tensor::kernels::complex_math
 static constexpr double ln2 = 0.6931471805599453094172321214581765L;
 static constexpr double pi = 3.1415926535897932384626433832795029L;
 
+template <typename realT>
+static constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+
 template <typename T>
 T cacos(const T &in)
 {
     using realT = typename T::value_type;
     using sycl_complexT = exprm_ns::complex<realT>;
-
-    static constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
 
     const realT x = std::real(in);
     const realT y = std::imag(in);
@@ -59,27 +60,27 @@ T cacos(const T &in)
     if (std::isnan(x)) {
         // acos(NaN + I*+-Inf) = NaN + I*-+Inf
         if (std::isinf(y)) {
-            return T(q_nan, -y);
+            return T{q_nan<realT>, -y};
         }
 
         // all other cases involving NaN return NaN + I*NaN
-        return T(q_nan, q_nan);
+        return T{q_nan<realT>, q_nan<realT>};
     }
 
     if (std::isnan(y)) {
         // acos(+-Inf + I*NaN) = NaN + I*opt(-)Inf
         if (std::isinf(x)) {
-            return T(q_nan, -std::numeric_limits<realT>::infinity());
+            return T{q_nan<realT>, -std::numeric_limits<realT>::infinity()};
         }
 
         // acos(0 + I*NaN) = PI/2 + I*NaN with inexact
         if (x == realT(0)) {
             static constexpr realT pio2 = realT(pi) / realT(2); // PI/2
-            return T(pio2, q_nan);
+            return T{pio2, q_nan<realT>};
         }
 
         // all other cases involving NaN return NaN + I*NaN
-        return T(q_nan, q_nan);
+        return T{q_nan<realT>, q_nan<realT>};
     }
 
     /*
@@ -97,10 +98,87 @@ T cacos(const T &in)
         const realT rx = sycl::fabs(wy);
 
         realT ry = wx + realT(ln2);
-        return T(rx, (sycl::signbit(y)) ? ry : -ry);
+        return T{rx, (sycl::signbit(y)) ? ry : -ry};
     }
 
     // ordinary cases
     return exprm_ns::acos(sycl_complexT(in)); // sycl::acos(in);
+}
+
+template <typename T>
+T casinh(const T &in)
+{
+    using realT = typename T::value_type;
+    using sycl_complexT = exprm_ns::complex<realT>;
+
+    const realT x = std::real(in);
+    const realT y = std::imag(in);
+
+    if (std::isnan(x)) {
+        // asinh(NaN + I*+-Inf) = opt(+-)Inf + I*NaN
+        if (std::isinf(y)) {
+            return T{y, q_nan<realT>};
+        }
+        // asinh(NaN + I*0) = NaN + I*0
+        if (y == realT(0)) {
+            return T{q_nan<realT>, y};
+        }
+        // all other cases involving NaN return NaN + I*NaN
+        return T{q_nan<realT>, q_nan<realT>};
+    }
+
+    if (std::isnan(y)) {
+        // asinh(+-Inf + I*NaN) = +-Inf + I*NaN
+        if (std::isinf(x)) {
+            return T{x, q_nan<realT>};
+        }
+        // all other cases involving NaN return NaN + I*NaN
+        return T{q_nan<realT>, q_nan<realT>};
+    }
+
+    /*
+     * For large x or y including asinh(+-Inf + I*+-Inf)
+     * asinh(in) = sign(x)*log(sign(x)*in) + O(1/in^2)   as in -> infinity
+     * The above formula works for the imaginary part as well, because
+     * Im(asinh(in)) = sign(x)*atan2(sign(x)*y, fabs(x)) + O(y/in^3)
+     * as in -> infinity, uniformly in y.
+     *
+     * exprm_ns::asinh(x) is based on calculating log(x + sqrt(x^2 + 1)),
+     * so r_eps = sqrt(1/eps)/2 is appropriate precision loss point.
+     */
+    const realT r_eps =
+        sycl::sqrt(realT(1) / std::numeric_limits<realT>::epsilon()) / 2;
+    if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
+        sycl_complexT log_in = (sycl::signbit(x))
+                                   ? exprm_ns::log(sycl_complexT(-in))
+                                   : exprm_ns::log(sycl_complexT(in));
+        realT wx = log_in.real() + realT(ln2);
+        realT wy = log_in.imag();
+
+        const realT res_re = sycl::copysign(wx, x);
+        const realT res_im = sycl::copysign(wy, y);
+        return T{res_re, res_im};
+    }
+
+    // ordinary cases
+    return exprm_ns::asinh(sycl_complexT(in));
+}
+
+template <typename T>
+T casin(const T &in)
+{
+    /*
+     * casin(z) = reverse(casinh(reverse(z))),
+     * where reverse(x + I*y) = y + I*x = I*conj(z)
+     */
+
+    // reverse(z): swap real and imaginary parts
+    T reversed{std::imag(in), std::real(in)};
+
+    // compute asinh of reversed input
+    T w = casinh(reversed);
+
+    // reverse result back: swap real and imaginary parts
+    return T{std::imag(w), std::real(w)};
 }
 } // namespace dpnp::tensor::kernels::complex_math
