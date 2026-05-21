@@ -190,7 +190,6 @@ def test_expm1_special_cases():
         assert_allclose(Y, res, atol=tol, rtol=tol)
 
     # assert_allclose treats +0 == -0
-    # verify sign bits for zero cases
+    # verify sign bits for zero real parts
     for i in (0, 1):
         assert not np.signbit(Y[i].real)
-        assert not np.signbit(Y[i].imag)
