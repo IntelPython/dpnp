@@ -99,9 +99,12 @@ dstTy convert_impl(const srcTy &v)
     else if constexpr (!std::is_integral_v<srcTy> &&
                        !std::is_same_v<dstTy, bool> &&
                        std::is_integral_v<dstTy> && std::is_unsigned_v<dstTy>) {
-        // first cast to signed variant, the cast to unsigned one
-        using signedT = typename std::make_signed_t<dstTy>;
-        return static_cast<dstTy>(convert_impl<signedT, srcTy>(v));
+        // cast through sufficiently large signed integer type to preserve
+        // two's complement
+        using intermediateT =
+            std::conditional_t<sizeof(dstTy) <= sizeof(std::int32_t),
+                               std::int32_t, std::int64_t>;
+        return static_cast<dstTy>(static_cast<intermediateT>(v));
     }
     else {
         return static_cast<dstTy>(v);
