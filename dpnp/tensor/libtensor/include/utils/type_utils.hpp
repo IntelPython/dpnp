@@ -102,7 +102,7 @@ dstTy convert_impl(const srcTy &v)
         // cast through sufficiently large signed integer type to preserve
         // two's complement
         using intermediateT =
-            std::conditional_t<sizeof(dstTy) <= sizeof(std::int32_t),
+            std::conditional_t<sizeof(dstTy) < sizeof(std::int32_t),
                                std::int32_t, std::int64_t>;
         return static_cast<dstTy>(static_cast<intermediateT>(v));
     }
