@@ -107,6 +107,18 @@ cdef bint _is_boolean(object x) except *:
     return False
 
 
+cdef _check_mask_shape(sh : tuple, ma_sh : tuple, Py_ssize_t axis):
+    cdef Py_ssize_t i, sh_i, m_sh
+    for i, ma_i in enumerate(ma_sh):
+        sh_i = sh[axis + i]
+        if ma_i not in (0, sh_i):
+            raise IndexError(
+                "boolean index did not match indexed array along dimension "
+                f"{axis + i}; dimension is {sh_i} but corresponding boolean "
+                f"dimension is {ma_i}"
+            )
+
+
 def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
     """
     Give basic slicing index `ind` and array layout information produce
@@ -353,6 +365,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 new_advanced_ind.append(ind_i)
                 dt_k = ind_i.dtype.kind
                 if dt_k == "b":
+                    _check_mask_shape(shape, ind_i.shape, k)
                     k_new = k + ind_i.ndim
                 else:
                     k_new = k + 1
