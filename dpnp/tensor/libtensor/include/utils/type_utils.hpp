@@ -102,8 +102,8 @@ dstTy convert_impl(const srcTy &v)
         // for negative values, cast through signed integer to get two's
         // complement wrapping
         using intermediateT =
-            std::conditional_t<sizeof(dstTy) < sizeof(std::int32_t), std::int32_t,
-                           std::int64_t>;
+            std::conditional_t<sizeof(dstTy) < sizeof(std::int32_t),
+                               std::int32_t, std::int64_t>;
         return (v < srcTy{0})
                    ? static_cast<dstTy>(static_cast<intermediateT>(v))
                    : static_cast<dstTy>(v);

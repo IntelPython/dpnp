@@ -1103,7 +1103,7 @@ def test_astype_gh_2121():
 def test_astype_gh_2882():
     get_queue_or_skip()
 
-    x = dpt.asarray([160., 120.], dtype="f4")
+    x = dpt.asarray([160.0, 120.0], dtype="f4")
     r = dpt.astype(x, dpt.uint8)
     expected = dpt.asarray([160, 120], dtype="u1")
     assert dpt.all(r == expected)
