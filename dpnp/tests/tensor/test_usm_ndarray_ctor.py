@@ -123,9 +123,6 @@ def test_usm_ndarray_flags():
     f = dpt.usm_ndarray((5, 0, 1), dtype="i4", strides=(1, 0, 1)).flags
     assert f.fc
     assert f.forc
-    assert not dpt.usm_ndarray(
-        (5, 1, 1), dtype="i4", strides=(2, 0, 1)
-    ).flags.forc
 
     x = dpt.empty(5, dtype="u2")
     assert x.flags.writable is True
@@ -1144,6 +1141,19 @@ def test_ctor_invalid():
     m = dpm.MemoryUSMShared(64)
     with pytest.raises(ValueError):
         dpt.usm_ndarray((4,), dtype="u1", buffer=m, strides={"not": "valid"})
+
+
+def test_ctor_invalid_strides():
+    try:
+        dpt.usm_ndarray((1,), dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    # negative displacement
+    with pytest.raises(ValueError):
+        dpt.usm_ndarray((2, 3, 4), dtype="i4", strides=(-1, 1, 1))
+    # oversized memory footprint
+    with pytest.raises(ValueError):
+        dpt.usm_ndarray((2, 3, 4), dtype="i4", strides=(1, 16, 128))
 
 
 def test_reshape():
