@@ -108,7 +108,7 @@ cdef bint _is_boolean(object x) except *:
 
 
 cdef _check_mask_shape(sh : tuple, ma_sh : tuple, Py_ssize_t axis):
-    cdef Py_ssize_t i, sh_i, m_sh
+    cdef Py_ssize_t i, sh_i, ma_i
     for i, ma_i in enumerate(ma_sh):
         sh_i = sh[axis + i]
         if ma_i not in (0, sh_i):
