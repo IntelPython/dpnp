@@ -30,7 +30,7 @@ This release is compatible with NumPy 2.4.5.
 * Fixed incorrect `dpnp.tensor.acosh` result for `complex(±0, NaN)` special case to match the Python Array API specification [#2914](https://github.com/IntelPython/dpnp/pull/2914)
 * Fixed fork PR documentation workflow failures by implementing conditional publishing strategy: upstream PRs publish to GitHub Pages with comment, fork PRs upload artifacts [#2910](https://github.com/IntelPython/dpnp/pull/2910)
 * Fixed missing `libtensor` headers in the installed `dpnp` package [#2915](https://github.com/IntelPython/dpnp/pull/2915)
-* Fixed some edge cases when indexing `dpnp.tensor.usm_ndarray`s and `dpnp.dpnp_array`s with boolean masks where the corresponding axis of the mask is incompatible with the axis of the indexed array [#2929](https://github.com/IntelPython/dpnp/pull/2929)
+* Fixed boolean mask indexing to raise `IndexError` when mask dimensions don't match the indexed array dimensions, aligning with NumPy behavior. Previously, incompatible boolean masks silently returned incorrect results instead of raising an error [#2929](https://github.com/IntelPython/dpnp/pull/2929)
 
 ### Security
 
