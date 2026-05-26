@@ -30,6 +30,8 @@ This release is compatible with NumPy 2.4.5.
 * Fixed incorrect `dpnp.tensor.acosh` result for `complex(±0, NaN)` special case to match the Python Array API specification [#2914](https://github.com/IntelPython/dpnp/pull/2914)
 * Fixed fork PR documentation workflow failures by implementing conditional publishing strategy: upstream PRs publish to GitHub Pages with comment, fork PRs upload artifacts [#2910](https://github.com/IntelPython/dpnp/pull/2910)
 * Fixed missing `libtensor` headers in the installed `dpnp` package [#2915](https://github.com/IntelPython/dpnp/pull/2915)
+* Fixed boolean mask indexing to raise `IndexError` when mask dimensions don't match the indexed array dimensions, aligning with NumPy behavior. Previously, incompatible boolean masks silently returned incorrect results instead of raising an error [#2929](https://github.com/IntelPython/dpnp/pull/2929)
+* Fixed a bug in `astype` where casting floating point types to unsigned integral types could cause an intermediate signed integral type to overflow, leading to incorrect results [#2930](https://github.com/IntelPython/dpnp/pull/2930)
 
 ### Security
 
