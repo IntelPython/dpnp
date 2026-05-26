@@ -26,6 +26,7 @@ from .helper import (
     numpy_version,
 )
 from .third_party.cupy import testing
+from .tensor.helper import get_queue_or_skip
 
 
 def _compare_results(result, expected):
@@ -2124,16 +2125,12 @@ class TestBroadcast:
         assert bc.size == bc_np.size
 
     def test_broadcast_with_array_like(self):
-        # Test broadcast with array-like inputs (lists)
+        # Conversion from array-like inputs is not implemented for broadcast yet.
         a = dpnp.array([1, 2, 3])
         b = [[1], [2]]
 
-        bc = dpnp.broadcast(a, b)
-        bc_np = numpy.broadcast(a.asnumpy(), b)
-
-        assert bc.shape == bc_np.shape
-        assert bc.nd == bc_np.nd
-        assert bc.size == bc_np.size
+        with pytest.raises(TypeError):
+            dpnp.broadcast(a, b)
 
     @pytest.mark.parametrize(
         "shapes",
@@ -2173,9 +2170,30 @@ class TestBroadcast:
         assert bc.numiter == 1
 
     def test_broadcast_no_args(self):
-        # Test that broadcast with no arguments raises TypeError
+        # Test broadcast with no arguments.
+        bc = dpnp.broadcast()
+
+        assert bc.shape == ()
+        assert bc.nd == 0
+        assert bc.ndim == 0
+        assert bc.size == 1
+        assert bc.numiter == 0
+
+    def test_broadcast_argument_without_shape(self):
+        a = dpnp.array([1, 2, 3])
+
         with pytest.raises(TypeError):
-            dpnp.broadcast()
+            dpnp.broadcast(a, 3)
+
+    def test_broadcast_compute_follows_data(self):
+        q1 = get_queue_or_skip()
+        q2 = get_queue_or_skip()
+
+        a = dpt.ones((2, 1), sycl_queue=q1)
+        b = dpt.ones((1, 2), sycl_queue=q2)
+
+        with pytest.raises(dpt.ExecutionPlacementError):
+            dpnp.broadcast(a, b)
 
     def test_broadcast_repr(self):
         # Test __repr__ method

@@ -29,6 +29,7 @@
 """Implementation of broadcast class."""
 
 import dpnp
+import dpnp.tensor as dpt
 from dpnp.tensor._manipulation_functions import _broadcast_shapes
 
 
@@ -40,8 +41,8 @@ class broadcast:
 
     Parameters
     ----------
-    *args : array_like
-        Input parameters.
+    *args : object
+        Input parameters. Every argument must define ``shape`` attribute.
 
     Returns
     -------
@@ -79,18 +80,30 @@ class broadcast:
     """
 
     def __init__(self, *args):
-        # Convert all arguments to dpnp arrays
-        arrays = []
-        for arg in args:
-            if not isinstance(arg, dpnp.ndarray):
-                # Convert array-like to dpnp.ndarray
-                arg = dpnp.asarray(arg)
-            arrays.append(arg)
+        for i, arg in enumerate(args):
+            if not hasattr(arg, "shape"):
+                raise TypeError(
+                    f"Argument at position {i} must define shape attribute"
+                )
 
-        if len(arrays) == 0:
-            raise TypeError("broadcast() requires at least one array")
+        self._arrays = tuple(args)
 
-        self._arrays = tuple(arrays)
+        dpnp_arrays = [arg for arg in self._arrays if isinstance(arg, dpnp.ndarray)]
+        if len(dpnp_arrays) > 1:
+            exec_q = dpt.get_execution_queue(
+                tuple(array.sycl_queue for array in dpnp_arrays)
+            )
+            if exec_q is None:
+                raise dpt.ExecutionPlacementError(
+                    "Execution placement can not be unambiguously inferred "
+                    "from input arguments."
+                )
+
+        if len(self._arrays) == 0:
+            self._shape = ()
+            self._size = 1
+            self._nd = 0
+            return
 
         # Compute the broadcasted shape using _broadcast_shapes
         self._shape = _broadcast_shapes(*self._arrays)
