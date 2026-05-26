@@ -298,7 +298,7 @@ def test_properties(dt):
         V.mT
 
 
-@pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
+@pytest.mark.parametrize("shape", [(), (1,), (1, 1), (1, 1, 1)])
 @pytest.mark.parametrize("dtype", ["|b1", "|u2", "|f4", "|i8"])
 class TestCopyScalar:
     @pytest.mark.parametrize("func", [bool, float, int, complex])
@@ -361,7 +361,7 @@ def test_index_noninteger():
 @pytest.mark.parametrize(
     "ind",
     [
-        tuple(),
+        (),
         (None,),
         (
             None,
@@ -671,7 +671,7 @@ def test_pyx_capi_check_constants():
 
 
 @pytest.mark.parametrize(
-    "shape", [tuple(), (1,), (5,), (2, 3), (2, 3, 4), (2, 2, 2, 2, 2)]
+    "shape", [(), (1,), (5,), (2, 3), (2, 3, 4), (2, 2, 2, 2, 2)]
 )
 @pytest.mark.parametrize(
     "dtype",
@@ -791,7 +791,7 @@ def test_setitem_broadcasting_empty_dst_edge_case():
     broadasting rule, hence no exception"""
     get_queue_or_skip()
     dst = dpt.ones(1, dtype="i8")[0:0]
-    src = dpt.ones(tuple(), dtype="i8")
+    src = dpt.ones((), dtype="i8")
     dst[...] = src
 
 
@@ -963,7 +963,7 @@ def test_len():
     assert len(X) == 1
     X = dpt.usm_ndarray((2, 1), "i4")
     assert len(X) == 2
-    X = dpt.usm_ndarray(tuple(), "i4")
+    X = dpt.usm_ndarray((), "i4")
     with pytest.raises(TypeError):
         len(X)
 
@@ -1098,6 +1098,15 @@ def test_astype_gh_2121():
     res = dpt.astype(x, dpt.uint8)
     expected = dpt.asarray([0, 1, 1, 1, 0, 1], dtype="u1")
     assert dpt.all(res == expected)
+
+
+def test_astype_gh_2882():
+    get_queue_or_skip()
+
+    x = dpt.asarray([160.0, 120.0], dtype="f4")
+    r = dpt.astype(x, dpt.uint8)
+    expected = dpt.asarray([160, 120], dtype="u1")
+    assert dpt.all(r == expected)
 
 
 def test_copy():
@@ -1353,19 +1362,19 @@ def test_full_cmplx128():
     dtype = "c16"
     skip_if_dtype_not_supported(dtype, q)
     fill_v = 1 + 1j
-    X = dpt.full(tuple(), fill_value=fill_v, dtype=dtype, sycl_queue=q)
+    X = dpt.full((), fill_value=fill_v, dtype=dtype, sycl_queue=q)
     assert np.array_equal(
-        dpt.asnumpy(X), np.full(tuple(), fill_value=fill_v, dtype=dtype)
+        dpt.asnumpy(X), np.full((), fill_value=fill_v, dtype=dtype)
     )
     fill_v = 0 + 1j
-    X = dpt.full(tuple(), fill_value=fill_v, dtype=dtype, sycl_queue=q)
+    X = dpt.full((), fill_value=fill_v, dtype=dtype, sycl_queue=q)
     assert np.array_equal(
-        dpt.asnumpy(X), np.full(tuple(), fill_value=fill_v, dtype=dtype)
+        dpt.asnumpy(X), np.full((), fill_value=fill_v, dtype=dtype)
     )
     fill_v = 0 + 0j
-    X = dpt.full(tuple(), fill_value=fill_v, dtype=dtype, sycl_queue=q)
+    X = dpt.full((), fill_value=fill_v, dtype=dtype, sycl_queue=q)
     assert np.array_equal(
-        dpt.asnumpy(X), np.full(tuple(), fill_value=fill_v, dtype=dtype)
+        dpt.asnumpy(X), np.full((), fill_value=fill_v, dtype=dtype)
     )
 
 
@@ -1640,7 +1649,7 @@ def test_empty_like(dt, usm_kind):
     assert X.usm_type == Y.usm_type
     assert X.sycl_queue == Y.sycl_queue
 
-    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    X = dpt.empty((), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.empty_like(X)
     assert X.shape == Y.shape
     assert X.dtype == Y.dtype
@@ -1680,7 +1689,7 @@ def test_zeros_like(dt, usm_kind):
     assert X.sycl_queue == Y.sycl_queue
     assert np.allclose(dpt.asnumpy(Y), np.zeros(X.shape, dtype=X.dtype))
 
-    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    X = dpt.empty((), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.zeros_like(X)
     assert X.shape == Y.shape
     assert X.dtype == Y.dtype
@@ -1713,7 +1722,7 @@ def test_ones_like(dt, usm_kind):
     assert X.sycl_queue == Y.sycl_queue
     assert np.allclose(dpt.asnumpy(Y), np.ones(X.shape, dtype=X.dtype))
 
-    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    X = dpt.empty((), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.ones_like(X)
     assert X.shape == Y.shape
     assert X.dtype == Y.dtype
@@ -1747,7 +1756,7 @@ def test_full_like(dt, usm_kind):
     assert X.sycl_queue == Y.sycl_queue
     assert np.allclose(dpt.asnumpy(Y), np.ones(X.shape, dtype=X.dtype))
 
-    X = dpt.empty(tuple(), dtype=dt, usm_type=usm_kind, sycl_queue=q)
+    X = dpt.empty((), dtype=dt, usm_type=usm_kind, sycl_queue=q)
     Y = dpt.full_like(X, fill_v)
     assert X.shape == Y.shape
     assert X.dtype == Y.dtype
@@ -1924,7 +1933,8 @@ def test_meshgrid():
     assert n == len(Znp)
     for i in range(n):
         assert np.array_equal(dpt.asnumpy(Z[i]), Znp[i])
-    assert dpt.meshgrid() == []
+    assert isinstance(Z, tuple)
+    assert dpt.meshgrid() == ()
     # dimension > 1 must raise ValueError
     with pytest.raises(ValueError):
         dpt.meshgrid(dpt.usm_ndarray((4, 4)))
@@ -2003,7 +2013,7 @@ def test_common_arg_validation():
 
 def test_flags():
     try:
-        x = dpt.empty(tuple(), dtype="i4")
+        x = dpt.empty((), dtype="i4")
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     f = x.flags

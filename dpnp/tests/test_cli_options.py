@@ -2,6 +2,24 @@ import subprocess
 import sys
 
 
+def test_includes():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpnp", "--includes"],
+        capture_output=True,
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    flags = res.stdout.decode("utf-8")
+    res = subprocess.run(
+        [sys.executable, "-m", "dpnp", "--include-dir"],
+        capture_output=True,
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    include_dir = res.stdout.decode("utf-8")
+    assert flags == "-I " + include_dir
+
+
 def test_tensor_includes():
     res = subprocess.run(
         [sys.executable, "-m", "dpnp", "--tensor-includes"],
