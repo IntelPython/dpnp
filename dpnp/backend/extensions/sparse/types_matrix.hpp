@@ -32,7 +32,7 @@
 #include <cstdint>
 #include <type_traits>
 
-// dpctl tensor headers
+// dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 
 // dpctl namespace alias for type dispatch utilities
