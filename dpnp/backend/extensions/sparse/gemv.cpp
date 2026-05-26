@@ -71,9 +71,9 @@ typedef std::pair<std::uintptr_t, sycl::event> (*gemv_init_fn_ptr_t)(
     const char *, // row_ptr (typeless)
     const char *, // col_ind (typeless)
     const char *, // values  (typeless)
-    std::int64_t, // num_rows
-    std::int64_t, // num_cols
-    std::int64_t, // nnz
+    const std::int64_t, // num_rows
+    const std::int64_t, // num_cols
+    const std::int64_t, // nnz
     const std::vector<sycl::event> &);
 
 /**
