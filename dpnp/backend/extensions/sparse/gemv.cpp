@@ -84,9 +84,9 @@ typedef sycl::event (*gemv_compute_fn_ptr_t)(
     sycl::queue &,
     oneapi::mkl::sparse::matrix_handle_t,
     oneapi::mkl::transpose,
-    double,       // alpha (cast to Tv inside)
+    const double,       // alpha (cast to Tv inside)
     const char *, // x (typeless)
-    double,       // beta  (cast to Tv inside)
+    const double,       // beta  (cast to Tv inside)
     char *,       // y (typeless, writable)
     const std::vector<sycl::event> &);
 
