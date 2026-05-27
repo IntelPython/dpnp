@@ -3,11 +3,26 @@
 Minimal implementation supporting the operations exercised by
 dpnp.scipy.sparse.linalg solvers (cg, gmres, minres) and
 LinearOperator. Construction from dense arrays or raw CSR
-components, plus dot/T for the solver fallback path.
+components; ``dot`` routed through oneMKL ``sparse::gemv`` when the
+compiled backend extension is available, with a dense fallback used
+when it is not.
 
 Operations not required by the solvers (arithmetic, format
 conversion, element-wise math, reductions, indexing) are
 intentionally not implemented in this initial version.
+
+SpMV fast path
+--------------
+On first ``.dot(x)`` with a 1-D ``x`` of a supported dtype, the
+instance lazily allocates an oneMKL ``matrix_handle`` via
+``_sparse_gemv_init`` (which itself runs ``set_csr_data`` plus
+``optimize_gemv`` -- the expensive sparsity-analysis phase). The
+handle is cached on the instance and reused for every subsequent
+matvec; ``__del__`` releases it. This matches the cupyx behaviour
+where ``csr_matrix.dot`` calls cuSPARSE SpMV directly without
+densification, and lets the iterative solvers in
+``dpnp.scipy.sparse.linalg`` reuse the same handle through
+``_make_fast_matvec`` without rebuilding it.
 """
 
 from __future__ import annotations
@@ -16,6 +31,14 @@ import numpy as _np
 import dpnp as _dpnp
 
 from ._base import SparseABC
+
+# Value dtypes the oneMKL sparse::gemv dispatch table registers
+# (see dpnp/backend/extensions/sparse/types_matrix.hpp). Anything
+# outside this set must take the dense fallback in ``dot``.
+_SPMV_VALUE_DTYPES = frozenset("fdFD")
+# Index dtypes oneMKL accepts (int32, int64). Matches the second
+# dimension of SparseGemvInitTypePairSupportFactory.
+_SPMV_INDEX_DTYPES = frozenset("ilq")
 
 
 class csr_matrix(SparseABC):
@@ -54,6 +77,14 @@ class csr_matrix(SparseABC):
     ndim = 2
 
     def __init__(self, arg1, shape=None, dtype=None, copy=False):
+        # Lazy SpMV handle state. Assigned BEFORE the dispatch below so
+        # that __del__ never sees a partially-constructed object (it can
+        # be invoked if any of the _init_* helpers raise).
+        self._spmv_handle = None
+        self._spmv_val_type_id = -1
+        self._spmv_si = None
+        self._spmv_exec_q = None
+
         if isinstance(arg1, _dpnp.ndarray):
             self._init_from_dense(arg1, dtype=dtype)
         elif isinstance(arg1, csr_matrix):
@@ -191,14 +222,98 @@ class csr_matrix(SparseABC):
         """Transpose. Materializes via toarray() since CSC isn't implemented."""
         return csr_matrix(self.toarray().T)
 
-    # --- methods used by the solver fallback path ----------------------
+    # --- SpMV fast-path internals --------------------------------------
+
+    def _spmv_supported(self):
+        """True iff value and index dtypes are in the oneMKL dispatch table."""
+        return (
+            _np.dtype(self.data.dtype).char in _SPMV_VALUE_DTYPES
+            and _np.dtype(self.indices.dtype).char in _SPMV_INDEX_DTYPES
+        )
+
+    def _ensure_spmv_handle(self):
+        """Lazily build the cached oneMKL matrix_handle for forward SpMV.
+
+        Returns the ``(si, handle, val_type_id, exec_q)`` quadruple so
+        callers can drive ``_sparse_gemv_compute`` directly. Returns
+        ``None`` if the compiled backend extension is unavailable, the
+        dtype combination is unsupported, or handle construction fails
+        for any backend-specific reason (in which case the caller must
+        fall back to a dense path).
+        """
+        if self._spmv_handle is not None:
+            return (
+                self._spmv_si,
+                self._spmv_handle,
+                self._spmv_val_type_id,
+                self._spmv_exec_q,
+            )
+
+        if not self._spmv_supported():
+            return None
+
+        try:
+            # Lazy import: keeps csr_matrix importable in builds that
+            # did not compile the sparse backend extension (e.g. host-
+            # only test matrices, doc builds).
+            # pylint: disable-next=import-outside-toplevel
+            from dpnp.backend.extensions.sparse import _sparse_impl as _si
+        except ImportError:
+            return None
+
+        exec_q = self.data.sycl_queue
+        try:
+            # pylint: disable-next=protected-access
+            handle, val_type_id, ev = _si._sparse_gemv_init(
+                exec_q,
+                0,  # trans=N (forward)
+                self.indptr,
+                self.indices,
+                self.data,
+                int(self._shape[0]),
+                int(self._shape[1]),
+                int(self.data.shape[0]),
+                [],
+            )
+        except Exception:  # pylint: disable=broad-exception-caught
+            # Backend dispatch may reject the (value, index) pair even
+            # though the Python guard above accepted them (e.g. complex
+            # support disabled in the linked oneMKL build). Fall through
+            # to the dense path silently.
+            return None
+
+        # set_csr_data + optimize_gemv must complete before any compute
+        # call can dispatch against the handle. This is the only blocking
+        # sync; subsequent matvecs return without waiting.
+        ev.wait()
+
+        self._spmv_si = _si
+        self._spmv_handle = handle
+        self._spmv_val_type_id = val_type_id
+        self._spmv_exec_q = exec_q
+        return (_si, handle, val_type_id, exec_q)
+
+    # --- public API: matvec via cached oneMKL handle -------------------
 
     def dot(self, x):
-        """Compute A @ x. Fallback path for MatrixLinearOperator.
+        """Compute ``A @ x``.
 
-        The solver hot path bypasses this method entirely via
-        _make_fast_matvec building a _CachedSpMV directly from
-        the CSR component arrays.
+        For a 1-D ``x`` of a supported dtype, this dispatches to oneMKL
+        ``sparse::gemv`` via a cached matrix handle (built lazily on the
+        first call). Subsequent calls reuse the handle and pay only the
+        SpMV kernel cost, matching the cupyx ``csr_matrix.dot`` behaviour.
+
+        Falls back to ``dpnp.dot(self.toarray(), x)`` when:
+
+          * the compiled sparse backend extension is not present,
+          * the value/index dtype combination is not in the oneMKL
+            dispatch table, or
+          * ``x`` is 2-D (no batched SpMV binding exists yet -- batched
+            SpMM is a different oneMKL entry point and intentionally not
+            wired up here).
+
+        The dense fallback materialises ``self`` and is therefore O(M*N)
+        in memory; the fast path is O(nnz) and never densifies.
         """
         if not isinstance(x, _dpnp.ndarray):
             raise TypeError(
@@ -209,9 +324,66 @@ class csr_matrix(SparseABC):
             raise ValueError(
                 f"csr_matrix.dot: x must be 1-D or 2-D, got {x.ndim}-D"
             )
-        # Dense fallback. Correct but materializes A; acceptable here
-        # because this path only runs when oneMKL SpMV is unavailable.
+
+        nrows, ncols = self._shape
+
+        if x.ndim == 1 and x.shape[0] == ncols:
+            handle_info = self._ensure_spmv_handle()
+            if handle_info is not None:
+                _si, handle, val_type_id, exec_q = handle_info
+                # Reject dtype mismatches deterministically here rather
+                # than letting the C++ layer raise: callers expect a
+                # clean TypeError for cross-dtype matvec.
+                if x.dtype != self.data.dtype:
+                    raise TypeError(
+                        f"csr_matrix.dot: x dtype {x.dtype} does not "
+                        f"match matrix dtype {self.data.dtype}"
+                    )
+                y = _dpnp.empty(
+                    nrows, dtype=self.data.dtype, sycl_queue=exec_q
+                )
+                # Do NOT wait on the returned event: any subsequent dpnp
+                # operation on the same queue will serialise behind it
+                # automatically. Blocking here would dominate runtime
+                # for small systems (same rationale as _CachedSpMV in
+                # linalg/_iterative.py).
+                # pylint: disable-next=protected-access
+                _si._sparse_gemv_compute(
+                    exec_q,
+                    handle,
+                    val_type_id,
+                    0,    # trans=N
+                    1.0,  # alpha
+                    x,
+                    0.0,  # beta
+                    y,
+                    nrows,
+                    ncols,
+                    [],
+                )
+                return y
+
+        # Dense fallback. Materialises ``self`` once -- this path is
+        # exercised only when SpMV is unavailable for this matrix.
         return _dpnp.dot(self.toarray(), x)
+
+    def __matmul__(self, x):
+        return self.dot(x)
+
+    def __del__(self):
+        # Release the cached oneMKL matrix_handle if one was built.
+        # __del__ may run during interpreter shutdown with the backend
+        # extension already torn down; swallow any error to avoid
+        # noisy garbage-collector exceptions.
+        handle = getattr(self, "_spmv_handle", None)
+        si = getattr(self, "_spmv_si", None)
+        if handle is not None and si is not None:
+            try:
+                # pylint: disable-next=protected-access
+                si._sparse_gemv_release(self._spmv_exec_q, handle, [])
+            except Exception:  # pylint: disable=broad-exception-caught
+                pass
+            self._spmv_handle = None
 
     def toarray(self):
         """Convert to a dense dpnp 2-D array."""

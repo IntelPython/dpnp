@@ -542,57 +542,86 @@ class IdentityOperator(LinearOperator):
 
 
 def aslinearoperator(A) -> LinearOperator:
-    """Return `A` as a `LinearOperator`
+    """Return ``A`` as a :class:`LinearOperator`.
 
-    Handles (in order):
-      1. Already a LinearOperator — returned as-is.
-      2. `dpnp.scipy.sparse` sparse matrix.
-      3. Dense 2-D dpnp.ndarray.
-      4. Duck-typed objects with .shape and .matvec / @ support.
+    Dispatch order (matches ``cupyx.scipy.sparse.linalg.aslinearoperator``
+    and ``scipy.sparse.linalg.aslinearoperator``):
+
+      1. Already a :class:`LinearOperator` -- returned as-is.
+      2. A ``dpnp.scipy.sparse`` sparse matrix (e.g. ``csr_matrix``)
+         -- wrapped as :class:`MatrixLinearOperator`. Inside the iterative
+         solvers this wrapper is further specialised to a cached oneMKL
+         SpMV handle in ``_iterative._make_fast_matvec`` so the dense
+         materialisation in ``csr_matrix.dot`` is bypassed.
+      3. A dense 2-D :class:`dpnp.ndarray` -- wrapped as
+         :class:`MatrixLinearOperator` after promotion via
+         :func:`dpnp.atleast_2d`.
+      4. A duck-typed object with ``.shape`` and ``.matvec``
+         (optionally ``rmatvec`` / ``matmat`` / ``rmatmat`` / ``dtype``).
+
+    Notes
+    -----
+    A :class:`numpy.ndarray` is explicitly rejected: silently promoting
+    a host array would force a hidden host->device copy on every
+    matvec, defeating the point of routing through dpnp. Callers must
+    explicitly transfer with ``dpnp.asarray`` first.
     """
+    # 1. Already a LinearOperator -- pass through.
     if isinstance(A, LinearOperator):
         return A
 
-    elif isinstance(A, dpnp.ndarray):
-        if A.ndim > 2:
-            raise ValueError('array must have ndim <= 2')
-        A = dpnp.atleast_2d(A)
+    # 2. dpnp sparse matrix. Import is at module-load time -- if
+    # dpnp.scipy.sparse is unimportable then the package itself is
+    # broken and a hard failure is preferable to silent fallthrough.
+    # The local import avoids the package-init circularity that exists
+    # while dpnp.scipy.sparse.__init__ is still executing (it imports
+    # us via linalg/__init__.py).
+    # pylint: disable-next=import-outside-toplevel
+    from dpnp.scipy.sparse import issparse
+    if issparse(A):
         return MatrixLinearOperator(A)
-    
+
+    # 3. Dense dpnp array.
+    if isinstance(A, dpnp.ndarray):
+        if A.ndim > 2:
+            raise ValueError(
+                f"aslinearoperator: dpnp array must be at most 2-D, "
+                f"got {A.ndim}-D"
+            )
+        return MatrixLinearOperator(dpnp.atleast_2d(A))
+
+    # 3b. Reject host NumPy arrays explicitly -- silently uploading
+    # would mask a real bug in user code (queue / device selection).
     try:
-        # Lazy import: dpnp.scipy.sparse may import this module during
-        # package initialisation, so we cannot import it at module scope.
-        # pylint: disable=import-outside-toplevel
-        from dpnp.scipy.sparse import issparse
-        if issparse(A):
-            return MatrixLinearOperator(A)
-    except (ImportError, AttributeError):
+        # pylint: disable-next=import-outside-toplevel
+        import numpy as _np
+        if isinstance(A, _np.ndarray):
+            raise TypeError(
+                "aslinearoperator: got a numpy.ndarray; transfer it to "
+                "the target device with dpnp.asarray(A) first."
+            )
+    except ImportError:
         pass
 
-    if isinstance(A, dpnp.ndarray):
-        if A.ndim != 2:
+    # 4. Duck-typed object with .shape and .matvec.
+    if hasattr(A, "shape") and hasattr(A, "matvec"):
+        shape = tuple(A.shape)
+        if len(shape) != 2:
             raise ValueError(
-                f"aslinearoperator: dpnp array must be 2-D, got {A.ndim}-D"
+                f"aslinearoperator: duck-typed operator must be 2-D, "
+                f"got shape {shape!r}"
             )
-        return MatrixLinearOperator(A)
-
-    if hasattr(A, "shape") and len(A.shape) == 2:
-        m, n = int(A.shape[0]), int(A.shape[1])
-        dtype = getattr(A, "dtype", None)
-        matvec = A.matvec if hasattr(A, "matvec") else (lambda x: A @ x)
-        rmatvec = A.rmatvec if hasattr(A, "rmatvec") else None
-        matmat = A.matmat if hasattr(A, "matmat") else None
-        rmatmat = A.rmatmat if hasattr(A, "rmatmat") else None
         return LinearOperator(
-            (m, n),
-            matvec=matvec,
-            rmatvec=rmatvec,
-            matmat=matmat,
-            dtype=dtype,
-            rmatmat=rmatmat,
+            shape,
+            matvec=A.matvec,
+            rmatvec=getattr(A, "rmatvec", None),
+            matmat=getattr(A, "matmat", None),
+            rmatmat=getattr(A, "rmatmat", None),
+            dtype=getattr(A, "dtype", None),
         )
 
     raise TypeError(
-        f"Cannot convert object of type {type(A)!r} to a LinearOperator. "
-        "Expected a LinearOperator, dpnp sparse matrix, or 2-D dpnp.ndarray."
+        f"aslinearoperator: cannot convert object of type {type(A).__name__!r} "
+        "to a LinearOperator. Expected a LinearOperator, a dpnp sparse "
+        "matrix, a 2-D dpnp.ndarray, or an object with .shape and .matvec."
     )

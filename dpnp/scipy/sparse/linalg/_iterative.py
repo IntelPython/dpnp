@@ -217,22 +217,51 @@ class _CachedSpMV:
 
 
 class _CachedSpMVPair:
-    """Holds forward and (lazily built) adjoint cached SpMV handles."""
+    """Forward + lazily-built adjoint SpMV closures around a csr_matrix.
 
-    __slots__ = ("forward", "_A", "_si", "_adjoint")
+    The forward handle is owned by the ``csr_matrix`` itself (built via
+    ``csr_matrix._ensure_spmv_handle()``) and therefore shared with any
+    other call site -- including a user-issued ``A.dot(x)`` outside the
+    solver. The adjoint handle is built on demand and owned by this
+    pair instance; ``__del__`` releases it.
+    """
+
+    __slots__ = ("_A", "_si", "_adjoint")
 
     def __init__(self, A, si):
         self._A = A
         self._si = si
-        self.forward = _CachedSpMV(A, si, trans=0)
         self._adjoint = None
 
     def matvec(self, x):
-        """Apply the operator to vector x."""
-        return self.forward(x)
+        """Apply the forward operator A @ x via the csr's cached handle."""
+        # _ensure_spmv_handle has already been validated by the caller
+        # (_make_fast_matvec) before this pair was constructed, so it
+        # cannot return None here. We re-fetch on every call only to
+        # pick up the (immutable) handle pointer and exec_q without
+        # caching them redundantly on this object.
+        _si, handle, val_type_id, exec_q = self._A._ensure_spmv_handle()
+        y = dpnp.empty(
+            self._A.shape[0], dtype=self._A.data.dtype, sycl_queue=exec_q
+        )
+        # pylint: disable-next=protected-access
+        _si._sparse_gemv_compute(
+            exec_q,
+            handle,
+            val_type_id,
+            0,    # trans=N
+            1.0,  # alpha
+            x,
+            0.0,  # beta
+            y,
+            int(self._A.shape[0]),
+            int(self._A.shape[1]),
+            [],
+        )
+        return y
 
     def rmatvec(self, x):
-        """Apply the conjugate-transpose operator to vector x."""
+        """Apply the conjugate-transpose operator A^H @ x."""
         if self._adjoint is None:
             # Build conjtrans handle on first use. For real dtypes
             # this is equivalent to trans=1.
@@ -248,9 +277,12 @@ def _make_fast_matvec(A):
     or None if A is not an eligible sparse matrix.
 
     Falls back to None (caller uses A.dot) on:
-      - missing _sparse_impl extension
-      - dtype not supported by the C++ dispatch table
-      - any other C++ exception during handle initialisation
+      - A is not a dpnp CSR sparse matrix
+      - the compiled backend extension is unavailable
+      - the (value, index) dtype combination is not registered with
+        the oneMKL dispatch table
+      - handle initialisation raises for any other backend-specific
+        reason
     """
     try:
         # Lazy import: dpnp.scipy.sparse may import this module during
@@ -263,27 +295,17 @@ def _make_fast_matvec(A):
     except (ImportError, AttributeError):
         return None
 
-    # Lazy backend import -- mirrors cupyx/scipy/sparse/linalg/_iterative.py,
-    # which imports cusparse inside this function. Keeping the import out of
-    # module scope avoids re-entering the partially-initialized dpnp package
-    # while dpnp/__init__.py is still executing `from . import scipy as scipy`.
-    try:
-        # pylint: disable-next=import-outside-toplevel
-        from dpnp.backend.extensions.sparse import _sparse_impl as _si
-    except ImportError:
+    # Probe the csr_matrix's own SpMV path. This either returns a
+    # fully-built handle (cached on A for sharing with A.dot) or None
+    # when the backend extension / dtype combination is unsupported.
+    if not hasattr(A, "_ensure_spmv_handle"):
+        return None
+    handle_info = A._ensure_spmv_handle()
+    if handle_info is None:
         return None
 
-    # Only build the cached handle for supported dtypes.
-    if _np_dtype(A.data.dtype).char not in _SUPPORTED_DTYPES:
-        return None
-
-    # The C++ dispatch may raise any backend-specific error if the
-    # value/index dtype combination is not registered; in that case we
-    # transparently fall back to the generic A.dot() path.
-    try:
-        return _CachedSpMVPair(A, _si)
-    except Exception:  # pylint: disable=broad-exception-caught
-        return None
+    _si, _handle, _val_type_id, _exec_q = handle_info
+    return _CachedSpMVPair(A, _si)
 
 
 def _make_system(A, M, x0, b):
