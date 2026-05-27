@@ -497,34 +497,46 @@ def cg(
     z = M_op.matvec(r)
     p = z.copy()
 
-    # rz is kept as a 0-D dpnp array on device.
+    # rz is kept as a 0-D dpnp array on device throughout the loop;
+    # the only time we transfer it to the host is the initial
+    # breakdown guard below (matches the CuPy contract -- a zero
+    # initial preconditioned residual means we are already at the
+    # solution and there is nothing further to do).
     rz = dpnp.real(dpnp.vdot(r, z))
-
-    # Single sync for the initial breakdown check.
     if float(dpnp.abs(rz)) < rhotol:
         return x, 0
 
     info = maxiter
     k = 0
-
+    # Per-iter sync count: 1 (rnorm convergence check). The pAp and
+    # rz_new breakdown checks are intentionally not transferred to
+    # the host; IEEE-754 inf / NaN propagation through alpha = rz/pAp
+    # makes pathological values poison the next residual norm, which
+    # the single sync below detects via the `not isfinite(rnorm_host)`
+    # branch. Mirrors CuPy / cuBLAS-style CG which also dispatches
+    # one nrm2 + comparison per iteration.
     for k in range(maxiter):
-        # Convergence check (sync).
         rnorm = dpnp.linalg.norm(r)
-        if float(rnorm) <= atol_eff_host:
+        rnorm_host = float(rnorm)
+        if rnorm_host <= atol_eff_host:
             info = 0
             break
-
-        Ap = A_op.matvec(p)
-        pAp = dpnp.real(dpnp.vdot(p, Ap))  # 0-D on device
-
-        if float(dpnp.abs(pAp)) < rhotol:
-            # pAp breakdown: report the iteration index at which the
-            # solver gave up. info > 0 per SciPy contract.
+        if not numpy.isfinite(rnorm_host):
+            # IEEE-propagated breakdown: pAp or rz collapsed in the
+            # previous iteration, poisoning r via alpha=inf/NaN. The
+            # current iterate is the best estimate we have; report
+            # info > 0 per SciPy contract.
             info = k + 1
             break
 
-        alpha = rz / pAp  # 0-D on device
-        x = x + alpha * p  # fully on-device
+        Ap = A_op.matvec(p)
+        pAp = dpnp.real(dpnp.vdot(p, Ap))  # 0-D, stays on device
+
+        # No sync on pAp -- division by a near-zero pAp will produce
+        # alpha = inf/NaN, propagated below into r and caught by the
+        # rnorm_host check at the top of the next iteration.
+        alpha = rz / pAp
+        x = x + alpha * p
         r = r - alpha * Ap
 
         if callback is not None:
@@ -533,13 +545,9 @@ def cg(
         z = M_op.matvec(r)
         rz_new = dpnp.real(dpnp.vdot(r, z))
 
-        if float(dpnp.abs(rz_new)) < rhotol:
-            # rz breakdown after a successful x update -- the iterate
-            # is the best estimate we have; treat as converged.
-            info = 0
-            break
-
-        beta = rz_new / rz  # 0-D on device
+        # No sync on rz_new either; near-zero rz_new likewise yields
+        # beta = inf/NaN and is caught at the next loop entry.
+        beta = rz_new / rz
         p = z + beta * p
         rz = rz_new
     else:
@@ -632,17 +640,24 @@ def gmres(
 
     queue = b.sycl_queue
 
-    # Krylov basis V, Hessenberg H, and RHS e all live on device to
-    # avoid host-device sync overhead (which dominates on Intel GPUs
-    # even for small transfers).  CuPy keeps e on host and solves
-    # lstsq on CPU, but for dpnp we keep everything on device.
+    # Krylov basis V is F-ordered so column slices V[:, :k] are
+    # F-contiguous USM views, a precondition of the bi._gemv_alpha_beta
+    # binding used inside _make_compute_hu.
     V = dpnp.empty((n, restart), dtype=dtype, sycl_queue=queue, order="F")
+    # H is F-ordered for the same reason: compute_hu writes Hessenberg
+    # column slices H[:j+1, j] in-place via the gemv output pointer.
+    # An RHS of length restart+1 is built on the host (e_host) because
+    # we run the small (restart+1) x restart least-squares on the host
+    # every restart -- the device-side SVD launch overhead dominates
+    # for this size class on Intel GPUs, matching CuPy's CPU choice.
     H = dpnp.zeros(
         (restart + 1, restart), dtype=dtype, sycl_queue=queue, order="F"
     )
-    e = dpnp.zeros(restart + 1, dtype=dtype, sycl_queue=queue)
 
-    compute_hu = _make_compute_hu(V)
+    compute_hu = _make_compute_hu(V, H)
+
+    np_dtype = _np_dtype(dtype)
+    e_host = numpy.zeros(restart + 1, dtype=np_dtype)
 
     iters = 0
     # r_norm_host tracks the latest residual norm as a Python float so
@@ -665,23 +680,55 @@ def gmres(
         if r_norm_host <= atol or iters >= maxiter:
             break
 
+        # Initialise the Arnoldi basis with the (normalised) residual.
+        # Writing V[:, 0] in one slice is a contiguous USM-to-USM copy
+        # of length n; same shape as CuPy's V[:, 0] = v.
         v = r / r_norm
         V[:, 0] = v
-        e[0] = r_norm
+        # Clear the Hessenberg column data the lstsq will read this
+        # restart. Only the upper (j+1) entries per column are written
+        # by compute_hu; without this reset stale values from the
+        # previous restart would leak into the system.
+        H[:] = 0
+        # RHS for the Hessenberg system is r_norm * e_1; the rest of
+        # e_host stays zero from the numpy.zeros allocation above.
+        e_host[0] = r_norm_host
+        if iters > 0:
+            # Clear stale tail from previous restart in case maxiter
+            # exceeds restart and we re-enter with a non-zero e_host[1].
+            e_host[1:] = 0
 
         # Arnoldi iteration
+        last_j = restart - 1
         for j in range(restart):
             z = psolve(v)
             u = matvec(z)
-            H[: j + 1, j], u = compute_hu(u, j)
-            H[j + 1, j] = dpnp.linalg.norm(u)
-            if j + 1 < restart:
-                v = u / H[j + 1, j]
+            # compute_hu writes H[:j+1, j] in-place and returns the
+            # orthogonalised u. No h temporary, no tmp buffer, two
+            # oneMKL gemv calls per Arnoldi step.
+            u = compute_hu(u, j)
+            # H[j+1, j] = ||u||  -- one device norm, one slice store.
+            # Stored as a device 0-D scalar; we only sync if we need
+            # to read its value for the next v normalisation.
+            h_norm = dpnp.linalg.norm(u)
+            H[j + 1, j] = h_norm
+            if j < last_j:
+                # Normalise u into the next Krylov vector and store it
+                # in V. The single in-place store V[:, j+1] = v writes
+                # a contiguous column slice with a unit-stride layout.
+                v = u / h_norm
                 V[:, j + 1] = v
 
-        # Solve the Hessenberg least-squares H y = e on device.
-        # Tiny problem (~restart x restart), kept on-device to avoid sync.
-        y, *_ = dpnp.linalg.lstsq(H, e, rcond=None)
+        # Solve the small Hessenberg least-squares  H y = e  on the
+        # host. The matrix is (restart+1) x restart -- typically
+        # 21 x 20 -- so the device SVD launch overhead dominates;
+        # CuPy makes the same choice and ships y back as a device
+        # array. Single host sync per restart, replacing the per-
+        # restart device-side lstsq that allocated a workspace and
+        # ran a tiny SVD kernel.
+        H_host = dpnp.asnumpy(H)
+        y_host, *_ = numpy.linalg.lstsq(H_host, e_host, rcond=None)
+        y = dpnp.asarray(y_host, sycl_queue=queue)
         x = x + dpnp.dot(V, y)
         iters += restart
 
@@ -988,25 +1035,63 @@ def minres(
     return (x, info)
 
 
-def _make_compute_hu(V):
-    """Factory mirroring cupyx's _make_compute_hu using oneMKL gemv directly.
+def _make_compute_hu(V, H):
+    """Factory for the GMRES Arnoldi inner step on Intel GPU.
 
-    Returns a closure compute_hu(u, j) that performs:
-        h = V[:, :j+1]^H @ u     (gemv with transpose=True)
-        u = u - V[:, :j+1] @ h   (gemv with transpose=False, then subtract)
+    Returns a closure ``compute_hu(u, j) -> u`` that performs
+    classical Gram-Schmidt orthogonalisation of ``u`` against the
+    first ``j+1`` columns of ``V`` and writes the projection
+    coefficients into column ``j`` of ``H``:
 
-    The current bi._gemv binding hardcodes alpha=1, beta=0, so the second
-    pass requires a temporary vector and an explicit subtraction.  To get
-    CuPy's fused u -= V@h in one kernel, the C++ binding would need
-    alpha/beta parameters.
+        h = V[:, :j+1].conj().T @ u
+        H[:j+1, j] = h
+        u = u - V[:, :j+1] @ h
 
-    V must be column-major; sub-views V[:, :j+1] of an F-order array
-    are themselves F-contiguous, so the same closure handles every j.
+    Both calls are dispatched as single oneMKL ``gemv`` kernels via
+    the ``bi._gemv_alpha_beta`` binding:
+
+      * Pass 1 (project) -- ``gemv(transpose=True, alpha=1, beta=0)``
+        with the *output* pointing at the Hessenberg column slice
+        ``H[:j+1, j]``. No temporary ``h`` buffer is allocated; the
+        result lands directly in the matrix.
+      * Pass 2 (subtract) -- ``gemv(transpose=False, alpha=-1, beta=1)``
+        with input ``H[:j+1, j]`` and in-place output ``u``. No
+        temporary ``tmp`` buffer; the AXPY-style update is fused
+        into the gemv kernel.
+
+    For complex matrices, pass 1 with ``transpose=True`` returns
+    ``V^T u`` (not the Hermitian ``V^H u`` we need). We patch this
+    up with an in-place conjugate on the Hessenberg column slice --
+    j+1 scalar ops, negligible compared with the m*(j+1) gemv.
+
+    Parameters
+    ----------
+    V : dpnp.ndarray
+        Krylov basis of shape ``(n, restart)``, must be F-contiguous.
+    H : dpnp.ndarray
+        Hessenberg matrix of shape ``(restart+1, restart)``, must be
+        F-contiguous so column slices ``H[:k, j]`` are unit-stride
+        contiguous USM views the C binding can write into.
+
+    Returns
+    -------
+    closure : callable
+        ``compute_hu(u, j) -> u`` -- updates ``H[:j+1, j]`` in place
+        and returns the orthogonalised ``u``.
     """
     if V.ndim != 2 or not V.flags.f_contiguous:
         raise ValueError(
             "_make_compute_hu: V must be a 2-D column-major (F-order) "
             "dpnp array"
+        )
+    if H.ndim != 2 or not H.flags.f_contiguous:
+        raise ValueError(
+            "_make_compute_hu: H must be a 2-D column-major (F-order) "
+            "dpnp array so column slices are unit-stride USM views"
+        )
+    if V.sycl_queue != H.sycl_queue:
+        raise ValueError(
+            "_make_compute_hu: V and H must share the same SYCL queue"
         )
 
     exec_q = V.sycl_queue
@@ -1014,53 +1099,57 @@ def _make_compute_hu(V):
     is_cpx = dpnp.issubdtype(dtype, dpnp.complexfloating)
 
     def compute_hu(u, j):
-        # h = V[:, :j+1]^H @ u  (allocate fresh, length j+1)
-        h = dpnp.empty(j + 1, dtype=dtype, sycl_queue=exec_q)
-
-        # Sub-view: column-major slice of the trailing axis is F-contiguous.
         Vj = V[:, : j + 1]
+        h_slice = H[: j + 1, j]  # length-(j+1) F-contig column slice
+
         Vj_usm = dpnp.get_usm_ndarray(Vj)
         u_usm = dpnp.get_usm_ndarray(u)
-        h_usm = dpnp.get_usm_ndarray(h)
+        h_usm = dpnp.get_usm_ndarray(h_slice)
 
         _manager = dpu.SequentialOrderManager[exec_q]
 
-        # Pass 1: h = Vj^T @ u  (real) or  h = (Vj^T @ u) then conj  (complex)
-        # bi._gemv is the only exported entry point of the compiled BLAS
-        # extension; pylint flags the leading underscore but it is the
-        # public C-binding contract.
+        # Pass 1: H[:j+1, j] = Vj^T @ u   (alpha=1, beta=0 implicit)
+        # Writes the projection coefficients directly into the
+        # Hessenberg column -- no h temporary, no slice-assign copy.
         # pylint: disable-next=protected-access
-        ht1, ev1 = bi._gemv(
+        ht1, ev1 = bi._gemv_alpha_beta(
             exec_q,
             Vj_usm,
             u_usm,
             h_usm,
             transpose=True,
+            alpha=1.0,
+            beta=0.0,
             depends=_manager.submitted_events,
         )
         _manager.add_event_pair(ht1, ev1)
 
         if is_cpx:
-            # h = conj(h) -- in-place, length j+1, negligible
-            h = dpnp.conj(h, out=h)
-            h_usm = dpnp.get_usm_ndarray(h)
+            # Need V^H, but we only have V^T from the gemv. Conjugate
+            # the (j+1) scalars in place. Trivial cost relative to the
+            # n*(j+1) gemv we just dispatched.
+            h_slice[...] = dpnp.conj(h_slice)
+            # Re-fetch USM handle after in-place update (still the
+            # same backing buffer; the handle itself is unchanged but
+            # making the dependency explicit keeps the sequential-
+            # order manager happy).
+            h_usm = dpnp.get_usm_ndarray(h_slice)
 
-        # Pass 2: tmp = Vj @ h, then u -= tmp
-        # No fused AXPY available, so we still allocate tmp.
-        tmp = dpnp.empty_like(u)
-        tmp_usm = dpnp.get_usm_ndarray(tmp)
+        # Pass 2: u = -Vj @ H[:j+1, j] + 1 * u   (alpha=-1, beta=1)
+        # Fused AXPY-gemv -- single oneMKL kernel, no tmp buffer.
         # pylint: disable-next=protected-access
-        ht2, ev2 = bi._gemv(
+        ht2, ev2 = bi._gemv_alpha_beta(
             exec_q,
             Vj_usm,
             h_usm,
-            tmp_usm,
+            u_usm,
             transpose=False,
+            alpha=-1.0,
+            beta=1.0,
             depends=_manager.submitted_events,
         )
         _manager.add_event_pair(ht2, ev2)
 
-        u -= tmp
-        return h, u
+        return u
 
     return compute_hu

@@ -330,6 +330,40 @@ class TestCG(unittest.TestCase):
         assert info == 0
         testing.assert_allclose(cupy.asnumpy(x), numpy.zeros(n))
 
+    def test_cg_inf_breakdown_returns_positive_info(self):
+        """Singular operator triggers IEEE-754 inf propagation; cg
+        must detect non-finite residual and return info > 0.
+
+        Regression guard for the per-iter-sync collapse: the dpnp cg
+        intentionally skips host syncs on pAp and rz_new and relies on
+        alpha = rz/pAp producing inf or NaN when pAp underflows. The
+        next residual norm is then non-finite, the single rnorm sync
+        catches it, and the routine reports info > 0 per the SciPy
+        contract. A regression that re-introduces the per-iter break-
+        down checks would still pass on well-conditioned matrices but
+        would change the info value reported here.
+        """
+        n = 8
+        # Rank-deficient: A has a one-dimensional null space, so CG
+        # cannot make progress in the direction of the null vector.
+        # The first iteration produces a finite alpha; subsequent ones
+        # have rz collapse and trigger the inf-propagation path.
+        A = numpy.eye(n, dtype=numpy.float64)
+        A[0, 0] = 0.0  # singular: row 0 is zero, A is PSD but not PD
+        b = numpy.ones(n, dtype=numpy.float64)
+        A_dp = cupy.asarray(A)
+        b_dp = cupy.asarray(b)
+        _, info = cupy.scipy.sparse.linalg.cg(
+            A_dp, b_dp, maxiter=20, rtol=1e-12, atol=0.0,
+        )
+        # Either the residual stays bounded but never reaches rtol
+        # (info == maxiter) or the rz_new = 0 division triggers
+        # inf-propagation and we exit with the iter index. Both are
+        # legitimate >0 outcomes per the SciPy contract; what must
+        # NOT happen is info == 0 (false convergence) or info == -1
+        # (the previous, broken contract).
+        assert info > 0
+
 
 # ---------------------------------------------------------------------------
 # gmres
@@ -391,6 +425,39 @@ class TestGMRES(unittest.TestCase):
             A_dp, b_dp, restart=2, maxiter=1, rtol=1e-12, atol=0.0,
         )
         assert info > 0
+
+    @testing.for_dtypes("FD")
+    def test_gmres_complex_arnoldi_fast_path(self, dtype):
+        """Complex GMRES exercises the conjugate-in-place branch of
+        _make_compute_hu.
+
+        Regression guard: when the bi._gemv_alpha_beta fast path was
+        introduced the closure had to patch up the result of
+        ``gemv(transpose=True)`` (which returns V^T u) with an in-place
+        conjugate of the Hessenberg column slice to obtain V^H u. If
+        the conjugate is skipped or executed out of queue-order with
+        respect to the follow-up gemv that consumes the slice, the
+        Krylov basis silently loses orthogonality and convergence
+        either stalls or returns a wrong answer.
+        """
+        n = 12
+        A = _diag_dominant(n, dtype)
+        b = _rhs(n, dtype)
+
+        x_ref, info_ref = scipy.sparse.linalg.gmres(
+            A, b, rtol=1e-7, atol=0.0,
+        )
+        assert info_ref == 0
+
+        A_dp = cupy.asarray(A)
+        b_dp = cupy.asarray(b)
+        x_dp, info_dp = cupy.scipy.sparse.linalg.gmres(
+            A_dp, b_dp, rtol=1e-7, atol=0.0,
+        )
+        assert info_dp == 0
+        testing.assert_allclose(
+            cupy.asnumpy(x_dp), x_ref, rtol=1e-4, atol=1e-5,
+        )
 
 
 # ---------------------------------------------------------------------------

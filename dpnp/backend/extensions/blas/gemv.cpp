@@ -49,14 +49,20 @@ namespace type_utils = dpnp::tensor::type_utils;
 
 using ext::common::init_dispatch_vector;
 
+// Impl signature now carries alpha and beta as double. Each per-T impl
+// casts them to T at the very end (T(alpha_d), T(beta_d)) so the same
+// dispatch vector serves both the legacy alpha=1/beta=0 wrapper and
+// the new alpha_beta entry point used by the GMRES Arnoldi fast path.
 typedef sycl::event (*gemv_impl_fn_ptr_t)(sycl::queue &,
                                           oneapi::mkl::transpose,
                                           const std::int64_t,
                                           const std::int64_t,
+                                          const double, // alpha
                                           const char *,
                                           const std::int64_t,
                                           const char *,
                                           const std::int64_t,
+                                          const double, // beta
                                           char *,
                                           const std::int64_t,
                                           const bool,
@@ -69,10 +75,12 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
                              oneapi::mkl::transpose transA,
                              const std::int64_t m,
                              const std::int64_t n,
+                             const double alpha_d,
                              const char *matrixA,
                              const std::int64_t lda,
                              const char *vectorX,
                              const std::int64_t incx,
+                             const double beta_d,
                              char *vectorY,
                              const std::int64_t incy,
                              const bool is_row_major,
@@ -83,6 +91,15 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
     const T *a = reinterpret_cast<const T *>(matrixA);
     const T *x = reinterpret_cast<const T *>(vectorX);
     T *y = reinterpret_cast<T *>(vectorY);
+
+    // Cast alpha/beta into the matrix value type. For complex T the
+    // single-argument constructor sets the imaginary component to
+    // zero, which is exact for the GMRES use case (alpha and beta are
+    // always one of {-1, 0, 1}) and for the dpnp.dot wrapper (alpha=1,
+    // beta=0). Callers passing fractional or complex scalars through
+    // this path would lose the imaginary component silently.
+    const T alpha = static_cast<T>(alpha_d);
+    const T beta = static_cast<T>(beta_d);
 
     std::stringstream error_msg;
     bool is_exception_caught = false;
@@ -112,13 +129,13 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
                     // or 'C' for a conjugate transpose.
             m,      // Number of rows in matrix A.
             n,      // Number of columns in matrix A.
-            T(1),   // Scaling factor for the matrix-vector product.
+            alpha,  // Scaling factor for the matrix-vector product.
             a,      // Pointer to the input matrix A.
             lda,    // Leading dimension of matrix A, which is the
                     // stride between successive rows (for row major layout).
             x,      // Pointer to the input vector x.
             incx,   // The stride of vector x.
-            T(0),   // Scaling factor for vector y.
+            beta,   // Scaling factor for vector y.
             y,      // Pointer to output vector y, where the result is stored.
             incy,   // The stride of vector y.
             depends);
@@ -141,13 +158,18 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
     return gemv_event;
 }
 
-std::pair<sycl::event, sycl::event>
-    gemv(sycl::queue &exec_q,
-         const dpnp::tensor::usm_ndarray &matrixA,
-         const dpnp::tensor::usm_ndarray &vectorX,
-         const dpnp::tensor::usm_ndarray &vectorY,
-         const bool transpose,
-         const std::vector<sycl::event> &depends)
+// Shared validation + dispatch. Both gemv() (alpha=1, beta=0) and
+// gemv_alpha_beta() funnel through here so behaviour stays identical
+// across the two entry points.
+static std::pair<sycl::event, sycl::event>
+    gemv_dispatch(sycl::queue &exec_q,
+                  const dpnp::tensor::usm_ndarray &matrixA,
+                  const dpnp::tensor::usm_ndarray &vectorX,
+                  const dpnp::tensor::usm_ndarray &vectorY,
+                  const bool transpose,
+                  const double alpha,
+                  const double beta,
+                  const std::vector<sycl::event> &depends)
 {
     const int matrixA_nd = matrixA.get_ndim();
     const int vectorX_nd = vectorX.get_ndim();
@@ -299,14 +321,49 @@ std::pair<sycl::event, sycl::event>
         y_typeless_ptr -= (y_shape[0] - 1) * std::abs(incy) * y_elemsize;
     }
 
-    sycl::event gemv_ev =
-        gemv_fn(exec_q, transA, m, n, a_typeless_ptr, lda, x_typeless_ptr, incx,
-                y_typeless_ptr, incy, is_row_major, depends);
+    sycl::event gemv_ev = gemv_fn(
+        exec_q, transA, m, n, alpha, a_typeless_ptr, lda, x_typeless_ptr, incx,
+        beta, y_typeless_ptr, incy, is_row_major, depends);
 
     sycl::event args_ev = dpnp::utils::keep_args_alive(
         exec_q, {matrixA, vectorX, vectorY}, {gemv_ev});
 
     return std::make_pair(args_ev, gemv_ev);
+}
+
+std::pair<sycl::event, sycl::event>
+    gemv(sycl::queue &exec_q,
+         const dpnp::tensor::usm_ndarray &matrixA,
+         const dpnp::tensor::usm_ndarray &vectorX,
+         const dpnp::tensor::usm_ndarray &vectorY,
+         const bool transpose,
+         const std::vector<sycl::event> &depends)
+{
+    // Legacy alpha=1, beta=0 wrapper. Existing dpnp.dot callers expect
+    // this exact behaviour, so we forward through the shared dispatch
+    // with fixed scalars.
+    return gemv_dispatch(exec_q, matrixA, vectorX, vectorY, transpose,
+                         /*alpha=*/1.0, /*beta=*/0.0, depends);
+}
+
+std::pair<sycl::event, sycl::event>
+    gemv_alpha_beta(sycl::queue &exec_q,
+                    const dpnp::tensor::usm_ndarray &matrixA,
+                    const dpnp::tensor::usm_ndarray &vectorX,
+                    const dpnp::tensor::usm_ndarray &vectorY,
+                    const bool transpose,
+                    const double alpha,
+                    const double beta,
+                    const std::vector<sycl::event> &depends)
+{
+    // Caller-supplied alpha / beta. Used by the GMRES Arnoldi step to
+    // fuse  u -= V @ h  (alpha=-1, beta=1) into a single gemv kernel
+    // and to write h = V^H @ u  directly into a Hessenberg column slice
+    // (alpha=1, beta=0). For complex matrices the scalars must be
+    // exactly representable as their real form -- callers pass 1/0/-1
+    // only, see the impl-level comment for the imag-loss caveat.
+    return gemv_dispatch(exec_q, matrixA, vectorX, vectorY, transpose, alpha,
+                         beta, depends);
 }
 
 template <typename fnT, typename varT>
