@@ -1074,19 +1074,26 @@ def _make_compute_hu(V, H):
     Both calls are dispatched as single oneMKL ``gemv`` kernels via
     the ``bi._gemv_alpha_beta`` binding:
 
-      * Pass 1 (project) -- ``gemv(transpose=True, alpha=1, beta=0)``
+      * Pass 1 (project) -- ``gemv(trans_op=T or C, alpha=1, beta=0)``
         with the *output* pointing at the Hessenberg column slice
         ``H[:j+1, j]``. No temporary ``h`` buffer is allocated; the
-        result lands directly in the matrix.
-      * Pass 2 (subtract) -- ``gemv(transpose=False, alpha=-1, beta=1)``
+        result lands directly in the matrix. ``trans_op`` is T for
+        real matrices (where V^T == V^H) and C (conjugate-transpose)
+        for complex matrices, so oneMKL produces ``V^H u`` directly.
+      * Pass 2 (subtract) -- ``gemv(trans_op=N, alpha=-1, beta=1)``
         with input ``H[:j+1, j]`` and in-place output ``u``. No
         temporary ``tmp`` buffer; the AXPY-style update is fused
         into the gemv kernel.
 
-    For complex matrices, pass 1 with ``transpose=True`` returns
-    ``V^T u`` (not the Hermitian ``V^H u`` we need). We patch this
-    up with an in-place conjugate on the Hessenberg column slice --
-    j+1 scalar ops, negligible compared with the m*(j+1) gemv.
+    A prior version of this closure tried to emulate ``V^H u`` for
+    complex matrices by issuing ``gemv(transpose=T)`` and then post-
+    conjugating ``h`` in place. That is mathematically wrong: the
+    identity ``conj(V^T u) == V^H u`` holds only when ``u`` is real;
+    for complex ``u`` the result is ``V^H @ conj(u)``, a different
+    vector that silently breaks Krylov-basis orthogonality and
+    prevents GMRES from converging. Using oneMKL's native conjugate-
+    transpose mode -- now exposed via the tri-state ``trans_op``
+    parameter of the binding -- removes the work-around entirely.
 
     Parameters
     ----------
@@ -1122,6 +1129,18 @@ def _make_compute_hu(V, H):
     dtype = V.dtype
     is_cpx = dpnp.issubdtype(dtype, dpnp.complexfloating)
 
+    # trans_op for pass-1 selects whether we project with V^T (real,
+    # which equals V^H) or with V^H directly via oneMKL's ``conjtrans``
+    # mode. The previous implementation tried to emulate V^H using
+    # transpose=T followed by an element-wise conjugate of h, but the
+    # identity ``conj(V^T @ u) == V^H @ u`` only holds when u is real;
+    # for complex u it produces ``V^H @ conj(u)`` instead, which is a
+    # different vector and silently breaks Gram-Schmidt orthogonality.
+    # bi._gemv_alpha_beta now exposes the full {N, T, C} tri-state so
+    # we can ask oneMKL for V^H directly -- one kernel, mathematically
+    # exact, no scratch buffer, no post-hoc conjugate to event-order.
+    pass1_trans_op = 2 if is_cpx else 1  # 2 = conjtrans, 1 = transpose
+
     def compute_hu(u, j):
         Vj = V[:, : j + 1]
         h_slice = H[: j + 1, j]  # length-(j+1) F-contig column slice
@@ -1132,32 +1151,22 @@ def _make_compute_hu(V, H):
 
         _manager = dpu.SequentialOrderManager[exec_q]
 
-        # Pass 1: H[:j+1, j] = Vj^T @ u   (alpha=1, beta=0 implicit)
-        # Writes the projection coefficients directly into the
-        # Hessenberg column -- no h temporary, no slice-assign copy.
+        # Pass 1: H[:j+1, j] = op(Vj) @ u   (alpha=1, beta=0)
+        # op = V^T for real, V^H for complex. Writes the projection
+        # coefficients straight into the Hessenberg column slice
+        # without any temporary buffer.
         # pylint: disable-next=protected-access
         ht1, ev1 = bi._gemv_alpha_beta(
             exec_q,
             Vj_usm,
             u_usm,
             h_usm,
-            transpose=True,
+            trans_op=pass1_trans_op,
             alpha=1.0,
             beta=0.0,
             depends=_manager.submitted_events,
         )
         _manager.add_event_pair(ht1, ev1)
-
-        if is_cpx:
-            # Need V^H, but we only have V^T from the gemv. Conjugate
-            # the (j+1) scalars in place. Trivial cost relative to the
-            # n*(j+1) gemv we just dispatched.
-            h_slice[...] = dpnp.conj(h_slice)
-            # Re-fetch USM handle after in-place update (still the
-            # same backing buffer; the handle itself is unchanged but
-            # making the dependency explicit keeps the sequential-
-            # order manager happy).
-            h_usm = dpnp.get_usm_ndarray(h_slice)
 
         # Pass 2: u = -Vj @ H[:j+1, j] + 1 * u   (alpha=-1, beta=1)
         # Fused AXPY-gemv -- single oneMKL kernel, no tmp buffer.
@@ -1167,7 +1176,7 @@ def _make_compute_hu(V, H):
             Vj_usm,
             h_usm,
             u_usm,
-            transpose=False,
+            trans_op=0,  # N: no transpose
             alpha=-1.0,
             beta=1.0,
             depends=_manager.submitted_events,

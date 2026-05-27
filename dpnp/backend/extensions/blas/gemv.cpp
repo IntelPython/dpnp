@@ -161,16 +161,36 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
 // Shared validation + dispatch. Both gemv() (alpha=1, beta=0) and
 // gemv_alpha_beta() funnel through here so behaviour stays identical
 // across the two entry points.
+//
+// ``trans_op`` is a tri-state matching oneapi::mkl::transpose:
+//      0 = N (no transpose),
+//      1 = T (plain transpose),
+//      2 = C (conjugate-transpose, complex only).
+//
+// The legacy gemv() entry-point only ever needs N/T (real or complex,
+// no conjugate semantics) and forwards trans_op = 0 or 1. The
+// gemv_alpha_beta() entry-point exposes the full tri-state so the
+// GMRES Arnoldi inner step can request V^H directly instead of
+// post-conjugating the result of a T-mode gemv -- which is
+// mathematically wrong for a complex right-hand vector (the identity
+// conj(V^T @ u) == V^H @ u holds only when u is real-valued).
 static std::pair<sycl::event, sycl::event>
     gemv_dispatch(sycl::queue &exec_q,
                   const dpnp::tensor::usm_ndarray &matrixA,
                   const dpnp::tensor::usm_ndarray &vectorX,
                   const dpnp::tensor::usm_ndarray &vectorY,
-                  const bool transpose,
+                  const int trans_op,
                   const double alpha,
                   const double beta,
                   const std::vector<sycl::event> &depends)
 {
+    if (trans_op < 0 || trans_op > 2) {
+        throw py::value_error(
+            "gemv: trans_op must be 0 (N), 1 (T), or 2 (C).");
+    }
+    const bool is_transposed = (trans_op != 0);
+    const bool is_conj_trans = (trans_op == 2);
+
     const int matrixA_nd = matrixA.get_ndim();
     const int vectorX_nd = vectorX.get_ndim();
     const int vectorY_nd = vectorY.get_ndim();
@@ -204,10 +224,22 @@ static std::pair<sycl::event, sycl::event>
             "Input matrix is not c-contiguous nor f-contiguous.");
     }
 
+    // Conjugate-transpose is only wired up for column-major (F-contig)
+    // matrices. The row-major remap (treating a C-contig matrix as its
+    // column-major transpose) does not extend cleanly to the C op
+    // because (A^T)^H == conj(A), which oneMKL does not expose as a
+    // gemv mode. Callers needing C-mode on row-major input must
+    // F-contigify first (e.g. via dpnp.asarray(A, order="F")).
+    if (is_conj_trans && !is_matrixA_f_contig) {
+        throw py::value_error(
+            "gemv: trans_op = 2 (conjugate-transpose) requires an "
+            "F-contiguous matrix; pass dpnp.asarray(A, order='F') first.");
+    }
+
     const py::ssize_t *a_shape = matrixA.get_shape_raw();
     const py::ssize_t *x_shape = vectorX.get_shape_raw();
     const py::ssize_t *y_shape = vectorY.get_shape_raw();
-    if (transpose) {
+    if (is_transposed) {
         if (a_shape[0] != x_shape[0]) {
             throw py::value_error("The number of rows in A must be equal to "
                                   "the number of elements in X.");
@@ -231,6 +263,9 @@ static std::pair<sycl::event, sycl::event>
     oneapi::mkl::transpose transA;
     std::size_t src_nelems;
 
+    // Resolve the storage layout into the oneMKL transpose mode.
+    // Conjugate-transpose is constrained to F-contig above; the
+    // row-major branch therefore only sees N/T here.
 // cuBLAS supports only column-major storage
 #if defined(USE_ONEMATH_CUBLAS)
     constexpr bool is_row_major = false;
@@ -240,7 +275,11 @@ static std::pair<sycl::event, sycl::event>
     if (is_matrixA_f_contig) {
         m = a_shape[0];
         n = a_shape[1];
-        if (transpose) {
+        if (is_conj_trans) {
+            transA = oneapi::mkl::transpose::C;
+            src_nelems = n;
+        }
+        else if (is_transposed) {
             transA = oneapi::mkl::transpose::T;
             src_nelems = n;
         }
@@ -250,9 +289,11 @@ static std::pair<sycl::event, sycl::event>
         }
     }
     else {
+        // Row-major-as-column-major swap. is_conj_trans is rejected
+        // above, so only N/T need handling.
         m = a_shape[1];
         n = a_shape[0];
-        if (transpose) {
+        if (is_transposed) {
             transA = oneapi::mkl::transpose::N;
             src_nelems = m;
         }
@@ -270,7 +311,11 @@ static std::pair<sycl::event, sycl::event>
     const std::int64_t m = a_shape[0];
     const std::int64_t n = a_shape[1];
 
-    if (transpose) {
+    if (is_conj_trans) {
+        transA = oneapi::mkl::transpose::C;
+        src_nelems = n;
+    }
+    else if (is_transposed) {
         transA = oneapi::mkl::transpose::T;
         src_nelems = n;
     }
@@ -340,9 +385,11 @@ std::pair<sycl::event, sycl::event>
          const std::vector<sycl::event> &depends)
 {
     // Legacy alpha=1, beta=0 wrapper. Existing dpnp.dot callers expect
-    // this exact behaviour, so we forward through the shared dispatch
-    // with fixed scalars.
-    return gemv_dispatch(exec_q, matrixA, vectorX, vectorY, transpose,
+    // this exact behaviour (N or plain T only, never conjugate-
+    // transpose), so we forward through the shared dispatch mapping
+    // the bool argument to the {0=N, 1=T} subset of the tri-state.
+    const int trans_op = transpose ? 1 : 0;
+    return gemv_dispatch(exec_q, matrixA, vectorX, vectorY, trans_op,
                          /*alpha=*/1.0, /*beta=*/0.0, depends);
 }
 
@@ -351,18 +398,20 @@ std::pair<sycl::event, sycl::event>
                     const dpnp::tensor::usm_ndarray &matrixA,
                     const dpnp::tensor::usm_ndarray &vectorX,
                     const dpnp::tensor::usm_ndarray &vectorY,
-                    const bool transpose,
+                    const int trans_op,
                     const double alpha,
                     const double beta,
                     const std::vector<sycl::event> &depends)
 {
-    // Caller-supplied alpha / beta. Used by the GMRES Arnoldi step to
-    // fuse  u -= V @ h  (alpha=-1, beta=1) into a single gemv kernel
-    // and to write h = V^H @ u  directly into a Hessenberg column slice
-    // (alpha=1, beta=0). For complex matrices the scalars must be
-    // exactly representable as their real form -- callers pass 1/0/-1
-    // only, see the impl-level comment for the imag-loss caveat.
-    return gemv_dispatch(exec_q, matrixA, vectorX, vectorY, transpose, alpha,
+    // Caller-supplied alpha / beta and full tri-state transpose.
+    // Used by the GMRES Arnoldi step to fuse  u -= V @ h
+    // (trans_op=0, alpha=-1, beta=1) into a single gemv kernel, and
+    // to write h = V^H @ u directly into a Hessenberg column slice
+    // (trans_op=2, alpha=1, beta=0). For complex matrices the scalars
+    // must be exactly representable as their real form -- callers
+    // pass 1/0/-1 only, see the impl-level comment for the imag-loss
+    // caveat.
+    return gemv_dispatch(exec_q, matrixA, vectorX, vectorY, trans_op, alpha,
                          beta, depends);
 }
 
