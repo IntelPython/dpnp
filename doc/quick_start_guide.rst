@@ -218,8 +218,8 @@ devices at the same time:
 Command-Line Interface
 ======================
 
-The ``python -m dpnp`` command provides options to query include paths
-needed for building C++ extensions against dpnp:
+The ``python -m dpnp`` command provides options to query the include paths
+needed when building C++ extensions with dpnp:
 
 .. code-block:: bash
 
