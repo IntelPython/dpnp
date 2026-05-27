@@ -417,22 +417,38 @@ class TestGMRES(unittest.TestCase):
         A = _diag_dominant(n, dtype)
         b = _rhs(n, dtype)
 
+        # Convergence tolerance must respect the dtype's noise floor.
+        # float32 cannot reliably reach 1e-8 relative residual in 10
+        # Arnoldi steps because the accumulated rounding error in
+        # classical Gram-Schmidt is already O(eps_f32 * sqrt(n)) ~
+        # 4e-7. Asking scipy for 1e-8 means even a well-conditioned
+        # 10x10 system reports info > 0 from the SciPy reference, not
+        # from dpnp -- a false-negative against our own solver.
+        # float64 has headroom and keeps the original 1e-8 target.
+        rtol = 1e-5 if numpy.dtype(dtype) == numpy.float32 else 1e-8
+
         # SciPy's gmres signature changed in 1.12+ to use `rtol`. Older
         # versions used `tol`. The dpnp tree pins a recent SciPy so the
         # `rtol` kwarg is safe.
         x_ref, info_ref = scipy.sparse.linalg.gmres(
-            A, b, rtol=1e-8, atol=0.0,
+            A, b, rtol=rtol, atol=0.0,
         )
         assert info_ref == 0
 
         A_dp = cupy.asarray(A)
         b_dp = cupy.asarray(b)
         x_dp, info_dp = cupy.scipy.sparse.linalg.gmres(
-            A_dp, b_dp, rtol=1e-8, atol=0.0,
+            A_dp, b_dp, rtol=rtol, atol=0.0,
         )
         assert info_dp == 0
+        # assert_allclose tolerance also needs dtype-awareness: a
+        # float32 solution agreeing with the float32 scipy solution
+        # to better than 5e-4 is the most we can demand without
+        # hitting the same noise floor that loosened rtol above.
+        cmp_rtol = 5e-4 if numpy.dtype(dtype) == numpy.float32 else 1e-4
+        cmp_atol = 5e-5 if numpy.dtype(dtype) == numpy.float32 else 1e-5
         testing.assert_allclose(
-            cupy.asnumpy(x_dp), x_ref, rtol=1e-4, atol=1e-5,
+            cupy.asnumpy(x_dp), x_ref, rtol=cmp_rtol, atol=cmp_atol,
         )
 
     def test_gmres_restart_parameter(self):
@@ -482,19 +498,29 @@ class TestGMRES(unittest.TestCase):
         A = _diag_dominant(n, dtype)
         b = _rhs(n, dtype)
 
+        # See the rationale in test_gmres_converges_diag_dominant:
+        # complex64's noise floor is the same as float32's (the data
+        # arrays are stored as paired float32 components), so 1e-7 is
+        # below what scipy's own gmres can reach in 12 Arnoldi steps
+        # on this matrix. Use a dtype-aware rtol so the test reports
+        # actual dpnp failures rather than scipy reaching its floor.
+        rtol = 1e-5 if numpy.dtype(dtype) == numpy.complex64 else 1e-7
+
         x_ref, info_ref = scipy.sparse.linalg.gmres(
-            A, b, rtol=1e-7, atol=0.0,
+            A, b, rtol=rtol, atol=0.0,
         )
         assert info_ref == 0
 
         A_dp = cupy.asarray(A)
         b_dp = cupy.asarray(b)
         x_dp, info_dp = cupy.scipy.sparse.linalg.gmres(
-            A_dp, b_dp, rtol=1e-7, atol=0.0,
+            A_dp, b_dp, rtol=rtol, atol=0.0,
         )
         assert info_dp == 0
+        cmp_rtol = 5e-4 if numpy.dtype(dtype) == numpy.complex64 else 1e-4
+        cmp_atol = 5e-5 if numpy.dtype(dtype) == numpy.complex64 else 1e-5
         testing.assert_allclose(
-            cupy.asnumpy(x_dp), x_ref, rtol=1e-4, atol=1e-5,
+            cupy.asnumpy(x_dp), x_ref, rtol=cmp_rtol, atol=cmp_atol,
         )
 
 
