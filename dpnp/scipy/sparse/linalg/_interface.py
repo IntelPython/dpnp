@@ -93,6 +93,18 @@ class LinearOperator:
 
     ndim = 2
 
+    # Opt out of NumPy's ufunc dispatch protocol so that any expression
+    # mixing a host ``numpy.ndarray`` with a ``LinearOperator`` (e.g.
+    # ``numpy_array * linop`` or ``numpy_array @ linop``) falls back to
+    # this operator's own ``__rmul__`` / ``__rmatmul__`` instead of
+    # NumPy attempting to broadcast a 1-D / 2-D operand element-wise
+    # through the ufunc machinery first. Matches the SciPy
+    # ``scipy.sparse.linalg.LinearOperator`` contract introduced for
+    # exactly this reason; ``dpnp.ndarray`` itself also sets this to
+    # ``None`` (see ``dpnp/dpnp_array.py``), so the two systems agree
+    # on the dispatch protocol.
+    __array_ufunc__ = None
+
     def __new__(cls, *args, **kwargs):
         if cls is LinearOperator:
             return super().__new__(_CustomLinearOperator)

@@ -204,6 +204,44 @@ class TestLinearOperator(unittest.TestCase):
         assert isinstance(AH, cupy.scipy.sparse.linalg.LinearOperator)
         assert AH.shape == (n, n)
 
+    def test_array_ufunc_opt_out(self):
+        """LinearOperator must set ``__array_ufunc__ = None``.
+
+        Matches the SciPy ``scipy.sparse.linalg.LinearOperator``
+        contract: opting out of NumPy's ufunc dispatch lets
+        ``scalar * linop`` and ``host_array @ linop`` fall back to
+        the operator's reflected ``__rmul__`` / ``__rmatmul__``
+        methods instead of NumPy attempting to broadcast the operator
+        element-wise through the ufunc machinery. dpnp.ndarray itself
+        sets this to None for the same reason; the two systems must
+        agree on the dispatch protocol.
+        """
+        n = 3
+        A = cupy.scipy.sparse.linalg.LinearOperator(
+            (n, n), matvec=lambda v: v, dtype=cupy.float64,
+        )
+        # The marker is what the protocol checks for; presence is the
+        # whole guarantee. SciPy does the same assertion in its own
+        # test suite (test_interface.py::test_array_ufunc_opt_out).
+        assert getattr(A, "__array_ufunc__", "missing") is None
+
+    def test_numpy_scalar_times_linop_dispatches_to_rmul(self):
+        """A NumPy scalar on the left must call LinearOperator.__rmul__.
+
+        Concrete consequence of ``__array_ufunc__ = None``: NumPy
+        returns NotImplemented from its ufunc and Python falls back to
+        the operator's reflected method, producing a scaled operator
+        rather than raising or producing a wrong-typed result.
+        """
+        n = 3
+        A = cupy.scipy.sparse.linalg.LinearOperator(
+            (n, n), matvec=lambda v: v, dtype=cupy.float64,
+        )
+        scaled = numpy.float64(2.0) * A
+        assert isinstance(scaled, cupy.scipy.sparse.linalg.LinearOperator)
+        x = cupy.ones(n, dtype=cupy.float64)
+        testing.assert_allclose(cupy.asnumpy(scaled.matvec(x)), 2.0 * numpy.ones(n))
+
 
 # ---------------------------------------------------------------------------
 # aslinearoperator

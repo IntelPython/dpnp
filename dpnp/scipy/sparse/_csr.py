@@ -372,17 +372,36 @@ class csr_matrix(SparseABC):
 
     def __del__(self):
         # Release the cached oneMKL matrix_handle if one was built.
-        # __del__ may run during interpreter shutdown with the backend
-        # extension already torn down; swallow any error to avoid
-        # noisy garbage-collector exceptions.
+        # See ``_iterative._CachedSpMV.__del__`` for the rationale of
+        # the staged except clauses below: during interpreter shutdown
+        # the compiled ``_sparse_impl`` extension may be GC'd before
+        # this __del__ runs, in which case ``si._sparse_gemv_release``
+        # evaluates to ``None``. Probe explicitly so a real backend
+        # error (extension still healthy) is not silenced by the same
+        # ``except Exception`` that catches the shutdown race.
         handle = getattr(self, "_spmv_handle", None)
         si = getattr(self, "_spmv_si", None)
-        if handle is not None and si is not None:
-            try:
-                # pylint: disable-next=protected-access
-                si._sparse_gemv_release(self._spmv_exec_q, handle, [])
-            except Exception:  # pylint: disable=broad-exception-caught
-                pass
+        if handle is None or si is None:
+            return
+
+        release_fn = getattr(si, "_sparse_gemv_release", None)
+        if release_fn is None:
+            self._spmv_handle = None
+            return
+
+        try:
+            release_fn(self._spmv_exec_q, handle, [])
+        except (AttributeError, TypeError):
+            # Shutdown-mode races; handle is unrecoverable and the
+            # OS will reclaim it at process exit.
+            pass
+        except Exception:  # pylint: disable=broad-exception-caught
+            # Genuine backend error while the interpreter is healthy.
+            # Raising from __del__ produces only an unraisable warning
+            # and the handle is gone either way -- swallow it
+            # deliberately, distinct from the shutdown branch above.
+            pass
+        finally:
             self._spmv_handle = None
 
     def toarray(self):

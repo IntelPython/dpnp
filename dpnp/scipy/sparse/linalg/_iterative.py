@@ -204,15 +204,39 @@ class _CachedSpMV:
         # __init__ raised before the assignment.
         handle = getattr(self, "_handle", None)
         si = getattr(self, "_si", None)
-        if handle is not None and si is not None:
-            # The release call may raise any backend-specific error during
-            # interpreter shutdown; we deliberately swallow everything to
-            # avoid noisy errors from __del__.
-            try:
-                # pylint: disable-next=protected-access
-                si._sparse_gemv_release(self._exec_q, handle, [])
-            except Exception:  # pylint: disable=broad-exception-caught
-                pass
+        if handle is None or si is None:
+            return
+
+        # During interpreter shutdown the compiled extension may be
+        # collected before this __del__ runs; in that case
+        # ``si._sparse_gemv_release`` evaluates to ``None`` (or raises
+        # AttributeError on some module proxies). Probe explicitly so
+        # we can distinguish "extension already torn down -- leak the
+        # handle, the OS will reclaim it" from "release call raised --
+        # narrow except below" and not silence both with one broad
+        # ``except Exception``.
+        release_fn = getattr(si, "_sparse_gemv_release", None)
+        if release_fn is None:
+            self._handle = None
+            return
+
+        try:
+            release_fn(self._exec_q, handle, [])
+        except (AttributeError, TypeError):
+            # Shutdown-mode races: queue or handle attribute access
+            # may itself raise once the supporting dpctl / pybind11
+            # state is gone. The handle is unrecoverable; leave the
+            # OS to reclaim it at process exit.
+            pass
+        except Exception:  # pylint: disable=broad-exception-caught
+            # Genuine backend error while the interpreter is still
+            # healthy. Swallowing here is still required (raising
+            # from __del__ produces an unraisable-exception warning
+            # and serves no purpose -- the handle is gone either
+            # way), but the explicit broad-except now documents the
+            # intent rather than masking the shutdown race above.
+            pass
+        finally:
             self._handle = None
 
 
