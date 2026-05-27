@@ -32,31 +32,31 @@
 /* Array contiguity flags */
 enum
 {
-    USM_ARRAY_C_CONTIGUOUS = 1,
-    USM_ARRAY_F_CONTIGUOUS = 2,
-    USM_ARRAY_WRITABLE = 4
+    USM_ARRAY_C_CONTIGUOUS_VALUE = 1,
+    USM_ARRAY_F_CONTIGUOUS_VALUE = 2,
+    USM_ARRAY_WRITABLE_VALUE = 4
 };
 
 /* These typenum values are aligned to values in NumPy */
 enum
 {
-    UAR_BOOL = 0,
-    UAR_BYTE = 1,
-    UAR_UBYTE = 2,
-    UAR_SHORT = 3,
-    UAR_USHORT = 4,
-    UAR_INT = 5,
-    UAR_UINT = 6,
-    UAR_LONG = 7,
-    UAR_ULONG = 8,
-    UAR_LONGLONG = 9,
-    UAR_ULONGLONG = 10,
-    UAR_FLOAT = 11,
-    UAR_DOUBLE = 12,
-    UAR_CFLOAT = 14,
-    UAR_CDOUBLE = 15,
-    UAR_TYPE_SENTINEL = 17,
-    UAR_HALF = 23
+    UAR_BOOL_VALUE = 0,
+    UAR_BYTE_VALUE = 1,
+    UAR_UBYTE_VALUE = 2,
+    UAR_SHORT_VALUE = 3,
+    UAR_USHORT_VALUE = 4,
+    UAR_INT_VALUE = 5,
+    UAR_UINT_VALUE = 6,
+    UAR_LONG_VALUE = 7,
+    UAR_ULONG_VALUE = 8,
+    UAR_LONGLONG_VALUE = 9,
+    UAR_ULONGLONG_VALUE = 10,
+    UAR_FLOAT_VALUE = 11,
+    UAR_DOUBLE_VALUE = 12,
+    UAR_CFLOAT_VALUE = 14,
+    UAR_CDOUBLE_VALUE = 15,
+    UAR_TYPE_SENTINEL_VALUE = 17,
+    UAR_HALF_VALUE = 23
 };
 
 #endif /* DPNP_TENSOR_USM_NDARRAY_CONSTANTS_H */

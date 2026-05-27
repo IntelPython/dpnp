@@ -86,6 +86,30 @@ from ._types cimport (
 )
 
 
+# Public API constants initialized from usm_ndarray_constants.h
+cdef int USM_ARRAY_C_CONTIGUOUS = USM_ARRAY_C_CONTIGUOUS_VALUE
+cdef int USM_ARRAY_F_CONTIGUOUS = USM_ARRAY_F_CONTIGUOUS_VALUE
+cdef int USM_ARRAY_WRITABLE = USM_ARRAY_WRITABLE_VALUE
+
+cdef int UAR_BOOL = UAR_BOOL_VALUE
+cdef int UAR_BYTE = UAR_BYTE_VALUE
+cdef int UAR_UBYTE = UAR_UBYTE_VALUE
+cdef int UAR_SHORT = UAR_SHORT_VALUE
+cdef int UAR_USHORT = UAR_USHORT_VALUE
+cdef int UAR_INT = UAR_INT_VALUE
+cdef int UAR_UINT = UAR_UINT_VALUE
+cdef int UAR_LONG = UAR_LONG_VALUE
+cdef int UAR_ULONG = UAR_ULONG_VALUE
+cdef int UAR_LONGLONG = UAR_LONGLONG_VALUE
+cdef int UAR_ULONGLONG = UAR_ULONGLONG_VALUE
+cdef int UAR_FLOAT = UAR_FLOAT_VALUE
+cdef int UAR_DOUBLE = UAR_DOUBLE_VALUE
+cdef int UAR_CFLOAT = UAR_CFLOAT_VALUE
+cdef int UAR_CDOUBLE = UAR_CDOUBLE_VALUE
+cdef int UAR_TYPE_SENTINEL = UAR_TYPE_SENTINEL_VALUE
+cdef int UAR_HALF = UAR_HALF_VALUE
+
+
 class DLDeviceType(IntEnum):
     """
     An :class:`enum.IntEnum` for the types of DLDevices supported by the DLPack

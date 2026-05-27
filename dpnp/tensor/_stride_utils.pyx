@@ -34,6 +34,10 @@ from cpython.ref cimport Py_INCREF
 from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
 
+cdef int USM_ARRAY_C_CONTIGUOUS = USM_ARRAY_C_CONTIGUOUS_VALUE
+cdef int USM_ARRAY_F_CONTIGUOUS = USM_ARRAY_F_CONTIGUOUS_VALUE
+cdef int USM_ARRAY_WRITABLE = USM_ARRAY_WRITABLE_VALUE
+
 cdef int ERROR_MALLOC = 1
 cdef int ERROR_INTERNAL = -1
 cdef int ERROR_INCORRECT_ORDER = 2
