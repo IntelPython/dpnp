@@ -55,18 +55,12 @@ from . import _flags
 from ._dlpack import get_build_dlpack_version
 from ._tensor_impl import default_device_fp_type
 
-from ._slicing cimport (
-    _is_boolean,
-    _is_buffer,
-    _is_integral,
-    _slice_len,
-)
+from ._slicing cimport _is_buffer
 
 from ._slicing import _basic_slice_meta
 
 from ._stride_utils cimport (
     ERROR_INCORRECT_ORDER,
-    ERROR_INTERNAL,
     ERROR_MALLOC,
     ERROR_UNEXPECTED_STRIDES,
     _c_contig_strides,
@@ -79,10 +73,8 @@ from ._stride_utils cimport (
 )
 from ._types cimport (
     _make_typestr,
-    descr_to_typenum,
     dtype_to_typenum,
     type_bytesize,
-    typenum_from_format,
 )
 
 
