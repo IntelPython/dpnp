@@ -86,8 +86,10 @@ coverage = [
 docs = [
   "Cython",
   "cupy",
+  "furo",
   "sphinx",
-  "sphinx_rtd_theme",
+  "sphinx-copybutton",
+  "sphinx-design",
   "pyenchant",
   "sphinxcontrib-googleanalytics",
   "sphinxcontrib-spelling"
