@@ -91,13 +91,13 @@ typedef sycl::event (*gemv_compute_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 // Init dispatch: 2-D on (Tv, Ti).
-static gemv_init_fn_ptr_t gemv_init_dispatch_table[dpctl_td_ns::num_types]
-                                                  [dpctl_td_ns::num_types];
+static gemv_init_fn_ptr_t gemv_init_dispatch_table[dpnp_td_ns::num_types]
+                                                  [dpnp_td_ns::num_types];
 
 // Compute dispatch: 1-D on Tv. The index type is baked into the handle,
 // so compute doesn't need it.
 static gemv_compute_fn_ptr_t
-    gemv_compute_dispatch_table[dpctl_td_ns::num_types];
+    gemv_compute_dispatch_table[dpnp_td_ns::num_types];
 
 // ---------------------------------------------------------------------------
 // Per-type init implementation
@@ -242,7 +242,7 @@ std::tuple<std::uintptr_t, int, sycl::event>
 
     auto mkl_trans = decode_trans(trans);
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int val_id = array_types.typenum_to_lookup_id(values.get_typenum());
     const int idx_id = array_types.typenum_to_lookup_id(row_ptr.get_typenum());
 
@@ -308,7 +308,7 @@ sycl::event sparse_gemv_compute(sycl::queue &exec_q,
         y, static_cast<std::size_t>(op_rows));
 
     // Dtype verification: x, y, and the handle's value type must all match.
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int x_val_id = array_types.typenum_to_lookup_id(x.get_typenum());
     const int y_val_id = array_types.typenum_to_lookup_id(y.get_typenum());
 
@@ -317,7 +317,7 @@ sycl::event sparse_gemv_compute(sycl::queue &exec_q,
             "sparse_gemv_compute: x and y dtype must match the value dtype "
             "of the sparse matrix used to build the handle.");
 
-    if (val_type_id < 0 || val_type_id >= dpctl_td_ns::num_types)
+    if (val_type_id < 0 || val_type_id >= dpnp_td_ns::num_types)
         throw py::value_error("sparse_gemv_compute: val_type_id out of range.");
 
     gemv_compute_fn_ptr_t compute_fn = gemv_compute_dispatch_table[val_type_id];
@@ -391,8 +391,8 @@ void init_sparse_gemv_dispatch_tables(void)
 
     // 1-D table on Tv for compute. dpctl's type dispatch headers expose
     // DispatchVectorBuilder as the 1-D analogue of DispatchTableBuilder.
-    dpctl_td_ns::DispatchVectorBuilder<
-        gemv_compute_fn_ptr_t, GemvComputeContigFactory, dpctl_td_ns::num_types>
+    dpnp_td_ns::DispatchVectorBuilder<
+        gemv_compute_fn_ptr_t, GemvComputeContigFactory, dpnp_td_ns::num_types>
         builder;
     builder.populate_dispatch_vector(gemv_compute_dispatch_table);
 }

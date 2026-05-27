@@ -34,4 +34,12 @@ and provides a location for future sparse matrix container types.
 
 from . import linalg
 
-__all__ = ["linalg"]
+from ._base import SparseABC, issparse
+from ._csr import csr_matrix
+
+__all__ = [
+    "linalg",
+    "SparseABC",
+    "issparse",
+    "csr_matrix",
+]

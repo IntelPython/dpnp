@@ -286,16 +286,24 @@ def _make_fast_matvec(A):
         return None
 
 
-# pylint: disable-next=too-many-locals,too-many-branches,too-many-statements
 def _make_system(A, M, x0, b):
-    """Validate and prepare (A_op, M_op, x, b, dtype) on device.
+    """Make a linear system Ax = b
 
-    dpnp-only policy: b, x0, and any dense operator inputs must already
-    be dpnp arrays. No host->device promotion happens here.
+    Args:
+        A (dpnp.ndarray or dpnpx.scipy.sparse.spmatrix or
+            dpnpx.scipy.sparse.LinearOperator): sparse or dense matrix.
+        M (dpnp.ndarray or dpnpx.scipy.sparse.spmatrix or
+            dpnpx.scipy.sparse.LinearOperator): preconditioner.
+        x0 (dpnp.ndarray): initial guess to iterative method.
+        b (dpnp.ndarray): right hand side.
 
-    dtype promotion follows CuPy v14 rules: A.dtype is used when it is in
-    {f,d,F,D}; otherwise b.dtype is promoted to float64 (real) or
-    complex128 (complex).
+    Returns:
+        tuple:
+            It returns (A, M, x, b).
+            A (LinaerOperator): matrix of linear system
+            M (LinearOperator): preconditioner
+            x (dpnp.ndarray): initial guess
+            b (dpnp.ndarray): right hand side.
     """
     if not isinstance(b, dpnp.ndarray):
         raise TypeError(f"b must be a dpnp.ndarray, got {type(b).__name__}")
@@ -636,7 +644,6 @@ def minres(
     *,
     rtol: float = 1e-5,
     shift: float = 0.0,
-    tol: float | None = None,
     maxiter: int | None = None,
     M=None,
     callback: Callable | None = None,
@@ -667,8 +674,6 @@ def minres(
         If nonzero, solve ``(A - shift*I)x = b``.  Default 0.
     rtol : float
         Relative tolerance for convergence.  Default 1e-5.
-    tol : float, optional
-        Deprecated alias for *rtol*.
     maxiter : int, optional
         Maximum number of iterations.  Default ``5*n``.
     M : dpnp sparse matrix, dpnp.ndarray, or LinearOperator, optional
@@ -699,8 +704,6 @@ def minres(
     scipy.sparse.linalg.minres
     cupyx.scipy.sparse.linalg.minres
     """
-    if tol is not None:
-        rtol = tol
 
     A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
     matvec = A_op.matvec

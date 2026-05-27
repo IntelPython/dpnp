@@ -35,8 +35,8 @@
 // dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 
-// dpctl namespace alias for type dispatch utilities
-namespace dpctl_td_ns = dpnp::tensor::type_dispatch;
+// namespace for operations with types
+namespace dpnp_td_ns = dpnp::tensor::type_dispatch;
 
 namespace dpnp::extensions::sparse::types
 {
@@ -67,23 +67,23 @@ struct SparseGemvInitTypePairSupportFactory
 {
     static constexpr bool is_defined = std::disjunction<
         // real single precision
-        dpctl_td_ns::TypePairDefinedEntry<Tv, float, Ti, std::int32_t>,
-        dpctl_td_ns::TypePairDefinedEntry<Tv, float, Ti, std::int64_t>,
+        dpnp_td_ns::TypePairDefinedEntry<Tv, float, Ti, std::int32_t>,
+        dpnp_td_ns::TypePairDefinedEntry<Tv, float, Ti, std::int64_t>,
         // real double precision
-        dpctl_td_ns::TypePairDefinedEntry<Tv, double, Ti, std::int32_t>,
-        dpctl_td_ns::TypePairDefinedEntry<Tv, double, Ti, std::int64_t>,
+        dpnp_td_ns::TypePairDefinedEntry<Tv, double, Ti, std::int32_t>,
+        dpnp_td_ns::TypePairDefinedEntry<Tv, double, Ti, std::int64_t>,
         // complex single precision
-        dpctl_td_ns::
+        dpnp_td_ns::
             TypePairDefinedEntry<Tv, std::complex<float>, Ti, std::int32_t>,
-        dpctl_td_ns::
+        dpnp_td_ns::
             TypePairDefinedEntry<Tv, std::complex<float>, Ti, std::int64_t>,
         // complex double precision
-        dpctl_td_ns::
+        dpnp_td_ns::
             TypePairDefinedEntry<Tv, std::complex<double>, Ti, std::int32_t>,
-        dpctl_td_ns::
+        dpnp_td_ns::
             TypePairDefinedEntry<Tv, std::complex<double>, Ti, std::int64_t>,
         // fall-through
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
+        dpnp_td_ns::NotDefinedEntry>::is_defined;
 };
 
 /**
@@ -105,11 +105,11 @@ struct SparseGemvComputeTypeSupportFactory
 {
 #if defined(DPCTL_HAS_TYPE_DEFINED_ENTRY)
     static constexpr bool
-        is_defined = std::disjunction dpctl_td_ns::TypeDefinedEntry<Tv, float>,
-        dpctl_td_ns::TypeDefinedEntry<Tv, double>,
-        dpctl_td_ns::TypeDefinedEntry<Tv, std::complex<float>>,
-        dpctl_td_ns::TypeDefinedEntry<Tv, std::complex<double>>,
-        dpctl_td_ns::NotDefinedEntry > ::is_defined;
+        is_defined = std::disjunction dpnp_td_ns::TypeDefinedEntry<Tv, float>,
+        dpnp_td_ns::TypeDefinedEntry<Tv, double>,
+        dpnp_td_ns::TypeDefinedEntry<Tv, std::complex<float>>,
+        dpnp_td_ns::TypeDefinedEntry<Tv, std::complex<double>>,
+        dpnp_td_ns::NotDefinedEntry > ::is_defined;
 #else
     // Portable fallback: works with any dpctl version.
     static constexpr bool is_defined =

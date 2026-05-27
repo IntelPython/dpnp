@@ -542,23 +542,28 @@ class IdentityOperator(LinearOperator):
 
 
 def aslinearoperator(A) -> LinearOperator:
-    """Wrap A as a LinearOperator if it is not already one.
+    """Return `A` as a `LinearOperator`
 
     Handles (in order):
       1. Already a LinearOperator — returned as-is.
-      2. dpnp.scipy.sparse sparse matrix.
+      2. `dpnp.scipy.sparse` sparse matrix.
       3. Dense 2-D dpnp.ndarray.
       4. Duck-typed objects with .shape and .matvec / @ support.
     """
     if isinstance(A, LinearOperator):
         return A
 
+    elif isinstance(A, dpnp.ndarray):
+        if A.ndim > 2:
+            raise ValueError('array must have ndim <= 2')
+        A = dpnp.atleast_2d(A)
+        return MatrixLinearOperator(A)
+    
     try:
         # Lazy import: dpnp.scipy.sparse may import this module during
         # package initialisation, so we cannot import it at module scope.
         # pylint: disable=import-outside-toplevel
         from dpnp.scipy.sparse import issparse
-
         if issparse(A):
             return MatrixLinearOperator(A)
     except (ImportError, AttributeError):
