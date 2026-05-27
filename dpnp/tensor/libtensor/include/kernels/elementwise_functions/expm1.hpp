@@ -121,6 +121,10 @@ struct Expm1Functor
                 }
             }
 
+            if (x == realT(0) && y == realT(0)) {
+                return resT{realT(0), y};
+            }
+
             // x, y finite numbers
             const realT cosY_val = sycl::cos(y);
             const realT sinY_val = (y == 0) ? y : sycl::sin(y);

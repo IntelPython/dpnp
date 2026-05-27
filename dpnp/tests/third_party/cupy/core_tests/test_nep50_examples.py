@@ -1,14 +1,7 @@
-import numpy
 import pytest
 
-import dpnp as cp
 from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
-
-# TODO: remove once all dtype aliases added
-cp.int8 = numpy.int8
-cp.uint8 = numpy.uint8
-cp.int16 = numpy.int16
 
 # "example string" or
 # ("example string", "xfail message")
