@@ -11,10 +11,9 @@ permissions: read-all
 env:
   GH_BOT_NAME: 'github-actions[bot]'
   GH_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
-  GH_EVENT_OPEN_PR_UPSTREAM: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' &&
-                                 github.event.pull_request && !github.event.pull_request.base.repo.fork }}
   GH_EVENT_PUSH_UPSTREAM: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' &&
                               github.event.ref == 'refs/heads/master' && github.event.repository && !github.event.repository.fork }}
+  GH_EVENT_PR_OPEN: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' }}
   PUBLISH_DIR: doc/_build/html/
 
 defaults:
@@ -25,7 +24,7 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Docs
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 90
 
     permissions:
@@ -71,13 +70,6 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt update
 
-      - name: Update libstdc++-dev
-        run: |
-          sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
-          sudo apt remove -y libstdc++-10-dev
-          sudo apt autoremove
-          sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
-
       - name: Install Intel OneAPI
         if: env.oneapi-pkgs-env == ''
         run: |
@@ -98,7 +90,7 @@ jobs:
         run: |
           sudo add-apt-repository ppa:graphics-drivers/ppa
           sudo apt-get update
-          sudo apt-get install -y libnvidia-gl-450
+          sudo apt-get install -y libnvidia-gl-550
           sudo apt-get install -y nvidia-cuda-toolkit clinfo
 
       - name: Checkout repo
@@ -191,10 +183,30 @@ jobs:
       - name: Copy backend docs
         run: cp -r dpnp/backend/doc/html ${{ env.PUBLISH_DIR }}/backend_doc
 
+      # Detect if this is a fork PR
+      - name: Check if fork PR
+        id: check_fork
+        run: |
+          IS_FORK="false"
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.event.pull_request.head.repo.fork }}" == "true" ]; then
+            IS_FORK="true"
+          fi
+          echo "is_fork=$IS_FORK" >> "$GITHUB_OUTPUT"
+          echo "Is fork PR: $IS_FORK"
+
+      # Upload artifact for fork PRs
+      - name: Upload docs artifact (Fork PRs)
+        if: env.GH_EVENT_PR_OPEN == 'true' && steps.check_fork.outputs.is_fork == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pr-${{ github.event.number }}-docs
+          path: ${{ env.PUBLISH_DIR }}
+          retention-days: 30
+
       # The step is only used to build docs while pushing a PR to "master"
       - name: Deploy docs
         if: env.GH_EVENT_PUSH_UPSTREAM == 'true'
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.PUBLISH_DIR }}
@@ -206,8 +218,8 @@ jobs:
 
       # The step is only used to build docs while pushing to PR branch
       - name: Publish pull-request docs
-        if: env.GH_EVENT_OPEN_PR_UPSTREAM == 'true'
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4.0.0
+        if: env.GH_EVENT_PR_OPEN == 'true' && steps.check_fork.outputs.is_fork == 'false'
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.PUBLISH_DIR }}
@@ -220,8 +232,10 @@ jobs:
           user_email: ${{ env.GH_BOT_EMAIL }}
 
       # The step is only used to build docs while pushing to PR branch
+      # Note: Fork PRs have read-only GITHUB_TOKEN and cannot post comments
+      # See: https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#workflows-in-forked-repositories
       - name: Comment with URL to published pull-request docs
-        if: env.GH_EVENT_OPEN_PR_UPSTREAM == 'true'
+        if: env.GH_EVENT_PR_OPEN == 'true' && steps.check_fork.outputs.is_fork == 'false'
         env:
           PR_NUM: ${{ github.event.number }}
         uses: mshick/add-pr-comment@8e4927817251f1ff60c001f04568532b38e0b4a0 # v3.11.0.8.3.11.0
@@ -235,7 +249,7 @@ jobs:
   clean:
     if: |
       github.event_name == 'pull_request' && github.event.action == 'closed' &&
-      github.event.pull_request && !github.event.pull_request.base.repo.fork
+      github.event.pull_request.head.repo && !github.event.pull_request.head.repo.fork
 
     needs: build-and-deploy
 

@@ -150,10 +150,6 @@ struct AcoshFunctor
             if (std::isnan(rx)) {
                 return resT{sycl::fabs(ry), rx};
             }
-            /* acosh(0 + I*NaN) = NaN + I*NaN */
-            if (std::isnan(ry)) {
-                return resT{ry, ry};
-            }
             /* ordinary cases */
             const realT res_im = sycl::copysign(rx, std::imag(in));
             return resT{sycl::fabs(ry), res_im};

@@ -29,7 +29,8 @@
 # *****************************************************************************
 
 
-cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
+# need this namespace for Enum import
+cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_PARTITION_EXT
         DPNP_FN_RNG_BETA_EXT
@@ -70,7 +71,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_WEIBULL_EXT
         DPNP_FN_RNG_ZIPF_EXT
 
-cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
+# need this namespace for Enum import
+cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":
     cdef enum DPNPFuncType "DPNPFuncType":
         DPNP_FT_NONE
         DPNP_FT_INT
@@ -88,7 +90,11 @@ cdef extern from "dpnp_iface_fptr.hpp":
         DPNPFuncType return_type_no_fp64
         void *ptr_no_fp64
 
-    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
+    DPNPFuncData get_dpnp_function_ptr(
+        DPNPFuncName name,
+        DPNPFuncType first_type,
+        DPNPFuncType second_type,
+    ) except +
 
 
 """

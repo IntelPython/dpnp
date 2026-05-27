@@ -1029,6 +1029,15 @@ def test_astype_gh_2121():
     assert dpt.all(res == expected)
 
 
+def test_astype_gh_2882():
+    get_queue_or_skip()
+
+    x = dpt.asarray([160.0, 120.0], dtype="f4")
+    r = dpt.astype(x, dpt.uint8)
+    expected = dpt.asarray([160, 120], dtype="u1")
+    assert dpt.all(r == expected)
+
+
 def test_copy():
     try:
         X = dpt.usm_ndarray((5, 5), "i4")[2:4, 1:4]

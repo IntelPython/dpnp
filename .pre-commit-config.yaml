@@ -64,7 +64,7 @@ repos:
         additional_dependencies:
             - tomli
 -   repo: https://github.com/psf/black
-    rev: 26.3.1
+    rev: 26.5.1
     hooks:
     -   id: black
         exclude: "dpnp/_version.py"
@@ -128,8 +128,13 @@ repos:
     hooks:
     -   id: actionlint
 -   repo: https://github.com/BlankSpruce/gersemi-pre-commit
-    rev: 0.27.4
+    rev: 0.27.6
     hooks:
     -   id: gersemi
         exclude: "dpnp/backend/cmake/Modules/"
         args: ["-i", "-l", "88", "--no-warn-about-unknown-commands"]
+-   repo: https://github.com/MarcoGorelli/cython-lint
+    rev: v0.19.0
+    hooks:
+    -   id: cython-lint
+    -   id: double-quote-cython-strings
