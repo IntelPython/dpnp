@@ -122,10 +122,22 @@ class LinearOperator:
         self.shape = shape
 
     def _init_dtype(self):
-        """Infer dtype via a trial matvec on a zero vector."""
+        """Infer dtype via a trial matvec on an int8 zero vector.
+
+        Using ``int8`` (the lowest precedence numeric dtype) lets the
+        matvec promote to its natural output type without artificially
+        widening the result -- a float32 operator stays float32, a
+        complex64 operator stays complex64, etc.  Mirrors the behaviour
+        of ``scipy.sparse.linalg.LinearOperator._init_dtype`` and
+        ``cupyx.scipy.sparse.linalg.LinearOperator._init_dtype``.
+
+        A previous version used ``dpnp.float64`` here, which silently
+        upcast every dtype-inferred operator to float64; that broke
+        single-precision and complex-single workflows.
+        """
         if self.dtype is not None:
             return
-        v = dpnp.zeros(self.shape[-1], dtype=dpnp.float64)
+        v = dpnp.zeros(self.shape[-1], dtype=dpnp.int8)
         self.dtype = self.matvec(v).dtype
 
     def _matvec(self, x):
@@ -154,7 +166,7 @@ class LinearOperator:
         if x.shape not in ((N,), (N, 1)):
             raise ValueError(
                 f"dimension mismatch: operator shape {self.shape}, "
-                "vector shape {x.shape}"
+                f"vector shape {x.shape}"
             )
         y = self._matvec(x)
         return y.reshape(M) if x.ndim == 1 else y.reshape(M, 1)
@@ -165,7 +177,7 @@ class LinearOperator:
         if x.shape not in ((M,), (M, 1)):
             raise ValueError(
                 f"dimension mismatch: operator shape {self.shape}, "
-                "vector shape {x.shape}"
+                f"vector shape {x.shape}"
             )
         y = self._rmatvec(x)
         return y.reshape(N) if x.ndim == 1 else y.reshape(N, 1)

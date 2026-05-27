@@ -454,7 +454,26 @@ def cg(
     Returns
     -------
     x    : dpnp.ndarray
-    info : int  0=converged  >0=maxiter  -1=breakdown
+    info : int
+        ``info`` follows the SciPy / CuPy contract:
+
+          * ``info == 0``           : converged successfully
+          * ``info > 0``            : did not converge; value is the
+                                       iteration count at which the
+                                       solver stopped (equals
+                                       ``maxiter`` when the iteration
+                                       budget was exhausted, or the
+                                       iteration index when a numerical
+                                       breakdown short-circuited the
+                                       loop).
+          * ``info < 0``            : reserved for illegal-input
+                                       errors; not produced by this
+                                       implementation (illegal inputs
+                                       raise ``ValueError`` instead).
+
+        Previous versions of this routine returned ``-1`` for an
+        ``rz``/``pAp`` breakdown, which violated the SciPy contract
+        and broke user code that branched on ``info > 0``.
     """
     if tol is not None:
         rtol = tol
@@ -486,8 +505,9 @@ def cg(
         return x, 0
 
     info = maxiter
+    k = 0
 
-    for _k in range(maxiter):
+    for k in range(maxiter):
         # Convergence check (sync).
         rnorm = dpnp.linalg.norm(r)
         if float(rnorm) <= atol_eff_host:
@@ -498,7 +518,9 @@ def cg(
         pAp = dpnp.real(dpnp.vdot(p, Ap))  # 0-D on device
 
         if float(dpnp.abs(pAp)) < rhotol:
-            info = -1
+            # pAp breakdown: report the iteration index at which the
+            # solver gave up. info > 0 per SciPy contract.
+            info = k + 1
             break
 
         alpha = rz / pAp  # 0-D on device
@@ -512,6 +534,8 @@ def cg(
         rz_new = dpnp.real(dpnp.vdot(r, z))
 
         if float(dpnp.abs(rz_new)) < rhotol:
+            # rz breakdown after a successful x update -- the iterate
+            # is the best estimate we have; treat as converged.
             info = 0
             break
 
@@ -585,10 +609,13 @@ def gmres(
     n = A_op.shape[0]
     if n == 0:
         return dpnp.empty_like(b), 0
-    b_norm = dpnp.linalg.norm(b)
+    # b_norm is a 0-D device tensor; cast to host once so the
+    # subsequent comparisons / atol arithmetic are pure-host floats
+    # and do not trigger implicit __bool__ syncs every iteration.
+    b_norm = float(dpnp.linalg.norm(b))
     if b_norm == 0.0:
         return b, 0
-    atol = max(float(atol), rtol * float(b_norm))
+    atol = max(float(atol), rtol * b_norm)
 
     if maxiter is None:
         maxiter = n * 10
@@ -618,17 +645,24 @@ def gmres(
     compute_hu = _make_compute_hu(V)
 
     iters = 0
+    # r_norm_host tracks the latest residual norm as a Python float so
+    # the convergence test and the final maxiter check below operate on
+    # host scalars (one explicit sync per restart, not an implicit one
+    # per comparison).
+    r_norm_host = numpy.inf
     while True:
         mx = psolve(x)
         r = b - matvec(mx)
         r_norm = dpnp.linalg.norm(r)
+        r_norm_host = float(r_norm)
 
         if callback_type == "x":
             callback(mx)
         elif callback_type == "pr_norm" and iters > 0:
-            callback(r_norm / b_norm)
+            # b_norm is already host; r_norm_host / b_norm stays on host.
+            callback(r_norm_host / b_norm)
 
-        if r_norm <= atol or iters >= maxiter:
+        if r_norm_host <= atol or iters >= maxiter:
             break
 
         v = r / r_norm
@@ -652,7 +686,7 @@ def gmres(
         iters += restart
 
     info = 0
-    if iters >= maxiter and not bool(r_norm <= atol):
+    if iters >= maxiter and r_norm_host > atol:
         info = iters
 
     return mx, info
@@ -760,16 +794,16 @@ def minres(
     # scalars (beta, qrnorm, phibar, rhs1) used in Python arithmetic
     # and branches every iteration.  Keeping it as a 0-D device array
     # would cascade implicit syncs or 0-D allocations throughout the
-    # recurrence.
-    beta1 = dpnp.inner(r1, y)
+    # recurrence -- and the < 0 / == 0 guards below would each trigger
+    # an implicit __bool__ sync of their own.
+    beta1 = float(dpnp.inner(r1, y))
 
     if beta1 < 0:
         raise ValueError("indefinite preconditioner")
     if beta1 == 0:
         return (x, 0)
 
-    beta1 = dpnp.sqrt(beta1)
-    beta1 = float(beta1)
+    beta1 = numpy.sqrt(beta1)
 
     if check:
         # See if A is symmetric.  All on device; only the bool syncs.
