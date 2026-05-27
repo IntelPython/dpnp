@@ -68,9 +68,13 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx_copybutton",
+    "sphinx_design",
     "sphinxcontrib.googleanalytics",
     "sphinxcontrib.spelling",
 ]
+
+copybutton_prompt_text = ">>> "
 
 googleanalytics_id = "G-554F8VNE28"
 googleanalytics_enabled = True
@@ -106,7 +110,7 @@ language = "en"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
+pygments_style = "default"
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -114,12 +118,8 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'alabaster'
-html_theme = "sphinx_rtd_theme"
-html_theme_options = {
-    "sidebarwidth": 30,
-    "nosidebar": False,
-}
+html_theme = "furo"
+html_theme_options = {}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -130,7 +130,10 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path = ["_static"]
+
+html_logo = "_static/dpnp.svg"
+html_favicon = "_static/dpnp.svg"
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -140,15 +143,6 @@ html_static_path = []
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-# html_sidebars = {}
-html_sidebars = {
-    "**": [
-        "globaltoc.html",
-        "relations.html",
-        "sourcelink.html",
-        "searchbox.html",
-    ]
-}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
