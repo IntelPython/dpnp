@@ -119,6 +119,13 @@ pygments_style = "default"
 # a list of builtin themes.
 #
 html_theme = "furo"
+# TODO: Remove html_title and uncomment html_logo once dpnp.svg is available
+html_title = (
+    '<span style="font-size:2em;font-weight:700">dpnp</span><br>'
+    '<small style="font-size:0.75em">Data Parallel Extension for NumPy<br>'
+    + release
+    + " documentation</small>"
+)
 html_theme_options = {}
 
 # Theme options are theme-specific and customize the look and feel of a theme
