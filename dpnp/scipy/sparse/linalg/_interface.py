@@ -51,8 +51,6 @@ from __future__ import annotations
 
 import warnings
 
-import numpy
-
 import dpnp
 
 # ---------------------------------------------------------------------------
@@ -234,10 +232,14 @@ class LinearOperator:
         if dpnp.isscalar(x):
             return _ScaledLinearOperator(self, x)
         if not isinstance(x, dpnp.ndarray):
-            # Pinpoint the common case (host numpy array) with a
-            # directly actionable message; fall back to a generic
-            # type-not-understood error for anything else.
-            if isinstance(x, numpy.ndarray):
+            # Singling out numpy.ndarray gives users a directly
+            # actionable hint; everything else falls through to a
+            # generic type-not-understood error. The numpy import is
+            # local so this module stays numpy-free at module scope
+            # (matching the rest of dpnp/scipy/).
+            # pylint: disable-next=import-outside-toplevel
+            import numpy as _np
+            if isinstance(x, _np.ndarray):
                 raise TypeError(
                     "LinearOperator.dot: got a numpy.ndarray. dpnp "
                     "does not perform implicit host -> device "
@@ -472,16 +474,10 @@ class _ProductLinearOperator(LinearOperator):
 
 class _ScaledLinearOperator(LinearOperator):
     def __init__(self, A, alpha):
-        # Infer alpha's dtype via numpy.array(...).dtype: a pure-host
-        # operation that returns the smallest numpy dtype that holds
-        # the scalar losslessly. Previously this passed type(alpha)
-        # into _get_dtype, which collapsed every Python float to
-        # float64 even when the operator was float32 -- silently
-        # widening the result of every subsequent matvec from
-        # float32 to float64 on the device. Using
-        # numpy.array(alpha).dtype keeps a float32 operator scaled
-        # by a numpy.float32 prefactor at float32.
-        alpha_dtype = numpy.array(alpha).dtype
+        # Prefer alpha's own .dtype (numpy scalars expose it) so a
+        # float32 prefactor doesn't silently widen the operator to
+        # float64; fall back to the type for Python int/float/complex.
+        alpha_dtype = getattr(alpha, "dtype", type(alpha))
         super().__init__(_get_dtype([A], [alpha_dtype]), A.shape)
         self.args = (A, alpha)
 
@@ -489,22 +485,20 @@ class _ScaledLinearOperator(LinearOperator):
         return self.args[1] * self.args[0].matvec(x)
 
     def _rmatvec(self, x):
-        # numpy.conj on a host scalar stays on the host -- the
-        # multiplication below then enters dpnp's __rmul__ chain
-        # exactly the same way the plain alpha did in _matvec. Using
-        # dpnp.conj(alpha) on a host scalar would promote it to a
-        # 0-D dpnp array (a one-element device upload) on each call.
-        return numpy.conj(self.args[1]) * self.args[0].rmatvec(x)
+        # alpha is a host scalar; .conjugate() is a host op that
+        # works for Python and numpy numerics alike (dpnp.conj
+        # rejects non-array inputs).
+        return self.args[1].conjugate() * self.args[0].rmatvec(x)
 
     def _matmat(self, X):
         return self.args[1] * self.args[0].matmat(X)
 
     def _rmatmat(self, X):
-        return numpy.conj(self.args[1]) * self.args[0].rmatmat(X)
+        return self.args[1].conjugate() * self.args[0].rmatmat(X)
 
     def _adjoint(self):
         A, alpha = self.args
-        return A.H * numpy.conj(alpha)
+        return A.H * alpha.conjugate()
 
 
 class _PowerLinearOperator(LinearOperator):
@@ -663,11 +657,11 @@ def aslinearoperator(A) -> LinearOperator:
             )
         return MatrixLinearOperator(dpnp.atleast_2d(A))
 
-    # 3b. Reject host NumPy arrays explicitly -- silently uploading
-    # would mask a real bug in user code (queue / device selection).
-    # numpy is a hard dpnp dependency (imported at module top), so
-    # no defensive try/except around the isinstance check.
-    if isinstance(A, numpy.ndarray):
+    # 3b. Reject host NumPy arrays explicitly. Local import keeps
+    # this module numpy-free at module scope.
+    # pylint: disable-next=import-outside-toplevel
+    import numpy as _np
+    if isinstance(A, _np.ndarray):
         raise TypeError(
             "aslinearoperator: got a numpy.ndarray; transfer it to "
             "the target device with dpnp.asarray(A) first."
