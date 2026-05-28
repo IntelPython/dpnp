@@ -141,8 +141,7 @@ html_static_path = ["_static"]
 
 # html_logo = "_static/dpnp.svg"
 # html_favicon = "_static/dpnp.svg"
-html_css_files = ["dpnp-css-custom.css"]
-html_js_files = ["dpnp-js-custom.js"]
+html_css_files = ["dpnp-custom.css"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -369,5 +368,6 @@ def _resolve_dpnp_tensor_refs(app, env, node, contnode):
 
 
 def setup(app):
+    app.add_js_file("dpnp-custom.js")
     app.connect("builder-inited", _load_dpctl_tensor_inventory, priority=400)
     app.connect("missing-reference", _resolve_dpnp_tensor_refs, priority=400)
