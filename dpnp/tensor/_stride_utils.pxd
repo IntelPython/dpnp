@@ -29,15 +29,6 @@
 # distutils: language = c++
 # cython: language_level=3
 
-cdef extern from "usm_ndarray_constants.h":
-    int USM_ARRAY_C_CONTIGUOUS_VALUE
-    int USM_ARRAY_F_CONTIGUOUS_VALUE
-    int USM_ARRAY_WRITABLE_VALUE
-
-cdef int USM_ARRAY_C_CONTIGUOUS
-cdef int USM_ARRAY_F_CONTIGUOUS
-cdef int USM_ARRAY_WRITABLE
-
 cdef int ERROR_MALLOC
 cdef int ERROR_INTERNAL
 cdef int ERROR_INCORRECT_ORDER

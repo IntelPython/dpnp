@@ -29,42 +29,6 @@
 # distutils: language = c++
 # cython: language_level=3
 
-cdef extern from "usm_ndarray_constants.h":
-    int UAR_BOOL_VALUE
-    int UAR_BYTE_VALUE
-    int UAR_UBYTE_VALUE
-    int UAR_SHORT_VALUE
-    int UAR_USHORT_VALUE
-    int UAR_INT_VALUE
-    int UAR_UINT_VALUE
-    int UAR_LONG_VALUE
-    int UAR_ULONG_VALUE
-    int UAR_LONGLONG_VALUE
-    int UAR_ULONGLONG_VALUE
-    int UAR_FLOAT_VALUE
-    int UAR_DOUBLE_VALUE
-    int UAR_CFLOAT_VALUE
-    int UAR_CDOUBLE_VALUE
-    int UAR_TYPE_SENTINEL_VALUE
-    int UAR_HALF_VALUE
-
-cdef int UAR_BOOL
-cdef int UAR_BYTE
-cdef int UAR_UBYTE
-cdef int UAR_SHORT
-cdef int UAR_USHORT
-cdef int UAR_INT
-cdef int UAR_UINT
-cdef int UAR_LONG
-cdef int UAR_ULONG
-cdef int UAR_LONGLONG
-cdef int UAR_ULONGLONG
-cdef int UAR_FLOAT
-cdef int UAR_DOUBLE
-cdef int UAR_CFLOAT
-cdef int UAR_CDOUBLE
-cdef int UAR_TYPE_SENTINEL
-cdef int UAR_HALF
 
 cdef int type_bytesize(int typenum)
 
