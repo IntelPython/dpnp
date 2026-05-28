@@ -23,6 +23,7 @@ core `NumPy*`_ functions and numerical data types.
         +++
 
         .. button-ref:: overview
+            :ref-type: doc
             :expand:
             :color: secondary
             :click-parent:
@@ -36,6 +37,7 @@ core `NumPy*`_ functions and numerical data types.
         +++
 
         .. button-ref:: quick_start_guide
+            :ref-type: doc
             :expand:
             :color: secondary
             :click-parent:
@@ -50,6 +52,7 @@ core `NumPy*`_ functions and numerical data types.
         +++
 
         .. button-ref:: dpnp_reference
+            :ref-type: ref
             :expand:
             :color: secondary
             :click-parent:
@@ -64,6 +67,7 @@ core `NumPy*`_ functions and numerical data types.
         +++
 
         .. button-ref:: tensor
+            :ref-type: doc
             :expand:
             :color: secondary
             :click-parent:
