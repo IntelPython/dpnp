@@ -242,6 +242,70 @@ class TestLinearOperator(unittest.TestCase):
         x = cupy.ones(n, dtype=cupy.float64)
         testing.assert_allclose(cupy.asnumpy(scaled.matvec(x)), 2.0 * numpy.ones(n))
 
+    def test_dot_rejects_numpy_array(self):
+        """LinearOperator.dot must NOT silently host->device upload a
+        numpy.ndarray operand.
+
+        dpnp's strict-coercion contract forbids implicit transfers
+        across the host / device boundary. A user passing a host
+        numpy array into the operator's dot() is almost certainly a
+        bug in device / queue selection, and silently uploading
+        would mask it. The contract is to raise TypeError with a
+        directly actionable hint to use dpnp.asarray() explicitly.
+        """
+        n = 4
+        A = cupy.scipy.sparse.linalg.LinearOperator(
+            (n, n), matvec=lambda v: v, dtype=cupy.float64,
+        )
+        host_vec = numpy.ones(n, dtype=numpy.float64)
+        with pytest.raises(TypeError, match="numpy.ndarray"):
+            A.dot(host_vec)
+        with pytest.raises(TypeError, match="numpy.ndarray"):
+            A @ host_vec
+        with pytest.raises(TypeError, match="numpy.ndarray"):
+            A * host_vec
+
+    def test_dot_accepts_dpnp_array_after_explicit_transfer(self):
+        """The companion to test_dot_rejects_numpy_array: the
+        documented workaround (call dpnp.asarray() explicitly) must
+        work. Demonstrates that the strict rejection is targeted at
+        implicit transfers, not at legitimate device data flow.
+        """
+        n = 4
+        A = cupy.scipy.sparse.linalg.LinearOperator(
+            (n, n), matvec=lambda v: 2 * v, dtype=cupy.float64,
+        )
+        host_vec = numpy.ones(n, dtype=numpy.float64)
+        dev_vec = cupy.asarray(host_vec)
+        result = A.dot(dev_vec)
+        testing.assert_allclose(
+            cupy.asnumpy(result), 2.0 * numpy.ones(n),
+        )
+
+    def test_scaled_operator_preserves_float32_dtype(self):
+        """Scaling a float32 operator by a Python or numpy float scalar
+        must not promote the resulting operator's dtype to float64.
+
+        Regression guard for the _ScaledLinearOperator dtype inference
+        fix. Previously, _ScaledLinearOperator collected
+        ``type(alpha)`` rather than the value's natural dtype, so a
+        Python ``float`` (which has no dtype) was uniformly treated as
+        float64 by dpnp.result_type. The result: a float32 operator
+        scaled by ``2.0`` returned a float64 operator, which then
+        widened every downstream matvec result on the device.
+        """
+        n = 3
+        A = cupy.scipy.sparse.linalg.LinearOperator(
+            (n, n), matvec=lambda v: v, dtype=cupy.float32,
+        )
+        # A numpy.float32 scalar must keep the dtype at float32.
+        scaled = numpy.float32(2.0) * A
+        assert scaled.dtype == numpy.dtype("float32"), (
+            f"numpy.float32 scalar widened operator dtype to {scaled.dtype}; "
+            "_ScaledLinearOperator must infer alpha dtype from the value, "
+            "not from type(alpha)."
+        )
+
 
 # ---------------------------------------------------------------------------
 # aslinearoperator

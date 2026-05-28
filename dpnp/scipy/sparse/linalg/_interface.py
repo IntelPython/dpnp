@@ -51,6 +51,8 @@ from __future__ import annotations
 
 import warnings
 
+import numpy
+
 import dpnp
 
 # ---------------------------------------------------------------------------
@@ -215,18 +217,44 @@ class LinearOperator:
         return self._rmatmat(X)
 
     def dot(self, x):
-        """Dispatch to matvec / matmat / scalar-scale / product."""
+        """Dispatch to matvec / matmat / scalar-scale / product.
+
+        Strict-coercion contract (matches the rest of dpnp): the only
+        accepted types are :class:`LinearOperator`, a true scalar
+        (Python / NumPy / dpnp 0-D), or a :class:`dpnp.ndarray` of
+        rank 1 or 2. A host :class:`numpy.ndarray` is rejected with
+        a directed :class:`TypeError`; silently calling
+        ``dpnp.asarray(x)`` here would upload the host array to the
+        device on every matvec, masking real bugs in caller code
+        about device / queue selection. The user must convert
+        explicitly via ``dpnp.asarray(x)`` before passing in.
+        """
         if isinstance(x, LinearOperator):
             return _ProductLinearOperator(self, x)
         if dpnp.isscalar(x):
             return _ScaledLinearOperator(self, x)
-        x = dpnp.asarray(x)
+        if not isinstance(x, dpnp.ndarray):
+            # Pinpoint the common case (host numpy array) with a
+            # directly actionable message; fall back to a generic
+            # type-not-understood error for anything else.
+            if isinstance(x, numpy.ndarray):
+                raise TypeError(
+                    "LinearOperator.dot: got a numpy.ndarray. dpnp "
+                    "does not perform implicit host -> device "
+                    "copies; pass dpnp.asarray(x) explicitly."
+                )
+            raise TypeError(
+                "LinearOperator.dot: expected a dpnp.ndarray, a "
+                "scalar, or another LinearOperator; got "
+                f"{type(x).__name__!r}."
+            )
         if x.ndim == 1 or (x.ndim == 2 and x.shape[1] == 1):
             return self.matvec(x)
         if x.ndim == 2:
             return self.matmat(x)
         raise ValueError(
-            f"expected 1-D or 2-D array or LinearOperator, got {x!r}"
+            f"LinearOperator.dot: expected 1-D or 2-D dpnp array, "
+            f"got {x.ndim}-D"
         )
 
     def __call__(self, x):
@@ -444,24 +472,39 @@ class _ProductLinearOperator(LinearOperator):
 
 class _ScaledLinearOperator(LinearOperator):
     def __init__(self, A, alpha):
-        super().__init__(_get_dtype([A], [type(alpha)]), A.shape)
+        # Infer alpha's dtype via numpy.array(...).dtype: a pure-host
+        # operation that returns the smallest numpy dtype that holds
+        # the scalar losslessly. Previously this passed type(alpha)
+        # into _get_dtype, which collapsed every Python float to
+        # float64 even when the operator was float32 -- silently
+        # widening the result of every subsequent matvec from
+        # float32 to float64 on the device. Using
+        # numpy.array(alpha).dtype keeps a float32 operator scaled
+        # by a numpy.float32 prefactor at float32.
+        alpha_dtype = numpy.array(alpha).dtype
+        super().__init__(_get_dtype([A], [alpha_dtype]), A.shape)
         self.args = (A, alpha)
 
     def _matvec(self, x):
         return self.args[1] * self.args[0].matvec(x)
 
     def _rmatvec(self, x):
-        return dpnp.conj(self.args[1]) * self.args[0].rmatvec(x)
+        # numpy.conj on a host scalar stays on the host -- the
+        # multiplication below then enters dpnp's __rmul__ chain
+        # exactly the same way the plain alpha did in _matvec. Using
+        # dpnp.conj(alpha) on a host scalar would promote it to a
+        # 0-D dpnp array (a one-element device upload) on each call.
+        return numpy.conj(self.args[1]) * self.args[0].rmatvec(x)
 
     def _matmat(self, X):
         return self.args[1] * self.args[0].matmat(X)
 
     def _rmatmat(self, X):
-        return dpnp.conj(self.args[1]) * self.args[0].rmatmat(X)
+        return numpy.conj(self.args[1]) * self.args[0].rmatmat(X)
 
     def _adjoint(self):
         A, alpha = self.args
-        return A.H * dpnp.conj(alpha)
+        return A.H * numpy.conj(alpha)
 
 
 class _PowerLinearOperator(LinearOperator):
@@ -473,6 +516,12 @@ class _PowerLinearOperator(LinearOperator):
                 "matrix power requires a non-negative integer exponent"
             )
         super().__init__(_get_dtype([A]), A.shape)
+        # ``int(p)`` would force a device sync if p were a dpnp 0-D
+        # array; in practice _PowerLinearOperator is only reached via
+        # LinearOperator.__pow__ which gates on dpnp.isscalar(p)
+        # (false for any dpnp 0-D array), so p here is always a host
+        # scalar. Callers constructing _PowerLinearOperator directly
+        # are responsible for passing a host int.
         self.args = (A, int(p))
 
     def _power(self, f, x):
@@ -616,16 +665,13 @@ def aslinearoperator(A) -> LinearOperator:
 
     # 3b. Reject host NumPy arrays explicitly -- silently uploading
     # would mask a real bug in user code (queue / device selection).
-    try:
-        # pylint: disable-next=import-outside-toplevel
-        import numpy as _np
-        if isinstance(A, _np.ndarray):
-            raise TypeError(
-                "aslinearoperator: got a numpy.ndarray; transfer it to "
-                "the target device with dpnp.asarray(A) first."
-            )
-    except ImportError:
-        pass
+    # numpy is a hard dpnp dependency (imported at module top), so
+    # no defensive try/except around the isinstance check.
+    if isinstance(A, numpy.ndarray):
+        raise TypeError(
+            "aslinearoperator: got a numpy.ndarray; transfer it to "
+            "the target device with dpnp.asarray(A) first."
+        )
 
     # 4. Duck-typed object with .shape and .matvec.
     if hasattr(A, "shape") and hasattr(A, "matvec"):
