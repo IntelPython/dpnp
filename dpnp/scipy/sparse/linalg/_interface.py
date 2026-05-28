@@ -31,14 +31,6 @@
 Aligned with SciPy main scipy/sparse/linalg/_interface.py and
 CuPy v14.0.1 cupyx/scipy/sparse/linalg/_interface.py so that code
 written for either library is portable to dpnp.
-
-Additional items versus the previous version
---------------------------------------------
-* T / H properties now exposed as SciPy does (A.T and A.H work)
-* _adjoint / _transpose virtual hooks on LinearOperator base
-* _ScaledLinearOperator.adjoint uses conj(alpha) correctly
-* aslinearoperator accepts ndim-1 vectors (promotes to column/row)
-* _isshape accepts numpy integer types, not just Python int
 """
 
 # Math-heavy module: single-letter and CamelCase identifiers such as
@@ -93,16 +85,9 @@ class LinearOperator:
 
     ndim = 2
 
-    # Opt out of NumPy's ufunc dispatch protocol so that any expression
-    # mixing a host ``numpy.ndarray`` with a ``LinearOperator`` (e.g.
-    # ``numpy_array * linop`` or ``numpy_array @ linop``) falls back to
-    # this operator's own ``__rmul__`` / ``__rmatmul__`` instead of
-    # NumPy attempting to broadcast a 1-D / 2-D operand element-wise
-    # through the ufunc machinery first. Matches the SciPy
-    # ``scipy.sparse.linalg.LinearOperator`` contract introduced for
-    # exactly this reason; ``dpnp.ndarray`` itself also sets this to
-    # ``None`` (see ``dpnp/dpnp_array.py``), so the two systems agree
-    # on the dispatch protocol.
+    # Opt out of NumPy's ufunc dispatch (NEP 13); defers ``host_array *
+    # linop`` etc. to ``LinearOperator.__rmul__`` / ``__rmatmul__``.
+    # Same convention as ``dpnp.ndarray``.
     __array_ufunc__ = None
 
     def __new__(cls, *args, **kwargs):
@@ -232,11 +217,6 @@ class LinearOperator:
         if dpnp.isscalar(x):
             return _ScaledLinearOperator(self, x)
         if not isinstance(x, dpnp.ndarray):
-            # Singling out numpy.ndarray gives users a directly
-            # actionable hint; everything else falls through to a
-            # generic type-not-understood error. The numpy import is
-            # local so this module stays numpy-free at module scope
-            # (matching the rest of dpnp/scipy/).
             # pylint: disable-next=import-outside-toplevel
             import numpy as _np
             if isinstance(x, _np.ndarray):
@@ -474,9 +454,6 @@ class _ProductLinearOperator(LinearOperator):
 
 class _ScaledLinearOperator(LinearOperator):
     def __init__(self, A, alpha):
-        # Prefer alpha's own .dtype (numpy scalars expose it) so a
-        # float32 prefactor doesn't silently widen the operator to
-        # float64; fall back to the type for Python int/float/complex.
         alpha_dtype = getattr(alpha, "dtype", type(alpha))
         super().__init__(_get_dtype([A], [alpha_dtype]), A.shape)
         self.args = (A, alpha)
@@ -485,9 +462,6 @@ class _ScaledLinearOperator(LinearOperator):
         return self.args[1] * self.args[0].matvec(x)
 
     def _rmatvec(self, x):
-        # alpha is a host scalar; .conjugate() is a host op that
-        # works for Python and numpy numerics alike (dpnp.conj
-        # rejects non-array inputs).
         return self.args[1].conjugate() * self.args[0].rmatvec(x)
 
     def _matmat(self, X):
@@ -510,12 +484,6 @@ class _PowerLinearOperator(LinearOperator):
                 "matrix power requires a non-negative integer exponent"
             )
         super().__init__(_get_dtype([A]), A.shape)
-        # ``int(p)`` would force a device sync if p were a dpnp 0-D
-        # array; in practice _PowerLinearOperator is only reached via
-        # LinearOperator.__pow__ which gates on dpnp.isscalar(p)
-        # (false for any dpnp 0-D array), so p here is always a host
-        # scalar. Callers constructing _PowerLinearOperator directly
-        # are responsible for passing a host int.
         self.args = (A, int(p))
 
     def _power(self, f, x):
@@ -657,8 +625,6 @@ def aslinearoperator(A) -> LinearOperator:
             )
         return MatrixLinearOperator(dpnp.atleast_2d(A))
 
-    # 3b. Reject host NumPy arrays explicitly. Local import keeps
-    # this module numpy-free at module scope.
     # pylint: disable-next=import-outside-toplevel
     import numpy as _np
     if isinstance(A, _np.ndarray):
