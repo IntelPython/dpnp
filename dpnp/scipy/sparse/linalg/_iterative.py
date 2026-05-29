@@ -70,6 +70,7 @@ _make_fast_matvec catches this and falls back to A.dot(x).
 
 from __future__ import annotations
 
+import math
 from typing import Callable
 
 import dpctl.utils as dpu
@@ -88,7 +89,7 @@ _SUPPORTED_DTYPES = frozenset("fdFD")
 
 
 def _np_dtype(dp_dtype) -> numpy.dtype:
-    """Normalise any dtype-like (dpnp type/numpy type/string) to numpy.dtype."""
+    """Normalise any dtype-like to numpy.dtype."""
     return numpy.dtype(dp_dtype)
 
 
@@ -545,7 +546,7 @@ def cg(
         if rnorm_host <= atol_eff_host:
             info = 0
             break
-        if not numpy.isfinite(rnorm_host):
+        if not math.isfinite(rnorm_host):
             # IEEE-propagated breakdown: pAp or rz collapsed in the
             # previous iteration, poisoning r via alpha=inf/NaN. The
             # current iterate is the best estimate we have; report
@@ -688,7 +689,7 @@ def gmres(
     # the convergence test and the final maxiter check below operate on
     # host scalars (one explicit sync per restart, not an implicit one
     # per comparison).
-    r_norm_host = numpy.inf
+    r_norm_host = math.inf
     while True:
         mx = psolve(x)
         r = b - matvec(mx)
@@ -714,8 +715,8 @@ def gmres(
         # by compute_hu; without this reset stale values from the
         # previous restart would leak into the system.
         H[:] = 0
-        # RHS for the Hessenberg system is r_norm * e_1; the rest of
-        # e_host stays zero from the numpy.zeros allocation above.
+        # RHS for the Hessenberg system is r_norm * e_1; the rest
+        # of e_host stays zero from the host allocation above.
         e_host[0] = r_norm_host
         if iters > 0:
             # Clear stale tail from previous restart in case maxiter
@@ -874,7 +875,7 @@ def minres(
     if beta1 == 0:
         return (x, 0)
 
-    beta1 = numpy.sqrt(beta1)
+    beta1 = math.sqrt(beta1)
 
     if check:
         # See if A is symmetric.  All on device; only the bool syncs.
@@ -937,7 +938,7 @@ def minres(
         beta = float(dpnp.inner(r2, y))
         if beta < 0:
             raise ValueError("non-symmetric matrix")
-        beta = numpy.sqrt(beta)
+        beta = math.sqrt(beta)
 
         tnorm2 += alpha**2 + oldb**2 + beta**2
 
@@ -953,10 +954,10 @@ def minres(
         gbar = sn * dbar - cs * alpha
         epsln = sn * beta
         dbar = -cs * beta
-        root = numpy.sqrt(gbar**2 + dbar**2)
+        root = math.hypot(gbar, dbar)
 
         # Compute the next plane rotation Q_k.
-        gamma = numpy.sqrt(gbar**2 + beta**2)
+        gamma = math.hypot(gbar, beta)
         gamma = max(gamma, eps)
         cs = gbar / gamma
         sn = beta / gamma
@@ -980,7 +981,7 @@ def minres(
         # ----------------------------------------------------------
         # Estimate norms and test for convergence.
         # ----------------------------------------------------------
-        Anorm = numpy.sqrt(tnorm2)
+        Anorm = math.sqrt(tnorm2)
         ynorm = float(dpnp.linalg.norm(x))  # host sync #3
         epsa = Anorm * eps
         epsx = Anorm * ynorm * eps
@@ -992,11 +993,11 @@ def minres(
         qrnorm = phibar
         rnorm = qrnorm
         if ynorm == 0 or Anorm == 0:
-            test1 = numpy.inf
+            test1 = math.inf
         else:
             test1 = rnorm / (Anorm * ynorm)  # ||r|| / (||A|| ||x||)
         if Anorm == 0:
-            test2 = numpy.inf
+            test2 = math.inf
         else:
             test2 = root / Anorm  # ||Ar|| / (||A|| ||r||)
 
