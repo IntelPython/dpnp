@@ -57,10 +57,6 @@
 
 #include "integer_advanced_indexing.hpp"
 
-#define INDEXING_MODES 2
-#define WRAP_MODE      0
-#define CLIP_MODE      1
-
 namespace dpnp::tensor::py_internal
 {
 
@@ -69,11 +65,15 @@ namespace td_ns = dpnp::tensor::type_dispatch;
 using dpnp::tensor::kernels::indexing::put_fn_ptr_t;
 using dpnp::tensor::kernels::indexing::take_fn_ptr_t;
 
-static take_fn_ptr_t take_dispatch_table[INDEXING_MODES][td_ns::num_types]
-                                        [td_ns::num_types];
+static take_fn_ptr_t take_wrap_dispatch_table[td_ns::num_types]
+                                             [td_ns::num_types];
 
-static put_fn_ptr_t put_dispatch_table[INDEXING_MODES][td_ns::num_types]
-                                      [td_ns::num_types];
+static take_fn_ptr_t take_clip_dispatch_table[td_ns::num_types]
+                                             [td_ns::num_types];
+
+static put_fn_ptr_t put_wrap_dispatch_table[td_ns::num_types][td_ns::num_types];
+
+static put_fn_ptr_t put_clip_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 namespace py = pybind11;
 
@@ -492,7 +492,8 @@ std::pair<sycl::event, sycl::event>
                     std::end(pack_deps));
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
 
-    auto fn = take_dispatch_table[mode][src_type_id][ind_type_id];
+    auto fn = mode ? take_clip_dispatch_table[src_type_id][ind_type_id]
+                   : take_wrap_dispatch_table[src_type_id][ind_type_id];
 
     if (fn == nullptr) {
         sycl::event::wait(host_task_events);
@@ -760,7 +761,8 @@ std::pair<sycl::event, sycl::event>
                     std::end(pack_deps));
     all_deps.insert(std::end(all_deps), std::begin(depends), std::end(depends));
 
-    auto fn = put_dispatch_table[mode][dst_type_id][ind_type_id];
+    auto fn = mode ? put_clip_dispatch_table[dst_type_id][ind_type_id]
+                   : put_wrap_dispatch_table[dst_type_id][ind_type_id];
 
     if (fn == nullptr) {
         sycl::event::wait(host_task_events);
@@ -795,20 +797,20 @@ void init_advanced_indexing_dispatch_tables(void)
     using dpnp::tensor::kernels::indexing::TakeClipFactory;
     DispatchTableBuilder<take_fn_ptr_t, TakeClipFactory, num_types>
         dtb_takeclip;
-    dtb_takeclip.populate_dispatch_table(take_dispatch_table[CLIP_MODE]);
+    dtb_takeclip.populate_dispatch_table(take_clip_dispatch_table);
 
     using dpnp::tensor::kernels::indexing::TakeWrapFactory;
     DispatchTableBuilder<take_fn_ptr_t, TakeWrapFactory, num_types>
         dtb_takewrap;
-    dtb_takewrap.populate_dispatch_table(take_dispatch_table[WRAP_MODE]);
+    dtb_takewrap.populate_dispatch_table(take_wrap_dispatch_table);
 
     using dpnp::tensor::kernels::indexing::PutClipFactory;
     DispatchTableBuilder<put_fn_ptr_t, PutClipFactory, num_types> dtb_putclip;
-    dtb_putclip.populate_dispatch_table(put_dispatch_table[CLIP_MODE]);
+    dtb_putclip.populate_dispatch_table(put_clip_dispatch_table);
 
     using dpnp::tensor::kernels::indexing::PutWrapFactory;
     DispatchTableBuilder<put_fn_ptr_t, PutWrapFactory, num_types> dtb_putwrap;
-    dtb_putwrap.populate_dispatch_table(put_dispatch_table[WRAP_MODE]);
+    dtb_putwrap.populate_dispatch_table(put_wrap_dispatch_table);
 }
 
 } // namespace dpnp::tensor::py_internal
