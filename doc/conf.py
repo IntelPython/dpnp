@@ -142,7 +142,7 @@ html_static_path = ["_static"]
 # html_logo = "_static/dpnp.svg"
 # html_favicon = "_static/dpnp.svg"
 html_css_files = ["dpnp-custom.css"]
-html_js_files = [("dpnp-custom.js", {"defer": ""})]
+html_js_files = ["dpnp-custom.js"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
