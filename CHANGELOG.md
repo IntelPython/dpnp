@@ -13,6 +13,7 @@ This release is compatible with NumPy 2.4.5.
 * Added C API functions for `dpnp.tensor.usm_ndarray` setters and getters to avoid ABI breakage if `dpnp.tensor.usm_ndarray` is modified [gh-2866](https://github.com/IntelPython/dpnp/pull/2866)
 * Added support for buffer protocol objects as advanced index keys in `dpnp.ndarray` [#2889](https://github.com/IntelPython/dpnp/pull/2889)
 * Added `--includes` and `--include-dir` options to the `dpnp` CLI [#2916](https://github.com/IntelPython/dpnp/pull/2916)
+* Added implementation of `dpnp.scipy.sparse.linalg import LinearOperator, cg, gmres, minres` [#2841](https://github.com/IntelPython/dpnp/pull/2841)
 
 ### Changed
 
@@ -64,7 +65,6 @@ Also, that release drops support for Python 3.9, making Python 3.10 the minimum 
 * Added implementation of `dpnp.scipy.linalg.lu` (SciPy-compatible) [#2787](https://github.com/IntelPython/dpnp/pull/2787)
 * Added support for ndarray subclassing via `dpnp.ndarray.view` method with `type` parameter [#2815](https://github.com/IntelPython/dpnp/pull/2815)
 * Migrated tensor implementation from `dpctl.tensor` into `dpnp.tensor`, making `dpnp` the primary owner of the Array API-compliant tensor layer [#2856](https://github.com/IntelPython/dpnp/pull/2856)
-* Added implementation of `dpnp.scipy.sparse.linalg import LinearOperator, cg, gmres, minres` [#2841](https://github.com/IntelPython/dpnp/pull/2841)
 
 ### Changed
 
