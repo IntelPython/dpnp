@@ -185,8 +185,7 @@ static std::pair<sycl::event, sycl::event>
                   const std::vector<sycl::event> &depends)
 {
     if (trans_op < 0 || trans_op > 2) {
-        throw py::value_error(
-            "gemv: trans_op must be 0 (N), 1 (T), or 2 (C).");
+        throw py::value_error("gemv: trans_op must be 0 (N), 1 (T), or 2 (C).");
     }
     const bool is_transposed = (trans_op != 0);
     const bool is_conj_trans = (trans_op == 2);
@@ -366,9 +365,9 @@ static std::pair<sycl::event, sycl::event>
         y_typeless_ptr -= (y_shape[0] - 1) * std::abs(incy) * y_elemsize;
     }
 
-    sycl::event gemv_ev = gemv_fn(
-        exec_q, transA, m, n, alpha, a_typeless_ptr, lda, x_typeless_ptr, incx,
-        beta, y_typeless_ptr, incy, is_row_major, depends);
+    sycl::event gemv_ev = gemv_fn(exec_q, transA, m, n, alpha, a_typeless_ptr,
+                                  lda, x_typeless_ptr, incx, beta,
+                                  y_typeless_ptr, incy, is_row_major, depends);
 
     sycl::event args_ev = dpnp::utils::keep_args_alive(
         exec_q, {matrixA, vectorX, vectorY}, {gemv_ev});

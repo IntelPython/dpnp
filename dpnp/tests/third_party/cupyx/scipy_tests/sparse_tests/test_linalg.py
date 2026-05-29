@@ -121,8 +121,7 @@ class TestLinearOperator(unittest.TestCase):
         assert isinstance(scaled, cupy.scipy.sparse.linalg.LinearOperator)
         x = cupy.ones(n, dtype=cupy.float64)
         testing.assert_allclose(
-            cupy.asnumpy(scaled.matvec(x)),
-            2.0 * numpy.ones(n),
+            cupy.asnumpy(scaled.matvec(x)), 2.0 * numpy.ones(n)
         )
 
     def test_dot_rejects_numpy_array(self):

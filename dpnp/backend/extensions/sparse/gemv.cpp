@@ -68,9 +68,9 @@ using ext::common::init_dispatch_table;
 typedef std::pair<std::uintptr_t, sycl::event> (*gemv_init_fn_ptr_t)(
     sycl::queue &,
     oneapi::mkl::transpose,
-    const char *, // row_ptr (typeless)
-    const char *, // col_ind (typeless)
-    const char *, // values  (typeless)
+    const char *,       // row_ptr (typeless)
+    const char *,       // col_ind (typeless)
+    const char *,       // values  (typeless)
     const std::int64_t, // num_rows
     const std::int64_t, // num_cols
     const std::int64_t, // nnz
@@ -84,9 +84,9 @@ typedef sycl::event (*gemv_compute_fn_ptr_t)(
     sycl::queue &,
     oneapi::mkl::sparse::matrix_handle_t,
     oneapi::mkl::transpose,
-    const double,       // alpha (cast to Tv inside)
+    const double, // alpha (cast to Tv inside)
     const char *, // x (typeless)
-    const double,       // beta  (cast to Tv inside)
+    const double, // beta  (cast to Tv inside)
     char *,       // y (typeless, writable)
     const std::vector<sycl::event> &);
 
@@ -96,8 +96,7 @@ static gemv_init_fn_ptr_t gemv_init_dispatch_table[dpnp_td_ns::num_types]
 
 // Compute dispatch: 1-D on Tv. The index type is baked into the handle,
 // so compute doesn't need it.
-static gemv_compute_fn_ptr_t
-    gemv_compute_dispatch_table[dpnp_td_ns::num_types];
+static gemv_compute_fn_ptr_t gemv_compute_dispatch_table[dpnp_td_ns::num_types];
 
 // ---------------------------------------------------------------------------
 // Per-type init implementation
