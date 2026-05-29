@@ -1,5 +1,6 @@
 (function() {
 var separator = " – ";
+var separatorAlt = " -- ";
 
 function reformatEntry(container)
 {
@@ -9,11 +10,16 @@ function reformatEntry(container)
 
     var firstP = paragraphs[0];
     var idx = firstP.innerHTML.indexOf(separator);
+    var sep = separator;
+    if (idx === -1) {
+        idx = firstP.innerHTML.indexOf(separatorAlt);
+        sep = separatorAlt;
+    }
     if (idx === -1)
         return;
 
     var before = firstP.innerHTML.substring(0, idx);
-    var after = firstP.innerHTML.substring(idx + separator.length);
+    var after = firstP.innerHTML.substring(idx + sep.length);
 
     var extra = [];
     for (var i = 1; i < paragraphs.length; i++) {
