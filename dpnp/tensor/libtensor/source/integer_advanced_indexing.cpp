@@ -77,7 +77,147 @@ static put_fn_ptr_t put_clip_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 namespace py = pybind11;
 
-using dpnp::utils::keep_args_alive;
+namespace detail
+{
+
+void copy_axis_shape_strides(int axis_start,
+                             int inp_nd,
+                             int k,
+                             int ind_nd,
+                             const py::ssize_t *inp_shape,
+                             const std::vector<py::ssize_t> &inp_strides,
+                             const py::ssize_t *arr_shape,
+                             const std::vector<py::ssize_t> &arr_strides,
+                             py::ssize_t *host_along_sh_st)
+{
+    if (inp_nd > 0) {
+        std::copy(inp_shape + axis_start, inp_shape + axis_start + k,
+                  host_along_sh_st);
+        std::copy(inp_strides.begin() + axis_start,
+                  inp_strides.begin() + axis_start + k, host_along_sh_st + k);
+    }
+
+    if (ind_nd > 0) {
+        std::copy(arr_shape + axis_start, arr_shape + axis_start + ind_nd,
+                  host_along_sh_st + 2 * k);
+        std::copy(arr_strides.begin() + axis_start,
+                  arr_strides.begin() + axis_start + ind_nd,
+                  host_along_sh_st + 2 * k + ind_nd);
+    }
+}
+
+void copy_orthog_shape_strides(int axis_start,
+                               int inp_nd,
+                               int k,
+                               int ind_nd,
+                               int orthog_sh_elems,
+                               const py::ssize_t *inp_shape,
+                               const std::vector<py::ssize_t> &inp_strides,
+                               const std::vector<py::ssize_t> &arr_strides,
+                               py::ssize_t *host_orthog_sh_st)
+{
+    int orthog_nd = inp_nd - k;
+    if (orthog_nd == 0) {
+        return;
+    }
+
+    if (axis_start > 0) {
+        std::copy(inp_shape, inp_shape + axis_start, host_orthog_sh_st);
+        std::copy(inp_strides.begin(), inp_strides.begin() + axis_start,
+                  host_orthog_sh_st + orthog_sh_elems);
+        std::copy(arr_strides.begin(), arr_strides.begin() + axis_start,
+                  host_orthog_sh_st + 2 * orthog_sh_elems);
+    }
+    if (inp_nd > (axis_start + k)) {
+        std::copy(inp_shape + axis_start + k, inp_shape + inp_nd,
+                  host_orthog_sh_st + axis_start);
+        std::copy(inp_strides.begin() + axis_start + k, inp_strides.end(),
+                  host_orthog_sh_st + orthog_sh_elems + axis_start);
+        std::copy(arr_strides.begin() + axis_start + ind_nd, arr_strides.end(),
+                  host_orthog_sh_st + 2 * orthog_sh_elems + axis_start);
+    }
+}
+
+void validate_index_array(const dpnp::tensor::usm_ndarray &ind_,
+                          const sycl::queue &exec_q,
+                          int ind_nd,
+                          int ind_type_id,
+                          const py::ssize_t *ind_shape,
+                          const td_ns::usm_ndarray_types &array_types,
+                          const dpnp::tensor::overlap::MemoryOverlap &overlap,
+                          const dpnp::tensor::usm_ndarray &other_array)
+{
+    if (!dpnp::utils::queues_are_compatible(exec_q, {ind_})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    if (ind_.get_ndim() != ind_nd) {
+        throw py::value_error("Index dimensions are not the same");
+    }
+
+    if (ind_type_id != array_types.typenum_to_lookup_id(ind_.get_typenum())) {
+        throw py::type_error("Indices array data types are not all the same.");
+    }
+
+    const py::ssize_t *ind_shape_ = ind_.get_shape_raw();
+    for (int dim = 0; dim < ind_nd; ++dim) {
+        if (ind_shape[dim] != ind_shape_[dim]) {
+            throw py::value_error("Indices shapes are not all equal.");
+        }
+    }
+
+    if (overlap(ind_, other_array)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+}
+
+void process_index_arrays(const std::vector<dpnp::tensor::usm_ndarray> &ind,
+                          sycl::queue &exec_q,
+                          int k,
+                          int ind_nd,
+                          int ind_sh_elems,
+                          const py::ssize_t *ind_shape,
+                          int ind_type_id,
+                          const td_ns::usm_ndarray_types &array_types,
+                          const dpnp::tensor::overlap::MemoryOverlap &overlap,
+                          const dpnp::tensor::usm_ndarray &other_array,
+                          std::vector<char *> &ind_ptrs,
+                          std::vector<py::ssize_t> &ind_offsets,
+                          std::vector<py::ssize_t> &ind_sh_sts)
+{
+    for (int i = 0; i < k; ++i) {
+        const dpnp::tensor::usm_ndarray &ind_ = ind[i];
+
+        if (i > 0) {
+            validate_index_array(ind_, exec_q, ind_nd, ind_type_id, ind_shape,
+                                 array_types, overlap, other_array);
+        }
+        else {
+            if (!dpnp::utils::queues_are_compatible(exec_q, {ind_})) {
+                throw py::value_error(
+                    "Execution queue is not compatible with allocation queues");
+            }
+            if (overlap(ind_, other_array)) {
+                throw py::value_error(
+                    "Arrays index overlapping segments of memory");
+            }
+        }
+
+        char *ind_data = ind_.get_data();
+
+        if (ind_nd > 0) {
+            auto ind_strides = ind_.get_strides_vector();
+            std::copy(ind_strides.begin(), ind_strides.end(),
+                      ind_sh_sts.begin() + (i + 1) * ind_nd);
+        }
+
+        ind_ptrs.push_back(ind_data);
+        ind_offsets.push_back(py::ssize_t(0));
+    }
+}
+
+} // namespace detail
 
 std::vector<sycl::event>
     _populate_kernel_params(sycl::queue &exec_q,
@@ -101,7 +241,6 @@ std::vector<sycl::event>
                             int orthog_sh_elems,
                             int ind_sh_elems)
 {
-
     using usm_host_allocator_T =
         dpnp::tensor::alloc_utils::usm_host_allocator<char *>;
     using ptrT = std::vector<char *, usm_host_allocator_T>;
@@ -144,47 +283,13 @@ std::vector<sycl::event>
         host_ind_offsets_shp->data(), device_ind_offsets,
         host_ind_offsets_shp->size());
 
-    int orthog_nd = inp_nd - k;
+    detail::copy_orthog_shape_strides(
+        axis_start, inp_nd, k, ind_nd, orthog_sh_elems, inp_shape, inp_strides,
+        arr_strides, host_orthog_sh_st_shp->data());
 
-    if (orthog_nd > 0) {
-        if (axis_start > 0) {
-            std::copy(inp_shape, inp_shape + axis_start,
-                      host_orthog_sh_st_shp->begin());
-            std::copy(inp_strides.begin(), inp_strides.begin() + axis_start,
-                      host_orthog_sh_st_shp->begin() + orthog_sh_elems);
-            std::copy(arr_strides.begin(), arr_strides.begin() + axis_start,
-                      host_orthog_sh_st_shp->begin() + 2 * orthog_sh_elems);
-        }
-        if (inp_nd > (axis_start + k)) {
-            std::copy(inp_shape + axis_start + k, inp_shape + inp_nd,
-                      host_orthog_sh_st_shp->begin() + axis_start);
-            std::copy(inp_strides.begin() + axis_start + k, inp_strides.end(),
-                      host_orthog_sh_st_shp->begin() + orthog_sh_elems +
-                          axis_start);
-
-            std::copy(arr_strides.begin() + axis_start + ind_nd,
-                      arr_strides.end(),
-                      host_orthog_sh_st_shp->begin() + 2 * orthog_sh_elems +
-                          axis_start);
-        }
-    }
-
-    if (inp_nd > 0) {
-        std::copy(inp_shape + axis_start, inp_shape + axis_start + k,
-                  host_along_sh_st_shp->begin());
-
-        std::copy(inp_strides.begin() + axis_start,
-                  inp_strides.begin() + axis_start + k,
-                  host_along_sh_st_shp->begin() + k);
-    }
-
-    if (ind_nd > 0) {
-        std::copy(arr_shape + axis_start, arr_shape + axis_start + ind_nd,
-                  host_along_sh_st_shp->begin() + 2 * k);
-        std::copy(arr_strides.begin() + axis_start,
-                  arr_strides.begin() + axis_start + ind_nd,
-                  host_along_sh_st_shp->begin() + 2 * k + ind_nd);
-    }
+    detail::copy_axis_shape_strides(axis_start, inp_nd, k, ind_nd, inp_shape,
+                                    inp_strides, arr_shape, arr_strides,
+                                    host_along_sh_st_shp->data());
 
     const sycl::event &device_orthog_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
         host_orthog_sh_st_shp->data(), device_orthog_sh_st,
@@ -382,52 +487,10 @@ std::pair<sycl::event, sycl::event>
     if (ind_nd > 0) {
         std::copy(ind_shape, ind_shape + ind_nd, ind_sh_sts.begin());
     }
-    for (int i = 0; i < k; ++i) {
-        dpnp::tensor::usm_ndarray ind_ = ind[i];
 
-        if (!dpnp::utils::queues_are_compatible(exec_q, {ind_})) {
-            throw py::value_error(
-                "Execution queue is not compatible with allocation queues");
-        }
-
-        // ndim, type, and shape are checked against the first array
-        if (i > 0) {
-            if (!(ind_.get_ndim() == ind_nd)) {
-                throw py::value_error("Index dimensions are not the same");
-            }
-
-            if (!(ind_type_id ==
-                  array_types.typenum_to_lookup_id(ind_.get_typenum()))) {
-                throw py::type_error(
-                    "Indices array data types are not all the same.");
-            }
-
-            const py::ssize_t *ind_shape_ = ind_.get_shape_raw();
-            for (int dim = 0; dim < ind_nd; ++dim) {
-                if (!(ind_shape[dim] == ind_shape_[dim])) {
-                    throw py::value_error("Indices shapes are not all equal.");
-                }
-            }
-        }
-
-        // check for overlap with destination
-        if (overlap(dst, ind_)) {
-            throw py::value_error(
-                "Arrays index overlapping segments of memory");
-        }
-
-        char *ind_data = ind_.get_data();
-
-        // strides are initialized to 0 for 0D indices, so skip here
-        if (ind_nd > 0) {
-            auto ind_strides = ind_.get_strides_vector();
-            std::copy(ind_strides.begin(), ind_strides.end(),
-                      ind_sh_sts.begin() + (i + 1) * ind_nd);
-        }
-
-        ind_ptrs.push_back(ind_data);
-        ind_offsets.push_back(py::ssize_t(0));
-    }
+    detail::process_index_arrays(ind, exec_q, k, ind_nd, ind_sh_elems,
+                                 ind_shape, ind_type_id, array_types, overlap,
+                                 dst, ind_ptrs, ind_offsets, ind_sh_sts);
 
     if (ind_nelems == 0) {
         return std::make_pair(sycl::event{}, sycl::event{});
@@ -515,6 +578,7 @@ std::pair<sycl::event, sycl::event>
             packed_ind_ptrs_owner, packed_ind_offsets_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
+    using dpnp::utils::keep_args_alive;
     sycl::event arg_cleanup_ev =
         keep_args_alive(exec_q, {src, py_ind, dst}, host_task_events);
 
@@ -650,54 +714,12 @@ std::pair<sycl::event, sycl::event>
     ind_offsets.reserve(k);
     std::vector<py::ssize_t> ind_sh_sts((k + 1) * ind_sh_elems, py::ssize_t(0));
     if (ind_nd > 0) {
-        std::copy(ind_shape, ind_shape + ind_sh_elems, ind_sh_sts.begin());
+        std::copy(ind_shape, ind_shape + ind_nd, ind_sh_sts.begin());
     }
-    for (int i = 0; i < k; ++i) {
-        dpnp::tensor::usm_ndarray ind_ = ind[i];
 
-        if (!dpnp::utils::queues_are_compatible(exec_q, {ind_})) {
-            throw py::value_error(
-                "Execution queue is not compatible with allocation queues");
-        }
-
-        // ndim, type, and shape are checked against the first array
-        if (i > 0) {
-            if (!(ind_.get_ndim() == ind_nd)) {
-                throw py::value_error("Index dimensions are not the same");
-            }
-
-            if (!(ind_type_id ==
-                  array_types.typenum_to_lookup_id(ind_.get_typenum()))) {
-                throw py::type_error(
-                    "Indices array data types are not all the same.");
-            }
-
-            const py::ssize_t *ind_shape_ = ind_.get_shape_raw();
-            for (int dim = 0; dim < ind_nd; ++dim) {
-                if (!(ind_shape[dim] == ind_shape_[dim])) {
-                    throw py::value_error("Indices shapes are not all equal.");
-                }
-            }
-        }
-
-        // check for overlap with destination
-        if (overlap(ind_, dst)) {
-            throw py::value_error(
-                "Arrays index overlapping segments of memory");
-        }
-
-        char *ind_data = ind_.get_data();
-
-        // strides are initialized to 0 for 0D indices, so skip here
-        if (ind_nd > 0) {
-            auto ind_strides = ind_.get_strides_vector();
-            std::copy(ind_strides.begin(), ind_strides.end(),
-                      ind_sh_sts.begin() + (i + 1) * ind_nd);
-        }
-
-        ind_ptrs.push_back(ind_data);
-        ind_offsets.push_back(py::ssize_t(0));
-    }
+    detail::process_index_arrays(ind, exec_q, k, ind_nd, ind_sh_elems,
+                                 ind_shape, ind_type_id, array_types, overlap,
+                                 dst, ind_ptrs, ind_offsets, ind_sh_sts);
 
     if (ind_nelems == 0) {
         return std::make_pair(sycl::event{}, sycl::event{});
@@ -784,6 +806,7 @@ std::pair<sycl::event, sycl::event>
             packed_ind_ptrs_owner, packed_ind_offsets_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
+    using dpnp::utils::keep_args_alive;
     sycl::event arg_cleanup_ev =
         keep_args_alive(exec_q, {dst, py_ind, val}, host_task_events);
 
