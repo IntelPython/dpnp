@@ -532,7 +532,6 @@ def cg(
         return x, 0
 
     info = maxiter
-    k = 0
     # Per-iter sync count: 1 (rnorm convergence check). The pAp and
     # rz_new breakdown checks are intentionally not transferred to
     # the host; IEEE-754 inf / NaN propagation through alpha = rz/pAp
@@ -843,13 +842,7 @@ def minres(
 
     istop = 0
     itn = 0
-    Anorm = 0
-    Acond = 0
-    rnorm = 0
-    ynorm = 0
-
-    xtype = dtype
-    eps = dpnp.finfo(xtype).eps
+    eps = dpnp.finfo(dtype).eps
 
     # ------------------------------------------------------------------
     # Set up y and v for the first Lanczos vector v1.
@@ -904,12 +897,12 @@ def minres(
     rhs2 = 0
     tnorm2 = 0
     gmax = 0
-    gmin = dpnp.finfo(xtype).max
+    gmin = dpnp.finfo(dtype).max
     cs = -1
     sn = 0
     queue = b.sycl_queue
-    w = dpnp.zeros(n, dtype=xtype, sycl_queue=queue)
-    w2 = dpnp.zeros(n, dtype=xtype, sycl_queue=queue)
+    w = dpnp.zeros(n, dtype=dtype, sycl_queue=queue)
+    w2 = dpnp.zeros(n, dtype=dtype, sycl_queue=queue)
     r2 = r1
 
     # Main Lanczos loop.
