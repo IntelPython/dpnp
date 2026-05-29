@@ -167,6 +167,49 @@ jobs:
           make html
         working-directory: doc
 
+      - name: Debug JS inclusion
+        run: |
+          echo "=== Sphinx and Furo versions ==="
+          python -c "import sphinx; print('Sphinx:', sphinx.__version__)"
+          python -c "import furo; print('Furo:', furo.__version__)"
+
+          echo "=== Check if JS file exists in build output ==="
+          ls -la doc/_build/html/_static/dpnp-custom.* 2>&1 || echo "FILES NOT FOUND"
+
+          echo "=== Check conf.py html_js_files setting ==="
+          grep -n "html_js_files\|add_js_file" doc/conf.py
+
+          echo "=== Search for dpnp-custom in any HTML file ==="
+          grep -rl "dpnp-custom" doc/_build/html/ | head -10 || echo "NO REFERENCES FOUND"
+
+          echo "=== Check index.html head section ==="
+          head -50 doc/_build/html/index.html
+
+          echo "=== Check index.html tail (scripts at body end) ==="
+          tail -30 doc/_build/html/index.html
+
+          echo "=== Check a generated function page for script tags ==="
+          grep -i "<script" doc/_build/html/reference/generated/dpnp.empty.html || echo "NO SCRIPT TAGS"
+
+          echo "=== Check all script tags in index.html ==="
+          grep -i "<script" doc/_build/html/index.html || echo "NO SCRIPT TAGS IN INDEX"
+
+          echo "=== Diff between CSS and JS file registration in Sphinx ==="
+          python -c "
+          import sphinx.builders.html as bh
+          print('html_js_files attr exists:', hasattr(bh, 'JavaScript'))
+          from sphinx.application import Sphinx
+          print('add_js_file method:', hasattr(Sphinx, 'add_js_file'))
+          "
+
+          echo "=== Check if furo theme template includes extra scripts ==="
+          FURO_PATH=$(python -c "import furo; import os; print(os.path.dirname(furo.__file__))")
+          echo "Furo path: $FURO_PATH"
+          grep -r "script_files\|js_files\|extra_script" "$FURO_PATH/" 2>/dev/null | head -10 || echo "NOT FOUND"
+
+          echo "=== List all files in _static that match custom ==="
+          find doc/_build/html/_static/ -name "*custom*" -o -name "*dpnp*" 2>/dev/null
+
       - name: Set a project number to current release
         run: |
           PROJECT_NUMBER=$(git describe --tags --abbrev=0)
