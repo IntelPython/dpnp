@@ -65,8 +65,12 @@ _make_fast_matvec catches this and falls back to A.dot(x).
 # A, M, X, V, H, Ap, Ax, Anorm, Acond, Vj, A_op, M_op, fast_mv_M,
 # _orig_M are part of the published numerical-linear-algebra API and
 # mirror SciPy/CuPy verbatim, so the snake_case rule is intentionally
-# relaxed for the whole file.
-# pylint: disable=invalid-name
+# relaxed for the whole file. The duplicate-code check fires against
+# dpnp/scipy/sparse/_csr.py where the cached-SpMV invocation and
+# __del__ shutdown handling necessarily mirror this module; the
+# duplication is tightly coupled to oneMKL's contract and not worth
+# hiding behind an indirection.
+# pylint: disable=invalid-name,duplicate-code
 
 from __future__ import annotations
 
@@ -222,6 +226,7 @@ class _CachedSpMV:
             return
 
         try:
+            # pylint: disable-next=not-callable
             release_fn(self._exec_q, handle, [])
         except (AttributeError, TypeError):
             # Shutdown-mode races: queue or handle attribute access
@@ -265,6 +270,7 @@ class _CachedSpMVPair:
         # cannot return None here. We re-fetch on every call only to
         # pick up the (immutable) handle pointer and exec_q without
         # caching them redundantly on this object.
+        # pylint: disable-next=protected-access
         _si, handle, val_type_id, exec_q = self._A._ensure_spmv_handle()
         y = dpnp.empty(
             self._A.shape[0], dtype=self._A.data.dtype, sycl_queue=exec_q
@@ -325,6 +331,7 @@ def _make_fast_matvec(A):
     # when the backend extension / dtype combination is unsupported.
     if not hasattr(A, "_ensure_spmv_handle"):
         return None
+    # pylint: disable-next=protected-access
     handle_info = A._ensure_spmv_handle()
     if handle_info is None:
         return None

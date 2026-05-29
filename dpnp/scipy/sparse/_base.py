@@ -13,10 +13,9 @@ solver fast-path already does.
 from abc import ABC
 
 
+# pylint: disable-next=too-few-public-methods
 class SparseABC(ABC):
     """Abstract base for all dpnp.scipy.sparse format classes."""
-
-    pass
 
 
 def issparse(x):

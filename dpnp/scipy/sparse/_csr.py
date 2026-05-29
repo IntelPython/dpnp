@@ -32,6 +32,13 @@ import dpnp as _dpnp
 
 from ._base import SparseABC
 
+# Two short blocks intentionally mirror code in
+# dpnp/scipy/sparse/linalg/_iterative.py: the cached-SpMV invocation
+# and the __del__ shutdown-safe release pattern. Both are tightly
+# coupled to oneMKL's contract; extracting a shared helper would add
+# indirection without reducing real duplication.
+# pylint: disable=duplicate-code
+
 # Value dtypes the oneMKL sparse::gemv dispatch table registers
 # (see dpnp/backend/extensions/sparse/types_matrix.hpp). Anything
 # outside this set must take the dense fallback in ``dot``.
@@ -41,6 +48,12 @@ _SPMV_VALUE_DTYPES = frozenset("fdFD")
 _SPMV_INDEX_DTYPES = frozenset("ilq")
 
 
+# pylint: disable=invalid-name,too-many-instance-attributes
+# The class name ``csr_matrix`` is the public scipy/cupy API spelling and
+# must stay lowercase. The instance-attribute count exceeds the default
+# pylint cap because the lazily-built oneMKL handle adds four cache
+# fields (handle, val_type_id, si, exec_q) on top of the CSR triple +
+# shape; all are required.
 class csr_matrix(SparseABC):
     """Compressed Sparse Row matrix on a SYCL device.
 
@@ -165,29 +178,29 @@ class csr_matrix(SparseABC):
         self.indptr = indptr
         self._shape = (nrows, ncols)
 
-    def _init_from_dense(self, D, dtype=None):
-        if D.ndim != 2:
+    def _init_from_dense(self, dense, dtype=None):
+        if dense.ndim != 2:
             raise ValueError(
-                f"csr_matrix: dense input must be 2-D, got {D.ndim}-D"
+                f"csr_matrix: dense input must be 2-D, got {dense.ndim}-D"
             )
         if dtype is not None:
-            D = D.astype(dtype, copy=False)
+            dense = dense.astype(dtype, copy=False)
 
-        nrows, ncols = D.shape
-        q = D.sycl_queue
+        nrows, ncols = dense.shape
+        q = dense.sycl_queue
 
-        rows, cols = _dpnp.nonzero(D)
+        rows, cols = _dpnp.nonzero(dense)
         nnz = int(rows.shape[0])
 
         if nnz == 0:
-            self.data = _dpnp.empty(0, dtype=D.dtype, sycl_queue=q)
+            self.data = _dpnp.empty(0, dtype=dense.dtype, sycl_queue=q)
             self.indices = _dpnp.empty(0, dtype=_dpnp.int64, sycl_queue=q)
             self.indptr = _dpnp.zeros(nrows + 1, dtype=_dpnp.int64,
                                        sycl_queue=q)
             self._shape = (nrows, ncols)
             return
 
-        values = D[rows, cols]
+        values = dense[rows, cols]
         idx_dtype = _dpnp.int64
         row_counts = _dpnp.bincount(rows.astype(idx_dtype), minlength=nrows)
         indptr = _dpnp.empty(nrows + 1, dtype=idx_dtype, sycl_queue=q)
@@ -203,21 +216,26 @@ class csr_matrix(SparseABC):
 
     @property
     def shape(self):
+        """Tuple of matrix dimensions ``(M, N)``."""
         return self._shape
 
     @property
     def dtype(self):
+        """Data type of stored values."""
         return self.data.dtype
 
     @property
     def nnz(self):
+        """Number of stored nonzero entries."""
         return int(self.data.shape[0])
 
     @property
     def size(self):
+        """Alias for ``nnz`` (number of stored entries)."""
         return self.nnz
 
     @property
+    # pylint: disable-next=invalid-name
     def T(self):
         """Transpose. Materializes via toarray() since CSC isn't implemented."""
         return csr_matrix(self.toarray().T)
@@ -390,6 +408,7 @@ class csr_matrix(SparseABC):
             return
 
         try:
+            # pylint: disable-next=not-callable
             release_fn(self._spmv_exec_q, handle, [])
         except (AttributeError, TypeError):
             # Shutdown-mode races; handle is unrecoverable and the
@@ -406,21 +425,22 @@ class csr_matrix(SparseABC):
 
     def toarray(self):
         """Convert to a dense dpnp 2-D array."""
-        nrows, ncols = self._shape
+        nrows = self._shape[0]
         q = self.data.sycl_queue
-        D = _dpnp.zeros(self._shape, dtype=self.dtype, sycl_queue=q)
+        dense = _dpnp.zeros(self._shape, dtype=self.dtype, sycl_queue=q)
         if self.nnz == 0:
-            return D
+            return dense
 
         row_lengths = self.indptr[1:] - self.indptr[:-1]
         rows = _dpnp.repeat(
             _dpnp.arange(nrows, dtype=self.indices.dtype, sycl_queue=q),
             row_lengths,
         )
-        D[rows, self.indices] = self.data
-        return D
+        dense[rows, self.indices] = self.data
+        return dense
 
     def copy(self):
+        """Return a deep copy of this matrix."""
         return csr_matrix(self)
 
     def __repr__(self):
