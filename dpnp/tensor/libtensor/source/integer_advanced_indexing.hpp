@@ -49,22 +49,22 @@ namespace dpnp::tensor::py_internal
 {
 
 extern std::pair<sycl::event, sycl::event>
-    usm_ndarray_take(const dpnp::tensor::usm_ndarray &,
-                     const py::object &,
-                     const dpnp::tensor::usm_ndarray &,
-                     int,
-                     std::uint8_t,
-                     sycl::queue &,
-                     const std::vector<sycl::event> & = {});
+    py_take(const dpnp::tensor::usm_ndarray &,
+            const py::object &,
+            const dpnp::tensor::usm_ndarray &,
+            int,
+            std::uint8_t,
+            sycl::queue &,
+            const std::vector<sycl::event> & = {});
 
 extern std::pair<sycl::event, sycl::event>
-    usm_ndarray_put(const dpnp::tensor::usm_ndarray &,
-                    const py::object &,
-                    const dpnp::tensor::usm_ndarray &,
-                    int,
-                    std::uint8_t,
-                    sycl::queue &,
-                    const std::vector<sycl::event> & = {});
+    py_put(const dpnp::tensor::usm_ndarray &,
+           const py::object &,
+           const dpnp::tensor::usm_ndarray &,
+           int,
+           std::uint8_t,
+           sycl::queue &,
+           const std::vector<sycl::event> & = {});
 
 extern void init_advanced_indexing_dispatch_tables(void);
 

@@ -251,13 +251,13 @@ std::vector<dpnp::tensor::usm_ndarray> parse_py_ind(const sycl::queue &q,
 }
 
 std::pair<sycl::event, sycl::event>
-    usm_ndarray_take(const dpnp::tensor::usm_ndarray &src,
-                     const py::object &py_ind,
-                     const dpnp::tensor::usm_ndarray &dst,
-                     int axis_start,
-                     std::uint8_t mode,
-                     sycl::queue &exec_q,
-                     const std::vector<sycl::event> &depends)
+    py_take(const dpnp::tensor::usm_ndarray &src,
+            const py::object &py_ind,
+            const dpnp::tensor::usm_ndarray &dst,
+            int axis_start,
+            std::uint8_t mode,
+            sycl::queue &exec_q,
+            const std::vector<sycl::event> &depends)
 {
     std::vector<dpnp::tensor::usm_ndarray> ind = parse_py_ind(exec_q, py_ind);
 
@@ -521,13 +521,13 @@ std::pair<sycl::event, sycl::event>
 }
 
 std::pair<sycl::event, sycl::event>
-    usm_ndarray_put(const dpnp::tensor::usm_ndarray &dst,
-                    const py::object &py_ind,
-                    const dpnp::tensor::usm_ndarray &val,
-                    int axis_start,
-                    std::uint8_t mode,
-                    sycl::queue &exec_q,
-                    const std::vector<sycl::event> &depends)
+    py_put(const dpnp::tensor::usm_ndarray &dst,
+           const py::object &py_ind,
+           const dpnp::tensor::usm_ndarray &val,
+           int axis_start,
+           std::uint8_t mode,
+           sycl::queue &exec_q,
+           const std::vector<sycl::event> &depends)
 {
     std::vector<dpnp::tensor::usm_ndarray> ind = parse_py_ind(exec_q, py_ind);
     int k = ind.size();
