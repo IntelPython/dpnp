@@ -33,7 +33,6 @@ and provides a location for future sparse matrix container types.
 """
 
 from . import linalg
-
 from ._base import SparseABC, issparse
 from ._csr import csr_matrix
 

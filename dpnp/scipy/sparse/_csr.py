@@ -28,6 +28,7 @@ densification, and lets the iterative solvers in
 from __future__ import annotations
 
 import numpy as _np
+
 import dpnp as _dpnp
 
 from ._base import SparseABC
