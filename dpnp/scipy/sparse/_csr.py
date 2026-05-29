@@ -125,9 +125,11 @@ class csr_matrix(SparseABC):
     def _init_from_components(self, arrays, shape, dtype=None, copy=False):
         data, indices, indptr = arrays
 
-        if not (isinstance(data, _dpnp.ndarray)
-                and isinstance(indices, _dpnp.ndarray)
-                and isinstance(indptr, _dpnp.ndarray)):
+        if not (
+            isinstance(data, _dpnp.ndarray)
+            and isinstance(indices, _dpnp.ndarray)
+            and isinstance(indptr, _dpnp.ndarray)
+        ):
             raise TypeError(
                 "csr_matrix: data, indices, and indptr must be dpnp arrays"
             )
@@ -156,7 +158,7 @@ class csr_matrix(SparseABC):
             )
 
         idx_char = _np.dtype(indices.dtype).char
-        if idx_char not in ('i', 'l', 'q'):
+        if idx_char not in ("i", "l", "q"):
             raise TypeError(
                 f"csr_matrix: indices dtype must be int32 or int64, "
                 f"got {indices.dtype}"
@@ -196,8 +198,9 @@ class csr_matrix(SparseABC):
         if nnz == 0:
             self.data = _dpnp.empty(0, dtype=dense.dtype, sycl_queue=q)
             self.indices = _dpnp.empty(0, dtype=_dpnp.int64, sycl_queue=q)
-            self.indptr = _dpnp.zeros(nrows + 1, dtype=_dpnp.int64,
-                                       sycl_queue=q)
+            self.indptr = _dpnp.zeros(
+                nrows + 1, dtype=_dpnp.int64, sycl_queue=q
+            )
             self._shape = (nrows, ncols)
             return
 
@@ -358,9 +361,7 @@ class csr_matrix(SparseABC):
                         f"csr_matrix.dot: x dtype {x.dtype} does not "
                         f"match matrix dtype {self.data.dtype}"
                     )
-                y = _dpnp.empty(
-                    nrows, dtype=self.data.dtype, sycl_queue=exec_q
-                )
+                y = _dpnp.empty(nrows, dtype=self.data.dtype, sycl_queue=exec_q)
                 # Do NOT wait on the returned event: any subsequent dpnp
                 # operation on the same queue will serialise behind it
                 # automatically. Blocking here would dominate runtime
@@ -371,7 +372,7 @@ class csr_matrix(SparseABC):
                     exec_q,
                     handle,
                     val_type_id,
-                    0,    # trans=N
+                    0,  # trans=N
                     1.0,  # alpha
                     x,
                     0.0,  # beta

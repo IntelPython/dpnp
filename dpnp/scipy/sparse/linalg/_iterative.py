@@ -280,7 +280,7 @@ class _CachedSpMVPair:
             exec_q,
             handle,
             val_type_id,
-            0,    # trans=N
+            0,  # trans=N
             1.0,  # alpha
             x,
             0.0,  # beta

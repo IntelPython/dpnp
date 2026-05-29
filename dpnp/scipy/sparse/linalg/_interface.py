@@ -219,6 +219,7 @@ class LinearOperator:
         if not isinstance(x, dpnp.ndarray):
             # pylint: disable-next=import-outside-toplevel
             import numpy as _np
+
             if isinstance(x, _np.ndarray):
                 raise TypeError(
                     "LinearOperator.dot: got a numpy.ndarray. dpnp "
@@ -613,6 +614,7 @@ def aslinearoperator(A) -> LinearOperator:
     # us via linalg/__init__.py).
     # pylint: disable-next=import-outside-toplevel
     from dpnp.scipy.sparse import issparse
+
     if issparse(A):
         return MatrixLinearOperator(A)
 
@@ -627,6 +629,7 @@ def aslinearoperator(A) -> LinearOperator:
 
     # pylint: disable-next=import-outside-toplevel
     import numpy as _np
+
     if isinstance(A, _np.ndarray):
         raise TypeError(
             "aslinearoperator: got a numpy.ndarray; transfer it to "
