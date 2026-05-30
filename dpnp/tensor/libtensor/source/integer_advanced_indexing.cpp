@@ -80,6 +80,49 @@ namespace py = pybind11;
 namespace detail
 {
 
+using host_ptr_allocator_t =
+    dpnp::tensor::alloc_utils::usm_host_allocator<char *>;
+using host_ptr_vec_t = std::vector<char *, host_ptr_allocator_t>;
+using host_ptr_shp_t = std::shared_ptr<host_ptr_vec_t>;
+
+using host_sz_allocator_t =
+    dpnp::tensor::alloc_utils::usm_host_allocator<py::ssize_t>;
+using host_sz_vec_t = std::vector<py::ssize_t, host_sz_allocator_t>;
+using host_sz_shp_t = std::shared_ptr<host_sz_vec_t>;
+
+template <typename T>
+sycl::event copy_to_device(sycl::queue &exec_q,
+                           const T *host_data,
+                           T *device_data,
+                           std::size_t count)
+{
+    return exec_q.copy<T>(host_data, device_data, count);
+}
+
+host_ptr_shp_t allocate_and_copy_ptrs(sycl::queue &exec_q,
+                                      const std::vector<char *> &ptrs)
+{
+    host_ptr_allocator_t allocator(exec_q);
+    auto host_shp = std::make_shared<host_ptr_vec_t>(ptrs.size(), allocator);
+    std::copy(ptrs.begin(), ptrs.end(), host_shp->begin());
+    return host_shp;
+}
+
+host_sz_shp_t allocate_and_copy_sizes(sycl::queue &exec_q,
+                                      const std::vector<py::ssize_t> &sizes)
+{
+    host_sz_allocator_t allocator(exec_q);
+    auto host_shp = std::make_shared<host_sz_vec_t>(sizes.size(), allocator);
+    std::copy(sizes.begin(), sizes.end(), host_shp->begin());
+    return host_shp;
+}
+
+host_sz_shp_t allocate_host_buffer(sycl::queue &exec_q, std::size_t size)
+{
+    host_sz_allocator_t allocator(exec_q);
+    return std::make_shared<host_sz_vec_t>(size, allocator);
+}
+
 void copy_axis_shape_strides(int axis_start,
                              int inp_nd,
                              int k,
@@ -241,47 +284,16 @@ std::vector<sycl::event>
                             int orthog_sh_elems,
                             int ind_sh_elems)
 {
-    using usm_host_allocator_T =
-        dpnp::tensor::alloc_utils::usm_host_allocator<char *>;
-    using ptrT = std::vector<char *, usm_host_allocator_T>;
+    auto host_ind_ptrs_shp = detail::allocate_and_copy_ptrs(exec_q, ind_ptrs);
+    auto host_ind_sh_st_shp =
+        detail::allocate_and_copy_sizes(exec_q, ind_sh_sts);
+    auto host_ind_offsets_shp =
+        detail::allocate_and_copy_sizes(exec_q, ind_offsets);
 
-    usm_host_allocator_T ptr_allocator(exec_q);
-    std::shared_ptr<ptrT> host_ind_ptrs_shp =
-        std::make_shared<ptrT>(k, ptr_allocator);
-
-    using usm_host_allocatorT =
-        dpnp::tensor::alloc_utils::usm_host_allocator<py::ssize_t>;
-    using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
-
-    usm_host_allocatorT sz_allocator(exec_q);
-    std::shared_ptr<shT> host_ind_sh_st_shp =
-        std::make_shared<shT>(ind_sh_elems * (k + 1), sz_allocator);
-
-    std::shared_ptr<shT> host_ind_offsets_shp =
-        std::make_shared<shT>(k, sz_allocator);
-
-    std::shared_ptr<shT> host_orthog_sh_st_shp =
-        std::make_shared<shT>(3 * orthog_sh_elems, sz_allocator);
-
-    std::shared_ptr<shT> host_along_sh_st_shp =
-        std::make_shared<shT>(2 * (k + ind_sh_elems), sz_allocator);
-
-    std::copy(ind_sh_sts.begin(), ind_sh_sts.end(),
-              host_ind_sh_st_shp->begin());
-    std::copy(ind_ptrs.begin(), ind_ptrs.end(), host_ind_ptrs_shp->begin());
-    std::copy(ind_offsets.begin(), ind_offsets.end(),
-              host_ind_offsets_shp->begin());
-
-    const sycl::event &device_ind_ptrs_copy_ev = exec_q.copy<char *>(
-        host_ind_ptrs_shp->data(), device_ind_ptrs, host_ind_ptrs_shp->size());
-
-    const sycl::event &device_ind_sh_st_copy_ev =
-        exec_q.copy<py::ssize_t>(host_ind_sh_st_shp->data(), device_ind_sh_st,
-                                 host_ind_sh_st_shp->size());
-
-    const sycl::event &device_ind_offsets_copy_ev = exec_q.copy<py::ssize_t>(
-        host_ind_offsets_shp->data(), device_ind_offsets,
-        host_ind_offsets_shp->size());
+    auto host_orthog_sh_st_shp =
+        detail::allocate_host_buffer(exec_q, 3 * orthog_sh_elems);
+    auto host_along_sh_st_shp =
+        detail::allocate_host_buffer(exec_q, 2 * (k + ind_sh_elems));
 
     detail::copy_orthog_shape_strides(
         axis_start, inp_nd, k, ind_nd, orthog_sh_elems, inp_shape, inp_strides,
@@ -291,15 +303,27 @@ std::vector<sycl::event>
                                     inp_strides, arr_shape, arr_strides,
                                     host_along_sh_st_shp->data());
 
-    const sycl::event &device_orthog_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
-        host_orthog_sh_st_shp->data(), device_orthog_sh_st,
+    const sycl::event device_ind_ptrs_copy_ev =
+        detail::copy_to_device(exec_q, host_ind_ptrs_shp->data(),
+                               device_ind_ptrs, host_ind_ptrs_shp->size());
+
+    const sycl::event device_ind_sh_st_copy_ev =
+        detail::copy_to_device(exec_q, host_ind_sh_st_shp->data(),
+                               device_ind_sh_st, host_ind_sh_st_shp->size());
+
+    const sycl::event device_ind_offsets_copy_ev = detail::copy_to_device(
+        exec_q, host_ind_offsets_shp->data(), device_ind_offsets,
+        host_ind_offsets_shp->size());
+
+    const sycl::event device_orthog_sh_st_copy_ev = detail::copy_to_device(
+        exec_q, host_orthog_sh_st_shp->data(), device_orthog_sh_st,
         host_orthog_sh_st_shp->size());
 
-    const sycl::event &device_along_sh_st_copy_ev = exec_q.copy<py::ssize_t>(
-        host_along_sh_st_shp->data(), device_along_sh_st,
+    const sycl::event device_along_sh_st_copy_ev = detail::copy_to_device(
+        exec_q, host_along_sh_st_shp->data(), device_along_sh_st,
         host_along_sh_st_shp->size());
 
-    const sycl::event &shared_ptr_cleanup_ev =
+    const sycl::event shared_ptr_cleanup_ev =
         exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on({device_along_sh_st_copy_ev,
                             device_orthog_sh_st_copy_ev,
@@ -314,11 +338,9 @@ std::vector<sycl::event>
         });
     host_task_events.push_back(shared_ptr_cleanup_ev);
 
-    std::vector<sycl::event> sh_st_pack_deps{
-        device_ind_ptrs_copy_ev, device_ind_sh_st_copy_ev,
-        device_ind_offsets_copy_ev, device_orthog_sh_st_copy_ev,
-        device_along_sh_st_copy_ev};
-    return sh_st_pack_deps;
+    return {device_ind_ptrs_copy_ev, device_ind_sh_st_copy_ev,
+            device_ind_offsets_copy_ev, device_orthog_sh_st_copy_ev,
+            device_along_sh_st_copy_ev};
 }
 
 /* Utility to parse python object py_ind into vector of `usm_ndarray`s */
