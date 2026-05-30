@@ -32,7 +32,6 @@
 /// This file defines functions of dpnp.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
-#include <algorithm>
 #include <cstddef>
 #include <utility>
 #include <vector>
@@ -53,8 +52,6 @@ namespace td_ns = dpnp::tensor::type_dispatch;
 namespace dpnp::tensor::py_internal
 {
 
-using dpnp::utils::keep_args_alive;
-
 using dpnp::tensor::kernels::constructors::eye_fn_ptr_t;
 static eye_fn_ptr_t eye_dispatch_vector[td_ns::num_types];
 
@@ -64,8 +61,6 @@ std::pair<sycl::event, sycl::event>
                     sycl::queue &exec_q,
                     const std::vector<sycl::event> &depends)
 {
-    // dst must be 2D
-
     if (dst.get_ndim() != 2) {
         throw py::value_error(
             "usm_ndarray_eye: Expecting 2D array to populate");
@@ -82,7 +77,7 @@ std::pair<sycl::event, sycl::event>
     int dst_typenum = dst.get_typenum();
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
-    const py::ssize_t nelem = dst.get_size();
+    const py::ssize_t nelems = dst.get_size();
     const py::ssize_t rows = dst.get_shape(0);
     const py::ssize_t cols = dst.get_shape(1);
     if (rows == 0 || cols == 0) {
@@ -96,34 +91,29 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("USM array is not contiguous");
     }
 
-    py::ssize_t start;
-    if (is_dst_c_contig) {
-        start = (k < 0) ? -k * cols : k;
-    }
-    else {
-        start = (k < 0) ? -k : k * rows;
-    }
-
     const py::ssize_t *strides = dst.get_strides_raw();
-    py::ssize_t step;
+    py::ssize_t stride0, stride1;
     if (strides == nullptr) {
-        step = (is_dst_c_contig) ? cols + 1 : rows + 1;
+        if (is_dst_c_contig) {
+            stride0 = cols;
+            stride1 = 1;
+        }
+        else {
+            stride0 = 1;
+            stride1 = rows;
+        }
     }
     else {
-        step = strides[0] + strides[1];
+        stride0 = strides[0];
+        stride1 = strides[1];
     }
-
-    const py::ssize_t length = std::min({rows, cols, rows + k, cols - k});
-    const py::ssize_t end = start + step * (length - 1);
-
-    char *dst_data = dst.get_data();
-    sycl::event eye_event;
 
     auto fn = eye_dispatch_vector[dst_typeid];
+    sycl::event eye_event =
+        fn(exec_q, static_cast<std::size_t>(nelems), rows, cols, k, stride0,
+           stride1, dst.get_data(), depends);
 
-    eye_event = fn(exec_q, static_cast<std::size_t>(nelem), start, end, step,
-                   dst_data, depends);
-
+    using dpnp::utils::keep_args_alive;
     return std::make_pair(keep_args_alive(exec_q, {dst}, {eye_event}),
                           eye_event);
 }

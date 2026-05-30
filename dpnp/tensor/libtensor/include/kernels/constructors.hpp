@@ -345,9 +345,11 @@ sycl::event full_strided_impl(sycl::queue &q,
 
 typedef sycl::event (*eye_fn_ptr_t)(sycl::queue &,
                                     std::size_t nelems, // num_elements
-                                    ssize_t start,
-                                    ssize_t end,
-                                    ssize_t step,
+                                    ssize_t rows,
+                                    ssize_t cols,
+                                    ssize_t k,
+                                    ssize_t stride0,
+                                    ssize_t stride1,
                                     char *, // dst_data_ptr
                                     const std::vector<sycl::event> &);
 
@@ -356,29 +358,30 @@ class EyeFunctor
 {
 private:
     Ty *p = nullptr;
-    ssize_t start_v;
-    ssize_t end_v;
-    ssize_t step_v;
+    ssize_t k_;
+    ssize_t stride0_;
+    ssize_t stride1_;
 
 public:
     EyeFunctor(char *dst_p,
-               const ssize_t v0,
-               const ssize_t v1,
-               const ssize_t dv)
-        : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), end_v(v1), step_v(dv)
+               const ssize_t k,
+               const ssize_t stride0,
+               const ssize_t stride1)
+        : p(reinterpret_cast<Ty *>(dst_p)), k_(k), stride0_(stride0),
+          stride1_(stride1)
     {
     }
 
-    void operator()(sycl::id<1> wiid) const
+    void operator()(sycl::id<2> idx) const
     {
-        Ty set_v = 0;
-        ssize_t i = static_cast<ssize_t>(wiid.get(0));
-        if (i >= start_v and i <= end_v) {
-            if ((i - start_v) % step_v == 0) {
-                set_v = 1;
-            }
-        }
-        p[i] = set_v;
+        const ssize_t row = static_cast<ssize_t>(idx[0]);
+        const ssize_t col = static_cast<ssize_t>(idx[1]);
+
+        // k-th diagonal: col - row == k
+        const Ty set_v = static_cast<Ty>(col - row == k_);
+
+        const ssize_t offset = row * stride0_ + col * stride1_;
+        p[offset] = set_v;
     }
 };
 
@@ -387,9 +390,12 @@ public:
  *
  * @param exec_q  Sycl queue to which kernel is submitted for execution.
  * @param nelems  Number of elements to assign.
- * @param start   Position of the first non-zero value.
- * @param end     Position of the last non-zero value.
- * @param step    Number of array elements between non-zeros.
+ * @param rows    Number of rows in the matrix.
+ * @param cols    Number of columns in the matrix.
+ * @param k       Diagonal offset (0 for main diagonal, positive for upper,
+ * negative for lower).
+ * @param stride0 Stride for the first dimension (rows).
+ * @param stride1 Stride for the second dimension (columns).
  * @param array_data Kernel accessible USM pointer for the destination array.
  * @param depends  List of events to wait for before starting computations, if
  * any.
@@ -400,9 +406,11 @@ public:
 template <typename Ty>
 sycl::event eye_impl(sycl::queue &exec_q,
                      std::size_t nelems,
-                     const ssize_t start,
-                     const ssize_t end,
-                     const ssize_t step,
+                     const ssize_t rows,
+                     const ssize_t cols,
+                     const ssize_t k,
+                     const ssize_t stride0,
+                     const ssize_t stride1,
                      char *array_data,
                      const std::vector<sycl::event> &depends)
 {
@@ -413,8 +421,10 @@ sycl::event eye_impl(sycl::queue &exec_q,
         using KernelName = eye_kernel<Ty>;
         using Impl = EyeFunctor<Ty>;
 
-        cgh.parallel_for<KernelName>(sycl::range<1>{nelems},
-                                     Impl(array_data, start, end, step));
+        cgh.parallel_for<KernelName>(
+            sycl::range<2>{static_cast<std::size_t>(rows),
+                           static_cast<std::size_t>(cols)},
+            Impl(array_data, k, stride0, stride1));
     });
 
     return eye_event;
