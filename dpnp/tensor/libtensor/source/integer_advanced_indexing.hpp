@@ -53,6 +53,7 @@ extern std::pair<sycl::event, sycl::event>
             const py::object &,
             const dpnp::tensor::usm_ndarray &,
             int,
+            int,
             std::uint8_t,
             sycl::queue &,
             const std::vector<sycl::event> & = {});
@@ -61,6 +62,7 @@ extern std::pair<sycl::event, sycl::event>
     py_put(const dpnp::tensor::usm_ndarray &,
            const py::object &,
            const dpnp::tensor::usm_ndarray &,
+           int,
            int,
            std::uint8_t,
            sycl::queue &,

@@ -382,6 +382,7 @@ std::pair<sycl::event, sycl::event>
             const py::object &py_ind,
             const dpnp::tensor::usm_ndarray &dst,
             int axis_start,
+            int axis_end,
             std::uint8_t mode,
             sycl::queue &exec_q,
             const std::vector<sycl::event> &depends)
@@ -395,7 +396,16 @@ std::pair<sycl::event, sycl::event>
     }
 
     if (axis_start < 0) {
-        throw py::value_error("Axis cannot be negative.");
+        throw py::value_error("Axis start cannot be negative.");
+    }
+
+    if (axis_end < axis_start) {
+        throw py::value_error(
+            "Axis end must be greater than or equal to axis start.");
+    }
+
+    if (k != (axis_end - axis_start)) {
+        throw py::value_error("Number of indices must match axis range.");
     }
 
     if (mode != 0 && mode != 1) {
@@ -412,9 +422,10 @@ std::pair<sycl::event, sycl::event>
 
     auto sh_elems = std::max<int>(src_nd, 1);
 
-    if (axis_start + k > sh_elems) {
-        throw py::value_error("Axes are out of range for array of dimension " +
-                              std::to_string(src_nd));
+    if (axis_end > sh_elems) {
+        throw py::value_error(
+            "Axis end is out of range for array of dimension " +
+            std::to_string(src_nd));
     }
     if (src_nd == 0) {
         if (dst_nd != ind_nd) {
@@ -612,6 +623,7 @@ std::pair<sycl::event, sycl::event>
            const py::object &py_ind,
            const dpnp::tensor::usm_ndarray &val,
            int axis_start,
+           int axis_end,
            std::uint8_t mode,
            sycl::queue &exec_q,
            const std::vector<sycl::event> &depends)
@@ -620,12 +632,20 @@ std::pair<sycl::event, sycl::event>
     int k = ind.size();
 
     if (k == 0) {
-        // no indices to write to
         throw py::value_error("List of indices is empty.");
     }
 
     if (axis_start < 0) {
-        throw py::value_error("Axis cannot be negative.");
+        throw py::value_error("Axis start cannot be negative.");
+    }
+
+    if (axis_end < axis_start) {
+        throw py::value_error(
+            "Axis end must be greater than or equal to axis start.");
+    }
+
+    if (k != (axis_end - axis_start)) {
+        throw py::value_error("Number of indices must match axis range.");
     }
 
     if (mode != 0 && mode != 1) {
@@ -642,9 +662,10 @@ std::pair<sycl::event, sycl::event>
 
     auto sh_elems = std::max<int>(dst_nd, 1);
 
-    if (axis_start + k > sh_elems) {
-        throw py::value_error("Axes are out of range for array of dimension " +
-                              std::to_string(dst_nd));
+    if (axis_end > sh_elems) {
+        throw py::value_error(
+            "Axis end is out of range for array of dimension " +
+            std::to_string(dst_nd));
     }
     if (dst_nd == 0) {
         if (val_nd != ind_nd) {
