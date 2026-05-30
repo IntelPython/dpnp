@@ -260,6 +260,84 @@ void process_index_arrays(const std::vector<dpnp::tensor::usm_ndarray> &ind,
     }
 }
 
+void validate_axis_range(int axis_start, int axis_end, int k, int array_nd)
+{
+    if (axis_start < 0) {
+        throw py::value_error("Axis start cannot be negative.");
+    }
+
+    if (axis_end < axis_start) {
+        throw py::value_error(
+            "Axis end must be greater than or equal to axis start.");
+    }
+
+    if (k != (axis_end - axis_start)) {
+        throw py::value_error("Number of indices must match axis range.");
+    }
+
+    int sh_elems = std::max<int>(array_nd, 1);
+    if (axis_end > sh_elems) {
+        throw py::value_error(
+            "Axis end is out of range for array of dimension " +
+            std::to_string(array_nd));
+    }
+}
+
+void validate_output_shape(int inp_nd, int out_nd, int k, int ind_nd)
+{
+    int expected_out_nd = (inp_nd == 0) ? ind_nd : (inp_nd - k + ind_nd);
+
+    if (out_nd != expected_out_nd) {
+        throw py::value_error(
+            "Output array has incorrect number of dimensions. "
+            "Expected " +
+            std::to_string(expected_out_nd) + ", got " +
+            std::to_string(out_nd));
+    }
+}
+
+std::size_t validate_and_compute_orthog_shape(int inp_nd,
+                                              int k,
+                                              int ind_nd,
+                                              int axis_start,
+                                              const py::ssize_t *inp_shape,
+                                              const py::ssize_t *out_shape)
+{
+    int orthog_nd = inp_nd - k;
+    std::size_t orthog_nelems = 1;
+
+    for (int i = 0; i < orthog_nd; ++i) {
+        int inp_idx = (i < axis_start) ? i : i + k;
+        int out_idx = (i < axis_start) ? i : i + ind_nd;
+
+        if (inp_shape[inp_idx] != out_shape[out_idx]) {
+            throw py::value_error("Orthogonal axes have mismatched shapes.");
+        }
+        orthog_nelems *= static_cast<std::size_t>(inp_shape[inp_idx]);
+    }
+
+    return orthog_nelems;
+}
+
+std::size_t validate_and_compute_ind_nelems(int ind_nd,
+                                            int axis_start,
+                                            const py::ssize_t *ind_shape,
+                                            const py::ssize_t *out_shape)
+{
+    std::size_t ind_nelems = 1;
+
+    for (int i = 0; i < ind_nd; ++i) {
+        ind_nelems *= static_cast<std::size_t>(ind_shape[i]);
+
+        if (ind_shape[i] != out_shape[axis_start + i]) {
+            throw py::value_error("Indices shape does not match output shape "
+                                  "along indexed axes.");
+        }
+    }
+
+    return ind_nelems;
+}
+
 } // namespace detail
 
 std::vector<sycl::event>
@@ -390,22 +468,8 @@ std::pair<sycl::event, sycl::event>
     std::vector<dpnp::tensor::usm_ndarray> ind = parse_py_ind(exec_q, py_ind);
 
     int k = ind.size();
-
     if (k == 0) {
         throw py::value_error("List of indices is empty.");
-    }
-
-    if (axis_start < 0) {
-        throw py::value_error("Axis start cannot be negative.");
-    }
-
-    if (axis_end < axis_start) {
-        throw py::value_error(
-            "Axis end must be greater than or equal to axis start.");
-    }
-
-    if (k != (axis_end - axis_start)) {
-        throw py::value_error("Number of indices must match axis range.");
     }
 
     if (mode != 0 && mode != 1) {
@@ -414,57 +478,32 @@ std::pair<sycl::event, sycl::event>
 
     dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
-    const dpnp::tensor::usm_ndarray ind_rep = ind[0];
-
     int src_nd = src.get_ndim();
     int dst_nd = dst.get_ndim();
+
+    const dpnp::tensor::usm_ndarray &ind_rep = ind[0];
     int ind_nd = ind_rep.get_ndim();
+    const py::ssize_t *ind_shape = ind_rep.get_shape_raw();
 
-    auto sh_elems = std::max<int>(src_nd, 1);
-
-    if (axis_end > sh_elems) {
-        throw py::value_error(
-            "Axis end is out of range for array of dimension " +
-            std::to_string(src_nd));
-    }
-    if (src_nd == 0) {
-        if (dst_nd != ind_nd) {
-            throw py::value_error(
-                "Destination is not of appropriate dimension for take kernel.");
-        }
-    }
-    else {
-        if (dst_nd != (src_nd - k + ind_nd)) {
-            throw py::value_error(
-                "Destination is not of appropriate dimension for take kernel.");
-        }
-    }
+    detail::validate_axis_range(axis_start, axis_end, k, src_nd);
+    detail::validate_output_shape(src_nd, dst_nd, k, ind_nd);
 
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
 
-    bool orthog_shapes_equal(true);
-    std::size_t orthog_nelems(1);
-    for (int i = 0; i < (src_nd - k); ++i) {
-        auto idx1 = (i < axis_start) ? i : i + k;
-        auto idx2 = (i < axis_start) ? i : i + ind_nd;
-
-        orthog_nelems *= static_cast<std::size_t>(src_shape[idx1]);
-        orthog_shapes_equal =
-            orthog_shapes_equal && (src_shape[idx1] == dst_shape[idx2]);
-    }
-
-    if (!orthog_shapes_equal) {
-        throw py::value_error(
-            "Axes of basic indices are not of matching shapes.");
-    }
+    std::size_t orthog_nelems = detail::validate_and_compute_orthog_shape(
+        src_nd, k, ind_nd, axis_start, src_shape, dst_shape);
 
     if (orthog_nelems == 0) {
         return std::make_pair(sycl::event{}, sycl::event{});
     }
 
-    char *src_data = src.get_data();
-    char *dst_data = dst.get_data();
+    std::size_t ind_nelems = detail::validate_and_compute_ind_nelems(
+        ind_nd, axis_start, ind_shape, dst_shape);
+
+    if (ind_nelems == 0) {
+        return std::make_pair(sycl::event{}, sycl::event{});
+    }
 
     if (!dpnp::utils::queues_are_compatible(exec_q, {src, dst})) {
         throw py::value_error(
@@ -476,34 +515,15 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Array memory overlap.");
     }
 
-    py::ssize_t src_offset = py::ssize_t(0);
-    py::ssize_t dst_offset = py::ssize_t(0);
-
-    int src_typenum = src.get_typenum();
-    int dst_typenum = dst.get_typenum();
-
     auto array_types = td_ns::usm_ndarray_types();
-    int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
-    int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
+    int src_type_id = array_types.typenum_to_lookup_id(src.get_typenum());
+    int dst_type_id = array_types.typenum_to_lookup_id(dst.get_typenum());
 
     if (src_type_id != dst_type_id) {
         throw py::type_error("Array data types are not the same.");
     }
 
-    const py::ssize_t *ind_shape = ind_rep.get_shape_raw();
-
-    int ind_typenum = ind_rep.get_typenum();
-    int ind_type_id = array_types.typenum_to_lookup_id(ind_typenum);
-
-    std::size_t ind_nelems(1);
-    for (int i = 0; i < ind_nd; ++i) {
-        ind_nelems *= static_cast<std::size_t>(ind_shape[i]);
-
-        if (!(ind_shape[i] == dst_shape[axis_start + i])) {
-            throw py::value_error(
-                "Indices shape does not match shape of axis in destination.");
-        }
-    }
+    int ind_type_id = array_types.typenum_to_lookup_id(ind_rep.get_typenum());
 
     dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         dst, orthog_nelems * ind_nelems);
@@ -529,11 +549,10 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event{}, sycl::event{});
     }
 
+    int orthog_sh_elems = std::max<int>(src_nd - k, 1);
+
     auto packed_ind_ptrs_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<char *>(k, exec_q);
-    char **packed_ind_ptrs = packed_ind_ptrs_owner.get();
-
-    // rearrange to past where indices shapes are checked
     // packed_ind_shapes_strides = [ind_shape,
     //                              ind[0] strides,
     //                              ...,
@@ -541,15 +560,8 @@ std::pair<sycl::event, sycl::event>
     auto packed_ind_shapes_strides_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
             (k + 1) * ind_sh_elems, exec_q);
-    py::ssize_t *packed_ind_shapes_strides =
-        packed_ind_shapes_strides_owner.get();
-
     auto packed_ind_offsets_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(k, exec_q);
-    py::ssize_t *packed_ind_offsets = packed_ind_offsets_owner.get();
-
-    int orthog_sh_elems = std::max<int>(src_nd - k, 1);
-
     // packed_shapes_strides = [src_shape[:axis] + src_shape[axis+k:],
     //                          src_strides[:axis] + src_strides[axis+k:],
     //                          dst_strides[:axis] +
@@ -557,8 +569,6 @@ std::pair<sycl::event, sycl::event>
     auto packed_shapes_strides_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
             3 * orthog_sh_elems, exec_q);
-    py::ssize_t *packed_shapes_strides = packed_shapes_strides_owner.get();
-
     // packed_axes_shapes_strides = [src_shape[axis:axis+k],
     //                               src_strides[axis:axis+k],
     //                               dst_shape[axis:axis+ind.ndim],
@@ -566,8 +576,6 @@ std::pair<sycl::event, sycl::event>
     auto packed_axes_shapes_strides_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
             2 * (k + ind_sh_elems), exec_q);
-    py::ssize_t *packed_axes_shapes_strides =
-        packed_axes_shapes_strides_owner.get();
 
     auto src_strides = src.get_strides_vector();
     auto dst_strides = dst.get_strides_vector();
@@ -576,11 +584,12 @@ std::pair<sycl::event, sycl::event>
     host_task_events.reserve(2);
 
     std::vector<sycl::event> pack_deps = _populate_kernel_params(
-        exec_q, host_task_events, packed_ind_ptrs, packed_ind_shapes_strides,
-        packed_ind_offsets, packed_shapes_strides, packed_axes_shapes_strides,
-        src_shape, dst_shape, src_strides, dst_strides, ind_sh_sts, ind_ptrs,
-        ind_offsets, axis_start, k, ind_nd, src_nd, orthog_sh_elems,
-        ind_sh_elems);
+        exec_q, host_task_events, packed_ind_ptrs_owner.get(),
+        packed_ind_shapes_strides_owner.get(), packed_ind_offsets_owner.get(),
+        packed_shapes_strides_owner.get(),
+        packed_axes_shapes_strides_owner.get(), src_shape, dst_shape,
+        src_strides, dst_strides, ind_sh_sts, ind_ptrs, ind_offsets, axis_start,
+        k, ind_nd, src_nd, orthog_sh_elems, ind_sh_elems);
 
     std::vector<sycl::event> all_deps;
     all_deps.reserve(depends.size() + pack_deps.size());
@@ -597,13 +606,15 @@ std::pair<sycl::event, sycl::event>
                                  std::to_string(ind_type_id));
     }
 
+    static constexpr py::ssize_t zero_offset(0);
     sycl::event take_generic_ev =
         fn(exec_q, orthog_nelems, ind_nelems, orthog_sh_elems, ind_sh_elems, k,
-           packed_shapes_strides, packed_axes_shapes_strides,
-           packed_ind_shapes_strides, src_data, dst_data, packed_ind_ptrs,
-           src_offset, dst_offset, packed_ind_offsets, all_deps);
+           packed_shapes_strides_owner.get(),
+           packed_axes_shapes_strides_owner.get(),
+           packed_ind_shapes_strides_owner.get(), src.get_data(),
+           dst.get_data(), packed_ind_ptrs_owner.get(), zero_offset,
+           zero_offset, packed_ind_offsets_owner.get(), all_deps);
 
-    // free packed temporaries
     sycl::event temporaries_cleanup_ev =
         dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {take_generic_ev}, packed_shapes_strides_owner,
@@ -629,23 +640,10 @@ std::pair<sycl::event, sycl::event>
            const std::vector<sycl::event> &depends)
 {
     std::vector<dpnp::tensor::usm_ndarray> ind = parse_py_ind(exec_q, py_ind);
-    int k = ind.size();
 
+    int k = ind.size();
     if (k == 0) {
         throw py::value_error("List of indices is empty.");
-    }
-
-    if (axis_start < 0) {
-        throw py::value_error("Axis start cannot be negative.");
-    }
-
-    if (axis_end < axis_start) {
-        throw py::value_error(
-            "Axis end must be greater than or equal to axis start.");
-    }
-
-    if (k != (axis_end - axis_start)) {
-        throw py::value_error("Number of indices must match axis range.");
     }
 
     if (mode != 0 && mode != 1) {
@@ -654,59 +652,32 @@ std::pair<sycl::event, sycl::event>
 
     dpnp::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
-    const dpnp::tensor::usm_ndarray ind_rep = ind[0];
-
     int dst_nd = dst.get_ndim();
     int val_nd = val.get_ndim();
+
+    const dpnp::tensor::usm_ndarray &ind_rep = ind[0];
     int ind_nd = ind_rep.get_ndim();
+    const py::ssize_t *ind_shape = ind_rep.get_shape_raw();
 
-    auto sh_elems = std::max<int>(dst_nd, 1);
-
-    if (axis_end > sh_elems) {
-        throw py::value_error(
-            "Axis end is out of range for array of dimension " +
-            std::to_string(dst_nd));
-    }
-    if (dst_nd == 0) {
-        if (val_nd != ind_nd) {
-            throw py::value_error("Destination is not of appropriate dimension "
-                                  "for put function.");
-        }
-    }
-    else {
-        if (val_nd != (dst_nd - k + ind_nd)) {
-            throw py::value_error("Destination is not of appropriate dimension "
-                                  "for put function.");
-        }
-    }
-
-    std::size_t dst_nelems = dst.get_size();
+    detail::validate_axis_range(axis_start, axis_end, k, dst_nd);
+    detail::validate_output_shape(dst_nd, val_nd, k, ind_nd);
 
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     const py::ssize_t *val_shape = val.get_shape_raw();
 
-    bool orthog_shapes_equal(true);
-    std::size_t orthog_nelems(1);
-    for (int i = 0; i < (dst_nd - k); ++i) {
-        auto idx1 = (i < axis_start) ? i : i + k;
-        auto idx2 = (i < axis_start) ? i : i + ind_nd;
-
-        orthog_nelems *= static_cast<std::size_t>(dst_shape[idx1]);
-        orthog_shapes_equal =
-            orthog_shapes_equal && (dst_shape[idx1] == val_shape[idx2]);
-    }
-
-    if (!orthog_shapes_equal) {
-        throw py::value_error(
-            "Axes of basic indices are not of matching shapes.");
-    }
+    std::size_t orthog_nelems = detail::validate_and_compute_orthog_shape(
+        dst_nd, k, ind_nd, axis_start, dst_shape, val_shape);
 
     if (orthog_nelems == 0) {
-        return std::make_pair(sycl::event(), sycl::event());
+        return std::make_pair(sycl::event{}, sycl::event{});
     }
 
-    char *dst_data = dst.get_data();
-    char *val_data = val.get_data();
+    std::size_t ind_nelems = detail::validate_and_compute_ind_nelems(
+        ind_nd, axis_start, ind_shape, val_shape);
+
+    if (ind_nelems == 0) {
+        return std::make_pair(sycl::event{}, sycl::event{});
+    }
 
     if (!dpnp::utils::queues_are_compatible(exec_q, {dst, val})) {
         throw py::value_error(
@@ -718,36 +689,18 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 
-    py::ssize_t dst_offset = py::ssize_t(0);
-    py::ssize_t val_offset = py::ssize_t(0);
-
-    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
-
-    int dst_typenum = dst.get_typenum();
-    int val_typenum = val.get_typenum();
-
     auto array_types = td_ns::usm_ndarray_types();
-    int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
-    int val_type_id = array_types.typenum_to_lookup_id(val_typenum);
+    int dst_type_id = array_types.typenum_to_lookup_id(dst.get_typenum());
+    int val_type_id = array_types.typenum_to_lookup_id(val.get_typenum());
 
     if (dst_type_id != val_type_id) {
         throw py::type_error("Array data types are not the same.");
     }
 
-    const py::ssize_t *ind_shape = ind_rep.get_shape_raw();
+    int ind_type_id = array_types.typenum_to_lookup_id(ind_rep.get_typenum());
 
-    int ind_typenum = ind_rep.get_typenum();
-    int ind_type_id = array_types.typenum_to_lookup_id(ind_typenum);
-
-    std::size_t ind_nelems(1);
-    for (int i = 0; i < ind_nd; ++i) {
-        ind_nelems *= static_cast<std::size_t>(ind_shape[i]);
-
-        if (!(ind_shape[i] == val_shape[axis_start + i])) {
-            throw py::value_error(
-                "Indices shapes does not match shape of axis in vals.");
-        }
-    }
+    dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(dst,
+                                                              dst.get_size());
 
     auto ind_sh_elems = std::max<int>(ind_nd, 1);
 
@@ -768,10 +721,10 @@ std::pair<sycl::event, sycl::event>
         return std::make_pair(sycl::event{}, sycl::event{});
     }
 
+    int orthog_sh_elems = std::max<int>(dst_nd - k, 1);
+
     auto packed_ind_ptrs_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<char *>(k, exec_q);
-    char **packed_ind_ptrs = packed_ind_ptrs_owner.get();
-
     // packed_ind_shapes_strides = [ind_shape,
     //                              ind[0] strides,
     //                              ...,
@@ -779,15 +732,8 @@ std::pair<sycl::event, sycl::event>
     auto packed_ind_shapes_strides_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
             (k + 1) * ind_sh_elems, exec_q);
-    py::ssize_t *packed_ind_shapes_strides =
-        packed_ind_shapes_strides_owner.get();
-
     auto packed_ind_offsets_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(k, exec_q);
-    py::ssize_t *packed_ind_offsets = packed_ind_offsets_owner.get();
-
-    int orthog_sh_elems = std::max<int>(dst_nd - k, 1);
-
     // packed_shapes_strides = [dst_shape[:axis] + dst_shape[axis+k:],
     //                          dst_strides[:axis] + dst_strides[axis+k:],
     //                          val_strides[:axis] +
@@ -795,8 +741,6 @@ std::pair<sycl::event, sycl::event>
     auto packed_shapes_strides_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
             3 * orthog_sh_elems, exec_q);
-    py::ssize_t *packed_shapes_strides = packed_shapes_strides_owner.get();
-
     // packed_axes_shapes_strides = [dst_shape[axis:axis+k],
     //                               dst_strides[axis:axis+k],
     //                               val_shape[axis:axis+ind.ndim],
@@ -804,8 +748,6 @@ std::pair<sycl::event, sycl::event>
     auto packed_axes_shapes_strides_owner =
         dpnp::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
             2 * (k + ind_sh_elems), exec_q);
-    py::ssize_t *packed_axes_shapes_strides =
-        packed_axes_shapes_strides_owner.get();
 
     auto dst_strides = dst.get_strides_vector();
     auto val_strides = val.get_strides_vector();
@@ -814,11 +756,12 @@ std::pair<sycl::event, sycl::event>
     host_task_events.reserve(2);
 
     std::vector<sycl::event> pack_deps = _populate_kernel_params(
-        exec_q, host_task_events, packed_ind_ptrs, packed_ind_shapes_strides,
-        packed_ind_offsets, packed_shapes_strides, packed_axes_shapes_strides,
-        dst_shape, val_shape, dst_strides, val_strides, ind_sh_sts, ind_ptrs,
-        ind_offsets, axis_start, k, ind_nd, dst_nd, orthog_sh_elems,
-        ind_sh_elems);
+        exec_q, host_task_events, packed_ind_ptrs_owner.get(),
+        packed_ind_shapes_strides_owner.get(), packed_ind_offsets_owner.get(),
+        packed_shapes_strides_owner.get(),
+        packed_axes_shapes_strides_owner.get(), dst_shape, val_shape,
+        dst_strides, val_strides, ind_sh_sts, ind_ptrs, ind_offsets, axis_start,
+        k, ind_nd, dst_nd, orthog_sh_elems, ind_sh_elems);
 
     std::vector<sycl::event> all_deps;
     all_deps.reserve(depends.size() + pack_deps.size());
@@ -835,13 +778,15 @@ std::pair<sycl::event, sycl::event>
                                  std::to_string(ind_type_id));
     }
 
+    static constexpr py::ssize_t zero_offset(0);
     sycl::event put_generic_ev =
         fn(exec_q, orthog_nelems, ind_nelems, orthog_sh_elems, ind_sh_elems, k,
-           packed_shapes_strides, packed_axes_shapes_strides,
-           packed_ind_shapes_strides, dst_data, val_data, packed_ind_ptrs,
-           dst_offset, val_offset, packed_ind_offsets, all_deps);
+           packed_shapes_strides_owner.get(),
+           packed_axes_shapes_strides_owner.get(),
+           packed_ind_shapes_strides_owner.get(), dst.get_data(),
+           val.get_data(), packed_ind_ptrs_owner.get(), zero_offset,
+           zero_offset, packed_ind_offsets_owner.get(), all_deps);
 
-    // free packed temporaries
     sycl::event temporaries_cleanup_ev =
         dpnp::tensor::alloc_utils::async_smart_free(
             exec_q, {put_generic_ev}, packed_shapes_strides_owner,
