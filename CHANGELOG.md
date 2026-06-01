@@ -12,12 +12,14 @@ This release is compatible with NumPy 2.4.5.
 
 * Added C API functions for `dpnp.tensor.usm_ndarray` setters and getters to avoid ABI breakage if `dpnp.tensor.usm_ndarray` is modified [gh-2866](https://github.com/IntelPython/dpnp/pull/2866)
 * Added support for buffer protocol objects as advanced index keys in `dpnp.ndarray` [#2889](https://github.com/IntelPython/dpnp/pull/2889)
+* Added `--includes` and `--include-dir` options to the `dpnp` CLI [#2916](https://github.com/IntelPython/dpnp/pull/2916)
 
 ### Changed
 
 * Changed `dpnp.meshgrid` and `dpnp.tensor.meshgrid` to return a tuple instead of a list, aligning with NumPy 2.5+ behavior and 2025.12 version of the Python array API standard [#2854](https://github.com/IntelPython/dpnp/pull/2854)
 * Updated `searchsorted` implementations to align with the 2025.12 array API spec [gh-2902](https://github.com/IntelPython/dpnp/pull/2902)
 * Updated tests to align with NumPy 2.4.5 compatibility [gh-2920](https://github.com/IntelPython/dpnp/pull/2920)
+* Replaced `.pxi` includes in `dpnp.tensor` with modular `.pxd`/`.pyx` Cython imports [#2913](https://github.com/IntelPython/dpnp/pull/2913)
 
 ### Deprecated
 
@@ -30,6 +32,9 @@ This release is compatible with NumPy 2.4.5.
 * Fixed incorrect `dpnp.tensor.acosh` result for `complex(±0, NaN)` special case to match the Python Array API specification [#2914](https://github.com/IntelPython/dpnp/pull/2914)
 * Fixed fork PR documentation workflow failures by implementing conditional publishing strategy: upstream PRs publish to GitHub Pages with comment, fork PRs upload artifacts [#2910](https://github.com/IntelPython/dpnp/pull/2910)
 * Fixed missing `libtensor` headers in the installed `dpnp` package [#2915](https://github.com/IntelPython/dpnp/pull/2915)
+* Fixed boolean mask indexing to raise `IndexError` when mask dimensions don't match the indexed array dimensions, aligning with NumPy behavior. Previously, incompatible boolean masks silently returned incorrect results instead of raising an error [#2929](https://github.com/IntelPython/dpnp/pull/2929)
+* Fixed a bug in `astype` where casting floating point types to unsigned integral types could cause an intermediate signed integral type to overflow, leading to incorrect results [#2930](https://github.com/IntelPython/dpnp/pull/2930)
+* Fixed incorrect `dpnp.tensor.expm1` result for `complex(±0, 0)` special case on CPU to match the Python Array API specification [#2926](https://github.com/IntelPython/dpnp/pull/2926)
 
 ### Security
 
