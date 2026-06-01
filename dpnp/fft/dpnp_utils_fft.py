@@ -408,12 +408,25 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
         a = dpnp.reshape(a, local_shape)
         index = 1
 
+    if not a.flags.c_contiguous:
         # cuFFT requires input arrays to be C-contiguous (row-major)
         # for correct execution
-        if (
-            dpnp.is_cuda_backend(a) and not a.flags.c_contiguous
-        ):  # pragma: no cover
+        if dpnp.is_cuda_backend(a):  # pragma: no cover
             a = dpnp.ascontiguousarray(a)
+        else:
+            # Check if the memory footprint of the strides exceeds
+            # the number of elements.
+            # If so, copy to contiguous to avoid oversized allocation
+            # for the output array and unnecessary copy to contiguous
+            # after oneMKL FFT
+            _strides = dpnp.get_usm_ndarray(a).strides
+            _shape = a.shape
+            # max element offset reachable by the strides
+            max_disp = sum(
+                st * (sh - 1) for st, sh in zip(_strides, _shape) if st > 0
+            )
+            if (max_disp + 1) > a.size:
+                a = dpnp.ascontiguousarray(a)
 
     # w/a for cuFFT to avoid "Invalid strides" error when
     # the last dimension is 1 and there are multiple axes
