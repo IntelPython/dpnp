@@ -165,16 +165,17 @@ class TestLinearOperator:
         )
         assert lo.dtype == dtype
 
-    def test_dtype_inference_float64_default(self):
-        # Dtype inference probes matvec with a float64 vector, so the
-        # inferred dtype is float64 even when the underlying array is
-        # float32. Pin the current behaviour as a regression guard.
-        if not has_support_aspect64():
-            pytest.skip("float64 not supported on this device")
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_dtype_inference_preserves_source(self, dtype):
+        # _init_dtype probes matvec with an int8 vector (the lowest
+        # precedence numeric dtype), so the matvec's natural output
+        # dtype survives unchanged -- a float32 operator stays
+        # float32 instead of being widened to float64. Mirrors
+        # scipy/cupyx LinearOperator semantics.
         n = 4
-        a = dpnp.eye(n, dtype=dpnp.float32)
+        a = dpnp.eye(n, dtype=dtype)
         lo = LinearOperator((n, n), matvec=lambda x: a @ x)
-        assert lo.dtype == dpnp.float64
+        assert lo.dtype == dpnp.dtype(dtype)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_matvec(self, dtype):
