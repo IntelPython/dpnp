@@ -350,14 +350,15 @@ class TestAsLinearOperator:
         expected = a @ x
         assert_dtype_allclose(result, expected)
 
-    def test_dense_numpy_array_attributes_only(self):
-        # aslinearoperator(numpy_array) wraps with lambda x: A @ x where A
-        # remains a numpy array; calling matvec(dpnp_x) then fails because
-        # dpnp __rmatmul__ refuses numpy LHS. Only attributes are checked.
+    def test_dense_numpy_array_rejected(self):
+        # aslinearoperator must NOT silently host -> device upload a
+        # numpy.ndarray: dpnp's strict-coercion contract forbids
+        # implicit transfers across the host / device boundary. The
+        # user has to call dpnp.asarray() explicitly.
         n = 5
         a = generate_random_numpy_array((n, n), numpy.float64, seed_value=42)
-        lo = aslinearoperator(a)
-        assert lo.shape == (n, n)
+        with pytest.raises(TypeError, match="numpy.ndarray"):
+            aslinearoperator(a)
 
     def test_rmatvec_from_dpnp_dense(self):
         if not has_support_aspect64():
