@@ -26,10 +26,14 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import numbers
+# distutils: language = c++
+# cython: language_level=3
+
 from operator import index
 from cpython.buffer cimport PyObject_CheckBuffer
 from numpy import ndarray
+
+from ._usmarray cimport usm_ndarray
 
 
 cdef bint _is_buffer(object o):
