@@ -186,8 +186,6 @@ void validate_index_array(const dpnp::tensor::usm_ndarray &ind_,
                           int ind_nd,
                           int ind_type_id,
                           const py::ssize_t *ind_shape,
-                          const td_ns::usm_ndarray_types &array_types,
-                          const dpnp::tensor::overlap::MemoryOverlap &overlap,
                           const dpnp::tensor::usm_ndarray &other_array)
 {
     if (!dpnp::utils::queues_are_compatible(exec_q, {ind_})) {
@@ -199,7 +197,8 @@ void validate_index_array(const dpnp::tensor::usm_ndarray &ind_,
         throw py::value_error("Index dimensions are not the same");
     }
 
-    if (ind_type_id != array_types.typenum_to_lookup_id(ind_.get_typenum())) {
+    if (ind_type_id !=
+        td_ns::usm_ndarray_types().typenum_to_lookup_id(ind_.get_typenum())) {
         throw py::type_error("Indices array data types are not all the same.");
     }
 
@@ -210,7 +209,7 @@ void validate_index_array(const dpnp::tensor::usm_ndarray &ind_,
         }
     }
 
-    if (overlap(ind_, other_array)) {
+    if (dpnp::tensor::overlap::MemoryOverlap()(ind_, other_array)) {
         throw py::value_error("Arrays index overlapping segments of memory");
     }
 }
@@ -219,11 +218,8 @@ void process_index_arrays(const std::vector<dpnp::tensor::usm_ndarray> &ind,
                           sycl::queue &exec_q,
                           int k,
                           int ind_nd,
-                          int ind_sh_elems,
                           const py::ssize_t *ind_shape,
                           int ind_type_id,
-                          const td_ns::usm_ndarray_types &array_types,
-                          const dpnp::tensor::overlap::MemoryOverlap &overlap,
                           const dpnp::tensor::usm_ndarray &other_array,
                           std::vector<char *> &ind_ptrs,
                           std::vector<py::ssize_t> &ind_offsets,
@@ -234,14 +230,14 @@ void process_index_arrays(const std::vector<dpnp::tensor::usm_ndarray> &ind,
 
         if (i > 0) {
             validate_index_array(ind_, exec_q, ind_nd, ind_type_id, ind_shape,
-                                 array_types, overlap, other_array);
+                                 other_array);
         }
         else {
             if (!dpnp::utils::queues_are_compatible(exec_q, {ind_})) {
                 throw py::value_error(
                     "Execution queue is not compatible with allocation queues");
             }
-            if (overlap(ind_, other_array)) {
+            if (dpnp::tensor::overlap::MemoryOverlap()(ind_, other_array)) {
                 throw py::value_error(
                     "Arrays index overlapping segments of memory");
             }
@@ -541,13 +537,8 @@ std::pair<sycl::event, sycl::event>
         std::copy(ind_shape, ind_shape + ind_nd, ind_sh_sts.begin());
     }
 
-    detail::process_index_arrays(ind, exec_q, k, ind_nd, ind_sh_elems,
-                                 ind_shape, ind_type_id, array_types, overlap,
+    detail::process_index_arrays(ind, exec_q, k, ind_nd, ind_shape, ind_type_id,
                                  dst, ind_ptrs, ind_offsets, ind_sh_sts);
-
-    if (ind_nelems == 0) {
-        return std::make_pair(sycl::event{}, sycl::event{});
-    }
 
     int orthog_sh_elems = std::max<int>(src_nd - k, 1);
 
@@ -713,13 +704,8 @@ std::pair<sycl::event, sycl::event>
         std::copy(ind_shape, ind_shape + ind_nd, ind_sh_sts.begin());
     }
 
-    detail::process_index_arrays(ind, exec_q, k, ind_nd, ind_sh_elems,
-                                 ind_shape, ind_type_id, array_types, overlap,
+    detail::process_index_arrays(ind, exec_q, k, ind_nd, ind_shape, ind_type_id,
                                  dst, ind_ptrs, ind_offsets, ind_sh_sts);
-
-    if (ind_nelems == 0) {
-        return std::make_pair(sycl::event{}, sycl::event{});
-    }
 
     int orthog_sh_elems = std::max<int>(dst_nd - k, 1);
 
