@@ -19,6 +19,7 @@ This release is compatible with NumPy 2.4.5.
 * Changed `dpnp.meshgrid` and `dpnp.tensor.meshgrid` to return a tuple instead of a list, aligning with NumPy 2.5+ behavior and 2025.12 version of the Python array API standard [#2854](https://github.com/IntelPython/dpnp/pull/2854)
 * Updated `searchsorted` implementations to align with the 2025.12 array API spec [gh-2902](https://github.com/IntelPython/dpnp/pull/2902)
 * Updated tests to align with NumPy 2.4.5 compatibility [gh-2920](https://github.com/IntelPython/dpnp/pull/2920)
+* Replaced `.pxi` includes in `dpnp.tensor` with modular `.pxd`/`.pyx` Cython imports [#2913](https://github.com/IntelPython/dpnp/pull/2913)
 
 ### Deprecated
 
