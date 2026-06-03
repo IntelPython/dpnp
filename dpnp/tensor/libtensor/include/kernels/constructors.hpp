@@ -344,7 +344,6 @@ sycl::event full_strided_impl(sycl::queue &q,
 /* ================ Eye ================== */
 
 typedef sycl::event (*eye_fn_ptr_t)(sycl::queue &,
-                                    std::size_t nelems, // num_elements
                                     ssize_t rows,
                                     ssize_t cols,
                                     ssize_t k,
@@ -389,7 +388,6 @@ public:
  * @brief Function to populate 2D array with eye matrix.
  *
  * @param exec_q  Sycl queue to which kernel is submitted for execution.
- * @param nelems  Number of elements to assign.
  * @param rows    Number of rows in the matrix.
  * @param cols    Number of columns in the matrix.
  * @param k       Diagonal offset (0 for main diagonal, positive for upper,
@@ -405,7 +403,6 @@ public:
  */
 template <typename Ty>
 sycl::event eye_impl(sycl::queue &exec_q,
-                     std::size_t nelems,
                      const ssize_t rows,
                      const ssize_t cols,
                      const ssize_t k,

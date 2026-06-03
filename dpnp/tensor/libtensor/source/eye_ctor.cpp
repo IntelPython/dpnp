@@ -80,6 +80,10 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t nelems = dst.get_size();
     const py::ssize_t rows = dst.get_shape(0);
     const py::ssize_t cols = dst.get_shape(1);
+    if (rows * cols != nelems) {
+        throw py::value_error("usm_ndarray_eye: Array size does not match "
+                              "shape");
+    }
     if (rows == 0 || cols == 0) {
         // nothing to do
         return std::make_pair(sycl::event{}, sycl::event{});
@@ -110,8 +114,7 @@ std::pair<sycl::event, sycl::event>
 
     auto fn = eye_dispatch_vector[dst_typeid];
     sycl::event eye_event =
-        fn(exec_q, static_cast<std::size_t>(nelems), rows, cols, k, stride0,
-           stride1, dst.get_data(), depends);
+        fn(exec_q, rows, cols, k, stride0, stride1, dst.get_data(), depends);
 
     using dpnp::utils::keep_args_alive;
     return std::make_pair(keep_args_alive(exec_q, {dst}, {eye_event}),
