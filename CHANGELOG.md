@@ -20,6 +20,7 @@ This release is compatible with NumPy 2.4.5.
 * Updated `searchsorted` implementations to align with the 2025.12 array API spec [gh-2902](https://github.com/IntelPython/dpnp/pull/2902)
 * Updated tests to align with NumPy 2.4.5 compatibility [gh-2920](https://github.com/IntelPython/dpnp/pull/2920)
 * Replaced `.pxi` includes in `dpnp.tensor` with modular `.pxd`/`.pyx` Cython imports [#2913](https://github.com/IntelPython/dpnp/pull/2913)
+* Reimplemented `dpnp.eye` and `dpnp.tensor.eye` with a branchless kernel [gh-2937](https://github.com/IntelPython/dpnp/pull/2937)
 
 ### Deprecated
 
