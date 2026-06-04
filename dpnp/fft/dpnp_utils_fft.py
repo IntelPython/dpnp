@@ -421,7 +421,9 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
             # after oneMKL FFT
             _strides = dpnp.get_usm_ndarray(a).strides
             _shape = a.shape
-            # max element offset reachable by the strides
+            # Max element displacement reachable by the strides.
+            # Negative strides are handled by _copy_array, so only
+            # positive strides are possible here
             max_disp = sum(
                 st * (sh - 1) for st, sh in zip(_strides, _shape) if st > 0
             )
