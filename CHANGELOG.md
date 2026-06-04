@@ -21,6 +21,7 @@ This release is compatible with NumPy 2.4.5.
 * Updated tests to align with NumPy 2.4.5 compatibility [gh-2920](https://github.com/IntelPython/dpnp/pull/2920)
 * Replaced `.pxi` includes in `dpnp.tensor` with modular `.pxd`/`.pyx` Cython imports [#2913](https://github.com/IntelPython/dpnp/pull/2913)
 * Reimplemented `dpnp.eye` and `dpnp.tensor.eye` with a branchless kernel [gh-2937](https://github.com/IntelPython/dpnp/pull/2937)
+* Cleaned up Python bindings for indexing functions, renaming `usm_ndarray_take` and `usm_ndarray_put` to `py_take` and `py_put` and refactoring validation [gh-2935](https://github.com/IntelPython/dpnp/pull/2935)
 
 ### Deprecated
 
