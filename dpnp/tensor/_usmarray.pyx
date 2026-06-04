@@ -46,7 +46,6 @@ from ._print import usm_ndarray_repr, usm_ndarray_str
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
 from cpython.mem cimport PyMem_Free
-from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
 from . cimport _dlpack as c_dlpack
 
@@ -56,9 +55,51 @@ from . import _flags
 from ._dlpack import get_build_dlpack_version
 from ._tensor_impl import default_device_fp_type
 
-include "_stride_utils.pxi"
-include "_types.pxi"
-include "_slicing.pxi"
+from ._slicing cimport _is_buffer
+
+from ._slicing import _basic_slice_meta
+
+from ._stride_utils cimport (
+    ERROR_INCORRECT_ORDER,
+    ERROR_MALLOC,
+    ERROR_UNEXPECTED_STRIDES,
+    _c_contig_strides,
+    _f_contig_strides,
+    _from_input_shape_strides,
+    _make_int_tuple,
+    _make_reversed_int_tuple,
+    _swap_last_two,
+    shape_to_elem_count,
+)
+from ._types cimport (
+    _make_typestr,
+    dtype_to_typenum,
+    type_bytesize,
+)
+
+
+# Public API constants initialized from usm_ndarray_constants.h
+cdef int USM_ARRAY_C_CONTIGUOUS = USM_ARRAY_C_CONTIGUOUS_VALUE
+cdef int USM_ARRAY_F_CONTIGUOUS = USM_ARRAY_F_CONTIGUOUS_VALUE
+cdef int USM_ARRAY_WRITABLE = USM_ARRAY_WRITABLE_VALUE
+
+cdef int UAR_BOOL = UAR_BOOL_VALUE
+cdef int UAR_BYTE = UAR_BYTE_VALUE
+cdef int UAR_UBYTE = UAR_UBYTE_VALUE
+cdef int UAR_SHORT = UAR_SHORT_VALUE
+cdef int UAR_USHORT = UAR_USHORT_VALUE
+cdef int UAR_INT = UAR_INT_VALUE
+cdef int UAR_UINT = UAR_UINT_VALUE
+cdef int UAR_LONG = UAR_LONG_VALUE
+cdef int UAR_ULONG = UAR_ULONG_VALUE
+cdef int UAR_LONGLONG = UAR_LONGLONG_VALUE
+cdef int UAR_ULONGLONG = UAR_ULONGLONG_VALUE
+cdef int UAR_FLOAT = UAR_FLOAT_VALUE
+cdef int UAR_DOUBLE = UAR_DOUBLE_VALUE
+cdef int UAR_CFLOAT = UAR_CFLOAT_VALUE
+cdef int UAR_CDOUBLE = UAR_CDOUBLE_VALUE
+cdef int UAR_TYPE_SENTINEL = UAR_TYPE_SENTINEL_VALUE
+cdef int UAR_HALF = UAR_HALF_VALUE
 
 
 class DLDeviceType(IntEnum):
@@ -1738,6 +1779,238 @@ cdef usm_ndarray _zero_like(usm_ndarray ary):
     )
     r.base_.memset()
     return r
+
+
+cdef api char* UsmNDArray_GetData(usm_ndarray arr):
+    """Get allocation pointer of zero index element of array """
+    return arr.get_data()
+
+
+cdef api int UsmNDArray_GetNDim(usm_ndarray arr):
+    """Get array rank: length of its shape"""
+    return arr.get_ndim()
+
+
+cdef api Py_ssize_t* UsmNDArray_GetShape(usm_ndarray arr):
+    """Get host pointer to shape vector"""
+    return arr.get_shape()
+
+
+cdef api Py_ssize_t* UsmNDArray_GetStrides(usm_ndarray arr):
+    """Get host pointer to strides vector"""
+    return arr.get_strides()
+
+
+cdef api int UsmNDArray_GetTypenum(usm_ndarray arr):
+    """Get type number for data type of array elements"""
+    return arr.get_typenum()
+
+
+cdef api int UsmNDArray_GetElementSize(usm_ndarray arr):
+    """Get array element size in bytes"""
+    return arr.get_itemsize()
+
+
+cdef api int UsmNDArray_GetFlags(usm_ndarray arr):
+    """Get flags of array"""
+    return arr.get_flags()
+
+
+cdef api c_dpctl.DPCTLSyclQueueRef UsmNDArray_GetQueueRef(usm_ndarray arr):
+    """Get DPCTLSyclQueueRef for queue associated with the array"""
+    return arr.get_queue_ref()
+
+
+cdef api Py_ssize_t UsmNDArray_GetOffset(usm_ndarray arr):
+    """Get offset of zero-index array element from the beginning of the USM
+    allocation"""
+    return arr.get_offset()
+
+
+cdef api object UsmNDArray_GetUSMData(usm_ndarray arr):
+    """Get USM data object underlying the array"""
+    return arr.get_base()
+
+
+cdef api void UsmNDArray_SetWritableFlag(usm_ndarray arr, int flag):
+    """Set/unset USM_ARRAY_WRITABLE in the given array `arr`."""
+    arr._set_writable_flag(flag)
+
+
+cdef api object UsmNDArray_MakeSimpleFromMemory(
+    int nd, const Py_ssize_t *shape, int typenum,
+    c_dpmem._Memory mobj, Py_ssize_t offset, char order
+):
+    """Create contiguous usm_ndarray.
+
+    Args:
+        nd: number of dimensions (non-negative)
+        shape: array of nd non-negative array's sizes along each dimension
+        typenum: array elemental type number
+        ptr: pointer to the start of allocation
+        QRef: DPCTLSyclQueueRef associated with the allocation
+        offset: distance between element with zero multi-index and the
+                start of allocation
+        order: Memory layout of the array. Use 'C' for C-contiguous or
+               row-major layout; 'F' for F-contiguous or column-major layout
+    Returns:
+        Created usm_ndarray instance
+    """
+    cdef object shape_tuple = _make_int_tuple(nd, <Py_ssize_t *>shape)
+    cdef usm_ndarray arr = usm_ndarray(
+        shape_tuple,
+        dtype=_make_typestr(typenum),
+        buffer=mobj,
+        offset=offset,
+        order=<bytes>(order)
+    )
+    return arr
+
+
+cdef api object UsmNDArray_MakeSimpleFromPtr(
+    size_t nelems,
+    int typenum,
+    c_dpctl.DPCTLSyclUSMRef ptr,
+    c_dpctl.DPCTLSyclQueueRef QRef,
+    object owner
+):
+    """Create 1D contiguous usm_ndarray from pointer.
+
+    Args:
+        nelems: number of elements in array
+        typenum: array elemental type number
+        ptr: pointer to the start of allocation
+        QRef: DPCTLSyclQueueRef associated with the allocation
+        owner: Python object managing lifetime of USM allocation.
+               Value None implies transfer of USM allocation ownership
+               to the created array object.
+    Returns:
+        Created usm_ndarray instance
+    """
+    cdef int itemsize = type_bytesize(typenum)
+    if (itemsize < 1):
+        raise ValueError(
+            "dtype with typenum=" + str(typenum) + " is not supported."
+        )
+    cdef size_t nbytes = (<size_t> itemsize) * nelems
+    cdef c_dpmem._Memory mobj
+    mobj = c_dpmem._Memory.create_from_usm_pointer_size_qref(
+        ptr, nbytes, QRef, memory_owner=owner
+    )
+    cdef usm_ndarray arr = usm_ndarray(
+        (nelems,),
+        dtype=_make_typestr(typenum),
+        buffer=mobj
+    )
+    return arr
+
+cdef api object UsmNDArray_MakeFromPtr(
+    int nd,
+    const Py_ssize_t *shape,
+    int typenum,
+    const Py_ssize_t *strides,
+    c_dpctl.DPCTLSyclUSMRef ptr,
+    c_dpctl.DPCTLSyclQueueRef QRef,
+    Py_ssize_t offset,
+    object owner
+):
+    """
+    General usm_ndarray constructor from externally made USM-allocation.
+
+    Args:
+        nd: number of dimensions (non-negative)
+        shape: array of nd non-negative array's sizes along each dimension
+        typenum: array elemental type number
+        strides: array of nd strides along each dimension in elements
+        ptr: pointer to the start of allocation
+        QRef: DPCTLSyclQueueRef associated with the allocation
+        offset: distance between element with zero multi-index and the
+                start of allocation
+        owner: Python object managing lifetime of USM allocation.
+               Value None implies transfer of USM allocation ownership
+               to the created array object.
+    Returns:
+        Created usm_ndarray instance
+    """
+    cdef int itemsize = type_bytesize(typenum)
+    cdef size_t nelems = 1
+    cdef Py_ssize_t min_disp = 0
+    cdef Py_ssize_t max_disp = 0
+    cdef Py_ssize_t step_ = 0
+    cdef Py_ssize_t dim_ = 0
+    cdef it = 0
+    cdef c_dpmem._Memory mobj
+    cdef usm_ndarray arr
+    cdef object obj_shape
+    cdef object obj_strides
+
+    if (itemsize < 1):
+        raise ValueError(
+            "dtype with typenum=" + str(typenum) + " is not supported."
+        )
+    if (nd < 0):
+        raise ValueError("Dimensionality must be non-negative")
+    if (ptr is NULL or QRef is NULL):
+        raise ValueError(
+            "Non-null USM allocation pointer and QRef are expected"
+        )
+    if (nd == 0):
+        # case of 0d scalars
+        mobj = c_dpmem._Memory.create_from_usm_pointer_size_qref(
+            ptr, itemsize, QRef, memory_owner=owner
+        )
+        arr = usm_ndarray(
+            tuple(),
+            dtype=_make_typestr(typenum),
+            buffer=mobj
+        )
+        return arr
+    if (shape is NULL or strides is NULL):
+        raise ValueError("Both shape and stride vectors are required")
+    for it in range(nd):
+        dim_ = shape[it]
+        if dim_ < 0:
+            raise ValueError(
+                f"Dimension along axis {it} must be non-negative"
+            )
+        nelems *= dim_
+        if dim_ > 0:
+            step_ = strides[it]
+            if step_ > 0:
+                max_disp += step_ * (dim_ - 1)
+            else:
+                min_disp += step_ * (dim_ - 1)
+
+    obj_shape = _make_int_tuple(nd, shape)
+    obj_strides = _make_int_tuple(nd, strides)
+    if nelems == 0:
+        mobj = c_dpmem._Memory.create_from_usm_pointer_size_qref(
+            ptr, itemsize, QRef, memory_owner=owner
+        )
+        arr = usm_ndarray(
+            obj_shape,
+            dtype=_make_typestr(typenum),
+            strides=obj_strides,
+            buffer=mobj,
+            offset=0
+        )
+        return arr
+    if offset + min_disp < 0:
+        raise ValueError(
+            "Given shape, strides and offset reference out-of-bound memory"
+        )
+    nbytes = (<size_t> itemsize) * (offset + max_disp + 1)
+    mobj = c_dpmem._Memory.create_from_usm_pointer_size_qref(
+        ptr, nbytes, QRef, memory_owner=owner
+    )
+    arr = usm_ndarray(
+        obj_shape,
+        dtype=_make_typestr(typenum),
+        strides=obj_strides,
+        buffer=mobj,
+        offset=offset
+    )
+    return arr
 
 
 def _is_object_with_buffer_protocol(o):

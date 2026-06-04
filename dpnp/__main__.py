@@ -39,10 +39,19 @@ def _dpnp_dir() -> str:
     return abs_dpnp_dir
 
 
+def get_include_dir() -> str:
+    """Returns path to dpnp include directory containing dpnp4pybind11.hpp"""
+    return os.path.join(_dpnp_dir(), "backend", "include")
+
+
+def print_include_flags() -> None:
+    """Prints include flags for dpnp headers"""
+    print("-I " + get_include_dir())
+
+
 def get_tensor_include_dir() -> str:
-    """Prints path to dpnp libtensor include directory"""
-    dpnp_dir = _dpnp_dir()
-    libtensor_dir = os.path.join(dpnp_dir, "tensor", "libtensor", "include")
+    """Returns path to dpnp libtensor include directory"""
+    libtensor_dir = os.path.join(_dpnp_dir(), "tensor", "libtensor", "include")
     return libtensor_dir
 
 
@@ -56,6 +65,16 @@ def main() -> None:
     """Main entry-point."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "--includes",
+        action="store_true",
+        help="Include flags for dpnp headers.",
+    )
+    parser.add_argument(
+        "--include-dir",
+        action="store_true",
+        help="Path to dpnp include directory.",
+    )
+    parser.add_argument(
         "--tensor-includes",
         action="store_true",
         help="Include flags for dpnp libtensor headers.",
@@ -68,6 +87,10 @@ def main() -> None:
     args = parser.parse_args()
     if not sys.argv[1:]:
         parser.print_help()
+    if args.includes:
+        print_include_flags()
+    if args.include_dir:
+        print(get_include_dir())
     if args.tensor_includes:
         print_tensor_include_flags()
     if args.tensor_include_dir:

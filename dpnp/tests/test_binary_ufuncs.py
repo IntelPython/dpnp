@@ -1014,16 +1014,21 @@ class TestRationalFunctions:
         result = getattr(dpnp, func)(ia, b)
         assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("dt", [numpy.int32, numpy.int64])
-    def test_gcd_overflow(self, dt):
-        a = dt(numpy.iinfo(dt).min)  # negative power of two
-        ia = dpnp.array(a)
-        q = -(a // 4)
+    @pytest.mark.parametrize("sign", [1, -1])
+    @pytest.mark.parametrize("dt", get_integer_dtypes(no_unsigned=True))
+    def test_gcd_overflow(self, sign, dt):
+        a = dt(numpy.iinfo(dt).min)  # INT_MIN
+        q = (a // 4) * sign
+        ia, iq = dpnp.array(a), dpnp.array(q)
 
         # verify that we don't overflow when taking abs(x)
         # not relevant for lcm, where the result is unrepresentable anyway
-        expected = numpy.gcd(a, q)
-        result = dpnp.gcd(ia, q)
+        expected = numpy.gcd(a, q * 3)
+        result = dpnp.gcd(ia, iq * 3)
+        assert_array_equal(result, expected)
+
+        expected = numpy.gcd(q * 3, a)
+        result = dpnp.gcd(iq * 3, ia)
         assert_array_equal(result, expected)
 
     def test_lcm_overflow(self):

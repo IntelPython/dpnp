@@ -32,9 +32,10 @@
 #include "dpctl4pybind11.hpp"
 
 // Include generated Cython headers for usm_ndarray
-// (struct definition and constants only)
 #include "dpnp/tensor/_usmarray.h"
 #include "dpnp/tensor/_usmarray_api.h"
+// Include usm_ndarray constants (flags, type numbers)
+#include "../../tensor/include/usm_ndarray_constants.h"
 
 #include <array>
 #include <cassert>
@@ -76,6 +77,37 @@ class dpnp_capi
 {
 public:
     PyTypeObject *PyUSMArrayType_;
+
+    char *(*UsmNDArray_GetData_)(PyUSMArrayObject *);
+    int (*UsmNDArray_GetNDim_)(PyUSMArrayObject *);
+    py::ssize_t *(*UsmNDArray_GetShape_)(PyUSMArrayObject *);
+    py::ssize_t *(*UsmNDArray_GetStrides_)(PyUSMArrayObject *);
+    int (*UsmNDArray_GetTypenum_)(PyUSMArrayObject *);
+    int (*UsmNDArray_GetElementSize_)(PyUSMArrayObject *);
+    int (*UsmNDArray_GetFlags_)(PyUSMArrayObject *);
+    DPCTLSyclQueueRef (*UsmNDArray_GetQueueRef_)(PyUSMArrayObject *);
+    py::ssize_t (*UsmNDArray_GetOffset_)(PyUSMArrayObject *);
+    PyObject *(*UsmNDArray_GetUSMData_)(PyUSMArrayObject *);
+    void (*UsmNDArray_SetWritableFlag_)(PyUSMArrayObject *, int);
+    PyObject *(*UsmNDArray_MakeSimpleFromMemory_)(int,
+                                                  const py::ssize_t *,
+                                                  int,
+                                                  Py_MemoryObject *,
+                                                  py::ssize_t,
+                                                  char);
+    PyObject *(*UsmNDArray_MakeSimpleFromPtr_)(size_t,
+                                               int,
+                                               DPCTLSyclUSMRef,
+                                               DPCTLSyclQueueRef,
+                                               PyObject *);
+    PyObject *(*UsmNDArray_MakeFromPtr_)(int,
+                                         const py::ssize_t *,
+                                         int,
+                                         const py::ssize_t *,
+                                         DPCTLSyclUSMRef,
+                                         DPCTLSyclQueueRef,
+                                         py::ssize_t,
+                                         PyObject *);
 
     int USM_ARRAY_C_CONTIGUOUS_;
     int USM_ARRAY_F_CONTIGUOUS_;
@@ -119,7 +151,15 @@ private:
     std::shared_ptr<py::object> default_usm_ndarray_;
 
     dpnp_capi()
-        : PyUSMArrayType_(nullptr), USM_ARRAY_C_CONTIGUOUS_(0),
+        : PyUSMArrayType_(nullptr), UsmNDArray_GetData_(nullptr),
+          UsmNDArray_GetNDim_(nullptr), UsmNDArray_GetShape_(nullptr),
+          UsmNDArray_GetStrides_(nullptr), UsmNDArray_GetTypenum_(nullptr),
+          UsmNDArray_GetElementSize_(nullptr), UsmNDArray_GetFlags_(nullptr),
+          UsmNDArray_GetQueueRef_(nullptr), UsmNDArray_GetOffset_(nullptr),
+          UsmNDArray_GetUSMData_(nullptr), UsmNDArray_SetWritableFlag_(nullptr),
+          UsmNDArray_MakeSimpleFromMemory_(nullptr),
+          UsmNDArray_MakeSimpleFromPtr_(nullptr),
+          UsmNDArray_MakeFromPtr_(nullptr), USM_ARRAY_C_CONTIGUOUS_(0),
           USM_ARRAY_F_CONTIGUOUS_(0), USM_ARRAY_WRITABLE_(0), UAR_BOOL_(-1),
           UAR_BYTE_(-1), UAR_UBYTE_(-1), UAR_SHORT_(-1), UAR_USHORT_(-1),
           UAR_INT_(-1), UAR_UINT_(-1), UAR_LONG_(-1), UAR_ULONG_(-1),
@@ -135,47 +175,64 @@ private:
 
         this->PyUSMArrayType_ = &PyUSMArrayType;
 
-        // constants
-        this->USM_ARRAY_C_CONTIGUOUS_ = USM_ARRAY_C_CONTIGUOUS;
-        this->USM_ARRAY_F_CONTIGUOUS_ = USM_ARRAY_F_CONTIGUOUS;
-        this->USM_ARRAY_WRITABLE_ = USM_ARRAY_WRITABLE;
-        this->UAR_BOOL_ = UAR_BOOL;
-        this->UAR_BYTE_ = UAR_BYTE;
-        this->UAR_UBYTE_ = UAR_UBYTE;
-        this->UAR_SHORT_ = UAR_SHORT;
-        this->UAR_USHORT_ = UAR_USHORT;
-        this->UAR_INT_ = UAR_INT;
-        this->UAR_UINT_ = UAR_UINT;
-        this->UAR_LONG_ = UAR_LONG;
-        this->UAR_ULONG_ = UAR_ULONG;
-        this->UAR_LONGLONG_ = UAR_LONGLONG;
-        this->UAR_ULONGLONG_ = UAR_ULONGLONG;
-        this->UAR_FLOAT_ = UAR_FLOAT;
-        this->UAR_DOUBLE_ = UAR_DOUBLE;
-        this->UAR_CFLOAT_ = UAR_CFLOAT;
-        this->UAR_CDOUBLE_ = UAR_CDOUBLE;
-        this->UAR_TYPE_SENTINEL_ = UAR_TYPE_SENTINEL;
-        this->UAR_HALF_ = UAR_HALF;
+        // dpnp.tensor.usm_ndarray API
+        this->UsmNDArray_GetData_ = UsmNDArray_GetData;
+        this->UsmNDArray_GetNDim_ = UsmNDArray_GetNDim;
+        this->UsmNDArray_GetShape_ = UsmNDArray_GetShape;
+        this->UsmNDArray_GetStrides_ = UsmNDArray_GetStrides;
+        this->UsmNDArray_GetTypenum_ = UsmNDArray_GetTypenum;
+        this->UsmNDArray_GetElementSize_ = UsmNDArray_GetElementSize;
+        this->UsmNDArray_GetFlags_ = UsmNDArray_GetFlags;
+        this->UsmNDArray_GetQueueRef_ = UsmNDArray_GetQueueRef;
+        this->UsmNDArray_GetOffset_ = UsmNDArray_GetOffset;
+        this->UsmNDArray_GetUSMData_ = UsmNDArray_GetUSMData;
+        this->UsmNDArray_SetWritableFlag_ = UsmNDArray_SetWritableFlag;
+        this->UsmNDArray_MakeSimpleFromMemory_ =
+            UsmNDArray_MakeSimpleFromMemory;
+        this->UsmNDArray_MakeSimpleFromPtr_ = UsmNDArray_MakeSimpleFromPtr;
+        this->UsmNDArray_MakeFromPtr_ = UsmNDArray_MakeFromPtr;
+
+        // constants from usm_ndarray_constants.h
+        this->USM_ARRAY_C_CONTIGUOUS_ = USM_ARRAY_C_CONTIGUOUS_VALUE;
+        this->USM_ARRAY_F_CONTIGUOUS_ = USM_ARRAY_F_CONTIGUOUS_VALUE;
+        this->USM_ARRAY_WRITABLE_ = USM_ARRAY_WRITABLE_VALUE;
+        this->UAR_BOOL_ = UAR_BOOL_VALUE;
+        this->UAR_BYTE_ = UAR_BYTE_VALUE;
+        this->UAR_UBYTE_ = UAR_UBYTE_VALUE;
+        this->UAR_SHORT_ = UAR_SHORT_VALUE;
+        this->UAR_USHORT_ = UAR_USHORT_VALUE;
+        this->UAR_INT_ = UAR_INT_VALUE;
+        this->UAR_UINT_ = UAR_UINT_VALUE;
+        this->UAR_LONG_ = UAR_LONG_VALUE;
+        this->UAR_ULONG_ = UAR_ULONG_VALUE;
+        this->UAR_LONGLONG_ = UAR_LONGLONG_VALUE;
+        this->UAR_ULONGLONG_ = UAR_ULONGLONG_VALUE;
+        this->UAR_FLOAT_ = UAR_FLOAT_VALUE;
+        this->UAR_DOUBLE_ = UAR_DOUBLE_VALUE;
+        this->UAR_CFLOAT_ = UAR_CFLOAT_VALUE;
+        this->UAR_CDOUBLE_ = UAR_CDOUBLE_VALUE;
+        this->UAR_TYPE_SENTINEL_ = UAR_TYPE_SENTINEL_VALUE;
+        this->UAR_HALF_ = UAR_HALF_VALUE;
 
         // deduced disjoint types
-        this->UAR_INT8_ = UAR_BYTE;
-        this->UAR_UINT8_ = UAR_UBYTE;
-        this->UAR_INT16_ = UAR_SHORT;
-        this->UAR_UINT16_ = UAR_USHORT;
+        this->UAR_INT8_ = UAR_BYTE_VALUE;
+        this->UAR_UINT8_ = UAR_UBYTE_VALUE;
+        this->UAR_INT16_ = UAR_SHORT_VALUE;
+        this->UAR_UINT16_ = UAR_USHORT_VALUE;
         this->UAR_INT32_ =
             platform_typeid_lookup<std::int32_t, long, int, short>(
-                UAR_LONG, UAR_INT, UAR_SHORT);
+                UAR_LONG_VALUE, UAR_INT_VALUE, UAR_SHORT_VALUE);
         this->UAR_UINT32_ =
             platform_typeid_lookup<std::uint32_t, unsigned long, unsigned int,
-                                   unsigned short>(UAR_ULONG, UAR_UINT,
-                                                   UAR_USHORT);
+                                   unsigned short>(
+                UAR_ULONG_VALUE, UAR_UINT_VALUE, UAR_USHORT_VALUE);
         this->UAR_INT64_ =
             platform_typeid_lookup<std::int64_t, long, long long, int>(
-                UAR_LONG, UAR_LONGLONG, UAR_INT);
+                UAR_LONG_VALUE, UAR_LONGLONG_VALUE, UAR_INT_VALUE);
         this->UAR_UINT64_ =
             platform_typeid_lookup<std::uint64_t, unsigned long,
                                    unsigned long long, unsigned int>(
-                UAR_ULONG, UAR_ULONGLONG, UAR_UINT);
+                UAR_ULONG_VALUE, UAR_ULONGLONG_VALUE, UAR_UINT_VALUE);
 
         py::object py_default_usm_memory =
             ::dpctl::detail::dpctl_capi::get().default_usm_memory_pyobj();
@@ -269,7 +326,9 @@ public:
     char *get_data() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
-        return raw_ar->data_;
+
+        auto const &api = detail::dpnp_capi::get();
+        return api.UsmNDArray_GetData_(raw_ar);
     }
 
     template <typename T>
@@ -281,13 +340,17 @@ public:
     int get_ndim() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
-        return raw_ar->nd_;
+
+        auto const &api = detail::dpnp_capi::get();
+        return api.UsmNDArray_GetNDim_(raw_ar);
     }
 
     const py::ssize_t *get_shape_raw() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
-        return raw_ar->shape_;
+
+        auto const &api = detail::dpnp_capi::get();
+        return api.UsmNDArray_GetShape_(raw_ar);
     }
 
     std::vector<py::ssize_t> get_shape_vector() const
@@ -308,7 +371,9 @@ public:
     const py::ssize_t *get_strides_raw() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
-        return raw_ar->strides_;
+
+        auto const &api = detail::dpnp_capi::get();
+        return api.UsmNDArray_GetStrides_(raw_ar);
     }
 
     std::vector<py::ssize_t> get_strides_vector() const
@@ -343,8 +408,9 @@ public:
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
 
-        int ndim = raw_ar->nd_;
-        const py::ssize_t *shape = raw_ar->shape_;
+        auto const &api = detail::dpnp_capi::get();
+        int ndim = api.UsmNDArray_GetNDim_(raw_ar);
+        const py::ssize_t *shape = api.UsmNDArray_GetShape_(raw_ar);
 
         py::ssize_t nelems = 1;
         for (int i = 0; i < ndim; ++i) {
@@ -359,9 +425,10 @@ public:
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
 
-        int nd = raw_ar->nd_;
-        const py::ssize_t *shape = raw_ar->shape_;
-        const py::ssize_t *strides = raw_ar->strides_;
+        auto const &api = detail::dpnp_capi::get();
+        int nd = api.UsmNDArray_GetNDim_(raw_ar);
+        const py::ssize_t *shape = api.UsmNDArray_GetShape_(raw_ar);
+        const py::ssize_t *strides = api.UsmNDArray_GetStrides_(raw_ar);
 
         py::ssize_t offset_min = 0;
         py::ssize_t offset_max = 0;
@@ -389,77 +456,43 @@ public:
     sycl::queue get_queue() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
-        Py_MemoryObject *mem_obj =
-            reinterpret_cast<Py_MemoryObject *>(raw_ar->base_);
 
-        auto const &dpctl_api = ::dpctl::detail::dpctl_capi::get();
-        DPCTLSyclQueueRef QRef = dpctl_api.Memory_GetQueueRef_(mem_obj);
+        auto const &api = detail::dpnp_capi::get();
+        DPCTLSyclQueueRef QRef = api.UsmNDArray_GetQueueRef_(raw_ar);
         return *(reinterpret_cast<sycl::queue *>(QRef));
     }
 
     sycl::device get_device() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
-        Py_MemoryObject *mem_obj =
-            reinterpret_cast<Py_MemoryObject *>(raw_ar->base_);
 
-        auto const &dpctl_api = ::dpctl::detail::dpctl_capi::get();
-        DPCTLSyclQueueRef QRef = dpctl_api.Memory_GetQueueRef_(mem_obj);
+        auto const &api = detail::dpnp_capi::get();
+        DPCTLSyclQueueRef QRef = api.UsmNDArray_GetQueueRef_(raw_ar);
         return reinterpret_cast<sycl::queue *>(QRef)->get_device();
     }
 
     int get_typenum() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
-        return raw_ar->typenum_;
+
+        auto const &api = detail::dpnp_capi::get();
+        return api.UsmNDArray_GetTypenum_(raw_ar);
     }
 
     int get_flags() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
-        return raw_ar->flags_;
+
+        auto const &api = detail::dpnp_capi::get();
+        return api.UsmNDArray_GetFlags_(raw_ar);
     }
 
     int get_elemsize() const
     {
-        int typenum = get_typenum();
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
+
         auto const &api = detail::dpnp_capi::get();
-
-        // Lookup table for element sizes based on typenum
-        if (typenum == api.UAR_BOOL_)
-            return 1;
-        if (typenum == api.UAR_BYTE_)
-            return 1;
-        if (typenum == api.UAR_UBYTE_)
-            return 1;
-        if (typenum == api.UAR_SHORT_)
-            return 2;
-        if (typenum == api.UAR_USHORT_)
-            return 2;
-        if (typenum == api.UAR_INT_)
-            return 4;
-        if (typenum == api.UAR_UINT_)
-            return 4;
-        if (typenum == api.UAR_LONG_)
-            return sizeof(long);
-        if (typenum == api.UAR_ULONG_)
-            return sizeof(unsigned long);
-        if (typenum == api.UAR_LONGLONG_)
-            return 8;
-        if (typenum == api.UAR_ULONGLONG_)
-            return 8;
-        if (typenum == api.UAR_FLOAT_)
-            return 4;
-        if (typenum == api.UAR_DOUBLE_)
-            return 8;
-        if (typenum == api.UAR_CFLOAT_)
-            return 8;
-        if (typenum == api.UAR_CDOUBLE_)
-            return 16;
-        if (typenum == api.UAR_HALF_)
-            return 2;
-
-        return 0; // Unknown type
+        return api.UsmNDArray_GetElementSize_(raw_ar);
     }
 
     bool is_c_contiguous() const
@@ -487,9 +520,10 @@ public:
     py::object get_usm_data() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
+
+        auto const &api = detail::dpnp_capi::get();
         // base_ is the Memory object - return new reference
-        PyObject *usm_data = raw_ar->base_;
-        Py_XINCREF(usm_data);
+        PyObject *usm_data = api.UsmNDArray_GetUSMData_(raw_ar);
 
         // pass reference ownership to py::object
         return py::reinterpret_steal<py::object>(usm_data);
@@ -498,10 +532,13 @@ public:
     bool is_managed_by_smart_ptr() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
-        PyObject *usm_data = raw_ar->base_;
+
+        auto const &api = detail::dpnp_capi::get();
+        PyObject *usm_data = api.UsmNDArray_GetUSMData_(raw_ar);
 
         auto const &dpctl_api = ::dpctl::detail::dpctl_capi::get();
         if (!PyObject_TypeCheck(usm_data, dpctl_api.Py_MemoryType_)) {
+            Py_DECREF(usm_data);
             return false;
         }
 
@@ -509,17 +546,20 @@ public:
             reinterpret_cast<Py_MemoryObject *>(usm_data);
         const void *opaque_ptr = dpctl_api.Memory_GetOpaquePointer_(mem_obj);
 
+        Py_DECREF(usm_data);
         return bool(opaque_ptr);
     }
 
     const std::shared_ptr<void> &get_smart_ptr_owner() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
-        PyObject *usm_data = raw_ar->base_;
+
+        auto const &api = detail::dpnp_capi::get();
+        PyObject *usm_data = api.UsmNDArray_GetUSMData_(raw_ar);
 
         auto const &dpctl_api = ::dpctl::detail::dpctl_capi::get();
-
         if (!PyObject_TypeCheck(usm_data, dpctl_api.Py_MemoryType_)) {
+            Py_DECREF(usm_data);
             throw std::runtime_error(
                 "usm_ndarray object does not have Memory object "
                 "managing lifetime of USM allocation");
@@ -528,6 +568,7 @@ public:
         Py_MemoryObject *mem_obj =
             reinterpret_cast<Py_MemoryObject *>(usm_data);
         void *opaque_ptr = dpctl_api.Memory_GetOpaquePointer_(mem_obj);
+        Py_DECREF(usm_data);
 
         if (opaque_ptr) {
             auto shptr_ptr =

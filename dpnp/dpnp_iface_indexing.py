@@ -312,6 +312,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
         ind=(inds,),
         dst=out,
         axis_start=axis,
+        axis_end=axis_end,
         mode=mode,
         sycl_queue=q,
         depends=dep_evs,

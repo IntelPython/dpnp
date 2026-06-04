@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,44 +26,16 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import skbuild
-import versioneer
+# distutils: language = c++
+# cython: language_level=3
 
-skbuild.setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=[
-        "dpnp",
-        "dpnp.tensor",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.exceptions",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.memory",
-        "dpnp.random",
-        "dpnp.scipy",
-        "dpnp.scipy.linalg",
-        "dpnp.scipy.special",
-    ],
-    package_data={
-        "dpnp": [
-            "backend/include/*.hpp",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "tensor/libtensor/include/kernels/*.h*",
-            "tensor/libtensor/include/kernels/*/*.h*",
-            "tensor/libtensor/include/utils/*.h*",
-            "tests/*.*",
-            "tests/tensor/*.py",
-            "tests/tensor/*/*.py",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-            "tests/third_party/cupyx/*.py",
-            "tests/third_party/cupyx/*/*.py",
-        ],
-    },
-    include_package_data=False,
-)
+
+cdef int type_bytesize(int typenum)
+
+cdef str _make_typestr(int typenum)
+
+cdef int typenum_from_format(str s)
+
+cdef int descr_to_typenum(object dtype)
+
+cdef int dtype_to_typenum(dtype)

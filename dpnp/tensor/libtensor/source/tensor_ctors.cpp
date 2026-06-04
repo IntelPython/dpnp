@@ -106,8 +106,8 @@ using dpnp::tensor::py_internal::usm_ndarray_full;
 using dpnp::tensor::py_internal::usm_ndarray_zeros;
 
 /* ============== Advanced Indexing ============= */
-using dpnp::tensor::py_internal::usm_ndarray_put;
-using dpnp::tensor::py_internal::usm_ndarray_take;
+using dpnp::tensor::py_internal::py_put;
+using dpnp::tensor::py_internal::py_take;
 
 using dpnp::tensor::py_internal::py_extract;
 using dpnp::tensor::py_internal::py_mask_positions;
@@ -329,22 +329,22 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("fill_value"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    m.def("_take", &usm_ndarray_take,
-          "Takes elements at usm_ndarray indices `ind` and axes starting "
-          "at axis `axis_start` from array `src` and copies them "
+    m.def("_take", &py_take,
+          "Takes elements at usm_ndarray indices `ind` from axes "
+          "[axis_start, axis_end) of array `src` and copies them "
           "into usm_ndarray `dst` synchronously."
           "Returns a tuple of events: (hev, ev)",
           py::arg("src"), py::arg("ind"), py::arg("dst"), py::arg("axis_start"),
-          py::arg("mode"), py::arg("sycl_queue"),
+          py::arg("axis_end"), py::arg("mode"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    m.def("_put", &usm_ndarray_put,
-          "Puts elements at usm_ndarray indices `ind` and axes starting "
-          "at axis `axis_start` into array `dst` from "
+    m.def("_put", &py_put,
+          "Puts elements at usm_ndarray indices `ind` into axes "
+          "[axis_start, axis_end) of array `dst` from "
           "usm_ndarray `val` synchronously."
           "Returns a tuple of events: (hev, ev)",
           py::arg("dst"), py::arg("ind"), py::arg("val"), py::arg("axis_start"),
-          py::arg("mode"), py::arg("sycl_queue"),
+          py::arg("axis_end"), py::arg("mode"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
     m.def("_eye", &usm_ndarray_eye,
