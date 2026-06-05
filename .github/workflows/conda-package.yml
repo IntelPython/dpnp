@@ -269,6 +269,119 @@ jobs:
 
             python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
 
+  test_examples_linux:
+    name: Test examples
+
+    needs: build
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    strategy:
+      matrix:
+        python: ['3.14']
+
+    env:
+      dpnp-repo-path: '${{ github.workspace }}/source/'
+      create-conda-channel-env: 'source/environments/create_conda_channel.yml'
+      channel-path: '${{ github.workspace }}/channel/'
+      pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
+      ver-json-path: '${{ github.workspace }}/version.json'
+      examples-env-name: 'examples_test'
+
+    steps:
+      - name: Checkout DPNP repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: ${{ env.fetch-depth }}
+          path: ${{ env.dpnp-repo-path }}
+
+      - name: Download artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: ${{ env.pkg-path-in-channel }}
+
+      - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.create-conda-channel-env }}
+          activate-environment: ${{ env.examples-env-name }}
+
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.create-conda-channel-env }}
+          activate-environment: ${{ env.examples-env-name }}
+
+      - name: Create conda channel
+        run: |
+          python -m conda_index ${{ env.channel-path }}
+
+      - name: Test conda channel
+        run: |
+          conda search ${{ env.package-name }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          cat ${{ env.ver-json-path }}
+
+      - name: Get package version
+        run: |
+          PACKAGE_VERSION=$(python -c "${{ env.ver-script-part1 }} ${{ env.ver-script-part2 }}")
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> "$GITHUB_ENV"
+
+      - name: Install dpnp
+        id: install_dpnp
+        continue-on-error: true
+        run: |
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
+
+      - name: ReInstall dpnp
+        if: steps.install_dpnp.outcome == 'failure'
+        run: |
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
+
+      - name: Install example requirements
+        run: |
+          mamba install pytest dpcpp_linux-64 cmake ninja scikit-build ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
+
+      - name: List installed packages
+        run: mamba list
+
+      - name: Smoke test
+        run: |
+          python -c "import dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
+
+      - name: Build and run pybind11 examples
+        run: |
+          cd ${{ env.dpnp-repo-path }}/examples/pybind11
+          for d in */; do
+            pushd "$d" > /dev/null
+            CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja || exit 1
+            if [ -d tests ]; then
+              python -m pytest tests || exit 1
+            fi
+            popd > /dev/null
+          done
+
   test_windows:
     name: Test
 
@@ -451,7 +564,7 @@ jobs:
   upload:
     name: Upload
 
-    needs: [test_linux, test_windows]
+    needs: [test_linux, test_windows, test_examples_linux]
 
     strategy:
       fail-fast: false
