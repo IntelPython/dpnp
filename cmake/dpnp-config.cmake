@@ -46,12 +46,9 @@ find_path(
 )
 get_filename_component(_dpnp_dir "${Dpnp_INCLUDE_DIR}" DIRECTORY)
 
-find_path(
-    Dpnp_TENSOR_INCLUDE_DIR
-    kernels
-    utils
-    PATHS "${_dpnp_dir}/tensor/libtensor/include"
-)
+find_path(Dpnp_TENSOR_INCLUDE_DIR kernels PATHS "${_dpnp_dir}/tensor/libtensor/include")
+
+find_path(Dpnp_TENSOR_INCLUDE_DIR utils PATHS "${_dpnp_dir}/tensor/libtensor/include")
 
 set(Dpnp_INCLUDE_DIRS ${Dpnp_INCLUDE_DIR})
 
