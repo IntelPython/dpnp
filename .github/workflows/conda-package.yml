@@ -358,7 +358,7 @@ jobs:
 
       - name: Install example requirements
         run: |
-          mamba install pytest dpcpp_linux-64 cmake ninja scikit-build ${{ env.TEST_CHANNELS }}
+          mamba install pytest dpcpp_linux-64">=2026.0.0" cmake ninja scikit-build ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 
