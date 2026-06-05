@@ -48,7 +48,7 @@ skbuild.setup(
     ],
     package_data={
         "dpnp": [
-            "backend/include/*.hpp",
+            "include/*.h*",
             "libdpnp_backend_c.so",
             "dpnp_backend_c.lib",
             "dpnp_backend_c.dll",

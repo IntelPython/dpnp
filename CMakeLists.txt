@@ -334,6 +334,14 @@ install(
 )
 install(FILES ${CMAKE_SOURCE_DIR}/cmake/dpnp-config.cmake DESTINATION lib/cmake/dpnp)
 
+# install dpnp4pybind11.hpp and usm_ndarray_constants.h into include folder
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/dpnp/include/
+    DESTINATION dpnp/include
+    FILES_MATCHING
+    REGEX "\\.(h|hpp)$"
+)
+
 # Define flags for CMAKE_BUILD_TYPE=Coverage
 set(CMAKE_C_FLAGS_COVERAGE "${CMAKE_C_FLAGS_DEBUG} -O1 -g1 -DDEBUG")
 set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} -O1 -g1 -DDEBUG")

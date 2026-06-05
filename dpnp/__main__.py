@@ -41,7 +41,7 @@ def _dpnp_dir() -> str:
 
 def get_include_dir() -> str:
     """Returns path to dpnp include directory containing dpnp4pybind11.hpp"""
-    return os.path.join(_dpnp_dir(), "backend", "include")
+    return os.path.join(_dpnp_dir(), "include")
 
 
 def print_include_flags() -> None:

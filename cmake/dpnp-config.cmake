@@ -44,7 +44,7 @@ find_path(
     PATHS "${_dpnp_include_dir}" "${Python_INCLUDE_DIRS}"
     PATH_SUFFIXES dpnp/include
 )
-get_filename_component(_dpnp_dir ${_dpnp_include_dir} DIRECTORY)
+get_filename_component(_dpnp_dir "${Dpnp_INCLUDE_DIR}" DIRECTORY)
 
 find_path(
     Dpnp_TENSOR_INCLUDE_DIR
