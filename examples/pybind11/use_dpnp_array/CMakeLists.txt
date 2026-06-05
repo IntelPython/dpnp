@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2023, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,10 +36,6 @@ project(
     DESCRIPTION "Example of using dpnp::tensor::usm_ndarray type caster"
 )
 
-set(SYCL_MODULE_PATH "${CMAKE_SOURCE_DIR}/../../../dpnp/backend/cmake/Modules")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SYCL_MODULE_PATH})
-find_package(IntelSYCL REQUIRED PATHS ${SYCL_MODULE_PATH} NO_DEFAULT_PATH)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -55,6 +51,7 @@ FetchContent_MakeAvailable(pybind11)
 
 find_package(Python REQUIRED COMPONENTS Development.Module)
 find_package(Dpctl REQUIRED)
+find_package(IntelSYCL REQUIRED)
 find_package(Dpnp REQUIRED)
 
 set(py_module_name _use_dpnp_array)

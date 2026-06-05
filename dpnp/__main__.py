@@ -94,7 +94,7 @@ def main() -> None:
     parser.add_argument(
         "--cmakedir",
         action="store_true",
-        help="CMake module directory, ideal for setting -DDPCTL_ROOT in CMake.",
+        help="CMake module directory, ideal for setting -DDpnp_ROOT in CMake.",
     )
     args = parser.parse_args()
     if not sys.argv[1:]:
