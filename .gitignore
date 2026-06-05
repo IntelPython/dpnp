@@ -27,6 +27,9 @@ dpnp_pytest.*
 # Build examples
 example3
 
+# moved cmake scripts
+dpnp/resources/cmake
+
 *dpnp_backend*
 dpnp/include/dpnp/tensor/*.h
 dpnp/**/*.cpython*.so

@@ -52,6 +52,7 @@ skbuild.setup(
             "libdpnp_backend_c.so",
             "dpnp_backend_c.lib",
             "dpnp_backend_c.dll",
+            "resources/cmake/*.cmake",
             "tensor/libtensor/include/kernels/*.h*",
             "tensor/libtensor/include/kernels/*/*.h*",
             "tensor/libtensor/include/utils/*.h*",

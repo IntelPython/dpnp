@@ -61,6 +61,13 @@ def print_tensor_include_flags() -> None:
     print("-I " + libtensor_dir)
 
 
+def print_cmake_dir() -> None:
+    """Prints directory with dpnp-config.cmake"""
+    dpnp_dir = _dpnp_dir()
+    cmake_dir = os.path.join(dpnp_dir, "resources", "cmake")
+    print(cmake_dir)
+
+
 def main() -> None:
     """Main entry-point."""
     parser = argparse.ArgumentParser()
@@ -84,6 +91,11 @@ def main() -> None:
         action="store_true",
         help="Path to dpnp libtensor include directory.",
     )
+    parser.add_argument(
+        "--cmakedir",
+        action="store_true",
+        help="CMake module directory, ideal for setting -DDPCTL_ROOT in CMake.",
+    )
     args = parser.parse_args()
     if not sys.argv[1:]:
         parser.print_help()
@@ -95,6 +107,8 @@ def main() -> None:
         print_tensor_include_flags()
     if args.tensor_include_dir:
         print(get_tensor_include_dir())
+    if args.cmakedir:
+        print_cmake_dir()
 
 
 if __name__ == "__main__":

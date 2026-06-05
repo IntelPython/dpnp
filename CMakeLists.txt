@@ -327,6 +327,13 @@ else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
 
+# install dpnp-config.cmake for find_package() support
+install(
+    FILES ${CMAKE_SOURCE_DIR}/cmake/dpnp-config.cmake
+    DESTINATION dpnp/resources/cmake
+)
+install(FILES ${CMAKE_SOURCE_DIR}/cmake/dpnp-config.cmake DESTINATION lib/cmake/dpnp)
+
 # Define flags for CMAKE_BUILD_TYPE=Coverage
 set(CMAKE_C_FLAGS_COVERAGE "${CMAKE_C_FLAGS_DEBUG} -O1 -g1 -DDEBUG")
 set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} -O1 -g1 -DDEBUG")
