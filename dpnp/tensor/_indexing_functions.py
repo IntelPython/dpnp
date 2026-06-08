@@ -342,7 +342,14 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
     _manager = SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     hev, put_ev = ti._put(
-        x, (indices,), rhs, axis, mode, sycl_queue=exec_q, depends=deps_ev
+        x,
+        (indices,),
+        rhs,
+        axis,
+        axis + 1,
+        mode,
+        sycl_queue=exec_q,
+        depends=deps_ev,
     )
     _manager.add_event_pair(hev, put_ev)
 
@@ -543,7 +550,14 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     _manager = SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     hev, take_ev = ti._take(
-        x, (indices,), out, axis, mode, sycl_queue=exec_q, depends=deps_ev
+        x,
+        (indices,),
+        out,
+        axis,
+        axis + 1,
+        mode,
+        sycl_queue=exec_q,
+        depends=deps_ev,
     )
     _manager.add_event_pair(hev, take_ev)
 
