@@ -2,7 +2,6 @@
 _skbuild
 build_cython
 cython_debug
-dpnp.egg-info
 *.egg-info
 
 # Byte-compiled / optimized / DLL files
