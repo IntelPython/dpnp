@@ -94,29 +94,15 @@ struct SparseGemvInitTypePairSupportFactory
  * the wasted num_types * num_types slots of a 2-D table where only the
  * diagonal (keyed on Ti) would ever be populated.
  *
- * If your pinned dpctl version does not expose TypeDefinedEntry as a 1-arg
- * entry, fall back to the std::is_same_v expansion shown in the comment
- * below -- both are equivalent.
- *
  * @tparam Tv  Value type of the sparse matrix and dense vectors.
  */
 template <typename Tv>
 struct SparseGemvComputeTypeSupportFactory
 {
-#if defined(DPCTL_HAS_TYPE_DEFINED_ENTRY)
-    static constexpr bool
-        is_defined = std::disjunction dpnp_td_ns::TypeDefinedEntry<Tv, float>,
-        dpnp_td_ns::TypeDefinedEntry<Tv, double>,
-        dpnp_td_ns::TypeDefinedEntry<Tv, std::complex<float>>,
-        dpnp_td_ns::TypeDefinedEntry<Tv, std::complex<double>>,
-        dpnp_td_ns::NotDefinedEntry > ::is_defined;
-#else
-    // Portable fallback: works with any dpctl version.
     static constexpr bool is_defined =
         std::is_same_v<Tv, float> || std::is_same_v<Tv, double> ||
         std::is_same_v<Tv, std::complex<float>> ||
         std::is_same_v<Tv, std::complex<double>>;
-#endif
 };
 
 } // namespace dpnp::extensions::sparse::types
