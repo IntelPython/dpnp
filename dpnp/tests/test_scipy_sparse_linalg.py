@@ -1168,6 +1168,15 @@ class TestSolversEdgeCases:
         # within the typical sqrt(cond) ~ 32 CG iterations for
         # n=30; broader spectra need maxiter > 1000 and are not
         # useful for a smoke test.
+        #
+        # The assertion threshold is sized for MINRES, whose
+        # SciPy-matching stopping criterion is ``||r|| / (||A||
+        # ||x||) <= rtol`` rather than ``||r|| / ||b|| <= rtol``.
+        # With ||A|| ~ 1e2 here, ||r|| / ||b|| converges to roughly
+        # ``rtol * Anorm * ynorm / ||b||``, which for rtol=1e-7 on
+        # this system lands around 1e-4. CG (which actually tests
+        # ``||r|| / ||b||``) reaches ~1e-7 comfortably, so the
+        # bound below is dominated by MINRES.
         n = 30
         diag = numpy.logspace(-1, 2, n, dtype=numpy.float64)
         ia = dpnp.asarray(numpy.diag(diag))
@@ -1175,7 +1184,7 @@ class TestSolversEdgeCases:
         x, info = solver(ia, ib, rtol=1e-7, maxiter=2 * n)
         assert info == 0
         res = float(dpnp.linalg.norm(ia @ x - ib) / dpnp.linalg.norm(ib))
-        assert res < 1e-5
+        assert res < 1e-3
 
     @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
     @pytest.mark.parametrize("solver", [cg, gmres, minres])
