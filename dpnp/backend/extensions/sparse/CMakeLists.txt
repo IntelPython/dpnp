@@ -36,6 +36,9 @@ set(_module_src
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 
+# Ensure Cython modules build first so _usmarray.h exists
+add_dependencies(${python_module_name} _usmarray)
+
 if(_dpnp_sycl_targets)
     # make fat binary
     target_compile_options(
