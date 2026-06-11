@@ -974,8 +974,6 @@ del _greater_equal_docstring_
 
 # U14: ==== EXPM1         (x)
 _expm1_docstring = r"""
-expm1(x, /, \*, out=None, order='K')
-
 Computes the exponential minus 1 for each element `x_i` of input array `x`.
 
 This function calculates `exp(x) - 1.0` more accurately for small values of `x`.
@@ -1294,8 +1292,6 @@ del _log_docstring
 
 # U21: ==== LOG1P       (x)
 _log1p_docstring = r"""
-log1p(x, /, \*, out=None, order='K')
-
 Computes the natural logarithm of (1 + `x`) for each element `x_i` of input
 array `x`.
 
@@ -1331,8 +1327,6 @@ del _log1p_docstring
 
 # U22: ==== LOG2        (x)
 _log2_docstring_ = r"""
-log2(x, /, \*, out=None, order='K')
-
 Computes the base-2 logarithm for each element `x_i` of input array `x`.
 
 Parameters
@@ -1366,8 +1360,6 @@ del _log2_docstring_
 
 # U23: ==== LOG10       (x)
 _log10_docstring_ = r"""
-log10(x, /, \*, out=None, order='K')
-
 Computes the base-10 logarithm for each element `x_i` of input array `x`.
 
 Parameters
@@ -2401,8 +2393,6 @@ del _cbrt_docstring_
 
 # U38: ==== EXP2        (x)
 _exp2_docstring_ = r"""
-exp2(x, /, \*, out=None, order='K')
-
 Computes the base-2 exponential for each element `x_i` for input array `x`.
 
 Parameters
