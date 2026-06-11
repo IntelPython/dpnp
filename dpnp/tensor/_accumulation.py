@@ -239,7 +239,7 @@ def cumulative_sum(
     ----------
     x : usm_ndarray
         input array.
-    axis : int, optional
+    axis : {None, int}, optional
         axis along which cumulative sum must be computed.
         If `None`, the sum is computed over the entire array.
         If `x` is a one-dimensional array, providing an `axis` is optional;
@@ -247,7 +247,7 @@ def cumulative_sum(
         is required.
 
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         data type of the returned array. If `None`, the default data
         type is inferred from the "kind" of the input array data type.
 
@@ -275,7 +275,7 @@ def cumulative_sum(
         in the output.
 
         Default: ``False``.
-    out : usm_ndarray, optional
+    out : {None, usm_ndarray}, optional
         the array into which the result is written.
         The data type of `out` must match the expected shape and the
         expected data type of the result or (if provided) `dtype`.
@@ -325,7 +325,7 @@ def cumulative_prod(
     ----------
     x : usm_ndarray
         input array.
-    axis : int, optional
+    axis : {None, int}, optional
         axis along which cumulative product must be computed.
         If `None`, the product is computed over the entire array.
         If `x` is a one-dimensional array, providing an `axis` is optional;
@@ -333,7 +333,7 @@ def cumulative_prod(
         is required.
 
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         data type of the returned array. If `None`, the default data
         type is inferred from the "kind" of the input array data type.
 
@@ -361,7 +361,7 @@ def cumulative_prod(
         axis in the output.
 
         Default: ``False``.
-    out : usm_ndarray, optional
+    out : {None, usm_ndarray}, optional
         the array into which the result is written.
         The data type of `out` must match the expected shape and the
         expected data type of the result or (if provided) `dtype`.
@@ -412,7 +412,7 @@ def cumulative_logsumexp(
     ----------
     x : usm_ndarray
         input array.
-    axis : int, optional
+    axis : {None, int}, optional
         axis along which cumulative logsumexp must be computed.
         If `None`, the logsumexp is computed over the entire array.
         If `x` is a one-dimensional array, providing an `axis` is optional;
@@ -420,7 +420,7 @@ def cumulative_logsumexp(
         is required.
 
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         data type of the returned array. If `None`, the default data
         type is inferred from the "kind" of the input array data type.
 
@@ -448,7 +448,7 @@ def cumulative_logsumexp(
         in the output.
 
         Default: ``False``.
-    out : usm_ndarray, optional
+    out : {None, usm_ndarray}, optional
         the array into which the result is written.
         The data type of `out` must match the expected shape and the
         expected data type of the result or (if provided) `dtype`.

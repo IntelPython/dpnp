@@ -219,7 +219,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         Array of values to be put into ``x``.
         Must be broadcastable to the result shape
         ``x.shape[:axis] + indices.shape + x.shape[axis+1:]``.
-    axis : int, optional
+    axis : {None, int}, optional
         The axis along which the values will be placed.
         If ``x`` is one-dimensional, this argument is optional.
 
@@ -459,7 +459,7 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
         The array that elements will be taken from.
     indices : usm_ndarray
         One-dimensional array of indices.
-    axis : int, optional
+    axis : {None, int}, optional
         The axis along which the values will be selected.
         If ``x`` is one-dimensional, this argument is optional.
 

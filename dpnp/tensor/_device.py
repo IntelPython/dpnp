@@ -161,14 +161,14 @@ def normalize_queue_device(sycl_queue=None, device=None):
 
     Parameters
     ----------
-    sycl_queue : dpctl.SyclQueue, optional
+    sycl_queue : {None, dpctl.SyclQueue}, optional
         explicitly indicates where USM allocation is done
         and the population code (if any) is executed.
         Value ``None`` is interpreted as get the SYCL queue
         from ``device`` keyword, or use default queue.
 
         Default: ``None``.
-    device : {str, dpctl.SyclDevice, dpctl.SyclQueue, dpnp.tensor.Device}, optional
+    device : {None, str, dpctl.SyclDevice, dpctl.SyclQueue, dpnp.tensor.Device}, optional
         array-API keyword indicating non-partitioned SYCL device
         where array is allocated.
 

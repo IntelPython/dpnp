@@ -139,7 +139,7 @@ class Info:
 
         Parameters
         ----------
-        device : {:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpnp.tensor.Device`, str}, optional
+        device : {None, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpnp.tensor.Device`, str}, optional
             array API concept of device used in getting default data types.
             ``device`` can be ``None`` (in which case the default device
             is used), an instance of :class:`dpctl.SyclDevice`, an instance
@@ -180,7 +180,7 @@ class Info:
 
         Parameters
         ----------
-        device : {:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpnp.tensor.Device`, str}, optional
+        device : {None, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpnp.tensor.Device`, str}, optional
             array API concept of device used in getting default data types.
             ``device`` can be ``None`` (in which case the default device is
             used), an instance of :class:`dpctl.SyclDevice`, an instance of
@@ -189,7 +189,7 @@ class Info:
             a filter selector string.
 
             Default: ``None``.
-        kind : {str, Tuple[str, ...]}, optional
+        kind : {None, str, tuple of str}, optional
             data type kind.
 
             - if ``kind`` is ``None``, returns a dictionary of all data

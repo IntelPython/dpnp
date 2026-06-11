@@ -407,7 +407,7 @@ def argmax(x, /, *, axis=None, keepdims=False, out=None):
     ----------
     x : usm_ndarray
         Input array.
-    axis : int, optional
+    axis : {None, int}, optional
         Axis along which to search. If ``None``, returns the index of the
         maximum value of the flattened array.
 
@@ -453,7 +453,7 @@ def argmin(x, /, *, axis=None, keepdims=False, out=None):
     ----------
     x : usm_ndarray
         Input array.
-    axis : int, optional
+    axis : {None, int}, optional
         Axis along which to search. If ``None``, returns the index of the
         minimum value of the flattened array.
 
@@ -554,7 +554,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         If ``None``, the result is computed over the entire array.
 
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         Data type of the returned array. If ``None``, the default data
         type is inferred from the "kind" of the input array data type.
 
@@ -709,7 +709,7 @@ def prod(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         If ``None``, the product is computed over the entire array.
 
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         Data type of the returned array. If ``None``, the default data
         type is inferred from the "kind" of the input array data type.
 
@@ -784,7 +784,7 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         If ``None``, the result is computed over the entire array.
 
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         Data type of the returned array. If ``None``, the default data
         type is inferred from the "kind" of the input array data type.
 
@@ -855,7 +855,7 @@ def sum(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         If ``None``, the sum is computed over the entire array.
 
         Default: ``None``.
-    dtype : dtype, optional
+    dtype : {None, dtype}, optional
         Data type of the returned array. If ``None``, the default data
         type is inferred from the "kind" of the input array data type.
 

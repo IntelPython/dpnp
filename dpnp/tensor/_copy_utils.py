@@ -550,7 +550,7 @@ def from_numpy(np_ary, /, *, device=None, usm_type="device", sycl_queue=None):
     ----------
     np_ary : array_like
         Input convertible to :class:`numpy.ndarray`
-    device : object, optional
+    device : {None, object}, optional
         array API specification of device where the
         output array is created. Device can be specified by
         a filter selector string, an instance of
@@ -566,7 +566,7 @@ def from_numpy(np_ary, /, *, device=None, usm_type="device", sycl_queue=None):
         ``"shared"``, or ``"host"``.
 
         Default: ``"device"``.
-    sycl_queue : dpctl.SyclQueue, optional
+    sycl_queue : {None, dpctl.SyclQueue}, optional
         A SYCL queue that determines output array allocation device
         as well as execution placement of data movement operations.
         The ``device`` and ``sycl_queue`` arguments
@@ -1106,7 +1106,7 @@ def astype(
         may be returned when possible.
 
         Default: ``True``.
-    device : object, optional
+    device : {None, object}, optional
         array API specification of device where the
         output array is created. Device can be specified by
         a filter selector string, an instance of

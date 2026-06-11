@@ -77,7 +77,7 @@ class UnaryElementwiseFunc:
         computational tasks complete execution, while the second event
         corresponds to computational tasks associated with function
         evaluation.
-    acceptance_fn : callable, optional
+    acceptance_fn : {None, callable}, optional
         Function to influence type promotion behavior of this unary
         function. The function takes 4 arguments:
 
@@ -326,7 +326,7 @@ class BinaryElementwiseFunc:
         evaluation.
     docs : str
         Documentation string for the unary function.
-    binary_inplace_fn : callable, optional
+    binary_inplace_fn : {None, callable}, optional
         Data-parallel implementation function with signature
         ``impl_fn(src: usm_ndarray, dst: usm_ndarray,
         sycl_queue: SyclQueue, depends: Optional[List[SyclEvent]])``
@@ -340,7 +340,7 @@ class BinaryElementwiseFunc:
         associated with function evaluation.
 
         Default: ``None``.
-    acceptance_fn : callable, optional
+    acceptance_fn : {None, callable}, optional
         Function to influence type promotion behavior of this binary
         function. The function takes 6 arguments:
 
