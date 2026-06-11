@@ -118,6 +118,12 @@ def reshape(X, /, shape, *, order="C", copy=None):
         and ``"F"`` for F-contiguous, or column-major layout.
 
         Default: ``"C"``.
+    copy : {None, bool}, optional
+        Whether or not to copy the input array. If ``True``, always
+        copies. If ``False``, never copies and raises a ``ValueError``
+        if a copy is required. If ``None``, copies only when necessary.
+
+        Default: ``None``.
 
     Returns
     -------

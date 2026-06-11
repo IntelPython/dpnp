@@ -1575,17 +1575,7 @@ def meshgrid(*arrays, indexing="xy"):
         zero- and one-dimensional cases, respectively), the ``indexing``
         keyword has no effect and should be ignored.
 
-    Returns:
-        Tuple[array]:
-            tuple of ``N`` arrays, where ``N`` is the number of
-            provided one-dimensional input arrays. Each returned array must
-            have rank ``N``.
-            For a set of ``n`` vectors with lengths ``N0``, ``N1``, ``N2``, ...
-            The cartesian indexing results in arrays of shape
-            ``(N1, N0, N2, ...)``, while the
-            matrix indexing results in arrays of shape
-            ``(N0, N1, N2, ...)``.
-            Default: ``"xy"``.
+        Default: ``"xy"``.
 
     Returns
     -------

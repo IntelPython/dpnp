@@ -292,6 +292,8 @@ cdef class usm_ndarray:
         Dictionary with keyword parameters to use when creating a new USM
         memory allocation. See :class:`dpctl.memory.MemoryUSMShared` for
         supported keyword arguments.
+
+        Default: ``{}``.
     array_namespace : {None, module}, optional
         Array namespace module associated with this array.
 
@@ -1135,6 +1137,8 @@ cdef class usm_ndarray:
         stream : {None, :class:`dpctl.SyclQueue`}, optional
             Execution queue to synchronize with. If ``None``,
             synchronization is not performed.
+
+            Default: ``None``.
 
         Returns
         -------

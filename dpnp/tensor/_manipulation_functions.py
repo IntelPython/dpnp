@@ -378,7 +378,7 @@ def expand_dims(X, /, *, axis=0):
     ----------
     x : usm_ndarray
         Input array.
-    axis : {int, tuple of ints}
+    axis : {int, tuple of ints}, optional
         Axis position in the expanded axes (zero-based). If `x` has rank
         (i.e, number of dimensions) `N`, a valid `axis` must reside
         in the closed-interval `[-N-1, N]`. If provided a negative
@@ -388,6 +388,8 @@ def expand_dims(X, /, *, axis=0):
         a singleton dimension must be appended to the input array `x`).
         If provided `-N-1`, the resolved axis position is `0` (i.e., a
         singleton dimension is prepended to the input array `x`).
+
+        Default: ``0``.
 
     Returns
     -------
@@ -878,8 +880,10 @@ def squeeze(X, /, axis=None):
     ----------
     x : usm_ndarray
         Input array.
-    axis : {int, tuple of ints}
+    axis : {None, int, tuple of ints}, optional
         Axis (or axes) to squeeze.
+
+        Default: ``None``.
 
     Returns
     -------

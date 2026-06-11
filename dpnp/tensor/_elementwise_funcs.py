@@ -987,6 +987,8 @@ Parameters
     out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
+
+        Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the new output array, if parameter
         `out` is ``None``.
@@ -1270,6 +1272,8 @@ Parameters
     out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
+
+        Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the new output array, if parameter
         `out` is ``None``.
@@ -1304,6 +1308,8 @@ Parameters
     out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
+
+        Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the new output array, if parameter
         `out` is ``None``.
@@ -1561,6 +1567,8 @@ Parameters
     out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
+
+        Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the new output array, if parameter
         `out` is ``None``.
@@ -1712,6 +1720,8 @@ Parameters
     out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
+
+        Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the new output array, if parameter
         `out` is ``None``.
@@ -1828,6 +1838,8 @@ Parameters
     out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
+
+        Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the new output array, if parameter
         `out` is ``None``.
@@ -1861,6 +1873,8 @@ Parameters
     out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
+
+        Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the new output array, if parameter
         `out` is ``None``.
