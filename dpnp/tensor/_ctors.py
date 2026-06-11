@@ -1560,7 +1560,7 @@ def linspace(
 
 def meshgrid(*arrays, indexing="xy"):
     """
-    Creates tuple of :class:`dpctl.tensor.usm_ndarray` coordinate matrices
+    Creates tuple of :class:`dpnp.tensor.usm_ndarray` coordinate matrices
     from vectors.
 
     Parameters
