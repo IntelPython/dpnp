@@ -1047,7 +1047,8 @@ def from_dlpack(x, /, *, device=None, copy=None):
     x : object
         A Python object representing an array that supports
         ``__dlpack__`` protocol.
-    device : {None, str, dpctl.SyclDevice, dpctl.SyclQueue, dpnp.tensor.Device, tuple}, optional
+    device : {None, str, dpctl.SyclDevice, dpctl.SyclQueue,
+              dpnp.tensor.Device, tuple}, optional
         Device where the output array is to be placed. ``device`` keyword
         values can be:
 
@@ -1072,7 +1073,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
            device types are ``"kDLCPU"`` and ``"kDLOneAPI"``.
 
         Default: ``None``.
-    copy : bool, optional
+    copy : {None, bool}, optional
         Boolean indicating whether or not to copy the input.
 
         * If ``copy`` is ``True``, the input will always be

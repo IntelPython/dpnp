@@ -464,7 +464,7 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
         If ``x`` is one-dimensional, this argument is optional.
 
         Default: ``None``.
-    out : usm_ndarray, optional
+    out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
 

@@ -302,7 +302,7 @@ def concat(arrays, /, *, axis=0):
     arrays : {list of usm_ndarrays, tuple of usm_ndarrays}
         Input arrays to join. The arrays must have the same shape,
         except in the dimension specified by `axis`.
-    axis : int, optional
+    axis : {None, int}, optional
         Axis along which the arrays will be joined.
         If `axis` is `None`, arrays must be flattened before
         concatenation. If `axis` is negative, it is understood as
@@ -574,7 +574,7 @@ def repeat(x, repeats, /, *, axis=None):
         If `repeats` is an array, it must have an integer data type.
         Otherwise, `repeats` must be a Python integer or sequence of
         Python integers (i.e., a tuple, list, or range).
-    axis : int, optional
+    axis : {None, int}, optional
         The axis along which to repeat values. If `axis` is `None`, the
         function repeats elements of the flattened array.
 

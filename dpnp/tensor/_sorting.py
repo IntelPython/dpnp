@@ -85,7 +85,7 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
         `x` values which compare as equal.
 
         Default: ``True``.
-    kind : {"stable", "mergesort", "radixsort"}, optional
+    kind : {None, "stable", "mergesort", "radixsort"}, optional
         Sorting algorithm. The default is `"stable"`, which uses parallel
         merge-sort or parallel radix-sort algorithms depending on the
         array data type.
@@ -209,7 +209,7 @@ def argsort(x, axis=-1, descending=False, stable=True, kind=None):
         `x` values which compare as equal.
 
         Default: ``True``.
-    kind : {"stable", "mergesort", "radixsort"}, optional
+    kind : {None, "stable", "mergesort", "radixsort"}, optional
         Sorting algorithm. The default is `"stable"`, which uses parallel
         merge-sort or parallel radix-sort algorithms depending on the
         array data type.
@@ -329,7 +329,7 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
         Input array.
     k : int
         Number of elements to find. Must be a positive integer value.
-    axis : int, optional
+    axis : {None, int}, optional
         Axis along which to search. If `None`, the search will be performed
         over the flattened array.
 

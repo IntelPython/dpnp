@@ -233,7 +233,7 @@ cdef class usm_ndarray:
     ----------
     shape : {int, tuple}
         Shape of the array to be created.
-    dtype : {str, dtype}, optional
+    dtype : {None, str, dtype}, optional
         Array data type, i.e. the type of array elements.
             If ``dtype`` has the value ``None``, it is determined by default
             floating point type supported by target device.
@@ -257,7 +257,7 @@ cdef class usm_ndarray:
                     ``has_aspect_fp64`` is ``True``.
 
         Default: ``None``.
-    strides : tuple, optional
+    strides : {None, tuple}, optional
         Strides of the array to be created in elements.
         If ``strides`` has the value ``None``, it is determined by the
         ``shape`` of the array and the requested ``order``.
@@ -292,7 +292,7 @@ cdef class usm_ndarray:
         Dictionary with keyword parameters to use when creating a new USM
         memory allocation. See :class:`dpctl.memory.MemoryUSMShared` for
         supported keyword arguments.
-    array_namespace : module, optional
+    array_namespace : {None, module}, optional
         Array namespace module associated with this array.
 
         Default: ``None``.
@@ -1132,7 +1132,7 @@ cdef class usm_ndarray:
             non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a :class:`dpnp.tensor.Device`
             object returned by :attr:`dpnp.tensor.usm_ndarray.device`.
-        stream : :class:`dpctl.SyclQueue`, optional
+        stream : {None, :class:`dpctl.SyclQueue`}, optional
             Execution queue to synchronize with. If ``None``,
             synchronization is not performed.
 
@@ -1197,7 +1197,7 @@ cdef class usm_ndarray:
 
         Parameters
         ----------
-        api_version : str, optional
+        api_version : {None, str}, optional
             Request namespace compliant with given version of
             array API. If ``None``, namespace for the most
             recent supported version is returned.
@@ -1291,12 +1291,12 @@ cdef class usm_ndarray:
 
         Parameters
         ----------
-        stream : :class:`dpctl.SyclQueue`, optional
+        stream : {None, :class:`dpctl.SyclQueue`}, optional
             Execution queue to synchronize with.
             If ``None``, synchronization is not performed.
 
             Default: ``None``.
-        max_version : tuple of ints, optional
+        max_version : {None, tuple of ints}, optional
             The maximum DLPack version the consumer (caller of
             ``__dlpack__``) supports. As ``__dlpack__`` may not
             always return a DLPack capsule with version
@@ -1304,7 +1304,7 @@ cdef class usm_ndarray:
             even if this argument is passed.
 
             Default: ``None``.
-        dl_device : tuple, optional
+        dl_device : {None, tuple}, optional
             The device the returned DLPack capsule will be
             placed on.
             The device must be a 2-tuple matching the format of
@@ -1313,7 +1313,7 @@ cdef class usm_ndarray:
             representing the index of the device.
 
             Default: ``None``.
-        copy : bool, optional
+        copy : {None, bool}, optional
             Boolean indicating whether or not to copy the input.
 
             * If ``copy`` is ``True``, the input will always be

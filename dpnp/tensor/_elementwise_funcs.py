@@ -984,7 +984,7 @@ Parameters
 ----------
     x : usm_ndarray
         Input array, expected to have a floating-point data type.
-    out : usm_ndarray
+    out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
     order : {"C", "F", "A", "K"}, optional
@@ -1267,7 +1267,7 @@ Parameters
 ----------
     x : usm_ndarray
         Input array, expected to have a floating-point data type.
-    out : usm_ndarray
+    out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
     order : {"C", "F", "A", "K"}, optional
@@ -1301,7 +1301,7 @@ Parameters
 ----------
     x : usm_ndarray
         Input array, expected to have a floating-point data type.
-    out : usm_ndarray
+    out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
     order : {"C", "F", "A", "K"}, optional
@@ -1558,7 +1558,7 @@ Parameters
 ----------
     x : usm_ndarray
         Input array. May have any data type.
-    out : usm_ndarray
+    out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
     order : {"C", "F", "A", "K"}, optional
@@ -1709,7 +1709,7 @@ Parameters
 ----------
     x : usm_ndarray
         Input array, expected to have a numeric data type.
-    out : usm_ndarray
+    out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
     order : {"C", "F", "A", "K"}, optional
@@ -1825,7 +1825,7 @@ Parameters
 ----------
     x : usm_ndarray
         Input array, expected to have a numeric data type.
-    out : usm_ndarray
+    out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
     order : {"C", "F", "A", "K"}, optional
@@ -1858,7 +1858,7 @@ Parameters
         First input array, expected to have a numeric data type.
     x2 : usm_ndarray
         Second input array, also expected to have a numeric data type.
-    out : usm_ndarray
+    out : {None, usm_ndarray}, optional
         Output array to populate. Array must have the correct
         shape and the expected data type.
     order : {"C", "F", "A", "K"}, optional
