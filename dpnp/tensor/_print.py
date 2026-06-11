@@ -140,10 +140,10 @@ def set_print_options(
         Raises `TypeError` if linewidth is not an integer.
 
         Default: ``75``.
-    edge_items : int, optional
+    edgeitems : int, optional
         Number of elements at the beginning and end
         when the printed array is abbreviated.
-        Raises `TypeError` if edge_items is not an integer.
+        Raises `TypeError` if edgeitems is not an integer.
 
         Default: ``3``.
     threshold : int, optional

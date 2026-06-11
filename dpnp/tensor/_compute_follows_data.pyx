@@ -114,7 +114,7 @@ def get_coerced_usm_type(usm_types, /):
     Returns
     -------
     out : {str, None}
-        Type of USM allocation for the output arrays (s).
+        Type of USM allocation for the output array(s).
         ``None`` if any of the input strings are not recognized.
 
     """

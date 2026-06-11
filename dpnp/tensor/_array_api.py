@@ -117,7 +117,7 @@ class Info:
                 boolean indicating ``dpnp.tensor``'s support of data-dependent shapes.
                 Value: ``True``
             ``max dimensions``:
-                integer indication the maximum array dimension supported by ``dpnp.tensor``.
+                integer indicating the maximum array dimension supported by ``dpnp.tensor``.
                 Value: ``None``
 
         Returns

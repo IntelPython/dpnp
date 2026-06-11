@@ -272,12 +272,12 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     Raises
     ------
     DLPackCreationError
-        when array can be represented as
+        when array cannot be represented as
         DLPack tensor. This may happen when array was allocated
         on a partitioned sycl device, or its USM allocation is
         not bound to the platform default SYCL context.
     MemoryError
-        when host allocation to needed for ``DLManagedTensor``
+        when host allocation needed for ``DLManagedTensor``
         did not succeed.
     ValueError
         when array elements data type could not be represented
@@ -406,12 +406,12 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
     Raises
     ------
     DLPackCreationError
-        when array can be represented as
+        when array cannot be represented as
         DLPack tensor. This may happen when array was allocated
         on a partitioned sycl device, or its USM allocation is
         not bound to the platform default SYCL context.
     MemoryError
-        when host allocation to needed for
+        when host allocation needed for
         ``DLManagedTensorVersioned`` did not succeed.
     ValueError
         when array elements data type could not be represented
@@ -559,10 +559,10 @@ cpdef numpy_to_dlpack_versioned_capsule(ndarray npy_ary, bint copied):
     Raises
     ------
     DLPackCreationError
-        when array can be represented as
+        when array cannot be represented as
         DLPack tensor.
     MemoryError
-        when host allocation to needed for
+        when host allocation needed for
         ``DLManagedTensorVersioned`` did not succeed.
     ValueError
         when array elements data type could not be represented
