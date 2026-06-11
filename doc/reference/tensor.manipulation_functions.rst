@@ -11,6 +11,7 @@ The following functions conform to `Python Array API standard <array_api_spec_ma
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     broadcast_arrays
     broadcast_to

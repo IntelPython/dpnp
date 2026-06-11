@@ -9,6 +9,7 @@ Accumulation functions compute cumulative results along a given axis of the inpu
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     cumulative_logsumexp
     cumulative_prod

@@ -7,6 +7,7 @@ Searching functions
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     argmax
     argmin

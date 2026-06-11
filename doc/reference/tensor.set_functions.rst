@@ -7,6 +7,7 @@ Set Functions
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     isin
     unique_all

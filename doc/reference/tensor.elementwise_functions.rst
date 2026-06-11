@@ -10,6 +10,7 @@ function values computed for every element of input array(s).
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
     :template: autosummary/elementwise.rst
 
     abs

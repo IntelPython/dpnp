@@ -12,6 +12,7 @@ to `Python Array API specification <array_api_data_type_fns_>`_:
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     astype
     can_cast

@@ -7,6 +7,7 @@ Utility functions
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     all
     any

@@ -14,6 +14,7 @@ capabilities of an array library as specified in
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
     :template: autosummary/cython_class.rst
 
     __array_api_version__

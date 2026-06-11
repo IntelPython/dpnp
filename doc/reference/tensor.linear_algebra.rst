@@ -7,6 +7,7 @@ Linear algebra functions
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     matmul
     matrix_transpose

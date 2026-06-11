@@ -10,6 +10,7 @@ to create new arrays:
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     arange
     asarray

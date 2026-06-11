@@ -9,6 +9,7 @@ Functions for controlling and customizing the string representation of arrays.
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     get_print_options
     set_print_options

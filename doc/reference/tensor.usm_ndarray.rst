@@ -16,6 +16,7 @@ Implementation of :py:class:`usm_ndarray` conforms to
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
     :template: autosummary/usm_ndarray.rst
 
     usm_ndarray

@@ -13,6 +13,7 @@
 
    .. autosummary::
       :toctree: generated
+      :nosignatures:
    {% for item in methods if item != "__init__" %}
       ~{{ name }}.{{ item }}
    {%- endfor %}
@@ -25,6 +26,7 @@
 
    .. autosummary::
       :toctree: generated
+      :nosignatures:
    {% for item in attributes %}
       ~{{ name }}.{{ item }}
    {%- endfor %}
@@ -33,6 +35,7 @@
 
    .. autosummary::
       :toctree: generated
+      :nosignatures:
 
       ~{{name}}.__dlpack_device__
       ~{{name}}.__dlpack__

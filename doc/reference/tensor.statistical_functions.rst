@@ -7,6 +7,7 @@ Statistical Functions
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     max
     mean

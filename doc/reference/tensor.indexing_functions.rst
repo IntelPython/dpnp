@@ -10,6 +10,7 @@ by either integral arrays of indices or boolean mask arrays.
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     extract
     place

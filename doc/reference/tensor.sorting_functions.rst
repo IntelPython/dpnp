@@ -7,6 +7,7 @@ Sorting functions
 
 .. autosummary::
     :toctree: generated
+    :nosignatures:
 
     argsort
     sort
