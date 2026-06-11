@@ -765,14 +765,14 @@ class _numpy_array_interface_wrapper:
     Implementation taken from
     https://github.com/dmlc/dlpack/blob/main/apps/numpy_dlpack/dlpack/to_numpy.py
 
-    Args:
-        array_interface:
-            A dictionary describing the underlying memory. Formatted
-            to match `numpy.ndarray.__array_interface__`.
-
-        pycapsule:
-            A Python capsule wrapping the dlpack tensor that will be
-            converted to numpy.
+    Parameters
+    ----------
+    array_interface : dict
+        A dictionary describing the underlying memory. Formatted
+        to match ``numpy.ndarray.__array_interface__``.
+    memory_owner : object
+        A Python capsule wrapping the dlpack tensor that will be
+        converted to numpy.
     """
 
     def __init__(self, array_interface, memory_owner) -> None:
