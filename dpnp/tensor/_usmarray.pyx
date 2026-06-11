@@ -1888,19 +1888,30 @@ cdef api object UsmNDArray_MakeSimpleFromMemory(
 ):
     """Create contiguous usm_ndarray.
 
-    Args:
-        nd: number of dimensions (non-negative)
-        shape: array of nd non-negative array's sizes along each dimension
-        typenum: array elemental type number
-        ptr: pointer to the start of allocation
-        QRef: DPCTLSyclQueueRef associated with the allocation
-        offset: distance between element with zero multi-index and the
-                start of allocation
-        order: Memory layout of the array. Use 'C' for C-contiguous or
-               row-major layout; 'F' for F-contiguous or column-major layout
-    Returns:
-        Created usm_ndarray instance
+    Parameters
+    ----------
+    nd : int
+        Number of dimensions (non-negative).
+    shape : pointer to Py_ssize_t
+        Array of ``nd`` non-negative sizes along each dimension.
+    typenum : int
+        Array elemental type number.
+    mobj : _Memory
+        USM memory object backing the array.
+    offset : Py_ssize_t
+        Distance between element with zero multi-index and the
+        start of allocation.
+    order : char
+        Memory layout of the array. Use ``'C'`` for C-contiguous or
+        row-major layout; ``'F'`` for F-contiguous or column-major layout.
+
+    Returns
+    -------
+    out : usm_ndarray
+        Created usm_ndarray instance.
+
     """
+
     cdef object shape_tuple = _make_int_tuple(nd, <Py_ssize_t *>shape)
     cdef usm_ndarray arr = usm_ndarray(
         shape_tuple,
@@ -1962,21 +1973,35 @@ cdef api object UsmNDArray_MakeFromPtr(
     """
     General usm_ndarray constructor from externally made USM-allocation.
 
-    Args:
-        nd: number of dimensions (non-negative)
-        shape: array of nd non-negative array's sizes along each dimension
-        typenum: array elemental type number
-        strides: array of nd strides along each dimension in elements
-        ptr: pointer to the start of allocation
-        QRef: DPCTLSyclQueueRef associated with the allocation
-        offset: distance between element with zero multi-index and the
-                start of allocation
-        owner: Python object managing lifetime of USM allocation.
-               Value None implies transfer of USM allocation ownership
-               to the created array object.
-    Returns:
-        Created usm_ndarray instance
+    Parameters
+    ----------
+    nd : int
+        Number of dimensions (non-negative).
+    shape : pointer to Py_ssize_t
+        Array of ``nd`` non-negative sizes along each dimension.
+    typenum : int
+        Array elemental type number.
+    strides : pointer to Py_ssize_t
+        Array of ``nd`` strides along each dimension in elements.
+    ptr : DPCTLSyclUSMRef
+        Pointer to the start of USM allocation.
+    QRef : DPCTLSyclQueueRef
+        SYCL queue reference associated with the allocation.
+    offset : Py_ssize_t
+        Distance between element with zero multi-index and the
+        start of allocation.
+    owner : object
+        Python object managing lifetime of USM allocation.
+        Value ``None`` implies transfer of USM allocation ownership
+        to the created array object.
+
+    Returns
+    -------
+    out : usm_ndarray
+        Created usm_ndarray instance.
+
     """
+
     cdef int itemsize = type_bytesize(typenum)
     cdef size_t nelems = 1
     cdef Py_ssize_t min_disp = 0
