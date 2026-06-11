@@ -483,7 +483,7 @@ def moveaxis(X, source, destination, /):
     -------
     out : usm_ndarray
         Array with moved axes.
-        The returned array must has the same data type as `x`,
+        The returned array has the same data type as `x`,
         is created on the same device as `x` and has the same
         USM allocation type as `x`.
 
@@ -533,7 +533,7 @@ def permute_dims(X, /, axes):
     -------
     out : usm_ndarray
         An array with permuted axes.
-        The returned array must has the same data type as `x`,
+        The returned array has the same data type as `x`,
         is created on the same device as `x` and has the same USM
         allocation type as `x`.
 
@@ -1015,7 +1015,7 @@ def swapaxes(X, axis1, axis2):
     -------
     out : usm_ndarray
         Array with swapped axes.
-        The returned array must has the same data type as `x`,
+        The returned array has the same data type as `x`,
         is created on the same device as `x` and has the same USM
         allocation type as `x`.
 

@@ -2376,7 +2376,7 @@ Parameters
         Input array, expected to have a real-valued floating-point data type.
     out : {None, usm_ndarray}, optional
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
 
         Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
@@ -2411,7 +2411,7 @@ Parameters
         Input array, expected to have a floating-point data type.
     out : {None, usm_ndarray}, optional
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
 
         Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
@@ -2450,7 +2450,7 @@ Parameters
         data type.
     out : {None, usm_ndarray}, optional
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
 
         Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
@@ -2485,7 +2485,7 @@ Parameters
         Input array, expected to have a real-valued floating-point data type.
     out : {None, usm_ndarray}, optional
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
 
         Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
@@ -2585,7 +2585,7 @@ Parameters
         Input array, expected to have a floating-point data type.
     out : {None, usm_ndarray}, optional
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
 
         Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
@@ -2624,7 +2624,7 @@ Parameters
         Input array, expected to have a complex floating-point data type.
     out : {None, usm_ndarray}, optional
         Output array to populate.
-        Array have the correct shape and the expected data type.
+        Array must have the correct shape and the expected data type.
 
         Default: ``None``.
     order : {"C", "F", "A", "K"}, optional

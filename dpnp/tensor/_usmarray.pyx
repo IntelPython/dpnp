@@ -814,7 +814,7 @@ cdef class usm_ndarray:
 
         For example, for strides ``(s1, s2, s3)`` and multi-index
         ``(i1, i2, i3)`` position of the respective element relative
-        to zero multi-index element is ``s1*s1 + s2*i2 + s3*i3``.
+        to zero multi-index element is ``s1*i1 + s2*i2 + s3*i3``.
 
         Examples
         --------

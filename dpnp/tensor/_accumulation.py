@@ -406,7 +406,7 @@ def cumulative_logsumexp(
     x, /, *, axis=None, dtype=None, include_initial=False, out=None
 ):
     """
-    Calculates the cumulative logsmumexp of elements in the input array `x`.
+    Calculates the cumulative logsumexp of elements in the input array `x`.
 
     Parameters
     ----------
