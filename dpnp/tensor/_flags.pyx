@@ -132,7 +132,7 @@ cdef class Flags:
         """
         True if the memory layout of the :class:`dpnp.tensor.usm_ndarray`
         instance is C-contiguous and F-contiguous.
-        Equivalent to `forc.`
+        Equivalent to ``forc``.
         """
         return self.forc
 

@@ -900,9 +900,8 @@ def isdtype(dtype, kind):
     Returns a boolean indicating whether a provided `dtype` is
     of a specified data type `kind`.
 
-    See [array API](array_api) for more information.
-
-    [array_api]: https://data-apis.org/array-api/latest/
+    See `array API <https://data-apis.org/array-api/latest/>`_ for more
+    information.
 
     Parameters
     ----------

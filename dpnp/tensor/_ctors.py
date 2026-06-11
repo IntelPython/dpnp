@@ -45,7 +45,7 @@ from ._data_types import _get_dtype
 from ._device import normalize_queue_device
 from ._usmarray import _is_object_with_buffer_protocol
 
-__doc__ = "Implementation of creation functions in :module:`dpnp.tensor`"
+__doc__ = "Implementation of creation functions in :mod:`dpnp.tensor`"
 
 _empty_tuple = ()
 _host_set = frozenset([None])

@@ -40,7 +40,7 @@ from ._type_utils import _supported_dtype, _to_device_supported_dtype
 
 __doc__ = (
     "Implementation module for array manipulation "
-    "functions in :module:`dpnp.tensor`"
+    "functions in :mod:`dpnp.tensor`"
 )
 
 

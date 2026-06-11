@@ -146,16 +146,16 @@ cdef extern from "dlpack/dlpack.h" nogil:
 def get_build_dlpack_version():
     """
     Returns a tuple of integers representing the ``major`` and ``minor``
-    version of DLPack :module:`dpnp.tensor` was built with.
+    version of DLPack :mod:`dpnp.tensor` was built with.
     This tuple can be passed as the ``max_version`` argument to
-    ``__dlpack__`` to guarantee :module:`dpnp.tensor` can properly
+    ``__dlpack__`` to guarantee :mod:`dpnp.tensor` can properly
     consume capsule.
 
     Returns
     -------
     out : tuple of ints
         A tuple of integers representing the ``major`` and ``minor``
-        version of DLPack used to build :module:`dpnp.tensor`.
+        version of DLPack used to build :mod:`dpnp.tensor`.
 
     """
 

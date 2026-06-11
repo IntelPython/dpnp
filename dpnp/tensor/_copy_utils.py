@@ -96,7 +96,7 @@ def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
 
 
 def _copy_from_numpy_into(dst, np_ary):
-    """Copies `np_ary` into `dst` of type :class:`dpnp.tensor.usm_ndarray"""
+    """Copies `np_ary` into `dst` of type :class:`dpnp.tensor.usm_ndarray`."""
     if not isinstance(np_ary, np.ndarray):
         raise TypeError(f"Expected numpy.ndarray, got {type(np_ary)}")
     if not isinstance(dst, dpt.usm_ndarray):
