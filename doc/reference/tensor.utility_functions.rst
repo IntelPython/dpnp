@@ -25,5 +25,5 @@ Device object
         ~sycl_queue
         ~sycl_device
         ~sycl_context
-        ~sycl_usm_shared_memory
-        ~usm_ndarray_to_device
+        ~print_device_info
+        ~wait

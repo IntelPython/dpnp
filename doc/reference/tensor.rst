@@ -20,6 +20,8 @@ This module contains:
 * :ref:`Accumulation functions <dpnp_tensor_accumulation_functions>`
 * :ref:`Array creation functions <dpnp_tensor_creation_functions>`
 * :ref:`Array manipulation functions <dpnp_tensor_manipulation_functions>`
+* :ref:`Data type functions <dpnp_tensor_data_type_functions>`
+* :ref:`Data types <dpnp_tensor_data_types>`
 * :ref:`Elementwise functions <dpnp_tensor_elementwise_functions>`
 * :ref:`Indexing functions <dpnp_tensor_indexing_functions>`
 * :ref:`Introspection functions <dpnp_tensor_inspection>`

@@ -6,8 +6,8 @@ Sorting functions
 .. currentmodule:: dpnp.tensor
 
 .. autosummary::
-   :toctree: generated
+    :toctree: generated
 
-   argsort
-   sort
-   top_k
+    argsort
+    sort
+    top_k
