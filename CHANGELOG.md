@@ -163,7 +163,7 @@ This release is compatible with NumPy 2.3.3.
 * Added `--target-cuda[=ARCH]` option to replace the deprecated `--target=cuda`, allowing users to build for CUDA devices with optional architecture selection using [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/nvidia/home/) [#2478](https://github.com/IntelPython/dpnp/pull/2478)
 * Added several new `pre-commit` rules, including protection against direct commits to master/maintenance branches [#2500](https://github.com/IntelPython/dpnp/pull/2500)
 * Added implementation of `dpnp.ndarray.view` method [#2520](https://github.com/IntelPython/dpnp/pull/2520)
-* Added a new backend routine `syrk` from oneMKL to perform symmetric rank-k update which is used for a specialized matrix multiplication where the result is a symmetric matrix [2509](https://github.com/IntelPython/dpnp/pull/2509)
+* Added a new backend routine `syrk` from oneMKL to perform symmetric rank-k update which is used for a specialized matrix multiplication where the result is a symmetric matrix [#2509](https://github.com/IntelPython/dpnp/pull/2509)
 * Added `timeout-minutes` property to GitHub jobs [#2526](https://github.com/IntelPython/dpnp/pull/2526)
 * Added implementation of `dpnp.ndarray.data` and `dpnp.ndarray.data.ptr` attributes [#2521](https://github.com/IntelPython/dpnp/pull/2521)
 * Added `dpnp.ndarray.__contains__` method [#2534](https://github.com/IntelPython/dpnp/pull/2534)
@@ -293,8 +293,8 @@ Moreover, it adds support to build `dpnp` from the source for AMD GPUs.
 * Updated `conda create` commands build and install instructions of `Quick start guide` to avoid a compilation error [#2395](https://github.com/IntelPython/dpnp/pull/2395)
 * Added handling of empty string passed to a test env variable defining data type scope as a `False` value [#2415](https://github.com/IntelPython/dpnp/pull/2415)
 * Resolved build issues on non-Intel targets in `dpnp.i0` and `dpnp.kaiser` [#2439](https://github.com/IntelPython/dpnp/pull/2439)
-* Ensure consistency in the `dpnp.linalg.LinAlgError` exception raised on singular input matrices for both non-batched and batched cases in `dpnp.linalg.inv` [#2458] (https://github.com/IntelPython/dpnp/pull/2458)
-* Updated test f/w to correct a check of array interface while converting to `numpy.ndarray` for comparison [#2467] (https://github.com/IntelPython/dpnp/pull/2467)
+* Ensure consistency in the `dpnp.linalg.LinAlgError` exception raised on singular input matrices for both non-batched and batched cases in `dpnp.linalg.inv` [#2458](https://github.com/IntelPython/dpnp/pull/2458)
+* Updated test f/w to correct a check of array interface while converting to `numpy.ndarray` for comparison [#2467](https://github.com/IntelPython/dpnp/pull/2467)
 
 
 ## [0.17.0] - 2025-02-26
