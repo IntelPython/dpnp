@@ -3952,6 +3952,10 @@ def transpose(a, axes=None):
     >>> np.transpose(a).shape
     (5, 4, 3, 2)
 
+    >>> a = np.arange(3*4*5).reshape((3, 4, 5))
+    >>> np.transpose(a, (-1, 0, -2)).shape
+    (5, 3, 4)
+
     """
 
     dpnp.check_supported_arrays_type(a)
