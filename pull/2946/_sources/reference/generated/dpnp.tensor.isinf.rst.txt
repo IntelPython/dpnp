@@ -1,0 +1,10 @@
+﻿dpnp.tensor.isinf
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: isinf
+    :no-value:
+
+

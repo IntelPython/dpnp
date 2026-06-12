@@ -1,0 +1,10 @@
+﻿dpnp.tensor.expm1
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: expm1
+    :no-value:
+
+

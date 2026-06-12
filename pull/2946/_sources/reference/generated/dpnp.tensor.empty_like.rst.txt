@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.empty\_like
+=======================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: empty_like

@@ -1,0 +1,10 @@
+﻿dpnp.tensor.proj
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: proj
+    :no-value:
+
+

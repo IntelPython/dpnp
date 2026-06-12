@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.reduce\_hypot
+=========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: reduce_hypot

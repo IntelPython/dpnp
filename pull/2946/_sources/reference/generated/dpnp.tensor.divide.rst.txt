@@ -1,0 +1,10 @@
+﻿dpnp.tensor.divide
+==================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: divide
+    :no-value:
+
+

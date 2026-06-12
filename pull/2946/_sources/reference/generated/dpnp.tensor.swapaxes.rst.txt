@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.swapaxes
+====================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: swapaxes

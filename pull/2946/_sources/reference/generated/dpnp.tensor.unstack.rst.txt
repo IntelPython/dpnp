@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.unstack
+===================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: unstack

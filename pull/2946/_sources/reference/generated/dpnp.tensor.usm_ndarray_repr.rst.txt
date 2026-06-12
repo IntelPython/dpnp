@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.usm\_ndarray\_repr
+==============================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: usm_ndarray_repr

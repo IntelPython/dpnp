@@ -1,0 +1,10 @@
+﻿dpnp.tensor.cosh
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: cosh
+    :no-value:
+
+

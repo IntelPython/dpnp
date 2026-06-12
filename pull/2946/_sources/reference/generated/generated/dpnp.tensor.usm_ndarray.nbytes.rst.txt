@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.tensor.usm\_ndarray.nbytes
+===============================
+
+.. currentmodule:: dpnp.tensor
+
+attribute
+
+.. autoattribute:: usm_ndarray.nbytes

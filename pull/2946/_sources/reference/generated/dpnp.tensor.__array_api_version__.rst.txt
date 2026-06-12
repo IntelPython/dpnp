@@ -1,0 +1,14 @@
+﻿dpnp.tensor.\_\_array\_api\_version\_\_
+=======================================
+
+.. currentmodule:: dpnp.tensor
+
+.. autoclass:: __array_api_version__
+   
+
+   
+   
+
+   
+   
+   

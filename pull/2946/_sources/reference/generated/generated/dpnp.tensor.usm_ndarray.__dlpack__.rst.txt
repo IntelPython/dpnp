@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.tensor.usm\_ndarray.\_\_dlpack\_\_
+=======================================
+
+.. currentmodule:: dpnp.tensor
+
+method
+
+.. automethod:: usm_ndarray.__dlpack__

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.var
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: var

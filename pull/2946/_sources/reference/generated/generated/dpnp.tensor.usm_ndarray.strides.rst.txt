@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.tensor.usm\_ndarray.strides
+================================
+
+.. currentmodule:: dpnp.tensor
+
+attribute
+
+.. autoattribute:: usm_ndarray.strides

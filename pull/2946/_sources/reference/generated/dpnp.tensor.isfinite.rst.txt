@@ -1,0 +1,10 @@
+﻿dpnp.tensor.isfinite
+====================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: isfinite
+    :no-value:
+
+

@@ -1,0 +1,10 @@
+﻿dpnp.tensor.cos
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: cos
+    :no-value:
+
+

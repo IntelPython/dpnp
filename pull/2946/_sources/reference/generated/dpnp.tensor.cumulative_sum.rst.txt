@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.cumulative\_sum
+===========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: cumulative_sum

@@ -1,0 +1,64 @@
+﻿dpnp.tensor.usm\_ndarray
+========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autoclass:: usm_ndarray
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree: generated
+      :nosignatures:
+   
+      ~usm_ndarray.to_device
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree: generated
+      :nosignatures:
+   
+      ~usm_ndarray.T
+      ~usm_ndarray.device
+      ~usm_ndarray.dtype
+      ~usm_ndarray.flags
+      ~usm_ndarray.imag
+      ~usm_ndarray.itemsize
+      ~usm_ndarray.mT
+      ~usm_ndarray.nbytes
+      ~usm_ndarray.ndim
+      ~usm_ndarray.real
+      ~usm_ndarray.shape
+      ~usm_ndarray.size
+      ~usm_ndarray.strides
+      ~usm_ndarray.sycl_context
+      ~usm_ndarray.sycl_device
+      ~usm_ndarray.sycl_queue
+      ~usm_ndarray.usm_data
+      ~usm_ndarray.usm_type
+
+   .. rubric:: Special attributes
+
+   .. autosummary::
+      :toctree: generated
+      :nosignatures:
+
+      ~usm_ndarray.__dlpack_device__
+      ~usm_ndarray.__dlpack__
+      ~usm_ndarray.__sycl_usm_array_interface__
+      ~usm_ndarray._pointer
+      ~usm_ndarray._element_offset
+      ~usm_ndarray._byte_bounds
+
+   
+   

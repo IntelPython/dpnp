@@ -1,0 +1,9 @@
+﻿dpnp.tensor.clip
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+
+.. autofunction:: clip

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.moveaxis
+====================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: moveaxis

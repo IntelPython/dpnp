@@ -1,0 +1,10 @@
+﻿dpnp.tensor.acos
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: acos
+    :no-value:
+
+

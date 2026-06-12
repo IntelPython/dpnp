@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.unique\_inverse
+===========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: unique_inverse

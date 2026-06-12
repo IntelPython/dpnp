@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.broadcast\_arrays
+=============================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: broadcast_arrays

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.full\_like
+======================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: full_like

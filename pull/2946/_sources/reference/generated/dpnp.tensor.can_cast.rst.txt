@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.can\_cast
+=====================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: can_cast

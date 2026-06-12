@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.stack
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: stack

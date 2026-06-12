@@ -1,0 +1,10 @@
+﻿dpnp.tensor.logaddexp
+=====================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: logaddexp
+    :no-value:
+
+

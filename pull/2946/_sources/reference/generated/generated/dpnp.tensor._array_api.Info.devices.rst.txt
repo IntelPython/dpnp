@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.tensor.\_array\_api.Info.devices
+=====================================
+
+.. currentmodule:: dpnp.tensor._array_api
+
+method
+
+.. automethod:: Info.devices

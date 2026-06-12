@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.tensor.usm\_ndarray.real
+=============================
+
+.. currentmodule:: dpnp.tensor
+
+attribute
+
+.. autoattribute:: usm_ndarray.real

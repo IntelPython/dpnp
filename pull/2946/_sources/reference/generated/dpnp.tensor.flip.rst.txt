@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.flip
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: flip

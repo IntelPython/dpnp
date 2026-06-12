@@ -1,0 +1,10 @@
+﻿dpnp.tensor.imag
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: imag
+    :no-value:
+
+

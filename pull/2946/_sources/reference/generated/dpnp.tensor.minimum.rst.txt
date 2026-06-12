@@ -1,0 +1,10 @@
+﻿dpnp.tensor.minimum
+===================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: minimum
+    :no-value:
+
+

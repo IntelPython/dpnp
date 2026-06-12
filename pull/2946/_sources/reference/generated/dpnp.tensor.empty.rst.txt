@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.empty
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: empty

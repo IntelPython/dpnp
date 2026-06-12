@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.take
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: take

@@ -1,0 +1,10 @@
+﻿dpnp.tensor.nextafter
+=====================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: nextafter
+    :no-value:
+
+

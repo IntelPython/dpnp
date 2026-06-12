@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.squeeze
+===================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: squeeze

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.finfo
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: finfo

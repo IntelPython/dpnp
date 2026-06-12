@@ -1,0 +1,10 @@
+﻿dpnp.tensor.log1p
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: log1p
+    :no-value:
+
+

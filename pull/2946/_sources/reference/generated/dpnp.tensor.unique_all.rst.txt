@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.unique\_all
+=======================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: unique_all

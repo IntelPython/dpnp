@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.asarray
+===================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: asarray

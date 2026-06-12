@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.expand\_dims
+========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: expand_dims

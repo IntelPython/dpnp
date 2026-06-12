@@ -1,0 +1,10 @@
+﻿dpnp.tensor.angle
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: angle
+    :no-value:
+
+

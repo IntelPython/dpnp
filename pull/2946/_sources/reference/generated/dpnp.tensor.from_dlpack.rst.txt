@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.from\_dlpack
+========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: from_dlpack

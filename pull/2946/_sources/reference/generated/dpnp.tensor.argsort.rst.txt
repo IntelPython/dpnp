@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.argsort
+===================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: argsort

@@ -1,0 +1,10 @@
+﻿dpnp.tensor.less\_equal
+=======================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: less_equal
+    :no-value:
+
+

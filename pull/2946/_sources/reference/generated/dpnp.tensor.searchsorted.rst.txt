@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.searchsorted
+========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: searchsorted

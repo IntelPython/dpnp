@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.copy
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: copy

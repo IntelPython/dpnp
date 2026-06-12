@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.astype
+==================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: astype

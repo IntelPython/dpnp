@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.nonzero
+===================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: nonzero

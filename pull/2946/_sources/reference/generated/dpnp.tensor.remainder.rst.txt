@@ -1,0 +1,10 @@
+﻿dpnp.tensor.remainder
+=====================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: remainder
+    :no-value:
+
+

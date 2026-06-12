@@ -1,0 +1,10 @@
+﻿dpnp.tensor.asinh
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: asinh
+    :no-value:
+
+

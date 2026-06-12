@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.reshape
+===================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: reshape

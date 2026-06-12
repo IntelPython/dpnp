@@ -1,0 +1,10 @@
+﻿dpnp.tensor.copysign
+====================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: copysign
+    :no-value:
+
+

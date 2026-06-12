@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.tensor.usm\_ndarray.device
+===============================
+
+.. currentmodule:: dpnp.tensor
+
+attribute
+
+.. autoattribute:: usm_ndarray.device

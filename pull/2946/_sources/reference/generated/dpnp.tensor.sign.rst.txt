@@ -1,0 +1,10 @@
+﻿dpnp.tensor.sign
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: sign
+    :no-value:
+
+

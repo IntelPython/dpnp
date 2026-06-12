@@ -1,0 +1,10 @@
+﻿dpnp.tensor.sin
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: sin
+    :no-value:
+
+

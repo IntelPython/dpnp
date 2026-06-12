@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.eye
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: eye

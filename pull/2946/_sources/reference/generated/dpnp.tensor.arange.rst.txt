@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.arange
+==================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: arange

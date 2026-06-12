@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.tril
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: tril

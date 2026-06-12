@@ -1,0 +1,10 @@
+﻿dpnp.tensor.subtract
+====================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: subtract
+    :no-value:
+
+

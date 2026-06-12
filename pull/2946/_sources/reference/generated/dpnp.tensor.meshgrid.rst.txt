@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.meshgrid
+====================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: meshgrid

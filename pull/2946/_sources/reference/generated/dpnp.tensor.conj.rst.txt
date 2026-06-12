@@ -1,0 +1,10 @@
+﻿dpnp.tensor.conj
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: conj
+    :no-value:
+
+

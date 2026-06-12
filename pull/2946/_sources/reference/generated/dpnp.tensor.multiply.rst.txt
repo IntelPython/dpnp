@@ -1,0 +1,10 @@
+﻿dpnp.tensor.multiply
+====================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: multiply
+    :no-value:
+
+

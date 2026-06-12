@@ -1,0 +1,10 @@
+﻿dpnp.tensor.bitwise\_invert
+===========================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: bitwise_invert
+    :no-value:
+
+

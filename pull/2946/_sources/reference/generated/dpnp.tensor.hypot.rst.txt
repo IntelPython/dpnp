@@ -1,0 +1,10 @@
+﻿dpnp.tensor.hypot
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: hypot
+    :no-value:
+
+

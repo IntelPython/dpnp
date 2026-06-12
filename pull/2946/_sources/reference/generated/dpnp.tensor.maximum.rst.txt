@@ -1,0 +1,10 @@
+﻿dpnp.tensor.maximum
+===================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: maximum
+    :no-value:
+
+

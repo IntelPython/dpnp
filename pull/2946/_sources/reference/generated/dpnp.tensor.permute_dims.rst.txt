@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.permute\_dims
+=========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: permute_dims

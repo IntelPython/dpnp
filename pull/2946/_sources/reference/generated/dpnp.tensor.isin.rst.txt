@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.isin
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: isin

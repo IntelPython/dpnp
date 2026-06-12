@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.cumulative\_prod
+============================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: cumulative_prod

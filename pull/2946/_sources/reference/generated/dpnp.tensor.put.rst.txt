@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.put
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: put

@@ -1,0 +1,10 @@
+﻿dpnp.tensor.sinh
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: sinh
+    :no-value:
+
+

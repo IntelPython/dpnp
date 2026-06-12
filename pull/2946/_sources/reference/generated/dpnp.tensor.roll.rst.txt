@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.roll
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: roll

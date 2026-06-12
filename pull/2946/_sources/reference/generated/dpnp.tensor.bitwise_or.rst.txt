@@ -1,0 +1,10 @@
+﻿dpnp.tensor.bitwise\_or
+=======================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: bitwise_or
+    :no-value:
+
+

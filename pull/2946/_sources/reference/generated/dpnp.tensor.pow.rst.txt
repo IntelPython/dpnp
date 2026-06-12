@@ -1,0 +1,10 @@
+﻿dpnp.tensor.pow
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: pow
+    :no-value:
+
+

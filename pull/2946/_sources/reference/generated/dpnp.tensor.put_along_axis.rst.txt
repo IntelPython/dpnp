@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.put\_along\_axis
+============================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: put_along_axis

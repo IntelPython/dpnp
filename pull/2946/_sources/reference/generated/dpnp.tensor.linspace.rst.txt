@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.linspace
+====================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: linspace

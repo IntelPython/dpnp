@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.min
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: min

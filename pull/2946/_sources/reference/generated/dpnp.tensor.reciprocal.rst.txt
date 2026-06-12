@@ -1,0 +1,10 @@
+﻿dpnp.tensor.reciprocal
+======================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: reciprocal
+    :no-value:
+
+

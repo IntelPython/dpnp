@@ -1,0 +1,10 @@
+﻿dpnp.tensor.bitwise\_xor
+========================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: bitwise_xor
+    :no-value:
+
+

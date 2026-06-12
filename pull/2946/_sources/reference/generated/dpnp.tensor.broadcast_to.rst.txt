@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.broadcast\_to
+=========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: broadcast_to

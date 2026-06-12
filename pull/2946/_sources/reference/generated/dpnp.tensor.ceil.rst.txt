@@ -1,0 +1,10 @@
+﻿dpnp.tensor.ceil
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: ceil
+    :no-value:
+
+

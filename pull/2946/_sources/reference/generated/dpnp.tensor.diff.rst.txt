@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.diff
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: diff

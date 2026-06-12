@@ -1,0 +1,10 @@
+﻿dpnp.tensor.equal
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: equal
+    :no-value:
+
+

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.isdtype
+===================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: isdtype

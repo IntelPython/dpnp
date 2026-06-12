@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.std
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: std

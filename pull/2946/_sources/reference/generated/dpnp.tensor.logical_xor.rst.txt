@@ -1,0 +1,10 @@
+﻿dpnp.tensor.logical\_xor
+========================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: logical_xor
+    :no-value:
+
+

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.zeros\_like
+=======================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: zeros_like

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.mean
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: mean

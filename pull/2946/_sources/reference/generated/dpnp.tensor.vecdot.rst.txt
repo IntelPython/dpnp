@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.vecdot
+==================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: vecdot

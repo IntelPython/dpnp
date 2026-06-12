@@ -1,0 +1,10 @@
+﻿dpnp.tensor.real
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: real
+    :no-value:
+
+

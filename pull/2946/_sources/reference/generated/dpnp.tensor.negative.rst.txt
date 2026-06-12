@@ -1,0 +1,10 @@
+﻿dpnp.tensor.negative
+====================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: negative
+    :no-value:
+
+

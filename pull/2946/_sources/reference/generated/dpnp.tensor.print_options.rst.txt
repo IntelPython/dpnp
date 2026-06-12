@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.print\_options
+==========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: print_options

@@ -1,0 +1,10 @@
+﻿dpnp.tensor.floor
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: floor
+    :no-value:
+
+

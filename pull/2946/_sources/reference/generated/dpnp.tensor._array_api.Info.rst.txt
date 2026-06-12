@@ -1,0 +1,25 @@
+﻿dpnp.tensor.\_array\_api.Info
+=============================
+
+.. currentmodule:: dpnp.tensor._array_api
+
+.. autoclass:: Info
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree: generated
+   
+      ~Info.capabilities
+      ~Info.default_device
+      ~Info.default_dtypes
+      ~Info.devices
+      ~Info.dtypes
+   
+   
+
+   
+   
+   

@@ -1,0 +1,10 @@
+﻿dpnp.tensor.rsqrt
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: rsqrt
+    :no-value:
+
+

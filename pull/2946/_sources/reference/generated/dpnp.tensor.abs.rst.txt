@@ -1,0 +1,10 @@
+﻿dpnp.tensor.abs
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: abs
+    :no-value:
+
+

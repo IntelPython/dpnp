@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.iinfo
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: iinfo

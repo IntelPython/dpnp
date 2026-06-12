@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.logsumexp
+=====================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: logsumexp

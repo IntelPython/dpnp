@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.ones\_like
+======================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: ones_like

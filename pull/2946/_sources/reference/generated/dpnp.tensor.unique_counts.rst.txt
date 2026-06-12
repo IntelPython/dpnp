@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.unique\_counts
+==========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: unique_counts

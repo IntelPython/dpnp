@@ -1,0 +1,10 @@
+﻿dpnp.tensor.square
+==================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: square
+    :no-value:
+
+

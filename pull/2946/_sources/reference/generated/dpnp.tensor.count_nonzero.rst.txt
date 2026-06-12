@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.count\_nonzero
+==========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: count_nonzero

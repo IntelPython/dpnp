@@ -1,0 +1,10 @@
+﻿dpnp.tensor.cbrt
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: cbrt
+    :no-value:
+
+

@@ -1,0 +1,10 @@
+﻿dpnp.tensor.less
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: less
+    :no-value:
+
+

@@ -1,0 +1,10 @@
+﻿dpnp.tensor.isnan
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: isnan
+    :no-value:
+
+

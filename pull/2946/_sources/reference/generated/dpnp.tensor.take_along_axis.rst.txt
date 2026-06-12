@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.take\_along\_axis
+=============================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: take_along_axis

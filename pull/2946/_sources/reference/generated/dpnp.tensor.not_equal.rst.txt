@@ -1,0 +1,10 @@
+﻿dpnp.tensor.not\_equal
+======================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: not_equal
+    :no-value:
+
+

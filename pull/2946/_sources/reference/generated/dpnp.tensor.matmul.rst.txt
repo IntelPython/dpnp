@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.matmul
+==================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: matmul

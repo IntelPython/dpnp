@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.tile
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: tile

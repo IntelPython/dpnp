@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.asnumpy
+===================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: asnumpy

@@ -1,0 +1,10 @@
+﻿dpnp.tensor.add
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: add
+    :no-value:
+
+

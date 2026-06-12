@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.top\_k
+==================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: top_k

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.triu
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: triu

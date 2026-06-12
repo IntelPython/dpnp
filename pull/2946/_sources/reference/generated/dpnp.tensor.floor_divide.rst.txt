@@ -1,0 +1,10 @@
+﻿dpnp.tensor.floor\_divide
+=========================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: floor_divide
+    :no-value:
+
+

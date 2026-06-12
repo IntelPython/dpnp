@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.place
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: place

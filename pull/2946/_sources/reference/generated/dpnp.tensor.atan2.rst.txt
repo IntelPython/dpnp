@@ -1,0 +1,10 @@
+﻿dpnp.tensor.atan2
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: atan2
+    :no-value:
+
+

@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.sum
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: sum

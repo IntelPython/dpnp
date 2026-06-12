@@ -1,0 +1,10 @@
+﻿dpnp.tensor.bitwise\_left\_shift
+================================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: bitwise_left_shift
+    :no-value:
+
+

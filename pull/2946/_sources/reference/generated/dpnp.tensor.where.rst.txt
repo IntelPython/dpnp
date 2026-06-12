@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.where
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: where

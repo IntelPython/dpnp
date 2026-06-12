@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.max
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: max

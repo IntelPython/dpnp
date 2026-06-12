@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.result\_type
+========================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: result_type

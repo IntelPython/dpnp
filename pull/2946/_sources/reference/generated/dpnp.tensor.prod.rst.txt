@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.prod
+================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: prod

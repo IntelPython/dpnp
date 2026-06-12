@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.matrix\_transpose
+=============================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: matrix_transpose

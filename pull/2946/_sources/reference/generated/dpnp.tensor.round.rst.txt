@@ -1,0 +1,10 @@
+﻿dpnp.tensor.round
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: round
+    :no-value:
+
+

@@ -1,0 +1,10 @@
+﻿dpnp.tensor.tan
+===============
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: tan
+    :no-value:
+
+

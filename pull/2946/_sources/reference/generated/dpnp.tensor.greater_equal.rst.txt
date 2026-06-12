@@ -1,0 +1,10 @@
+﻿dpnp.tensor.greater\_equal
+==========================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: greater_equal
+    :no-value:
+
+

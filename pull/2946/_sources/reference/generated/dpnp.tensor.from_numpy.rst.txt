@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.from\_numpy
+=======================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: from_numpy

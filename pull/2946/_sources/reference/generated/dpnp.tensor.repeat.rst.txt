@@ -1,0 +1,10 @@
+﻿
+
+dpnp.tensor.repeat
+==================
+
+.. currentmodule:: dpnp.tensor
+
+
+
+.. autofunction:: repeat

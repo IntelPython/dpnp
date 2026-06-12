@@ -1,0 +1,10 @@
+﻿dpnp.tensor.trunc
+=================
+
+.. currentmodule:: dpnp.tensor
+
+
+.. autodata:: trunc
+    :no-value:
+
+
