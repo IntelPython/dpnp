@@ -22,7 +22,6 @@ This release is compatible with NumPy 2.4.5.
 * Replaced `.pxi` includes in `dpnp.tensor` with modular `.pxd`/`.pyx` Cython imports [#2913](https://github.com/IntelPython/dpnp/pull/2913)
 * Reimplemented `dpnp.eye` and `dpnp.tensor.eye` with a branchless kernel [#2937](https://github.com/IntelPython/dpnp/pull/2937)
 * Cleaned up Python bindings for indexing functions, renaming `usm_ndarray_take` and `usm_ndarray_put` to `py_take` and `py_put` and refactoring validation [#2935](https://github.com/IntelPython/dpnp/pull/2935)
-* Fixed some tests which expected lists from `dpctl` functions which now return tuples (i.e., `dpctl.SyclDevice.create_sub_devices`) [#2945](https://github.com/IntelPython/dpnp/pull/2945)
 
 ### Deprecated
 
@@ -38,6 +37,7 @@ This release is compatible with NumPy 2.4.5.
 * Fixed boolean mask indexing to raise `IndexError` when mask dimensions don't match the indexed array dimensions, aligning with NumPy behavior. Previously, incompatible boolean masks silently returned incorrect results instead of raising an error [#2929](https://github.com/IntelPython/dpnp/pull/2929)
 * Fixed a bug in `astype` where casting floating point types to unsigned integral types could cause an intermediate signed integral type to overflow, leading to incorrect results [#2930](https://github.com/IntelPython/dpnp/pull/2930)
 * Fixed incorrect `dpnp.tensor.expm1` result for `complex(±0, 0)` special case on CPU to match the Python Array API specification [#2926](https://github.com/IntelPython/dpnp/pull/2926)
+* Fixed tests which expected lists from `dpctl` functions which now return tuples (i.e., `dpctl.SyclDevice.create_sub_devices`) [#2945](https://github.com/IntelPython/dpnp/pull/2945)
 
 ### Security
 
