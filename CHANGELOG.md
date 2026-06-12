@@ -10,19 +10,19 @@ This release is compatible with NumPy 2.4.5.
 
 ### Added
 
-* Added C API functions for `dpnp.tensor.usm_ndarray` setters and getters to avoid ABI breakage if `dpnp.tensor.usm_ndarray` is modified [gh-2866](https://github.com/IntelPython/dpnp/pull/2866)
+* Added C API functions for `dpnp.tensor.usm_ndarray` setters and getters to avoid ABI breakage if `dpnp.tensor.usm_ndarray` is modified [#2866](https://github.com/IntelPython/dpnp/pull/2866)
 * Added support for buffer protocol objects as advanced index keys in `dpnp.ndarray` [#2889](https://github.com/IntelPython/dpnp/pull/2889)
 * Added `--includes` and `--include-dir` options to the `dpnp` CLI [#2916](https://github.com/IntelPython/dpnp/pull/2916)
 
 ### Changed
 
 * Changed `dpnp.meshgrid` and `dpnp.tensor.meshgrid` to return a tuple instead of a list, aligning with NumPy 2.5+ behavior and 2025.12 version of the Python array API standard [#2854](https://github.com/IntelPython/dpnp/pull/2854)
-* Updated `searchsorted` implementations to align with the 2025.12 array API spec [gh-2902](https://github.com/IntelPython/dpnp/pull/2902)
-* Updated tests to align with NumPy 2.4.5 compatibility [gh-2920](https://github.com/IntelPython/dpnp/pull/2920)
+* Updated `searchsorted` implementations to align with the 2025.12 array API spec [#2902](https://github.com/IntelPython/dpnp/pull/2902)
+* Updated tests to align with NumPy 2.4.5 compatibility [#2920](https://github.com/IntelPython/dpnp/pull/2920)
 * Replaced `.pxi` includes in `dpnp.tensor` with modular `.pxd`/`.pyx` Cython imports [#2913](https://github.com/IntelPython/dpnp/pull/2913)
-* Reimplemented `dpnp.eye` and `dpnp.tensor.eye` with a branchless kernel [gh-2937](https://github.com/IntelPython/dpnp/pull/2937)
-* Cleaned up Python bindings for indexing functions, renaming `usm_ndarray_take` and `usm_ndarray_put` to `py_take` and `py_put` and refactoring validation [gh-2935](https://github.com/IntelPython/dpnp/pull/2935)
-* Fixed some tests which expected lists from `dpctl` functions which now return tuples (i.e., `dpctl.SyclDevice.create_sub_devices`) [gh-2945](https://github.com/IntelPython/dpnp/pull/2945)
+* Reimplemented `dpnp.eye` and `dpnp.tensor.eye` with a branchless kernel [#2937](https://github.com/IntelPython/dpnp/pull/2937)
+* Cleaned up Python bindings for indexing functions, renaming `usm_ndarray_take` and `usm_ndarray_put` to `py_take` and `py_put` and refactoring validation [#2935](https://github.com/IntelPython/dpnp/pull/2935)
+* Fixed some tests which expected lists from `dpctl` functions which now return tuples (i.e., `dpctl.SyclDevice.create_sub_devices`) [#2945](https://github.com/IntelPython/dpnp/pull/2945)
 
 ### Deprecated
 
