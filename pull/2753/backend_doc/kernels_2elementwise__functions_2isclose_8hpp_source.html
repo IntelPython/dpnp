@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.20.0dev6</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.21.0dev1</span>
    </div>
    <div id="projectbrief">Data Parallel Extension for NumPy*</div>
   </td>
@@ -136,9 +136,9 @@ $(function(){initNavTree('kernels_2elementwise__functions_2isclose_8hpp_source.h
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &lt;sycl/sycl.hpp&gt;</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment">// dpctl tensor headers</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment">// dpnp tensor headers</span></div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#include &quot;kernels/alignment.hpp&quot;</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#include &quot;kernels/dpctl_tensor_types.hpp&quot;</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#include &quot;kernels/dpnp_tensor_types.hpp&quot;</span></div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#include &quot;kernels/elementwise_functions/sycl_complex.hpp&quot;</span></div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#include &quot;utils/offset_utils.hpp&quot;</span></div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="preprocessor">#include &quot;utils/sycl_utils.hpp&quot;</span></div>
@@ -222,11 +222,11 @@ $(function(){initNavTree('kernels_2elementwise__functions_2isclose_8hpp_source.h
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">void</span> operator()(sycl::id&lt;1&gt; wid)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;three_offsets_ = three_offsets_indexer_(wid.get(0));</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keyword">const</span> dpctl::tensor::ssize_t &amp;inp1_offset =</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keyword">const</span> dpnp::tensor::ssize_t &amp;inp1_offset =</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            three_offsets_.get_first_offset();</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keyword">const</span> dpctl::tensor::ssize_t &amp;inp2_offset =</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keyword">const</span> dpnp::tensor::ssize_t &amp;inp2_offset =</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            three_offsets_.get_second_offset();</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keyword">const</span> dpctl::tensor::ssize_t &amp;out_offset =</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keyword">const</span> dpnp::tensor::ssize_t &amp;out_offset =</div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            three_offsets_.get_third_offset();</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        out_[out_offset] =</div>
@@ -272,7 +272,7 @@ $(function(){initNavTree('kernels_2elementwise__functions_2isclose_8hpp_source.h
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="comment">/* Each work-item processes vec_sz elements, contiguous in memory */</span></div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="comment">/* NOTE: work-group size must be divisible by sub-group size */</span></div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keyword">using </span>dpctl::tensor::type_utils::is_complex_v;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keyword">using </span>dpnp::tensor::type_utils::is_complex_v;</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (enable_sg_loadstore &amp;&amp; !is_complex_v&lt;T&gt;) {</div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>            <span class="keyword">auto</span> sg = ndit.get_sub_group();</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            <span class="keyword">const</span> std::uint16_t sgSize = sg.get_max_local_range()[0];</div>
@@ -281,8 +281,8 @@ $(function(){initNavTree('kernels_2elementwise__functions_2isclose_8hpp_source.h
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>                                sg.get_group_id()[0] * sgSize);</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            <span class="keywordflow">if</span> (base + elems_per_wi * sgSize &lt; nelems_) {</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>                <span class="keyword">using </span>dpctl::tensor::sycl_utils::sub_group_load;</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                <span class="keyword">using </span>dpctl::tensor::sycl_utils::sub_group_store;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>                <span class="keyword">using </span>dpnp::tensor::sycl_utils::sub_group_load;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                <span class="keyword">using </span>dpnp::tensor::sycl_utils::sub_group_store;</div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="preprocessor">#pragma unroll</span></div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                <span class="keywordflow">for</span> (std::uint8_t it = 0; it &lt; elems_per_wi; it += vec_sz) {</div>
 <div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                    <span class="keyword">const</span> std::size_t offset = base + it * sgSize;</div>
@@ -340,19 +340,19 @@ $(function(){initNavTree('kernels_2elementwise__functions_2isclose_8hpp_source.h
 <div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    isclose_strided_scalar_impl(sycl::queue &amp;exec_q,</div>
 <div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>                                <span class="keyword">const</span> <span class="keywordtype">int</span> nd,</div>
 <div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>                                std::size_t nelems,</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>                                <span class="keyword">const</span> dpctl::tensor::ssize_t *shape_strides,</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>                                <span class="keyword">const</span> dpnp::tensor::ssize_t *shape_strides,</div>
 <div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>                                <span class="keyword">const</span> scT rtol,</div>
 <div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>                                <span class="keyword">const</span> scT atol,</div>
 <div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>                                <span class="keyword">const</span> <span class="keywordtype">bool</span> equal_nan,</div>
 <div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>                                <span class="keyword">const</span> <span class="keywordtype">char</span> *a_cp,</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>                                <span class="keyword">const</span> dpctl::tensor::ssize_t a_offset,</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>                                <span class="keyword">const</span> dpnp::tensor::ssize_t a_offset,</div>
 <div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>                                <span class="keyword">const</span> <span class="keywordtype">char</span> *b_cp,</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>                                <span class="keyword">const</span> dpctl::tensor::ssize_t b_offset,</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>                                <span class="keyword">const</span> dpnp::tensor::ssize_t b_offset,</div>
 <div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>                                <span class="keywordtype">char</span> *out_cp,</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                                <span class="keyword">const</span> dpctl::tensor::ssize_t out_offset,</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                                <span class="keyword">const</span> dpnp::tensor::ssize_t out_offset,</div>
 <div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>                                <span class="keyword">const</span> std::vector&lt;sycl::event&gt; &amp;depends)</div>
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>{</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    dpctl::tensor::type_utils::validate_type_for_device&lt;T&gt;(exec_q);</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    dpnp::tensor::type_utils::validate_type_for_device&lt;T&gt;(exec_q);</div>
 <div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
 <div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="keyword">const</span> T *a_tp = <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>T *<span class="keyword">&gt;</span>(a_cp);</div>
 <div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keyword">const</span> T *b_tp = <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span>T *<span class="keyword">&gt;</span>(b_cp);</div>
@@ -361,7 +361,7 @@ $(function(){initNavTree('kernels_2elementwise__functions_2isclose_8hpp_source.h
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    resTy *out_tp = <span class="keyword">reinterpret_cast&lt;</span>resTy *<span class="keyword">&gt;</span>(out_cp);</div>
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keyword">using </span>IndexerT =</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keyword">typename</span> dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keyword">typename</span> dpnp::tensor::offset_utils::ThreeOffsets_StridedIndexer;</div>
 <div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="keyword">const</span> IndexerT indexer{nd, a_offset, b_offset, out_offset, shape_strides};</div>
 <div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    sycl::event comp_ev = exec_q.submit([&amp;](sycl::handler &amp;cgh) {</div>
@@ -412,8 +412,8 @@ $(function(){initNavTree('kernels_2elementwise__functions_2isclose_8hpp_source.h
 <div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    sycl::event comp_ev = exec_q.submit([&amp;](sycl::handler &amp;cgh) {</div>
 <div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        cgh.depends_on(depends);</div>
 <div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span> </div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        <span class="keyword">using </span>dpctl::tensor::kernels::alignment_utils::is_aligned;</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        <span class="keyword">using </span>dpctl::tensor::kernels::alignment_utils::required_alignment;</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        <span class="keyword">using </span>dpnp::tensor::kernels::alignment_utils::is_aligned;</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        <span class="keyword">using </span>dpnp::tensor::kernels::alignment_utils::required_alignment;</div>
 <div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        <span class="keywordflow">if</span> (is_aligned&lt;required_alignment&gt;(a_tp) &amp;&amp;</div>
 <div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>            is_aligned&lt;required_alignment&gt;(b_tp) &amp;&amp;</div>
 <div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>            is_aligned&lt;required_alignment&gt;(out_tp)) {</div>

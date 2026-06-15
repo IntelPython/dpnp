@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.20.0dev6+10.g60ba145e9e6 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.21.0dev1+5.g0854e60c872 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b45b9b84"></script>
+      <script src="../../_static/documentation_options.js?v=0dc94af6"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tensor.html">Tensor (<code class="docutils literal notranslate"><span class="pre">dpnp.tensor</span></code>)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development information</span></p>
 <ul>
@@ -128,10 +129,10 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_container</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo.dpnp_arraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -262,7 +263,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -385,7 +386,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -533,7 +534,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -641,7 +642,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -745,7 +746,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -862,7 +863,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1002,7 +1003,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 <span class="sd">        If the value is ``None``, returned array is created on the same device</span>
 <span class="sd">        as `x`.</span>
@@ -1074,7 +1075,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1197,7 +1198,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1305,7 +1306,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1414,7 +1415,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1523,7 +1524,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1638,7 +1639,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1753,7 +1754,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1876,7 +1877,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -2000,7 +2001,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -2114,7 +2115,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -2219,7 +2220,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -2299,9 +2300,9 @@
 <span class="sd">          to a non-partitioned SYCL device.</span>
 <span class="sd">        * :class:`dpctl.SyclQueue` : Implies SYCL device targeted by the SYCL</span>
 <span class="sd">          queue.</span>
-<span class="sd">        * :class:`dpctl.tensor.Device` : Implies SYCL device</span>
+<span class="sd">        * :class:`dpnp.tensor.Device` : Implies SYCL device</span>
 <span class="sd">          ``device.sycl_queue``. The `device` object is obtained via</span>
-<span class="sd">          :attr:`dpctl.tensor.usm_ndarray.device`.</span>
+<span class="sd">          :attr:`dpnp.tensor.usm_ndarray.device`.</span>
 <span class="sd">        * ``(device_type, device_id)`` : 2-tuple matching the format of the</span>
 <span class="sd">          output of the :meth:`dpnp.ndarray.__dlpack_device__`: an integer</span>
 <span class="sd">          enumerator representing the device type followed by an integer</span>
@@ -2346,7 +2347,7 @@
 <span class="sd">    If the return type is :class:`dpnp.ndarray`, the associated SYCL queue is</span>
 <span class="sd">    derived from the `device` keyword. When `device` keyword value has type</span>
 <span class="sd">    :class:`dpctl.SyclQueue`, the explicit queue instance is used, when `device`</span>
-<span class="sd">    keyword value has type :class:`dpctl.tensor.Device`, the</span>
+<span class="sd">    keyword value has type :class:`dpnp.tensor.Device`, the</span>
 <span class="sd">    ``device.sycl_queue`` is used. In all other cases, the cached SYCL queue</span>
 <span class="sd">    corresponding to the implied SYCL device is used.</span>
 
@@ -2405,7 +2406,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -2517,7 +2518,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -2635,7 +2636,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -2750,7 +2751,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -2871,7 +2872,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -2986,7 +2987,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -3104,7 +3105,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -3276,7 +3277,7 @@
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">()</span>
 
     <span class="n">s0</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">ndim</span>
     <span class="n">output</span> <span class="o">=</span> <span class="p">[</span>
@@ -3297,7 +3298,7 @@
     <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">output</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="p">[</span><span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">output</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">output</span><span class="p">)</span></div>
 
 
 
@@ -3314,7 +3315,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -3393,7 +3394,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -3485,7 +3486,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -3600,7 +3601,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -3779,7 +3780,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -3857,8 +3858,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">_k</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">if</span> <span class="n">_k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># pylint: disable=raise-missing-from</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`k` must be a integer data type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
@@ -4026,7 +4026,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -4159,7 +4159,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -4274,7 +4274,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>

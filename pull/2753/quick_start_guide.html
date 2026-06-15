@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.20.0dev6+10.g60ba145e9e6 documentation</title>
+  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.21.0dev1+5.g0854e60c872 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=b45b9b84"></script>
+      <script src="_static/documentation_options.js?v=0dc94af6"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -68,11 +68,13 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command-Line Interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tensor.html">Tensor (<code class="docutils literal notranslate"><span class="pre">dpnp.tensor</span></code>)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development information</span></p>
 <ul>
@@ -158,7 +160,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
 <p>And to build dpnp package from the sources:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda-build<span class="w"> </span>conda-recipe<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels
 </pre></div>
 </div>
 <p>Finally, to install the result package:</p>
@@ -263,6 +265,19 @@ devices at the same time:</p>
 </div>
 </section>
 </section>
+</section>
+<section id="command-line-interface">
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">dpnp</span></code> command provides options to query the include paths
+needed when building C++ extensions with dpnp:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>dpnp<span class="w"> </span>--includes<span class="w">            </span><span class="c1"># print -I flag for dpnp include directory</span>
+python<span class="w"> </span>-m<span class="w"> </span>dpnp<span class="w"> </span>--include-dir<span class="w">         </span><span class="c1"># print path to dpnp include directory</span>
+python<span class="w"> </span>-m<span class="w"> </span>dpnp<span class="w"> </span>--tensor-includes<span class="w">     </span><span class="c1"># print -I flag for libtensor include directory</span>
+python<span class="w"> </span>-m<span class="w"> </span>dpnp<span class="w"> </span>--tensor-include-dir<span class="w">  </span><span class="c1"># print path to libtensor include directory</span>
+</pre></div>
+</div>
+<p>These options are useful when building pybind11 extensions that use
+<code class="docutils literal notranslate"><span class="pre">dpnp4pybind11.hpp</span></code> or libtensor kernel headers.</p>
 </section>
 <section id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>

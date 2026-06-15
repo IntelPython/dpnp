@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.random.dpnp_random_state &mdash; Data Parallel Extension for NumPy 0.20.0dev6+10.g60ba145e9e6 documentation</title>
+  <title>dpnp.random.dpnp_random_state &mdash; Data Parallel Extension for NumPy 0.21.0dev1+5.g0854e60c872 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=b45b9b84"></script>
+      <script src="../../../_static/documentation_options.js?v=0dc94af6"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start_guide.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tensor.html">Tensor (<code class="docutils literal notranslate"><span class="pre">dpnp.tensor</span></code>)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development information</span></p>
 <ul>
@@ -121,7 +122,6 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
@@ -131,6 +131,7 @@
     <span class="n">use_origin_backend</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.random.dpnp_algo_random</span><span class="w"> </span><span class="kn">import</span> <span class="n">MCG59</span><span class="p">,</span> <span class="n">MT19937</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_usm_type</span>
 
 
 <div class="viewcode-block" id="RandomState">
@@ -152,7 +153,7 @@
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
 <span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
 <span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
-<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :class:`dpnp.tensor.Device` object returned by</span>
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -367,7 +368,7 @@
                         <span class="sa">f</span><span class="s2">&quot;scale=</span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2">, but must be non-negative.&quot;</span>
                     <span class="p">)</span>
 
-                <span class="n">dpu</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
                     <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span>
                     <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
@@ -751,7 +752,7 @@
                 <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_float_dtype</span><span class="p">(</span>
                     <span class="n">dtype</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
                 <span class="p">)</span>
-                <span class="n">dpu</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">validate_usm_type</span><span class="p">(</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
                     <span class="n">low</span><span class="o">=</span><span class="n">low</span><span class="p">,</span>
