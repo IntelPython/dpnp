@@ -1,0 +1,10 @@
+﻿
+
+dpnp.scipy.special.erf
+======================
+
+.. currentmodule:: dpnp.scipy.special
+
+
+
+.. autofunction:: erf
