@@ -174,14 +174,15 @@ class TestCross:
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_error(self, xp):
         a = xp.arange(3)
-        b = xp.arange(4)
+        b = xp.arange(1, 4)
 
         # axis should be an integer
         assert_raises(TypeError, xp.cross, a, b, axis=0.0)
 
-        a = a.astype(dtype=dpnp.bool)
         # Input arrays with boolean data type are not supported
-        assert_raises(ValueError, xp.cross, a, b)
+        a = a.astype(dtype=dpnp.bool)
+        b = b.astype(dtype=dpnp.bool)
+        assert_raises(TypeError, xp.cross, a, b)
 
 
 class TestDot:
