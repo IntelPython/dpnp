@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.21.0] - 2026-MM-DD
 
-This release is compatible with NumPy 2.4.5.
+This release is compatible with NumPy 2.5.
 
 ### Added
 
@@ -26,6 +26,8 @@ This release is compatible with NumPy 2.4.5.
 ### Deprecated
 
 ### Removed
+
+* Removed support for arrays of 2-dimensional vectors in `dpnp.cross`, which now requires (arrays of) 3-dimensional vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
 
 ### Fixed
 
