@@ -38,6 +38,7 @@ This release is compatible with NumPy 2.4.5.
 * Fixed a bug in `astype` where casting floating point types to unsigned integral types could cause an intermediate signed integral type to overflow, leading to incorrect results [#2930](https://github.com/IntelPython/dpnp/pull/2930)
 * Fixed incorrect `dpnp.tensor.expm1` result for `complex(±0, 0)` special case on CPU to match the Python Array API specification [#2926](https://github.com/IntelPython/dpnp/pull/2926)
 * Fixed tests which expected lists from `dpctl` functions which now return tuples (i.e., `dpctl.SyclDevice.create_sub_devices`) [#2945](https://github.com/IntelPython/dpnp/pull/2945)
+* Fixed `PytestRemovedIn10Warning` raised by `pytest` 9.1.0 by converting class-scoped fixtures to class methods [#2952](https://github.com/IntelPython/dpnp/pull/2952)
 
 ### Security
 
