@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.21.0] - 2026-MM-DD
 
-This release is compatible with NumPy 2.4.5.
+This release is compatible with NumPy 2.5.
 
 ### Added
 
@@ -28,6 +28,8 @@ This release is compatible with NumPy 2.4.5.
 
 ### Removed
 
+* Removed support for arrays of 2-dimensional vectors in `dpnp.cross`, which now requires (arrays of) 3-dimensional vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
+
 ### Fixed
 
 * Fixed incorrect in-place advanced indexing for 4D arrays when using `range` or `list` as index keys [#2872](https://github.com/IntelPython/dpnp/pull/2872)
@@ -39,6 +41,7 @@ This release is compatible with NumPy 2.4.5.
 * Fixed a bug in `astype` where casting floating point types to unsigned integral types could cause an intermediate signed integral type to overflow, leading to incorrect results [#2930](https://github.com/IntelPython/dpnp/pull/2930)
 * Fixed incorrect `dpnp.tensor.expm1` result for `complex(±0, 0)` special case on CPU to match the Python Array API specification [#2926](https://github.com/IntelPython/dpnp/pull/2926)
 * Fixed tests which expected lists from `dpctl` functions which now return tuples (i.e., `dpctl.SyclDevice.create_sub_devices`) [#2945](https://github.com/IntelPython/dpnp/pull/2945)
+* Fixed `PytestRemovedIn10Warning` raised by `pytest` 9.1.0 by converting class-scoped fixtures to class methods [#2952](https://github.com/IntelPython/dpnp/pull/2952)
 
 ### Security
 
