@@ -309,14 +309,6 @@ def cross(x1, x2, /, *, axis=-1):
 
     """
 
-    dpnp.check_supported_arrays_type(x1, x2)
-    if x1.shape[axis] != 3 or x2.shape[axis] != 3:
-        raise ValueError(
-            "Both input arrays must be (arrays of) 3-dimensional vectors, "
-            f"but they are {x1.shape[axis]} and {x2.shape[axis]} "
-            "dimensional instead."
-        )
-
     return dpnp.cross(x1, x2, axis=axis)
 
 

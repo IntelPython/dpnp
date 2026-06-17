@@ -700,67 +700,33 @@ def _validate_out_array(out, exec_q):
 
 
 def dpnp_cross(a, b, cp):
-    """Return the cross product of two (arrays of) vectors."""
+    """Return the cross product of two (arrays of) 3-dimensional vectors."""
 
     # create local aliases for readability
     a0 = a[..., 0]
     a1 = a[..., 1]
-    if a.shape[-1] == 3:
-        a2 = a[..., 2]
+    a2 = a[..., 2]
 
     b0 = b[..., 0]
     b1 = b[..., 1]
-    if b.shape[-1] == 3:
-        b2 = b[..., 2]
+    b2 = b[..., 2]
 
-    if cp.ndim != 0 and cp.shape[-1] == 3:
-        cp0 = cp[..., 0]
-        cp1 = cp[..., 1]
-        cp2 = cp[..., 2]
+    cp0 = cp[..., 0]
+    cp1 = cp[..., 1]
+    cp2 = cp[..., 2]
 
-    if a.shape[-1] == 2:
-        if b.shape[-1] == 2:
-            # a0 * b1 - a1 * b0
-            cp = dpnp.multiply(a0, b1, out=cp)
-            cp -= a1 * b0
-        else:
-            assert b.shape[-1] == 3
-            # cp0 = a1 * b2 - 0  (a2 = 0)
-            cp0 = dpnp.multiply(a1, b2, out=cp0)
+    # cp0 = a1 * b2 - a2 * b1
+    cp0 = dpnp.multiply(a1, b2, out=cp0)
+    cp0 -= a2 * b1
 
-            # cp1 = 0 - a0 * b2  (a2 = 0)
-            cp1 = dpnp.multiply(a0, b2, out=cp1)
-            cp1 = dpnp.negative(cp1, out=cp1)
+    # cp1 = a2 * b0 - a0 * b2
+    cp1 = dpnp.multiply(a2, b0, out=cp1)
+    cp1 -= a0 * b2
 
-            # cp2 = a0 * b1 - a1 * b0
-            cp2 = dpnp.multiply(a0, b1, out=cp2)
-            cp2 -= a1 * b0
-    else:
-        assert a.shape[-1] == 3
-        if b.shape[-1] == 3:
-            # cp0 = a1 * b2 - a2 * b1
-            cp0 = dpnp.multiply(a1, b2, out=cp0)
-            cp0 -= a2 * b1
+    # cp2 = a0 * b1 - a1 * b0
+    cp2 = dpnp.multiply(a0, b1, out=cp2)
+    cp2 -= a1 * b0
 
-            # cp1 = a2 * b0 - a0 * b2
-            cp1 = dpnp.multiply(a2, b0, out=cp1)
-            cp1 -= a0 * b2
-
-            # cp2 = a0 * b1 - a1 * b0
-            cp2 = dpnp.multiply(a0, b1, out=cp2)
-            cp2 -= a1 * b0
-        else:
-            assert b.shape[-1] == 2
-            # cp0 = 0 - a2 * b1  (b2 = 0)
-            cp0 = dpnp.multiply(a2, b1, out=cp0)
-            cp0 = dpnp.negative(cp0, out=cp0)
-
-            # cp1 = a2 * b0 - 0  (b2 = 0)
-            cp1 = dpnp.multiply(a2, b0, out=cp1)
-
-            # cp2 = a0 * b1 - a1 * b0
-            cp2 = dpnp.multiply(a0, b1, out=cp2)
-            cp2 -= a1 * b0
     return cp
 
 
