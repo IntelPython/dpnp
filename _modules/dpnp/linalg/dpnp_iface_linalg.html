@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.21.0dev1+3.ga20a2e938b2 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.21.0dev1+4.ga733826142e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a2a67135"></script>
+      <script src="../../../_static/documentation_options.js?v=4fbd8104"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -402,14 +402,6 @@
 <span class="sd">           [-6,  -18]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Both input arrays must be (arrays of) 3-dimensional vectors, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;but they are </span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
-            <span class="s2">&quot;dimensional instead.&quot;</span>
-        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
 
