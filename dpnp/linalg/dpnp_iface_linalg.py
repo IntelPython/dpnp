@@ -511,8 +511,8 @@ def eig(a):
     (Almost) trivial example with real eigenvalues and eigenvectors.
 
     >>> w, v = LA.eig(np.diag((1, 2, 3)))
-    >>> w, v
-    (array([1., 2., 3.]),
+    >>> w, v.real
+    (array([1.+0.j, 2.+0.j, 3.+0.j]),
      array([[1., 0., 0.],
             [0., 1., 0.],
             [0., 0., 1.]]))
@@ -541,8 +541,8 @@ def eig(a):
     >>> a = np.array([[1 + 1e-9, 0], [0, 1 - 1e-9]])
     >>> # Theor. eigenvalues are 1 +/- 1e-9
     >>> w, v = LA.eig(a)
-    >>> w, v
-    (array([1., 1.]),
+    >>> w, v.real
+    (array([1.+0.j, 1.+0.j]),
      array([[1., 0.],
             [0., 1.]]))
 
@@ -689,11 +689,11 @@ def eigvals(a):
 
     >>> D = np.diag((-1, 1))
     >>> LA.eigvals(D)
-    array([-1.,  1.])
+    array([-1.+0.j,  1.+0.j])
     >>> A = np.dot(Q, D)
     >>> A = np.dot(A, Q.T)
     >>> LA.eigvals(A)
-    array([-1.,  1.]) # random
+    array([-1.+0.j,  1.+0.j]) # random
 
     """
 
