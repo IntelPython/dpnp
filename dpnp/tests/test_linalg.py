@@ -464,6 +464,8 @@ class TestDet:
 
 
 class TestEigenvalue:
+    ALL_DTYPES_NO_BOOL = get_all_dtypes(no_none=True, no_bool=True)
+
     # Eigenvalue decomposition of a matrix or a batch of matrices
     # by checking if the eigen equation A*v=w*v holds for given eigenvalues(w)
     # and eigenvectors(v).
@@ -487,7 +489,7 @@ class TestEigenvalue:
         [(2, 2), (2, 3, 3), (2, 2, 3, 3)],
         ids=["(2, 2)", "(2, 3, 3)", "(2, 2, 3, 3)"],
     )
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_eigenvalues(self, func, shape, dtype, order):
         # Set a `hermitian` flag for generate_random_numpy_array() to
@@ -524,7 +526,7 @@ class TestEigenvalue:
         [(0, 0), (2, 0, 0), (0, 3, 3)],
         ids=["(0, 0)", "(2, 0, 0)", "(0, 3, 3)"],
     )
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     def test_eigenvalue_empty(self, func, shape, dtype):
         a_np = numpy.empty(shape, dtype=dtype)
         a_dp = dpnp.array(a_np)
