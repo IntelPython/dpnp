@@ -480,10 +480,10 @@ def eig(a):
 
     eigenvalues : (..., M) dpnp.ndarray
         The eigenvalues, each repeated according to its multiplicity.
-        The eigenvalues are not necessarily ordered. The resulting array will
-        be of complex type, unless the imaginary part is zero in which case it
-        will be cast to a real type. When `a` is real the resulting eigenvalues
-        will be real (zero imaginary part) or occur in conjugate pairs.
+        The eigenvalues are not necessarily ordered. The resulting array is
+        always of complex type, even when `a` is real-valued. In that case the
+        eigenvalues either have a zero imaginary part or occur in conjugate
+        pairs.
     eigenvectors : (..., M, M) dpnp.ndarray
         The normalized (unit "length") eigenvectors, such that the column
         ``eigenvectors[:,i]`` is the eigenvector corresponding to the
