@@ -1,0 +1,10 @@
+﻿
+
+dpnp.diagflat
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: diagflat
