@@ -1,7 +1,12 @@
 import dpctl
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal, assert_raises
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal,
+    assert_raises,
+    assert_raises_regex,
+)
 
 import dpnp
 from dpnp.dpnp_utils import map_dtype_to_device
@@ -23,6 +28,8 @@ _selected_dtypes = [numpy.int64, numpy.float32]
 
 
 class TestCross:
+    ALL_DTYPES_NO_BOOL = get_all_dtypes(no_none=True, no_bool=True)
+
     @pytest.mark.parametrize("axis", [None, 0])
     @pytest.mark.parametrize("axisc", [-1, 0])
     @pytest.mark.parametrize("axisb", [-1, 0])
@@ -48,14 +55,10 @@ class TestCross:
         expected = numpy.cross(np_x1, np_x2, axisa, axisb, axisc, axis)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     @pytest.mark.parametrize(
         "shape1, shape2, axis_a, axis_b, axis_c",
         [
-            ((4, 2, 3, 5), (2, 4, 3, 5), 1, 0, -2),
-            ((2, 2, 4, 5), (2, 4, 3, 5), 1, 2, -1),
-            ((2, 3, 4, 5), (2, 4, 2, 5), 1, 2, -1),
             ((2, 3, 4, 5), (2, 4, 3, 5), 1, 2, -1),
             ((2, 3, 4, 5), (2, 4, 3, 5), -3, -2, 0),
         ],
@@ -70,18 +73,17 @@ class TestCross:
         expected = numpy.cross(a, b, axis_a, axis_b, axis_c)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     @pytest.mark.parametrize(
         "shape1, shape2, axis",
         [
-            ((2, 3, 4, 5), (2, 3, 4, 5), 0),
+            ((3, 2, 4, 5), (3, 2, 4, 5), 0),
             ((2, 3, 4, 5), (2, 3, 4, 5), 1),
         ],
     )
     def test_axis(self, dtype, shape1, shape2, axis):
-        a = generate_random_numpy_array(shape1, dtype)
-        b = generate_random_numpy_array(shape2, dtype)
+        a = generate_random_numpy_array(shape1, dtype, seed_value=1)
+        b = generate_random_numpy_array(shape2, dtype, seed_value=2)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -89,11 +91,12 @@ class TestCross:
         expected = numpy.cross(a, b, axis=axis)
         assert_dtype_allclose(result, expected, factor=24)
 
-    @pytest.mark.parametrize("dtype1", get_all_dtypes())
-    @pytest.mark.parametrize("dtype2", get_all_dtypes())
+    @pytest.mark.parametrize("dtype1", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype2", get_all_dtypes(no_none=True))
     def test_input_dtype_matrix(self, dtype1, dtype2):
         if dtype1 == dpnp.bool and dtype2 == dpnp.bool:
-            pytest.skip("boolean input arrays is not supported.")
+            pytest.skip("boolean input arrays is not supported")
+
         a = generate_random_numpy_array(3, dtype1)
         b = generate_random_numpy_array(3, dtype2)
         ia = dpnp.array(a)
@@ -103,14 +106,10 @@ class TestCross:
         expected = numpy.cross(a, b)
         assert_dtype_allclose(result, expected, factor=24)
 
-    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     @pytest.mark.parametrize(
         "shape1, shape2, axis_a, axis_b, axis_c",
         [
-            ((4, 2, 1, 5), (2, 4, 3, 5), 1, 0, -2),
-            ((2, 2, 4, 5), (2, 4, 3, 1), 1, 2, -1),
-            ((2, 3, 4, 1), (2, 4, 2, 5), 1, 2, -1),
             ((1, 3, 4, 5), (2, 4, 3, 5), 1, 2, -1),
             ((2, 3, 4, 5), (1, 1, 3, 1), -3, -2, 0),
         ],
@@ -125,7 +124,7 @@ class TestCross:
         expected = numpy.cross(a, b, axis_a, axis_b, axis_c)
         assert_dtype_allclose(result, expected, factor=24)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     @pytest.mark.parametrize("stride", [3, -3])
     def test_strided(self, dtype, stride):
         a = numpy.arange(1, 10, dtype=dtype)
@@ -149,31 +148,41 @@ class TestCross:
         expected = numpy.linalg.cross(a, b, axis=axis)
         assert_dtype_allclose(result, expected)
 
-    def test_error(self):
-        a = dpnp.arange(3)
-        b = dpnp.arange(4)
-        # Incompatible vector dimensions
-        with pytest.raises(ValueError):
-            dpnp.cross(a, b)
+    @testing.with_requires("numpy>=2.5")
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_2x2(self, xp):
+        a = xp.array([1, 2])
+        b = xp.array([3, 4])
+        assert_raises(ValueError, xp.cross, a, b)
 
-        a = dpnp.arange(3)
-        b = dpnp.arange(4)
+    @testing.with_requires("numpy>=2.5")
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_2x3(self, xp):
+        a = xp.array([1, 2])
+        b = xp.array([3, 4, 5])
+        assert_raises(ValueError, xp.cross, a, b)
+        assert_raises(ValueError, xp.cross, b, a)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("a, b", [(0, [1, 2]), ([1, 2], 3)])
+    def test_zero_dim(self, xp, a, b):
+        x, y = xp.array(a), xp.array(b)
+        assert_raises_regex(
+            ValueError, "At least one array has zero dimension", xp.cross, x, y
+        )
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_error(self, xp):
+        a = xp.arange(3)
+        b = xp.arange(1, 4)
+
         # axis should be an integer
-        with pytest.raises(TypeError):
-            dpnp.cross(a, b, axis=0.0)
+        assert_raises(TypeError, xp.cross, a, b, axis=0.0)
 
-        a = dpnp.arange(2, dtype=dpnp.bool)
         # Input arrays with boolean data type are not supported
-        with pytest.raises(TypeError):
-            dpnp.cross(a, a)
-
-    @testing.with_requires("numpy>=2.0")
-    def test_linalg_error(self):
-        a = dpnp.arange(4)
-        b = dpnp.arange(4)
-        # Both input arrays must be (arrays of) 3-dimensional vectors
-        with pytest.raises(ValueError):
-            dpnp.linalg.cross(a, b)
+        a = a.astype(dtype=dpnp.bool)
+        b = b.astype(dtype=dpnp.bool)
+        assert_raises(TypeError, xp.cross, a, b)
 
 
 class TestDot:
