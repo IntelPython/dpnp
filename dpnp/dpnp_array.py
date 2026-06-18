@@ -2384,6 +2384,7 @@ class dpnp_array:
             * ``tuple or list of ints``: `i` in the `j`-th place in the
               tuple/list means that the array’s `i`-th axis becomes the
               transposed array’s `j`-th axis.
+              Negative indices can also be used to specify axes.
             * ``n ints``: same as an n-tuple/n-list of the same integers (this
               form is intended simply as a “convenience” alternative to the
               tuple form).

@@ -914,7 +914,8 @@ def _hermitian_svd(a, compute_uv):
     # the eigenvalues and related arrays to have the correct order
     if compute_uv:
         s, u = dpnp_eigh(a, eigen_mode="V")
-        sgn = dpnp.sign(s)
+        # avoid zero sign
+        sgn = dpnp.copysign(1.0, s)
         s = dpnp.abs(s, out=s)
         sidx = dpnp.argsort(s)[..., ::-1]
         # Rearrange the signs according to sorted indices
