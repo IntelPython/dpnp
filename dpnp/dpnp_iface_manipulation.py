@@ -3908,6 +3908,7 @@ def transpose(a, axes=None):
     axes : {None, tuple or list of ints}, optional
         If specified, it must be a tuple or list which contains a permutation
         of [0, 1, ..., N-1] where N is the number of axes of `a`.
+        Negative indices can also be used to specify axes.
         The `i`'th axis of the returned array will correspond to the axis
         numbered ``axes[i]`` of the input. If not specified or ``None``,
         defaults to ``range(a.ndim)[::-1]``, which reverses the order of
@@ -3950,6 +3951,10 @@ def transpose(a, axes=None):
     >>> a = np.ones((2, 3, 4, 5))
     >>> np.transpose(a).shape
     (5, 4, 3, 2)
+
+    >>> a = np.arange(3*4*5).reshape((3, 4, 5))
+    >>> np.transpose(a, (-1, 0, -2)).shape
+    (5, 3, 4)
 
     """
 
