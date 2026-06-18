@@ -287,7 +287,7 @@ jobs:
 
     env:
       dpnp-repo-path: '${{ github.workspace }}/source/'
-      create-conda-channel-env: 'source/environments/create_conda_channel.yml'
+      examples-conda-pkg-env: 'environments/examples.yml'
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       ver-json-path: '${{ github.workspace }}/version.json'
@@ -314,7 +314,7 @@ jobs:
           miniforge-version: latest
           use-mamba: 'true'
           conda-remove-defaults: 'true'
-          environment-file: ${{ env.create-conda-channel-env }}
+          environment-file: ${{ env.examples-conda-pkg-env }}
           activate-environment: ${{ env.examples-env-name }}
 
       - name: ReSetup miniconda
@@ -324,7 +324,7 @@ jobs:
           miniforge-version: latest
           use-mamba: 'true'
           conda-remove-defaults: 'true'
-          environment-file: ${{ env.create-conda-channel-env }}
+          environment-file: ${{ env.examples-conda-pkg-env }}
           activate-environment: ${{ env.examples-env-name }}
 
       - name: Create conda channel
@@ -353,12 +353,6 @@ jobs:
         if: steps.install_dpnp.outcome == 'failure'
         run: |
           mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
-        env:
-          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
-
-      - name: Install example requirements
-        run: |
-          mamba install pytest dpcpp_linux-64">=2026.0.0" cmake ninja scikit-build ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 

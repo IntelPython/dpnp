@@ -328,18 +328,15 @@ else()
 endif()
 
 # install dpnp-config.cmake for find_package() support
-install(
-    FILES ${CMAKE_SOURCE_DIR}/cmake/dpnp-config.cmake
-    DESTINATION dpnp/resources/cmake
-)
-install(FILES ${CMAKE_SOURCE_DIR}/cmake/dpnp-config.cmake DESTINATION lib/cmake/dpnp)
+foreach(_dest IN ITEMS dpnp/resources/cmake lib/cmake/dpnp)
+    install(FILES ${CMAKE_SOURCE_DIR}/cmake/dpnp-config.cmake DESTINATION ${_dest})
+endforeach()
 
 # install dpnp4pybind11.hpp and usm_ndarray_constants.h into include folder
-install(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/dpnp/include/
+install(FILES
+    ${CMAKE_SOURCE_DIR}/dpnp/include/dpnp4pybind11.hpp
+    ${CMAKE_SOURCE_DIR}/dpnp/include/usm_ndarray_constants.h
     DESTINATION dpnp/include
-    FILES_MATCHING
-    REGEX "\\.(h|hpp)$"
 )
 
 # Define flags for CMAKE_BUILD_TYPE=Coverage

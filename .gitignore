@@ -32,7 +32,6 @@ dpnp/resources/cmake
 
 *dpnp_backend*
 dpnp/include/dpnp/tensor/*.h
-dpnp/**/*.cpython*.so
 dpnp/**/*.pyd
 *~
 core
