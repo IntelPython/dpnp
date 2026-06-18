@@ -593,7 +593,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         Function to influence type promotion behavior for Python scalar types
         of this binary function. The function takes 3 arguments:
             o1_dtype - Data type or Python scalar type of the first argument
-            o2_dtype - Data type or Python scalar type of of the second argument
+            o2_dtype - Data type or Python scalar type of the second argument
             sycl_dev - The :class:`dpctl.SyclDevice` where the function
                 evaluation is carried out.
         One of `o1_dtype` and `o2_dtype` must be a ``dtype`` instance.
