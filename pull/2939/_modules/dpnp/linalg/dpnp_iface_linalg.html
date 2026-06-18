@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.21.0dev0+60.g05cb6af1347 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.21.0dev1+17.gf482ca32e90 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=e30819d2"></script>
+      <script src="../../../_static/documentation_options.js?v=08714518"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -403,14 +403,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Both input arrays must be (arrays of) 3-dimensional vectors, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;but they are </span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
-            <span class="s2">&quot;dimensional instead.&quot;</span>
-        <span class="p">)</span>
-
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
 
 
@@ -583,10 +575,10 @@
 
 <span class="sd">    eigenvalues : (..., M) dpnp.ndarray</span>
 <span class="sd">        The eigenvalues, each repeated according to its multiplicity.</span>
-<span class="sd">        The eigenvalues are not necessarily ordered. The resulting array will</span>
-<span class="sd">        be of complex type, unless the imaginary part is zero in which case it</span>
-<span class="sd">        will be cast to a real type. When `a` is real the resulting eigenvalues</span>
-<span class="sd">        will be real (zero imaginary part) or occur in conjugate pairs.</span>
+<span class="sd">        The eigenvalues are not necessarily ordered. The resulting array is</span>
+<span class="sd">        always of complex type, even when `a` is real-valued. In that case the</span>
+<span class="sd">        eigenvalues either have a zero imaginary part or occur in conjugate</span>
+<span class="sd">        pairs.</span>
 <span class="sd">    eigenvectors : (..., M, M) dpnp.ndarray</span>
 <span class="sd">        The normalized (unit &quot;length&quot;) eigenvectors, such that the column</span>
 <span class="sd">        ``eigenvectors[:,i]`` is the eigenvector corresponding to the</span>
@@ -614,8 +606,8 @@
 <span class="sd">    (Almost) trivial example with real eigenvalues and eigenvectors.</span>
 
 <span class="sd">    &gt;&gt;&gt; w, v = LA.eig(np.diag((1, 2, 3)))</span>
-<span class="sd">    &gt;&gt;&gt; w, v</span>
-<span class="sd">    (array([1., 2., 3.]),</span>
+<span class="sd">    &gt;&gt;&gt; w, v.real</span>
+<span class="sd">    (array([1.+0.j, 2.+0.j, 3.+0.j]),</span>
 <span class="sd">     array([[1., 0., 0.],</span>
 <span class="sd">            [0., 1., 0.],</span>
 <span class="sd">            [0., 0., 1.]]))</span>
@@ -644,8 +636,8 @@
 <span class="sd">    &gt;&gt;&gt; a = np.array([[1 + 1e-9, 0], [0, 1 - 1e-9]])</span>
 <span class="sd">    &gt;&gt;&gt; # Theor. eigenvalues are 1 +/- 1e-9</span>
 <span class="sd">    &gt;&gt;&gt; w, v = LA.eig(a)</span>
-<span class="sd">    &gt;&gt;&gt; w, v</span>
-<span class="sd">    (array([1., 1.]),</span>
+<span class="sd">    &gt;&gt;&gt; w, v.real</span>
+<span class="sd">    (array([1.+0.j, 1.+0.j]),</span>
 <span class="sd">     array([[1., 0.],</span>
 <span class="sd">            [0., 1.]]))</span>
 
@@ -798,11 +790,11 @@
 
 <span class="sd">    &gt;&gt;&gt; D = np.diag((-1, 1))</span>
 <span class="sd">    &gt;&gt;&gt; LA.eigvals(D)</span>
-<span class="sd">    array([-1.,  1.])</span>
+<span class="sd">    array([-1.+0.j,  1.+0.j])</span>
 <span class="sd">    &gt;&gt;&gt; A = np.dot(Q, D)</span>
 <span class="sd">    &gt;&gt;&gt; A = np.dot(A, Q.T)</span>
 <span class="sd">    &gt;&gt;&gt; LA.eigvals(A)</span>
-<span class="sd">    array([-1.,  1.]) # random</span>
+<span class="sd">    array([-1.+0.j,  1.+0.j]) # random</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
