@@ -4053,6 +4053,7 @@ class TestSvd:
             dp_a, dp_u, dp_s, dp_vh, np_u, np_s, np_vh, compute_vt
         )
 
+    @testing.with_requires("numpy>=2.5")
     def test_hermitian_singular(self):
         a = numpy.array([[1, 0], [0, 0]])
         dp_a = dpnp.array(a)
