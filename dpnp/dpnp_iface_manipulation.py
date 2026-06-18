@@ -4606,9 +4606,6 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     """
     Stack arrays in sequence vertically (row wise).
 
-    :obj:`dpnp.row_stack` is an alias for :obj:`dpnp.vstack`.
-    They are the same function.
-
     For full documentation refer to :obj:`numpy.vstack`.
 
     Parameters
@@ -4670,6 +4667,3 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     if not isinstance(arrs, list):
         arrs = [arrs]
     return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
-
-
-row_stack = vstack
