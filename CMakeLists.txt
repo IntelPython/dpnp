@@ -333,9 +333,10 @@ foreach(_dest IN ITEMS dpnp/resources/cmake lib/cmake/dpnp)
 endforeach()
 
 # install dpnp4pybind11.hpp and usm_ndarray_constants.h into include folder
-install(FILES
-    ${CMAKE_SOURCE_DIR}/dpnp/include/dpnp4pybind11.hpp
-    ${CMAKE_SOURCE_DIR}/dpnp/include/usm_ndarray_constants.h
+install(
+    FILES
+        ${CMAKE_SOURCE_DIR}/dpnp/include/dpnp4pybind11.hpp
+        ${CMAKE_SOURCE_DIR}/dpnp/include/usm_ndarray_constants.h
     DESTINATION dpnp/include
 )
 
