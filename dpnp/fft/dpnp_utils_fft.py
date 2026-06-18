@@ -419,13 +419,14 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
             # If so, copy to contiguous to avoid oversized allocation
             # for the output array and unnecessary copy to contiguous
             # after oneMKL FFT
-            _strides = dpnp.get_usm_ndarray(a).strides
+            elem_strides = dpnp.get_usm_ndarray(a).strides
             _shape = a.shape
-            # Max element displacement reachable by the strides.
-            # Negative strides are handled by _copy_array, so only
-            # positive strides are possible here
+            # Max element displacement reachable by positive strides.
+            # Negative strides are handled by _copy_array;
+            # zero strides are safely ignored as they reuse the same
+            # memory location and don't extend the footprint
             max_disp = sum(
-                st * (sh - 1) for st, sh in zip(_strides, _shape) if st > 0
+                st * (sh - 1) for st, sh in zip(elem_strides, _shape) if st > 0
             )
             if (max_disp + 1) > a.size:
                 a = dpnp.ascontiguousarray(a)
