@@ -525,36 +525,3 @@ class TestJoin:
         b = testing.shaped_arange((3, 4), xp, dtype1)
         # may raise TypeError or ComplexWarning
         return xp.stack((a, b), dtype=dtype2, casting=casting)
-
-    @pytest.mark.skip("row_stack removed in favor of vstack")
-    @testing.with_requires("numpy>=2.0")
-    @testing.for_all_dtypes(name="dtype1")
-    @testing.for_all_dtypes(name="dtype2")
-    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
-    def test_row_stack(self, xp, dtype1, dtype2):
-        a = testing.shaped_arange((4, 3), xp, dtype1)
-        b = testing.shaped_arange((3,), xp, dtype2)
-        c = testing.shaped_arange((2, 3), xp, dtype1)
-        with pytest.warns(DeprecationWarning):
-            return xp.row_stack((a, b, c))
-
-    @pytest.mark.skip("row_stack removed in favor of vstack")
-    def test_row_stack_wrong_ndim1(self):
-        a = cupy.zeros(())
-        b = cupy.zeros((3,))
-        with pytest.raises(ValueError), pytest.warns(DeprecationWarning):
-            cupy.row_stack((a, b))
-
-    @pytest.mark.skip("row_stack removed in favor of vstack")
-    def test_row_stack_wrong_ndim2(self):
-        a = cupy.zeros((3, 2, 3))
-        b = cupy.zeros((3, 2))
-        with pytest.raises(ValueError), pytest.warns(DeprecationWarning):
-            cupy.row_stack((a, b))
-
-    @pytest.mark.skip("row_stack removed in favor of vstack")
-    def test_row_stack_wrong_shape(self):
-        a = cupy.zeros((3, 2))
-        b = cupy.zeros((4, 3))
-        with pytest.raises(ValueError), pytest.warns(DeprecationWarning):
-            cupy.row_stack((a, b))
