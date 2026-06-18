@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.eig &mdash; Data Parallel Extension for NumPy 0.21.0dev0+82.gba51717f908 documentation</title>
+  <title>dpnp.linalg.eig &mdash; Data Parallel Extension for NumPy 0.21.0dev1+24.g5b3c22ec324 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a1e53fa7"></script>
+      <script src="../../_static/documentation_options.js?v=dc1a89cf"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -145,10 +145,10 @@ be computed.</p>
 <dd class="field-even"><p><dl class="simple">
 <dt>A namedtuple with the following attributes</dt><dd><ul class="simple">
 <li><p><strong>eigenvalues</strong> (<em>(..., M) dpnp.ndarray</em>) -- The eigenvalues, each repeated according to its multiplicity.
-The eigenvalues are not necessarily ordered. The resulting array will
-be of complex type, unless the imaginary part is zero in which case it
-will be cast to a real type. When <cite>a</cite> is real the resulting eigenvalues
-will be real (zero imaginary part) or occur in conjugate pairs.</p></li>
+The eigenvalues are not necessarily ordered. The resulting array is
+always of complex type, even when <cite>a</cite> is real-valued. In that case the
+eigenvalues either have a zero imaginary part or occur in conjugate
+pairs.</p></li>
 <li><p><strong>eigenvectors</strong> (<em>(..., M, M) dpnp.ndarray</em>) -- The normalized (unit &quot;length&quot;) eigenvectors, such that the column
 <code class="docutils literal notranslate"><span class="pre">eigenvectors[:,i]</span></code> is the eigenvector corresponding to the
 eigenvalue <code class="docutils literal notranslate"><span class="pre">eigenvalues[i]</span></code>.</p></li>
@@ -181,8 +181,8 @@ through a fallback on NumPy call.</p>
 </div>
 <p>(Almost) trivial example with real eigenvalues and eigenvectors.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span>
-<span class="go">(array([1., 2., 3.]),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">real</span>
+<span class="go">(array([1.+0.j, 2.+0.j, 3.+0.j]),</span>
 <span class="go"> array([[1., 0., 0.],</span>
 <span class="go">        [0., 1., 0.],</span>
 <span class="go">        [0., 0., 1.]]))</span>
@@ -211,8 +211,8 @@ eigenvectors); note that <code class="docutils literal notranslate"><span class=
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-9</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Theor. eigenvalues are 1 +/- 1e-9</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span>
-<span class="go">(array([1., 1.]),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">real</span>
+<span class="go">(array([1.+0.j, 1.+0.j]),</span>
 <span class="go"> array([[1., 0.],</span>
 <span class="go">        [0., 1.]]))</span>
 </pre></div>
