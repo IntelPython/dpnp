@@ -1,4 +1,4 @@
-name: Create conda channel with DPNP package
+name: Create conda channel with DPNP package for examples
 channels:
   - conda-forge
 dependencies:
