@@ -472,10 +472,10 @@ def eig(a):
 
     eigenvalues : (..., M) dpnp.ndarray
         The eigenvalues, each repeated according to its multiplicity.
-        The eigenvalues are not necessarily ordered. The resulting array will
-        be of complex type, unless the imaginary part is zero in which case it
-        will be cast to a real type. When `a` is real the resulting eigenvalues
-        will be real (zero imaginary part) or occur in conjugate pairs.
+        The eigenvalues are not necessarily ordered. The resulting array is
+        always of complex type, even when `a` is real-valued. In that case the
+        eigenvalues either have a zero imaginary part or occur in conjugate
+        pairs.
     eigenvectors : (..., M, M) dpnp.ndarray
         The normalized (unit "length") eigenvectors, such that the column
         ``eigenvectors[:,i]`` is the eigenvector corresponding to the
@@ -503,8 +503,8 @@ def eig(a):
     (Almost) trivial example with real eigenvalues and eigenvectors.
 
     >>> w, v = LA.eig(np.diag((1, 2, 3)))
-    >>> w, v
-    (array([1., 2., 3.]),
+    >>> w, v.real
+    (array([1.+0.j, 2.+0.j, 3.+0.j]),
      array([[1., 0., 0.],
             [0., 1., 0.],
             [0., 0., 1.]]))
@@ -533,8 +533,8 @@ def eig(a):
     >>> a = np.array([[1 + 1e-9, 0], [0, 1 - 1e-9]])
     >>> # Theor. eigenvalues are 1 +/- 1e-9
     >>> w, v = LA.eig(a)
-    >>> w, v
-    (array([1., 1.]),
+    >>> w, v.real
+    (array([1.+0.j, 1.+0.j]),
      array([[1., 0.],
             [0., 1.]]))
 
@@ -681,11 +681,11 @@ def eigvals(a):
 
     >>> D = np.diag((-1, 1))
     >>> LA.eigvals(D)
-    array([-1.,  1.])
+    array([-1.+0.j,  1.+0.j])
     >>> A = np.dot(Q, D)
     >>> A = np.dot(A, Q.T)
     >>> LA.eigvals(A)
-    array([-1.,  1.]) # random
+    array([-1.+0.j,  1.+0.j]) # random
 
     """
 
