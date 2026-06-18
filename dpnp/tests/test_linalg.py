@@ -27,6 +27,8 @@ from .helper import (
 from .qr_helper import check_qr
 from .third_party.cupy import testing
 
+ALL_DTYPES_NO_BOOL = get_all_dtypes(no_none=True, no_bool=True)
+
 
 def vvsort(val, vec, size, xp):
     val_kwargs = {}
@@ -487,7 +489,7 @@ class TestEigenvalue:
         [(2, 2), (2, 3, 3), (2, 2, 3, 3)],
         ids=["(2, 2)", "(2, 3, 3)", "(2, 2, 3, 3)"],
     )
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_eigenvalues(self, func, shape, dtype, order):
         # Set a `hermitian` flag for generate_random_numpy_array() to
@@ -524,7 +526,7 @@ class TestEigenvalue:
         [(0, 0), (2, 0, 0), (0, 3, 3)],
         ids=["(0, 0)", "(2, 0, 0)", "(0, 3, 3)"],
     )
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     def test_eigenvalue_empty(self, func, shape, dtype):
         a_np = numpy.empty(shape, dtype=dtype)
         a_dp = dpnp.array(a_np)
@@ -3972,7 +3974,7 @@ class TestSvd:
     # Additionally checks for equality of singular values
     # between dpnp and numpy decompositions
     def check_decomposition(
-        self, dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
+        self, dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt=False
     ):
         tol = self._tol
         if compute_vt:
@@ -4004,13 +4006,13 @@ class TestSvd:
                     atol=tol,
                 )
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     @pytest.mark.parametrize(
         "shape",
         [(2, 2), (3, 4), (5, 3), (16, 16)],
         ids=["(2, 2)", "(3, 4)", "(5, 3)", "(16, 16)"],
     )
-    def test_svd(self, dtype, shape):
+    def test_basic(self, dtype, shape):
         a = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
         dp_a = dpnp.array(a)
 
@@ -4028,7 +4030,7 @@ class TestSvd:
     @pytest.mark.parametrize(
         "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
-    def test_svd_hermitian(self, dtype, compute_vt, shape):
+    def test_hermitian(self, dtype, compute_vt, shape):
         a = generate_random_numpy_array(shape, dtype, hermitian=True)
         dp_a = dpnp.array(a)
 
@@ -4050,6 +4052,16 @@ class TestSvd:
         self.check_decomposition(
             dp_a, dp_u, dp_s, dp_vh, np_u, np_s, np_vh, compute_vt
         )
+
+    @testing.with_requires("numpy>=2.5")
+    def test_hermitian_singular(self):
+        a = numpy.array([[1, 0], [0, 0]])
+        dp_a = dpnp.array(a)
+
+        np_u, _, np_vh = numpy.linalg.svd(a, hermitian=True)
+        u, _, vh = dpnp.linalg.svd(dp_a, hermitian=True)
+        assert_allclose(u, np_u)
+        assert_allclose(vh, np_vh)
 
     def test_svd_errors(self):
         a_dp = dpnp.array([[1, 2], [3, 4]], dtype="float32")
