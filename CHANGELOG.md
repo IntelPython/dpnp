@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.21.0] - 2026-MM-DD
 
-This release is compatible with NumPy 2.4.5.
+This release is compatible with NumPy 2.5.
 
 ### Added
 
@@ -22,11 +22,15 @@ This release is compatible with NumPy 2.4.5.
 * Replaced `.pxi` includes in `dpnp.tensor` with modular `.pxd`/`.pyx` Cython imports [#2913](https://github.com/IntelPython/dpnp/pull/2913)
 * Reimplemented `dpnp.eye` and `dpnp.tensor.eye` with a branchless kernel [#2937](https://github.com/IntelPython/dpnp/pull/2937)
 * Cleaned up Python bindings for indexing functions, renaming `usm_ndarray_take` and `usm_ndarray_put` to `py_take` and `py_put` and refactoring validation [#2935](https://github.com/IntelPython/dpnp/pull/2935)
+* Updated `dpnp.linalg.eig` and `dpnp.linalg.eigvals` documentation to reflect NumPy's always-complex eigenvalue output for general matrices [#2953](https://github.com/IntelPython/dpnp/pull/2953)
+* Clarified support for negative axes in `dpnp.transpose`/`dpnp.permute_dims` documentation [#2940](https://github.com/IntelPython/dpnp/pull/2940)
 * Improved performance of `dpnp.fft` functions for complex strided input by avoiding oversized allocations and extra copies [#2939](https://github.com/IntelPython/dpnp/pull/2939)
 
 ### Deprecated
 
 ### Removed
+
+* Removed support for arrays of 2-dimensional vectors in `dpnp.cross`, which now requires (arrays of) 3-dimensional vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
 
 ### Fixed
 
@@ -39,6 +43,8 @@ This release is compatible with NumPy 2.4.5.
 * Fixed a bug in `astype` where casting floating point types to unsigned integral types could cause an intermediate signed integral type to overflow, leading to incorrect results [#2930](https://github.com/IntelPython/dpnp/pull/2930)
 * Fixed incorrect `dpnp.tensor.expm1` result for `complex(±0, 0)` special case on CPU to match the Python Array API specification [#2926](https://github.com/IntelPython/dpnp/pull/2926)
 * Fixed tests which expected lists from `dpctl` functions which now return tuples (i.e., `dpctl.SyclDevice.create_sub_devices`) [#2945](https://github.com/IntelPython/dpnp/pull/2945)
+* Fixed `PytestRemovedIn10Warning` raised by `pytest` 9.1.0 by converting class-scoped fixtures to class methods [#2952](https://github.com/IntelPython/dpnp/pull/2952)
+* Fixed `dpnp.linalg.svd(..., hermitian=True)` returning a non-unitary `vh` for singular input arrays due to a zero sign appearing [#2954](https://github.com/IntelPython/dpnp/pull/2954)
 
 ### Security
 

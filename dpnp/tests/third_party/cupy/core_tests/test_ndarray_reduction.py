@@ -17,7 +17,8 @@ from dpnp.tests.third_party.cupy import testing
 class TestArrayReduction:
 
     @pytest.fixture(scope="class")
-    def exclude_cutensor(self):
+    @classmethod
+    def exclude_cutensor(cls):
         # cuTENSOR seems to have issues in handling inf/nan in reduction-based
         # routines, so we use this fixture to skip testing it
         # self.old_routine_accelerators = _acc.get_routine_accelerators()
