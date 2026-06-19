@@ -952,6 +952,45 @@ class TestTake:
         assert_raises(TypeError, ia.take, [0], axis=ia)
         assert_raises(TypeError, a.take, [0], axis=a)
 
+    @testing.with_requires("numpy>=2.5")
+    @pytest.mark.usefixtures(
+        "suppress_complex_warning", "suppress_invalid_numpy_warnings"
+    )
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    def test_out_dtype(self, out_dt):
+        a = numpy.array([1, 2, 3, 4], dtype="i4")
+        ind = numpy.array([0, 2, 3])
+        out = numpy.empty(3, dtype=out_dt)
+        ia, iind, iout = dpnp.array(a), dpnp.array(ind), dpnp.array(out)
+
+        if numpy.can_cast(a.dtype, out_dt, casting="same_kind"):
+            # casting the result into `out` of a same-kind dtype is allowed
+            result = ia.take(iind, out=iout)
+            expected = a.take(ind, out=out)
+            assert result is iout
+            assert_array_equal(result, expected)
+        else:
+            # NumPy only deprecates casting the result into `out` of a
+            # different kind, while dpnp does not allow it
+            with pytest.warns(DeprecationWarning, match="casting of output"):
+                a.take(ind, out=out)
+
+            with pytest.raises(TypeError, match="Output array"):
+                ia.take(iind, out=iout)
+
+    def test_overlapping_out(self):
+        a = numpy.arange(6)
+        ind = numpy.array([0, 1])
+        ia, iind = dpnp.array(a), dpnp.array(ind)
+
+        iout = ia[2:4]
+        result = dpnp.take(ia, iind, out=iout)
+        assert result is iout
+        assert (ia[2:4] == iout).all()
+
+        expected = numpy.take(a, ind)
+        assert_array_equal(expected, result)
+
     def test_mode_raise(self):
         a = dpnp.array([[1, 2], [3, 4]])
         assert_raises(ValueError, a.take, [-1, 4], mode="raise")
@@ -1565,13 +1604,33 @@ class TestCompress:
         out_bad_queue = dpnp.empty(1, dtype="i4", sycl_queue=q2)
         with pytest.raises(ExecutionPlacementError):
             dpnp.compress(condition, a, out=out_bad_queue)
-        out_bad_dt = dpnp.empty(1, dtype="i8", sycl_queue=q1)
-        with pytest.raises(TypeError):
-            dpnp.compress(condition, a, out=out_bad_dt)
         out_read_only = dpnp.empty(1, dtype="i4", sycl_queue=q1)
         out_read_only.flags.writable = False
         with pytest.raises(ValueError):
             dpnp.compress(condition, a, out=out_read_only)
+
+    @testing.with_requires("numpy>=2.5")
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    def test_out_dtype(self, out_dt):
+        a = numpy.array([[1, 2], [3, 4]], dtype="i4")
+        out = numpy.empty((2, 1), dtype=out_dt)
+        ia, iout = dpnp.array(a), dpnp.array(out)
+
+        if numpy.can_cast(a.dtype, out_dt, casting="same_kind"):
+            # casting the result into `out` of a same-kind dtype is allowed
+            result = dpnp.compress([1, 0], ia, axis=1, out=iout)
+            expected = numpy.compress([1, 0], a, axis=1, out=out)
+            assert result is iout
+            assert_array_equal(result, expected)
+        else:
+            # NumPy only deprecates casting the result into `out` of a
+            # different kind, while dpnp does not allow it
+            with pytest.warns(DeprecationWarning, match="casting of output"):
+                numpy.compress([1, 0], a, axis=1, out=out)
+
+            with pytest.raises(TypeError, match="Output array"):
+                dpnp.compress([1, 0], ia, axis=1, out=iout)
 
     def test_compress_empty_axis(self):
         a = dpnp.ones((10, 0, 5), dtype="i4")
