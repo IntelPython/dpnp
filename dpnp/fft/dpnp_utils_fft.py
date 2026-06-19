@@ -408,6 +408,8 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
         a = dpnp.reshape(a, local_shape)
         index = 1
 
+    elem_strides = dpnp.get_usm_ndarray(a).strides
+
     if not a.flags.c_contiguous:
         # cuFFT requires input arrays to be C-contiguous (row-major)
         # for correct execution
@@ -419,14 +421,13 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
             # If so, copy to contiguous to avoid oversized allocation
             # for the output array and unnecessary copy to contiguous
             # after oneMKL FFT
-            elem_strides = dpnp.get_usm_ndarray(a).strides
-            _shape = a.shape
+            a_shape = a.shape
             # Max element displacement reachable by positive strides.
             # Negative strides are handled by _copy_array;
             # zero strides are safely ignored as they reuse the same
             # memory location and don't extend the footprint
             max_disp = sum(
-                st * (sh - 1) for st, sh in zip(elem_strides, _shape) if st > 0
+                st * (sh - 1) for st, sh in zip(elem_strides, a_shape) if st > 0
             )
             if (max_disp + 1) > a.size:
                 a = dpnp.ascontiguousarray(a)
@@ -440,8 +441,7 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
     if cufft_wa:  # pragma: no cover
         a = dpnp.moveaxis(a, -1, -2)
 
-    strides = dpnp.get_usm_ndarray(a).strides
-    a_strides = _standardize_strides_to_nonzero(strides, a.shape)
+    a_strides = _standardize_strides_to_nonzero(elem_strides, a.shape)
     dsc, out_strides = _commit_descriptor(
         a, forward, in_place, c2c, a_strides, index, batch_fft
     )
