@@ -171,7 +171,7 @@ cdef object _as_zero_dim_ndarray(object usm_ary):
     usm_ary.sycl_queue.wait()
     host_buf = mem_view.copy_to_host()
     view = host_buf.view(usm_ary.dtype)
-    view.shape = tuple()
+    view = view.reshape(())
     return view
 
 
