@@ -43,9 +43,10 @@ namespace dpnp::extensions::sparse::types
 
 /**
  * @brief Factory encoding the supported (value type, index type) combinations
- *        for oneapi::mkl::sparse::gemv initialization.
+ *        for sparse matrix-vector multiply initialization (oneMKL
+ *        sparse::gemv, or oneMath sparse::spmv under USE_ONEMATH).
  *
- * oneMKL sparse BLAS supports:
+ * oneMKL / oneMath sparse BLAS supports:
  *   - float32          with int32 indices
  *   - float32          with int64 indices
  *   - float64          with int32 indices

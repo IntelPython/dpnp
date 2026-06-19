@@ -28,7 +28,12 @@
 
 #pragma once
 
+#if defined(USE_ONEMATH)
+#include <oneapi/math.hpp>
+#else
 #include <oneapi/mkl.hpp>
+#endif
+
 #include <sycl/sycl.hpp>
 
 #include "dpnp4pybind11.hpp"
@@ -39,18 +44,25 @@ namespace dpnp::extensions::sparse
 /**
  * sparse_gemv_init -- ONE-TIME setup per sparse matrix operator.
  *
- * Calls init_matrix_handle + set_csr_data + optimize_gemv.
+ * Builds the sparse matrix handle from the CSR arrays. With the
+ * legacy oneMKL sparse API this runs init_matrix_handle + set_csr_data
+ * + optimize_gemv; with the oneMath sparse API (USE_ONEMATH) it runs
+ * init_csr_matrix and prepares an spmv descriptor whose optimize step
+ * is deferred to the first sparse_gemv_compute call.
  *
  * Returns a tuple of:
- *   - handle_ptr:   opaque matrix_handle_t cast to uintptr_t for safe
- *                   Python round-tripping.
+ *   - handle_ptr:   opaque handle cast to uintptr_t for safe Python
+ *                   round-tripping. With the legacy API this is the
+ *                   matrix_handle_t; with oneMath it is an owning cache
+ *                   struct that also holds the dense-vector handles,
+ *                   the spmv descriptor and its workspace.
  *   - val_type_id:  the dpctl typenum lookup id of the value dtype Tv.
  *                   Python MUST pass this back to sparse_gemv_compute so
  *                   the C++ layer can verify that x and y dtype match the
  *                   handle's value type.
- *   - event:        dependency event from optimize_gemv; the caller must
- *                   wait on it (or chain via depends) before the first
- *                   sparse_gemv_compute call.
+ *   - event:        dependency event the caller must wait on (or chain
+ *                   via depends) before the first sparse_gemv_compute
+ *                   call.
  *
  * LIFETIME CONTRACT -- IMPORTANT:
  * The handle owns NO copies of the CSR arrays. The caller MUST keep
@@ -76,7 +88,9 @@ extern std::tuple<std::uintptr_t, int, sycl::event>
 /**
  * sparse_gemv_compute -- PER-ITERATION SpMV.
  *
- * Calls only oneapi::mkl::sparse::gemv using the pre-built handle.
+ * Runs a single sparse matrix-vector product using the pre-built
+ * handle (legacy oneapi::mkl::sparse::gemv, or oneapi::math::sparse::
+ * spmv under USE_ONEMATH).
  * Verifies that:
  *   - x and y are 1-D usm_ndarrays on a queue compatible with exec_q
  *   - x and y dtype match val_type_id (the handle's value type)

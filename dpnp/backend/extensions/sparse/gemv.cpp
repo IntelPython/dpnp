@@ -50,7 +50,14 @@
 namespace dpnp::extensions::sparse
 {
 
+#if defined(USE_ONEMATH)
+namespace mkl = oneapi::math;
+namespace mkl_sparse = oneapi::math::sparse;
+#else
+namespace mkl = oneapi::mkl;
 namespace mkl_sparse = oneapi::mkl::sparse;
+#endif
+
 namespace py = pybind11;
 namespace type_utils = dpnp::tensor::type_utils;
 
@@ -61,13 +68,13 @@ using ext::common::init_dispatch_table;
 // ---------------------------------------------------------------------------
 
 /**
- * init_impl: builds the matrix_handle, calls set_csr_data + optimize_gemv.
- * Returns (handle_ptr, optimize_event).
- * All CSR arrays are *not* copied -- they must stay alive until release.
+ * init_impl: builds the sparse matrix handle from the CSR arrays.
+ * Returns (handle_ptr, event). All CSR arrays are *not* copied -- they
+ * must stay alive until release.
  */
 typedef std::pair<std::uintptr_t, sycl::event> (*gemv_init_fn_ptr_t)(
     sycl::queue &,
-    oneapi::mkl::transpose,
+    mkl::transpose,
     const char *,       // row_ptr (typeless)
     const char *,       // col_ind (typeless)
     const char *,       // values  (typeless)
@@ -77,17 +84,20 @@ typedef std::pair<std::uintptr_t, sycl::event> (*gemv_init_fn_ptr_t)(
     const std::vector<sycl::event> &);
 
 /**
- * compute_impl: fires sparse::gemv using a pre-built handle.
- * Returns the gemv event directly -- no host_task wrapping.
+ * compute_impl: fires a single sparse matrix-vector product using a
+ * pre-built handle. Returns the kernel event directly -- no host_task
+ * wrapping.
  */
 typedef sycl::event (*gemv_compute_fn_ptr_t)(
     sycl::queue &,
-    oneapi::mkl::sparse::matrix_handle_t,
-    oneapi::mkl::transpose,
-    const double, // alpha (cast to Tv inside)
-    const char *, // x (typeless)
-    const double, // beta  (cast to Tv inside)
-    char *,       // y (typeless, writable)
+    std::uintptr_t, // pre-built handle (matrix_handle_t or cache ptr)
+    mkl::transpose,
+    const double,       // alpha (cast to Tv inside)
+    const char *,       // x (typeless)
+    const double,       // beta  (cast to Tv inside)
+    char *,             // y (typeless, writable)
+    const std::int64_t, // op_rows (length of y)
+    const std::int64_t, // op_cols (length of x)
     const std::vector<sycl::event> &);
 
 // Init dispatch: 2-D on (Tv, Ti).
@@ -98,14 +108,119 @@ static gemv_init_fn_ptr_t gemv_init_dispatch_table[dpnp_td_ns::num_types]
 // so compute doesn't need it.
 static gemv_compute_fn_ptr_t gemv_compute_dispatch_table[dpnp_td_ns::num_types];
 
+#if defined(USE_ONEMATH)
+
 // ---------------------------------------------------------------------------
-// Per-type init implementation
+// oneMath sparse API (v2) cache
+// ---------------------------------------------------------------------------
+
+/**
+ * Owns the five oneMath objects an spmv needs (matrix handle, x / y
+ * dense-vector handles, descriptor, workspace), so a single cached
+ * handle can drive repeated matvecs. init returns its address as the
+ * opaque uintptr_t handle; release frees the workspace and deletes it.
+ * spmv_buffer_size + spmv_optimize run once on the first compute;
+ * later calls only rebind the x / y data (see gemv_compute_impl).
+ */
+struct SpmvCache
+{
+    mkl_sparse::matrix_handle_t A = nullptr;
+    mkl_sparse::dense_vector_handle_t x = nullptr;
+    mkl_sparse::dense_vector_handle_t y = nullptr;
+    mkl_sparse::spmv_descr_t descr = nullptr;
+    void *workspace = nullptr;
+    mkl_sparse::matrix_view view{};
+    bool optimized = false;
+};
+
+// ---------------------------------------------------------------------------
+// Per-type init implementation (oneMath)
 // ---------------------------------------------------------------------------
 
 template <typename Tv, typename Ti>
 static std::pair<std::uintptr_t, sycl::event>
     gemv_init_impl(sycl::queue &exec_q,
-                   oneapi::mkl::transpose mkl_trans,
+                   mkl::transpose mkl_trans,
+                   const char *row_ptr_data,
+                   const char *col_ind_data,
+                   const char *values_data,
+                   std::int64_t num_rows,
+                   std::int64_t num_cols,
+                   std::int64_t nnz,
+                   const std::vector<sycl::event> &depends)
+{
+    type_utils::validate_type_for_device<Tv>(exec_q);
+
+    // init_csr_matrix has no dependency-list overload in the USM API;
+    // the caller-supplied depends are honoured at the first compute
+    // (spmv_optimize / spmv accept them).
+    static_cast<void>(depends);
+
+    Ti *row_ptr = const_cast<Ti *>(reinterpret_cast<const Ti *>(row_ptr_data));
+    Ti *col_ind = const_cast<Ti *>(reinterpret_cast<const Ti *>(col_ind_data));
+    Tv *values = const_cast<Tv *>(reinterpret_cast<const Tv *>(values_data));
+
+    // op(A) is (num_rows x num_cols) for trans=N, transposed otherwise;
+    // x has op_cols elements, y has op_rows.
+    const bool is_non_trans = (mkl_trans == mkl::transpose::nontrans);
+    const std::int64_t op_rows = is_non_trans ? num_rows : num_cols;
+    const std::int64_t op_cols = is_non_trans ? num_cols : num_rows;
+
+    auto *cache = new SpmvCache;
+
+    // Release whatever was created before the failure, then drop the
+    // cache, so a throwing init does not leak oneMath handles.
+    auto cleanup_partial = [&]() {
+        if (cache->descr != nullptr)
+            mkl_sparse::release_spmv_descr(exec_q, cache->descr, {});
+        if (cache->x != nullptr)
+            mkl_sparse::release_dense_vector(exec_q, cache->x, {});
+        if (cache->y != nullptr)
+            mkl_sparse::release_dense_vector(exec_q, cache->y, {});
+        if (cache->A != nullptr)
+            mkl_sparse::release_sparse_matrix(exec_q, cache->A, {});
+        delete cache;
+    };
+
+    try {
+        mkl_sparse::init_csr_matrix(exec_q, &cache->A, num_rows, num_cols, nnz,
+                                    mkl::index_base::zero, row_ptr, col_ind,
+                                    values);
+
+        // values is a placeholder pointer; the real x / y pointers are
+        // bound on every compute call via set_dense_vector_data.
+        mkl_sparse::init_dense_vector(exec_q, &cache->x, op_cols, values);
+        mkl_sparse::init_dense_vector(exec_q, &cache->y, op_rows, values);
+
+        mkl_sparse::init_spmv_descr(exec_q, &cache->descr);
+    } catch (mkl::exception const &e) {
+        cleanup_partial();
+        throw std::runtime_error(
+            std::string("sparse_gemv_init: oneMath exception in init: ") +
+            e.what());
+    } catch (sycl::exception const &e) {
+        cleanup_partial();
+        throw std::runtime_error(
+            std::string("sparse_gemv_init: SYCL exception in init: ") +
+            e.what());
+    }
+
+    auto handle_ptr = reinterpret_cast<std::uintptr_t>(cache);
+    // No optimize event yet -- optimization is deferred to first compute.
+    // Return a completed event so the caller's wait() is a no-op.
+    return {handle_ptr, sycl::event{}};
+}
+
+#else // legacy oneMKL sparse API (v1)
+
+// ---------------------------------------------------------------------------
+// Per-type init implementation (oneMKL)
+// ---------------------------------------------------------------------------
+
+template <typename Tv, typename Ti>
+static std::pair<std::uintptr_t, sycl::event>
+    gemv_init_impl(sycl::queue &exec_q,
+                   mkl::transpose mkl_trans,
                    const char *row_ptr_data,
                    const char *col_ind_data,
                    const char *values_data,
@@ -124,14 +239,14 @@ static std::pair<std::uintptr_t, sycl::event>
     mkl_sparse::init_matrix_handle(&spmat);
 
     auto ev_set = mkl_sparse::set_csr_data(
-        exec_q, spmat, num_rows, num_cols, nnz, oneapi::mkl::index_base::zero,
+        exec_q, spmat, num_rows, num_cols, nnz, mkl::index_base::zero,
         const_cast<Ti *>(row_ptr), const_cast<Ti *>(col_ind),
         const_cast<Tv *>(values), depends);
 
     sycl::event ev_opt;
     try {
         ev_opt = mkl_sparse::optimize_gemv(exec_q, mkl_trans, spmat, {ev_set});
-    } catch (oneapi::mkl::exception const &e) {
+    } catch (mkl::exception const &e) {
         mkl_sparse::release_matrix_handle(exec_q, &spmat, {});
         throw std::runtime_error(
             std::string("sparse_gemv_init: MKL exception in optimize_gemv: ") +
@@ -147,24 +262,105 @@ static std::pair<std::uintptr_t, sycl::event>
     return {handle_ptr, ev_opt};
 }
 
+#endif // USE_ONEMATH
+
 // ---------------------------------------------------------------------------
 // Per-type compute implementation
 // ---------------------------------------------------------------------------
 
+#if defined(USE_ONEMATH)
+
 template <typename Tv>
 static sycl::event gemv_compute_impl(sycl::queue &exec_q,
-                                     mkl_sparse::matrix_handle_t spmat,
-                                     oneapi::mkl::transpose mkl_trans,
+                                     std::uintptr_t handle_ptr,
+                                     mkl::transpose mkl_trans,
                                      double alpha_d,
                                      const char *x_data,
                                      double beta_d,
                                      char *y_data,
+                                     std::int64_t op_rows,
+                                     std::int64_t op_cols,
                                      const std::vector<sycl::event> &depends)
 {
-    // For complex Tv the single-arg constructor sets imag to zero.
-    // Solvers use alpha=1, beta=0 so this is exact; other callers
-    // passing complex scalars via this path will lose the imag
-    // component silently.
+    auto *cache = reinterpret_cast<SpmvCache *>(handle_ptr);
+
+    // Complex Tv loses the imaginary part here; solvers use alpha=1,
+    // beta=0 so this is exact for them.
+    const Tv alpha = static_cast<Tv>(alpha_d);
+    const Tv beta = static_cast<Tv>(beta_d);
+
+    Tv *x = const_cast<Tv *>(reinterpret_cast<const Tv *>(x_data));
+    Tv *y = reinterpret_cast<Tv *>(y_data);
+
+    try {
+        // The spec permits resetting x / y data (and alpha / beta)
+        // before each spmv without re-optimizing, as long as the
+        // handles passed to spmv match those passed to spmv_optimize.
+        mkl_sparse::set_dense_vector_data(exec_q, cache->x, op_cols, x);
+        mkl_sparse::set_dense_vector_data(exec_q, cache->y, op_rows, y);
+
+        constexpr auto alg = mkl_sparse::spmv_alg::default_alg;
+
+        if (!cache->optimized) {
+            // spmv_buffer_size + spmv_optimize must each run at least
+            // once before spmv; do so on the first matvec only.
+            std::size_t workspace_bytes = 0;
+            mkl_sparse::spmv_buffer_size(exec_q, mkl_trans, &alpha, cache->view,
+                                         cache->A, cache->x, &beta, cache->y,
+                                         alg, cache->descr, workspace_bytes);
+            if (workspace_bytes > 0) {
+                cache->workspace = sycl::malloc_device(workspace_bytes, exec_q);
+                if (cache->workspace == nullptr)
+                    throw std::runtime_error(
+                        "sparse_gemv_compute: failed to allocate spmv "
+                        "workspace.");
+            }
+
+            sycl::event ev_opt = mkl_sparse::spmv_optimize(
+                exec_q, mkl_trans, &alpha, cache->view, cache->A, cache->x,
+                &beta, cache->y, alg, cache->descr, cache->workspace, depends);
+            cache->optimized = true;
+
+            return mkl_sparse::spmv(exec_q, mkl_trans, &alpha, cache->view,
+                                    cache->A, cache->x, &beta, cache->y, alg,
+                                    cache->descr, {ev_opt});
+        }
+
+        return mkl_sparse::spmv(exec_q, mkl_trans, &alpha, cache->view,
+                                cache->A, cache->x, &beta, cache->y, alg,
+                                cache->descr, depends);
+    } catch (mkl::exception const &e) {
+        throw std::runtime_error(
+            std::string("sparse_gemv_compute: oneMath exception: ") + e.what());
+    } catch (sycl::exception const &e) {
+        throw std::runtime_error(
+            std::string("sparse_gemv_compute: SYCL exception: ") + e.what());
+    }
+}
+
+#else // legacy oneMKL sparse API (v1)
+
+template <typename Tv>
+static sycl::event gemv_compute_impl(sycl::queue &exec_q,
+                                     std::uintptr_t handle_ptr,
+                                     mkl::transpose mkl_trans,
+                                     double alpha_d,
+                                     const char *x_data,
+                                     double beta_d,
+                                     char *y_data,
+                                     std::int64_t op_rows,
+                                     std::int64_t op_cols,
+                                     const std::vector<sycl::event> &depends)
+{
+    // op_rows / op_cols are unused here (the handle encodes the
+    // dimensions); kept for ABI parity with the oneMath path.
+    static_cast<void>(op_rows);
+    static_cast<void>(op_cols);
+
+    auto spmat = reinterpret_cast<mkl_sparse::matrix_handle_t>(handle_ptr);
+
+    // Complex Tv loses the imaginary part here; solvers use alpha=1,
+    // beta=0 so this is exact for them.
     const Tv alpha = static_cast<Tv>(alpha_d);
     const Tv beta = static_cast<Tv>(beta_d);
 
@@ -174,7 +370,7 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
     try {
         return mkl_sparse::gemv(exec_q, mkl_trans, alpha, spmat, x, beta, y,
                                 depends);
-    } catch (oneapi::mkl::exception const &e) {
+    } catch (mkl::exception const &e) {
         throw std::runtime_error(
             std::string("sparse_gemv_compute: MKL exception: ") + e.what());
     } catch (sycl::exception const &e) {
@@ -183,19 +379,21 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
     }
 }
 
+#endif // USE_ONEMATH
+
 // ---------------------------------------------------------------------------
 // Public entry points
 // ---------------------------------------------------------------------------
 
-static oneapi::mkl::transpose decode_trans(const int trans)
+static mkl::transpose decode_trans(const int trans)
 {
     switch (trans) {
     case 0:
-        return oneapi::mkl::transpose::nontrans;
+        return mkl::transpose::nontrans;
     case 1:
-        return oneapi::mkl::transpose::trans;
+        return mkl::transpose::trans;
     case 2:
-        return oneapi::mkl::transpose::conjtrans;
+        return mkl::transpose::conjtrans;
     default:
         throw std::invalid_argument(
             "sparse_gemv: trans must be 0 (N), 1 (T), or 2 (C)");
@@ -292,7 +490,7 @@ sycl::event sparse_gemv_compute(sycl::queue &exec_q,
     // Shape validation: op(A) is (num_rows, num_cols) for trans=N,
     // (num_cols, num_rows) for trans={T,C}.
     auto mkl_trans = decode_trans(trans);
-    const bool is_non_trans = (mkl_trans == oneapi::mkl::transpose::nontrans);
+    const bool is_non_trans = (mkl_trans == mkl::transpose::nontrans);
     const std::int64_t op_rows = is_non_trans ? num_rows : num_cols;
     const std::int64_t op_cols = is_non_trans ? num_cols : num_rows;
 
@@ -324,11 +522,50 @@ sycl::event sparse_gemv_compute(sycl::queue &exec_q,
     if (compute_fn == nullptr)
         throw py::value_error("sparse_gemv_compute: unsupported value dtype.");
 
-    auto spmat = reinterpret_cast<mkl_sparse::matrix_handle_t>(handle_ptr);
-
-    return compute_fn(exec_q, spmat, mkl_trans, alpha, x.get_data(), beta,
-                      const_cast<char *>(y.get_data()), depends);
+    return compute_fn(exec_q, handle_ptr, mkl_trans, alpha, x.get_data(), beta,
+                      const_cast<char *>(y.get_data()), op_rows, op_cols,
+                      depends);
 }
+
+#if defined(USE_ONEMATH)
+
+sycl::event sparse_gemv_release(sycl::queue &exec_q,
+                                const std::uintptr_t handle_ptr,
+                                const std::vector<sycl::event> &depends)
+{
+    auto *cache = reinterpret_cast<SpmvCache *>(handle_ptr);
+    if (cache == nullptr)
+        return sycl::event{};
+
+    // Release every owned oneMath object; each takes `depends` so it
+    // waits for pending compute before freeing.
+    std::vector<sycl::event> rel_evs;
+    rel_evs.push_back(
+        mkl_sparse::release_spmv_descr(exec_q, cache->descr, depends));
+    rel_evs.push_back(
+        mkl_sparse::release_dense_vector(exec_q, cache->x, depends));
+    rel_evs.push_back(
+        mkl_sparse::release_dense_vector(exec_q, cache->y, depends));
+    rel_evs.push_back(
+        mkl_sparse::release_sparse_matrix(exec_q, cache->A, depends));
+
+    // Free the USM workspace and delete the cache only after all
+    // releases complete (the spec forbids freeing the workspace before
+    // the spmv using it has finished). A host_task orders this without
+    // blocking the caller.
+    sycl::event cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(rel_evs);
+        cgh.host_task([cache, exec_q]() {
+            if (cache->workspace != nullptr)
+                sycl::free(cache->workspace, exec_q);
+            delete cache;
+        });
+    });
+
+    return cleanup_ev;
+}
+
+#else // legacy oneMKL sparse API (v1)
 
 sycl::event sparse_gemv_release(sycl::queue &exec_q,
                                 const std::uintptr_t handle_ptr,
@@ -351,6 +588,8 @@ sycl::event sparse_gemv_release(sycl::queue &exec_q,
 
     return release_ev;
 }
+
+#endif // USE_ONEMATH
 
 // ---------------------------------------------------------------------------
 // Dispatch table factories and registration
