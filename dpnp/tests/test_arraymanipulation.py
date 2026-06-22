@@ -78,9 +78,9 @@ class TestAtleast1d:
         a = dpnp.array([1, 2])
         b = dpt.asarray([2, 3])
         res = dpnp.atleast_1d(a, b)
-        # multiple inputs are returned as a tuple of arrays
-        assert isinstance(res, tuple)
-        desired = [dpnp.array([1, 2]), dpnp.array([2, 3])]
+        desired = numpy.atleast_1d(numpy.array([1, 2]), numpy.array([2, 3]))
+        # multiple inputs are returned as a tuple of arrays, matching NumPy
+        assert type(res) is type(desired) is tuple
         assert_array_equal(res, desired)
 
 
@@ -119,9 +119,9 @@ class TestAtleast2d:
         a = dpnp.array([1, 2])
         b = dpt.asarray([2, 3])
         res = dpnp.atleast_2d(a, b)
-        # multiple inputs are returned as a tuple of arrays
-        assert isinstance(res, tuple)
-        desired = [dpnp.array([[1, 2]]), dpnp.array([[2, 3]])]
+        desired = numpy.atleast_2d(numpy.array([1, 2]), numpy.array([2, 3]))
+        # multiple inputs are returned as a tuple of arrays, matching NumPy
+        assert type(res) is type(desired) is tuple
         assert_array_equal(res, desired)
 
 
@@ -160,9 +160,9 @@ class TestAtleast3d:
         a = dpnp.array([1, 2])
         b = dpt.asarray([2, 3])
         res = dpnp.atleast_3d(a, b)
-        # multiple inputs are returned as a tuple of arrays
-        assert isinstance(res, tuple)
-        desired = [dpnp.array([[[1], [2]]]), dpnp.array([[[2], [3]]])]
+        desired = numpy.atleast_3d(numpy.array([1, 2]), numpy.array([2, 3]))
+        # multiple inputs are returned as a tuple of arrays, matching NumPy
+        assert type(res) is type(desired) is tuple
         assert_array_equal(res, desired)
 
 
@@ -1073,6 +1073,8 @@ class TestUnstack:
 
         np_res = numpy.unstack(np_a)
         dp_res = dpnp.unstack(dp_a)
+        # the result is a tuple of arrays, matching NumPy
+        assert type(dp_res) is type(np_res) is tuple
         assert len(dp_res) == len(np_res)
         for dp_arr, np_arr in zip(dp_res, np_res):
             assert_array_equal(dp_arr, np_arr)

@@ -739,8 +739,8 @@ class TestHistogramDd:
         result_hist, result_edges = dpnp.histogramdd(iv, bins_dpnp)
         assert_allclose(result_hist, expected_hist)
 
-        # bin edges are returned as a tuple of arrays
-        assert isinstance(result_edges, tuple)
+        assert isinstance(result_edges, list)
+        assert isinstance(expected_edges, list)
         for x, y in zip(result_edges, expected_edges):
             assert_allclose(x, y)
 
