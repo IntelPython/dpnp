@@ -1835,8 +1835,8 @@ class dpnp_array:
 
         For full documentation refer to :obj:`numpy.ndarray.shape`.
 
-        Warning
-        -------
+        Warnings
+        --------
         Setting ``a.shape`` is deprecated and may be removed in the future.
         Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the
         preferred approach.
@@ -1882,8 +1882,8 @@ class dpnp_array:
             New shape. Only non-negative values are supported. The new shape
             may not lead to the change in the number of elements in the array.
 
-        Warning
-        -------
+        Warnings
+        --------
         Setting ``a.shape`` is deprecated and may be removed in the future.
         Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the
         preferred approach.

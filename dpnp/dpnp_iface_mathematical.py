@@ -1818,8 +1818,8 @@ See Also
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.
 
-Warning
--------
+Warnings
+--------
 This function is deprecated. It is recommended to use
 :func:`dpnp.trunc` instead, as it provides the same functionality of
 truncating decimal values to their integer parts.
@@ -3249,8 +3249,8 @@ order : {None, "C", "F", "A", "K"}, optional
 
     Default: ``"K"``.
 
-Warning
--------
+Warnings
+--------
 Passing more than 2 positional arguments is deprecated.
 If you meant to use the third argument as an output,
 use the `out` keyword argument instead.
@@ -3356,8 +3356,8 @@ out : dpnp.ndarray
     An array containing the element-wise minima. The data type of
     the returned array is determined by the Type Promotion Rules.
 
-Warning
--------
+Warnings
+--------
 Passing more than 2 positional arguments is deprecated.
 If you meant to use the third argument as an output,
 use the `out` keyword argument instead.
