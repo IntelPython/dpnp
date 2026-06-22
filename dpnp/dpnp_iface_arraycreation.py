@@ -3036,7 +3036,7 @@ def logspace(
 # pylint: disable=redefined-outer-name
 def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     """
-    Return coordinate matrices from coordinate vectors.
+    Return a tuple of coordinate matrices from coordinate vectors.
 
     Make N-D coordinate arrays for vectorized evaluations of
     N-D scalar/vector fields over N-D grids, given
@@ -3068,6 +3068,13 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
         ``(N2, N1, N3,..., Nn)`` shaped arrays if ``indexing='xy'`` with
         the elements of `xi` repeated to fill the matrix along the first
         dimension for `x1`, the second for `x2` and so on.
+
+    See Also
+    --------
+    :obj:`dpnp.mgrid` : Construct a multi-dimensional "meshgrid" using
+        indexing notation.
+    :obj:`dpnp.ogrid` : Construct an open multi-dimensional "meshgrid" using
+        indexing notation.
 
     Examples
     --------
@@ -3164,9 +3171,9 @@ class MGridClass:
 
     Returns
     -------
-    out : one dpnp.ndarray or tuple of dpnp.ndarray
-        Returns one array of grid indices,
-        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.
+    out : dpnp.ndarray
+        A single array, containing a set of arrays all of the same dimensions,
+        stacked along the first axis.
 
     Examples
     --------
@@ -3182,6 +3189,13 @@ class MGridClass:
             [0, 1, 2, 3, 4],
             [0, 1, 2, 3, 4],
             [0, 1, 2, 3, 4]]])
+
+    >>> np.mgrid[0:4].shape
+    (4,)
+    >>> np.mgrid[0:4, 0:5].shape
+    (2, 4, 5)
+    >>> np.mgrid[0:4, 0:5, 0:6].shape
+    (3, 4, 5, 6)
 
     Creating an array on a different device or with a specified usm_type
 
@@ -3243,20 +3257,20 @@ class OGridClass:
 
     Returns
     -------
-    out : one dpnp.ndarray or tuple of dpnp.ndarray
-        Returns a tuple of arrays,
-        with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
-        with dimensions[i] in the i-th place.
+    out : dpnp.ndarray or tuple of dpnp.ndarray
+        If the input is a single slice, returns an array.
+        If the input is multiple slices, returns a tuple of arrays, with
+        only one dimension not equal to 1.
 
     Examples
     --------
     >>> import dpnp as np
     >>> np.ogrid[0:5, 0:5]
-    [array([[0],
+    (array([[0],
             [1],
             [2],
             [3],
-            [4]]), array([[0, 1, 2, 3, 4]])]
+            [4]]), array([[0, 1, 2, 3, 4]]))
 
     Creating an array on a different device or with a specified usm_type
 
