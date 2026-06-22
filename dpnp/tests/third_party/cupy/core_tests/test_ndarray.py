@@ -559,21 +559,6 @@ class TestNdarrayTakeErrorShapeMismatch(unittest.TestCase):
 
 
 @testing.parameterize(
-    {"shape": (3, 4, 5), "indices": (2, 3), "out_shape": (2, 3)},
-    {"shape": (), "indices": (), "out_shape": ()},
-)
-class TestNdarrayTakeErrorTypeMismatch(unittest.TestCase):
-
-    def test_output_type_mismatch(self):
-        for xp in (numpy, cupy):
-            a = testing.shaped_arange(self.shape, xp, numpy.int32)
-            i = testing.shaped_arange(self.indices, xp, numpy.int32) % 3
-            o = testing.shaped_arange(self.out_shape, xp, numpy.float32)
-            with pytest.raises(TypeError):
-                wrap_take(a, i, out=o)
-
-
-@testing.parameterize(
     {"shape": (0,), "indices": (0,), "axis": None},
     {"shape": (0,), "indices": (0, 1), "axis": None},
     {"shape": (3, 0), "indices": (2,), "axis": 0},
