@@ -1768,7 +1768,7 @@ class dpnp_array:
 
     def reshape(self, /, *shape, order="C", copy=None):
         """
-        Return an array containing the same data with a new shape.
+        Return a reshaped array without changing data.
 
         Refer to :obj:`dpnp.reshape` for full documentation.
 
