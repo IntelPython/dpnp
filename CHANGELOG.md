@@ -25,6 +25,7 @@ This release is compatible with NumPy 2.5.
 * Updated `dpnp.linalg.eig` and `dpnp.linalg.eigvals` documentation to reflect NumPy's always-complex eigenvalue output for general matrices [#2953](https://github.com/IntelPython/dpnp/pull/2953)
 * Clarified support for negative axes in `dpnp.transpose`/`dpnp.permute_dims` documentation [#2940](https://github.com/IntelPython/dpnp/pull/2940)
 * Allowed `dpnp.take` and `dpnp.compress` to cast the result into an `out` array of a different but same-kind dtype [#2959](https://github.com/IntelPython/dpnp/pull/2959)
+* Clarified the summary in `dpnp.reshape` and `dpnp.ndarray.reshape` docstrings [#2964](https://github.com/IntelPython/dpnp/pull/2964)
 
 ### Deprecated
 
