@@ -26,7 +26,7 @@ This release is compatible with NumPy 2.5.
 * Clarified support for negative axes in `dpnp.transpose`/`dpnp.permute_dims` documentation [#2940](https://github.com/IntelPython/dpnp/pull/2940)
 * Allowed `dpnp.take` and `dpnp.compress` to cast the result into an `out` array of a different but same-kind dtype [#2959](https://github.com/IntelPython/dpnp/pull/2959)
 * Clarified the summary in `dpnp.reshape` and `dpnp.ndarray.reshape` docstrings [#2964](https://github.com/IntelPython/dpnp/pull/2964)
-* Changed `dpnp.atleast_1d`, `dpnp.atleast_2d`, `dpnp.atleast_3d`, `dpnp.array_split`, `dpnp.split`, `dpnp.hsplit`, `dpnp.vsplit`, `dpnp.dsplit`, `dpnp.ogrid`, and `dpnp.histogramdd` to return a tuple of arrays instead of a list [#2965](https://github.com/IntelPython/dpnp/pull/2965)
+* Changed `dpnp.atleast_1d`, `dpnp.atleast_2d`, `dpnp.atleast_3d`, and `dpnp.ogrid` to return a tuple of arrays instead of a list [#2965](https://github.com/IntelPython/dpnp/pull/2965)
 
 ### Deprecated
 
