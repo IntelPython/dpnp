@@ -2951,7 +2951,7 @@ def require(a, dtype=None, requirements=None, *, like=None):
 
 def reshape(a, /, shape, order="C", *, copy=None):
     """
-    Gives a new shape to an array without changing its data.
+    Return a reshaped ndarray without changing data.
 
     For full documentation refer to :obj:`numpy.reshape`.
 
