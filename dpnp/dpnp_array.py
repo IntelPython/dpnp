@@ -1890,14 +1890,7 @@ class dpnp_array:
 
         """
 
-        warnings.warn(
-            "Setting the shape on a dpnp.ndarray has been deprecated. As an "
-            "alternative, you can create a new view using dpnp.reshape (with "
-            "copy=False if needed).",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
+        # the underlying usm_ndarray shape setter raises a deprecation warning
         self._array_obj.shape = newshape
 
     @property

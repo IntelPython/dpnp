@@ -30,6 +30,8 @@
 # cython: language_level=3
 # cython: linetrace=True
 
+import warnings
+
 import dpctl
 import dpctl.memory as dpmem
 import numpy as np
@@ -691,10 +693,10 @@ cdef class usm_ndarray:
         Elements of the shape tuple give the lengths of the
         respective array dimensions.
 
-        Setting shape is allowed only when reshaping to the requested
-        dimensions can be returned as view, otherwise :exc:`AttributeError`
-        is raised. Use :func:`dpctl.tensor.reshape` to reshape the array
-        in all cases.
+        .. warning::
+            Setting ``a.shape`` has been deprecated and may be removed in
+            the future. Use :func:`dpnp.tensor.reshape` to reshape the array
+            instead.
 
         :Example:
 
@@ -703,7 +705,7 @@ cdef class usm_ndarray:
                 from dpnp import tensor
 
                 x = tensor.arange(899)
-                x.shape = (29, 31)
+                x = tensor.reshape(x, (29, 31))
         """
         if self.nd_ > 0:
             return _make_int_tuple(self.nd_, self.shape_)
@@ -727,7 +729,20 @@ cdef class usm_ndarray:
         strides. Use :func:`dpctl.tensor.reshape` function which
         always succeeds to reshape the array by performing a copy
         if necessary.
+
+        .. deprecated::
+            Setting ``a.shape`` has been deprecated and may be removed in
+            the future. Use :func:`dpnp.tensor.reshape` to reshape the array
+            instead.
         """
+        warnings.warn(
+            "Setting the shape on an array has been deprecated. As an "
+            "alternative, you can create a new array with the desired shape "
+            "using the reshape function.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         cdef int new_nd = -1
         cdef Py_ssize_t nelems = -1
         cdef int err = 0
