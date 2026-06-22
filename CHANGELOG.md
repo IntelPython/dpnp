@@ -24,6 +24,8 @@ This release is compatible with NumPy 2.5.
 * Cleaned up Python bindings for indexing functions, renaming `usm_ndarray_take` and `usm_ndarray_put` to `py_take` and `py_put` and refactoring validation [#2935](https://github.com/IntelPython/dpnp/pull/2935)
 * Updated `dpnp.linalg.eig` and `dpnp.linalg.eigvals` documentation to reflect NumPy's always-complex eigenvalue output for general matrices [#2953](https://github.com/IntelPython/dpnp/pull/2953)
 * Clarified support for negative axes in `dpnp.transpose`/`dpnp.permute_dims` documentation [#2940](https://github.com/IntelPython/dpnp/pull/2940)
+* Allowed `dpnp.take` and `dpnp.compress` to cast the result into an `out` array of a different but same-kind dtype [#2959](https://github.com/IntelPython/dpnp/pull/2959)
+* Clarified the summary in `dpnp.reshape` and `dpnp.ndarray.reshape` docstrings [#2964](https://github.com/IntelPython/dpnp/pull/2964)
 
 ### Deprecated
 
@@ -45,6 +47,7 @@ This release is compatible with NumPy 2.5.
 * Fixed tests which expected lists from `dpctl` functions which now return tuples (i.e., `dpctl.SyclDevice.create_sub_devices`) [#2945](https://github.com/IntelPython/dpnp/pull/2945)
 * Fixed `PytestRemovedIn10Warning` raised by `pytest` 9.1.0 by converting class-scoped fixtures to class methods [#2952](https://github.com/IntelPython/dpnp/pull/2952)
 * Fixed `dpnp.linalg.svd(..., hermitian=True)` returning a non-unitary `vh` for singular input arrays due to a zero sign appearing [#2954](https://github.com/IntelPython/dpnp/pull/2954)
+* Fixed scalar conversion of size-one `dpnp.tensor.usm_ndarray` (e.g. `int()`, `float()`, indexing) which failed with NumPy 2.5 after the in-place `ndarray.shape` assignment was deprecated [#2958](https://github.com/IntelPython/dpnp/pull/2958)
 
 ### Security
 
