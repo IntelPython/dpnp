@@ -612,8 +612,8 @@ def array_split(ary, indices_or_sections, axis=0):
 
     Returns
     -------
-    sub-arrays : list of dpnp.ndarray
-        A list of sub arrays. Each array is a view of the corresponding input
+    sub-arrays : tuple of dpnp.ndarray
+        A tuple of sub arrays. Each array is a view of the corresponding input
         array.
 
     See Also
@@ -625,11 +625,11 @@ def array_split(ary, indices_or_sections, axis=0):
     >>> import dpnp as np
     >>> x = np.arange(8.0)
     >>> np.array_split(x, 3)
-    [array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7.])]
+    (array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7.]))
 
     >>> x = np.arange(9)
     >>> np.array_split(x, 4)
-    [array([0, 1, 2]), array([3, 4]), array([5, 6]), array([7, 8])]
+    (array([0, 1, 2]), array([3, 4]), array([5, 6]), array([7, 8]))
 
     """
 
@@ -662,7 +662,7 @@ def array_split(ary, indices_or_sections, axis=0):
         end = div_points[i + 1]
         sub_arys.append(dpnp.swapaxes(sary[st:end], axis, 0))
 
-    return sub_arys
+    return tuple(sub_arys)
 
 
 def asarray_chkfinite(
@@ -881,7 +881,7 @@ def atleast_1d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 1``.
+        An array, or tuple of arrays, each with ``a.ndim >= 1``.
         Copies are made only if necessary.
 
     See Also
@@ -899,7 +899,7 @@ def atleast_1d(*arys):
 
     >>> y = np.array([3, 4])
     >>> np.atleast_1d(x, y)
-    [array([1.]), array([3, 4])]
+    (array([1.]), array([3, 4]))
 
     >>> x = np.arange(9.0).reshape(3, 3)
     >>> np.atleast_1d(x)
@@ -926,7 +926,7 @@ def atleast_1d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
 
 
 def atleast_2d(*arys):
@@ -944,7 +944,7 @@ def atleast_2d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 2``.
+        An array, or tuple of arrays, each with ``a.ndim >= 2``.
         Copies are avoided where possible, and views with two or more
         dimensions are returned.
 
@@ -982,7 +982,7 @@ def atleast_2d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
 
 
 def atleast_3d(*arys):
@@ -1000,7 +1000,7 @@ def atleast_3d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 3``. Copies are
+        An array, or tuple of arrays, each with ``a.ndim >= 3``. Copies are
         avoided where possible, and views with three or more dimensions are
         returned.
 
@@ -1044,7 +1044,7 @@ def atleast_3d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
 
 
 def broadcast_arrays(*args, subok=False):
@@ -1653,8 +1653,8 @@ def dsplit(ary, indices_or_sections):
 
     Returns
     -------
-    sub-arrays : list of dpnp.ndarray
-        A list of sub arrays. Each array is a view of the corresponding input
+    sub-arrays : tuple of dpnp.ndarray
+        A tuple of sub arrays. Each array is a view of the corresponding input
         array.
 
     See Also
@@ -1671,16 +1671,16 @@ def dsplit(ary, indices_or_sections):
            [[ 8.,  9., 10., 11.],
             [12., 13., 14., 15.]]])
     >>> np.dsplit(x, 2)
-    [array([[[ 0.,  1.],
+    (array([[[ 0.,  1.],
              [ 4.,  5.]],
             [[ 8.,  9.],
              [12., 13.]]]),
      array([[[ 2.,  3.],
              [ 6.,  7.]],
             [[10., 11.],
-             [14., 15.]]])]
+             [14., 15.]]]))
     >>> np.dsplit(x, np.array([3, 6]))
-    [array([[[ 0.,  1.,  2.],
+    (array([[[ 0.,  1.,  2.],
              [ 4.,  5.,  6.]],
             [[ 8.,  9., 10.],
              [12., 13., 14.]]]),
@@ -1688,7 +1688,7 @@ def dsplit(ary, indices_or_sections):
              [ 7.]],
             [[11.],
              [15.]]]),
-     array([])]
+     array([]))
 
     """
 
@@ -1753,8 +1753,8 @@ def dstack(tup):
     _check_stack_arrays(tup)
 
     arrs = atleast_3d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
     return dpnp.concatenate(arrs, axis=2)
 
 
@@ -2052,8 +2052,8 @@ def hsplit(ary, indices_or_sections):
 
     Returns
     -------
-    sub-arrays : list of dpnp.ndarray
-        A list of sub arrays. Each array is a view of the corresponding input
+    sub-arrays : tuple of dpnp.ndarray
+        A tuple of sub arrays. Each array is a view of the corresponding input
         array.
 
     See Also
@@ -2070,16 +2070,16 @@ def hsplit(ary, indices_or_sections):
            [ 8.,  9., 10., 11.],
            [12., 13., 14., 15.]])
     >>> np.hsplit(x, 2)
-    [array([[ 0.,  1.],
+    (array([[ 0.,  1.],
             [ 4.,  5.],
             [ 8.,  9.],
             [12., 13.]]),
      array([[ 2.,  3.],
             [ 6.,  7.],
             [10., 11.],
-            [14., 15.]])]
+            [14., 15.]]))
     >>> np.hsplit(x, np.array([3, 6]))
-    [array([[ 0.,  1.,  2.],
+    (array([[ 0.,  1.,  2.],
             [ 4.,  5.,  6.],
             [ 8.,  9., 10.],
             [12., 13., 14.]]),
@@ -2087,7 +2087,7 @@ def hsplit(ary, indices_or_sections):
             [ 7.],
             [11.],
             [15.]]),
-     array([])]
+     array([]))
 
     With a higher dimensional array the split is still along the second axis.
 
@@ -2098,16 +2098,16 @@ def hsplit(ary, indices_or_sections):
            [[4., 5.],
             [6., 7.]]])
     >>> np.hsplit(x, 2)
-    [array([[[0., 1.]],
+    (array([[[0., 1.]],
             [[4., 5.]]]),
      array([[[2., 3.]],
-            [[6., 7.]]])]
+            [[6., 7.]]]))
 
     With a 1-D array, the split is along axis 0.
 
     >>> x = np.array([0, 1, 2, 3, 4, 5])
     >>> np.hsplit(x, 2)
-    [array([0, 1, 2]), array([3, 4, 5])]
+    (array([0, 1, 2]), array([3, 4, 5]))
 
     """
 
@@ -2178,8 +2178,8 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     _check_stack_arrays(tup)
 
     arrs = dpnp.atleast_1d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
 
     # As a special case, dimension 0 of 1-dimensional arrays is "horizontal"
     if arrs and arrs[0].ndim == 1:
@@ -3555,8 +3555,8 @@ def split(ary, indices_or_sections, axis=0):
 
     Returns
     -------
-    sub-arrays : list of dpnp.ndarray
-        A list of sub arrays. Each array is a view of the corresponding input
+    sub-arrays : tuple of dpnp.ndarray
+        A tuple of sub arrays. Each array is a view of the corresponding input
         array.
 
     Raises
@@ -3588,12 +3588,12 @@ def split(ary, indices_or_sections, axis=0):
     >>> import dpnp as np
     >>> x = np.arange(9.0)
     >>> np.split(x, 3)
-    [array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7., 8.])]
+    (array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7., 8.]))
 
     >>> x = np.arange(8.0)
     >>> np.split(x, [3, 5, 6, 10])
-    [array([0., 1., 2.]), array([3., 4.]), array([5.]), array([6., 7.]), \
-    array([])]
+    (array([0., 1., 2.]), array([3., 4.]), array([5.]), array([6., 7.]), \
+    array([]))
 
     """
 
@@ -4551,8 +4551,8 @@ def vsplit(ary, indices_or_sections):
 
     Returns
     -------
-    sub-arrays : list of dpnp.ndarray
-        A list of sub arrays. Each array is a view of the corresponding input
+    sub-arrays : tuple of dpnp.ndarray
+        A tuple of sub arrays. Each array is a view of the corresponding input
         array.
 
     See Also
@@ -4569,16 +4569,16 @@ def vsplit(ary, indices_or_sections):
            [ 8.,  9., 10., 11.],
            [12., 13., 14., 15.]])
     >>> np.vsplit(x, 2)
-    [array([[0., 1., 2., 3.],
+    (array([[0., 1., 2., 3.],
             [4., 5., 6., 7.]]),
      array([[ 8.,  9., 10., 11.],
-            [12., 13., 14., 15.]])]
+            [12., 13., 14., 15.]]))
     >>> np.vsplit(x, np.array([3, 6]))
-    [array([[ 0.,  1.,  2.,  3.],
+    (array([[ 0.,  1.,  2.,  3.],
             [ 4.,  5.,  6.,  7.],
             [ 8.,  9., 10., 11.]]),
      array([[12., 13., 14., 15.]]),
-     array([], shape=(0, 4), dtype=float64)]
+     array([], shape=(0, 4), dtype=float64))
 
     With a higher dimensional array the split is still along the first axis.
 
@@ -4589,10 +4589,10 @@ def vsplit(ary, indices_or_sections):
            [[4., 5.],
             [6., 7.]]])
     >>> np.vsplit(x, 2)
-    [array([[[0., 1.],
+    (array([[[0., 1.],
              [2., 3.]]]),
      array([[[4., 5.],
-             [6., 7.]]])]
+             [6., 7.]]]))
 
     """
 
@@ -4664,6 +4664,6 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     _check_stack_arrays(tup)
 
     arrs = dpnp.atleast_2d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
     return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
