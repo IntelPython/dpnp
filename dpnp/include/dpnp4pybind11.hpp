@@ -35,7 +35,7 @@
 #include "dpnp/tensor/_usmarray.h"
 #include "dpnp/tensor/_usmarray_api.h"
 // Include usm_ndarray constants (flags, type numbers)
-#include "../../tensor/include/usm_ndarray_constants.h"
+#include "usm_ndarray_constants.h"
 
 #include <array>
 #include <cassert>

@@ -41,7 +41,7 @@ def _dpnp_dir() -> str:
 
 def get_include_dir() -> str:
     """Returns path to dpnp include directory containing dpnp4pybind11.hpp"""
-    return os.path.join(_dpnp_dir(), "backend", "include")
+    return os.path.join(_dpnp_dir(), "include")
 
 
 def print_include_flags() -> None:
@@ -59,6 +59,13 @@ def print_tensor_include_flags() -> None:
     """Prints include flags for dpnp tensor library"""
     libtensor_dir = get_tensor_include_dir()
     print("-I " + libtensor_dir)
+
+
+def print_cmake_dir() -> None:
+    """Prints directory with dpnp-config.cmake"""
+    dpnp_dir = _dpnp_dir()
+    cmake_dir = os.path.join(dpnp_dir, "resources", "cmake")
+    print(cmake_dir)
 
 
 def main() -> None:
@@ -84,6 +91,11 @@ def main() -> None:
         action="store_true",
         help="Path to dpnp libtensor include directory.",
     )
+    parser.add_argument(
+        "--cmakedir",
+        action="store_true",
+        help="CMake module directory, ideal for setting -DDpnp_ROOT in CMake.",
+    )
     args = parser.parse_args()
     if not sys.argv[1:]:
         parser.print_help()
@@ -95,6 +107,8 @@ def main() -> None:
         print_tensor_include_flags()
     if args.tensor_include_dir:
         print(get_tensor_include_dir())
+    if args.cmakedir:
+        print_cmake_dir()
 
 
 if __name__ == "__main__":

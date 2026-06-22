@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,45 +27,43 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import skbuild
-import versioneer
+cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
-skbuild.setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=[
-        "dpnp",
-        "dpnp.tensor",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.exceptions",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.memory",
-        "dpnp.random",
-        "dpnp.scipy",
-        "dpnp.scipy.linalg",
-        "dpnp.scipy.special",
-    ],
-    package_data={
-        "dpnp": [
-            "include/*.h*",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "resources/cmake/*.cmake",
-            "tensor/libtensor/include/kernels/*.h*",
-            "tensor/libtensor/include/kernels/*/*.h*",
-            "tensor/libtensor/include/utils/*.h*",
-            "tests/*.*",
-            "tests/tensor/*.py",
-            "tests/tensor/*/*.py",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-            "tests/third_party/cupyx/*.py",
-            "tests/third_party/cupyx/*/*.py",
-        ],
-    },
-    include_package_data=False,
+project(
+    use_dpnp_array
+    VERSION 0.1
+    LANGUAGES CXX
+    DESCRIPTION "Example of using dpnp::tensor::usm_ndarray type caster"
 )
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Fetch pybind11
+include(FetchContent)
+FetchContent_Declare(
+    pybind11
+    URL https://github.com/pybind/pybind11/archive/refs/tags/v3.0.4.tar.gz
+    URL_HASH SHA256=74b6a2c2b4573a400cafb6ecbf60c98df300cd3d0041296b913d02b2cbbb2676
+    FIND_PACKAGE_ARGS NAMES pybind11
+)
+FetchContent_MakeAvailable(pybind11)
+
+find_package(Python REQUIRED COMPONENTS Development.Module)
+find_package(Dpctl REQUIRED)
+find_package(IntelSYCL REQUIRED)
+find_package(Dpnp REQUIRED)
+
+set(py_module_name _use_dpnp_array)
+set(_sources use_dpnp_array/_example.cpp)
+pybind11_add_module(${py_module_name} MODULE ${_sources})
+add_sycl_to_target(TARGET ${py_module_name} SOURCES ${_sources})
+
+target_include_directories(
+    ${py_module_name}
+    PRIVATE ${Dpnp_INCLUDE_DIR} ${Dpctl_INCLUDE_DIR}
+)
+
+install(TARGETS ${py_module_name} DESTINATION use_dpnp_array)
+
+set(ignoreMe "${SKBUILD}")

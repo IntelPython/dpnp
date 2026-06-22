@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,45 +26,13 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import skbuild
-import versioneer
+from skbuild import setup
 
-skbuild.setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=[
-        "dpnp",
-        "dpnp.tensor",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.exceptions",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.memory",
-        "dpnp.random",
-        "dpnp.scipy",
-        "dpnp.scipy.linalg",
-        "dpnp.scipy.special",
-    ],
-    package_data={
-        "dpnp": [
-            "include/*.h*",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "resources/cmake/*.cmake",
-            "tensor/libtensor/include/kernels/*.h*",
-            "tensor/libtensor/include/kernels/*/*.h*",
-            "tensor/libtensor/include/utils/*.h*",
-            "tests/*.*",
-            "tests/tensor/*.py",
-            "tests/tensor/*/*.py",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-            "tests/third_party/cupyx/*.py",
-            "tests/third_party/cupyx/*/*.py",
-        ],
-    },
-    include_package_data=False,
+setup(
+    name="use_dpnp_array",
+    version="0.0.1",
+    description="Example of using dpnp::tensor::usm_ndarray with pybind11",
+    author="Intel Corporation",
+    license="BSD-3-Clause",
+    packages=["use_dpnp_array"],
 )

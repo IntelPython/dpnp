@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,45 +26,52 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import skbuild
-import versioneer
+import use_dpnp_array as uda
 
-skbuild.setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=[
-        "dpnp",
-        "dpnp.tensor",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.exceptions",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.memory",
-        "dpnp.random",
-        "dpnp.scipy",
-        "dpnp.scipy.linalg",
-        "dpnp.scipy.special",
-    ],
-    package_data={
-        "dpnp": [
-            "include/*.h*",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "resources/cmake/*.cmake",
-            "tensor/libtensor/include/kernels/*.h*",
-            "tensor/libtensor/include/kernels/*/*.h*",
-            "tensor/libtensor/include/utils/*.h*",
-            "tests/*.*",
-            "tests/tensor/*.py",
-            "tests/tensor/*/*.py",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-            "tests/third_party/cupyx/*.py",
-            "tests/third_party/cupyx/*/*.py",
-        ],
-    },
-    include_package_data=False,
-)
+import dpnp.tensor as dpt
+
+
+def test_ndim():
+    arr = dpt.usm_ndarray((3, 4), dtype="i4")
+    assert uda.get_ndim(arr) == 2
+    arr = dpt.usm_ndarray(10, dtype="f4")
+    assert uda.get_ndim(arr) == 1
+
+
+def test_shape():
+    arr = dpt.usm_ndarray((5, 7, 3), dtype="f8")
+    assert uda.get_shape(arr) == [5, 7, 3]
+
+
+def test_size():
+    arr = dpt.usm_ndarray((4, 5), dtype="i4")
+    assert uda.get_size(arr) == 20
+
+
+def test_elemsize():
+    arr_f4 = dpt.usm_ndarray(10, dtype="f4")
+    assert uda.get_elemsize(arr_f4) == 4
+
+    arr_f8 = dpt.usm_ndarray(10, dtype="f8")
+    assert uda.get_elemsize(arr_f8) == 8
+
+
+def test_c_contiguous():
+    arr = dpt.usm_ndarray((3, 4), dtype="f4", order="C")
+    assert uda.is_c_contiguous(arr) is True
+
+
+def test_f_contiguous():
+    arr = dpt.usm_ndarray((3, 4), dtype="f4", order="F")
+    assert uda.is_f_contiguous(arr) is True
+
+
+def test_writable():
+    arr = dpt.usm_ndarray(10, dtype="i4")
+    assert uda.is_writable(arr) is True
+
+
+def test_typenum():
+    arr_f4 = dpt.usm_ndarray(5, dtype="f4")
+    arr_f8 = dpt.usm_ndarray(5, dtype="f8")
+    assert uda.get_typenum(arr_f4) != uda.get_typenum(arr_f8)
