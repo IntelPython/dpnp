@@ -1071,13 +1071,13 @@ def indices(
     -------
     out : one dpnp.ndarray or tuple of dpnp.ndarray
         If sparse is ``False``:
-        Returns one array of grid indices,
-        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.
+            Returns one array of grid indices with
+            ``grid.shape == (len(dimensions),) + tuple(dimensions)``.
 
         If sparse is ``True``:
-        Returns a tuple of arrays,
-        with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
-        with dimensions[i] in the i-th place.
+            Returns a tuple of arrays,
+            with grid[i].shape == (1, ..., 1, dimensions[i], 1, ..., 1)
+            with dimensions[i] in the i-th place.
 
     See Also
     --------
@@ -1109,6 +1109,7 @@ def indices(
 
     Note that it would be more straightforward in the above example to
     extract the required elements directly with ``x[:2, :3]``.
+
     If sparse is set to ``True``, the grid will be returned in a sparse
     representation.
 

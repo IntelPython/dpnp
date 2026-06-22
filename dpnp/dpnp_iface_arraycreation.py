@@ -3038,9 +3038,9 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     """
     Return a tuple of coordinate matrices from coordinate vectors.
 
-    Make N-D coordinate arrays for vectorized evaluations of
-    N-D scalar/vector fields over N-D grids, given
-    one-dimensional coordinate arrays ``x1, x2,..., xn``.
+    Make N-D coordinate arrays for vectorized evaluations of N-D scalar/vector
+    fields over N-D grids, given one-dimensional coordinate arrays
+    ``x1, x2,..., xn``.
 
     For full documentation refer to :obj:`numpy.meshgrid`.
 
@@ -3054,10 +3054,12 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
         If ``True`` the shape of the returned coordinate array for dimension `i`
         is reduced from ``(N1, ..., Ni, ... Nn)`` to
         ``(1, ..., 1, Ni, 1, ..., 1)``.
+
         Default: ``False``.
     copy : bool, optional
         If ``False``, a view into the original arrays are returned in order to
         conserve memory.
+
         Default: ``True``.
 
     Returns
@@ -3143,7 +3145,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
 
 
 class MGridClass:
-    """
+    r"""
     Construct a dense multi-dimensional "meshgrid".
 
     For full documentation refer to :obj:`numpy.mgrid`.
@@ -3168,6 +3170,13 @@ class MGridClass:
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
         Default: ``None``.
+
+    See Also
+    --------
+    :obj:`dpnp.ogrid` : Work like :obj:`dpnp.mgrid` but returns open
+        (not fleshed out) mesh grids.
+    :obj:`dpnp.meshgrid`: Return coordinate matrices from coordinate vectors.
+    :obj:`dpnp.r_` : Array concatenator.
 
     Returns
     -------
@@ -3247,20 +3256,29 @@ class OGridClass:
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
         Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
     -------
-    out : dpnp.ndarray or tuple of dpnp.ndarray
+    out : one dpnp.ndarray or tuple of dpnp.ndarray
         If the input is a single slice, returns an array.
         If the input is multiple slices, returns a tuple of arrays, with
         only one dimension not equal to 1.
+
+    See Also
+    --------
+    :obj:`dpnp.mgrid` : Work like :obj:`dpnp.ogrid` but returns dense
+        (or fleshed out) mesh grids..
+    :obj:`dpnp.meshgrid`: Return coordinate matrices from coordinate vectors.
+    :obj:`dpnp.r_` : Array concatenator.
 
     Examples
     --------
