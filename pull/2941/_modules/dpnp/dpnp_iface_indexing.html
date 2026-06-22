@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.21.0dev1+34.g0d3091e7be3 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.21.0dev1+42.gbbcc6d83d88 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=40094b52"></script>
+      <script src="../../_static/documentation_options.js?v=452512e6"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -365,6 +365,7 @@
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;cannot take non-empty indices from an empty axis&quot;</span><span class="p">)</span>
     <span class="n">res_sh</span> <span class="o">=</span> <span class="n">x_sh</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="n">inds</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">x_sh</span><span class="p">[</span><span class="n">axis_end</span><span class="p">:]</span>
 
+    <span class="n">x_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
     <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
@@ -377,21 +378,24 @@
                 <span class="sa">f</span><span class="s2">&quot;Expected output shape is </span><span class="si">{</span><span class="n">res_sh</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is needed, &quot;</span> <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-
         <span class="k">if</span> <span class="n">dpt</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
                 <span class="s2">&quot;Input and output allocation queues are not compatible&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x_dt</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">x_dt</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">x_dt</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># tensor.take() requires `out` to match the input dtype</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x_dt</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
             <span class="c1"># Allocate a temporary buffer to avoid memory overlapping.</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">res_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">res_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
 
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
@@ -510,7 +514,7 @@
 
     <span class="n">res</span> <span class="o">=</span> <span class="n">_take_index</span><span class="p">(</span><span class="n">a_ary</span><span class="p">,</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
 
 
 
@@ -2318,7 +2322,7 @@
         <span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_ind</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
 
 
 
