@@ -283,7 +283,8 @@ class TestNdarrayShape(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_shape_set(self, xp):
         arr = xp.ndarray((2, 3))
-        arr.shape = (3, 2)
+        with testing.assert_warns(DeprecationWarning):
+            arr.shape = (3, 2)
         return xp.array(arr.shape)
 
     @pytest.mark.skip(
@@ -299,9 +300,11 @@ class TestNdarrayShape(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_shape_set_int(self, xp):
         arr = xp.ndarray((2, 3))
-        arr.shape = 6
+        with testing.assert_warns(DeprecationWarning):
+            arr.shape = 6
         return xp.array(arr.shape)
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     def test_shape_need_copy(self):
         # from cupy/cupy#5470
         for xp in (numpy, cupy):

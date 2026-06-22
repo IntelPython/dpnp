@@ -1001,10 +1001,14 @@ def test_meshgrid(arrays, dtype, indexing):
 
 @pytest.mark.parametrize("shape", [(24,), (4, 6), (2, 3, 4), (2, 3, 2, 2)])
 def test_set_shape(shape):
+    deprecation_msg = "Setting the shape on .* has been deprecated"
     na = numpy.arange(24)
-    na.shape = shape
+    with pytest.warns(DeprecationWarning, match=deprecation_msg):
+        na.shape = shape
+
     da = dpnp.arange(24)
-    da.shape = shape
+    with pytest.warns(DeprecationWarning, match=deprecation_msg):
+        da.shape = shape
 
     assert_array_equal(na, da)
 
