@@ -1151,8 +1151,8 @@ def histogramdd(sample, bins=10, range=None, density=None, weights=None):
     H : dpnp.ndarray
         The multidimensional histogram of sample x. See density and weights
         for the different possible semantics.
-    edges : tuple of dpnp.ndarray
-        A tuple of D arrays describing the bin edges for each dimension.
+    edges : list of dpnp.ndarray
+        A list of D arrays describing the bin edges for each dimension.
 
     See Also
     --------
@@ -1228,4 +1228,4 @@ def histogramdd(sample, bins=10, range=None, density=None, weights=None):
         if dpnp.is_supported_array_type(b):
             bin_edges_view_list[i] = b
 
-    return n, tuple(bin_edges_view_list)
+    return n, bin_edges_view_list
