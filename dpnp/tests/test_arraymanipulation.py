@@ -78,6 +78,8 @@ class TestAtleast1d:
         a = dpnp.array([1, 2])
         b = dpt.asarray([2, 3])
         res = dpnp.atleast_1d(a, b)
+        # multiple inputs are returned as a tuple of arrays
+        assert isinstance(res, tuple)
         desired = [dpnp.array([1, 2]), dpnp.array([2, 3])]
         assert_array_equal(res, desired)
 
@@ -117,6 +119,8 @@ class TestAtleast2d:
         a = dpnp.array([1, 2])
         b = dpt.asarray([2, 3])
         res = dpnp.atleast_2d(a, b)
+        # multiple inputs are returned as a tuple of arrays
+        assert isinstance(res, tuple)
         desired = [dpnp.array([[1, 2]]), dpnp.array([[2, 3]])]
         assert_array_equal(res, desired)
 
@@ -156,6 +160,8 @@ class TestAtleast3d:
         a = dpnp.array([1, 2])
         b = dpt.asarray([2, 3])
         res = dpnp.atleast_3d(a, b)
+        # multiple inputs are returned as a tuple of arrays
+        assert isinstance(res, tuple)
         desired = [dpnp.array([[[1], [2]]]), dpnp.array([[[2], [3]]])]
         assert_array_equal(res, desired)
 

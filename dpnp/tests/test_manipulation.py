@@ -28,7 +28,8 @@ from .third_party.cupy import testing
 
 
 def _compare_results(result, expected):
-    """Compare lists of arrays."""
+    """Compare tuples of arrays returned by the split family of functions."""
+    assert isinstance(result, tuple)
     if len(result) != len(expected):
         raise ValueError("Iterables have different lengths")
 
