@@ -40,7 +40,6 @@ var hierarchy =
     [ "dpnp::extensions::blas::types::DotTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dot_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::blas::DotuContigFactory< fnT, varT >", "structdpnp_1_1extensions_1_1blas_1_1_dotu_contig_factory.html", null ],
     [ "dpnp::extensions::blas::types::DotuTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotu_type_pair_support_factory.html", null ],
-    [ "dpnp::detail::dpnp_capi", "classdpnp_1_1detail_1_1dpnp__capi.html", null ],
     [ "dpnp_less_comp", "classdpnp__less__comp.html", null ],
     [ "DPNPC_ptr_adapter< _DataType >", "class_d_p_n_p_c__ptr__adapter.html", null ],
     [ "DPNPFuncData", "struct_d_p_n_p_func_data.html", null ],
@@ -100,15 +99,11 @@ var hierarchy =
     [ "dpnp::kernels::ldexp::LdexpFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ],
     [ "ext::common::Less< T >", "structext_1_1common_1_1_less.html", null ],
     [ "dpnp::kernels::logaddexp2::Logaddexp2Functor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ],
-    [ "dpnp::utils::detail::ManagedMemory", "structdpnp_1_1utils_1_1detail_1_1_managed_memory.html", null ],
     [ "dpnp::kernels::modf::ModfFunctor< argT, fractT, intT >", "structdpnp_1_1kernels_1_1modf_1_1_modf_functor.html", null ],
     [ "dpnp::kernels::nan_to_num::NanToNumContigFunctor< T, scT, vec_sz, n_vecs, enable_sg_loadstore >", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html", null ],
     [ "dpnp::kernels::nan_to_num::NanToNumFunctor< T, scT, InOutIndexerT >", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor.html", null ],
     [ "statistics::histogram::NoWeights< T >", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
     [ "dpnp::kernels::choose::strides::NthStrideOffsetUnpacked", "structdpnp_1_1kernels_1_1choose_1_1strides_1_1_nth_stride_offset_unpacked.html", null ],
-    [ "pybind11::object", null, [
-      [ "dpnp::tensor::usm_ndarray", "classdpnp_1_1tensor_1_1usm__ndarray.html", null ]
-    ] ],
     [ "ext::common::one_of< T, Rest >", "structext_1_1common_1_1one__of.html", null ],
     [ "ext::common::one_of< T, std::tuple< Top > >", "structext_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html", null ],
     [ "ext::common::one_of< T, std::tuple< Top, Rest... > >", "structext_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html", null ],
