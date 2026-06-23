@@ -726,7 +726,7 @@ cdef class usm_ndarray:
                 number of elements in the array.
 
         Whether the array can be reshape in-place depends on its
-        strides. Use :func:`dpctl.tensor.reshape` function which
+        strides. Use :func:`dpnp.tensor.reshape` function which
         always succeeds to reshape the array by performing a copy
         if necessary.
 
