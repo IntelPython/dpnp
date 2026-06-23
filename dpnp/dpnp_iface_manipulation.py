@@ -2813,6 +2813,10 @@ def repeat(a, repeats, axis=None):
     >>> np.repeat(x, 4)
     array([3, 3, 3, 3])
 
+    >>> x = np.array([4, 5, 6])
+    >>> np.repeat(x, [1, 2, 3])
+    array([4, 5, 5, 6, 6, 6])
+
     >>> x = np.array([[1, 2], [3, 4]])
     >>> np.repeat(x, 2)
     array([1, 1, 2, 2, 3, 3, 4, 4])
