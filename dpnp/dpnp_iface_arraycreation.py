@@ -3171,18 +3171,18 @@ class MGridClass:
         a default queue.
         Default: ``None``.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        A single array, containing a set of arrays all of the same dimensions,
+        stacked along the first axis.
+
     See Also
     --------
     :obj:`dpnp.ogrid` : Work like :obj:`dpnp.mgrid` but returns open
         (not fleshed out) mesh grids.
     :obj:`dpnp.meshgrid`: Return coordinate matrices from coordinate vectors.
     :obj:`dpnp.r_` : Array concatenator.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        A single array, containing a set of arrays all of the same dimensions,
-        stacked along the first axis.
 
     Examples
     --------
