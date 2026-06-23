@@ -42,8 +42,15 @@
 
 namespace dpnp::tensor::kernels::complex_math
 {
-static constexpr double ln2 = 0.6931471805599453094172321214581765L;
-static constexpr double pi = 3.1415926535897932384626433832795029L;
+template <typename realT>
+static constexpr realT ln2 = 0.6931471805599453094172321214581765L;
+
+template <typename realT>
+static constexpr realT pi = 3.1415926535897932384626433832795029L;
+
+template <typename realT>
+static constexpr realT inv_eps =
+    realT(1) / std::numeric_limits<realT>::epsilon();
 
 template <typename realT>
 static constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
@@ -75,7 +82,7 @@ T cacos(const T &in)
 
         // acos(0 + I*NaN) = PI/2 + I*NaN with inexact
         if (x == realT(0)) {
-            static constexpr realT pio2 = realT(pi) / realT(2); // PI/2
+            static constexpr realT pio2 = pi<realT> / realT(2); // PI/2
             return T{pio2, q_nan<realT>};
         }
 
@@ -88,8 +95,7 @@ T cacos(const T &in)
      * exprm_ns::acos(x) is based on calculating log(x + sqrt(x^2 - 1)),
      * so r_eps = sqrt(1/eps)/2 is appropriate precision loss point.
      */
-    const realT r_eps =
-        sycl::sqrt(realT(1) / std::numeric_limits<realT>::epsilon()) / 2;
+    const realT r_eps = sycl::sqrt(inv_eps<realT>) / 2;
     if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
         sycl_complexT log_in = exprm_ns::log(sycl_complexT(in));
 
@@ -97,7 +103,7 @@ T cacos(const T &in)
         const realT wy = log_in.imag();
         const realT rx = sycl::fabs(wy);
 
-        realT ry = wx + realT(ln2);
+        realT ry = wx + ln2<realT>;
         return T{rx, (sycl::signbit(y)) ? ry : -ry};
     }
 
@@ -146,13 +152,12 @@ T casinh(const T &in)
      * exprm_ns::asinh(x) is based on calculating log(x + sqrt(x^2 + 1)),
      * so r_eps = sqrt(1/eps)/2 is appropriate precision loss point.
      */
-    const realT r_eps =
-        sycl::sqrt(realT(1) / std::numeric_limits<realT>::epsilon()) / 2;
+    const realT r_eps = sycl::sqrt(inv_eps<realT>) / 2;
     if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
         sycl_complexT log_in = (sycl::signbit(x))
                                    ? exprm_ns::log(sycl_complexT(-in))
                                    : exprm_ns::log(sycl_complexT(in));
-        realT wx = log_in.real() + realT(ln2);
+        realT wx = log_in.real() + ln2<realT>;
         realT wy = log_in.imag();
 
         const realT res_re = sycl::copysign(wx, x);
@@ -187,7 +192,7 @@ T catanh(const T &in)
 {
     using realT = typename T::value_type;
 
-    static constexpr realT pio2 = realT(pi) / realT(2); // PI/2
+    static constexpr realT pio2 = pi<realT> / realT(2); // PI/2
 
     const realT x = std::real(in);
     const realT y = std::imag(in);
@@ -227,7 +232,7 @@ T catanh(const T &in)
      * exprm_ns::atanh(x) is based on calculating log((1 + x) / (1 - x)) / 2,
      * so r_eps = 1/eps is appropriate precision loss point.
      */
-    const realT r_eps = realT(1) / std::numeric_limits<realT>::epsilon();
+    static constexpr realT r_eps = inv_eps<realT>;
     if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
         const realT res_re = realT(0);
         const realT res_im = sycl::copysign(pio2, y);
