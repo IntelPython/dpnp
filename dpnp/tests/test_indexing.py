@@ -480,6 +480,7 @@ class TestIx:
         expected = dpnp.ix_(dpnp.array(x0), dpnp.array(x1))
         result = numpy.ix_(numpy.array(x0), numpy.array(x1))
 
+        assert type(expected) is type(result) is tuple
         assert_array_equal(result[0], expected[0])
         assert_array_equal(result[1], expected[1])
 
@@ -571,6 +572,7 @@ class TestNonzero:
 
         np_res = numpy.nonzero(a)
         dpnp_res = dpnp.nonzero(ia)
+        assert type(dpnp_res) is type(np_res) is tuple
         assert_array_equal(np_res, dpnp_res)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
@@ -1295,6 +1297,7 @@ def test_putmask3(arr, mask, vals):
 def test_tril_indices(n, k, m):
     result = dpnp.tril_indices(n, k, m)
     expected = numpy.tril_indices(n, k, m)
+    assert type(result) is type(expected) is tuple
     assert_array_equal(expected, result)
 
 
@@ -1322,6 +1325,7 @@ def test_tril_indices_from(array, k):
 def test_triu_indices(n, k, m):
     result = dpnp.triu_indices(n, k, m)
     expected = numpy.triu_indices(n, k, m)
+    assert type(result) is type(expected) is tuple
     assert_array_equal(expected, result)
 
 
@@ -1451,6 +1455,7 @@ class TestUnravelIndex:
 
         expected = numpy.unravel_index(x_np, (7, 6))
         result = dpnp.unravel_index(x_dp, (7, 6))
+        assert type(result) is type(expected) is tuple
         assert_equal(expected, result)
 
     def test_order_f(self):

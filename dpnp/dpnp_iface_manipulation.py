@@ -881,7 +881,7 @@ def atleast_1d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 1``.
+        An array, or tuple of arrays, each with ``a.ndim >= 1``.
         Copies are made only if necessary.
 
     See Also
@@ -899,7 +899,7 @@ def atleast_1d(*arys):
 
     >>> y = np.array([3, 4])
     >>> np.atleast_1d(x, y)
-    [array([1.]), array([3, 4])]
+    (array([1.]), array([3, 4]))
 
     >>> x = np.arange(9.0).reshape(3, 3)
     >>> np.atleast_1d(x)
@@ -926,7 +926,7 @@ def atleast_1d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
 
 
 def atleast_2d(*arys):
@@ -944,7 +944,7 @@ def atleast_2d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 2``.
+        An array, or tuple of arrays, each with ``a.ndim >= 2``.
         Copies are avoided where possible, and views with two or more
         dimensions are returned.
 
@@ -982,7 +982,7 @@ def atleast_2d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
 
 
 def atleast_3d(*arys):
@@ -1000,7 +1000,7 @@ def atleast_3d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 3``. Copies are
+        An array, or tuple of arrays, each with ``a.ndim >= 3``. Copies are
         avoided where possible, and views with three or more dimensions are
         returned.
 
@@ -1044,7 +1044,7 @@ def atleast_3d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
 
 
 def broadcast_arrays(*args, subok=False):
@@ -1753,8 +1753,8 @@ def dstack(tup):
     _check_stack_arrays(tup)
 
     arrs = atleast_3d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
     return dpnp.concatenate(arrs, axis=2)
 
 
@@ -2178,8 +2178,8 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     _check_stack_arrays(tup)
 
     arrs = dpnp.atleast_1d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
 
     # As a special case, dimension 0 of 1-dimensional arrays is "horizontal"
     if arrs and arrs[0].ndim == 1:
@@ -4664,6 +4664,6 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     _check_stack_arrays(tup)
 
     arrs = dpnp.atleast_2d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
     return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
