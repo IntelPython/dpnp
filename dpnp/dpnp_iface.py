@@ -449,6 +449,8 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
         and implementing `__sycl_usm_array_interface__` protocol, an instance
         of `numpy.ndarray`, an object supporting Python buffer protocol,
         a Python scalar, or a (possibly nested) sequence of Python scalars.
+
+        Default: ``None``.
     sycl_queue : {None, class:`dpctl.SyclQueue`}, optional
         A queue which explicitly indicates where USM allocation is done
         and the population code (if any) is executed.
@@ -500,7 +502,7 @@ def get_result_array(a, out=None, casting="safe"):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    out : {None, dpnp.ndarray, usm_ndarray}
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, value of `a` array will be copied into it
         according to ``safe`` casting rule.
         It should be of the appropriate shape.
