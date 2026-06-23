@@ -320,8 +320,12 @@ class TestWhere:
         a = numpy.zeros((1, 1))
         ia = dpnp.array(a)
 
-        expected = numpy.vstack(numpy.where(a == 99.0))
-        result = dpnp.vstack(dpnp.where(ia == 99.0))
+        np_res = numpy.where(a == 99.0)
+        dp_res = dpnp.where(ia == 99.0)
+        assert type(dp_res) is type(np_res) is tuple
+
+        expected = numpy.vstack(np_res)
+        result = dpnp.vstack(dp_res)
         assert_array_equal(result, expected)
 
     @testing.with_requires("numpy>=2.5")

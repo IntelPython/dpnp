@@ -1,0 +1,10 @@
+name: Create conda channel with DPNP package for examples
+channels:
+  - conda-forge
+dependencies:
+  - conda-index=0.11.0
+  - pytest
+  - dpcpp_linux-64>=2026.0.0
+  - cmake
+  - ninja
+  - scikit-build

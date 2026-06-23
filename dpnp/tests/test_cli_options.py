@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 
@@ -36,3 +37,13 @@ def test_tensor_includes():
     assert res.stdout
     dir = res.stdout.decode("utf-8")
     assert flags == "-I " + dir
+
+
+def test_cmakedir():
+    res = subprocess.run(
+        [sys.executable, "-m", "dpnp", "--cmakedir"], capture_output=True
+    )
+    assert res.returncode == 0
+    assert res.stdout
+    cmake_dir = res.stdout.decode("utf-8").strip()
+    assert os.path.exists(os.path.join(cmake_dir, "dpnp-config.cmake"))
