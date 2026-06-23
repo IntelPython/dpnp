@@ -2,7 +2,7 @@
 _skbuild
 build_cython
 cython_debug
-dpnp.egg-info
+*.egg-info
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -27,9 +27,12 @@ dpnp_pytest.*
 # Build examples
 example3
 
+# moved cmake scripts
+dpnp/resources/cmake
+
 *dpnp_backend*
 dpnp/include/dpnp/tensor/*.h
-dpnp/**/*.cpython*.so
 dpnp/**/*.pyd
 *~
 core
+*.so

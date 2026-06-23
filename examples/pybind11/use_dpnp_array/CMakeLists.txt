@@ -1,5 +1,6 @@
+# -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2024, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,49 +27,43 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Interface of the utils function of the DPNP
+cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
-Notes
------
-This module is a face or public interface file for the library
+project(
+    use_dpnp_array
+    VERSION 0.1
+    LANGUAGES CXX
+    DESCRIPTION "Example of using dpnp::tensor::usm_ndarray type caster"
+)
 
-"""
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-import dpnp
+# Fetch pybind11
+include(FetchContent)
+FetchContent_Declare(
+    pybind11
+    URL https://github.com/pybind/pybind11/archive/refs/tags/v3.0.4.tar.gz
+    URL_HASH SHA256=74b6a2c2b4573a400cafb6ecbf60c98df300cd3d0041296b913d02b2cbbb2676
+    FIND_PACKAGE_ARGS NAMES pybind11
+)
+FetchContent_MakeAvailable(pybind11)
 
+find_package(Python REQUIRED COMPONENTS Development.Module)
+find_package(Dpctl REQUIRED)
+find_package(IntelSYCL REQUIRED)
+find_package(Dpnp REQUIRED)
 
-def byte_bounds(a):
-    """
-    Returns a 2-tuple with pointers to the end-points of the array.
+set(py_module_name _use_dpnp_array)
+set(_sources use_dpnp_array/_example.cpp)
+pybind11_add_module(${py_module_name} MODULE ${_sources})
+add_sycl_to_target(TARGET ${py_module_name} SOURCES ${_sources})
 
-    For full documentation refer to :obj:`numpy.lib.array_utils.byte_bounds`.
+target_include_directories(
+    ${py_module_name}
+    PRIVATE ${Dpnp_INCLUDE_DIR} ${Dpctl_INCLUDE_DIR}
+)
 
-    Parameters
-    ----------
-    a : {dpnp.ndarray, usm_ndarray}
-        Input array
+install(TARGETS ${py_module_name} DESTINATION use_dpnp_array)
 
-    Returns
-    -------
-    (low, high) : tuple of 2 integers
-        The first integer is the first byte of the array, the second integer is
-        just past the last byte of the array. If `a` is not contiguous it will
-        not use every byte between the (`low`, `high`) values.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> I = np.eye(2, dtype=np.complex64);
-    >>> low, high = np.byte_bounds(I)
-    >>> high - low == I.size*I.itemsize
-    True
-    >>> I = np.eye(2);
-    >>> low, high = np.byte_bounds(I)
-    >>> high - low == I.size*I.itemsize
-    True
-
-    """
-
-    # pylint: disable=protected-access
-    return dpnp.get_usm_ndarray(a)._byte_bounds
+set(ignoreMe "${SKBUILD}")
