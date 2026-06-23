@@ -439,4 +439,5 @@ class dpnp_nd_grid:
                 slobj[k] = slice(None, None)
                 nn[k] = nn[k][tuple(slobj)]
                 slobj[k] = dpnp.newaxis
-        return nn
+            return tuple(nn)  # ogrid -> tuple of arrays
+        return nn  # mgrid -> ndarray
