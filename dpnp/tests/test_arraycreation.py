@@ -999,6 +999,7 @@ def test_meshgrid(arrays, dtype, indexing):
     assert isinstance(result, tuple)
 
 
+@testing.with_requires("numpy>=2.5")
 @pytest.mark.parametrize("shape", [(24,), (4, 6), (2, 3, 4), (2, 3, 2, 2)])
 def test_set_shape(shape):
     deprecation_msg = "Setting the shape on .* has been deprecated"

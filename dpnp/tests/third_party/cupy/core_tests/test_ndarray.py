@@ -280,6 +280,7 @@ class TestNdarrayCopy:
 
 class TestNdarrayShape(unittest.TestCase):
 
+    @testing.with_requires("numpy>=2.5")
     @testing.numpy_cupy_array_equal()
     def test_shape_set(self, xp):
         arr = xp.ndarray((2, 3))
@@ -297,6 +298,7 @@ class TestNdarrayShape(unittest.TestCase):
         arr.shape = (3, -1)
         return xp.array(arr.shape)
 
+    @testing.with_requires("numpy>=2.5")
     @testing.numpy_cupy_array_equal()
     def test_shape_set_int(self, xp):
         arr = xp.ndarray((2, 3))
