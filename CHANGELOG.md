@@ -31,7 +31,7 @@ This release is compatible with NumPy 2.5.
 
 ### Deprecated
 
-* Deprecated setting the shape via the `shape` attribute of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray`. Use `dpnp.reshape`/`dpnp.tensor.reshape` (or the `reshape` method) instead [#2965](https://github.com/IntelPython/dpnp/pull/2965)
+* Deprecated setting the shape via the `shape` attribute of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray`. Use `dpnp.reshape`/`dpnp.tensor.reshape` (or the `reshape` method) instead [#2967](https://github.com/IntelPython/dpnp/pull/2967)
 
 ### Removed
 
