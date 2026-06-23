@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.indices &mdash; Data Parallel Extension for NumPy 0.21.0dev1+30.g712c5c51fea documentation</title>
+  <title>dpnp.indices &mdash; Data Parallel Extension for NumPy 0.21.0dev1+32.g5d78bf779d1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e68e9fcf"></script>
+      <script src="../../_static/documentation_options.js?v=db520637"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -165,16 +165,13 @@ a default queue.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p><strong>out</strong> --</p>
-<dl class="simple">
-<dt>If sparse is <code class="docutils literal notranslate"><span class="pre">False</span></code>:</dt><dd><p>Returns one array of grid indices with
+<dd class="field-even"><p><p><strong>out</strong> -- If sparse is <code class="docutils literal notranslate"><span class="pre">False</span></code>:
+Returns one array of grid indices with
 <code class="docutils literal notranslate"><span class="pre">grid.shape</span> <span class="pre">==</span> <span class="pre">(len(dimensions),)</span> <span class="pre">+</span> <span class="pre">tuple(dimensions)</span></code>.</p>
-</dd>
-<dt>If sparse is <code class="docutils literal notranslate"><span class="pre">True</span></code>:</dt><dd><p>Returns a tuple of arrays,
+<p>If sparse is <code class="docutils literal notranslate"><span class="pre">True</span></code>:
+Returns a tuple of arrays,
 with grid[i].shape == (1, ..., 1, dimensions[i], 1, ..., 1)
 with dimensions[i] in the i-th place.</p>
-</dd>
-</dl>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
