@@ -354,11 +354,10 @@ class dpnp_nd_grid:
             if start is None:
                 start = 0
             if isinstance(step, complex):
-                step = abs(step)
-                length = int(step)
+                step_float = abs(step)
+                step = length = int(step_float)
                 if step != 1:
                     step = (stop - start) / float(step - 1)
-                stop = stop + step
                 return (
                     dpnp.arange(
                         0,
