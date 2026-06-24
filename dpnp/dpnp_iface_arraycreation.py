@@ -585,7 +585,7 @@ def asarray(
         (``dtype``, ``order``, etc.). For ``False`` it raises a ``ValueError``
         exception if a copy can not be avoided.
 
-        Default: ``True``.
+        Default: ``None``.
 
     Returns
     -------
