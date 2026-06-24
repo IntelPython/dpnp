@@ -1050,13 +1050,19 @@ def test_meshgrid_raise_error():
         dpnp.meshgrid(b, indexing="ab")
 
 
-class TestMgrid:
+@pytest.mark.parametrize("grid", ["mgrid", "ogrid"])
+class TestGrid:
     def check_results(self, result, expected):
-        if isinstance(result, (list, tuple)):
+        # mgrid always returns a single array; ogrid returns a single array for
+        # a single slice and a tuple of arrays for multiple slices. In every
+        # case the container kind (tuple vs. bare array) must match NumPy.
+        if isinstance(expected, tuple):
+            assert isinstance(result, tuple)
             assert len(result) == len(expected)
             for dp_arr, np_arr in zip(result, expected):
                 assert_allclose(dp_arr, np_arr)
         else:
+            assert not isinstance(result, tuple)
             assert_allclose(result, expected)
 
     @pytest.mark.parametrize(
@@ -1069,9 +1075,9 @@ class TestMgrid:
             slice(0, 5, None),  # no step
         ],
     )
-    def test_single_slice(self, slice):
-        dpnp_result = dpnp.mgrid[slice]
-        numpy_result = numpy.mgrid[slice]
+    def test_single_slice(self, grid, slice):
+        dpnp_result = getattr(dpnp, grid)[slice]
+        numpy_result = getattr(numpy, grid)[slice]
         self.check_results(dpnp_result, numpy_result)
 
     @pytest.mark.parametrize(
@@ -1086,9 +1092,9 @@ class TestMgrid:
             ),  # float start and complex step
         ],
     )
-    def test_md_slice(self, slices):
-        dpnp_result = dpnp.mgrid[slices]
-        numpy_result = numpy.mgrid[slices]
+    def test_md_slice(self, grid, slices):
+        dpnp_result = getattr(dpnp, grid)[slices]
+        numpy_result = getattr(numpy, grid)[slices]
         self.check_results(dpnp_result, numpy_result)
 
 

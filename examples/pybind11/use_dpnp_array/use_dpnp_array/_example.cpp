@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2026, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,42 +25,65 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-
-#pragma once
-
-#include <pybind11/pybind11.h>
-#include <sycl/sycl.hpp>
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file defines basic pybind11 extension example using
+/// dpnp::tensor::usm_ndarray.
+//===----------------------------------------------------------------------===//
 
 #include "dpnp4pybind11.hpp"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
-#include "ext/dispatch_table.hpp"
+namespace py = pybind11;
 
-namespace statistics::sliding_window1d
+int get_ndim(const dpnp::tensor::usm_ndarray &arr) { return arr.get_ndim(); }
+
+std::vector<py::ssize_t> get_shape(const dpnp::tensor::usm_ndarray &arr)
 {
-struct SlidingDotProduct1d
+    return arr.get_shape_vector();
+}
+
+py::ssize_t get_size(const dpnp::tensor::usm_ndarray &arr)
 {
-    using FnT = sycl::event (*)(sycl::queue &,
-                                const void *,
-                                const void *,
-                                void *,
-                                const size_t,
-                                const size_t,
-                                const size_t,
-                                const size_t,
-                                const std::vector<sycl::event> &);
+    return arr.get_size();
+}
 
-    ext::common::DispatchTable<FnT> dispatch_table;
+int get_typenum(const dpnp::tensor::usm_ndarray &arr)
+{
+    return arr.get_typenum();
+}
 
-    SlidingDotProduct1d();
+int get_elemsize(const dpnp::tensor::usm_ndarray &arr)
+{
+    return arr.get_elemsize();
+}
 
-    std::tuple<sycl::event, sycl::event>
-        call(const dpnp::tensor::usm_ndarray &a,
-             const dpnp::tensor::usm_ndarray &v,
-             dpnp::tensor::usm_ndarray &output,
-             const size_t l_pad,
-             const size_t r_pad,
-             const std::vector<sycl::event> &depends);
-};
+bool is_c_contiguous(const dpnp::tensor::usm_ndarray &arr)
+{
+    return arr.is_c_contiguous();
+}
 
-void populate_sliding_dot_product1d(py::module_ m);
-} // namespace statistics::sliding_window1d
+bool is_f_contiguous(const dpnp::tensor::usm_ndarray &arr)
+{
+    return arr.is_f_contiguous();
+}
+
+bool is_writable(const dpnp::tensor::usm_ndarray &arr)
+{
+    return arr.is_writable();
+}
+
+PYBIND11_MODULE(_use_dpnp_array, m)
+{
+    m.def("get_ndim", &get_ndim);
+    m.def("get_shape", &get_shape);
+    m.def("get_size", &get_size);
+    m.def("get_typenum", &get_typenum);
+    m.def("get_elemsize", &get_elemsize);
+    m.def("is_c_contiguous", &is_c_contiguous);
+    m.def("is_f_contiguous", &is_f_contiguous);
+    m.def("is_writable", &is_writable);
+}

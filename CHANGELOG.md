@@ -6,27 +6,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.21.0] - 2026-MM-DD
 
-This release is compatible with NumPy 2.4.5.
+This release is compatible with NumPy 2.5.
 
 ### Added
 
-* Added C API functions for `dpnp.tensor.usm_ndarray` setters and getters to avoid ABI breakage if `dpnp.tensor.usm_ndarray` is modified [gh-2866](https://github.com/IntelPython/dpnp/pull/2866)
+* Added C API functions for `dpnp.tensor.usm_ndarray` setters and getters to avoid ABI breakage if `dpnp.tensor.usm_ndarray` is modified [#2866](https://github.com/IntelPython/dpnp/pull/2866)
 * Added support for buffer protocol objects as advanced index keys in `dpnp.ndarray` [#2889](https://github.com/IntelPython/dpnp/pull/2889)
 * Added `--includes` and `--include-dir` options to the `dpnp` CLI [#2916](https://github.com/IntelPython/dpnp/pull/2916)
+* Added `dpnp-config.cmake` to make `find_package(Dpnp)` work out of the box, and an example which uses it [#2941](https://github.com/IntelPython/dpnp/pull/2941)
 
 ### Changed
 
 * Changed `dpnp.meshgrid` and `dpnp.tensor.meshgrid` to return a tuple instead of a list, aligning with NumPy 2.5+ behavior and 2025.12 version of the Python array API standard [#2854](https://github.com/IntelPython/dpnp/pull/2854)
-* Updated `searchsorted` implementations to align with the 2025.12 array API spec [gh-2902](https://github.com/IntelPython/dpnp/pull/2902)
-* Updated tests to align with NumPy 2.4.5 compatibility [gh-2920](https://github.com/IntelPython/dpnp/pull/2920)
+* Updated `searchsorted` implementations to align with the 2025.12 array API spec [#2902](https://github.com/IntelPython/dpnp/pull/2902)
+* Updated tests to align with NumPy 2.4.5 compatibility [#2920](https://github.com/IntelPython/dpnp/pull/2920)
 * Replaced `.pxi` includes in `dpnp.tensor` with modular `.pxd`/`.pyx` Cython imports [#2913](https://github.com/IntelPython/dpnp/pull/2913)
-* Reimplemented `dpnp.eye` and `dpnp.tensor.eye` with a branchless kernel [gh-2937](https://github.com/IntelPython/dpnp/pull/2937)
-* Cleaned up Python bindings for indexing functions, renaming `usm_ndarray_take` and `usm_ndarray_put` to `py_take` and `py_put` and refactoring validation [gh-2935](https://github.com/IntelPython/dpnp/pull/2935)
-* Fixed some tests which expected lists from `dpctl` functions which now return tuples (i.e., `dpctl.SyclDevice.create_sub_devices`) [gh-2945](https://github.com/IntelPython/dpnp/pull/2945)
+* Reimplemented `dpnp.eye` and `dpnp.tensor.eye` with a branchless kernel [#2937](https://github.com/IntelPython/dpnp/pull/2937)
+* Cleaned up Python bindings for indexing functions, renaming `usm_ndarray_take` and `usm_ndarray_put` to `py_take` and `py_put` and refactoring validation [#2935](https://github.com/IntelPython/dpnp/pull/2935)
+* Updated `dpnp.linalg.eig` and `dpnp.linalg.eigvals` documentation to reflect NumPy's always-complex eigenvalue output for general matrices [#2953](https://github.com/IntelPython/dpnp/pull/2953)
+* Clarified support for negative axes in `dpnp.transpose`/`dpnp.permute_dims` documentation [#2940](https://github.com/IntelPython/dpnp/pull/2940)
+* Allowed `dpnp.take` and `dpnp.compress` to cast the result into an `out` array of a different but same-kind dtype [#2959](https://github.com/IntelPython/dpnp/pull/2959)
+* Clarified the summary in `dpnp.reshape` and `dpnp.ndarray.reshape` docstrings [#2964](https://github.com/IntelPython/dpnp/pull/2964)
+* Changed `dpnp.atleast_1d`, `dpnp.atleast_2d`, `dpnp.atleast_3d`, and `dpnp.ogrid` to return a tuple of arrays instead of a list [#2965](https://github.com/IntelPython/dpnp/pull/2965)
 
 ### Deprecated
 
 ### Removed
+
+* Removed support for arrays of 2-dimensional vectors in `dpnp.cross`, which now requires (arrays of) 3-dimensional vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
+* Removed `dpnp.row_stack` in favor of `dpnp.vstack` [#2956](https://github.com/IntelPython/dpnp/pull/2956)
 
 ### Fixed
 
@@ -38,6 +46,10 @@ This release is compatible with NumPy 2.4.5.
 * Fixed boolean mask indexing to raise `IndexError` when mask dimensions don't match the indexed array dimensions, aligning with NumPy behavior. Previously, incompatible boolean masks silently returned incorrect results instead of raising an error [#2929](https://github.com/IntelPython/dpnp/pull/2929)
 * Fixed a bug in `astype` where casting floating point types to unsigned integral types could cause an intermediate signed integral type to overflow, leading to incorrect results [#2930](https://github.com/IntelPython/dpnp/pull/2930)
 * Fixed incorrect `dpnp.tensor.expm1` result for `complex(±0, 0)` special case on CPU to match the Python Array API specification [#2926](https://github.com/IntelPython/dpnp/pull/2926)
+* Fixed tests which expected lists from `dpctl` functions which now return tuples (i.e., `dpctl.SyclDevice.create_sub_devices`) [#2945](https://github.com/IntelPython/dpnp/pull/2945)
+* Fixed `PytestRemovedIn10Warning` raised by `pytest` 9.1.0 by converting class-scoped fixtures to class methods [#2952](https://github.com/IntelPython/dpnp/pull/2952)
+* Fixed `dpnp.linalg.svd(..., hermitian=True)` returning a non-unitary `vh` for singular input arrays due to a zero sign appearing [#2954](https://github.com/IntelPython/dpnp/pull/2954)
+* Fixed scalar conversion of size-one `dpnp.tensor.usm_ndarray` (e.g. `int()`, `float()`, indexing) which failed with NumPy 2.5 after the in-place `ndarray.shape` assignment was deprecated [#2958](https://github.com/IntelPython/dpnp/pull/2958)
 
 ### Security
 
@@ -163,7 +175,7 @@ This release is compatible with NumPy 2.3.3.
 * Added `--target-cuda[=ARCH]` option to replace the deprecated `--target=cuda`, allowing users to build for CUDA devices with optional architecture selection using [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/nvidia/home/) [#2478](https://github.com/IntelPython/dpnp/pull/2478)
 * Added several new `pre-commit` rules, including protection against direct commits to master/maintenance branches [#2500](https://github.com/IntelPython/dpnp/pull/2500)
 * Added implementation of `dpnp.ndarray.view` method [#2520](https://github.com/IntelPython/dpnp/pull/2520)
-* Added a new backend routine `syrk` from oneMKL to perform symmetric rank-k update which is used for a specialized matrix multiplication where the result is a symmetric matrix [2509](https://github.com/IntelPython/dpnp/pull/2509)
+* Added a new backend routine `syrk` from oneMKL to perform symmetric rank-k update which is used for a specialized matrix multiplication where the result is a symmetric matrix [#2509](https://github.com/IntelPython/dpnp/pull/2509)
 * Added `timeout-minutes` property to GitHub jobs [#2526](https://github.com/IntelPython/dpnp/pull/2526)
 * Added implementation of `dpnp.ndarray.data` and `dpnp.ndarray.data.ptr` attributes [#2521](https://github.com/IntelPython/dpnp/pull/2521)
 * Added `dpnp.ndarray.__contains__` method [#2534](https://github.com/IntelPython/dpnp/pull/2534)
@@ -293,8 +305,8 @@ Moreover, it adds support to build `dpnp` from the source for AMD GPUs.
 * Updated `conda create` commands build and install instructions of `Quick start guide` to avoid a compilation error [#2395](https://github.com/IntelPython/dpnp/pull/2395)
 * Added handling of empty string passed to a test env variable defining data type scope as a `False` value [#2415](https://github.com/IntelPython/dpnp/pull/2415)
 * Resolved build issues on non-Intel targets in `dpnp.i0` and `dpnp.kaiser` [#2439](https://github.com/IntelPython/dpnp/pull/2439)
-* Ensure consistency in the `dpnp.linalg.LinAlgError` exception raised on singular input matrices for both non-batched and batched cases in `dpnp.linalg.inv` [#2458] (https://github.com/IntelPython/dpnp/pull/2458)
-* Updated test f/w to correct a check of array interface while converting to `numpy.ndarray` for comparison [#2467] (https://github.com/IntelPython/dpnp/pull/2467)
+* Ensure consistency in the `dpnp.linalg.LinAlgError` exception raised on singular input matrices for both non-batched and batched cases in `dpnp.linalg.inv` [#2458](https://github.com/IntelPython/dpnp/pull/2458)
+* Updated test f/w to correct a check of array interface while converting to `numpy.ndarray` for comparison [#2467](https://github.com/IntelPython/dpnp/pull/2467)
 
 
 ## [0.17.0] - 2025-02-26

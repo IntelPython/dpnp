@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2024, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,13 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Interface of the utils function of the DPNP
+from skbuild import setup
 
-Notes
------
-This module is a face or public interface file for the library
-
-"""
-
-import dpnp
-
-
-def byte_bounds(a):
-    """
-    Returns a 2-tuple with pointers to the end-points of the array.
-
-    For full documentation refer to :obj:`numpy.lib.array_utils.byte_bounds`.
-
-    Parameters
-    ----------
-    a : {dpnp.ndarray, usm_ndarray}
-        Input array
-
-    Returns
-    -------
-    (low, high) : tuple of 2 integers
-        The first integer is the first byte of the array, the second integer is
-        just past the last byte of the array. If `a` is not contiguous it will
-        not use every byte between the (`low`, `high`) values.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> I = np.eye(2, dtype=np.complex64);
-    >>> low, high = np.byte_bounds(I)
-    >>> high - low == I.size*I.itemsize
-    True
-    >>> I = np.eye(2);
-    >>> low, high = np.byte_bounds(I)
-    >>> high - low == I.size*I.itemsize
-    True
-
-    """
-
-    # pylint: disable=protected-access
-    return dpnp.get_usm_ndarray(a)._byte_bounds
+setup(
+    name="use_dpnp_array",
+    version="0.0.1",
+    description="Example of using dpnp::tensor::usm_ndarray with pybind11",
+    author="Intel Corporation",
+    license="BSD-3-Clause",
+    packages=["use_dpnp_array"],
+)
