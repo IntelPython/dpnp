@@ -45,9 +45,8 @@ year = datetime.now().year
 copyright = f"2020-{year}, Intel Corporation"
 author = "Intel"
 
-version = dpnp.__version__.strip(".dirty")
-# The full version, including alpha/beta/rc tags
-release = dpnp.__version__.strip(".dirty")
+# Strip local version identifiers (e.g. git hash) from the version string
+version = release = dpnp.__version__.split("+")[0]
 
 
 # -- General configuration ---------------------------------------------------
@@ -120,12 +119,7 @@ pygments_style = "default"
 #
 html_theme = "furo"
 # TODO: Remove html_title and uncomment html_logo once dpnp.svg is available
-html_title = (
-    '<span style="font-size:2em;font-weight:700">dpnp</span><br>'
-    '<small style="font-size:0.75em">Data Parallel Extension for NumPy<br>'
-    + release
-    + " documentation</small>"
-)
+html_title = f"Data Parallel Extension for NumPy (dpnp) {release} documentation"
 html_theme_options = {}
 
 # Theme options are theme-specific and customize the look and feel of a theme

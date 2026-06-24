@@ -8,9 +8,10 @@ Data Parallel Extension for NumPy*
 .. module:: dpnp
     :no-index:
 
-Python package :py:mod:`dpnp` implements a subset of `NumPy*`_ that can be
-executed on any data parallel device. The subset is a drop-in replacement of
-core `NumPy*`_ functions and numerical data types.
+:py:mod:`dpnp` is a NumPy-compatible array library for data-parallel
+computing. It acts as a drop-in replacement for core `NumPy*`_ functions
+and numerical data types and provides implementations of selected
+`SciPy*`_ routines for data-parallel devices.
 
 .. grid:: 2
     :gutter: 3
@@ -74,6 +75,20 @@ core `NumPy*`_ functions and numerical data types.
 
             To the tensor documentation
 
+    .. grid-item-card:: Development information
+
+        C++ backend API reference and extension documentation for developers.
+
+        +++
+
+        .. button-ref:: dpnp_backend_api
+            :ref-type: doc
+            :expand:
+            :color: secondary
+            :click-parent:
+
+            To the backend API reference
+
 
 .. toctree::
    :maxdepth: 2
@@ -84,4 +99,10 @@ core `NumPy*`_ functions and numerical data types.
    quick_start_guide
    reference/index
    tensor
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Development information
+
    dpnp_backend_api
