@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_indexing - dpnpData Parallel Extension for NumPy0.21.0dev0+63.gb7ac2a73403 documentation</title>
+        <title>dpnp.dpnp_iface_indexing - Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand"><span style="font-size:2em;font-weight:700">dpnp</span><br><small style="font-size:0.75em">Data Parallel Extension for NumPy<br>0.21.0dev0+63.gb7ac2a73403 documentation</small></div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text"><span style="font-size:2em;font-weight:700">dpnp</span><br><small style="font-size:0.75em">Data Parallel Extension for NumPy<br>0.21.0dev0+63.gb7ac2a73403 documentation</small></span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -534,7 +534,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.hstack.html">dpnp.hstack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.dstack.html">dpnp.dstack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.column_stack.html">dpnp.column_stack</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.row_stack.html">dpnp.row_stack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.split.html">dpnp.split</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.array_split.html">dpnp.array_split</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.dsplit.html">dpnp.dsplit</a></li>
@@ -994,6 +993,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../tensor.html">Tensor (<code class="docutils literal notranslate"><span class="pre">dpnp.tensor</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
 </ul>
 
@@ -1309,6 +1311,7 @@
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;cannot take non-empty indices from an empty axis&quot;</span><span class="p">)</span>
     <span class="n">res_sh</span> <span class="o">=</span> <span class="n">x_sh</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="n">inds</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">x_sh</span><span class="p">[</span><span class="n">axis_end</span><span class="p">:]</span>
 
+    <span class="n">x_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
     <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
@@ -1321,21 +1324,24 @@
                 <span class="sa">f</span><span class="s2">&quot;Expected output shape is </span><span class="si">{</span><span class="n">res_sh</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is needed, &quot;</span> <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-
         <span class="k">if</span> <span class="n">dpt</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
                 <span class="s2">&quot;Input and output allocation queues are not compatible&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x_dt</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">x_dt</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">x_dt</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># tensor.take() requires `out` to match the input dtype</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x_dt</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
             <span class="c1"># Allocate a temporary buffer to avoid memory overlapping.</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">res_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">res_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
 
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
@@ -1345,6 +1351,7 @@
         <span class="n">ind</span><span class="o">=</span><span class="p">(</span><span class="n">inds</span><span class="p">,),</span>
         <span class="n">dst</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
         <span class="n">axis_start</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">axis_end</span><span class="o">=</span><span class="n">axis_end</span><span class="p">,</span>
         <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
         <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
@@ -1453,7 +1460,7 @@
 
     <span class="n">res</span> <span class="o">=</span> <span class="n">_take_index</span><span class="p">(</span><span class="n">a_ary</span><span class="p">,</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
 
 
 
@@ -3261,7 +3268,7 @@
         <span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_ind</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
 
 
 
@@ -3949,7 +3956,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=0f4c5e14"></script>
+</div><script src="../../_static/documentation_options.js?v=3e943f6d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

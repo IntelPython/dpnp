@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_array - dpnpData Parallel Extension for NumPy0.21.0dev0+63.gb7ac2a73403 documentation</title>
+        <title>dpnp.dpnp_array - Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand"><span style="font-size:2em;font-weight:700">dpnp</span><br><small style="font-size:0.75em">Data Parallel Extension for NumPy<br>0.21.0dev0+63.gb7ac2a73403 documentation</small></div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text"><span style="font-size:2em;font-weight:700">dpnp</span><br><small style="font-size:0.75em">Data Parallel Extension for NumPy<br>0.21.0dev0+63.gb7ac2a73403 documentation</small></span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -534,7 +534,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.hstack.html">dpnp.hstack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.dstack.html">dpnp.dstack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.column_stack.html">dpnp.column_stack</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.row_stack.html">dpnp.row_stack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.split.html">dpnp.split</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.array_split.html">dpnp.array_split</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.dsplit.html">dpnp.dsplit</a></li>
@@ -994,6 +993,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../tensor.html">Tensor (<code class="docutils literal notranslate"><span class="pre">dpnp.tensor</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
 </ul>
 
@@ -2892,7 +2894,7 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.reshape.html#dpnp.dpnp_array.dpnp_array.reshape">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reshape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return an array containing the same data with a new shape.</span>
+<span class="sd">        Return a reshaped array without changing data.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.reshape` for full documentation.</span>
 
@@ -3550,6 +3552,7 @@
 <span class="sd">            * ``tuple or list of ints``: `i` in the `j`-th place in the</span>
 <span class="sd">              tuple/list means that the array’s `i`-th axis becomes the</span>
 <span class="sd">              transposed array’s `j`-th axis.</span>
+<span class="sd">              Negative indices can also be used to specify axes.</span>
 <span class="sd">            * ``n ints``: same as an n-tuple/n-list of the same integers (this</span>
 <span class="sd">              form is intended simply as a “convenience” alternative to the</span>
 <span class="sd">              tuple form).</span>
@@ -3564,8 +3567,8 @@
 <span class="sd">        :obj:`dpnp.transpose` : Equivalent function.</span>
 <span class="sd">        :obj:`dpnp.ndarray.ndarray.T` : Array property returning the array</span>
 <span class="sd">            transposed.</span>
-<span class="sd">        :obj:`dpnp.ndarray.reshape` : Give a new shape to an array without</span>
-<span class="sd">            changing its data.</span>
+<span class="sd">        :obj:`dpnp.ndarray.reshape` : Return a reshaped ndarray without</span>
+<span class="sd">            changing data.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -3766,7 +3769,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=0f4c5e14"></script>
+</div><script src="../../_static/documentation_options.js?v=3e943f6d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.linalg.eigh" href="dpnp.linalg.eigh.html"><link rel="prev" title="dpnp.linalg.svdvals" href="dpnp.linalg.svdvals.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>dpnp.linalg.eig - dpnpData Parallel Extension for NumPy0.21.0dev0+63.gb7ac2a73403 documentation</title>
+        <title>dpnp.linalg.eig - Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand"><span style="font-size:2em;font-weight:700">dpnp</span><br><small style="font-size:0.75em">Data Parallel Extension for NumPy<br>0.21.0dev0+63.gb7ac2a73403 documentation</small></div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text"><span style="font-size:2em;font-weight:700">dpnp</span><br><small style="font-size:0.75em">Data Parallel Extension for NumPy<br>0.21.0dev0+63.gb7ac2a73403 documentation</small></span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -535,7 +535,6 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.hstack.html">dpnp.hstack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.dstack.html">dpnp.dstack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.column_stack.html">dpnp.column_stack</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.row_stack.html">dpnp.row_stack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.split.html">dpnp.split</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.array_split.html">dpnp.array_split</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.dsplit.html">dpnp.dsplit</a></li>
@@ -995,6 +994,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../tensor.html">Tensor (<code class="docutils literal notranslate"><span class="pre">dpnp.tensor</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
 </ul>
 
@@ -1050,10 +1052,10 @@ be computed.</p>
 <dd class="field-even"><p><dl class="simple">
 <dt>A namedtuple with the following attributes</dt><dd><ul class="simple">
 <li><p><strong>eigenvalues</strong> (<em>(..., M) dpnp.ndarray</em>) -- The eigenvalues, each repeated according to its multiplicity.
-The eigenvalues are not necessarily ordered. The resulting array will
-be of complex type, unless the imaginary part is zero in which case it
-will be cast to a real type. When <cite>a</cite> is real the resulting eigenvalues
-will be real (zero imaginary part) or occur in conjugate pairs.</p></li>
+The eigenvalues are not necessarily ordered. The resulting array is
+always of complex type, even when <cite>a</cite> is real-valued. In that case the
+eigenvalues either have a zero imaginary part or occur in conjugate
+pairs.</p></li>
 <li><p><strong>eigenvectors</strong> (<em>(..., M, M) dpnp.ndarray</em>) -- The normalized (unit &quot;length&quot;) eigenvectors, such that the column
 <code class="docutils literal notranslate"><span class="pre">eigenvectors[:,i]</span></code> is the eigenvector corresponding to the
 eigenvalue <code class="docutils literal notranslate"><span class="pre">eigenvalues[i]</span></code>.</p></li>
@@ -1086,8 +1088,8 @@ through a fallback on NumPy call.</p>
 </div>
 <p>(Almost) trivial example with real eigenvalues and eigenvectors.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span>
-<span class="go">(array([1., 2., 3.]),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">real</span>
+<span class="go">(array([1.+0.j, 2.+0.j, 3.+0.j]),</span>
 <span class="go"> array([[1., 0., 0.],</span>
 <span class="go">        [0., 1., 0.],</span>
 <span class="go">        [0., 0., 1.]]))</span>
@@ -1116,8 +1118,8 @@ eigenvectors); note that <code class="docutils literal notranslate"><span class=
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-9</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Theor. eigenvalues are 1 +/- 1e-9</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">LA</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span>
-<span class="go">(array([1., 1.]),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">real</span>
+<span class="go">(array([1.+0.j, 1.+0.j]),</span>
 <span class="go"> array([[1., 0.],</span>
 <span class="go">        [0., 1.]]))</span>
 </pre></div>
@@ -1194,7 +1196,7 @@ eigenvectors); note that <code class="docutils literal notranslate"><span class=
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=0f4c5e14"></script>
+</div><script src="../../_static/documentation_options.js?v=3e943f6d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

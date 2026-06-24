@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_mathematical - dpnpData Parallel Extension for NumPy0.21.0dev0+63.gb7ac2a73403 documentation</title>
+        <title>dpnp.dpnp_iface_mathematical - Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand"><span style="font-size:2em;font-weight:700">dpnp</span><br><small style="font-size:0.75em">Data Parallel Extension for NumPy<br>0.21.0dev0+63.gb7ac2a73403 documentation</small></div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text"><span style="font-size:2em;font-weight:700">dpnp</span><br><small style="font-size:0.75em">Data Parallel Extension for NumPy<br>0.21.0dev0+63.gb7ac2a73403 documentation</small></span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -534,7 +534,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.hstack.html">dpnp.hstack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.dstack.html">dpnp.dstack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.column_stack.html">dpnp.column_stack</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.row_stack.html">dpnp.row_stack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.split.html">dpnp.split</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.array_split.html">dpnp.array_split</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.dsplit.html">dpnp.dsplit</a></li>
@@ -994,6 +993,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../tensor.html">Tensor (<code class="docutils literal notranslate"><span class="pre">dpnp.tensor</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
 </ul>
 
@@ -1075,7 +1077,6 @@
 
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
@@ -1912,11 +1913,8 @@
 
 <span class="sd">    The cross product of `a` and `b` in :math:`R^3` is a vector perpendicular</span>
 <span class="sd">    to both `a` and `b`. If `a` and `b` are arrays of vectors, the vectors</span>
-<span class="sd">    are defined by the last axis of `a` and `b` by default, and these axes</span>
-<span class="sd">    can have dimensions 2 or 3. Where the dimension of either `a` or `b` is</span>
-<span class="sd">    2, the third component of the input vector is assumed to be zero and the</span>
-<span class="sd">    cross product calculated accordingly. In cases where both input vectors</span>
-<span class="sd">    have dimension 2, the z-component of the cross product is returned.</span>
+<span class="sd">    are defined by the last axis of `a` and `b` by default, and these axes must</span>
+<span class="sd">    have 3 dimensions.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.cross`.</span>
 
@@ -1935,8 +1933,7 @@
 
 <span class="sd">        Default: ``-1``.</span>
 <span class="sd">    axisc : int, optional</span>
-<span class="sd">        Axis of `c` containing the cross product vector(s). Ignored if both</span>
-<span class="sd">        input vectors have dimension ``2``, as the return is scalar. By default,</span>
+<span class="sd">        Axis of `c` containing the cross product vector(s). By default,</span>
 <span class="sd">        the last axis.</span>
 
 <span class="sd">        Default: ``-1``.</span>
@@ -1951,9 +1948,14 @@
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        Vector cross product(s).</span>
 
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        When the dimension of the vector(s) in `a` or `b` does not equal 3.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.linalg.cross` : Array API compatible version.</span>
+<span class="sd">    :obj:`dpnp.linalg.cross` : Array API compatible variation.</span>
 <span class="sd">    :obj:`dpnp.inner` : Inner product.</span>
 <span class="sd">    :obj:`dpnp.outer` : Outer product.</span>
 
@@ -1966,27 +1968,6 @@
 <span class="sd">    &gt;&gt;&gt; y = np.array([4, 5, 6])</span>
 <span class="sd">    &gt;&gt;&gt; np.cross(x, y)</span>
 <span class="sd">    array([-3,  6, -3])</span>
-
-<span class="sd">    One vector with dimension 2.</span>
-
-<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2])</span>
-<span class="sd">    &gt;&gt;&gt; y = np.array([4, 5, 6])</span>
-<span class="sd">    &gt;&gt;&gt; np.cross(x, y)</span>
-<span class="sd">    array([12, -6, -3])</span>
-
-<span class="sd">    Equivalently:</span>
-
-<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2, 0])</span>
-<span class="sd">    &gt;&gt;&gt; y = np.array([4, 5, 6])</span>
-<span class="sd">    &gt;&gt;&gt; np.cross(x, y)</span>
-<span class="sd">    array([12, -6, -3])</span>
-
-<span class="sd">    Both vectors with dimension 2.</span>
-
-<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2])</span>
-<span class="sd">    &gt;&gt;&gt; y = np.array([4, 5])</span>
-<span class="sd">    &gt;&gt;&gt; np.cross(x, y)</span>
-<span class="sd">    array(-3)</span>
 
 <span class="sd">    Multiple vector cross-products. Note that the direction of the cross</span>
 <span class="sd">    product vector is defined by the *right-hand rule*.</span>
@@ -2030,6 +2011,9 @@
             <span class="s2">&quot;Input arrays with boolean data type are not supported.&quot;</span>
         <span class="p">)</span>
 
+    <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one array has zero dimension&quot;</span><span class="p">)</span>
+
     <span class="c1"># Check axisa and axisb are within bounds</span>
     <span class="n">axisa</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axisa</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">msg_prefix</span><span class="o">=</span><span class="s2">&quot;axisa&quot;</span><span class="p">)</span>
     <span class="n">axisb</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axisb</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">msg_prefix</span><span class="o">=</span><span class="s2">&quot;axisb&quot;</span><span class="p">)</span>
@@ -2037,36 +2021,18 @@
     <span class="c1"># Move working axis to the end of the shape</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axisa</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">axisb</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Incompatible vector dimensions for cross product</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="s2">&quot;(the dimension of vector used in cross product must be 2 or 3)&quot;</span>
-        <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;Arrays of 2-dimensional vectors are deprecated. Use arrays of &quot;</span>
-            <span class="s2">&quot;3-dimensional vectors instead. (deprecated in dpnp 0.17.0)&quot;</span><span class="p">,</span>
-            <span class="ne">DeprecationWarning</span><span class="p">,</span>
-            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-        <span class="p">)</span>
-
-    <span class="c1"># Modify the shape of input arrays if necessary</span>
     <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">b_shape</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">b_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Both input arrays must be (arrays of) 3-dimensional vectors, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;but they are </span><span class="si">{</span><span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">b_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> dimensional instead.&quot;</span>
+        <span class="p">)</span>
 
-    <span class="n">res_shape</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],))</span>
-        <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">if</span> <span class="n">b_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">b_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],))</span>
-        <span class="n">b_shape</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span>
-
-    <span class="k">if</span> <span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">b_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">res_shape</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)</span>
-        <span class="c1"># Check axisc is within bounds</span>
-        <span class="n">axisc</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axisc</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">res_shape</span><span class="p">),</span> <span class="n">msg_prefix</span><span class="o">=</span><span class="s2">&quot;axisc&quot;</span><span class="p">)</span>
+    <span class="c1"># Check axisc is within bounds</span>
+    <span class="n">res_shape</span> <span class="o">=</span> <span class="o">*</span><span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">3</span>
+    <span class="n">axisc</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axisc</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">res_shape</span><span class="p">),</span> <span class="n">msg_prefix</span><span class="o">=</span><span class="s2">&quot;axisc&quot;</span><span class="p">)</span>
 
     <span class="c1"># Create the output array</span>
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
@@ -2080,9 +2046,6 @@
     <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">cp</span> <span class="o">=</span> <span class="n">dpnp_cross</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">cp</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">b_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">cp</span>
-
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisc</span><span class="p">)</span></div>
 
 
@@ -6345,7 +6308,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=0f4c5e14"></script>
+</div><script src="../../_static/documentation_options.js?v=3e943f6d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

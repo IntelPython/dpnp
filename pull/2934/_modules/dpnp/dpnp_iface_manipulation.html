@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_manipulation - dpnpData Parallel Extension for NumPy0.21.0dev0+63.gb7ac2a73403 documentation</title>
+        <title>dpnp.dpnp_iface_manipulation - Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand"><span style="font-size:2em;font-weight:700">dpnp</span><br><small style="font-size:0.75em">Data Parallel Extension for NumPy<br>0.21.0dev0+63.gb7ac2a73403 documentation</small></div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text"><span style="font-size:2em;font-weight:700">dpnp</span><br><small style="font-size:0.75em">Data Parallel Extension for NumPy<br>0.21.0dev0+63.gb7ac2a73403 documentation</small></span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -534,7 +534,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.hstack.html">dpnp.hstack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.dstack.html">dpnp.dstack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.column_stack.html">dpnp.column_stack</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.row_stack.html">dpnp.row_stack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.split.html">dpnp.split</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.array_split.html">dpnp.array_split</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.dsplit.html">dpnp.dsplit</a></li>
@@ -994,6 +993,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../tensor.html">Tensor (<code class="docutils literal notranslate"><span class="pre">dpnp.tensor</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
 </ul>
 
@@ -1925,7 +1927,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array, or list of arrays, each with ``a.ndim &gt;= 1``.</span>
+<span class="sd">        An array, or tuple of arrays, each with ``a.ndim &gt;= 1``.</span>
 <span class="sd">        Copies are made only if necessary.</span>
 
 <span class="sd">    See Also</span>
@@ -1943,7 +1945,7 @@
 
 <span class="sd">    &gt;&gt;&gt; y = np.array([3, 4])</span>
 <span class="sd">    &gt;&gt;&gt; np.atleast_1d(x, y)</span>
-<span class="sd">    [array([1.]), array([3, 4])]</span>
+<span class="sd">    (array([1.]), array([3, 4]))</span>
 
 <span class="sd">    &gt;&gt;&gt; x = np.arange(9.0).reshape(3, 3)</span>
 <span class="sd">    &gt;&gt;&gt; np.atleast_1d(x)</span>
@@ -1970,7 +1972,7 @@
         <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">res</span></div>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
 
 
 
@@ -1991,7 +1993,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array, or list of arrays, each with ``a.ndim &gt;= 2``.</span>
+<span class="sd">        An array, or tuple of arrays, each with ``a.ndim &gt;= 2``.</span>
 <span class="sd">        Copies are avoided where possible, and views with two or more</span>
 <span class="sd">        dimensions are returned.</span>
 
@@ -2029,7 +2031,7 @@
         <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">res</span></div>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
 
 
 
@@ -2050,7 +2052,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array, or list of arrays, each with ``a.ndim &gt;= 3``. Copies are</span>
+<span class="sd">        An array, or tuple of arrays, each with ``a.ndim &gt;= 3``. Copies are</span>
 <span class="sd">        avoided where possible, and views with three or more dimensions are</span>
 <span class="sd">        returned.</span>
 
@@ -2094,7 +2096,7 @@
         <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">res</span></div>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
 
 
 
@@ -2833,8 +2835,8 @@
     <span class="n">_check_stack_arrays</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
 
     <span class="n">arrs</span> <span class="o">=</span> <span class="n">atleast_3d</span><span class="p">(</span><span class="o">*</span><span class="n">tup</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="n">arrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">arrs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">arrs</span> <span class="o">=</span> <span class="p">(</span><span class="n">arrs</span><span class="p">,)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
 
@@ -3276,8 +3278,8 @@
     <span class="n">_check_stack_arrays</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
 
     <span class="n">arrs</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="o">*</span><span class="n">tup</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="n">arrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">arrs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">arrs</span> <span class="o">=</span> <span class="p">(</span><span class="n">arrs</span><span class="p">,)</span>
 
     <span class="c1"># As a special case, dimension 0 of 1-dimensional arrays is &quot;horizontal&quot;</span>
     <span class="k">if</span> <span class="n">arrs</span> <span class="ow">and</span> <span class="n">arrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -4076,7 +4078,7 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.reshape.html#dpnp.reshape">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reshape</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Gives a new shape to an array without changing its data.</span>
+<span class="sd">    Return a reshaped ndarray without changing data.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.reshape`.</span>
 
@@ -5072,6 +5074,7 @@
 <span class="sd">    axes : {None, tuple or list of ints}, optional</span>
 <span class="sd">        If specified, it must be a tuple or list which contains a permutation</span>
 <span class="sd">        of [0, 1, ..., N-1] where N is the number of axes of `a`.</span>
+<span class="sd">        Negative indices can also be used to specify axes.</span>
 <span class="sd">        The `i`&#39;th axis of the returned array will correspond to the axis</span>
 <span class="sd">        numbered ``axes[i]`` of the input. If not specified or ``None``,</span>
 <span class="sd">        defaults to ``range(a.ndim)[::-1]``, which reverses the order of</span>
@@ -5114,6 +5117,10 @@
 <span class="sd">    &gt;&gt;&gt; a = np.ones((2, 3, 4, 5))</span>
 <span class="sd">    &gt;&gt;&gt; np.transpose(a).shape</span>
 <span class="sd">    (5, 4, 3, 2)</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(3*4*5).reshape((3, 4, 5))</span>
+<span class="sd">    &gt;&gt;&gt; np.transpose(a, (-1, 0, -2)).shape</span>
+<span class="sd">    (5, 3, 4)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -5792,9 +5799,6 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stack arrays in sequence vertically (row wise).</span>
 
-<span class="sd">    :obj:`dpnp.row_stack` is an alias for :obj:`dpnp.vstack`.</span>
-<span class="sd">    They are the same function.</span>
-
 <span class="sd">    For full documentation refer to :obj:`numpy.vstack`.</span>
 
 <span class="sd">    Parameters</span>
@@ -5853,13 +5857,10 @@
     <span class="n">_check_stack_arrays</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span>
 
     <span class="n">arrs</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="o">*</span><span class="n">tup</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="n">arrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">arrs</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">arrs</span> <span class="o">=</span> <span class="p">(</span><span class="n">arrs</span><span class="p">,)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">arrs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span></div>
 
-
-
-<span class="n">row_stack</span> <span class="o">=</span> <span class="n">vstack</span>
 </pre></div>
         </article>
       </div>
@@ -5892,7 +5893,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=0f4c5e14"></script>
+</div><script src="../../_static/documentation_options.js?v=3e943f6d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
