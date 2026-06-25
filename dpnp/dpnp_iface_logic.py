@@ -246,7 +246,7 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, equal_nan=False):
         The absolute tolerance parameter.
 
         Default: ``1e-08``.
-    equal_nan : bool
+    equal_nan : bool, optional
         Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will
         be considered equal to ``NaNs`` in `b` in the output array.
 
