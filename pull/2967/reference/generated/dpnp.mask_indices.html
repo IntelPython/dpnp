@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.mask_indices &mdash; Data Parallel Extension for NumPy 0.21.0dev1+33.gcc9504fbbc7 documentation</title>
+  <title>dpnp.mask_indices &mdash; Data Parallel Extension for NumPy 0.21.0dev1+37.gbb7005a7f8b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=62f4109e"></script>
+      <script src="../../_static/documentation_options.js?v=3cb72ef6"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -144,7 +144,7 @@ located.</p>
 <li><p><strong>mask_func</strong> (<em>callable</em>) -- A function whose call signature is similar to that of <a class="reference internal" href="dpnp.triu.html#dpnp.triu" title="dpnp.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.triu</span></code></a>,
 <a class="reference internal" href="dpnp.tril.html#dpnp.tril" title="dpnp.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tril</span></code></a>. That is, <code class="docutils literal notranslate"><span class="pre">mask_func(x,</span> <span class="pre">k=k)</span></code> returns a boolean
 array, shaped like <cite>x</cite>.`k` is an optional argument to the function.</p></li>
-<li><p><strong>k</strong> (<em>scalar</em>) -- <p>An optional argument which is passed through to <cite>mask_func</cite>. Functions
+<li><p><strong>k</strong> (<em>scalar</em><em>, </em><em>optional</em>) -- <p>An optional argument which is passed through to <cite>mask_func</cite>. Functions
 like <a class="reference internal" href="dpnp.triu.html#dpnp.triu" title="dpnp.triu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.triu</span></code></a>, <a class="reference internal" href="dpnp.tril.html#dpnp.tril" title="dpnp.tril"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tril</span></code></a> take a second argument that is
 interpreted as an offset.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
