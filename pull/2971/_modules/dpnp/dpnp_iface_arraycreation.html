@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.21.0dev1+27.g295c03e467e documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.21.0dev1+29.g3decef4d5ab documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=77699f74"></script>
+      <script src="../../_static/documentation_options.js?v=bff0dc18"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -254,10 +254,14 @@
 <span class="sd">    step : {int, real}, optional</span>
 <span class="sd">        Spacing between values. The default `step` size is 1. If `step`</span>
 <span class="sd">        is specified as a position argument, `start` must also be given.</span>
+
+<span class="sd">        Default: ``1``.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -269,12 +273,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -366,20 +372,24 @@
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    copy : {None, bool}, optional</span>
 <span class="sd">        If ``True``, then the array data is copied. If ``None``, a copy will</span>
 <span class="sd">        only be made if a copy is needed to satisfy any of the requirements</span>
 <span class="sd">        (``dtype``, ``order``, etc.). For ``False`` it raises a ``ValueError``</span>
 <span class="sd">        exception if a copy can not be avoided.</span>
+
 <span class="sd">        Default: ``True``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    ndmin : int, optional</span>
 <span class="sd">        Specifies the minimum number of dimensions that the resulting array</span>
 <span class="sd">        should have. Ones will be prepended to the shape as needed to meet</span>
 <span class="sd">        this requirement.</span>
+
 <span class="sd">        Default: ``0``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -392,12 +402,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -526,8 +538,11 @@
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -540,12 +555,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -633,9 +650,11 @@
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -648,19 +667,22 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    copy : {None, bool}, optional</span>
 <span class="sd">        If ``True``, then the array data is copied. If ``None``, a copy will</span>
 <span class="sd">        only be made if a copy is needed to satisfy any of the requirements</span>
 <span class="sd">        (``dtype``, ``order``, etc.). For ``False`` it raises a ``ValueError``</span>
 <span class="sd">        exception if a copy can not be avoided.</span>
-<span class="sd">        Default: ``True``.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -741,6 +763,8 @@
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -752,12 +776,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -858,6 +884,8 @@
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -869,12 +897,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1069,6 +1099,7 @@
 <span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -1081,12 +1112,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Limitations</span>
@@ -1192,6 +1225,7 @@
 <span class="sd">    k : int, optional</span>
 <span class="sd">        Diagonal in question. Use k &gt; 0 for diagonals above</span>
 <span class="sd">        the main diagonal, and k &lt; 0 for diagonals below the main diagonal.</span>
+
 <span class="sd">        Default: ``0``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -1204,12 +1238,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1301,6 +1337,8 @@
 <span class="sd">        Diagonal to set; 0, the default, corresponds to the &quot;main&quot; diagonal,</span>
 <span class="sd">        a positive (negative) k giving the number of the diagonal above (below)</span>
 <span class="sd">        the main.</span>
+
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -1312,12 +1350,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1405,10 +1445,13 @@
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        input array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the input array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+
 <span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -1421,12 +1464,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1511,11 +1556,14 @@
 <span class="sd">        of the returned array.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        input array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the input array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
 <span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
@@ -1530,12 +1578,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1623,16 +1673,23 @@
 <span class="sd">        Number of rows in the output.</span>
 <span class="sd">    M : {None, int}, optional</span>
 <span class="sd">        Number of columns in the output. If None, defaults to `N`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    k : int, optional</span>
 <span class="sd">        Index of the diagonal: 0 (the default) refers to the main diagonal,</span>
 <span class="sd">        a positive value refers to an upper diagonal, and a negative value to</span>
 <span class="sd">        a lower diagonal.</span>
+
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        input array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the input array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+
 <span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -1645,12 +1702,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1742,12 +1801,17 @@
 <span class="sd">        An object that exposes the buffer interface.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Data-type of the returned array.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        the returned array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the returned array is allocated.</span>
+
+<span class="sd">        Default: ``float``.</span>
 <span class="sd">    count : int, optional</span>
 <span class="sd">        Number of items to read. ``-1`` means all data in the buffer.</span>
+
+<span class="sd">        Default: ``-1``.</span>
 <span class="sd">    offset : int, optional</span>
 <span class="sd">        Start reading the buffer from this offset (in bytes).</span>
+
 <span class="sd">        Default: ``0``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -1760,12 +1824,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1858,20 +1924,28 @@
 <span class="sd">        Data type of the returned array.</span>
 <span class="sd">        For binary files, it is used to determine the size and byte-order</span>
 <span class="sd">        of the items in the file.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        the returned array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the returned array is allocated.</span>
+
+<span class="sd">        Default: ``float``.</span>
 <span class="sd">    count : int, optional</span>
 <span class="sd">        Number of items to read. ``-1`` means all items (i.e., the complete</span>
 <span class="sd">        file).</span>
+
+<span class="sd">        Default: ``-1``.</span>
 <span class="sd">    sep : str, optional</span>
 <span class="sd">        Separator between items if `file` is a text file.</span>
 <span class="sd">        Empty (&quot;&quot;) separator means the file should be treated as binary.</span>
 <span class="sd">        Spaces (&quot; &quot;) in the separator match zero or more whitespace characters.</span>
 <span class="sd">        A separator consisting only of spaces must match at least one</span>
 <span class="sd">        whitespace.</span>
+
+<span class="sd">        Default: ``&quot;&quot;``.</span>
 <span class="sd">    offset : int, optional</span>
-<span class="sd">        The offset (in bytes) from the file&#39;s current position. Defaults to 0.</span>
+<span class="sd">        The offset (in bytes) from the file&#39;s current position.</span>
 <span class="sd">        Only permitted for binary files.</span>
+
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -1883,12 +1957,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1994,8 +2070,10 @@
 <span class="sd">        the coordinate arrays passed to `function`.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Data-type of the coordinate arrays passed to `function`.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        the returned array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the returned array is allocated.</span>
+
+<span class="sd">        Default: ``float``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -2007,12 +2085,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2110,6 +2190,8 @@
 <span class="sd">    count : int, optional</span>
 <span class="sd">        The number of items to read from *iterable*. The default is -1,</span>
 <span class="sd">        which means all data is read.</span>
+
+<span class="sd">        Default: ``-1``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -2121,12 +2203,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2207,12 +2291,16 @@
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The data type of the array.</span>
 <span class="sd">        For binary input data, the data must be in exactly this format.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        the returned array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the returned array is allocated.</span>
+
+<span class="sd">        Default: ``float``.</span>
 <span class="sd">    count : int, optional</span>
 <span class="sd">        Read this number of `dtype` elements from the data. If this is negative</span>
 <span class="sd">        (the default), the count will be determined from the length of the data.</span>
-<span class="sd">    sep : str, optional</span>
+
+<span class="sd">        Default: ``-1``.</span>
+<span class="sd">    sep : str</span>
 <span class="sd">        The string separating numbers in the data; extra whitespace between</span>
 <span class="sd">        elements is also ignored.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
@@ -2226,12 +2314,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2396,10 +2486,13 @@
 <span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        input array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the input array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+
 <span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -2412,12 +2505,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2505,11 +2600,14 @@
 <span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        input array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the input array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
 <span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
@@ -2524,12 +2622,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2626,11 +2726,14 @@
 <span class="sd">        all but the last (a sequence of length `num`) are returned.</span>
 <span class="sd">    num : int, optional</span>
 <span class="sd">        Number of samples to generate.</span>
+
 <span class="sd">        Default: ``50``.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -2642,16 +2745,22 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    endpoint : bool, optional</span>
 <span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included.</span>
+
 <span class="sd">        Default: ``True``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis in the result to store the samples. Relevant only if start or</span>
 <span class="sd">        stop are array-like. By default (0), the samples will be along a new</span>
 <span class="sd">        axis inserted at the beginning. Use -1 to get an axis at the end.</span>
+
+<span class="sd">        Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2744,8 +2853,10 @@
 <span class="sd">        Number of rows (and columns) in `n` x `n` output.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        input array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the input array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -2757,12 +2868,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2867,6 +2980,8 @@
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -2878,19 +2993,27 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    endpoint : bool, optional</span>
 <span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included.</span>
+
 <span class="sd">        Default: ``True``.</span>
 <span class="sd">    retstep : bool, optional</span>
 <span class="sd">        If ``True``, return (samples, step), where step is the spacing between</span>
 <span class="sd">        samples.</span>
+
+<span class="sd">        Default: ``False``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis in the result to store the samples. Relevant only if start or</span>
 <span class="sd">        stop are array-like. By default (0), the samples will be along a new</span>
 <span class="sd">        axis inserted at the beginning. Use -1 to get an axis at the end.</span>
+
+<span class="sd">        Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2979,9 +3102,11 @@
 <span class="sd">        produced by a generator are treated as lines.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Data-type of the resulting array.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        the returned array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the returned array is allocated.</span>
 <span class="sd">        A structured data-type is not supported.</span>
+
+<span class="sd">        Default: ``float``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -2993,12 +3118,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -3099,6 +3226,7 @@
 <span class="sd">        the last (a sequence of length `num`) are returned.</span>
 <span class="sd">    num : int, optional</span>
 <span class="sd">        Number of samples to generate.</span>
+
 <span class="sd">        Default: ``50``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -3111,11 +3239,15 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    endpoint : {bool}, optional</span>
 <span class="sd">        If ``True``, stop is the last sample. Otherwise, it is not included.</span>
+
 <span class="sd">        Default: ``True``.</span>
 <span class="sd">    base : {array_like}, optional</span>
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
@@ -3125,15 +3257,20 @@
 <span class="sd">        of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">        The `step` size between the elements in ``ln(samples) / ln(base)``</span>
 <span class="sd">        (or log_base(samples)) is uniform.</span>
+
 <span class="sd">        Default: ``10.0``.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis in the result to store the samples. Relevant only if start,</span>
 <span class="sd">        stop, or base are array-like. By default (0), the samples will be along</span>
 <span class="sd">        a new axis inserted at the beginning. Use -1 to get an axis at the end.</span>
+
+<span class="sd">        Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3216,14 +3353,18 @@
 <span class="sd">        1-D arrays representing the coordinates of a grid.</span>
 <span class="sd">    indexing : {&#39;xy&#39;, &#39;ij&#39;}, optional</span>
 <span class="sd">        Cartesian (``&#39;xy&#39;``, default) or matrix (``&#39;ij&#39;``) indexing of output.</span>
+
+<span class="sd">        Default: ``&quot;xy&quot;``.</span>
 <span class="sd">    sparse : bool, optional</span>
 <span class="sd">        If ``True`` the shape of the returned coordinate array for dimension `i`</span>
 <span class="sd">        is reduced from ``(N1, ..., Ni, ... Nn)`` to</span>
 <span class="sd">        ``(1, ..., 1, Ni, 1, ..., 1)``.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    copy : bool, optional</span>
 <span class="sd">        If ``False``, a view into the original arrays are returned in order to</span>
 <span class="sd">        conserve memory.</span>
+
 <span class="sd">        Default: ``True``.</span>
 
 <span class="sd">    Returns</span>
@@ -3328,12 +3469,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -3414,12 +3557,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -3490,10 +3635,13 @@
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        input array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the input array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+
 <span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -3506,12 +3654,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -3602,11 +3752,14 @@
 <span class="sd">        of the returned array.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        input array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the input array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
 <span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
@@ -3621,12 +3774,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -3705,21 +3860,26 @@
 <span class="sd">    offset : int, optional</span>
 <span class="sd">        Offset of the diagonal from the main diagonal. Can be both positive and</span>
 <span class="sd">        negative.</span>
+
 <span class="sd">        Default: ``0``.</span>
 <span class="sd">    axis1, axis2 : int, optional</span>
 <span class="sd">        Axes to be used as the first and second axis of the 2-D sub-arrays from</span>
 <span class="sd">        which the diagonals should be taken. Defaults are the first two axes of</span>
 <span class="sd">        `a`.</span>
+
+<span class="sd">        Default: ``axis1 = 0``, ``axis2 = 1``.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Determines the data-type of the returned array and of the accumulator</span>
 <span class="sd">        where the elements are summed. If `dtype` has the value ``None`` and</span>
 <span class="sd">        `a` is of integer type of precision less than the default integer</span>
 <span class="sd">        precision, then the default integer precision is used. Otherwise, the</span>
 <span class="sd">        precision is the same as that of `a`.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Array into which the output is placed. Its type is preserved and it</span>
 <span class="sd">        must be of the right shape to hold the output.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -3781,14 +3941,19 @@
 <span class="sd">        Number of rows in the array.</span>
 <span class="sd">    M : {None, int}, optional</span>
 <span class="sd">        Number of columns in the array. By default, `M` is taken equal to `N`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    k : int, optional</span>
 <span class="sd">        The sub-diagonal at and below which the array is filled. k = 0 is</span>
 <span class="sd">        the main diagonal, while k &lt; 0 is below it, and k &gt; 0 is above.</span>
+
 <span class="sd">        Default: ``0``.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        input array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the input array is allocated.</span>
+
+<span class="sd">        Default: ``float``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -3800,12 +3965,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -3912,6 +4079,8 @@
 <span class="sd">        Diagonal above which to zero elements. k = 0 (the default) is</span>
 <span class="sd">        the main diagonal, k &lt; 0 is below it and k &gt; 0 is above.</span>
 
+<span class="sd">        Default: ``0``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray of shape (N, M)</span>
@@ -3967,6 +4136,8 @@
 <span class="sd">    k : int, optional</span>
 <span class="sd">        Diagonal below which to zero elements. k = 0 (the default) is</span>
 <span class="sd">        the main diagonal, k &lt; 0 is below it and k &gt; 0 is above.</span>
+
+<span class="sd">        Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -4032,9 +4203,13 @@
 <span class="sd">    N : {None, int}, optional</span>
 <span class="sd">        Number of columns in the output. If `N` is not specified, a square</span>
 <span class="sd">        array is returned ``(N = len(x))``.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    increasing : bool, optional</span>
 <span class="sd">        Order of the powers of the columns. If ``True,`` the powers increase</span>
 <span class="sd">        from left to right, if ``False`` (the default) they are reversed.</span>
+
+<span class="sd">        Default: ``False``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -4046,12 +4221,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -4163,10 +4340,13 @@
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., `dpnp.int32`.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        input array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the input array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+
 <span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -4179,12 +4359,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -4275,11 +4457,14 @@
 <span class="sd">        of the returned array.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
-<span class="sd">        Default is the default floating point data type for the device where</span>
-<span class="sd">        input array is allocated.</span>
+<span class="sd">        If ``None``, uses a default floating point data type for the device on</span>
+<span class="sd">        which the input array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
 <span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
@@ -4294,12 +4479,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
