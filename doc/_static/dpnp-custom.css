@@ -11,23 +11,19 @@ div.admonition {
 }
 
 /* Table borders and alternating row backgrounds */
-body table.docutils tbody tr.row-odd,
-body table.docutils tbody tr.row-even {
-    background: transparent !important;
-}
-
 body table.docutils td,
 body table.docutils th {
     border: 1px solid var(--color-foreground-border) !important;
     padding: 8px 12px;
 }
 
-body table.docutils thead th {
+body table.docutils thead th,
+body table.docutils tbody tr.row-odd {
     background-color: var(--color-background-secondary) !important;
 }
 
-body table.docutils tbody tr.row-odd {
-    background-color: var(--color-background-secondary) !important;
+body table.docutils tbody tr.row-even {
+    background: transparent !important;
 }
 
 /* Docstring section titles: normal case, bold, secondary background */
