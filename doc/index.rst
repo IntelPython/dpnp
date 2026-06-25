@@ -97,6 +97,7 @@ and numerical data types and provides implementations of selected
 
    overview
    quick_start_guide
+   user_guides/index
    reference/index
    tensor
 

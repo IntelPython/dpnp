@@ -52,7 +52,7 @@ class ExecutionPlacementError(Exception):
     Make sure that input arrays are associated with the same
     :class:`dpctl.SyclQueue`,
     or migrate data to the same :class:`dpctl.SyclQueue` using
-    :meth:`dpctl.tensor.usm_ndarray.to_device` method.
+    :meth:`dpnp.tensor.usm_ndarray.to_device` method.
     """
     pass
 
@@ -67,16 +67,20 @@ def get_execution_queue(qs, /):
     """
     Get execution queue from queues associated with input arrays.
 
-    Args:
-        qs (List[:class:`dpctl.SyclQueue`], Tuple[:class:`dpctl.SyclQueue`]):
-            a list or a tuple of :class:`dpctl.SyclQueue` objects
-            corresponding to arrays that are being combined.
+    Parameters
+    ----------
+    qs : list or tuple of :class:`dpctl.SyclQueue`
+        A list or a tuple of :class:`dpctl.SyclQueue` objects
+        corresponding to arrays that are being combined.
 
-    Returns:
-        SyclQueue:
-            execution queue under compute follows data paradigm,
-            or ``None`` if queues are not equal.
+    Returns
+    -------
+    out : {:class:`dpctl.SyclQueue`, None}
+        Execution queue under compute follows data paradigm,
+        or ``None`` if queues are not equal.
+
     """
+
     if not isinstance(qs, (list, tuple)):
         raise TypeError(
             "Expected a list or a tuple, got {}".format(type(qs))
@@ -101,16 +105,20 @@ def get_coerced_usm_type(usm_types, /):
     arrays of given USM types using compute-follows-data execution
     model.
 
-    Args:
-        usm_types (List[str], Tuple[str]):
-            a list or a tuple of strings of ``.usm_types`` attributes
-            for input arrays
+    Parameters
+    ----------
+    usm_types : list or tuple of str
+        A list or a tuple of strings of ``.usm_types`` attributes
+        for input arrays
 
-    Returns:
-         str
-            type of USM allocation for the output arrays (s).
-            ``None`` if any of the input strings are not recognized.
+    Returns
+    -------
+    out : {str, None}
+        Type of USM allocation for the output array(s).
+        ``None`` if any of the input strings are not recognized.
+
     """
+
     if not isinstance(usm_types, (list, tuple)):
         raise TypeError(
             "Expected a list or a tuple, got {}".format(type(usm_types))
@@ -159,32 +167,36 @@ def _validate_usm_type_disallow_none(usm_type):
 
 
 def validate_usm_type(usm_type, /, *, allow_none=True):
-    """ validate_usm_type(usm_type, allow_none=True)
-
+    """
     Raises an exception if `usm_type` is invalid.
 
-    Args:
-        usm_type:
-            Specification for USM allocation type. Valid specifications
-            are:
+    Parameters
+    ----------
+    usm_type: {str, None}
+        Specification for USM allocation type. Valid specifications
+        are:
 
-            * ``"device"``
-            * ``"shared"``
-            * ``"host"``
+        * ``"device"``
+        * ``"shared"``
+        * ``"host"``
 
-            If ``allow_none`` keyword argument is set, a value of
-            ``None`` is also permitted.
-        allow_none (bool, optional):
-            Whether ``usm_type`` value of ``None`` is considered valid.
-            Default: `True`.
+        If ``allow_none`` keyword argument is set, a value of
+        ``None`` is also permitted.
+    allow_none : bool, optional
+        Whether ``usm_type`` value of ``None`` is considered valid.
 
-    Raises:
-        ValueError:
-            if ``usm_type`` is not a recognized string.
-        TypeError:
-            if ``usm_type`` is not a string, and ``usm_type`` is
-            not ``None`` provided ``allow_none`` is ``True``.
+        Default: ``True``.
+
+    Raises
+    ------
+    ValueError:
+        If ``usm_type`` is not a recognized string.
+    TypeError:
+        If ``usm_type`` is not a string, and ``usm_type`` is
+        not ``None`` provided ``allow_none`` is ``True``.
+
     """
+
     if allow_none:
         _validate_usm_type_allow_none(usm_type)
     else:
