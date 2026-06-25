@@ -1,36 +1,61 @@
 (function() {
-var separator = " – ";
-var separatorAlt = " -- ";
+var separators = [ " – ", " -- " ];
 
+function findSeparator(container)
+{
+    var walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+    var node;
+    while ((node = walker.nextNode())) {
+        for (var i = 0; i < separators.length; i++) {
+            var idx = node.nodeValue.indexOf(separators[i]);
+            if (idx !== -1)
+                return {node : node, offset : idx, sep : separators[i]};
+        }
+    }
+    return null;
+}
+
+// Splits <p> at the separator; wraps everything after it in .param-desc.
+function reformatP(p)
+{
+    var found = findSeparator(p);
+    if (!found)
+        return null;
+
+    var afterNode = found.node.splitText(found.offset);
+    afterNode.nodeValue = afterNode.nodeValue.slice(found.sep.length);
+
+    var range = document.createRange();
+    range.setStartBefore(afterNode);
+    range.setEndAfter(p.lastChild);
+
+    var desc = document.createElement("span");
+    desc.className = "param-desc";
+    desc.appendChild(range.extractContents());
+    p.appendChild(desc);
+    return desc;
+}
+
+// Browsers auto-close nested <p> tags, so multi-paragraph descriptions
+// arrive as sibling <p> elements inside <li>. Fold them into the same desc.
 function reformatEntry(container)
 {
-    var paragraphs = container.querySelectorAll(":scope > p");
-    if (!paragraphs.length)
+    var firstP = container.querySelector(":scope > p");
+    if (!firstP)
         return;
 
-    var firstP = paragraphs[0];
-    var idx = firstP.innerHTML.indexOf(separator);
-    var sep = separator;
-    if (idx === -1) {
-        idx = firstP.innerHTML.indexOf(separatorAlt);
-        sep = separatorAlt;
-    }
-    if (idx === -1)
+    var desc = reformatP(firstP);
+    if (!desc)
         return;
 
-    var before = firstP.innerHTML.substring(0, idx);
-    var after = firstP.innerHTML.substring(idx + sep.length);
-
-    var extra = [];
-    for (var i = 1; i < paragraphs.length; i++) {
-        extra.push(paragraphs[i].innerHTML);
-        paragraphs[i].remove();
+    var sibling;
+    while ((sibling = firstP.nextElementSibling) && sibling.tagName === "P") {
+        if (desc.textContent.trim())
+            desc.appendChild(document.createElement("br"));
+        while (sibling.firstChild)
+            desc.appendChild(sibling.firstChild);
+        sibling.remove();
     }
-    if (extra.length)
-        after += (after ? "<br>" : "") + extra.join("<br>");
-
-    firstP.innerHTML =
-        before + '<br><span class="param-desc">' + after + "</span>";
 }
 
 document.querySelectorAll("dl.field-list dd ul.simple li")
@@ -39,4 +64,4 @@ document.querySelectorAll("dl.field-list dd").forEach(function(dd) {
     if (!dd.querySelector("ul.simple"))
         reformatEntry(dd);
 });
-})();
+}());

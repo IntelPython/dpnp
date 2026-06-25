@@ -73,7 +73,8 @@ extensions = [
     "sphinxcontrib.spelling",
 ]
 
-copybutton_prompt_text = ">>> "
+copybutton_prompt_text = r">>> |\.\.\. "
+copybutton_prompt_is_regexp = True
 
 googleanalytics_id = "G-554F8VNE28"
 googleanalytics_enabled = True
@@ -121,12 +122,6 @@ html_theme = "furo"
 # TODO: Remove html_title and uncomment html_logo once dpnp.svg is available
 html_title = f"Data Parallel Extension for NumPy (dpnp) {release} documentation"
 html_theme_options = {}
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
