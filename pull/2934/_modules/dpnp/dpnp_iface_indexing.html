@@ -20,7 +20,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=22da0ec1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
     
     
 
@@ -1897,7 +1897,7 @@
 <span class="sd">        written along the diagonal. If array, the flattened `val` is</span>
 <span class="sd">        written along the diagonal, repeating if necessary to fill all</span>
 <span class="sd">        diagonal entries.</span>
-<span class="sd">    wrap : bool</span>
+<span class="sd">    wrap : bool, optional</span>
 <span class="sd">        It enables the diagonal &quot;wrapped&quot; after N columns. This affects only</span>
 <span class="sd">        tall matrices.</span>
 
@@ -2103,7 +2103,7 @@
 <span class="sd">        Return a sparse representation of the grid instead of a dense</span>
 <span class="sd">        representation.</span>
 
-<span class="sd">        Default is ``False``.</span>
+<span class="sd">        Default: ``False``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -2371,7 +2371,7 @@
 <span class="sd">        A function whose call signature is similar to that of :obj:`dpnp.triu`,</span>
 <span class="sd">        :obj:`dpnp.tril`. That is, ``mask_func(x, k=k)`` returns a boolean</span>
 <span class="sd">        array, shaped like `x`.`k` is an optional argument to the function.</span>
-<span class="sd">    k : scalar</span>
+<span class="sd">    k : scalar, optional</span>
 <span class="sd">        An optional argument which is passed through to `mask_func`. Functions</span>
 <span class="sd">        like :obj:`dpnp.triu`, :obj:`dpnp.tril` take a second argument that is</span>
 <span class="sd">        interpreted as an offset.</span>
@@ -3295,7 +3295,7 @@
 <span class="sd">        Indices to take along each 1d slice of `a`. This must match the</span>
 <span class="sd">        dimension of the input array, but dimensions ``Ni`` and ``Nj``</span>
 <span class="sd">        only need to broadcast against `a`.</span>
-<span class="sd">    axis : {None, int}</span>
+<span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        The axis to take 1d slices along. If axis is ``None``, the input array</span>
 <span class="sd">        is treated as if it had first been flattened to 1d. The default is</span>
 <span class="sd">        ``-1``, which takes 1d slices along the last axis. These behaviors are</span>
@@ -3961,8 +3961,8 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../../_static/copybutton.js?v=4ea706d9"></script>
+    <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=2d2385ae"></script>
+    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=22da0ec1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/dpnp-custom.css?v=077675f8" />
     
     
 
@@ -1053,14 +1053,18 @@ one-dimensional coordinate arrays <code class="docutils literal notranslate"><sp
 <li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- 1-D arrays representing the coordinates of a grid.</p></li>
 <li><p><strong>...</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- 1-D arrays representing the coordinates of a grid.</p></li>
 <li><p><strong>xn</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- 1-D arrays representing the coordinates of a grid.</p></li>
-<li><p><strong>indexing</strong> (<em>{'xy'</em><em>, </em><em>'ij'}</em><em>, </em><em>optional</em>) -- Cartesian (<code class="docutils literal notranslate"><span class="pre">'xy'</span></code>, default) or matrix (<code class="docutils literal notranslate"><span class="pre">'ij'</span></code>) indexing of output.</p></li>
-<li><p><strong>sparse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">True</span></code> the shape of the returned coordinate array for dimension <cite>i</cite>
+<li><p><strong>indexing</strong> (<em>{'xy'</em><em>, </em><em>'ij'}</em><em>, </em><em>optional</em>) -- <p>Cartesian (<code class="docutils literal notranslate"><span class="pre">'xy'</span></code>, default) or matrix (<code class="docutils literal notranslate"><span class="pre">'ij'</span></code>) indexing of output.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code>.</p>
+</p></li>
+<li><p><strong>sparse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> the shape of the returned coordinate array for dimension <cite>i</cite>
 is reduced from <code class="docutils literal notranslate"><span class="pre">(N1,</span> <span class="pre">...,</span> <span class="pre">Ni,</span> <span class="pre">...</span> <span class="pre">Nn)</span></code> to
-<code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">...,</span> <span class="pre">1,</span> <span class="pre">Ni,</span> <span class="pre">1,</span> <span class="pre">...,</span> <span class="pre">1)</span></code>.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a view into the original arrays are returned in order to
-conserve memory.
-Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">...,</span> <span class="pre">1,</span> <span class="pre">Ni,</span> <span class="pre">1,</span> <span class="pre">...,</span> <span class="pre">1)</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a view into the original arrays are returned in order to
+conserve memory.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1190,8 +1194,8 @@ dimension for <cite>x1</cite>, the second for <cite>x2</cite> and so on.</p>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../../_static/copybutton.js?v=4ea706d9"></script>
+    <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../_static/dpnp-custom.js?v=2d2385ae"></script>
+    <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

@@ -20,7 +20,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/dpnp-custom.css?v=22da0ec1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/dpnp-custom.css?v=077675f8" />
     
     
 
@@ -1936,11 +1936,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2218,12 +2221,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2282,11 +2287,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2346,11 +2354,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2404,11 +2415,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2458,11 +2472,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2529,11 +2546,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2582,11 +2602,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2679,11 +2702,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2764,6 +2790,8 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for an array with generated numbers.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -2937,11 +2965,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -3091,11 +3122,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -3340,8 +3374,8 @@
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../../../_static/copybutton.js?v=4ea706d9"></script>
+    <script src="../../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../../_static/dpnp-custom.js?v=2d2385ae"></script>
+    <script src="../../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

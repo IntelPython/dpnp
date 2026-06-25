@@ -20,7 +20,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/dpnp-custom.css?v=22da0ec1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/dpnp-custom.css?v=077675f8" />
     
     
 
@@ -1094,6 +1094,8 @@
 <span class="sd">        A random seed to initialize the pseudo-random number generator.</span>
 <span class="sd">        The `seed` can be ``None`` (the default), an integer scalar, or</span>
 <span class="sd">        an array of at most three integer scalars.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -1108,6 +1110,7 @@
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1253,6 +1256,8 @@
 <span class="sd">        usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">            The type of SYCL USM allocation for the output array.</span>
 
+<span class="sd">            Default: ``&quot;device&quot;``.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        out : dpnp.ndarray</span>
@@ -1348,6 +1353,8 @@
 <span class="sd">        usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">            The type of SYCL USM allocation for the output array.</span>
 
+<span class="sd">            Default: ``&quot;device&quot;``.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        out : dpnp.ndarray</span>
@@ -1392,6 +1399,8 @@
 <span class="sd">        ----------</span>
 <span class="sd">        usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``&quot;device&quot;``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1495,6 +1504,8 @@
 <span class="sd">        usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">            The type of SYCL USM allocation for the output array.</span>
 
+<span class="sd">            Default: ``&quot;device&quot;``.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        out : dpnp.ndarray</span>
@@ -1545,6 +1556,8 @@
 <span class="sd">        usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">            The type of SYCL USM allocation for the output array.</span>
 
+<span class="sd">            Default: ``&quot;device&quot;``.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        out : dpnp.ndarray</span>
@@ -1583,6 +1596,8 @@
 <span class="sd">        ----------</span>
 <span class="sd">        usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``&quot;device&quot;``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1629,6 +1644,8 @@
 <span class="sd">        ----------</span>
 <span class="sd">        usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">            The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">            Default: ``&quot;device&quot;``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1754,8 +1771,8 @@
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../../../_static/copybutton.js?v=4ea706d9"></script>
+    <script src="../../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
-    <script src="../../../_static/dpnp-custom.js?v=2d2385ae"></script>
+    <script src="../../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>
