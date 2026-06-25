@@ -542,3 +542,23 @@ class TestBasicReshape:
         c = cupy.full(self.shape, 1, dtype=dtype)
 
         testing.assert_array_equal(b, c)
+
+
+@pytest.mark.skip("void dtypes are not supported")
+class TestDTypeUnchecked:
+    def test_void_dtype(self):
+        arr = cupy.zeros(3, dtype="V10")
+        assert not arr.get().view("uint8").any()
+
+        np_arr = numpy.array([b"1", b"2", b"3"], dtype="V10")
+        arr = cupy.array(np_arr)
+        testing.assert_array_equal(arr.get(), np_arr)
+
+    def test_subarray_rejected(self):
+        with pytest.raises(ValueError, match="Unsupported dtype"):
+            cupy.empty(3, dtype="3i")
+
+    def test_empty_void_rejected(self):
+        # We could try to allow V0 explicitly, but for now...
+        with pytest.raises(ValueError, match="Unsupported dtype"):
+            cupy.empty(3, dtype="V")
