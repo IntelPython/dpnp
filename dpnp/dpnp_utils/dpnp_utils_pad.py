@@ -51,6 +51,7 @@ def _as_pairs(x, ndim, as_index=False):
     as_index : bool, optional
         If `x` is not ``None``, try to round each element of `x` to an integer
         (dtype `dpnp.intp`) and ensure every element is positive.
+
         Default: ``False``.
 
     Returns
@@ -332,6 +333,8 @@ def _pad_simple(array, pad_width, fill_value=None):
     fill_value : scalar, optional
         If provided the padded area is filled with this value, otherwise
         the pad area left undefined.
+
+        Default: ``None``.
 
     Returns
     -------

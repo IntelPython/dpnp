@@ -2963,7 +2963,7 @@ def reshape(a, /, shape, order="C", *, copy=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array to be reshaped.
-    shape : {int, tuple of ints}, optional
+    shape : {int, tuple of ints}
         The new shape should be compatible with the original shape. If
         an integer, then the result will be a 1-D array of that length.
         One shape dimension can be -1. In this case, the value is

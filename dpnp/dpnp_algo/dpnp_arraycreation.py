@@ -332,7 +332,9 @@ class dpnp_nd_grid:
     Parameters
     ----------
     sparse : {bool}, optional
-        Whether the grid is sparse or not. Default is False.
+        Whether the grid is sparse or not.
+
+        Default: ``False``.
 
     """
 

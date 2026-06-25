@@ -664,19 +664,19 @@ def clip(a, /, min=None, max=None, *, out=None, order="K", **kwargs):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array containing elements to clip.
-    min, max : {None, dpnp.ndarray, usm_ndarray}
+    min, max : {None, dpnp.ndarray, usm_ndarray}, optional
         Minimum and maximum value. If ``None``, clipping is not performed on
         the corresponding edge. If both `min` and `max` are ``None``,
         the elements of the returned array stay the same.
         Both are broadcast against `a`.
 
-        Default : ``None``.
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array
         for in-place clipping. `out` must be of the right shape to hold the
         output. Its type is preserved.
 
-        Default : ``None``.
+        Default: ``None``.
     order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
         If `order` is ``None``, the default value ``"K"`` will be used.
