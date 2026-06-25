@@ -319,11 +319,11 @@ def bincount(x, weights=None, minlength=0):
     weights : {None, dpnp.ndarray, usm_ndarray}, optional
         Weights, array of the same shape as `x`.
 
-        Default: ``None``
+        Default: ``None``.
     minlength : int, optional
         A minimum number of bins for the output array.
 
-        Default: ``0``
+        Default: ``0``.
 
     Returns
     -------
@@ -1151,7 +1151,7 @@ def histogramdd(sample, bins=10, range=None, density=None, weights=None):
     H : dpnp.ndarray
         The multidimensional histogram of sample x. See density and weights
         for the different possible semantics.
-    edges : list of {dpnp.ndarray or usm_ndarray}
+    edges : list of dpnp.ndarray
         A list of D arrays describing the bin edges for each dimension.
 
     See Also

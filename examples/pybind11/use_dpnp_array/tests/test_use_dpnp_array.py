@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2024, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,49 +26,52 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Interface of the utils function of the DPNP
+import use_dpnp_array as uda
 
-Notes
------
-This module is a face or public interface file for the library
-
-"""
-
-import dpnp
+import dpnp.tensor as dpt
 
 
-def byte_bounds(a):
-    """
-    Returns a 2-tuple with pointers to the end-points of the array.
+def test_ndim():
+    arr = dpt.usm_ndarray((3, 4), dtype="i4")
+    assert uda.get_ndim(arr) == 2
+    arr = dpt.usm_ndarray(10, dtype="f4")
+    assert uda.get_ndim(arr) == 1
 
-    For full documentation refer to :obj:`numpy.lib.array_utils.byte_bounds`.
 
-    Parameters
-    ----------
-    a : {dpnp.ndarray, usm_ndarray}
-        Input array
+def test_shape():
+    arr = dpt.usm_ndarray((5, 7, 3), dtype="f8")
+    assert uda.get_shape(arr) == [5, 7, 3]
 
-    Returns
-    -------
-    (low, high) : tuple of 2 integers
-        The first integer is the first byte of the array, the second integer is
-        just past the last byte of the array. If `a` is not contiguous it will
-        not use every byte between the (`low`, `high`) values.
 
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> I = np.eye(2, dtype=np.complex64);
-    >>> low, high = np.byte_bounds(I)
-    >>> high - low == I.size*I.itemsize
-    True
-    >>> I = np.eye(2);
-    >>> low, high = np.byte_bounds(I)
-    >>> high - low == I.size*I.itemsize
-    True
+def test_size():
+    arr = dpt.usm_ndarray((4, 5), dtype="i4")
+    assert uda.get_size(arr) == 20
 
-    """
 
-    # pylint: disable=protected-access
-    return dpnp.get_usm_ndarray(a)._byte_bounds
+def test_elemsize():
+    arr_f4 = dpt.usm_ndarray(10, dtype="f4")
+    assert uda.get_elemsize(arr_f4) == 4
+
+    arr_f8 = dpt.usm_ndarray(10, dtype="f8")
+    assert uda.get_elemsize(arr_f8) == 8
+
+
+def test_c_contiguous():
+    arr = dpt.usm_ndarray((3, 4), dtype="f4", order="C")
+    assert uda.is_c_contiguous(arr) is True
+
+
+def test_f_contiguous():
+    arr = dpt.usm_ndarray((3, 4), dtype="f4", order="F")
+    assert uda.is_f_contiguous(arr) is True
+
+
+def test_writable():
+    arr = dpt.usm_ndarray(10, dtype="i4")
+    assert uda.is_writable(arr) is True
+
+
+def test_typenum():
+    arr_f4 = dpt.usm_ndarray(5, dtype="f4")
+    arr_f8 = dpt.usm_ndarray(5, dtype="f8")
+    assert uda.get_typenum(arr_f4) != uda.get_typenum(arr_f8)

@@ -332,7 +332,9 @@ class dpnp_nd_grid:
     Parameters
     ----------
     sparse : {bool}, optional
-        Whether the grid is sparse or not. Default is False.
+        Whether the grid is sparse or not.
+
+        Default: ``False``.
 
     """
 
@@ -439,4 +441,5 @@ class dpnp_nd_grid:
                 slobj[k] = slice(None, None)
                 nn[k] = nn[k][tuple(slobj)]
                 slobj[k] = dpnp.newaxis
-        return nn
+            return tuple(nn)  # ogrid -> tuple of arrays
+        return nn  # mgrid -> ndarray
