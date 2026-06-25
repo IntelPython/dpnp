@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.21.0dev1+23.g6c5fe045015 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.21.0dev1+35.g1fbdb39e212 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=326a5935"></script>
+      <script src="../../_static/documentation_options.js?v=1546931c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -541,6 +541,8 @@
 <span class="sd">        and implementing `__sycl_usm_array_interface__` protocol, an instance</span>
 <span class="sd">        of `numpy.ndarray`, an object supporting Python buffer protocol,</span>
 <span class="sd">        a Python scalar, or a (possibly nested) sequence of Python scalars.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, class:`dpctl.SyclQueue`}, optional</span>
 <span class="sd">        A queue which explicitly indicates where USM allocation is done</span>
 <span class="sd">        and the population code (if any) is executed.</span>
@@ -592,7 +594,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, value of `a` array will be copied into it</span>
 <span class="sd">        according to ``safe`` casting rule.</span>
 <span class="sd">        It should be of the appropriate shape.</span>
