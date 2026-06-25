@@ -3276,7 +3276,7 @@ class OGridClass:
     See Also
     --------
     :obj:`dpnp.mgrid` : Work like :obj:`dpnp.ogrid` but returns dense
-        (or fleshed out) mesh grids..
+        (or fleshed out) mesh grids.
     :obj:`dpnp.meshgrid`: Return coordinate matrices from coordinate vectors.
     :obj:`dpnp.r_` : Array concatenator.
 
