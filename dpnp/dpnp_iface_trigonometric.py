@@ -1861,6 +1861,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         as singleton dimensions, so that the returned array remains compatible
         with the input arrays according to Array Broadcasting rules. Otherwise,
         if ``False``, the reduced axes are not included in the returned array.
+
         Default: ``False``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The array into which the result is written. The data type of `out` must
@@ -2149,6 +2150,7 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         as singleton dimensions, so that the returned array remains compatible
         with the input arrays according to Array Broadcasting rules. Otherwise,
         if ``False``, the reduced axes are not included in the returned array.
+
         Default: ``False``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The array into which the result is written. The data type of `out` must
@@ -2213,7 +2215,8 @@ out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is `None`.
-    Default: ``"K"``
+
+    Default: ``"K"``.
 
 Returns
 -------

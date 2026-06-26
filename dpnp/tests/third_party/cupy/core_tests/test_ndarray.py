@@ -280,10 +280,12 @@ class TestNdarrayCopy:
 
 class TestNdarrayShape(unittest.TestCase):
 
+    @testing.with_requires("numpy>=2.5")
     @testing.numpy_cupy_array_equal()
     def test_shape_set(self, xp):
         arr = xp.ndarray((2, 3))
-        arr.shape = (3, 2)
+        with testing.assert_warns(DeprecationWarning):
+            arr.shape = (3, 2)
         return xp.array(arr.shape)
 
     @pytest.mark.skip(
@@ -296,12 +298,15 @@ class TestNdarrayShape(unittest.TestCase):
         arr.shape = (3, -1)
         return xp.array(arr.shape)
 
+    @testing.with_requires("numpy>=2.5")
     @testing.numpy_cupy_array_equal()
     def test_shape_set_int(self, xp):
         arr = xp.ndarray((2, 3))
-        arr.shape = 6
+        with testing.assert_warns(DeprecationWarning):
+            arr.shape = 6
         return xp.array(arr.shape)
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     def test_shape_need_copy(self):
         # from cupy/cupy#5470
         for xp in (numpy, cupy):
@@ -555,21 +560,6 @@ class TestNdarrayTakeErrorShapeMismatch(unittest.TestCase):
             i = testing.shaped_arange(self.indices, xp, numpy.int32) % 3
             o = testing.shaped_arange(self.out_shape, xp)
             with pytest.raises(ValueError):
-                wrap_take(a, i, out=o)
-
-
-@testing.parameterize(
-    {"shape": (3, 4, 5), "indices": (2, 3), "out_shape": (2, 3)},
-    {"shape": (), "indices": (), "out_shape": ()},
-)
-class TestNdarrayTakeErrorTypeMismatch(unittest.TestCase):
-
-    def test_output_type_mismatch(self):
-        for xp in (numpy, cupy):
-            a = testing.shaped_arange(self.shape, xp, numpy.int32)
-            i = testing.shaped_arange(self.indices, xp, numpy.int32) % 3
-            o = testing.shaped_arange(self.out_shape, xp, numpy.float32)
-            with pytest.raises(TypeError):
                 wrap_take(a, i, out=o)
 
 

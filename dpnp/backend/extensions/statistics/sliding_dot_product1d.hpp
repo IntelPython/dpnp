@@ -28,9 +28,12 @@
 
 #pragma once
 
-#include "ext/dispatch_table.hpp"
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
+
+#include "dpnp4pybind11.hpp"
+
+#include "ext/dispatch_table.hpp"
 
 namespace statistics::sliding_window1d
 {

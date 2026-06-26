@@ -475,7 +475,7 @@ def einsum_path(*operands, optimize="greedy"):
         These are the arrays for the operation in any form that can be
         converted to an array. This includes scalars, lists, lists of
         tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.
-    optimize : {bool, list, tuple, None, "greedy", "optimal"}
+    optimize : {bool, list, tuple, None, "greedy", "optimal"}, optional
         Choose the type of path. If a tuple is provided, the second argument is
         assumed to be the maximum intermediate size created. If only a single
         argument is provided the largest input or output array size is used
@@ -613,19 +613,20 @@ def inner(a, b):
         matches that of the array between `a` and `b`, whichever is an array.
         If `a` and `b` are both 1-D arrays then a 0-d array is returned;
         otherwise an array with a shape as
-        ``out.shape = (*a.shape[:-1], *b.shape[:-1])`` is returned.
+        ``out.shape == (*a.shape[:-1], *b.shape[:-1])`` is returned.
 
 
     See Also
     --------
     :obj:`dpnp.einsum` : Einstein summation convention.
     :obj:`dpnp.dot` : Generalized matrix product,
-                      using second last dimension of `b`.
+        using second last dimension of `b`.
     :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
+    :obj:`dpnp.vecdot` : Vector dot product of two arrays.
 
     Examples
     --------
-    # Ordinary inner product for vectors
+    Ordinary inner product for vectors:
 
     >>> import dpnp as np
     >>> a = np.array([1, 2, 3])
@@ -633,7 +634,7 @@ def inner(a, b):
     >>> np.inner(a, b)
     array(2)
 
-    # Some multidimensional examples
+    Some multidimensional examples:
 
     >>> a = np.arange(24).reshape((2, 3, 4))
     >>> b = np.arange(4)
@@ -652,7 +653,7 @@ def inner(a, b):
     >>> c
     array([[[1, 3, 5]]])
 
-    An example where `b` is a scalar
+    An example where `b` is a scalar:
 
     >>> np.inner(np.eye(2), 7)
     array([[7., 0.],
@@ -1142,7 +1143,7 @@ def tensordot(a, b, /, *, axes=2):
     b : {dpnp.ndarray, usm_ndarray, scalar}
         Second input array. Both inputs `a` and `b` can not be scalars
         at the same time.
-    axes : int or (2,) array_like
+    axes : int or (2,) array_like, optional
         * integer_like: If an int `N`, sum over the last `N` axes of `a` and
           the first `N` axes of `b` in order. The sizes of the corresponding
           axes must match.

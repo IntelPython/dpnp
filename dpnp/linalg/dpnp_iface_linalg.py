@@ -309,14 +309,6 @@ def cross(x1, x2, /, *, axis=-1):
 
     """
 
-    dpnp.check_supported_arrays_type(x1, x2)
-    if x1.shape[axis] != 3 or x2.shape[axis] != 3:
-        raise ValueError(
-            "Both input arrays must be (arrays of) 3-dimensional vectors, "
-            f"but they are {x1.shape[axis]} and {x2.shape[axis]} "
-            "dimensional instead."
-        )
-
     return dpnp.cross(x1, x2, axis=axis)
 
 
@@ -480,10 +472,10 @@ def eig(a):
 
     eigenvalues : (..., M) dpnp.ndarray
         The eigenvalues, each repeated according to its multiplicity.
-        The eigenvalues are not necessarily ordered. The resulting array will
-        be of complex type, unless the imaginary part is zero in which case it
-        will be cast to a real type. When `a` is real the resulting eigenvalues
-        will be real (zero imaginary part) or occur in conjugate pairs.
+        The eigenvalues are not necessarily ordered. The resulting array is
+        always of complex type, even when `a` is real-valued. In that case the
+        eigenvalues either have a zero imaginary part or occur in conjugate
+        pairs.
     eigenvectors : (..., M, M) dpnp.ndarray
         The normalized (unit "length") eigenvectors, such that the column
         ``eigenvectors[:,i]`` is the eigenvector corresponding to the
@@ -511,8 +503,8 @@ def eig(a):
     (Almost) trivial example with real eigenvalues and eigenvectors.
 
     >>> w, v = LA.eig(np.diag((1, 2, 3)))
-    >>> w, v
-    (array([1., 2., 3.]),
+    >>> w, v.real
+    (array([1.+0.j, 2.+0.j, 3.+0.j]),
      array([[1., 0., 0.],
             [0., 1., 0.],
             [0., 0., 1.]]))
@@ -541,8 +533,8 @@ def eig(a):
     >>> a = np.array([[1 + 1e-9, 0], [0, 1 - 1e-9]])
     >>> # Theor. eigenvalues are 1 +/- 1e-9
     >>> w, v = LA.eig(a)
-    >>> w, v
-    (array([1., 1.]),
+    >>> w, v.real
+    (array([1.+0.j, 1.+0.j]),
      array([[1., 0.],
             [0., 1.]]))
 
@@ -689,11 +681,11 @@ def eigvals(a):
 
     >>> D = np.diag((-1, 1))
     >>> LA.eigvals(D)
-    array([-1.,  1.])
+    array([-1.+0.j,  1.+0.j])
     >>> A = np.dot(Q, D)
     >>> A = np.dot(A, Q.T)
     >>> LA.eigvals(A)
-    array([-1.,  1.]) # random
+    array([-1.+0.j,  1.+0.j]) # random
 
     """
 
@@ -1969,7 +1961,7 @@ def tensordot(a, b, /, *, axes=2):
     b : {dpnp.ndarray, usm_ndarray, scalar}
         Second input array. Both inputs `a` and `b` can not be scalars
         at the same time.
-    axes : int or (2,) array_like
+    axes : int or (2,) array_like, optional
         * integer_like: If an int `N`, sum over the last `N` axes of `a` and
           the first `N` axes of `b` in order. The sizes of the corresponding
           axes must match.
@@ -2091,17 +2083,21 @@ def tensorinv(a, ind=2):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.eye(4*6)
-    >>> a.shape = (4, 6, 8, 3)
+    >>> a = np.eye(4*6).reshape((4, 6, 8, 3))
     >>> ainv = np.linalg.tensorinv(a, ind=2)
     >>> ainv.shape
     (8, 3, 4, 6)
+    >>> b = np.random.normal(size=(4, 6))
+    >>> np.allclose(np.tensordot(ainv, b), np.linalg.tensorsolve(a, b))
+    array(True)
 
-    >>> a = np.eye(4*6)
-    >>> a.shape = (24, 8, 3)
+    >>> a = np.eye(4*6).reshape((24, 8, 3))
     >>> ainv = np.linalg.tensorinv(a, ind=1)
     >>> ainv.shape
     (8, 3, 24)
+    >>> b = np.random.normal(size=24)
+    >>> np.allclose(np.tensordot(ainv, b, axes=1), np.linalg.tensorsolve(a, b))
+    array(True)
 
     """
 
@@ -2158,14 +2154,13 @@ def tensorsolve(a, b, axes=None):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.eye(2*3*4)
-    >>> a.shape = (2*3, 4, 2, 3, 4)
+    >>> a = np.eye(2*3*4).reshape((2*3, 4, 2, 3, 4))
     >>> b = np.random.randn(2*3, 4)
     >>> x = np.linalg.tensorsolve(a, b)
     >>> x.shape
     (2, 3, 4)
     >>> np.allclose(np.tensordot(a, x, axes=3), b)
-    array([ True])
+    array(True)
 
     """
 

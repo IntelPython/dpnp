@@ -1778,7 +1778,7 @@ class dpnp_array:
 
     def reshape(self, /, *shape, order="C", copy=None):
         """
-        Return an array containing the same data with a new shape.
+        Return a reshaped array without changing data.
 
         Refer to :obj:`dpnp.reshape` for full documentation.
 
@@ -1845,10 +1845,11 @@ class dpnp_array:
 
         For full documentation refer to :obj:`numpy.ndarray.shape`.
 
-        Note
-        ----
+        Warnings
+        --------
+        Setting ``a.shape`` is deprecated and may be removed in the future.
         Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the
-        preferred approach to set new shape of an array.
+        preferred approach.
 
         See Also
         --------
@@ -1865,15 +1866,6 @@ class dpnp_array:
         >>> y = np.zeros((2, 3, 4))
         >>> y.shape
         (2, 3, 4)
-
-        >>> y.shape = (3, 8)
-        >>> y
-        array([[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
-               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
-               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]])
-        >>> y.shape = (3, 6)
-        ...
-        TypeError: Can not reshape array of size 24 into (3, 6)
 
         """
 
@@ -1900,8 +1892,15 @@ class dpnp_array:
             New shape. Only non-negative values are supported. The new shape
             may not lead to the change in the number of elements in the array.
 
+        Warnings
+        --------
+        Setting ``a.shape`` is deprecated and may be removed in the future.
+        Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the
+        preferred approach.
+
         """
 
+        # the underlying usm_ndarray shape setter raises a deprecation warning
         self._array_obj.shape = newshape
 
     @property
@@ -2216,7 +2215,7 @@ class dpnp_array:
 
         Parameters
         ----------
-        device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        device : {None, string, SyclDevice, SyclQueue, Device}
             An array API concept of device where the output array is created.
             `device` can be ``None``, a oneAPI filter selector string,
             an instance of :class:`dpctl.SyclDevice` corresponding to
@@ -2394,6 +2393,7 @@ class dpnp_array:
             * ``tuple or list of ints``: `i` in the `j`-th place in the
               tuple/list means that the array’s `i`-th axis becomes the
               transposed array’s `j`-th axis.
+              Negative indices can also be used to specify axes.
             * ``n ints``: same as an n-tuple/n-list of the same integers (this
               form is intended simply as a “convenience” alternative to the
               tuple form).
@@ -2408,8 +2408,8 @@ class dpnp_array:
         :obj:`dpnp.transpose` : Equivalent function.
         :obj:`dpnp.ndarray.ndarray.T` : Array property returning the array
             transposed.
-        :obj:`dpnp.ndarray.reshape` : Give a new shape to an array without
-            changing its data.
+        :obj:`dpnp.ndarray.reshape` : Return a reshaped ndarray without
+            changing data.
 
         Examples
         --------
