@@ -24,6 +24,8 @@ class TestBasic:
         return a
 
     @testing.slow
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="too large allocations")
     def test_empty_huge_size(self):
         a = cupy.empty((1024, 2048, 1024), dtype="b")
         a.fill(123)
@@ -33,6 +35,8 @@ class TestBasic:
         # cupy.get_default_memory_pool().free_all_blocks()
 
     @testing.slow
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="too large allocations")
     def test_empty_huge_size_fill0(self):
         a = cupy.empty((1024, 2048, 1024), dtype="b")
         a.fill(0)
@@ -66,6 +70,8 @@ class TestBasic:
         return a
 
     @testing.slow
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="too large allocations")
     def test_empty_int_huge_size(self):
         a = cupy.empty(2**31, dtype="b")
         a.fill(123)
@@ -75,6 +81,8 @@ class TestBasic:
         cupy.get_default_memory_pool().free_all_blocks()
 
     @testing.slow
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="too large allocations")
     def test_empty_int_huge_size_fill0(self):
         a = cupy.empty(2**31, dtype="b")
         a.fill(0)

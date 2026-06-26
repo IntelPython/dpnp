@@ -65,6 +65,8 @@ class TestSumprod:
 
     @testing.slow
     @testing.numpy_cupy_allclose()
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="too large allocations")
     def test_sum_axis_huge(self, xp):
         a = testing.shaped_random((2048, 1, 1024), xp, "b")
         a = xp.broadcast_to(a, (2048, 1024, 1024))
@@ -232,6 +234,8 @@ class TestCubReduction:
         _acc.set_routine_accelerators(old_routine_accelerators)
         _acc.set_reduction_accelerators(old_reduction_accelerators)
 
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
     @testing.for_contiguous_axes()
     # sum supports less dtypes; don't test float16 as it's not as accurate?
     @testing.for_dtypes("qQfdFD")
@@ -283,6 +287,8 @@ class TestCubReduction:
             a = xp.asfortranarray(a)
         return a.sum(axis=())
 
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
     @testing.for_contiguous_axes()
     # prod supports less dtypes; don't test float16 as it's not as accurate?
     @testing.for_dtypes("qQfdFD")
@@ -325,6 +331,8 @@ class TestCubReduction:
 
     # TODO(leofang): test axis after support is added
     # don't test float16 as it's not as accurate?
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
     @testing.for_dtypes("bhilBHILfdF")
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_cub_cumsum(self, xp, dtype):
@@ -350,6 +358,8 @@ class TestCubReduction:
 
     # TODO(leofang): test axis after support is added
     # don't test float16 as it's not as accurate?
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
     @testing.for_dtypes("bhilBHILfdF")
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_cub_cumprod(self, xp, dtype):
@@ -400,8 +410,8 @@ class TestCubReduction:
 @pytest.mark.skip("cutensor is not supported")
 class TestCuTensorReduction:
 
-    @pytest.fixture(autouse=True)
-    def setUp(self):
+    @pytest.fixture(autouse=True, scope="class")
+    def setup(self):
         old_accelerators = cupy._core.get_routine_accelerators()
         cupy._core.set_routine_accelerators(["cutensor"])
         yield

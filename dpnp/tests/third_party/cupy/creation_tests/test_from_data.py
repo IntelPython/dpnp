@@ -799,6 +799,8 @@ class TestCudaArrayInterfaceMaskedArray(unittest.TestCase):
 
 # marked slow as either numpy or cupy could go OOM in this test
 @testing.slow
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="too large allocations")
 @pytest.mark.skip("CUDA array interface is not supported")
 class TestCudaArrayInterfaceBigArray(unittest.TestCase):
     def test_with_over_size_array(self):

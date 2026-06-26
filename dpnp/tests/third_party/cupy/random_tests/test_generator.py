@@ -82,8 +82,8 @@ class RandomGeneratorTestCase(common_distributions.BaseGeneratorTestCase):
     def get_rng(self, xp, seed):
         return xp.random.RandomState(seed=seed)
 
-    def set_rng_seed(self, seed):
-        self.rng.seed(seed)
+    def set_rng_seed(self, rng, seed):
+        rng.seed(seed)
 
 
 def _xp_random(xp, method_name):
@@ -103,12 +103,8 @@ def _xp_random(xp, method_name):
 
 @testing.fix_random()
 class TestRandomState(unittest.TestCase):
-
-    def setUp(self):
-        self.rs = _generator.RandomState(seed=testing.generate_seed())
-
     def check_seed(self, seed):
-        rs = self.rs
+        rs = _generator.RandomState(seed=testing.generate_seed())
 
         rs.seed(seed)
         xs1 = [rs.uniform() for _ in range(100)]
@@ -131,13 +127,15 @@ class TestRandomState(unittest.TestCase):
 
     @testing.for_dtypes([numpy.complex128])
     def test_seed_invalid_type_complex(self, dtype):
+        rs = _generator.RandomState(seed=testing.generate_seed())
         with self.assertRaises(TypeError):
-            self.rs.seed(dtype(0))
+            rs.seed(dtype(0))
 
     @testing.for_float_dtypes()
     def test_seed_invalid_type_float(self, dtype):
+        rs = _generator.RandomState(seed=testing.generate_seed())
         with self.assertRaises(TypeError):
-            self.rs.seed(dtype(0))
+            rs.seed(dtype(0))
 
     def test_array_seed(self):
         self.check_seed(numpy.random.randint(0, 2**31, size=40))
@@ -1263,12 +1261,16 @@ class TestChoiceReplaceFalseFailure(unittest.TestCase):
 
 class TestResetStates(unittest.TestCase):
 
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="mutates global _generator.")
     def test_reset_states(self):
         _generator._random_states = "dummy"
         _generator.reset_states()
         assert {} == _generator._random_states
 
 
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="mutates global _generator.")
 class TestGetRandomState(unittest.TestCase):
 
     def setUp(self):
@@ -1294,6 +1296,8 @@ class TestGetRandomState(unittest.TestCase):
         assert "expected" == rs
 
 
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="mutates global _generator.")
 class TestSetRandomState(unittest.TestCase):
 
     def setUp(self):
@@ -1335,6 +1339,8 @@ class TestTriangular(RandomGeneratorTestCase):
         )
 
 
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="Mutates global rng instance.")
 class TestRandomStateThreadSafe(unittest.TestCase):
 
     def setUp(self):
@@ -1389,6 +1395,8 @@ class TestRandomStateThreadSafe(unittest.TestCase):
         assert cupy.random.get_random_state() is rs
 
 
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="mutates global random states")
 class TestGetRandomState2(unittest.TestCase):
 
     def setUp(self):
