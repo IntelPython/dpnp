@@ -80,6 +80,7 @@ class TestSolve(unittest.TestCase):
     # NumPy with OpenBLAS returns an empty array
     # while numpy with OneMKL raises LinAlgError
     @pytest.mark.skip("Undefined behavior")
+    @testing.with_requires("numpy<2.4")
     @testing.numpy_cupy_allclose()
     def test_solve_singular_empty(self, xp):
         a = xp.zeros((3, 3))  # singular
