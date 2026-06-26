@@ -94,15 +94,13 @@ class TestComparisonOperator:
         return [op(a, b), op(b, a)]
 
     @pytest.mark.parametrize(
-        "dtype", [numpy.float16, numpy.float32, numpy.float64]
-    )
-    @pytest.mark.parametrize(
         "scalar", [-1, 0, 2**32, 2**31 - 1, 2**31 + 1, 2**63, 2**64 - 1]
     )
     @pytest.mark.parametrize("op", operators)
+    @testing.for_float_dtypes(no_float16=False)
     @testing.numpy_cupy_array_equal()
     @numpy.errstate(over="ignore")
-    def test_binary_array_pyscalar_int_and_float(self, xp, dtype, scalar, op):
+    def test_binary_array_pyscalar_int_and_float(self, xp, scalar, op, dtype):
         a = xp.array(
             [-1, 0, 2**31 - 1, 2**31 + 1, 2**32, 2**63 - 1, 2**62, 2**62 + 1]
         )

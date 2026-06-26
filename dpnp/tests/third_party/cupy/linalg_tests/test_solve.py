@@ -82,7 +82,7 @@ class TestSolve(unittest.TestCase):
         c = cupy.linalg.solve(a, b)
         assert c.size == 0
 
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_solve_non_singular_empty(self, xp):
         a = xp.eye(3)  # non-singular
         b = xp.empty((3, 0))  # nrhs = 0

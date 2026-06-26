@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -166,7 +167,7 @@ class TestRepeatNdarrayRepsDtype:
 class TestRepeatNdarrayArrayDtype:
     """Output dtype matches input dtype."""
 
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_dtype_preserved(self, xp):
         x = testing.shaped_arange((3, 4), xp, dtype=self.a_dtype)
         return xp.repeat(x, xp.array([1, 2, 3, 4]), axis=1)

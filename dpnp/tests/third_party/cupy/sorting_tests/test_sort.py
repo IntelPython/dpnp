@@ -37,7 +37,7 @@ class TestSort(unittest.TestCase):
             with pytest.raises(AxisError):
                 xp.sort(a)
 
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_sort_zero_length_axis(self, xp):
         """Sorting along a zero-length axis is a no-op (#9816)."""
         return xp.sort(xp.empty((2, 0)), axis=-1)
