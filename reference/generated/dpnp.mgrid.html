@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.mgrid &mdash; Data Parallel Extension for NumPy 0.21.0dev1+25.g77e000ba9f2 documentation</title>
+  <title>dpnp.mgrid &mdash; Data Parallel Extension for NumPy 0.21.0dev1+26.gf79adfd0244 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b681cdfb"></script>
+      <script src="../../_static/documentation_options.js?v=f67285ef"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -162,6 +162,17 @@ stacked along the first axis.</p>
 <dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.ogrid.html#dpnp.ogrid" title="dpnp.ogrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ogrid</span></code></a></dt><dd><p>Work like <a class="reference internal" href="#dpnp.mgrid" title="dpnp.mgrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.mgrid</span></code></a> but returns open (not fleshed out) mesh grids.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.meshgrid.html#dpnp.meshgrid" title="dpnp.meshgrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.meshgrid</span></code></a></dt><dd><p>Return coordinate matrices from coordinate vectors.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.r_</span></code></dt><dd><p>Array concatenator.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>

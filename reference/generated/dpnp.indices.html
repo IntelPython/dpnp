@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.indices &mdash; Data Parallel Extension for NumPy 0.21.0dev1+25.g77e000ba9f2 documentation</title>
+  <title>dpnp.indices &mdash; Data Parallel Extension for NumPy 0.21.0dev1+26.gf79adfd0244 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b681cdfb"></script>
+      <script src="../../_static/documentation_options.js?v=f67285ef"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -166,11 +166,11 @@ a default queue.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p><strong>out</strong> -- If sparse is <code class="docutils literal notranslate"><span class="pre">False</span></code>:
-Returns one array of grid indices,
-<code class="docutils literal notranslate"><span class="pre">grid.shape</span> <span class="pre">=</span> <span class="pre">(len(dimensions),)</span> <span class="pre">+</span> <span class="pre">tuple(dimensions)</span></code>.</p>
+Returns one array of grid indices with
+<code class="docutils literal notranslate"><span class="pre">grid.shape</span> <span class="pre">==</span> <span class="pre">(len(dimensions),)</span> <span class="pre">+</span> <span class="pre">tuple(dimensions)</span></code>.</p>
 <p>If sparse is <code class="docutils literal notranslate"><span class="pre">True</span></code>:
 Returns a tuple of arrays,
-with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
+with grid[i].shape == (1, ..., 1, dimensions[i], 1, ..., 1)
 with dimensions[i] in the i-th place.</p>
 </p>
 </dd>
@@ -211,8 +211,8 @@ with dimensions[i] in the i-th place.</p>
 </pre></div>
 </div>
 <p>Note that it would be more straightforward in the above example to
-extract the required elements directly with <code class="docutils literal notranslate"><span class="pre">x[:2,</span> <span class="pre">:3]</span></code>.
-If sparse is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the grid will be returned in a sparse
+extract the required elements directly with <code class="docutils literal notranslate"><span class="pre">x[:2,</span> <span class="pre">:3]</span></code>.</p>
+<p>If sparse is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the grid will be returned in a sparse
 representation.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">shape</span>

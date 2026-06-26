@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.21.0dev1+25.g77e000ba9f2 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.21.0dev1+26.gf79adfd0244 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b681cdfb"></script>
+      <script src="../../_static/documentation_options.js?v=f67285ef"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -1183,12 +1183,12 @@
 <span class="sd">    -------</span>
 <span class="sd">    out : one dpnp.ndarray or tuple of dpnp.ndarray</span>
 <span class="sd">        If sparse is ``False``:</span>
-<span class="sd">        Returns one array of grid indices,</span>
-<span class="sd">        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.</span>
+<span class="sd">        Returns one array of grid indices with</span>
+<span class="sd">        ``grid.shape == (len(dimensions),) + tuple(dimensions)``.</span>
 
 <span class="sd">        If sparse is ``True``:</span>
 <span class="sd">        Returns a tuple of arrays,</span>
-<span class="sd">        with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)</span>
+<span class="sd">        with grid[i].shape == (1, ..., 1, dimensions[i], 1, ..., 1)</span>
 <span class="sd">        with dimensions[i] in the i-th place.</span>
 
 <span class="sd">    See Also</span>
@@ -1221,6 +1221,7 @@
 
 <span class="sd">    Note that it would be more straightforward in the above example to</span>
 <span class="sd">    extract the required elements directly with ``x[:2, :3]``.</span>
+
 <span class="sd">    If sparse is set to ``True``, the grid will be returned in a sparse</span>
 <span class="sd">    representation.</span>
 

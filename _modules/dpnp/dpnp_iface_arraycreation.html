@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.21.0dev1+25.g77e000ba9f2 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.21.0dev1+26.gf79adfd0244 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b681cdfb"></script>
+      <script src="../../_static/documentation_options.js?v=f67285ef"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -3341,9 +3341,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a tuple of coordinate matrices from coordinate vectors.</span>
 
-<span class="sd">    Make N-D coordinate arrays for vectorized evaluations of</span>
-<span class="sd">    N-D scalar/vector fields over N-D grids, given</span>
-<span class="sd">    one-dimensional coordinate arrays ``x1, x2,..., xn``.</span>
+<span class="sd">    Make N-D coordinate arrays for vectorized evaluations of N-D scalar/vector</span>
+<span class="sd">    fields over N-D grids, given one-dimensional coordinate arrays</span>
+<span class="sd">    ``x1, x2,..., xn``.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.meshgrid`.</span>
 
@@ -3451,7 +3451,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MGridClass</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct a dense multi-dimensional &quot;meshgrid&quot;.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.mgrid`.</span>
@@ -3484,6 +3484,13 @@
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        A single array, containing a set of arrays all of the same dimensions,</span>
 <span class="sd">        stacked along the first axis.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ogrid` : Work like :obj:`dpnp.mgrid` but returns open</span>
+<span class="sd">        (not fleshed out) mesh grids.</span>
+<span class="sd">    :obj:`dpnp.meshgrid`: Return coordinate matrices from coordinate vectors.</span>
+<span class="sd">    :obj:`dpnp.r_` : Array concatenator.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -3569,10 +3576,17 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray or tuple of dpnp.ndarray</span>
+<span class="sd">    out : one dpnp.ndarray or tuple of dpnp.ndarray</span>
 <span class="sd">        If the input is a single slice, returns an array.</span>
 <span class="sd">        If the input is multiple slices, returns a tuple of arrays, with</span>
 <span class="sd">        only one dimension not equal to 1.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.mgrid` : Work like :obj:`dpnp.ogrid` but returns dense</span>
+<span class="sd">        (or fleshed out) mesh grids.</span>
+<span class="sd">    :obj:`dpnp.meshgrid`: Return coordinate matrices from coordinate vectors.</span>
+<span class="sd">    :obj:`dpnp.r_` : Array concatenator.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
