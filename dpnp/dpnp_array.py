@@ -1835,10 +1835,11 @@ class dpnp_array:
 
         For full documentation refer to :obj:`numpy.ndarray.shape`.
 
-        Note
-        ----
+        Warnings
+        --------
+        Setting ``a.shape`` is deprecated and may be removed in the future.
         Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the
-        preferred approach to set new shape of an array.
+        preferred approach.
 
         See Also
         --------
@@ -1855,15 +1856,6 @@ class dpnp_array:
         >>> y = np.zeros((2, 3, 4))
         >>> y.shape
         (2, 3, 4)
-
-        >>> y.shape = (3, 8)
-        >>> y
-        array([[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
-               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
-               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]])
-        >>> y.shape = (3, 6)
-        ...
-        TypeError: Can not reshape array of size 24 into (3, 6)
 
         """
 
@@ -1890,8 +1882,15 @@ class dpnp_array:
             New shape. Only non-negative values are supported. The new shape
             may not lead to the change in the number of elements in the array.
 
+        Warnings
+        --------
+        Setting ``a.shape`` is deprecated and may be removed in the future.
+        Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the
+        preferred approach.
+
         """
 
+        # the underlying usm_ndarray shape setter raises a deprecation warning
         self._array_obj.shape = newshape
 
     @property

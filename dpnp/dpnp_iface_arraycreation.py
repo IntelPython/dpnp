@@ -3175,9 +3175,9 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     """
     Return a tuple of coordinate matrices from coordinate vectors.
 
-    Make N-D coordinate arrays for vectorized evaluations of
-    N-D scalar/vector fields over N-D grids, given
-    one-dimensional coordinate arrays ``x1, x2,..., xn``.
+    Make N-D coordinate arrays for vectorized evaluations of N-D scalar/vector
+    fields over N-D grids, given one-dimensional coordinate arrays
+    ``x1, x2,..., xn``.
 
     For full documentation refer to :obj:`numpy.meshgrid`.
 
@@ -3284,7 +3284,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
 
 
 class MGridClass:
-    """
+    r"""
     Construct a dense multi-dimensional "meshgrid".
 
     For full documentation refer to :obj:`numpy.mgrid`.
@@ -3317,6 +3317,13 @@ class MGridClass:
     out : dpnp.ndarray
         A single array, containing a set of arrays all of the same dimensions,
         stacked along the first axis.
+
+    See Also
+    --------
+    :obj:`dpnp.ogrid` : Work like :obj:`dpnp.mgrid` but returns open
+        (not fleshed out) mesh grids.
+    :obj:`dpnp.meshgrid`: Return coordinate matrices from coordinate vectors.
+    :obj:`dpnp.r_` : Array concatenator.
 
     Examples
     --------
@@ -3402,10 +3409,17 @@ class OGridClass:
 
     Returns
     -------
-    out : dpnp.ndarray or tuple of dpnp.ndarray
+    out : one dpnp.ndarray or tuple of dpnp.ndarray
         If the input is a single slice, returns an array.
         If the input is multiple slices, returns a tuple of arrays, with
         only one dimension not equal to 1.
+
+    See Also
+    --------
+    :obj:`dpnp.mgrid` : Work like :obj:`dpnp.ogrid` but returns dense
+        (or fleshed out) mesh grids.
+    :obj:`dpnp.meshgrid`: Return coordinate matrices from coordinate vectors.
+    :obj:`dpnp.r_` : Array concatenator.
 
     Examples
     --------

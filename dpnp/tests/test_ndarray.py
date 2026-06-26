@@ -1,3 +1,5 @@
+import warnings
+
 import numpy
 import pytest
 from numpy.testing import (
@@ -56,11 +58,16 @@ class TestAttributes:
         assert_equal(self.two.shape, (4, 5))
         assert_equal(self.three.shape, (2, 5, 6))
 
-        self.three.shape = (10, 3, 2)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            self.three.shape = (10, 3, 2)
         assert_equal(self.three.shape, (10, 3, 2))
-        self.three.shape = (2, 5, 6)
 
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            self.three.shape = (2, 5, 6)
         assert_equal(self.one.strides, (self.one.itemsize,))
+
         num = self.two.itemsize
         assert_equal(self.two.strides, (5 * num, num))
         num = self.three.itemsize
@@ -377,7 +384,7 @@ def test_flags_writable():
     a = dpnp.arange(10, dtype="f4")
     a.flags["W"] = False
 
-    a.shape = (5, 2)
+    a = a.reshape((5, 2))
     assert not a.flags.writable
     assert not a.T.flags.writable
     assert not a.real.flags.writable

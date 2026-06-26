@@ -613,19 +613,20 @@ def inner(a, b):
         matches that of the array between `a` and `b`, whichever is an array.
         If `a` and `b` are both 1-D arrays then a 0-d array is returned;
         otherwise an array with a shape as
-        ``out.shape = (*a.shape[:-1], *b.shape[:-1])`` is returned.
+        ``out.shape == (*a.shape[:-1], *b.shape[:-1])`` is returned.
 
 
     See Also
     --------
     :obj:`dpnp.einsum` : Einstein summation convention.
     :obj:`dpnp.dot` : Generalized matrix product,
-                      using second last dimension of `b`.
+        using second last dimension of `b`.
     :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
+    :obj:`dpnp.vecdot` : Vector dot product of two arrays.
 
     Examples
     --------
-    # Ordinary inner product for vectors
+    Ordinary inner product for vectors:
 
     >>> import dpnp as np
     >>> a = np.array([1, 2, 3])
@@ -633,7 +634,7 @@ def inner(a, b):
     >>> np.inner(a, b)
     array(2)
 
-    # Some multidimensional examples
+    Some multidimensional examples:
 
     >>> a = np.arange(24).reshape((2, 3, 4))
     >>> b = np.arange(4)
@@ -652,7 +653,7 @@ def inner(a, b):
     >>> c
     array([[[1, 3, 5]]])
 
-    An example where `b` is a scalar
+    An example where `b` is a scalar:
 
     >>> np.inner(np.eye(2), 7)
     array([[7., 0.],

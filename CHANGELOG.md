@@ -32,6 +32,8 @@ This release is compatible with NumPy 2.5.
 
 ### Deprecated
 
+* Deprecated setting the shape via the `shape` attribute of `dpnp.ndarray` and `dpnp.tensor.usm_ndarray`. Use `dpnp.reshape`/`dpnp.tensor.reshape` (or the `reshape` method) instead [#2967](https://github.com/IntelPython/dpnp/pull/2967)
+
 ### Removed
 
 * Removed support for arrays of 2-dimensional vectors in `dpnp.cross`, which now requires (arrays of) 3-dimensional vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
