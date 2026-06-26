@@ -1076,6 +1076,8 @@ class TestGrid:
             slice(0, 5, 0.5),  # float step
             slice(0, 5, 1j),  # complex step
             slice(0, 5, 5j),  # complex step
+            slice(0, 10, 2.5j),  # complex step with non-integer magnitude
+            slice(0, 10, 3.5j),  # non-integer magnitude with interior points
             slice(None, 5, 1),  # no start
             slice(0, 5, None),  # no step
         ],
@@ -1095,6 +1097,10 @@ class TestGrid:
                 slice(0.0, 5, 1),
                 slice(0, 10, 1j),
             ),  # float start and complex step
+            (
+                slice(0, 10, 2.5j),
+                slice(0, 10, 3.5j),
+            ),  # complex step with non-integer magnitude
         ],
     )
     def test_md_slice(self, grid, slices):

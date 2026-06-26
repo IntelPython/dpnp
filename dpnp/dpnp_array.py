@@ -2205,7 +2205,7 @@ class dpnp_array:
 
         Parameters
         ----------
-        device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        device : {None, string, SyclDevice, SyclQueue, Device}
             An array API concept of device where the output array is created.
             `device` can be ``None``, a oneAPI filter selector string,
             an instance of :class:`dpctl.SyclDevice` corresponding to

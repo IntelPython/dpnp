@@ -2813,6 +2813,10 @@ def repeat(a, repeats, axis=None):
     >>> np.repeat(x, 4)
     array([3, 3, 3, 3])
 
+    >>> x = np.array([4, 5, 6])
+    >>> np.repeat(x, [1, 2, 3])
+    array([4, 5, 5, 6, 6, 6])
+
     >>> x = np.array([[1, 2], [3, 4]])
     >>> np.repeat(x, 2)
     array([1, 1, 2, 2, 3, 3, 4, 4])
@@ -2959,7 +2963,7 @@ def reshape(a, /, shape, order="C", *, copy=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array to be reshaped.
-    shape : {int, tuple of ints}, optional
+    shape : {int, tuple of ints}
         The new shape should be compatible with the original shape. If
         an integer, then the result will be a 1-D array of that length.
         One shape dimension can be -1. In this case, the value is

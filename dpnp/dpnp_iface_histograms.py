@@ -319,11 +319,11 @@ def bincount(x, weights=None, minlength=0):
     weights : {None, dpnp.ndarray, usm_ndarray}, optional
         Weights, array of the same shape as `x`.
 
-        Default: ``None``
+        Default: ``None``.
     minlength : int, optional
         A minimum number of bins for the output array.
 
-        Default: ``0``
+        Default: ``0``.
 
     Returns
     -------

@@ -28,6 +28,7 @@ This release is compatible with NumPy 2.5.
 * Allowed `dpnp.take` and `dpnp.compress` to cast the result into an `out` array of a different but same-kind dtype [#2959](https://github.com/IntelPython/dpnp/pull/2959)
 * Clarified the summary in `dpnp.reshape` and `dpnp.ndarray.reshape` docstrings [#2964](https://github.com/IntelPython/dpnp/pull/2964)
 * Changed `dpnp.atleast_1d`, `dpnp.atleast_2d`, `dpnp.atleast_3d`, and `dpnp.ogrid` to return a tuple of arrays instead of a list [#2965](https://github.com/IntelPython/dpnp/pull/2965)
+* Improved performance of `dpnp.fft` functions for complex strided input by avoiding oversized allocations and extra copies [#2939](https://github.com/IntelPython/dpnp/pull/2939)
 
 ### Deprecated
 
@@ -52,6 +53,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `PytestRemovedIn10Warning` raised by `pytest` 9.1.0 by converting class-scoped fixtures to class methods [#2952](https://github.com/IntelPython/dpnp/pull/2952)
 * Fixed `dpnp.linalg.svd(..., hermitian=True)` returning a non-unitary `vh` for singular input arrays due to a zero sign appearing [#2954](https://github.com/IntelPython/dpnp/pull/2954)
 * Fixed scalar conversion of size-one `dpnp.tensor.usm_ndarray` (e.g. `int()`, `float()`, indexing) which failed with NumPy 2.5 after the in-place `ndarray.shape` assignment was deprecated [#2958](https://github.com/IntelPython/dpnp/pull/2958)
+* Fixed `dpnp.mgrid` and `dpnp.ogrid` to return consistent results between single-slice and tuple-of-slices syntax when the step is a complex number with a non-integer magnitude (e.g. `2.5j`) [#2971](https://github.com/IntelPython/dpnp/pull/2971)
 
 ### Security
 

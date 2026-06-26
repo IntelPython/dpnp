@@ -74,6 +74,8 @@ def _compute_res_dtype(*arrays, dtype=None, out=None, casting="no"):
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur.
 
+        Default: ``"no"``.
+
     Returns
     -------
     res_dtype : dtype

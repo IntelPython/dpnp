@@ -475,7 +475,7 @@ def einsum_path(*operands, optimize="greedy"):
         These are the arrays for the operation in any form that can be
         converted to an array. This includes scalars, lists, lists of
         tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.
-    optimize : {bool, list, tuple, None, "greedy", "optimal"}
+    optimize : {bool, list, tuple, None, "greedy", "optimal"}, optional
         Choose the type of path. If a tuple is provided, the second argument is
         assumed to be the maximum intermediate size created. If only a single
         argument is provided the largest input or output array size is used
@@ -1143,7 +1143,7 @@ def tensordot(a, b, /, *, axes=2):
     b : {dpnp.ndarray, usm_ndarray, scalar}
         Second input array. Both inputs `a` and `b` can not be scalars
         at the same time.
-    axes : int or (2,) array_like
+    axes : int or (2,) array_like, optional
         * integer_like: If an int `N`, sum over the last `N` axes of `a` and
           the first `N` axes of `b` in order. The sizes of the corresponding
           axes must match.

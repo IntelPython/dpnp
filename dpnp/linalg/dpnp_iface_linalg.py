@@ -1961,7 +1961,7 @@ def tensordot(a, b, /, *, axes=2):
     b : {dpnp.ndarray, usm_ndarray, scalar}
         Second input array. Both inputs `a` and `b` can not be scalars
         at the same time.
-    axes : int or (2,) array_like
+    axes : int or (2,) array_like, optional
         * integer_like: If an int `N`, sum over the last `N` axes of `a` and
           the first `N` axes of `b` in order. The sizes of the corresponding
           axes must match.
