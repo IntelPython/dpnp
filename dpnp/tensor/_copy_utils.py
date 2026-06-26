@@ -51,12 +51,12 @@ __doc__ = (
 int32_t_max = 1 + np.iinfo(np.int32).max
 
 
-def _copy_to_numpy(ary):
+def _copy_to_numpy(ary, order="K"):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(ary)}")
     if ary.size == 0:
         # no data needs to be copied for zero sized array
-        return np.ndarray(ary.shape, dtype=ary.dtype)
+        return np.ndarray(ary.shape, dtype=ary.dtype, order=order)
     nb = ary.usm_data.nbytes
     q = ary.sycl_queue
     hh = dpm.MemoryUSMHost(nb, queue=q)
@@ -67,13 +67,16 @@ def _copy_to_numpy(ary):
     # ensure that content of ary.usm_data is final
     q.wait()
     hh.copy_from_device(ary.usm_data)
-    return np.ndarray(
+    result = np.ndarray(
         ary.shape,
         dtype=ary.dtype,
         buffer=h,
         strides=strides_bytes,
         offset=offset,
     )
+    # apply the requested memory layout; ``"K"`` preserves the strides of the
+    # source array as closely as possible and is the default
+    return np.asarray(result, order=order)
 
 
 def _copy_from_numpy(np_ary, usm_type="device", sycl_queue=None):
@@ -594,9 +597,9 @@ def to_numpy(usm_ary, /):
     return _copy_to_numpy(usm_ary)
 
 
-def asnumpy(usm_ary):
+def asnumpy(usm_ary, order="K"):
     """
-    asnumpy(usm_ary)
+    asnumpy(usm_ary, order="K")
 
     Copies content of :class:`dpctl.tensor.usm_ndarray` instance ``usm_ary``
     into :class:`numpy.ndarray` instance of the same shape and same data
@@ -605,12 +608,16 @@ def asnumpy(usm_ary):
     Args:
         usm_ary (usm_ndarray):
             Input array
+        order (``"C"``, ``"F"``, ``"A"``, ``"K"``):
+            The desired memory layout of the returned array.
+            Default: ``"K"``, which keeps the strides of ``usm_ary`` as
+            closely as possible.
     Returns:
         :class:`numpy.ndarray`:
             An instance of :class:`numpy.ndarray` populated with content
             of ``usm_ary``
     """
-    return _copy_to_numpy(usm_ary)
+    return _copy_to_numpy(usm_ary, order=order)
 
 
 class Dummy:

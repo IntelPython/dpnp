@@ -136,6 +136,59 @@ class TestToBytes:
         assert_array_equal(b, a.asnumpy().flatten(order))
 
 
+class TestAsNumpy:
+    # gh-2884: ``order`` keyword was ignored by ``dpnp.asnumpy`` and the
+    # resulting NumPy array kept the (possibly non-contiguous) layout of the
+    # source array.
+    def _non_c_contiguous_array(self):
+        # transposing a C-contiguous 2-D array yields a non-C-contiguous view
+        a = dpnp.arange(21, dtype="int32").reshape(7, 3).T
+        assert not a.flags["C_CONTIGUOUS"]
+        return a
+
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_iface_order(self, order):
+        a = self._non_c_contiguous_array()
+        result = dpnp.asnumpy(a, order=order)
+
+        expected = numpy.asarray(a.asnumpy(), order=order)
+        assert isinstance(result, numpy.ndarray)
+        assert result.flags[f"{order}_CONTIGUOUS"]
+        assert_array_equal(result, expected)
+
+    def test_iface_default_order_is_c(self):
+        a = self._non_c_contiguous_array()
+        result = dpnp.asnumpy(a)
+        assert result.flags["C_CONTIGUOUS"]
+
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_method_order(self, order):
+        a = self._non_c_contiguous_array()
+        result = a.asnumpy(order=order)
+        assert result.flags[f"{order}_CONTIGUOUS"]
+        assert_array_equal(result, a.asnumpy(order="K"))
+
+    def test_method_default_order_is_c(self):
+        # the array method matches ``cupy.ndarray.get`` and defaults to "C"
+        a = self._non_c_contiguous_array()
+        result = a.asnumpy()
+        assert result.flags["C_CONTIGUOUS"]
+
+    def test_method_order_k_keeps_strides(self):
+        # explicit "K" keeps the strides of the source as closely as possible
+        a = self._non_c_contiguous_array()
+        result = a.asnumpy(order="K")
+        assert not result.flags["C_CONTIGUOUS"]
+
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_usm_ndarray_input_order(self, order):
+        a = self._non_c_contiguous_array()
+        usm_a = dpnp.get_usm_ndarray(a)
+        result = dpnp.asnumpy(usm_a, order=order)
+        assert result.flags[f"{order}_CONTIGUOUS"]
+        assert_array_equal(result, dpt.asnumpy(usm_a, order=order))
+
+
 class TestToFile:
     def _create_data(self):
         x = generate_random_numpy_array((2, 4, 3), dtype=complex)
