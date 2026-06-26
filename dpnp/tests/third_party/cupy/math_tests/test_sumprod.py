@@ -333,7 +333,7 @@ class TestCubReduction:
     # don't test float16 as it's not as accurate?
     # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
     # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
-    @testing.for_dtypes("bhilBHILfdF")
+    @testing.for_dtypes("bhilBHILfdFD")
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_cub_cumsum(self, xp, dtype):
         if self.backend == "block":
@@ -360,7 +360,7 @@ class TestCubReduction:
     # don't test float16 as it's not as accurate?
     # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
     # @pytest.mark.thread_unsafe(reason="unsafe AssertFunctionIsCalled.")
-    @testing.for_dtypes("bhilBHILfdF")
+    @testing.for_dtypes("bhilBHILfdFD")
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_cub_cumprod(self, xp, dtype):
         if self.backend == "block":
