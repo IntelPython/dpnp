@@ -1,0 +1,10 @@
+﻿
+
+dpnp.clip
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: clip
