@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.logsumexp &mdash; Data Parallel Extension for NumPy 0.21.0dev1+33.g9c8422ce329 documentation</title>
+  <title>dpnp.logsumexp &mdash; Data Parallel Extension for NumPy 0.21.0dev2+17.ge19bdef7456 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=672ae725"></script>
+      <script src="../../_static/documentation_options.js?v=55ed6351"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -167,11 +167,12 @@ type of <cite>x</cite>, the input array elements are cast to the specified data
 type before computing the result.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>keepdims</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
+<li><p><strong>keepdims</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
 as singleton dimensions, so that the returned array remains compatible
 with the input arrays according to Array Broadcasting rules. Otherwise,
-if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the reduced axes are not included in the returned array.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the reduced axes are not included in the returned array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
 <li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>The array into which the result is written. The data type of <cite>out</cite> must
 match the expected shape and the expected data type of the result or
 (if provided) <cite>dtype</cite>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> then a new array is returned.</p>

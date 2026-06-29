@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.21.0dev1+33.g9c8422ce329 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.21.0dev2+17.ge19bdef7456 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=672ae725"></script>
+      <script src="../../_static/documentation_options.js?v=55ed6351"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2022,10 +2022,11 @@
 
 <span class="sd">        For full documentation refer to :obj:`numpy.ndarray.shape`.</span>
 
-<span class="sd">        Note</span>
-<span class="sd">        ----</span>
+<span class="sd">        Warnings</span>
+<span class="sd">        --------</span>
+<span class="sd">        Setting ``a.shape`` is deprecated and may be removed in the future.</span>
 <span class="sd">        Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the</span>
-<span class="sd">        preferred approach to set new shape of an array.</span>
+<span class="sd">        preferred approach.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -2042,15 +2043,6 @@
 <span class="sd">        &gt;&gt;&gt; y = np.zeros((2, 3, 4))</span>
 <span class="sd">        &gt;&gt;&gt; y.shape</span>
 <span class="sd">        (2, 3, 4)</span>
-
-<span class="sd">        &gt;&gt;&gt; y.shape = (3, 8)</span>
-<span class="sd">        &gt;&gt;&gt; y</span>
-<span class="sd">        array([[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],</span>
-<span class="sd">               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],</span>
-<span class="sd">               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]])</span>
-<span class="sd">        &gt;&gt;&gt; y.shape = (3, 6)</span>
-<span class="sd">        ...</span>
-<span class="sd">        TypeError: Can not reshape array of size 24 into (3, 6)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2077,8 +2069,15 @@
 <span class="sd">            New shape. Only non-negative values are supported. The new shape</span>
 <span class="sd">            may not lead to the change in the number of elements in the array.</span>
 
+<span class="sd">        Warnings</span>
+<span class="sd">        --------</span>
+<span class="sd">        Setting ``a.shape`` is deprecated and may be removed in the future.</span>
+<span class="sd">        Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the</span>
+<span class="sd">        preferred approach.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="c1"># the underlying usm_ndarray shape setter raises a deprecation warning</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">newshape</span>
 
     <span class="nd">@property</span>
@@ -2413,7 +2412,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        device : {None, string, SyclDevice, SyclQueue, Device}</span>
 <span class="sd">            An array API concept of device where the output array is created.</span>
 <span class="sd">            `device` can be ``None``, a oneAPI filter selector string,</span>
 <span class="sd">            an instance of :class:`dpctl.SyclDevice` corresponding to</span>

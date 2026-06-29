@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.indices &mdash; Data Parallel Extension for NumPy 0.21.0dev1+33.g9c8422ce329 documentation</title>
+  <title>dpnp.indices &mdash; Data Parallel Extension for NumPy 0.21.0dev2+17.ge19bdef7456 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=672ae725"></script>
+      <script src="../../_static/documentation_options.js?v=55ed6351"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -133,7 +133,7 @@
 <dd><p>Return an array representing the indices of a grid.</p>
 <p>Compute an array where the subarrays contain index values 0, 1, …
 varying only along the corresponding axis.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.indices.html#numpy.indices" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.indices</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.indices.html#numpy.indices" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.indices</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -143,7 +143,7 @@ varying only along the corresponding axis.</p>
 </p></li>
 <li><p><strong>sparse</strong> (<em>{None</em><em>, </em><em>boolean}</em><em>, </em><em>optional</em>) -- <p>Return a sparse representation of the grid instead of a dense
 representation.</p>
-<p>Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>
 <li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue</em><em>, </em><em>Device}</em><em>, </em><em>optional</em>) -- <p>An array API concept of device where the output array is created.
 <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector string, an instance
@@ -166,11 +166,11 @@ a default queue.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p><strong>out</strong> -- If sparse is <code class="docutils literal notranslate"><span class="pre">False</span></code>:
-Returns one array of grid indices,
-<code class="docutils literal notranslate"><span class="pre">grid.shape</span> <span class="pre">=</span> <span class="pre">(len(dimensions),)</span> <span class="pre">+</span> <span class="pre">tuple(dimensions)</span></code>.</p>
+Returns one array of grid indices with
+<code class="docutils literal notranslate"><span class="pre">grid.shape</span> <span class="pre">==</span> <span class="pre">(len(dimensions),)</span> <span class="pre">+</span> <span class="pre">tuple(dimensions)</span></code>.</p>
 <p>If sparse is <code class="docutils literal notranslate"><span class="pre">True</span></code>:
 Returns a tuple of arrays,
-with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
+with grid[i].shape == (1, ..., 1, dimensions[i], 1, ..., 1)
 with dimensions[i] in the i-th place.</p>
 </p>
 </dd>
@@ -211,8 +211,8 @@ with dimensions[i] in the i-th place.</p>
 </pre></div>
 </div>
 <p>Note that it would be more straightforward in the above example to
-extract the required elements directly with <code class="docutils literal notranslate"><span class="pre">x[:2,</span> <span class="pre">:3]</span></code>.
-If sparse is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the grid will be returned in a sparse
+extract the required elements directly with <code class="docutils literal notranslate"><span class="pre">x[:2,</span> <span class="pre">:3]</span></code>.</p>
+<p>If sparse is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the grid will be returned in a sparse
 representation.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">shape</span>

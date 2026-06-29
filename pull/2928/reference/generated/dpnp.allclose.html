@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.allclose &mdash; Data Parallel Extension for NumPy 0.21.0dev1+33.g9c8422ce329 documentation</title>
+  <title>dpnp.allclose &mdash; Data Parallel Extension for NumPy 0.21.0dev2+17.ge19bdef7456 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=672ae725"></script>
+      <script src="../../_static/documentation_options.js?v=55ed6351"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -139,7 +139,7 @@ and <cite>b</cite>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">NaNs</span></code> are treated as equal if they are in the same place and if
 <code class="docutils literal notranslate"><span class="pre">equal_nan=True</span></code>. <code class="docutils literal notranslate"><span class="pre">Infs</span></code> are treated as equal if they are in the same
 place and of the same sign in both arrays.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.allclose.html#numpy.allclose" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.allclose</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.allclose.html#numpy.allclose" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.allclose</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -151,7 +151,7 @@ place and of the same sign in both arrays.</p>
 <li><p><strong>atol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>The absolute tolerance parameter.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">1e-08</span></code>.</p>
 </p></li>
-<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) -- <p>Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>a</cite> will
+<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>a</cite> will
 be considered equal to <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>b</cite> in the output array.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>

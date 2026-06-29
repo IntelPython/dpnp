@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.meshgrid &mdash; Data Parallel Extension for NumPy 0.21.0dev1+33.g9c8422ce329 documentation</title>
+  <title>dpnp.meshgrid &mdash; Data Parallel Extension for NumPy 0.21.0dev2+17.ge19bdef7456 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=672ae725"></script>
+      <script src="../../_static/documentation_options.js?v=55ed6351"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -131,10 +131,10 @@
 <dt class="sig sig-object py" id="dpnp.meshgrid">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">meshgrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">xi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indexing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#meshgrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.meshgrid" title="Link to this definition"></a></dt>
 <dd><p>Return a tuple of coordinate matrices from coordinate vectors.</p>
-<p>Make N-D coordinate arrays for vectorized evaluations of
-N-D scalar/vector fields over N-D grids, given
-one-dimensional coordinate arrays <code class="docutils literal notranslate"><span class="pre">x1,</span> <span class="pre">x2,...,</span> <span class="pre">xn</span></code>.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.meshgrid</span></code></a>.</p>
+<p>Make N-D coordinate arrays for vectorized evaluations of N-D scalar/vector
+fields over N-D grids, given one-dimensional coordinate arrays
+<code class="docutils literal notranslate"><span class="pre">x1,</span> <span class="pre">x2,...,</span> <span class="pre">xn</span></code>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.meshgrid</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -142,14 +142,18 @@ one-dimensional coordinate arrays <code class="docutils literal notranslate"><sp
 <li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- 1-D arrays representing the coordinates of a grid.</p></li>
 <li><p><strong>...</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- 1-D arrays representing the coordinates of a grid.</p></li>
 <li><p><strong>xn</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- 1-D arrays representing the coordinates of a grid.</p></li>
-<li><p><strong>indexing</strong> (<em>{'xy'</em><em>, </em><em>'ij'}</em><em>, </em><em>optional</em>) -- Cartesian (<code class="docutils literal notranslate"><span class="pre">'xy'</span></code>, default) or matrix (<code class="docutils literal notranslate"><span class="pre">'ij'</span></code>) indexing of output.</p></li>
-<li><p><strong>sparse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">True</span></code> the shape of the returned coordinate array for dimension <cite>i</cite>
+<li><p><strong>indexing</strong> (<em>{'xy'</em><em>, </em><em>'ij'}</em><em>, </em><em>optional</em>) -- <p>Cartesian (<code class="docutils literal notranslate"><span class="pre">'xy'</span></code>, default) or matrix (<code class="docutils literal notranslate"><span class="pre">'ij'</span></code>) indexing of output.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code>.</p>
+</p></li>
+<li><p><strong>sparse</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> the shape of the returned coordinate array for dimension <cite>i</cite>
 is reduced from <code class="docutils literal notranslate"><span class="pre">(N1,</span> <span class="pre">...,</span> <span class="pre">Ni,</span> <span class="pre">...</span> <span class="pre">Nn)</span></code> to
-<code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">...,</span> <span class="pre">1,</span> <span class="pre">Ni,</span> <span class="pre">1,</span> <span class="pre">...,</span> <span class="pre">1)</span></code>.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a view into the original arrays are returned in order to
-conserve memory.
-Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">...,</span> <span class="pre">1,</span> <span class="pre">Ni,</span> <span class="pre">1,</span> <span class="pre">...,</span> <span class="pre">1)</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a view into the original arrays are returned in order to
+conserve memory.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
