@@ -130,4 +130,6 @@ def test_dtypes_invalid_device():
 
 
 def test_devices():
-    assert info.devices() == get_devices()
+    devices = info.devices()
+    assert isinstance(devices, tuple)
+    assert tuple(dev.sycl_device for dev in devices) == get_devices()

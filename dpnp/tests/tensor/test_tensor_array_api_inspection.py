@@ -79,7 +79,7 @@ def test_array_api_inspection_devices():
         pytest.skip("No default device available")
     devices1 = dpt.__array_namespace_info__().devices()
     assert len(devices1) == len(devices2)
-    assert devices1 == devices2
+    assert tuple(dev.sycl_device for dev in devices1) == devices2
 
 
 def test_array_api_inspection_capabilities():
