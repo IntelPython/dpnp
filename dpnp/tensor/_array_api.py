@@ -239,9 +239,9 @@ class Info:
         """
         devices()
 
-        Returns a list of supported devices.
+        Returns a tuple of supported devices.
         """
-        return dpctl.get_devices()
+        return tuple(dpt.Device.create_device(d) for d in dpctl.get_devices())
 
 
 def __array_namespace_info__():
