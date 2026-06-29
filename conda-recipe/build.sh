@@ -22,6 +22,15 @@ fi
 export CC=icx
 export CXX=icpx
 
+# conda-forge's gcc/g++ activation injects -fno-merge-constants into CFLAGS/CXXFLAGS
+# when CONDA_BUILD==1. icx/icpx don't implement this GCC flag and emit warning #10430
+# (they have -fmerge-all-constants instead). Drop it to keep the build log clean; it
+# is a no-op for the Intel compiler. See CMPLRLLVM-19167 / CMPLRLLVM-28729 and the
+# conda-forge change that added the flag (later scoped to CONDA_BUILD only in #194):
+# https://github.com/conda-forge/ctng-compiler-activation-feedstock/pull/193
+export CFLAGS="${CFLAGS//-fno-merge-constants/}"
+export CXXFLAGS="${CXXFLAGS//-fno-merge-constants/}"
+
 export CMAKE_GENERATOR=Ninja
 # Make CMake verbose
 export VERBOSE=1
