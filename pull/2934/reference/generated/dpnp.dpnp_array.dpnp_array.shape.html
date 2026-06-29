@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_array.dpnp_array.shape - Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</title>
+        <title>dpnp.dpnp_array.dpnp_array.shape - Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev1 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1048,11 +1048,12 @@ but may also be used to reshape the array in-place by assigning a tuple
 of array dimensions to it. Unlike <a class="reference internal" href="dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a>, only non-negative
 values are supported to be set as new shape. Reshaping an array in-place
 will fail if a copy is required.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.shape.html#numpy.ndarray.shape" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.shape</span></code></a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Using <a class="reference internal" href="dpnp.ndarray.reshape.html#dpnp.ndarray.reshape" title="dpnp.ndarray.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.reshape</span></code></a> or <a class="reference internal" href="dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a> is the
-preferred approach to set new shape of an array.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.shape.html#numpy.ndarray.shape" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.shape</span></code></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">a.shape</span></code> is deprecated and may be removed in the future.
+Using <a class="reference internal" href="dpnp.ndarray.reshape.html#dpnp.ndarray.reshape" title="dpnp.ndarray.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.reshape</span></code></a> or <a class="reference internal" href="dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a> is the
+preferred approach.</p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -1073,16 +1074,6 @@ preferred approach to set new shape of an array.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(2, 3, 4)</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
-<span class="go">array([[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],</span>
-<span class="go">       [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],</span>
-<span class="go">       [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
-<span class="gp">...</span>
-<span class="go">TypeError: Can not reshape array of size 24 into (3, 6)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1139,7 +1130,7 @@ preferred approach to set new shape of an array.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=3e943f6d"></script>
+</div><script src="../../_static/documentation_options.js?v=096cb507"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
