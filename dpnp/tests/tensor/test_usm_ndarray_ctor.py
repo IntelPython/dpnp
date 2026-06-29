@@ -169,7 +169,7 @@ def test_usm_ndarray_writable_flag_views():
     a = dpt.arange(10, dtype="f4")
     a.flags["W"] = False
 
-    a.shape = (5, 2)
+    a = dpt.reshape(a, (5, 2))
     assert not a.flags.writable
     assert not a.T.flags.writable
     assert not a.mT.flags.writable
@@ -803,6 +803,7 @@ def test_setitem_wingaps():
         assert np.array_equal(dpt.asnumpy(dpt_dst), np_src)
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_shape_setter():
     def cc_strides(sh):
         return np.empty(sh, dtype="u1").strides

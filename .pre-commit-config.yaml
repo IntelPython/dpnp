@@ -134,7 +134,7 @@ repos:
         exclude: "dpnp/backend/cmake/Modules/"
         args: ["-i", "-l", "88", "--no-warn-about-unknown-commands"]
 -   repo: https://github.com/MarcoGorelli/cython-lint
-    rev: v0.20.0
+    rev: v0.21.0
     hooks:
     -   id: cython-lint
     -   id: double-quote-cython-strings
