@@ -22,7 +22,7 @@ def test_capabilities():
 
 
 def test_default_device():
-    assert info.default_device() == default_device
+    assert info.default_device().sycl_device == default_device
 
 
 def test_default_dtypes():

@@ -132,9 +132,9 @@ class Info:
         """
         default_device()
 
-        Returns the default SYCL device.
+        Returns the default device.
         """
-        return dpctl.select_default_device()
+        return dpt.Device.create_device(dpctl.select_default_device())
 
     def default_dtypes(self, *, device=None):
         """
