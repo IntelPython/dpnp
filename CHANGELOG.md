@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.21.0] - 2026-MM-DD
 
+This release achieves 100% compliance with Python Array API specification (revision [2025.12](https://data-apis.org/array-api/2025.12/)).
 This release is compatible with NumPy 2.5.
 
 ### Added
