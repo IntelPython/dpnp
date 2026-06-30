@@ -124,9 +124,7 @@ class TestAdd:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
-    @pytest.mark.parametrize(
-        "shape", [(4, 4), (3, 5), (100, 37), (513, 256)]
-    )
+    @pytest.mark.parametrize("shape", [(4, 4), (3, 5), (100, 37), (513, 256)])
     def test_inplace_row_broadcast(self, shape, dtype):
         # C-contiguous matrix += row vector, in place (broadcast over rows)
         n0, n1 = shape
@@ -143,16 +141,16 @@ class TestAdd:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
-    @pytest.mark.parametrize(
-        "shape", [(4, 4), (3, 5), (100, 37), (513, 256)]
-    )
+    @pytest.mark.parametrize("shape", [(4, 4), (3, 5), (100, 37), (513, 256)])
     def test_inplace_column_broadcast(self, shape, dtype):
         # C-contiguous matrix += column vector, in place (broadcast over columns)
         n0, n1 = shape
         a = get_abs_array(
             numpy.arange(n0 * n1).reshape(shape) % 7 + 1, dtype=dtype
         )
-        col = get_abs_array((numpy.arange(n0) % 3 + 1).reshape(n0, 1), dtype=dtype)
+        col = get_abs_array(
+            (numpy.arange(n0) % 3 + 1).reshape(n0, 1), dtype=dtype
+        )
         ia, icol = dpnp.array(a), dpnp.array(col)
 
         a += col

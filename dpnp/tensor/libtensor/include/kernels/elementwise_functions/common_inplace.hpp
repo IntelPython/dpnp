@@ -473,7 +473,8 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
 
 // In-place column-broadcast: C-contiguous matrix += column vector.
 // Scalar kernel: one work-item per element, mat[gid] += vec[gid / n1] (n1 = row
-// length so gid/n1 = row index). No sub-group collectives -> correct for any n1.
+// length so gid/n1 = row index). No sub-group collectives -> correct for any
+// n1.
 template <typename argT, typename resT, typename BinaryOperatorT>
 struct BinaryInplaceColMatrixBroadcastingFunctor
 {
@@ -511,8 +512,8 @@ typedef sycl::event (*binary_inplace_col_matrix_broadcast_impl_fn_ptr_t)(
 
 template <typename argT,
           typename resT,
-          template <typename T1, typename T3>
-          class BinaryInplaceColMatrixBroadcastFunctorT,
+          template <typename T1,
+                    typename T3> class BinaryInplaceColMatrixBroadcastFunctorT,
           template <typename T1, typename T3> class kernel_name>
 sycl::event binary_inplace_col_matrix_broadcast_impl(
     sycl::queue &exec_q,
@@ -536,8 +537,8 @@ sycl::event binary_inplace_col_matrix_broadcast_impl(
 
         using Impl = BinaryInplaceColMatrixBroadcastFunctorT<argT, resT>;
 
-        cgh.parallel_for<class kernel_name<argT, resT>>(
-            sycl::range<1>(n_elems), Impl(vec, mat, n1));
+        cgh.parallel_for<class kernel_name<argT, resT>>(sycl::range<1>(n_elems),
+                                                        Impl(vec, mat, n1));
     });
 
     return comp_ev;

@@ -701,9 +701,9 @@ sycl::event add_inplace_col_matrix_broadcast_impl(
 {
     return elementwise_common::binary_inplace_col_matrix_broadcast_impl<
         argT, resT, AddInplaceColMatrixBroadcastingFunctor,
-        add_inplace_col_matrix_broadcast_krn>(exec_q, host_tasks, n0, n1,
-                                              vec_p, vec_offset, mat_p,
-                                              mat_offset, depends);
+        add_inplace_col_matrix_broadcast_krn>(exec_q, host_tasks, n0, n1, vec_p,
+                                              vec_offset, mat_p, mat_offset,
+                                              depends);
 }
 
 template <typename fnT, typename T1, typename T2>

@@ -63,9 +63,9 @@ using ew_cmn_ns::binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_strided_impl_fn_ptr_t;
 
+using ew_cmn_ns::binary_inplace_col_matrix_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_inplace_contig_impl_fn_ptr_t;
 using ew_cmn_ns::binary_inplace_row_matrix_broadcast_impl_fn_ptr_t;
-using ew_cmn_ns::binary_inplace_col_matrix_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_inplace_strided_impl_fn_ptr_t;
 
 // B01: ===== ADD (x1, x2)
@@ -224,10 +224,10 @@ void init_add(py::module_ m)
               py::arg("depends") = py::list());
         m.def("_add_result_type", add_result_type_pyapi, "");
 
+        using impl::add_inplace_col_matrix_dispatch_table;
         using impl::add_inplace_contig_dispatch_table;
         using impl::add_inplace_output_id_table;
         using impl::add_inplace_row_matrix_dispatch_table;
-        using impl::add_inplace_col_matrix_dispatch_table;
         using impl::add_inplace_strided_dispatch_table;
 
         auto add_inplace_pyapi = [&](const arrayT &src, const arrayT &dst,

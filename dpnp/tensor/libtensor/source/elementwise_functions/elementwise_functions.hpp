@@ -611,20 +611,19 @@ template <typename output_typesT,
           // Optional table for the C-contiguous matrix += column broadcast
           // case; defaulted so existing callers stay source-compatible.
           typename contig_col_matrix_dispatchT = std::nullptr_t>
-std::pair<sycl::event, sycl::event>
-    py_binary_inplace_ufunc(const dpnp::tensor::usm_ndarray &lhs,
-                            const dpnp::tensor::usm_ndarray &rhs,
-                            sycl::queue &exec_q,
-                            const std::vector<sycl::event> depends,
-                            //
-                            const output_typesT &output_type_table,
-                            const contig_dispatchT &contig_dispatch_table,
-                            const strided_dispatchT &strided_dispatch_table,
-                            const contig_row_matrix_dispatchT
-                                &contig_row_matrix_broadcast_dispatch_table,
-                            const contig_col_matrix_dispatchT
-                                &contig_col_matrix_broadcast_dispatch_table =
-                                    nullptr)
+std::pair<sycl::event, sycl::event> py_binary_inplace_ufunc(
+    const dpnp::tensor::usm_ndarray &lhs,
+    const dpnp::tensor::usm_ndarray &rhs,
+    sycl::queue &exec_q,
+    const std::vector<sycl::event> depends,
+    //
+    const output_typesT &output_type_table,
+    const contig_dispatchT &contig_dispatch_table,
+    const strided_dispatchT &strided_dispatch_table,
+    const contig_row_matrix_dispatchT
+        &contig_row_matrix_broadcast_dispatch_table,
+    const contig_col_matrix_dispatchT
+        &contig_col_matrix_broadcast_dispatch_table = nullptr)
 {
     dpnp::tensor::validation::CheckWritable::throw_if_not_writable(lhs);
 
@@ -757,7 +756,8 @@ std::pair<sycl::event, sycl::event>
                 std::initializer_list<py::ssize_t>{1, 0};
             static constexpr py::ssize_t one{1};
             // C-contiguous matrix (lhs) and a row (rhs): D(N0,N1) += row(N1,)
-            // lhs strides {N1,1} = {shape[1],1}, rhs (row broadcast) strides {0,1}
+            // lhs strides {N1,1} = {shape[1],1}, rhs (row broadcast) strides
+            // {0,1}
             if (isEqual(simplified_rhs_strides, zero_one_strides) &&
                 isEqual(simplified_lhs_strides, {simplified_shape[1], one})) {
                 auto row_matrix_broadcast_fn =
@@ -777,14 +777,15 @@ std::pair<sycl::event, sycl::event>
                             lhs_data, lhs_offset, depends);
 
                         return std::make_pair(
-                            dpnp::utils::keep_args_alive(
-                                exec_q, {lhs, rhs}, host_tasks),
+                            dpnp::utils::keep_args_alive(exec_q, {lhs, rhs},
+                                                         host_tasks),
                             comp_ev);
                     }
                 }
             }
-            // C-contiguous matrix (lhs) and a column (rhs): D(N0,N1) += col(N0,1)
-            // rhs(col broadcast) strides {1,0}; lhs(C-contig) {shape[1],1}
+            // C-contiguous matrix (lhs) and a column (rhs): D(N0,N1) +=
+            // col(N0,1) rhs(col broadcast) strides {1,0}; lhs(C-contig)
+            // {shape[1],1}
             if constexpr (!std::is_same_v<contig_col_matrix_dispatchT,
                                           std::nullptr_t>) {
                 if (isEqual(simplified_rhs_strides, one_zero_strides) &&
@@ -800,8 +801,8 @@ std::pair<sycl::event, sycl::event>
                             exec_q, host_tasks, n0, n1, rhs_data, rhs_offset,
                             lhs_data, lhs_offset, depends);
                         return std::make_pair(
-                            dpnp::utils::keep_args_alive(
-                                exec_q, {lhs, rhs}, host_tasks),
+                            dpnp::utils::keep_args_alive(exec_q, {lhs, rhs},
+                                                         host_tasks),
                             comp_ev);
                     }
                 }
