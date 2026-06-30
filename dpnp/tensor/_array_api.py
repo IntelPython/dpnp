@@ -77,7 +77,7 @@ def _get_device_impl(d):
             raise TypeError(f"Unsupported type for device argument: {type(d)}")
 
 
-__array_api_version__ = "2024.12"
+__array_api_version__ = "2025.12"
 
 
 class Info:

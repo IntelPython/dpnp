@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.21.0] - 2026-MM-DD
 
+This release achieves 100% compliance with Python Array API specification (revision [2025.12](https://data-apis.org/array-api/2025.12/)).
 This release is compatible with NumPy 2.5.
 
 ### Added
@@ -30,6 +31,7 @@ This release is compatible with NumPy 2.5.
 * Changed `dpnp.atleast_1d`, `dpnp.atleast_2d`, `dpnp.atleast_3d`, and `dpnp.ogrid` to return a tuple of arrays instead of a list [#2965](https://github.com/IntelPython/dpnp/pull/2965)
 * Improved performance of `dpnp.fft` functions for complex strided input by avoiding oversized allocations and extra copies [#2939](https://github.com/IntelPython/dpnp/pull/2939)
 * Refreshed `dpnp` documentation styling with the Furo theme [#2934](https://github.com/IntelPython/dpnp/pull/2934)
+* Updated Python Array API specification version supported to `2025.12` [#2899](https://github.com/IntelPython/dpnp/pull/2899)
 
 ### Deprecated
 
