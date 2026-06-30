@@ -17,7 +17,7 @@ This release is compatible with NumPy 2.5.
 
 ### Changed
 
-* Improved performance of in-place binary elementwise operations broadcasting a vector against a C-contiguous matrix (e.g. `m += row`, `m += col[:, None]`) on CPU by dispatching to vectorized broadcast kernels instead of the general strided kernel [#XXXX](https://github.com/IntelPython/dpnp/pull/XXXX)
+* Improved performance of in-place binary elementwise operations broadcasting a vector against a C-contiguous matrix (e.g. `m += row`, `m += col[:, None]`) on CPU by dispatching to vectorized broadcast kernels instead of the general strided kernel [#2981](https://github.com/IntelPython/dpnp/pull/2981)
 * Changed `dpnp.meshgrid` and `dpnp.tensor.meshgrid` to return a tuple instead of a list, aligning with NumPy 2.5+ behavior and 2025.12 version of the Python array API standard [#2854](https://github.com/IntelPython/dpnp/pull/2854)
 * Updated `searchsorted` implementations to align with the 2025.12 array API spec [#2902](https://github.com/IntelPython/dpnp/pull/2902)
 * Updated tests to align with NumPy 2.4.5 compatibility [#2920](https://github.com/IntelPython/dpnp/pull/2920)
