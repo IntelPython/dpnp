@@ -247,7 +247,7 @@ class TestMisc:
     def test_sign_negative(self):
         self.check_unary_negative("sign", no_bool=True)
 
-    @pytest.mark.parametrize("dtype", ["e", "f", "d", "F", "D"])
+    @testing.for_dtypes(["e", "f", "d", "F", "D"])
     @testing.numpy_cupy_array_equal()
     def test_sign_signed_zero(self, xp, dtype):
         a = xp.array([-0.0, 0.0], dtype=dtype)
@@ -260,12 +260,25 @@ class TestMisc:
         [
             "e",
             "f",
-            "d",
+            pytest.param(
+                "d",
+                marks=pytest.mark.skipif(
+                    not has_support_aspect64(),
+                    reason="float64 is not supported by the device",
+                ),
+            ),
             pytest.param(
                 "F", marks=pytest.mark.xfail(reason="no inf special case")
             ),
             pytest.param(
-                "D", marks=pytest.mark.xfail(reason="no inf special case")
+                "D",
+                marks=[
+                    pytest.mark.skipif(
+                        not has_support_aspect64(),
+                        reason="complex128 is not supported by the device",
+                    ),
+                    pytest.mark.xfail(reason="no inf special case"),
+                ],
             ),
         ],
     )
