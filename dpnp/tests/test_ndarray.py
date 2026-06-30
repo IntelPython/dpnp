@@ -221,6 +221,20 @@ class TestAsNumpy:
         assert result.flags["C_CONTIGUOUS"] and result.flags["F_CONTIGUOUS"]
         assert_array_equal(result, a.asnumpy(order=order))
 
+    def test_negative_stride(self):
+        # a reversed view has a negative stride; "K" preserves it (matching
+        # ``dpnp.tensor.asnumpy``) while "C" returns a C-contiguous copy
+        a = dpnp.arange(10, dtype="int32")[::-1]
+        usm_a = dpnp.get_usm_ndarray(a)
+
+        result_k = dpnp.asnumpy(a, order="K")
+        assert_array_equal(result_k, dpt.asnumpy(usm_a))
+        assert result_k.strides == dpt.asnumpy(usm_a).strides
+
+        result_c = dpnp.asnumpy(a, order="C")
+        assert result_c.flags["C_CONTIGUOUS"]
+        assert_array_equal(result_c, result_k)
+
 
 class TestToFile:
     def _create_data(self):
