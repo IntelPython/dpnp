@@ -5,6 +5,6 @@ dependencies:
   - python=3.13 # no dpctl package on PyPI with enabled python 3.14 support
   - cupy
   - sphinx
-  - sphinx_rtd_theme
+  - furo
   - pip:
     - -r base_build_docs.txt
