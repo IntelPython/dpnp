@@ -55,8 +55,11 @@ def _copy_to_numpy(ary, order="K"):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(ary)}")
     if ary.size == 0:
-        # no data needs to be copied for zero sized array
-        return np.ndarray(ary.shape, dtype=ary.dtype, order=order)
+        # No data needs to be copied for a zero-sized array. A zero-sized
+        # array is both C- and F-contiguous regardless of ``order``, and
+        # ``numpy.ndarray`` officially only accepts ``"C"``/``"F"``, so
+        # ``order`` is intentionally not forwarded here.
+        return np.ndarray(ary.shape, dtype=ary.dtype)
     nb = ary.usm_data.nbytes
     q = ary.sycl_queue
     hh = dpm.MemoryUSMHost(nb, queue=q)
@@ -608,8 +611,9 @@ def asnumpy(usm_ary, order="K"):
     Args:
         usm_ary (usm_ndarray):
             Input array
-        order (``"C"``, ``"F"``, ``"A"``, ``"K"``):
-            The desired memory layout of the returned array.
+        order ({None, ``"C"``, ``"F"``, ``"A"``, ``"K"``}, optional):
+            The desired memory layout of the returned array. ``None`` does
+            not enforce any particular layout.
             Default: ``"K"``, which keeps the strides of ``usm_ary`` as
             closely as possible.
     Returns:
