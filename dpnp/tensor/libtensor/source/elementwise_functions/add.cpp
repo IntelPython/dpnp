@@ -65,6 +65,7 @@ using ew_cmn_ns::binary_strided_impl_fn_ptr_t;
 
 using ew_cmn_ns::binary_inplace_contig_impl_fn_ptr_t;
 using ew_cmn_ns::binary_inplace_row_matrix_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_inplace_col_matrix_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_inplace_strided_impl_fn_ptr_t;
 
 // B01: ===== ADD (x1, x2)
@@ -98,6 +99,8 @@ static binary_inplace_strided_impl_fn_ptr_t
     add_inplace_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 static binary_inplace_row_matrix_broadcast_impl_fn_ptr_t
     add_inplace_row_matrix_dispatch_table[td_ns::num_types][td_ns::num_types];
+static binary_inplace_col_matrix_broadcast_impl_fn_ptr_t
+    add_inplace_col_matrix_dispatch_table[td_ns::num_types][td_ns::num_types];
 
 void populate_add_dispatch_tables(void)
 {
@@ -165,6 +168,14 @@ void populate_add_dispatch_tables(void)
         dtb8;
     dtb8.populate_dispatch_table(add_inplace_row_matrix_dispatch_table);
 
+    // function pointers for the in-place c-contig matrix += column
+    // broadcast operation
+    using fn_ns::AddInplaceColMatrixBroadcastFactory;
+    DispatchTableBuilder<binary_inplace_col_matrix_broadcast_impl_fn_ptr_t,
+                         AddInplaceColMatrixBroadcastFactory, num_types>
+        dtb10;
+    dtb10.populate_dispatch_table(add_inplace_col_matrix_dispatch_table);
+
     // which types are supported by the in-place kernels
     using fn_ns::AddInplaceTypeMapFactory;
     DispatchTableBuilder<int, AddInplaceTypeMapFactory, num_types> dtb9;
@@ -216,6 +227,7 @@ void init_add(py::module_ m)
         using impl::add_inplace_contig_dispatch_table;
         using impl::add_inplace_output_id_table;
         using impl::add_inplace_row_matrix_dispatch_table;
+        using impl::add_inplace_col_matrix_dispatch_table;
         using impl::add_inplace_strided_dispatch_table;
 
         auto add_inplace_pyapi = [&](const arrayT &src, const arrayT &dst,
@@ -232,7 +244,11 @@ void init_add(py::module_ m)
                 // function pointers to handle inplace operation on
                 // c-contig matrix with c-contig row with broadcasting
                 // (may be nullptr)
-                add_inplace_row_matrix_dispatch_table);
+                add_inplace_row_matrix_dispatch_table,
+                // function pointers to handle inplace operation on
+                // c-contig matrix with c-contig column with broadcasting
+                // (may be nullptr)
+                add_inplace_col_matrix_dispatch_table);
         };
         m.def("_add_inplace", add_inplace_pyapi, "", py::arg("lhs"),
               py::arg("rhs"), py::arg("sycl_queue"),

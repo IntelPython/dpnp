@@ -676,4 +676,57 @@ struct AddInplaceRowMatrixBroadcastFactory
     }
 };
 
+// In-place column-broadcast wiring for add.
+template <typename argT, typename resT>
+class add_inplace_col_matrix_broadcast_krn;
+
+template <typename argT, typename resT>
+using AddInplaceColMatrixBroadcastingFunctor =
+    elementwise_common::BinaryInplaceColMatrixBroadcastingFunctor<
+        argT,
+        resT,
+        AddInplaceFunctor<argT, resT>>;
+
+template <typename argT, typename resT>
+sycl::event add_inplace_col_matrix_broadcast_impl(
+    sycl::queue &exec_q,
+    std::vector<sycl::event> &host_tasks,
+    std::size_t n0,
+    std::size_t n1,
+    const char *vec_p,
+    ssize_t vec_offset,
+    char *mat_p,
+    ssize_t mat_offset,
+    const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_inplace_col_matrix_broadcast_impl<
+        argT, resT, AddInplaceColMatrixBroadcastingFunctor,
+        add_inplace_col_matrix_broadcast_krn>(exec_q, host_tasks, n0, n1,
+                                              vec_p, vec_offset, mat_p,
+                                              mat_offset, depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct AddInplaceColMatrixBroadcastFactory
+{
+    fnT get()
+    {
+        if constexpr (!AddInplaceTypePairSupport<T1, T2>::is_defined) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            if constexpr (dpnp::tensor::type_utils::is_complex<T1>::value ||
+                          dpnp::tensor::type_utils::is_complex<T2>::value) {
+                fnT fn = nullptr;
+                return fn;
+            }
+            else {
+                fnT fn = add_inplace_col_matrix_broadcast_impl<T1, T2>;
+                return fn;
+            }
+        }
+    }
+};
+
 } // namespace dpnp::tensor::kernels::add

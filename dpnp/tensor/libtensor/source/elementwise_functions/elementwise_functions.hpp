@@ -607,7 +607,10 @@ py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
 template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT,
-          typename contig_row_matrix_dispatchT>
+          typename contig_row_matrix_dispatchT,
+          // Optional table for the C-contiguous matrix += column broadcast
+          // case; defaulted so existing callers stay source-compatible.
+          typename contig_col_matrix_dispatchT = std::nullptr_t>
 std::pair<sycl::event, sycl::event>
     py_binary_inplace_ufunc(const dpnp::tensor::usm_ndarray &lhs,
                             const dpnp::tensor::usm_ndarray &rhs,
@@ -618,7 +621,10 @@ std::pair<sycl::event, sycl::event>
                             const contig_dispatchT &contig_dispatch_table,
                             const strided_dispatchT &strided_dispatch_table,
                             const contig_row_matrix_dispatchT
-                                &contig_row_matrix_broadcast_dispatch_table)
+                                &contig_row_matrix_broadcast_dispatch_table,
+                            const contig_col_matrix_dispatchT
+                                &contig_col_matrix_broadcast_dispatch_table =
+                                    nullptr)
 {
     dpnp::tensor::validation::CheckWritable::throw_if_not_writable(lhs);
 
@@ -745,9 +751,61 @@ std::pair<sycl::event, sycl::event>
             }
         }
         if (nd == 2) {
+            static constexpr auto zero_one_strides =
+                std::initializer_list<py::ssize_t>{0, 1};
             static constexpr auto one_zero_strides =
                 std::initializer_list<py::ssize_t>{1, 0};
             static constexpr py::ssize_t one{1};
+            // C-contiguous matrix (lhs) and a row (rhs): D(N0,N1) += row(N1,)
+            // lhs strides {N1,1} = {shape[1],1}, rhs (row broadcast) strides {0,1}
+            if (isEqual(simplified_rhs_strides, zero_one_strides) &&
+                isEqual(simplified_lhs_strides, {simplified_shape[1], one})) {
+                auto row_matrix_broadcast_fn =
+                    contig_row_matrix_broadcast_dispatch_table[rhs_typeid]
+                                                              [lhs_typeid];
+                if (row_matrix_broadcast_fn != nullptr) {
+                    int rhs_itemsize = rhs.get_elemsize();
+                    int lhs_itemsize = lhs.get_elemsize();
+                    if (is_aligned<required_alignment>(
+                            rhs_data + rhs_offset * rhs_itemsize) &&
+                        is_aligned<required_alignment>(
+                            lhs_data + lhs_offset * lhs_itemsize)) {
+                        std::size_t n0 = simplified_shape[0];
+                        std::size_t n1 = simplified_shape[1];
+                        sycl::event comp_ev = row_matrix_broadcast_fn(
+                            exec_q, host_tasks, n0, n1, rhs_data, rhs_offset,
+                            lhs_data, lhs_offset, depends);
+
+                        return std::make_pair(
+                            dpnp::utils::keep_args_alive(
+                                exec_q, {lhs, rhs}, host_tasks),
+                            comp_ev);
+                    }
+                }
+            }
+            // C-contiguous matrix (lhs) and a column (rhs): D(N0,N1) += col(N0,1)
+            // rhs(col broadcast) strides {1,0}; lhs(C-contig) {shape[1],1}
+            if constexpr (!std::is_same_v<contig_col_matrix_dispatchT,
+                                          std::nullptr_t>) {
+                if (isEqual(simplified_rhs_strides, one_zero_strides) &&
+                    isEqual(simplified_lhs_strides,
+                            {simplified_shape[1], one})) {
+                    auto col_matrix_broadcast_fn =
+                        contig_col_matrix_broadcast_dispatch_table[rhs_typeid]
+                                                                  [lhs_typeid];
+                    if (col_matrix_broadcast_fn != nullptr) {
+                        std::size_t n0 = simplified_shape[0];
+                        std::size_t n1 = simplified_shape[1];
+                        sycl::event comp_ev = col_matrix_broadcast_fn(
+                            exec_q, host_tasks, n0, n1, rhs_data, rhs_offset,
+                            lhs_data, lhs_offset, depends);
+                        return std::make_pair(
+                            dpnp::utils::keep_args_alive(
+                                exec_q, {lhs, rhs}, host_tasks),
+                            comp_ev);
+                    }
+                }
+            }
             // special case of C-contiguous matrix and a row
             if (isEqual(simplified_rhs_strides, one_zero_strides) &&
                 isEqual(simplified_lhs_strides, {one, simplified_shape[0]})) {
