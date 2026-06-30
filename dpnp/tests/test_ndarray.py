@@ -163,8 +163,10 @@ class TestAsNumpy:
     @pytest.mark.parametrize("order", orders)
     @pytest.mark.parametrize("layout", ["c", "f"])
     def test_iface_order(self, layout, order):
-        a = self._c_contiguous_array() if layout == "c" else (
-            self._f_contiguous_array()
+        a = (
+            self._c_contiguous_array()
+            if layout == "c"
+            else (self._f_contiguous_array())
         )
         result = dpnp.asnumpy(a, order=order)
 
