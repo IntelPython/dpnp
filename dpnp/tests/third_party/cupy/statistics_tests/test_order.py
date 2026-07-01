@@ -12,7 +12,7 @@ import dpnp as cupy
 from dpnp.tests.third_party.cupy import testing
 
 _all_methods = (
-    # 'inverted_cdf',               # TODO(takagi) Not implemented
+    "inverted_cdf",
     # 'averaged_inverted_cdf',      # TODO(takagi) Not implemented
     # 'closest_observation',        # TODO(takagi) Not implemented
     # 'interpolated_inverted_cdf',  # TODO(takagi) Not implemented
@@ -65,6 +65,8 @@ class TestQuantile:
 
     # See gh-4453
     @testing.for_float_dtypes()
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="allocator setting not thread-safe")
     def test_percentile_memory_access(self, dtype):
         # Create an allocator that guarantees array allocated in
         # cupy.percentile call will be followed by a NaN

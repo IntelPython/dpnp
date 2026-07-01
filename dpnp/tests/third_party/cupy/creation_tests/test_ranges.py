@@ -346,13 +346,16 @@ class TestMeshgrid(unittest.TestCase):
         )
         assert out == ()
 
+    @testing.with_requires("numpy>=2.5")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_meshgrid1(self, xp, dtype):
         x = xp.arange(2).astype(dtype)
-        return xp.meshgrid(
+        result = xp.meshgrid(
             x, indexing=self.indexing, sparse=self.sparse, copy=self.copy
         )
+        assert isinstance(result, tuple)
+        return result
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()

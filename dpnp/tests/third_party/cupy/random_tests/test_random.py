@@ -9,6 +9,8 @@ from dpnp.tests.third_party.cupy import testing
 @pytest.mark.skip("random.get_random_state() is not supported yet")
 class TestResetSeed(unittest.TestCase):
 
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="uses global random state")
     @testing.for_float_dtypes(no_float16=True)
     def test_reset_seed(self, dtype):
         rs = random.get_random_state()
