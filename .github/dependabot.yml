@@ -22,3 +22,10 @@ updates:
       interval: "weekly"
       day: "saturday"
     rebase-strategy: "disabled"
+
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    rebase-strategy: "disabled"
