@@ -6,3 +6,19 @@ updates:
       interval: "weekly"
       day: "saturday"
     rebase-strategy: "disabled"
+
+  # Note: only "==" pins are bumped; ">=" floors and dev pre-releases are not
+  - package-ecosystem: "pip"
+    directory: "/environments"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    rebase-strategy: "disabled"
+
+  # Handles plain conda-forge "pkg=X.Y.Z" pins and pip: sections
+  - package-ecosystem: "conda"
+    directory: "/environments"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    rebase-strategy: "disabled"
