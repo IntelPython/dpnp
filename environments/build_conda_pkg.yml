@@ -3,3 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - conda-build=25.11.1
+  - conda=26.5.3=*_0 # conda-forge/conda-feedstock/issues/304
