@@ -154,18 +154,24 @@ class TestBasic:
     @pytest.mark.skip("multi GPU is not supported")
     @testing.multi_gpu(2)
     @testing.for_all_dtypes()
+    # cupy._util.PerformanceWarning has no dpnp equivalent
+    # @pytest.mark.filterwarnings("ignore::cupy._util.PerformanceWarning")
     def test_copyto_where_multigpu_raises(self, dtype):
         self._check_copyto_where_multigpu_raises(dtype, 2)
 
     @pytest.mark.skip("multi GPU is not supported")
     @testing.multi_gpu(4)
     @testing.for_all_dtypes()
+    # cupy._util.PerformanceWarning has no dpnp equivalent
+    # @pytest.mark.filterwarnings("ignore::cupy._util.PerformanceWarning")
     def test_copyto_where_multigpu_raises_4(self, dtype):
         self._check_copyto_where_multigpu_raises(dtype, 4)
 
     @pytest.mark.skip("multi GPU is not supported")
     @testing.multi_gpu(6)
     @testing.for_all_dtypes()
+    # cupy._util.PerformanceWarning has no dpnp equivalent
+    # @pytest.mark.filterwarnings("ignore::cupy._util.PerformanceWarning")
     def test_copyto_where_multigpu_raises_6(self, dtype):
         self._check_copyto_where_multigpu_raises(dtype, 6)
 
@@ -173,6 +179,8 @@ class TestBasic:
     @testing.multi_gpu(2)
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
+    # cupy._util.PerformanceWarning has no dpnp equivalent
+    # @pytest.mark.filterwarnings("ignore::cupy._util.PerformanceWarning")
     def test_copyto_multigpu(self, xp, dtype):
         with cuda.Device(0):
             a = testing.shaped_arange((2, 3, 4), xp, dtype)
@@ -184,6 +192,8 @@ class TestBasic:
     @pytest.mark.skip("multi GPU is not supported")
     @testing.multi_gpu(2)
     @testing.for_all_dtypes()
+    # cupy._util.PerformanceWarning has no dpnp equivalent
+    # @pytest.mark.filterwarnings("ignore::cupy._util.PerformanceWarning")
     def test_copyto_multigpu_noncontinguous(self, dtype):
         with cuda.Device(0):
             src = testing.shaped_arange((2, 3, 4), cupy, dtype)
