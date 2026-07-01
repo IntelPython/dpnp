@@ -6,6 +6,9 @@ updates:
       interval: "weekly"
       day: "saturday"
     rebase-strategy: "disabled"
+    groups:
+      github-actions:
+        patterns: ["*"]
 
   # Note: only "==" pins are bumped; ">=" floors and dev pre-releases are not
   - package-ecosystem: "pip"
@@ -14,6 +17,9 @@ updates:
       interval: "weekly"
       day: "saturday"
     rebase-strategy: "disabled"
+    groups:
+      pip:
+        patterns: ["*"]
 
   # Handles plain conda-forge "pkg=X.Y.Z" pins and pip: sections
   - package-ecosystem: "conda"
@@ -22,6 +28,9 @@ updates:
       interval: "weekly"
       day: "saturday"
     rebase-strategy: "disabled"
+    groups:
+      conda:
+        patterns: ["*"]
 
   - package-ecosystem: "pre-commit"
     directory: "/"
@@ -29,3 +38,6 @@ updates:
       interval: "weekly"
       day: "saturday"
     rebase-strategy: "disabled"
+    groups:
+      pre-commit:
+        patterns: ["*"]
