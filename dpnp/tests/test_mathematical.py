@@ -1213,14 +1213,14 @@ class TestInterp:
         result = dpnp.interp(ix, ixp, ifp)
         assert_dtype_allclose(result, expected)
 
-    def test_empty_x(self):
-        x = numpy.array([])
-        xp = numpy.array([0, 1])
-        fp = numpy.array([10, 20])
-
-        ix = dpnp.array(x)
-        ixp = dpnp.array(xp)
-        ifp = dpnp.array(fp)
+    @testing.with_requires("numpy>=2.5")
+    @pytest.mark.parametrize(
+        "x, xp, fp",
+        [([], [], []), ([], [1, 2], [3, 4]), ([], [1, 2], [3 + 4j, 5 + 6j])],
+    )
+    def test_empty_x(self, x, xp, fp):
+        x, xp, fp = numpy.array(x), numpy.array(xp), numpy.array(fp)
+        ix, ixp, ifp = dpnp.array(x), dpnp.array(xp), dpnp.array(fp)
 
         expected = numpy.interp(x, xp, fp)
         result = dpnp.interp(ix, ixp, ifp)
@@ -1238,18 +1238,6 @@ class TestInterp:
 
         expected = numpy.interp(x, xp, fp, period=180)
         result = dpnp.interp(ix, ixp, ifp, period=180)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize(
-        "x, xp, fp",
-        [([], [], []), ([], [1, 2], [3, 4]), ([], [1, 2], [3 + 4j, 5 + 6j])],
-    )
-    def test_empty_x(self, x, xp, fp):
-        x, xp, fp = numpy.array(x), numpy.array(xp), numpy.array(fp)
-        ix, ixp, ifp = dpnp.array(x), dpnp.array(xp), dpnp.array(fp)
-
-        expected = numpy.interp(x, xp, fp)
-        result = dpnp.interp(ix, ixp, ifp)
         assert_dtype_allclose(result, expected)
 
     def test_errors(self):
