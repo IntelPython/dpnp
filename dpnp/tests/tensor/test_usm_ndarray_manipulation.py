@@ -102,7 +102,7 @@ def test_permute_dims_2d_3d(shapes):
 def test_expand_dims_incorrect_type():
     X_list = [1, 2, 3, 4, 5]
     with pytest.raises(TypeError):
-        dpt.permute_dims(X_list, axis=1)
+        dpt.expand_dims(X_list, axis=1)
 
 
 def test_expand_dims_0d():
