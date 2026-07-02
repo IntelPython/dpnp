@@ -1971,10 +1971,20 @@
 
 <div class="viewcode-block" id="dpnp_array.asnumpy">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.asnumpy.html#dpnp.dpnp_array.dpnp_array.asnumpy">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">asnumpy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">asnumpy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Copy content of the array into :class:`numpy.ndarray` instance of</span>
 <span class="sd">        the same shape and data type.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        order : {None, &#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}, optional</span>
+<span class="sd">            The desired memory layout of the converted array.</span>
+<span class="sd">            When `order` is ``&#39;A&#39;``, it uses ``&#39;F&#39;`` if the array is</span>
+<span class="sd">            column-major and uses ``&#39;C&#39;`` otherwise. And when `order` is</span>
+<span class="sd">            ``&#39;K&#39;``, it keeps strides as closely as possible.</span>
+
+<span class="sd">            Default: ``&#39;C&#39;``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1984,7 +1994,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="dpnp_array.astype">
