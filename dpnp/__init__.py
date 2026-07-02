@@ -303,6 +303,7 @@ from .dpnp_iface_indexing import (
     unravel_index,
 )
 from .dpnp_flatiter import flatiter
+from .dpnp_broadcast import broadcast
 
 # -----------------------------------------------------------------------------
 # Linear algebra
@@ -690,6 +691,7 @@ __all__ += [
     "atleast_1d",
     "atleast_2d",
     "atleast_3d",
+    "broadcast",
     "broadcast_arrays",
     "broadcast_to",
     "column_stack",
