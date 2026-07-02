@@ -628,7 +628,7 @@ class TestMisc:
 
     @testing.for_float_dtypes(name="dtype_x")
     @testing.for_dtypes("efdFD", name="dtype_y")
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_interp_inf_fy_at_knot(self, xp, dtype_y, dtype_x):
         # Regression test: querying at an exact knot point should return the
         # knot value, not nan, even when the adjacent fy value is inf.
