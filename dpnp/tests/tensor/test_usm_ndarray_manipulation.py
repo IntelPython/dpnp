@@ -154,6 +154,21 @@ def test_expand_dims_tuple(axes):
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
 
+def test_expand_dims_positional_axis():
+    q = get_queue_or_skip()
+
+    Xnp = np.empty((3, 3, 3), dtype="u1")
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    Y = dpt.expand_dims(X, 1)  # `axis` is a positional-or-keyword argument
+    Ynp = np.expand_dims(Xnp, 1)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    # `axis` has no default value
+    with pytest.raises(TypeError):
+        dpt.expand_dims(X)
+
+
 def test_expand_dims_incorrect_tuple():
     try:
         X = dpt.empty((3, 3, 3), dtype="i4")
