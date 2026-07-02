@@ -601,6 +601,16 @@ class TestEinsum:
         expected = numpy.einsum("ii->i", a.asnumpy())
         assert_dtype_allclose(result, expected)
 
+    def test_out_0d(self):
+        a = numpy.ones(7, dtype=int)
+        out = numpy.array(0, dtype=a.dtype)
+        ia, iout = dpnp.array(a), dpnp.array(out)
+
+        result = dpnp.einsum("i,i->", ia, ia, out=iout, optimize="optimal")
+        expected = numpy.einsum("i,i->", a, a, out=out, optimize="optimal")
+        assert_dtype_allclose(result, expected)
+        assert result is iout
+
     def test_einsum_error1(self):
         a = dpnp.ones((5, 5))
         out = dpnp.empty((5,), sycl_queue=dpctl.SyclQueue())
