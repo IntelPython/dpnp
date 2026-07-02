@@ -1806,8 +1806,6 @@ class dpnp_array:
             shape = shape[0]
         return dpnp.reshape(self, shape, order=order, copy=copy)
 
-    # 'resize',
-
     def round(self, /, decimals=0, *, out=None):
         """
         Return array with each element rounded to the given number of decimals.
