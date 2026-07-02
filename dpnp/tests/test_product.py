@@ -887,9 +887,7 @@ class TestMatmul:
         ids=["-2", "2", "(-2, 2)", "(2, -2)"],
     )
     def test_strided1(self, dtype, stride):
-        # TODO: enable back when the root cause is identified
-        # for dim in [1, 2, 3, 4]:
-        for dim in [1, 2, 3]:
+        for dim in [1, 2, 3, 4]:
             shape = tuple(20 for _ in range(dim))
             A = generate_random_numpy_array(shape, dtype)
             iA = dpnp.array(A)
@@ -1544,9 +1542,7 @@ class TestMatvec:
 
         result = dpnp.matvec(ia, ib, axes=axes)
         expected = numpy.matvec(a, b, axes=axes)
-
-        # TODO: check if failing with newer NumPy
-        assert_dtype_allclose(result, expected, factor=40)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_error(self, xp):
