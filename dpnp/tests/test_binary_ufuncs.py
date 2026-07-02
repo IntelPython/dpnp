@@ -121,6 +121,42 @@ class TestAdd:
             assert_raises(TypeError, numpy.add, a, b, out=a)
             assert_raises(ValueError, dpnp.add, ia, ib, out=ia)
 
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    @pytest.mark.parametrize("shape", [(4, 4), (3, 5), (100, 37), (513, 256)])
+    def test_inplace_row_broadcast(self, shape, dtype):
+        # C-contiguous matrix += row vector, in place (broadcast over rows)
+        n0, n1 = shape
+        a = get_abs_array(
+            numpy.arange(n0 * n1).reshape(shape) % 7 + 1, dtype=dtype
+        )
+        row = get_abs_array(numpy.arange(n1) % 3 + 1, dtype=dtype)
+        ia, irow = dpnp.array(a), dpnp.array(row)
+
+        a += row
+        ia += irow
+        assert_dtype_allclose(ia, a)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    @pytest.mark.parametrize("shape", [(4, 4), (3, 5), (100, 37), (513, 256)])
+    def test_inplace_column_broadcast(self, shape, dtype):
+        # C-contiguous matrix += column vector, in place (broadcast over columns)
+        n0, n1 = shape
+        a = get_abs_array(
+            numpy.arange(n0 * n1).reshape(shape) % 7 + 1, dtype=dtype
+        )
+        col = get_abs_array(
+            (numpy.arange(n0) % 3 + 1).reshape(n0, 1), dtype=dtype
+        )
+        ia, icol = dpnp.array(a), dpnp.array(col)
+
+        a += col
+        ia += icol
+        assert_dtype_allclose(ia, a)
+
     @pytest.mark.parametrize("shape", [(0,), (15,), (2, 2)])
     def test_invalid_shape(self, shape):
         a, b = dpnp.arange(10), dpnp.arange(10)
