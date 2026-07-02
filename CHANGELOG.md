@@ -32,6 +32,7 @@ This release is compatible with NumPy 2.5.
 * Improved performance of `dpnp.fft` functions for complex strided input by avoiding oversized allocations and extra copies [#2939](https://github.com/IntelPython/dpnp/pull/2939)
 * Refreshed `dpnp` documentation styling with the Furo theme [#2934](https://github.com/IntelPython/dpnp/pull/2934)
 * Updated Python Array API specification version supported to `2025.12` [#2899](https://github.com/IntelPython/dpnp/pull/2899)
+* Aligned the signature of `dpnp.tensor.expand_dims` with the Python array API by making `axis` a required argument [#2986](https://github.com/IntelPython/dpnp/pull/2986)
 
 ### Deprecated
 
