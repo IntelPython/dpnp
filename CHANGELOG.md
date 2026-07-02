@@ -60,6 +60,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `icx`/`icpx` warning during `conda build` by stripping the GCC-only `-fno-merge-constants` flag injected by conda-forge into `CFLAGS`/`CXXFLAGS` [#2978](https://github.com/IntelPython/dpnp/pull/2978)
 * Fixed `dpnp.asnumpy` and `dpnp.ndarray.asnumpy` ignoring the `order` keyword, which caused a non-contiguous source array to be returned with a non-contiguous layout even when `order="C"` was requested [#2980](https://github.com/IntelPython/dpnp/pull/2980)
 * Fixed `dpnp.tensor.acosh` and `dpnp.tensor.acos` returning infinity for complex numbers with large negative real parts [#2928](https://github.com/IntelPython/dpnp/pull/2928)
+* Fixed `dpnp.interp` returning `nan` when querying at an exact knot point whose adjacent `fp` value is `inf` [#2985](https://github.com/IntelPython/dpnp/pull/2985)
 
 ### Security
 
