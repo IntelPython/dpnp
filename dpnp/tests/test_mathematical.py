@@ -1140,13 +1140,14 @@ class TestI0:
 
 
 class TestInterp:
-    @pytest.mark.parametrize(
-        "dtype_x", get_all_dtypes(no_complex=True, no_none=True)
+    ALL_DTYPES = get_all_dtypes(no_float16=False, no_none=True)
+    ALL_DTYPES_NO_COMPLEX = get_all_dtypes(
+        no_float16=False, no_complex=True, no_none=True
     )
-    @pytest.mark.parametrize(
-        "dtype_xp", get_all_dtypes(no_complex=True, no_none=True)
-    )
-    @pytest.mark.parametrize("dtype_y", get_all_dtypes(no_none=True))
+
+    @pytest.mark.parametrize("dtype_x", ALL_DTYPES_NO_COMPLEX)
+    @pytest.mark.parametrize("dtype_xp", ALL_DTYPES_NO_COMPLEX)
+    @pytest.mark.parametrize("dtype_y", ALL_DTYPES)
     def test_all_dtypes(self, dtype_x, dtype_xp, dtype_y):
         x = numpy.linspace(0.1, 9.9, 20).astype(dtype_x)
         xp = numpy.linspace(0.0, 10.0, 5).astype(dtype_xp)
@@ -1160,9 +1161,7 @@ class TestInterp:
         result = dpnp.interp(ix, ixp, ifp)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "dtype_x", get_all_dtypes(no_complex=True, no_none=True)
-    )
+    @pytest.mark.parametrize("dtype_x", ALL_DTYPES_NO_COMPLEX)
     @pytest.mark.parametrize("dtype_y", get_complex_dtypes())
     def test_complex_fp(self, dtype_x, dtype_y):
         x = numpy.array([0.25, 0.75], dtype=dtype_x)
@@ -1177,9 +1176,7 @@ class TestInterp:
         result = dpnp.interp(ix, ixp, ifp)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_complex=True, no_none=True)
-    )
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_COMPLEX)
     @pytest.mark.parametrize(
         "left, right", [[-40, 40], [dpnp.array(-40), dpnp.array(40)]]
     )
@@ -1241,6 +1238,18 @@ class TestInterp:
 
         expected = numpy.interp(x, xp, fp, period=180)
         result = dpnp.interp(ix, ixp, ifp, period=180)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "x, xp, fp",
+        [([], [], []), ([], [1, 2], [3, 4]), ([], [1, 2], [3 + 4j, 5 + 6j])],
+    )
+    def test_empty_x(self, x, xp, fp):
+        x, xp, fp = numpy.array(x), numpy.array(xp), numpy.array(fp)
+        ix, ixp, ifp = dpnp.array(x), dpnp.array(xp), dpnp.array(fp)
+
+        expected = numpy.interp(x, xp, fp)
+        result = dpnp.interp(ix, ixp, ifp)
         assert_dtype_allclose(result, expected)
 
     def test_errors(self):
