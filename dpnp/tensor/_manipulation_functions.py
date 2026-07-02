@@ -355,36 +355,50 @@ def concat(arrays, /, *, axis=0):
     return res
 
 
-def expand_dims(X, /, *, axis=0):
+def expand_dims(X, /, axis):
     """expand_dims(x, axis)
 
     Expands the shape of an array by inserting a new axis (dimension)
-    of size one at the position specified by axis.
+    of size one at the position (or positions) specified by axis.
 
     Args:
         x (usm_ndarray):
             input array
-        axis (Union[int, Tuple[int]]):
-            axis position in the expanded axes (zero-based). If `x` has rank
-            (i.e, number of dimensions) `N`, a valid `axis` must reside
-            in the closed-interval `[-N-1, N]`. If provided a negative
-            `axis`, the `axis` position at which to insert a singleton
-            dimension is computed as `N + axis + 1`. Hence, if
-            provided `-1`, the resolved axis position is `N` (i.e.,
-            a singleton dimension must be appended to the input array `x`).
-            If provided `-N-1`, the resolved axis position is `0` (i.e., a
-            singleton dimension is prepended to the input array `x`).
+        axis (Union[int, Tuple[int, ...]]):
+            axis position(s) (zero-based). If ``axis`` is an integer, ``axis``
+            **must** be equivalent to the tuple ``(axis,)``. If ``axis`` is
+            a tuple,
+
+            - a valid axis position **must** reside on the half-open interval
+              ``[-M, M)``, where ``M = N + len(axis)`` and ``N`` is the number
+              of dimensions in ``x``.
+            - if the i-th entry is a negative integer, the axis position of the
+              inserted singleton dimension in the output array **must** be
+              computed as ``M + axis[i]``.
+            - each entry of ``axis`` must resolve to a unique positive axis
+              position.
+            - for each entry of ``axis``, the corresponding dimension in the
+              expanded output array **must** be a singleton dimension.
+            - for the remaining dimensions of the expanded output array, the
+              output array dimensions **must** correspond to the dimensions of
+              ``x`` in order.
+            - if provided an invalid axis position, the function **must** raise
+              an exception.
 
     Returns:
         usm_ndarray:
             Returns a view, if possible, and a copy otherwise with the number
             of dimensions increased.
             The expanded array has the same data type as the input array `x`.
+            If ``axis`` is an integer, the output array must have ``N + 1``
+            dimensions. If ``axis`` is a tuple, the output array must have
+            ``N + len(axis)`` dimensions.
             The expanded array is located on the same device as the input
             array, and has the same USM allocation type.
 
     Raises:
-        IndexError: if `axis` value is invalid.
+        AxisError: if an `axis` value is out of range.
+        ValueError: if `axis` contains a repeated value.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
