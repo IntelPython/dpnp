@@ -152,6 +152,32 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
+        // y = alpha * op(A) * x + beta * y, the full BLAS gemv form.
+        // Used by dpnp.scipy.sparse.linalg.gmres to fuse the Arnoldi
+        // orthogonalisation (u -= V @ h) into a single oneMKL call
+        // (trans_op=0, alpha=-1, beta=1) and to write the Hessenberg
+        // column h = V^H @ u directly into the Hessenberg matrix slice
+        // (trans_op=2, alpha=1, beta=0).
+        //
+        // trans_op selects the op applied to A:
+        //   0 = N   y = alpha * A   @ x + beta * y
+        //   1 = T   y = alpha * A^T @ x + beta * y
+        //   2 = C   y = alpha * A^H @ x + beta * y   (F-contig only)
+        //
+        // For complex matrices the scalars must be exactly
+        // representable as their real form: callers pass {-1, 0, 1};
+        // fractional or complex scalars would lose the imaginary
+        // component on the C++ cast.
+        m.def("_gemv_alpha_beta", &blas_ns::gemv_alpha_beta,
+              "Call `gemv` from oneMKL BLAS library with explicit "
+              "alpha, beta, and tri-state trans_op (0=N, 1=T, 2=C). "
+              "Computes y = alpha * op(A) * x + beta * y.",
+              py::arg("sycl_queue"), py::arg("matrixA"), py::arg("vectorX"),
+              py::arg("vectorY"), py::arg("trans_op"), py::arg("alpha"),
+              py::arg("beta"), py::arg("depends") = py::list());
+    }
+
+    {
         m.def("_syrk", &blas_ns::syrk,
               "Call `syrk` from oneMKL BLAS library to compute "
               "the matrix-vector product with a general matrix.",

@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,47 +26,19 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import skbuild
-import versioneer
+"""
+Sparse linear algebra interface for DPNP.
 
-skbuild.setup(
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    packages=[
-        "dpnp",
-        "dpnp.tensor",
-        "dpnp.dpnp_algo",
-        "dpnp.dpnp_utils",
-        "dpnp.exceptions",
-        "dpnp.fft",
-        "dpnp.linalg",
-        "dpnp.memory",
-        "dpnp.random",
-        "dpnp.scipy",
-        "dpnp.scipy.linalg",
-        "dpnp.scipy.sparse",
-        "dpnp.scipy.sparse.linalg",
-        "dpnp.scipy.special",
-    ],
-    package_data={
-        "dpnp": [
-            "include/*.h*",
-            "libdpnp_backend_c.so",
-            "dpnp_backend_c.lib",
-            "dpnp_backend_c.dll",
-            "resources/cmake/*.cmake",
-            "tensor/libtensor/include/kernels/*.h*",
-            "tensor/libtensor/include/kernels/*/*.h*",
-            "tensor/libtensor/include/utils/*.h*",
-            "tests/*.*",
-            "tests/tensor/*.py",
-            "tests/tensor/*/*.py",
-            "tests/testing/*.py",
-            "tests/third_party/cupy/*.py",
-            "tests/third_party/cupy/*/*.py",
-            "tests/third_party/cupyx/*.py",
-            "tests/third_party/cupyx/*/*.py",
-        ],
-    },
-    include_package_data=False,
-)
+This module provides a subset of :mod:`scipy.sparse.linalg`
+ functionality on top of DPNP arrays.
+
+The initial implementation focuses on the :class:`LinearOperator` interface
+and a small set of Krylov solvers (``cg``, ``gmres``, ``minres``).
+"""
+
+from __future__ import annotations
+
+from ._interface import LinearOperator, aslinearoperator
+from ._iterative import cg, gmres, minres
+
+__all__ = ["LinearOperator", "aslinearoperator", "cg", "gmres", "minres"]
