@@ -999,12 +999,17 @@ def test_meshgrid(arrays, dtype, indexing):
     assert isinstance(result, tuple)
 
 
+@testing.with_requires("numpy>=2.5")
 @pytest.mark.parametrize("shape", [(24,), (4, 6), (2, 3, 4), (2, 3, 2, 2)])
 def test_set_shape(shape):
+    deprecation_msg = "Setting the shape on .* has been deprecated"
     na = numpy.arange(24)
-    na.shape = shape
+    with pytest.warns(DeprecationWarning, match=deprecation_msg):
+        na.shape = shape
+
     da = dpnp.arange(24)
-    da.shape = shape
+    with pytest.warns(DeprecationWarning, match=deprecation_msg):
+        da.shape = shape
 
     assert_array_equal(na, da)
 
@@ -1071,6 +1076,8 @@ class TestGrid:
             slice(0, 5, 0.5),  # float step
             slice(0, 5, 1j),  # complex step
             slice(0, 5, 5j),  # complex step
+            slice(0, 10, 2.5j),  # complex step with non-integer magnitude
+            slice(0, 10, 3.5j),  # non-integer magnitude with interior points
             slice(None, 5, 1),  # no start
             slice(0, 5, None),  # no step
         ],
@@ -1090,6 +1097,10 @@ class TestGrid:
                 slice(0.0, 5, 1),
                 slice(0, 10, 1j),
             ),  # float start and complex step
+            (
+                slice(0, 10, 2.5j),
+                slice(0, 10, 3.5j),
+            ),  # complex step with non-integer magnitude
         ],
     )
     def test_md_slice(self, grid, slices):

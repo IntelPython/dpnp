@@ -845,7 +845,7 @@ def fill_diagonal(a, val, wrap=False):
         written along the diagonal. If array, the flattened `val` is
         written along the diagonal, repeating if necessary to fill all
         diagonal entries.
-    wrap : bool
+    wrap : bool, optional
         It enables the diagonal "wrapped" after N columns. This affects only
         tall matrices.
 
@@ -1045,7 +1045,7 @@ def indices(
         Return a sparse representation of the grid instead of a dense
         representation.
 
-        Default is ``False``.
+        Default: ``False``.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
         `device` can be ``None``, a oneAPI filter selector string, an instance
@@ -1071,12 +1071,12 @@ def indices(
     -------
     out : one dpnp.ndarray or tuple of dpnp.ndarray
         If sparse is ``False``:
-        Returns one array of grid indices,
-        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.
+        Returns one array of grid indices with
+        ``grid.shape == (len(dimensions),) + tuple(dimensions)``.
 
         If sparse is ``True``:
         Returns a tuple of arrays,
-        with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
+        with grid[i].shape == (1, ..., 1, dimensions[i], 1, ..., 1)
         with dimensions[i] in the i-th place.
 
     See Also
@@ -1109,6 +1109,7 @@ def indices(
 
     Note that it would be more straightforward in the above example to
     extract the required elements directly with ``x[:2, :3]``.
+
     If sparse is set to ``True``, the grid will be returned in a sparse
     representation.
 
@@ -1304,7 +1305,7 @@ def mask_indices(
         A function whose call signature is similar to that of :obj:`dpnp.triu`,
         :obj:`dpnp.tril`. That is, ``mask_func(x, k=k)`` returns a boolean
         array, shaped like `x`.`k` is an optional argument to the function.
-    k : scalar
+    k : scalar, optional
         An optional argument which is passed through to `mask_func`. Functions
         like :obj:`dpnp.triu`, :obj:`dpnp.tril` take a second argument that is
         interpreted as an offset.
@@ -2198,7 +2199,7 @@ def take_along_axis(a, indices, axis=-1, mode="wrap"):
         Indices to take along each 1d slice of `a`. This must match the
         dimension of the input array, but dimensions ``Ni`` and ``Nj``
         only need to broadcast against `a`.
-    axis : {None, int}
+    axis : {None, int}, optional
         The axis to take 1d slices along. If axis is ``None``, the input array
         is treated as if it had first been flattened to 1d. The default is
         ``-1``, which takes 1d slices along the last axis. These behaviors are

@@ -3740,7 +3740,7 @@ class TestSolve:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_solve_nrhs_greater_n(self, dtype):
         # Test checking the case when nrhs > n for
-        # for a.shape = (n x n) and b.shape = (n x nrhs).
+        # for a.shape == (n x n) and b.shape == (n x nrhs).
         a_np = numpy.array([[1, 2], [3, 5]], dtype=dtype)
         b_np = numpy.array([[1, 1, 1], [2, 2, 2]], dtype=dtype)
 

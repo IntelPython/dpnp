@@ -74,6 +74,8 @@ def _compute_res_dtype(*arrays, dtype=None, out=None, casting="no"):
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur.
 
+        Default: ``"no"``.
+
     Returns
     -------
     res_dtype : dtype
@@ -202,13 +204,13 @@ def _define_dim_flags(x, axis):
     """
     Define useful flags for the calculations in dpnp_multiplication and dpnp_vecdot.
     x_is_1D: `x` is 1D array or inherently 1D (all dimensions are equal to one
-    except for dimension at `axis`), for instance, if x.shape = (1, 1, 1, 2),
-    and axis=-1, then x_is_1D = True.
+    except for dimension at `axis`), for instance, if ``x.shape == (1, 1, 1, 2)``,
+    and ``axis == -1``, then ``x_is_1D = True``.
     x_is_2D: `x` is 2D array or inherently 2D (all dimensions are equal to one
-    except for the last two of them), for instance, if x.shape = (1, 1, 3, 2),
-    then x_is_2D = True.
+    except for the last two of them), for instance, if ``x.shape == (1, 1, 3, 2)``,
+    then ``x_is_2D = True``.
     x_base_is_1D: `x` is 1D considering only its last two dimensions, for instance,
-    if x.shape = (3, 4, 1, 2), then x_base_is_1D = True.
+    if ``x.shape == (3, 4, 1, 2)``, then ``x_base_is_1D = True``.
 
     """
 

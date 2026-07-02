@@ -1961,7 +1961,7 @@ def tensordot(a, b, /, *, axes=2):
     b : {dpnp.ndarray, usm_ndarray, scalar}
         Second input array. Both inputs `a` and `b` can not be scalars
         at the same time.
-    axes : int or (2,) array_like
+    axes : int or (2,) array_like, optional
         * integer_like: If an int `N`, sum over the last `N` axes of `a` and
           the first `N` axes of `b` in order. The sizes of the corresponding
           axes must match.
@@ -2083,17 +2083,21 @@ def tensorinv(a, ind=2):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.eye(4*6)
-    >>> a.shape = (4, 6, 8, 3)
+    >>> a = np.eye(4*6).reshape((4, 6, 8, 3))
     >>> ainv = np.linalg.tensorinv(a, ind=2)
     >>> ainv.shape
     (8, 3, 4, 6)
+    >>> b = np.random.normal(size=(4, 6))
+    >>> np.allclose(np.tensordot(ainv, b), np.linalg.tensorsolve(a, b))
+    array(True)
 
-    >>> a = np.eye(4*6)
-    >>> a.shape = (24, 8, 3)
+    >>> a = np.eye(4*6).reshape((24, 8, 3))
     >>> ainv = np.linalg.tensorinv(a, ind=1)
     >>> ainv.shape
     (8, 3, 24)
+    >>> b = np.random.normal(size=24)
+    >>> np.allclose(np.tensordot(ainv, b, axes=1), np.linalg.tensorsolve(a, b))
+    array(True)
 
     """
 
@@ -2150,14 +2154,13 @@ def tensorsolve(a, b, axes=None):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.eye(2*3*4)
-    >>> a.shape = (2*3, 4, 2, 3, 4)
+    >>> a = np.eye(2*3*4).reshape((2*3, 4, 2, 3, 4))
     >>> b = np.random.randn(2*3, 4)
     >>> x = np.linalg.tensorsolve(a, b)
     >>> x.shape
     (2, 3, 4)
     >>> np.allclose(np.tensordot(a, x, axes=3), b)
-    array([ True])
+    array(True)
 
     """
 

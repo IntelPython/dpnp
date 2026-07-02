@@ -664,19 +664,19 @@ def clip(a, /, min=None, max=None, *, out=None, order="K", **kwargs):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array containing elements to clip.
-    min, max : {None, dpnp.ndarray, usm_ndarray}
+    min, max : {None, dpnp.ndarray, usm_ndarray}, optional
         Minimum and maximum value. If ``None``, clipping is not performed on
         the corresponding edge. If both `min` and `max` are ``None``,
         the elements of the returned array stay the same.
         Both are broadcast against `a`.
 
-        Default : ``None``.
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array
         for in-place clipping. `out` must be of the right shape to hold the
         output. Its type is preserved.
 
-        Default : ``None``.
+        Default: ``None``.
     order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
         If `order` is ``None``, the default value ``"K"`` will be used.
@@ -1818,8 +1818,8 @@ See Also
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.
 
-Warning
--------
+Warnings
+--------
 This function is deprecated. It is recommended to use
 :func:`dpnp.trunc` instead, as it provides the same functionality of
 truncating decimal values to their integer parts.
@@ -3249,8 +3249,8 @@ order : {None, "C", "F", "A", "K"}, optional
 
     Default: ``"K"``.
 
-Warning
--------
+Warnings
+--------
 Passing more than 2 positional arguments is deprecated.
 If you meant to use the third argument as an output,
 use the `out` keyword argument instead.
@@ -3356,8 +3356,8 @@ out : dpnp.ndarray
     An array containing the element-wise minima. The data type of
     the returned array is determined by the Type Promotion Rules.
 
-Warning
--------
+Warnings
+--------
 Passing more than 2 positional arguments is deprecated.
 If you meant to use the third argument as an output,
 use the `out` keyword argument instead.
