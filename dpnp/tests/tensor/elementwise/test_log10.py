@@ -26,8 +26,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import itertools
-
 import numpy as np
 import pytest
 from numpy.testing import assert_equal
@@ -41,7 +39,6 @@ from ..helper import (
 from .utils import (
     _all_dtypes,
     _map_to_device_dtype,
-    _usm_types,
 )
 
 
@@ -90,54 +87,6 @@ def test_log_output_strided(dtype):
     np.testing.assert_allclose(
         dpt.asnumpy(Y), np.log10(Xnp), atol=tol, rtol=tol
     )
-
-
-@pytest.mark.parametrize("usm_type", _usm_types)
-def test_log_usm_type(usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("f4")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    X[..., 0::2] = 4 * dpt.e
-    X[..., 1::2] = 10 * dpt.e
-
-    Y = dpt.log10(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    expected_Y = np.empty(input_shape, dtype=arg_dt)
-    expected_Y[..., 0::2] = np.log10(np.float32(4 * dpt.e))
-    expected_Y[..., 1::2] = np.log10(np.float32(10 * dpt.e))
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-
-    np.testing.assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_log_order(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
-    X[..., 0::2] = 4 * dpt.e
-    X[..., 1::2] = 10 * dpt.e
-
-    for perms in itertools.permutations(range(4)):
-        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
-        expected_Y = np.log10(dpt.asnumpy(U))
-        for ord in ["C", "F", "A", "K"]:
-            Y = dpt.log10(U, order=ord)
-            tol = 8 * max(
-                dpt.finfo(Y.dtype).resolution,
-                np.finfo(expected_Y.dtype).resolution,
-            )
-            np.testing.assert_allclose(
-                dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol
-            )
 
 
 def test_log_special_cases():

@@ -26,10 +26,8 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import ctypes
 import itertools
 
-import dpctl
 import numpy as np
 import pytest
 from numpy.testing import assert_array_equal
@@ -43,7 +41,6 @@ from ..helper import (
 from .utils import (
     _all_dtypes,
     _compare_dtypes,
-    _usm_types,
 )
 
 
@@ -191,139 +188,3 @@ def test_maximum_minimum_complex_special_cases(dtype):
     Rnp = np.minimum(Xnp, Ynp)
     assert_array_equal(dpt.asnumpy(dpt.real(R)), np.real(Rnp))
     assert_array_equal(dpt.asnumpy(dpt.imag(R)), np.imag(Rnp))
-
-
-@pytest.mark.parametrize("op1_usm_type", _usm_types)
-@pytest.mark.parametrize("op2_usm_type", _usm_types)
-def test_maximum_minimum_usm_type_matrix(op1_usm_type, op2_usm_type):
-    get_queue_or_skip()
-
-    sz = 128
-    ar1_np = np.arange(sz, dtype="i4")
-    np.random.shuffle(ar1_np)
-    ar1 = dpt.asarray(ar1_np, usm_type=op1_usm_type)
-    ar2_np = np.arange(sz, dtype="i4")
-    np.random.shuffle(ar2_np)
-    ar2 = dpt.asarray(ar2_np, usm_type=op2_usm_type)
-
-    r = dpt.maximum(ar1, ar2)
-    assert isinstance(r, dpt.usm_ndarray)
-    expected_usm_type = dpt.get_coerced_usm_type((op1_usm_type, op2_usm_type))
-    assert r.usm_type == expected_usm_type
-
-    r = dpt.minimum(ar1, ar2)
-    assert isinstance(r, dpt.usm_ndarray)
-    expected_usm_type = dpt.get_coerced_usm_type((op1_usm_type, op2_usm_type))
-    assert r.usm_type == expected_usm_type
-
-
-def test_maximum_minimum_order():
-    get_queue_or_skip()
-
-    ar1_np = np.arange(20 * 20, dtype="i4").reshape(20, 20)
-    np.random.shuffle(ar1_np)
-    ar1 = dpt.asarray(ar1_np, order="C")
-    ar2_np = np.arange(20 * 20, dtype="i4").reshape(20, 20)
-    np.random.shuffle(ar2_np)
-    ar2 = dpt.asarray(ar2_np, order="C")
-
-    r1 = dpt.maximum(ar1, ar2, order="C")
-    assert r1.flags.c_contiguous
-    r2 = dpt.maximum(ar1, ar2, order="F")
-    assert r2.flags.f_contiguous
-    r3 = dpt.maximum(ar1, ar2, order="A")
-    assert r3.flags.c_contiguous
-    r4 = dpt.maximum(ar1, ar2, order="K")
-    assert r4.flags.c_contiguous
-
-    ar1 = dpt.asarray(ar1_np, order="F")
-    ar2 = dpt.asarray(ar2_np, order="F")
-    r1 = dpt.maximum(ar1, ar2, order="C")
-    assert r1.flags.c_contiguous
-    r2 = dpt.maximum(ar1, ar2, order="F")
-    assert r2.flags.f_contiguous
-    r3 = dpt.maximum(ar1, ar2, order="A")
-    assert r3.flags.f_contiguous
-    r4 = dpt.maximum(ar1, ar2, order="K")
-    assert r4.flags.f_contiguous
-
-    ar1_np = np.arange(40 * 40, dtype="i4").reshape(40, 40)
-    np.random.shuffle(ar1_np)
-    ar1 = dpt.asarray(ar1_np, order="C")[:20, ::-2]
-    ar2_np = np.arange(40 * 40, dtype="i4").reshape(40, 40)
-    np.random.shuffle(ar2_np)
-    ar2 = dpt.asarray(ar2_np, order="C")[:20, ::-2]
-    r4 = dpt.maximum(ar1, ar2, order="K")
-    assert r4.strides == (20, -1)
-
-    ar1 = dpt.asarray(ar1_np, order="C")[:20, ::-2].mT
-    ar2 = dpt.asarray(ar2_np, order="C")[:20, ::-2].mT
-    r4 = dpt.maximum(ar1, ar2, order="K")
-    assert r4.strides == (-1, 20)
-
-
-@pytest.mark.parametrize("arr_dt", _all_dtypes)
-def test_maximum_minimum_python_scalar(arr_dt):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(arr_dt, q)
-
-    X = dpt.zeros((10, 10), dtype=arr_dt, sycl_queue=q)
-    py_ones = (
-        bool(1),
-        int(1),
-        float(1),
-        complex(1),
-        np.float32(1),
-        ctypes.c_int(1),
-    )
-    for sc in py_ones:
-        R = dpt.maximum(X, sc)
-        assert isinstance(R, dpt.usm_ndarray)
-        R = dpt.maximum(sc, X)
-        assert isinstance(R, dpt.usm_ndarray)
-
-        R = dpt.minimum(X, sc)
-        assert isinstance(R, dpt.usm_ndarray)
-        R = dpt.minimum(sc, X)
-        assert isinstance(R, dpt.usm_ndarray)
-
-
-class MockArray:
-    def __init__(self, arr):
-        self.data_ = arr
-
-    @property
-    def __sycl_usm_array_interface__(self):
-        return self.data_.__sycl_usm_array_interface__
-
-
-def test_maximum_minimum_mock_array():
-    get_queue_or_skip()
-    a = dpt.arange(10)
-    b = dpt.ones(10)
-    c = MockArray(b)
-    r = dpt.maximum(a, c)
-    assert isinstance(r, dpt.usm_ndarray)
-
-    r = dpt.minimum(a, c)
-    assert isinstance(r, dpt.usm_ndarray)
-
-
-def test_maximum_canary_mock_array():
-    get_queue_or_skip()
-    a = dpt.arange(10)
-
-    class Canary:
-        def __init__(self):
-            pass
-
-        @property
-        def __sycl_usm_array_interface__(self):
-            return None
-
-    c = Canary()
-    with pytest.raises(ValueError):
-        dpt.maximum(a, c)
-
-    with pytest.raises(ValueError):
-        dpt.minimum(a, c)

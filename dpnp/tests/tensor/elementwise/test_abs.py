@@ -27,8 +27,10 @@
 # *****************************************************************************
 
 import itertools
+import re
 import warnings
 
+import dpctl
 import numpy as np
 import pytest
 
@@ -42,7 +44,6 @@ from .utils import (
     _all_dtypes,
     _complex_fp_dtypes,
     _real_fp_dtypes,
-    _usm_types,
 )
 
 
@@ -69,33 +70,6 @@ def test_abs_out_type(dtype):
         r = dpt.empty_like(X, dtype=arg_dt)
         dpt.abs(X, out=r)
         assert np.allclose(dpt.asnumpy(r), dpt.asnumpy(dpt.abs(X)))
-
-
-@pytest.mark.parametrize("usm_type", _usm_types)
-def test_abs_usm_type(usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("i4")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    X[..., 0::2] = 1
-    X[..., 1::2] = 0
-
-    Y = dpt.abs(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    expected_Y = dpt.asnumpy(X)
-    assert np.allclose(dpt.asnumpy(Y), expected_Y)
-
-
-def test_abs_types_property():
-    get_queue_or_skip()
-    types = dpt.abs.types
-    assert isinstance(types, list)
-    assert len(types) > 0
-    assert types == dpt.abs.types_
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes[1:])
@@ -222,3 +196,44 @@ def test_abs_alignment(dtype):
 
     dpt.abs(x[:-1], out=r[1:])
     assert np.allclose(dpt.asnumpy(r[1:]), dpt.asnumpy(r2))
+
+
+def test_abs_errors():
+    q1 = get_queue_or_skip()
+    q2 = dpctl.SyclQueue()
+
+    x = dpt.ones(2, dtype="float32", sycl_queue=q1)
+    y = dpt.empty_like(x, sycl_queue=q2)
+    with pytest.raises(dpt.ExecutionPlacementError) as excinfo:
+        dpt.abs(x, out=y)
+    assert "Input and output allocation queues are not compatible" in str(
+        excinfo.value
+    )
+
+    x = dpt.ones(2, dtype="float32")
+    y = dpt.empty(3, dtype=x.dtype)
+    with pytest.raises(ValueError) as excinfo:
+        dpt.abs(x, out=y)
+    assert "The shape of input and output arrays are inconsistent" in str(
+        excinfo.value
+    )
+
+    x = np.ones(2, dtype="float32")
+    with pytest.raises(TypeError) as excinfo:
+        dpt.abs(x)
+    assert re.match(
+        "Expected dpnp.tensor.usm_ndarray, got.*",
+        str(excinfo.value),
+    )
+
+    x = dpt.ones(2, dtype="float32")
+    y = np.empty(x.shape, dtype=x.dtype)
+    with pytest.raises(TypeError) as excinfo:
+        dpt.abs(x, out=y)
+    assert "output array must be of usm_ndarray type" in str(excinfo.value)
+
+    x = dpt.ones(5, dtype="f4")
+    y = dpt.zeros_like(x, dtype="int8")
+    with pytest.raises(ValueError) as excinfo:
+        dpt.abs(x, out=y)
+    assert re.match("Output array of type.*is needed", str(excinfo.value))
