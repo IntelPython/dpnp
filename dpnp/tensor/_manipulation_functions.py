@@ -382,8 +382,6 @@ def expand_dims(X, /, axis):
             - for the remaining dimensions of the expanded output array, the
               output array dimensions **must** correspond to the dimensions of
               ``x`` in order.
-            - if provided an invalid axis position, the function **must** raise
-              an exception.
 
     Returns:
         usm_ndarray:
