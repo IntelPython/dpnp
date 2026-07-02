@@ -32,6 +32,7 @@ This release is compatible with NumPy 2.5.
 * Improved performance of `dpnp.fft` functions for complex strided input by avoiding oversized allocations and extra copies [#2939](https://github.com/IntelPython/dpnp/pull/2939)
 * Refreshed `dpnp` documentation styling with the Furo theme [#2934](https://github.com/IntelPython/dpnp/pull/2934)
 * Updated Python Array API specification version supported to `2025.12` [#2899](https://github.com/IntelPython/dpnp/pull/2899)
+* Replaced references to the `dpnp.amax`/`dpnp.amin` aliases with the canonical `dpnp.max`/`dpnp.min` in docstrings and code internally [#2990](https://github.com/IntelPython/dpnp/pull/2990)
 
 ### Deprecated
 
