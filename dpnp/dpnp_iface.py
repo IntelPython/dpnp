@@ -132,10 +132,10 @@ def asnumpy(a, order="C"):
     """
 
     if isinstance(a, dpnp_array):
-        return a.asnumpy()
+        return a.asnumpy(order=order)
 
     if isinstance(a, dpt.usm_ndarray):
-        return dpt.asnumpy(a)
+        return dpt.asnumpy(a, order=order)
 
     return numpy.asarray(a, order=order)
 

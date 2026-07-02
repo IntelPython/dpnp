@@ -920,10 +920,20 @@ class dpnp_array:
             self, axis, kind, order, descending=descending, stable=stable
         )
 
-    def asnumpy(self):
+    def asnumpy(self, order="C"):
         """
         Copy content of the array into :class:`numpy.ndarray` instance of
         the same shape and data type.
+
+        Parameters
+        ----------
+        order : {None, 'C', 'F', 'A', 'K'}, optional
+            The desired memory layout of the converted array.
+            When `order` is ``'A'``, it uses ``'F'`` if the array is
+            column-major and uses ``'C'`` otherwise. And when `order` is
+            ``'K'``, it keeps strides as closely as possible.
+
+            Default: ``'C'``.
 
         Returns
         -------
@@ -933,7 +943,7 @@ class dpnp_array:
 
         """
 
-        return dpt.asnumpy(self._array_obj)
+        return dpt.asnumpy(self._array_obj, order=order)
 
     def astype(
         self,
