@@ -3070,9 +3070,7 @@ def resize(a, new_shape):
     Return a new array with the specified shape.
 
     If the new array is larger than the original array, then the new array is
-    filled with repeated copies of `a`. Note that this behavior is different
-    from ``a.resize(new_shape)`` which fills with zeros instead of repeated
-    copies of `a`.
+    filled with repeated copies of `a`.
 
     For full documentation refer to :obj:`numpy.resize`.
 
@@ -3092,7 +3090,6 @@ def resize(a, new_shape):
 
     See Also
     --------
-    :obj:`dpnp.ndarray.resize` : Resize an array in-place.
     :obj:`dpnp.reshape` : Reshape an array without changing the total size.
     :obj:`dpnp.pad` : Enlarge and pad an array.
     :obj:`dpnp.repeat` : Repeat elements of an array.
