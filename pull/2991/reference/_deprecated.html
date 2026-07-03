@@ -1,0 +1,1099 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+        <title>NumPy Routines - Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../_static/dpnp-custom.css?v=077675f8" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ndarray.html">The N-dimensional array (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>)</a><input aria-label="Toggle navigation of The N-dimensional array (ndarray)" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.html">dpnp.ndarray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.dpnp_array.dpnp_array.html">dpnp.dpnp_array.dpnp_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.html">dpnp.ndarray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.flags.html">dpnp.ndarray.flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.shape.html">dpnp.ndarray.shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.strides.html">dpnp.ndarray.strides</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.ndim.html">dpnp.ndarray.ndim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.data.html">dpnp.ndarray.data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.size.html">dpnp.ndarray.size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.itemsize.html">dpnp.ndarray.itemsize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.nbytes.html">dpnp.ndarray.nbytes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.device.html">dpnp.ndarray.device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.sycl_context.html">dpnp.ndarray.sycl_context</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.sycl_device.html">dpnp.ndarray.sycl_device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.sycl_queue.html">dpnp.ndarray.sycl_queue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.usm_type.html">dpnp.ndarray.usm_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.dtype.html">dpnp.ndarray.dtype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.T.html">dpnp.ndarray.T</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.mT.html">dpnp.ndarray.mT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.real.html">dpnp.ndarray.real</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.imag.html">dpnp.ndarray.imag</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.flat.html">dpnp.ndarray.flat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__sycl_usm_array_interface__.html">dpnp.ndarray.__sycl_usm_array_interface__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__usm_ndarray__.html">dpnp.ndarray.__usm_ndarray__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.item.html">dpnp.ndarray.item</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.tolist.html">dpnp.ndarray.tolist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.tobytes.html">dpnp.ndarray.tobytes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.tofile.html">dpnp.ndarray.tofile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.astype.html">dpnp.ndarray.astype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.copy.html">dpnp.ndarray.copy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.view.html">dpnp.ndarray.view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.fill.html">dpnp.ndarray.fill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.get_array.html">dpnp.ndarray.get_array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.reshape.html">dpnp.ndarray.reshape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.transpose.html">dpnp.ndarray.transpose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.swapaxes.html">dpnp.ndarray.swapaxes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.flatten.html">dpnp.ndarray.flatten</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.ravel.html">dpnp.ndarray.ravel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.squeeze.html">dpnp.ndarray.squeeze</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.take.html">dpnp.ndarray.take</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.put.html">dpnp.ndarray.put</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.repeat.html">dpnp.ndarray.repeat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.choose.html">dpnp.ndarray.choose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.sort.html">dpnp.ndarray.sort</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.argsort.html">dpnp.ndarray.argsort</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.searchsorted.html">dpnp.ndarray.searchsorted</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.compress.html">dpnp.ndarray.compress</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.diagonal.html">dpnp.ndarray.diagonal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.max.html">dpnp.ndarray.max</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.argmax.html">dpnp.ndarray.argmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.min.html">dpnp.ndarray.min</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.argmin.html">dpnp.ndarray.argmin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.clip.html">dpnp.ndarray.clip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.conj.html">dpnp.ndarray.conj</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.conjugate.html">dpnp.ndarray.conjugate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.round.html">dpnp.ndarray.round</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.trace.html">dpnp.ndarray.trace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.sum.html">dpnp.ndarray.sum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.cumsum.html">dpnp.ndarray.cumsum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.mean.html">dpnp.ndarray.mean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.var.html">dpnp.ndarray.var</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.std.html">dpnp.ndarray.std</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.prod.html">dpnp.ndarray.prod</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.cumprod.html">dpnp.ndarray.cumprod</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.all.html">dpnp.ndarray.all</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.any.html">dpnp.ndarray.any</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__lt__.html">dpnp.ndarray.__lt__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__le__.html">dpnp.ndarray.__le__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__gt__.html">dpnp.ndarray.__gt__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__ge__.html">dpnp.ndarray.__ge__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__eq__.html">dpnp.ndarray.__eq__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__ne__.html">dpnp.ndarray.__ne__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__bool__.html">dpnp.ndarray.__bool__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__neg__.html">dpnp.ndarray.__neg__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__pos__.html">dpnp.ndarray.__pos__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__abs__.html">dpnp.ndarray.__abs__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__invert__.html">dpnp.ndarray.__invert__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__add__.html">dpnp.ndarray.__add__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__sub__.html">dpnp.ndarray.__sub__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__mul__.html">dpnp.ndarray.__mul__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__truediv__.html">dpnp.ndarray.__truediv__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__floordiv__.html">dpnp.ndarray.__floordiv__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__mod__.html">dpnp.ndarray.__mod__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__divmod__.html">dpnp.ndarray.__divmod__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__pow__.html">dpnp.ndarray.__pow__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__lshift__.html">dpnp.ndarray.__lshift__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rshift__.html">dpnp.ndarray.__rshift__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__and__.html">dpnp.ndarray.__and__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__or__.html">dpnp.ndarray.__or__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__xor__.html">dpnp.ndarray.__xor__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__radd__.html">dpnp.ndarray.__radd__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rsub__.html">dpnp.ndarray.__rsub__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rmul__.html">dpnp.ndarray.__rmul__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rtruediv__.html">dpnp.ndarray.__rtruediv__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rfloordiv__.html">dpnp.ndarray.__rfloordiv__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rmod__.html">dpnp.ndarray.__rmod__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rdivmod__.html">dpnp.ndarray.__rdivmod__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rpow__.html">dpnp.ndarray.__rpow__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rlshift__.html">dpnp.ndarray.__rlshift__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rrshift__.html">dpnp.ndarray.__rrshift__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rand__.html">dpnp.ndarray.__rand__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__ror__.html">dpnp.ndarray.__ror__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rxor__.html">dpnp.ndarray.__rxor__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__iadd__.html">dpnp.ndarray.__iadd__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__isub__.html">dpnp.ndarray.__isub__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__imul__.html">dpnp.ndarray.__imul__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__itruediv__.html">dpnp.ndarray.__itruediv__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__ifloordiv__.html">dpnp.ndarray.__ifloordiv__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__imod__.html">dpnp.ndarray.__imod__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__ipow__.html">dpnp.ndarray.__ipow__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__ilshift__.html">dpnp.ndarray.__ilshift__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__irshift__.html">dpnp.ndarray.__irshift__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__iand__.html">dpnp.ndarray.__iand__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__ior__.html">dpnp.ndarray.__ior__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__ixor__.html">dpnp.ndarray.__ixor__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__matmul__.html">dpnp.ndarray.__matmul__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__rmatmul__.html">dpnp.ndarray.__rmatmul__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__imatmul__.html">dpnp.ndarray.__imatmul__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__copy__.html">dpnp.ndarray.__copy__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__new__.html">dpnp.ndarray.__new__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__array__.html">dpnp.ndarray.__array__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__array_namespace__.html">dpnp.ndarray.__array_namespace__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__dlpack__.html">dpnp.ndarray.__dlpack__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__dlpack_device__.html">dpnp.ndarray.__dlpack_device__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__len__.html">dpnp.ndarray.__len__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__iter__.html">dpnp.ndarray.__iter__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__getitem__.html">dpnp.ndarray.__getitem__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__setitem__.html">dpnp.ndarray.__setitem__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__contains__.html">dpnp.ndarray.__contains__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__bytes__.html">dpnp.ndarray.__bytes__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__index__.html">dpnp.ndarray.__index__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__int__.html">dpnp.ndarray.__int__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__float__.html">dpnp.ndarray.__float__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__complex__.html">dpnp.ndarray.__complex__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__str__.html">dpnp.ndarray.__str__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__repr__.html">dpnp.ndarray.__repr__</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.__format__.html">dpnp.ndarray.__format__</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ufunc.html">Universal functions</a><input aria-label="Toggle navigation of Universal functions" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.add.html">dpnp.add</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.subtract.html">dpnp.subtract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.multiply.html">dpnp.multiply</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.matmul.html">dpnp.matmul</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.divide.html">dpnp.divide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.logaddexp.html">dpnp.logaddexp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.logaddexp2.html">dpnp.logaddexp2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.true_divide.html">dpnp.true_divide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.floor_divide.html">dpnp.floor_divide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.negative.html">dpnp.negative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.positive.html">dpnp.positive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.power.html">dpnp.power</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.pow.html">dpnp.pow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.float_power.html">dpnp.float_power</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.remainder.html">dpnp.remainder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.mod.html">dpnp.mod</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.fmod.html">dpnp.fmod</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.divmod.html">dpnp.divmod</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.absolute.html">dpnp.absolute</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.fabs.html">dpnp.fabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.rint.html">dpnp.rint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.sign.html">dpnp.sign</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.heaviside.html">dpnp.heaviside</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.conj.html">dpnp.conj</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.conjugate.html">dpnp.conjugate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.exp.html">dpnp.exp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.exp2.html">dpnp.exp2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.log.html">dpnp.log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.log2.html">dpnp.log2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.log10.html">dpnp.log10</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.expm1.html">dpnp.expm1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.log1p.html">dpnp.log1p</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.proj.html">dpnp.proj</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.sqrt.html">dpnp.sqrt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.square.html">dpnp.square</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.cbrt.html">dpnp.cbrt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.reciprocal.html">dpnp.reciprocal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.rsqrt.html">dpnp.rsqrt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.gcd.html">dpnp.gcd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.lcm.html">dpnp.lcm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.sin.html">dpnp.sin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.cos.html">dpnp.cos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.tan.html">dpnp.tan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.arcsin.html">dpnp.arcsin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.asin.html">dpnp.asin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.arccos.html">dpnp.arccos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.acos.html">dpnp.acos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.arctan.html">dpnp.arctan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.atan.html">dpnp.atan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.arctan2.html">dpnp.arctan2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.atan2.html">dpnp.atan2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.hypot.html">dpnp.hypot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.sinh.html">dpnp.sinh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.cosh.html">dpnp.cosh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.tanh.html">dpnp.tanh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.arcsinh.html">dpnp.arcsinh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.asinh.html">dpnp.asinh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.arccosh.html">dpnp.arccosh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.acosh.html">dpnp.acosh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.arctanh.html">dpnp.arctanh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.atanh.html">dpnp.atanh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.degrees.html">dpnp.degrees</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.radians.html">dpnp.radians</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.deg2rad.html">dpnp.deg2rad</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.rad2deg.html">dpnp.rad2deg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.bitwise_and.html">dpnp.bitwise_and</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.bitwise_not.html">dpnp.bitwise_not</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.bitwise_or.html">dpnp.bitwise_or</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.bitwise_xor.html">dpnp.bitwise_xor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.invert.html">dpnp.invert</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.bitwise_invert.html">dpnp.bitwise_invert</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.left_shift.html">dpnp.left_shift</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.bitwise_left_shift.html">dpnp.bitwise_left_shift</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.right_shift.html">dpnp.right_shift</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.bitwise_right_shift.html">dpnp.bitwise_right_shift</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.bitwise_count.html">dpnp.bitwise_count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.greater.html">dpnp.greater</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.greater_equal.html">dpnp.greater_equal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.less.html">dpnp.less</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.less_equal.html">dpnp.less_equal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.not_equal.html">dpnp.not_equal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.equal.html">dpnp.equal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.logical_and.html">dpnp.logical_and</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.logical_or.html">dpnp.logical_or</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.logical_xor.html">dpnp.logical_xor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.logical_not.html">dpnp.logical_not</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.maximum.html">dpnp.maximum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.minimum.html">dpnp.minimum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.fmax.html">dpnp.fmax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.fmin.html">dpnp.fmin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.isfinite.html">dpnp.isfinite</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.isinf.html">dpnp.isinf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.isnan.html">dpnp.isnan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.fabs.html">dpnp.fabs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.signbit.html">dpnp.signbit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.copysign.html">dpnp.copysign</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.nextafter.html">dpnp.nextafter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.spacing.html">dpnp.spacing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.modf.html">dpnp.modf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ldexp.html">dpnp.ldexp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.frexp.html">dpnp.frexp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.fmod.html">dpnp.fmod</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.floor.html">dpnp.floor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ceil.html">dpnp.ceil</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.trunc.html">dpnp.trunc</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="routines.html">Routines (NumPy)</a><input aria-label="Toggle navigation of Routines (NumPy)" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="constants.html">Constants</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="array-creation.html">Array creation routines</a><input aria-label="Toggle navigation of Array creation routines" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.empty.html">dpnp.empty</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.empty_like.html">dpnp.empty_like</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.eye.html">dpnp.eye</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.identity.html">dpnp.identity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ones.html">dpnp.ones</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ones_like.html">dpnp.ones_like</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.zeros.html">dpnp.zeros</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.zeros_like.html">dpnp.zeros_like</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.full.html">dpnp.full</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.full_like.html">dpnp.full_like</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.array.html">dpnp.array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.asarray.html">dpnp.asarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.asanyarray.html">dpnp.asanyarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ascontiguousarray.html">dpnp.ascontiguousarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.astype.html">dpnp.astype</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.copy.html">dpnp.copy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.frombuffer.html">dpnp.frombuffer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.from_dlpack.html">dpnp.from_dlpack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fromfile.html">dpnp.fromfile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fromfunction.html">dpnp.fromfunction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fromiter.html">dpnp.fromiter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fromstring.html">dpnp.fromstring</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.loadtxt.html">dpnp.loadtxt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.arange.html">dpnp.arange</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linspace.html">dpnp.linspace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.logspace.html">dpnp.logspace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.geomspace.html">dpnp.geomspace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.meshgrid.html">dpnp.meshgrid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.mgrid.html">dpnp.mgrid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ogrid.html">dpnp.ogrid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.diag.html">dpnp.diag</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.diagflat.html">dpnp.diagflat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.tri.html">dpnp.tri</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.tril.html">dpnp.tril</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.triu.html">dpnp.triu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.vander.html">dpnp.vander</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="array-manipulation.html">Array manipulation routines</a><input aria-label="Toggle navigation of Array manipulation routines" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.copyto.html">dpnp.copyto</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndim.html">dpnp.ndim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.shape.html">dpnp.shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.size.html">dpnp.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.reshape.html">dpnp.reshape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ravel.html">dpnp.ravel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.flat.html">dpnp.ndarray.flat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.flatten.html">dpnp.ndarray.flatten</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.moveaxis.html">dpnp.moveaxis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.rollaxis.html">dpnp.rollaxis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.swapaxes.html">dpnp.swapaxes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.T.html">dpnp.ndarray.T</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.transpose.html">dpnp.transpose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.permute_dims.html">dpnp.permute_dims</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.matrix_transpose.html">dpnp.matrix_transpose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.atleast_1d.html">dpnp.atleast_1d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.atleast_2d.html">dpnp.atleast_2d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.atleast_3d.html">dpnp.atleast_3d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.broadcast_to.html">dpnp.broadcast_to</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.broadcast_arrays.html">dpnp.broadcast_arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.expand_dims.html">dpnp.expand_dims</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.squeeze.html">dpnp.squeeze</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.asarray.html">dpnp.asarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.asanyarray.html">dpnp.asanyarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.asnumpy.html">dpnp.asnumpy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.asfortranarray.html">dpnp.asfortranarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ascontiguousarray.html">dpnp.ascontiguousarray</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.asarray_chkfinite.html">dpnp.asarray_chkfinite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.require.html">dpnp.require</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.concatenate.html">dpnp.concatenate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.concat.html">dpnp.concat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.stack.html">dpnp.stack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.vstack.html">dpnp.vstack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.hstack.html">dpnp.hstack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.dstack.html">dpnp.dstack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.column_stack.html">dpnp.column_stack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.split.html">dpnp.split</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.array_split.html">dpnp.array_split</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.dsplit.html">dpnp.dsplit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.hsplit.html">dpnp.hsplit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.vsplit.html">dpnp.vsplit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.unstack.html">dpnp.unstack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.tile.html">dpnp.tile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.repeat.html">dpnp.repeat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.delete.html">dpnp.delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.insert.html">dpnp.insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.append.html">dpnp.append</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.resize.html">dpnp.resize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.trim_zeros.html">dpnp.trim_zeros</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.pad.html">dpnp.pad</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.flip.html">dpnp.flip</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fliplr.html">dpnp.fliplr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.flipud.html">dpnp.flipud</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.roll.html">dpnp.roll</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.rot90.html">dpnp.rot90</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="bitwise.html">Bit-wise operations</a><input aria-label="Toggle navigation of Bit-wise operations" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.bitwise_and.html">dpnp.bitwise_and</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.bitwise_not.html">dpnp.bitwise_not</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.bitwise_or.html">dpnp.bitwise_or</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.bitwise_xor.html">dpnp.bitwise_xor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.invert.html">dpnp.invert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.bitwise_invert.html">dpnp.bitwise_invert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.left_shift.html">dpnp.left_shift</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.bitwise_left_shift.html">dpnp.bitwise_left_shift</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.right_shift.html">dpnp.right_shift</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.bitwise_right_shift.html">dpnp.bitwise_right_shift</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.bitwise_count.html">dpnp.bitwise_count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.binary_repr.html">dpnp.binary_repr</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="dtype.html">Data type routines</a><input aria-label="Toggle navigation of Data type routines" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.can_cast.html">dpnp.can_cast</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.result_type.html">dpnp.result_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.common_type.html">dpnp.common_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.dtype.html">dpnp.dtype</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.finfo.html">dpnp.finfo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.iinfo.html">dpnp.iinfo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isdtype.html">dpnp.isdtype</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.issubdtype.html">dpnp.issubdtype</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">Exceptions and Warnings</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="fft.html">Discrete Fourier Transform (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.fft</span></code>)</a><input aria-label="Toggle navigation of Discrete Fourier Transform (dpnp.fft)" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.fft.html">dpnp.fft.fft</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.ifft.html">dpnp.fft.ifft</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.fft2.html">dpnp.fft.fft2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.ifft2.html">dpnp.fft.ifft2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.fftn.html">dpnp.fft.fftn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.ifftn.html">dpnp.fft.ifftn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.rfft.html">dpnp.fft.rfft</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.irfft.html">dpnp.fft.irfft</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.rfft2.html">dpnp.fft.rfft2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.irfft2.html">dpnp.fft.irfft2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.rfftn.html">dpnp.fft.rfftn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.irfftn.html">dpnp.fft.irfftn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.hfft.html">dpnp.fft.hfft</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.ihfft.html">dpnp.fft.ihfft</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.fftfreq.html">dpnp.fft.fftfreq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.rfftfreq.html">dpnp.fft.rfftfreq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.fftshift.html">dpnp.fft.fftshift</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fft.ifftshift.html">dpnp.fft.ifftshift</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="functional.html">Functional programming</a><input aria-label="Toggle navigation of Functional programming" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.apply_along_axis.html">dpnp.apply_along_axis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.apply_over_axes.html">dpnp.apply_over_axes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.piecewise.html">dpnp.piecewise</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="io.html">Input and output</a><input aria-label="Toggle navigation of Input and output" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.loadtxt.html">dpnp.loadtxt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fromstring.html">dpnp.fromstring</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.tofile.html">dpnp.ndarray.tofile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.tolist.html">dpnp.ndarray.tolist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fromfile.html">dpnp.fromfile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.tofile.html">dpnp.ndarray.tofile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.binary_repr.html">dpnp.binary_repr</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="indexing.html">Indexing routines</a><input aria-label="Toggle navigation of Indexing routines" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nonzero.html">dpnp.nonzero</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.where.html">dpnp.where</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.indices.html">dpnp.indices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ix_.html">dpnp.ix_</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ogrid.html">dpnp.ogrid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ravel_multi_index.html">dpnp.ravel_multi_index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.unravel_index.html">dpnp.unravel_index</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.diag_indices.html">dpnp.diag_indices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.diag_indices_from.html">dpnp.diag_indices_from</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.mask_indices.html">dpnp.mask_indices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.tril_indices.html">dpnp.tril_indices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.tril_indices_from.html">dpnp.tril_indices_from</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.triu_indices.html">dpnp.triu_indices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.triu_indices_from.html">dpnp.triu_indices_from</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.take.html">dpnp.take</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.take_along_axis.html">dpnp.take_along_axis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.choose.html">dpnp.choose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.compress.html">dpnp.compress</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.diag.html">dpnp.diag</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.diagonal.html">dpnp.diagonal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.select.html">dpnp.select</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.place.html">dpnp.place</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.put.html">dpnp.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.put_along_axis.html">dpnp.put_along_axis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.putmask.html">dpnp.putmask</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fill_diagonal.html">dpnp.fill_diagonal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndindex.html">dpnp.ndindex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.flatiter.html">dpnp.flatiter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.iterable.html">dpnp.iterable</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="lib.html">Lib module (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.lib</span></code>)</a><input aria-label="Toggle navigation of Lib module (dpnp.lib)" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="generated/dpnp.lib.stride_tricks.html">dpnp.lib.stride_tricks</a><input aria-label="Toggle navigation of dpnp.lib.stride_tricks" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/dpnp.lib.stride_tricks.as_strided.html">dpnp.lib.stride_tricks.as_strided</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.linalg</span></code>)</a><input aria-label="Toggle navigation of Linear algebra (dpnp.linalg)" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.dot.html">dpnp.dot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.multi_dot.html">dpnp.linalg.multi_dot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.vdot.html">dpnp.vdot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.vecdot.html">dpnp.vecdot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.vecdot.html">dpnp.linalg.vecdot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.inner.html">dpnp.inner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.outer.html">dpnp.outer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.outer.html">dpnp.linalg.outer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.matmul.html">dpnp.matmul</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.matmul.html">dpnp.linalg.matmul</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.matvec.html">dpnp.matvec</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.vecmat.html">dpnp.vecmat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.tensordot.html">dpnp.tensordot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.tensordot.html">dpnp.linalg.tensordot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.einsum.html">dpnp.einsum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.einsum_path.html">dpnp.einsum_path</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.matrix_power.html">dpnp.linalg.matrix_power</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.kron.html">dpnp.kron</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.cross.html">dpnp.linalg.cross</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.cholesky.html">dpnp.linalg.cholesky</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.qr.html">dpnp.linalg.qr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.svd.html">dpnp.linalg.svd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.svdvals.html">dpnp.linalg.svdvals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.eig.html">dpnp.linalg.eig</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.eigh.html">dpnp.linalg.eigh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.eigvals.html">dpnp.linalg.eigvals</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.eigvalsh.html">dpnp.linalg.eigvalsh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.norm.html">dpnp.linalg.norm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.matrix_norm.html">dpnp.linalg.matrix_norm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.vector_norm.html">dpnp.linalg.vector_norm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.cond.html">dpnp.linalg.cond</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.det.html">dpnp.linalg.det</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.matrix_rank.html">dpnp.linalg.matrix_rank</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.slogdet.html">dpnp.linalg.slogdet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.trace.html">dpnp.trace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.trace.html">dpnp.linalg.trace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.solve.html">dpnp.linalg.solve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.tensorsolve.html">dpnp.linalg.tensorsolve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.lstsq.html">dpnp.linalg.lstsq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.inv.html">dpnp.linalg.inv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.pinv.html">dpnp.linalg.pinv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.tensorinv.html">dpnp.linalg.tensorinv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.diagonal.html">dpnp.diagonal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.diagonal.html">dpnp.linalg.diagonal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.matrix_transpose.html">dpnp.linalg.matrix_transpose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.linalg.LinAlgError.html">dpnp.linalg.LinAlgError</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="logic.html">Logic functions</a><input aria-label="Toggle navigation of Logic functions" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.all.html">dpnp.all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.any.html">dpnp.any</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isfinite.html">dpnp.isfinite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isinf.html">dpnp.isinf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isnan.html">dpnp.isnan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isneginf.html">dpnp.isneginf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isposinf.html">dpnp.isposinf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.iscomplex.html">dpnp.iscomplex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.iscomplexobj.html">dpnp.iscomplexobj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isfortran.html">dpnp.isfortran</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isreal.html">dpnp.isreal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isrealobj.html">dpnp.isrealobj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isscalar.html">dpnp.isscalar</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.logical_and.html">dpnp.logical_and</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.logical_or.html">dpnp.logical_or</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.logical_not.html">dpnp.logical_not</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.logical_xor.html">dpnp.logical_xor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.allclose.html">dpnp.allclose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isclose.html">dpnp.isclose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.array_equal.html">dpnp.array_equal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.array_equiv.html">dpnp.array_equiv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.greater.html">dpnp.greater</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.greater_equal.html">dpnp.greater_equal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.less.html">dpnp.less</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.less_equal.html">dpnp.less_equal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.equal.html">dpnp.equal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.not_equal.html">dpnp.not_equal</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="math.html">Mathematical functions</a><input aria-label="Toggle navigation of Mathematical functions" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.sin.html">dpnp.sin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.cos.html">dpnp.cos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.tan.html">dpnp.tan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.arcsin.html">dpnp.arcsin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.asin.html">dpnp.asin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.arccos.html">dpnp.arccos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.acos.html">dpnp.acos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.arctan.html">dpnp.arctan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.atan.html">dpnp.atan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.hypot.html">dpnp.hypot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.arctan2.html">dpnp.arctan2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.atan2.html">dpnp.atan2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.degrees.html">dpnp.degrees</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.radians.html">dpnp.radians</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.unwrap.html">dpnp.unwrap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.deg2rad.html">dpnp.deg2rad</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.rad2deg.html">dpnp.rad2deg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.reduce_hypot.html">dpnp.reduce_hypot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.sinh.html">dpnp.sinh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.cosh.html">dpnp.cosh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.tanh.html">dpnp.tanh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.arcsinh.html">dpnp.arcsinh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.asinh.html">dpnp.asinh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.arccosh.html">dpnp.arccosh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.acosh.html">dpnp.acosh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.arctanh.html">dpnp.arctanh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.atanh.html">dpnp.atanh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.round.html">dpnp.round</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.around.html">dpnp.around</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.rint.html">dpnp.rint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fix.html">dpnp.fix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.floor.html">dpnp.floor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ceil.html">dpnp.ceil</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.trunc.html">dpnp.trunc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.prod.html">dpnp.prod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.sum.html">dpnp.sum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nanprod.html">dpnp.nanprod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nansum.html">dpnp.nansum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.cumulative_sum.html">dpnp.cumulative_sum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.cumulative_prod.html">dpnp.cumulative_prod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.cumprod.html">dpnp.cumprod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.cumsum.html">dpnp.cumsum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nancumprod.html">dpnp.nancumprod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nancumsum.html">dpnp.nancumsum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.diff.html">dpnp.diff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ediff1d.html">dpnp.ediff1d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.gradient.html">dpnp.gradient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.cross.html">dpnp.cross</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.trapezoid.html">dpnp.trapezoid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.exp.html">dpnp.exp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.expm1.html">dpnp.expm1</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.exp2.html">dpnp.exp2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.log.html">dpnp.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.log10.html">dpnp.log10</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.log2.html">dpnp.log2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.log1p.html">dpnp.log1p</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.logaddexp.html">dpnp.logaddexp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.logaddexp2.html">dpnp.logaddexp2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.logsumexp.html">dpnp.logsumexp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.cumlogsumexp.html">dpnp.cumlogsumexp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.i0.html">dpnp.i0</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.sinc.html">dpnp.sinc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.signbit.html">dpnp.signbit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.copysign.html">dpnp.copysign</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.frexp.html">dpnp.frexp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ldexp.html">dpnp.ldexp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nextafter.html">dpnp.nextafter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.spacing.html">dpnp.spacing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.lcm.html">dpnp.lcm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.gcd.html">dpnp.gcd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.add.html">dpnp.add</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.reciprocal.html">dpnp.reciprocal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.positive.html">dpnp.positive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.negative.html">dpnp.negative</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.multiply.html">dpnp.multiply</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.divide.html">dpnp.divide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.power.html">dpnp.power</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.pow.html">dpnp.pow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.subtract.html">dpnp.subtract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.true_divide.html">dpnp.true_divide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.floor_divide.html">dpnp.floor_divide</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.float_power.html">dpnp.float_power</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fmod.html">dpnp.fmod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.mod.html">dpnp.mod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.modf.html">dpnp.modf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.remainder.html">dpnp.remainder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.divmod.html">dpnp.divmod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.angle.html">dpnp.angle</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.real.html">dpnp.real</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.imag.html">dpnp.imag</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.conj.html">dpnp.conj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.conjugate.html">dpnp.conjugate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.proj.html">dpnp.proj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.maximum.html">dpnp.maximum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.max.html">dpnp.max</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.amax.html">dpnp.amax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fmax.html">dpnp.fmax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nanmax.html">dpnp.nanmax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.minimum.html">dpnp.minimum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.min.html">dpnp.min</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.amin.html">dpnp.amin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fmin.html">dpnp.fmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nanmin.html">dpnp.nanmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.convolve.html">dpnp.convolve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.clip.html">dpnp.clip</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.sqrt.html">dpnp.sqrt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.cbrt.html">dpnp.cbrt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.square.html">dpnp.square</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.rsqrt.html">dpnp.rsqrt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.abs.html">dpnp.abs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.absolute.html">dpnp.absolute</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.fabs.html">dpnp.fabs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.sign.html">dpnp.sign</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.heaviside.html">dpnp.heaviside</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nan_to_num.html">dpnp.nan_to_num</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.real_if_close.html">dpnp.real_if_close</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.interp.html">dpnp.interp</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="other.html">Miscellaneous routines</a><input aria-label="Toggle navigation of Miscellaneous routines" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.byte_bounds.html">dpnp.byte_bounds</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.get_include.html">dpnp.get_include</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.broadcast_shapes.html">dpnp.broadcast_shapes</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="random.html">Random sampling (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><input aria-label="Toggle navigation of Random sampling (dpnp.random)" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.rand.html">dpnp.random.rand</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.randn.html">dpnp.random.randn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.randint.html">dpnp.random.randint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.random_integers.html">dpnp.random.random_integers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.random_sample.html">dpnp.random.random_sample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.random.html">dpnp.random.random</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.ranf.html">dpnp.random.ranf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.sample.html">dpnp.random.sample</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.choice.html">dpnp.random.choice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.bytes.html">dpnp.random.bytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.shuffle.html">dpnp.random.shuffle</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.permutation.html">dpnp.random.permutation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.beta.html">dpnp.random.beta</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.binomial.html">dpnp.random.binomial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.chisquare.html">dpnp.random.chisquare</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.dirichlet.html">dpnp.random.dirichlet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.exponential.html">dpnp.random.exponential</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.f.html">dpnp.random.f</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.gamma.html">dpnp.random.gamma</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.geometric.html">dpnp.random.geometric</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.gumbel.html">dpnp.random.gumbel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.hypergeometric.html">dpnp.random.hypergeometric</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.laplace.html">dpnp.random.laplace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.logistic.html">dpnp.random.logistic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.lognormal.html">dpnp.random.lognormal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.logseries.html">dpnp.random.logseries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.multinomial.html">dpnp.random.multinomial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.multivariate_normal.html">dpnp.random.multivariate_normal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.negative_binomial.html">dpnp.random.negative_binomial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.noncentral_chisquare.html">dpnp.random.noncentral_chisquare</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.noncentral_f.html">dpnp.random.noncentral_f</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.normal.html">dpnp.random.normal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.pareto.html">dpnp.random.pareto</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.poisson.html">dpnp.random.poisson</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.power.html">dpnp.random.power</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.rayleigh.html">dpnp.random.rayleigh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.standard_cauchy.html">dpnp.random.standard_cauchy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.standard_exponential.html">dpnp.random.standard_exponential</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.standard_gamma.html">dpnp.random.standard_gamma</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.standard_normal.html">dpnp.random.standard_normal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.standard_t.html">dpnp.random.standard_t</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.triangular.html">dpnp.random.triangular</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.uniform.html">dpnp.random.uniform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.vonmises.html">dpnp.random.vonmises</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.wald.html">dpnp.random.wald</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.weibull.html">dpnp.random.weibull</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.zipf.html">dpnp.random.zipf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.RandomState.html">dpnp.random.RandomState</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.random.seed.html">dpnp.random.seed</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="set.html">Set routines</a><input aria-label="Toggle navigation of Set routines" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.unique.html">dpnp.unique</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.unique_all.html">dpnp.unique_all</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.unique_counts.html">dpnp.unique_counts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.unique_inverse.html">dpnp.unique_inverse</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.unique_values.html">dpnp.unique_values</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.isin.html">dpnp.isin</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="sort.html">Sorting, searching, and counting</a><input aria-label="Toggle navigation of Sorting, searching, and counting" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.sort.html">dpnp.sort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.argsort.html">dpnp.argsort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.sort_complex.html">dpnp.sort_complex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.partition.html">dpnp.partition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.argmax.html">dpnp.argmax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nanargmax.html">dpnp.nanargmax</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.argmin.html">dpnp.argmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nanargmin.html">dpnp.nanargmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.argwhere.html">dpnp.argwhere</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nonzero.html">dpnp.nonzero</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.flatnonzero.html">dpnp.flatnonzero</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.where.html">dpnp.where</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.searchsorted.html">dpnp.searchsorted</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.extract.html">dpnp.extract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.count_nonzero.html">dpnp.count_nonzero</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="statistics.html">Statistics</a><input aria-label="Toggle navigation of Statistics" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ptp.html">dpnp.ptp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.median.html">dpnp.median</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.average.html">dpnp.average</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.mean.html">dpnp.mean</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.std.html">dpnp.std</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.var.html">dpnp.var</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nanmedian.html">dpnp.nanmedian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nanmean.html">dpnp.nanmean</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nanstd.html">dpnp.nanstd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.nanvar.html">dpnp.nanvar</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.corrcoef.html">dpnp.corrcoef</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.correlate.html">dpnp.correlate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.cov.html">dpnp.cov</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.histogram.html">dpnp.histogram</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.histogram2d.html">dpnp.histogram2d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.histogramdd.html">dpnp.histogramdd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.bincount.html">dpnp.bincount</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.histogram_bin_edges.html">dpnp.histogram_bin_edges</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.digitize.html">dpnp.digitize</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="window.html">Window functions</a><input aria-label="Toggle navigation of Window functions" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.bartlett.html">dpnp.bartlett</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.blackman.html">dpnp.blackman</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.hamming.html">dpnp.hamming</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.hanning.html">dpnp.hanning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.kaiser.html">dpnp.kaiser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="scipy.html">Routines (SciPy) (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy</span></code>)</a><input aria-label="Toggle navigation of Routines (SciPy) (dpnp.scipy)" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="scipy_linalg.html">Linear algebra (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy.linalg</span></code>)</a><input aria-label="Toggle navigation of Linear algebra (dpnp.scipy.linalg)" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.scipy.linalg.lu.html">dpnp.scipy.linalg.lu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.scipy.linalg.lu_factor.html">dpnp.scipy.linalg.lu_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.scipy.linalg.lu_solve.html">dpnp.scipy.linalg.lu_solve</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="scipy_special.html">Special functions (<code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp.scipy.special</span></code>)</a><input aria-label="Toggle navigation of Special functions (dpnp.scipy.special)" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.scipy.special.erf.html">dpnp.scipy.special.erf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.scipy.special.erfc.html">dpnp.scipy.special.erfc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.scipy.special.erfcx.html">dpnp.scipy.special.erfcx</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.scipy.special.erfinv.html">dpnp.scipy.special.erfinv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.scipy.special.erfcinv.html">dpnp.scipy.special.erfcinv</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="array_api.html">Array API standard compatibility</a><input aria-label="Toggle navigation of Array API standard compatibility" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.__array_namespace_info__.html">dpnp.__array_namespace_info__</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tensor.html">Tensor (<code class="docutils literal notranslate"><span class="pre">dpnp.tensor</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/reference/_deprecated.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="numpy-routines">
+<h1>NumPy Routines<a class="headerlink" href="#numpy-routines" title="Link to this heading">¶</a></h1>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.asfarray.html#dpnp.asfarray" title="dpnp.asfarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfarray</span></code></a></p></td>
+<td><p>Return an array converted to a float type.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2020-2026, Intel Corporation
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=096cb507"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=ccdb6887"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/dpnp-custom.js?v=b3bf1689"></script>
+    </body>
+</html>
