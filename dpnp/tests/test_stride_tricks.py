@@ -48,9 +48,10 @@ class TestAsStrided:
         )
         assert_array_equal(result, expected)
 
-        # writing to a shared element changes every position referencing it
-        result[0, 0] = 100
-        expected[0, 0] = 100
+        # element (i, j) maps to base offset (i + j), so (0, 1) and (1, 0)
+        # share the same element; writing one changes the other
+        result[0, 1] = 100
+        expected[0, 1] = 100
         assert_array_equal(result, expected)
 
     def test_overlapping_bulk_write_rejected(self):
@@ -62,14 +63,26 @@ class TestAsStrided:
         ):
             view[...] = dpnp.full((3, 3), 7, dtype=a.dtype)
 
-    def test_writeable_false(self):
-        ia = dpnp.array([1, 2, 3, 4], dtype=dpnp.int32)
-        result = as_strided(
-            ia, shape=(2,), strides=(2 * ia.itemsize,), writeable=False
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_writeable_false(self, xp):
+        a = xp.array([1, 2, 3, 4], dtype=xp.int32)
+        view = xp.lib.stride_tricks.as_strided(
+            a, shape=(2,), strides=(2 * a.itemsize,), writeable=False
         )
-        assert result.flags.writable is False
-        # the base array remains writable
-        assert ia.flags.writable is True
+        assert view.flags["W"] is False
+        assert a.flags["W"] is True
+
+        # writing through a read-only view is rejected
+        with pytest.raises(ValueError, match="read-only"):
+            view[...] = 5
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_writeable_true_readonly_base(self, xp):
+        a = xp.arange(10, dtype=xp.int32)
+        a.flags["W"] = False
+
+        view = xp.lib.stride_tricks.as_strided(a, writeable=True)
+        assert view.flags["W"] is False
 
     def test_subok_not_supported(self):
         ia = dpnp.array([1, 2, 3, 4], dtype=dpnp.int32)
@@ -93,13 +106,30 @@ class TestAsStrided:
     def test_bounds_use_base_allocation(self):
         # bounds are validated against the whole base allocation, so a view
         # reaching beyond a slice but within its parent is accepted
-        a = numpy.arange(1000, dtype=dpnp.int64)
+        a = numpy.arange(1000, dtype=numpy.int64)
         ia = dpnp.array(a)
         b, ib = a[:2], ia[:2]
 
         result = as_strided(ib, shape=(2,), strides=(400,))
         expected = np_as_strided(b, shape=(2,), strides=(400,))
         assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "start, strides",
+        [
+            (95, (200,)),  # positive stride overruns the base allocation
+            (5, (-48,)),  # negative stride underruns the base allocation
+        ],
+    )
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_out_of_bounds_over_slice(self, start, strides, xp):
+        a = xp.arange(100, dtype=xp.int64)
+        b = a[start : start + 2]
+
+        with pytest.raises(ValueError):
+            _ = xp.lib.stride_tricks.as_strided(
+                b, shape=(2,), strides=strides, check_bounds=True
+            )
 
     def test_view_with_offset(self):
         a = numpy.arange(1000, dtype=numpy.int64)
