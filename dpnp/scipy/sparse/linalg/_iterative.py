@@ -738,40 +738,27 @@ def gmres(
         for j in range(restart):
             z = psolve(v)
             u = matvec(z)
-            # compute_hu writes H[:j+1, j] in-place and returns the
-            # orthogonalised u. No h temporary, no tmp buffer, two
-            # oneMKL gemv calls per Arnoldi step.
+            # writes H[:j+1, j] in place, returns the orthogonalised u
             u = compute_hu(u, j)
-            # H[j+1, j] = ||u||  -- one device norm, one slice store,
-            # kept on device so the loop stays sync-free.
+            # kept on device so the Arnoldi loop stays sync-free
             h_norm = dpnp.linalg.norm(u)
             H[j + 1, j] = h_norm
             if j < last_j:
-                # Normalise u into the next Krylov vector. On a happy
-                # breakdown h_norm is zero; clamp it so the divide does
-                # not produce NaNs that would poison later V columns.
-                # These columns are discarded after breakdown detection
-                # below, but the clamp keeps the device arithmetic clean.
+                # clamp the divisor so a breakdown (h_norm == 0) does not
+                # produce NaNs; the affected columns are discarded below
                 v = u / dpnp.where(h_norm == 0, dpnp.ones_like(h_norm), h_norm)
                 V[:, j + 1] = v
 
-        # Solve the small Hessenberg least-squares  H y = e  on the
-        # host. The matrix is (restart+1) x restart -- typically
-        # 21 x 20 -- so the device SVD launch overhead dominates;
-        # CuPy makes the same choice and ships y back as a device
-        # array. Single host sync per restart, replacing the per-
-        # restart device-side lstsq that allocated a workspace and
-        # ran a tiny SVD kernel.
+        # Solve H y = e on the host: the matrix is tiny ((restart+1) x
+        # restart), so a device SVD launch would cost more than the copy.
+        # This is the single host sync per restart.
         H_host = dpnp.asnumpy(H)
 
-        # Detect a happy breakdown from the (now host-side) subdiagonal:
-        # the first near-zero H[j+1, j] means u had no component outside
-        # the current Krylov subspace, so the solution is exact in
-        # span(V[:, :built]). Threshold scales with the starting residual
-        # norm since ||u|| tracks the problem magnitude. Truncating here
-        # keeps the trailing all-zero (and possibly NaN) columns out of
-        # lstsq, which otherwise trips a DLASCL error on some LAPACK
-        # builds. This uses only the single per-restart sync above.
+        # Happy breakdown: the first near-zero subdiagonal means the
+        # solution is exact in span(V[:, :built]). Truncate there so the
+        # trailing zero/NaN columns never reach lstsq, which would trip a
+        # DLASCL error on some LAPACK builds. Threshold scales with the
+        # starting residual norm since ||u|| tracks the problem magnitude.
         eps_break = eps * r_norm_host
         subdiag = numpy.abs(numpy.diagonal(H_host, offset=-1))
         breakdown = numpy.nonzero(subdiag <= eps_break)[0]

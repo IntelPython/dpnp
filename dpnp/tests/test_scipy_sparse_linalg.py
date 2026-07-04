@@ -19,6 +19,7 @@ from dpnp.scipy.sparse.linalg import (
 from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
+    get_complex_dtypes,
     get_float_complex_dtypes,
     has_support_aspect64,
 )
@@ -983,9 +984,51 @@ class TestMinres:
         res = float(dpnp.linalg.norm(ia @ x - ib) / dpnp.linalg.norm(ib))
         assert res < 1e-3
 
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    def test_minres_complex_hermitian_2x2(self):
+        # Pinned regression from the PR review. SciPy's minres is
+        # real-symmetric only, so numpy.linalg.solve is the CPU reference.
+        a = numpy.array(
+            [[2.0 + 0j, 1.0 - 1j], [1.0 + 1j, 3.0 + 0j]],
+            dtype=numpy.complex128,
+        )
+        b = numpy.array([1.0 + 0j, 2.0 + 0j], dtype=numpy.complex128)
+        x_ref = numpy.linalg.solve(a, b)
+
+        x_dp, info = minres(dpnp.array(a), dpnp.array(b), rtol=1e-12)
+        assert info == 0
+        assert_allclose(dpnp.asnumpy(x_dp), x_ref, rtol=1e-10, atol=1e-12)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_minres_complex_matches_direct(self, dtype):
+        # SciPy's minres is real-symmetric only, so a dense host direct
+        # solve is the CPU reference for complex Hermitian systems.
+        ia = _spd_matrix(self.n, dtype)
+        ib = _rhs(self.n, dtype)
+        x_ref = numpy.linalg.solve(dpnp.asnumpy(ia), dpnp.asnumpy(ib))
+
+        x_dp, info = minres(ia, ib, rtol=_rtol_for(dtype), maxiter=500)
+        assert info == 0
+        cmp_tol = 5e-4 if dtype == dpnp.complex64 else 1e-8
+        assert_allclose(
+            dpnp.asnumpy(x_dp), x_ref, rtol=cmp_tol, atol=cmp_tol
+        )
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_minres_complex_via_linear_operator(self, dtype):
+        ia = _spd_matrix(self.n, dtype)
+        ib = _rhs(self.n, dtype)
+        lo = aslinearoperator(ia)
+        x, info = minres(lo, ib, rtol=_rtol_for(dtype), maxiter=500)
+        assert info == 0
+        res = float(dpnp.linalg.norm(ia @ x - ib) / dpnp.linalg.norm(ib))
+        assert res < _res_bound(dtype)
+
     @with_requires("scipy")
     @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
     def test_minres_matches_scipy(self):
+        # Real only: SciPy's minres does not support complex Hermitian
+        # systems. Complex coverage is in test_minres_complex_matches_direct.
         import scipy.sparse.linalg as scipy_sla
 
         a = dpnp.asnumpy(_spd_matrix(self.n, dpnp.float64))
