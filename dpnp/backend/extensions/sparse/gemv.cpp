@@ -26,7 +26,6 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <complex>
 #include <cstdint>
 #include <stdexcept>
 #include <string>

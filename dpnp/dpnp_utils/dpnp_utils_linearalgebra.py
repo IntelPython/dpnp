@@ -1064,7 +1064,7 @@ def dpnp_multiplication(
                         a_usm,
                         x_usm,
                         dpnp.get_usm_ndarray(result),
-                        transpose,
+                        trans_op=1 if transpose else 0,
                         depends=_manager.submitted_events,
                     )
                     _manager.add_event_pair(ht_ev, gemv_ev)

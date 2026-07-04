@@ -35,23 +35,10 @@
 
 namespace dpnp::extensions::blas
 {
-// Convenience wrapper: alpha = 1, beta = 0. Preserved for the existing
-// dpnp call sites (dpnp.dot etc.) that do not care about scaling.
-extern std::pair<sycl::event, sycl::event>
-    gemv(sycl::queue &exec_q,
-         const dpnp::tensor::usm_ndarray &matrixA,
-         const dpnp::tensor::usm_ndarray &vectorX,
-         const dpnp::tensor::usm_ndarray &vectorY,
-         const bool transpose,
-         const std::vector<sycl::event> &depends);
-
-// Full y = alpha * op(A) * x + beta * y form. Required by the GMRES
-// Arnoldi step where we fuse u -= V @ h into a single gemv call
-// (alpha = -1, beta = 1), and where we write h = V^H @ u directly into
-// a Hessenberg column slice (alpha = 1, beta = 0). Both alpha and
-// beta arrive as double on the Python side and are cast to the matrix
-// value type inside the impl -- complex callers should use 1 / 0 / -1
-// (representable exactly) to avoid silent imaginary loss.
+// y = alpha * op(A) * x + beta * y. alpha/beta come in as double and
+// are cast to the matrix value type in the impl, so complex callers
+// should stick to 1 / 0 / -1 to avoid silently dropping the imaginary
+// part.
 //
 // ``trans_op`` selects the operation applied to A:
 //      0 = N  (no transpose)         y = alpha * A   @ x + beta * y
@@ -67,14 +54,14 @@ extern std::pair<sycl::event, sycl::event>
 // for conjugate-transpose would require an explicit element-wise
 // conjugate pass and is not wired up here.
 extern std::pair<sycl::event, sycl::event>
-    gemv_alpha_beta(sycl::queue &exec_q,
-                    const dpnp::tensor::usm_ndarray &matrixA,
-                    const dpnp::tensor::usm_ndarray &vectorX,
-                    const dpnp::tensor::usm_ndarray &vectorY,
-                    const int trans_op,
-                    const double alpha,
-                    const double beta,
-                    const std::vector<sycl::event> &depends);
+    gemv(sycl::queue &exec_q,
+         const dpnp::tensor::usm_ndarray &matrixA,
+         const dpnp::tensor::usm_ndarray &vectorX,
+         const dpnp::tensor::usm_ndarray &vectorY,
+         const int trans_op,
+         const double alpha,
+         const double beta,
+         const std::vector<sycl::event> &depends);
 
 extern void init_gemv_dispatch_vector(void);
 } // namespace dpnp::extensions::blas

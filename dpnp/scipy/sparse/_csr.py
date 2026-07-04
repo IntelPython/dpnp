@@ -173,6 +173,10 @@ class csr_matrix(SparseABC):
             data = data.astype(dtype, copy=True)
         elif copy:
             data = data.copy()
+        # copy indices/indptr separately: the dtype cast above only
+        # touches data, so on that branch they'd stay aliased to the
+        # caller's arrays even with copy=True.
+        if copy:
             indices = indices.copy()
             indptr = indptr.copy()
 

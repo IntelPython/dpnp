@@ -943,20 +943,37 @@ class TestGmres:
         _, info = gmres(ia, ib, x0=x_true, rtol=1e-12, restart=n)
         assert info == 0
 
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    def test_gmres_happy_breakdown(self):
+        # A = 2*I: the exact solution x = b / 2 is reachable in a single
+        # Krylov step, so the Arnoldi subdiagonal H[1, 0] is zero (happy
+        # breakdown). The solver must detect this, truncate the
+        # Hessenberg system to the built columns, and return the exact
+        # solution instead of feeding a zero/NaN column to lstsq.
+        n = 4
+        ia = dpnp.diag(dpnp.full(n, 2.0, dtype=dpnp.float64))
+        ib = dpnp.ones(n, dtype=dpnp.float64)
+        x, info = gmres(ia, ib, restart=n, maxiter=20)
+        assert info == 0
+        assert_allclose(dpnp.asnumpy(x), numpy.full(n, 0.5), atol=1e-12)
+
 
 class TestMinres:
     n = 30
 
-    @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.float64])
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_minres_converges_spd(self, dtype):
-        if not has_support_aspect64() and dtype == dpnp.float64:
-            pytest.skip("fp64 is required")
+        # Covers real symmetric and complex Hermitian positive-definite
+        # systems. The complex path exercises the Hermitian (conjugated)
+        # Lanczos inner products; a plain, non-conjugated inner product
+        # would leave a complex beta1 that float() cannot cast.
         ia = _spd_matrix(self.n, dtype)
         ib = _rhs(self.n, dtype)
-        x, info = minres(ia, ib, rtol=1e-8, maxiter=500)
+        rtol = _rtol_for(dtype)
+        x, info = minres(ia, ib, rtol=rtol, maxiter=500)
         assert info == 0
         res = float(dpnp.linalg.norm(ia @ x - ib) / dpnp.linalg.norm(ib))
-        assert res < 1e-4
+        assert res < _res_bound(dtype)
 
     @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
     def test_minres_converges_sym_indefinite(self):
@@ -1142,17 +1159,15 @@ class TestSolversEdgeCases:
     # and the smallest possible n=1 / n=2 systems.
 
     @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
-    @pytest.mark.parametrize("solver", [cg, minres])
+    @pytest.mark.parametrize("solver", [cg, gmres, minres])
     def test_identity_system_one_iter(self, solver):
         # A = I and b arbitrary; the exact solution is x = b and any
         # iterative solver should reach it in at most n iterations
-        # (Krylov subspace is trivial). gmres is omitted: A = I
-        # triggers an Arnoldi happy breakdown at j=1 (A @ v_1 == v_1
-        # so H[2, 1] = 0), and detecting it would require either a
-        # host sync per Arnoldi step (violates the no-implicit-
-        # sync rule of these solvers) or non-trivial device-side
-        # NaN-guarded arithmetic for a contrived case that no real
-        # workload exercises.
+        # (Krylov subspace is trivial). For gmres, A = I triggers an
+        # Arnoldi happy breakdown at j=1 (A @ v_1 == v_1 so H[2, 1] = 0);
+        # this is detected after the Arnoldi loop from the host-side
+        # Hessenberg subdiagonal and the system is truncated to the
+        # built columns, so gmres also converges here.
         n = 6
         ia = dpnp.eye(n, dtype=dpnp.float64)
         ib = _rhs(n, dpnp.float64)

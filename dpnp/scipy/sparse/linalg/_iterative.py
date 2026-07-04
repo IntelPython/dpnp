@@ -672,7 +672,7 @@ def gmres(
     queue = b.sycl_queue
 
     # Krylov basis V is F-ordered so column slices V[:, :k] are
-    # F-contiguous USM views, a precondition of the bi._gemv_alpha_beta
+    # F-contiguous USM views, a precondition of the bi._gemv
     # binding used inside _make_compute_hu.
     V = dpnp.empty((n, restart), dtype=dtype, sycl_queue=queue, order="F")
     # H is F-ordered for the same reason: compute_hu writes Hessenberg
@@ -689,6 +689,10 @@ def gmres(
 
     np_dtype = _np_dtype(dtype)
     e_host = numpy.zeros(restart + 1, dtype=np_dtype)
+
+    # eps of the working dtype; scaled per restart into the
+    # happy-breakdown threshold below.
+    eps = numpy.finfo(np_dtype).eps
 
     iters = 0
     # r_norm_host tracks the latest residual norm as a Python float so
@@ -738,16 +742,17 @@ def gmres(
             # orthogonalised u. No h temporary, no tmp buffer, two
             # oneMKL gemv calls per Arnoldi step.
             u = compute_hu(u, j)
-            # H[j+1, j] = ||u||  -- one device norm, one slice store.
-            # Stored as a device 0-D scalar; we only sync if we need
-            # to read its value for the next v normalisation.
+            # H[j+1, j] = ||u||  -- one device norm, one slice store,
+            # kept on device so the loop stays sync-free.
             h_norm = dpnp.linalg.norm(u)
             H[j + 1, j] = h_norm
             if j < last_j:
-                # Normalise u into the next Krylov vector and store it
-                # in V. The single in-place store V[:, j+1] = v writes
-                # a contiguous column slice with a unit-stride layout.
-                v = u / h_norm
+                # Normalise u into the next Krylov vector. On a happy
+                # breakdown h_norm is zero; clamp it so the divide does
+                # not produce NaNs that would poison later V columns.
+                # These columns are discarded after breakdown detection
+                # below, but the clamp keeps the device arithmetic clean.
+                v = u / dpnp.where(h_norm == 0, dpnp.ones_like(h_norm), h_norm)
                 V[:, j + 1] = v
 
         # Solve the small Hessenberg least-squares  H y = e  on the
@@ -758,10 +763,25 @@ def gmres(
         # restart device-side lstsq that allocated a workspace and
         # ran a tiny SVD kernel.
         H_host = dpnp.asnumpy(H)
-        y_host, *_ = numpy.linalg.lstsq(H_host, e_host, rcond=None)
+
+        # Detect a happy breakdown from the (now host-side) subdiagonal:
+        # the first near-zero H[j+1, j] means u had no component outside
+        # the current Krylov subspace, so the solution is exact in
+        # span(V[:, :built]). Threshold scales with the starting residual
+        # norm since ||u|| tracks the problem magnitude. Truncating here
+        # keeps the trailing all-zero (and possibly NaN) columns out of
+        # lstsq, which otherwise trips a DLASCL error on some LAPACK
+        # builds. This uses only the single per-restart sync above.
+        eps_break = eps * r_norm_host
+        subdiag = numpy.abs(numpy.diagonal(H_host, offset=-1))
+        breakdown = numpy.nonzero(subdiag <= eps_break)[0]
+        built = int(breakdown[0]) + 1 if breakdown.size else restart
+
+        H_sub = H_host[: built + 1, :built]
+        y_host, *_ = numpy.linalg.lstsq(H_sub, e_host[: built + 1], rcond=None)
         y = dpnp.asarray(y_host, sycl_queue=queue)
-        x = x + dpnp.dot(V, y)
-        iters += restart
+        x = x + dpnp.dot(V[:, :built], y)
+        iters += built
 
     info = 0
     if iters >= maxiter and r_norm_host > atol:
@@ -868,7 +888,10 @@ def minres(
     # would cascade implicit syncs or 0-D allocations throughout the
     # recurrence -- and the < 0 / == 0 guards below would each trigger
     # an implicit __bool__ sync of their own.
-    beta1 = float(dpnp.inner(r1, y))
+    #
+    # vdot conjugates r1, so <r1, y> is real for a Hermitian A; inner()
+    # would leave a complex value that float() rejects.
+    beta1 = float(dpnp.vdot(r1, y).real)
 
     if beta1 < 0:
         raise ValueError("indefinite preconditioner")
@@ -881,15 +904,15 @@ def minres(
         # See if A is symmetric.  All on device; only the bool syncs.
         w_chk = matvec(y)
         r2_chk = matvec(w_chk)
-        s = dpnp.inner(w_chk, w_chk)
-        t = dpnp.inner(y, r2_chk)
+        s = float(dpnp.vdot(w_chk, w_chk).real)
+        t = float(dpnp.vdot(y, r2_chk).real)
         if abs(s - t) > (s + eps) * eps ** (1.0 / 3.0):
             raise ValueError("non-symmetric matrix")
 
         # See if M is symmetric.
         r2_chk = psolve(y)
-        s = dpnp.inner(y, y)
-        t = dpnp.inner(r1, r2_chk)
+        s = float(dpnp.vdot(y, y).real)
+        t = float(dpnp.vdot(r1, r2_chk).real)
         if abs(s - t) > (s + eps) * eps ** (1.0 / 3.0):
             raise ValueError("non-symmetric preconditioner")
 
@@ -925,8 +948,8 @@ def minres(
         if itn >= 2:
             y = y - (beta / oldb) * r1
 
-        # alpha = <v, y>   -- host sync #1
-        alpha = float(dpnp.inner(v, y))
+        # alpha = <v, y>   -- host sync #1 (vdot conjugates v)
+        alpha = float(dpnp.vdot(v, y).real)
 
         y = y - (alpha / beta) * r2
         r1 = r2
@@ -934,8 +957,8 @@ def minres(
         y = psolve(r2)
         oldb = beta
 
-        # beta = sqrt(<r2, y>)   -- host sync #2
-        beta = float(dpnp.inner(r2, y))
+        # beta = sqrt(<r2, y>)   -- host sync #2 (vdot conjugates r2)
+        beta = float(dpnp.vdot(r2, y).real)
         if beta < 0:
             raise ValueError("non-symmetric matrix")
         beta = math.sqrt(beta)
@@ -1073,7 +1096,7 @@ def _make_compute_hu(V, H):
         u = u - V[:, :j+1] @ h
 
     Both calls are dispatched as single oneMKL ``gemv`` kernels via
-    the ``bi._gemv_alpha_beta`` binding:
+    the ``bi._gemv`` binding:
 
       * Pass 1 (project) -- ``gemv(trans_op=T or C, alpha=1, beta=0)``
         with the *output* pointing at the Hessenberg column slice
@@ -1137,7 +1160,7 @@ def _make_compute_hu(V, H):
     # identity ``conj(V^T @ u) == V^H @ u`` only holds when u is real;
     # for complex u it produces ``V^H @ conj(u)`` instead, which is a
     # different vector and silently breaks Gram-Schmidt orthogonality.
-    # bi._gemv_alpha_beta now exposes the full {N, T, C} tri-state so
+    # bi._gemv now exposes the full {N, T, C} tri-state so
     # we can ask oneMKL for V^H directly -- one kernel, mathematically
     # exact, no scratch buffer, no post-hoc conjugate to event-order.
     pass1_trans_op = 2 if is_cpx else 1  # 2 = conjtrans, 1 = transpose
@@ -1157,7 +1180,7 @@ def _make_compute_hu(V, H):
         # coefficients straight into the Hessenberg column slice
         # without any temporary buffer.
         # pylint: disable-next=protected-access
-        ht1, ev1 = bi._gemv_alpha_beta(
+        ht1, ev1 = bi._gemv(
             exec_q,
             Vj_usm,
             u_usm,
@@ -1172,7 +1195,7 @@ def _make_compute_hu(V, H):
         # Pass 2: u = -Vj @ H[:j+1, j] + 1 * u   (alpha=-1, beta=1)
         # Fused AXPY-gemv -- single oneMKL kernel, no tmp buffer.
         # pylint: disable-next=protected-access
-        ht2, ev2 = bi._gemv_alpha_beta(
+        ht2, ev2 = bi._gemv(
             exec_q,
             Vj_usm,
             h_usm,

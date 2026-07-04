@@ -158,22 +158,16 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
     return gemv_event;
 }
 
-// Shared validation + dispatch. Both gemv() (alpha=1, beta=0) and
-// gemv_alpha_beta() funnel through here so behaviour stays identical
-// across the two entry points.
+// Validation + dispatch behind the public gemv().
 //
 // ``trans_op`` is a tri-state matching oneapi::mkl::transpose:
 //      0 = N (no transpose),
 //      1 = T (plain transpose),
 //      2 = C (conjugate-transpose, complex only).
 //
-// The legacy gemv() entry-point only ever needs N/T (real or complex,
-// no conjugate semantics) and forwards trans_op = 0 or 1. The
-// gemv_alpha_beta() entry-point exposes the full tri-state so the
-// GMRES Arnoldi inner step can request V^H directly instead of
-// post-conjugating the result of a T-mode gemv -- which is
-// mathematically wrong for a complex right-hand vector (the identity
-// conj(V^T @ u) == V^H @ u holds only when u is real-valued).
+// dpnp.dot only needs N/T. C exists for the GMRES Arnoldi step, which
+// needs V^H directly: post-conjugating a T-mode result is wrong for
+// complex u since conj(V^T @ u) == V^H @ u only holds when u is real.
 static std::pair<sycl::event, sycl::event>
     gemv_dispatch(sycl::queue &exec_q,
                   const dpnp::tensor::usm_ndarray &matrixA,
@@ -380,36 +374,16 @@ std::pair<sycl::event, sycl::event>
          const dpnp::tensor::usm_ndarray &matrixA,
          const dpnp::tensor::usm_ndarray &vectorX,
          const dpnp::tensor::usm_ndarray &vectorY,
-         const bool transpose,
+         const int trans_op,
+         const double alpha,
+         const double beta,
          const std::vector<sycl::event> &depends)
 {
-    // Legacy alpha=1, beta=0 wrapper. Existing dpnp.dot callers expect
-    // this exact behaviour (N or plain T only, never conjugate-
-    // transpose), so we forward through the shared dispatch mapping
-    // the bool argument to the {0=N, 1=T} subset of the tri-state.
-    const int trans_op = transpose ? 1 : 0;
-    return gemv_dispatch(exec_q, matrixA, vectorX, vectorY, trans_op,
-                         /*alpha=*/1.0, /*beta=*/0.0, depends);
-}
-
-std::pair<sycl::event, sycl::event>
-    gemv_alpha_beta(sycl::queue &exec_q,
-                    const dpnp::tensor::usm_ndarray &matrixA,
-                    const dpnp::tensor::usm_ndarray &vectorX,
-                    const dpnp::tensor::usm_ndarray &vectorY,
-                    const int trans_op,
-                    const double alpha,
-                    const double beta,
-                    const std::vector<sycl::event> &depends)
-{
-    // Caller-supplied alpha / beta and full tri-state transpose.
-    // Used by the GMRES Arnoldi step to fuse  u -= V @ h
-    // (trans_op=0, alpha=-1, beta=1) into a single gemv kernel, and
-    // to write h = V^H @ u directly into a Hessenberg column slice
-    // (trans_op=2, alpha=1, beta=0). For complex matrices the scalars
-    // must be exactly representable as their real form -- callers
-    // pass 1/0/-1 only, see the impl-level comment for the imag-loss
-    // caveat.
+    // dpnp.dot uses the defaults (trans_op 0/1, alpha 1, beta 0). GMRES
+    // passes the full tri-state and its own scalars to fuse u -= V @ h
+    // (0, -1, 1) and write h = V^H @ u into a Hessenberg slice (2, 1, 0)
+    // in one kernel each. Complex scalars must be real-representable;
+    // callers only pass 1/0/-1 -- see the impl for the imag-loss note.
     return gemv_dispatch(exec_q, matrixA, vectorX, vectorY, trans_op, alpha,
                          beta, depends);
 }
