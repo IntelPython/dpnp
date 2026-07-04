@@ -417,7 +417,6 @@ std::tuple<std::uintptr_t, int, sycl::event>
             "sparse_gemv_init: USM allocations are not compatible with the "
             "execution queue.");
 
-    // Basic CSR shape sanity.
     if (row_ptr.get_ndim() != 1 || col_ind.get_ndim() != 1 ||
         values.get_ndim() != 1)
         throw py::value_error(
@@ -503,7 +502,6 @@ sycl::event sparse_gemv_compute(sycl::queue &exec_q,
     dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         y, static_cast<std::size_t>(op_rows));
 
-    // Dtype verification: x, y, and the handle's value type must all match.
     auto array_types = dpnp_td_ns::usm_ndarray_types();
     const int x_val_id = array_types.typenum_to_lookup_id(x.get_typenum());
     const int y_val_id = array_types.typenum_to_lookup_id(y.get_typenum());
@@ -572,16 +570,8 @@ sycl::event sparse_gemv_release(sycl::queue &exec_q,
 {
     auto spmat = reinterpret_cast<mkl_sparse::matrix_handle_t>(handle_ptr);
 
-    // release_matrix_handle takes `depends` so it will not free the handle
-    // until all pending compute work on it has completed. In recent oneMKL
-    // versions release_matrix_handle returns a sycl::event; older versions
-    // returned void. If your pinned oneMKL returns void, replace the body
-    // with:
-    //     mkl_sparse::release_matrix_handle(exec_q, &spmat, depends);
-    //     return exec_q.submit([&](sycl::handler &cgh) {
-    //         cgh.depends_on(depends);
-    //         cgh.host_task([]() {});
-    //     });
+    // release_matrix_handle takes `depends` so the handle is not freed
+    // until pending compute on it completes.
     sycl::event release_ev =
         mkl_sparse::release_matrix_handle(exec_q, &spmat, depends);
 
