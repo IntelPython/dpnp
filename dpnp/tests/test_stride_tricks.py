@@ -7,6 +7,7 @@ import dpnp
 from dpnp.lib.stride_tricks import as_strided
 
 from .helper import generate_random_numpy_array, get_all_dtypes
+from .third_party.cupy import testing
 
 
 class TestAsStrided:
@@ -88,6 +89,7 @@ class TestAsStrided:
         ia = dpnp.array([1, 2, 3, 4], dtype=dpnp.int32)
         assert_raises(NotImplementedError, as_strided, ia, subok=True)
 
+    @testing.with_requires("numpy>=2.5")
     @pytest.mark.parametrize(
         "shape, strides",
         [
@@ -114,6 +116,7 @@ class TestAsStrided:
         expected = np_as_strided(b, shape=(2,), strides=(400,))
         assert_array_equal(result, expected)
 
+    @testing.with_requires("numpy>=2.5")
     @pytest.mark.parametrize(
         "start, strides",
         [
