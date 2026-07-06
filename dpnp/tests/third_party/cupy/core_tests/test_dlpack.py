@@ -21,6 +21,9 @@ def _gen_array(dtype, alloc_q=None):
         array = numpy.random.random((2, 3))
     elif dtype == cupy.bool_:
         array = numpy.random.randint(0, 2, size=(2, 3))
+    # bfloat16 is not supported by dpnp
+    # elif dtype.name == "bfloat16":
+    #     array = numpy.random.rand(2, 3)
     else:
         assert False, f"unrecognized dtype: {dtype}"
     return cupy.asarray(array, sycl_queue=alloc_q).astype(dtype)
@@ -85,6 +88,14 @@ class TestNewDLPackConversion:
     @testing.for_all_dtypes(no_bool=False)
     def test_conversion(self, dtype):
         orig_array = _gen_array(dtype)
+        out_array = cupy.from_dlpack(orig_array)
+        testing.assert_array_equal(orig_array, out_array)
+        testing.assert_array_equal(orig_array.data.ptr, out_array.data.ptr)
+
+    @pytest.mark.skip("bfloat16 dtype is not supported")
+    def test_conversion_bfloat16(self):
+        ml_dtypes = pytest.importorskip("ml_dtypes")
+        orig_array = _gen_array(numpy.dtype(ml_dtypes.bfloat16))
         out_array = cupy.from_dlpack(orig_array)
         testing.assert_array_equal(orig_array, out_array)
         testing.assert_array_equal(orig_array.data.ptr, out_array.data.ptr)
