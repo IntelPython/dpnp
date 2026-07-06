@@ -375,4 +375,3 @@ void init_gemv_dispatch_vector(void)
         gemv_dispatch_vector);
 }
 } // namespace dpnp::extensions::blas
-<
