@@ -33,21 +33,18 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <cmath>
-#include <complex>
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 #include <type_traits>
 #include <vector>
 
 #include <sycl/sycl.hpp>
 
-#include "sycl_complex.hpp"
+#include "common.hpp"
+#include "complex_math.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpnp_tensor_types.hpp"
-#include "kernels/elementwise_functions/common.hpp"
 
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -77,78 +74,7 @@ struct AsinFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-            using realT = typename argT::value_type;
-
-            static constexpr realT q_nan =
-                std::numeric_limits<realT>::quiet_NaN();
-
-            /*
-             * asin(in) = I * conj( asinh(I * conj(in)) )
-             * so we first calculate w = asinh(I * conj(in)) with
-             * x = real(I * conj(in)) = imag(in)
-             * y = imag(I * conj(in)) = real(in)
-             * and then return {imag(w), real(w)} which is asin(in)
-             */
-            const realT x = std::imag(in);
-            const realT y = std::real(in);
-
-            if (std::isnan(x)) {
-                /* asinh(NaN + I*+-Inf) = opt(+-)Inf + I*NaN */
-                if (std::isinf(y)) {
-                    const realT asinh_re = y;
-                    const realT asinh_im = q_nan;
-                    return resT{asinh_im, asinh_re};
-                }
-                /* asinh(NaN + I*0) = NaN + I*0 */
-                if (y == realT(0)) {
-                    const realT asinh_re = q_nan;
-                    const realT asinh_im = y;
-                    return resT{asinh_im, asinh_re};
-                }
-                /* All other cases involving NaN return NaN + I*NaN. */
-                return resT{q_nan, q_nan};
-            }
-            else if (std::isnan(y)) {
-                /* asinh(+-Inf + I*NaN) = +-Inf + I*NaN */
-                if (std::isinf(x)) {
-                    const realT asinh_re = x;
-                    const realT asinh_im = q_nan;
-                    return resT{asinh_im, asinh_re};
-                }
-                /* All other cases involving NaN return NaN + I*NaN. */
-                return resT{q_nan, q_nan};
-            }
-
-            /*
-             * For large x or y including asinh(+-Inf + I*+-Inf)
-             * asinh(in) = sign(x)*log(sign(x)*in) + O(1/in^2)   as in ->
-             * infinity The above formula works for the imaginary part as well,
-             * because Im(asinh(in)) = sign(x)*atan2(sign(x)*y, fabs(x)) +
-             * O(y/in^3) as in -> infinity, uniformly in y
-             */
-            static constexpr realT r_eps =
-                realT(1) / std::numeric_limits<realT>::epsilon();
-            if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
-                using sycl_complexT = exprm_ns::complex<realT>;
-                const sycl_complexT z{x, y};
-                realT wx, wy;
-                if (!sycl::signbit(x)) {
-                    const auto log_z = exprm_ns::log(z);
-                    wx = log_z.real() + sycl::log(realT(2));
-                    wy = log_z.imag();
-                }
-                else {
-                    const auto log_mz = exprm_ns::log(-z);
-                    wx = log_mz.real() + sycl::log(realT(2));
-                    wy = log_mz.imag();
-                }
-                const realT asinh_re = sycl::copysign(wx, x);
-                const realT asinh_im = sycl::copysign(wy, y);
-                return resT{asinh_im, asinh_re};
-            }
-            /* ordinary cases */
-            return exprm_ns::asin(
-                exprm_ns::complex<realT>(in)); // sycl::asin(in);
+            return complex_math::casin(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

@@ -281,6 +281,8 @@ class TestMultiGpuFftOrder:
 
 @pytest.mark.skip("default FFT function is not supported")
 @testing.with_requires("numpy>=2.0")
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestDefaultPlanType:
 
     @nd_planning_states()
@@ -404,6 +406,8 @@ class TestFftAllocate:
         )
     )
 )
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestFft2:
 
     @nd_planning_states()
@@ -496,6 +500,8 @@ class TestFft2:
         )
     )
 )
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestFftn:
 
     @nd_planning_states()
@@ -584,6 +590,8 @@ class TestFftn:
         )
     )
 )
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestPlanCtxManagerFftn:
 
     @pytest.fixture(autouse=True)
@@ -851,6 +859,8 @@ class TestMultiGpuPlanCtxManagerFft:
     )
 )
 @pytest.mark.skip("default FFT function is not supported")
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestFftnContiguity:
 
     @nd_planning_states([True])
@@ -1120,6 +1130,8 @@ class TestRfft2EmptyAxes:
         )
     )
 )
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestRfftn:
 
     @nd_planning_states()
@@ -1189,6 +1201,8 @@ class TestRfftn:
     )
 )
 @pytest.mark.skip("get_fft_plan() is not supported")
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestPlanCtxManagerRfftn:
 
     @pytest.fixture(autouse=True)
@@ -1269,6 +1283,8 @@ class TestPlanCtxManagerRfftn:
     )
 )
 @pytest.mark.skip("default FFT function is not supported")
+# thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+# @pytest.mark.thread_unsafe(reason="`nd_planning_states` is not thread-safe")
 class TestRfftnContiguity:
 
     @nd_planning_states([True])

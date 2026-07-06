@@ -143,6 +143,99 @@ class TestToBytes:
         assert_array_equal(b, a.asnumpy().flatten(order))
 
 
+class TestAsNumpy:
+    # gh-2884: ``order`` keyword was ignored by ``dpnp.asnumpy`` and the
+    # resulting NumPy array kept the (possibly non-contiguous) layout of the
+    # source array.
+    orders = ["C", "F", "A", "K", None]
+
+    def _f_contiguous_array(self):
+        # transposing a C-contiguous 2-D array yields an F-contiguous view
+        a = dpnp.arange(21, dtype="int32").reshape(7, 3).T
+        assert not a.flags["C_CONTIGUOUS"] and a.flags["F_CONTIGUOUS"]
+        return a
+
+    def _c_contiguous_array(self):
+        a = dpnp.arange(21, dtype="int32").reshape(3, 7)
+        assert a.flags["C_CONTIGUOUS"]
+        return a
+
+    @pytest.mark.parametrize("order", orders)
+    @pytest.mark.parametrize("layout", ["c", "f"])
+    def test_iface_order(self, layout, order):
+        a = (
+            self._c_contiguous_array()
+            if layout == "c"
+            else (self._f_contiguous_array())
+        )
+        result = dpnp.asnumpy(a, order=order)
+
+        # numpy.asarray on the host copy is the reference for every order value
+        expected = numpy.asarray(a.asnumpy(order="K"), order=order)
+        assert isinstance(result, numpy.ndarray)
+        assert result.flags["C_CONTIGUOUS"] == expected.flags["C_CONTIGUOUS"]
+        assert result.flags["F_CONTIGUOUS"] == expected.flags["F_CONTIGUOUS"]
+        assert_array_equal(result, expected)
+
+    def test_iface_default_order_is_c(self):
+        a = self._f_contiguous_array()
+        result = dpnp.asnumpy(a)
+        assert result.flags["C_CONTIGUOUS"]
+
+    @pytest.mark.parametrize("order", orders)
+    def test_method_order(self, order):
+        a = self._f_contiguous_array()
+        result = a.asnumpy(order=order)
+        expected = numpy.asarray(a.asnumpy(order="K"), order=order)
+        assert result.flags["C_CONTIGUOUS"] == expected.flags["C_CONTIGUOUS"]
+        assert result.flags["F_CONTIGUOUS"] == expected.flags["F_CONTIGUOUS"]
+        assert_array_equal(result, expected)
+
+    def test_method_default_order_is_c(self):
+        # the array method matches ``cupy.ndarray.get`` and defaults to "C"
+        a = self._f_contiguous_array()
+        result = a.asnumpy()
+        assert result.flags["C_CONTIGUOUS"]
+
+    def test_method_order_k_keeps_strides(self):
+        # explicit "K" keeps the strides of the source as closely as possible
+        a = self._f_contiguous_array()
+        result = a.asnumpy(order="K")
+        assert not result.flags["C_CONTIGUOUS"]
+
+    @pytest.mark.parametrize("order", orders)
+    def test_usm_ndarray_input_order(self, order):
+        a = self._f_contiguous_array()
+        usm_a = dpnp.get_usm_ndarray(a)
+        result = dpnp.asnumpy(usm_a, order=order)
+        assert_array_equal(result, dpt.asnumpy(usm_a, order=order))
+
+    @pytest.mark.parametrize("order", orders)
+    @pytest.mark.parametrize("shape", [(0, 3), (3, 0)])
+    def test_empty_array(self, shape, order):
+        # zero-sized arrays are both C- and F-contiguous for any order value
+        a = dpnp.empty(shape, dtype="int32")
+        result = dpnp.asnumpy(a, order=order)
+        assert result.shape == shape
+        assert result.dtype == a.dtype
+        assert result.flags["C_CONTIGUOUS"] and result.flags["F_CONTIGUOUS"]
+        assert_array_equal(result, a.asnumpy(order=order))
+
+    def test_negative_stride(self):
+        # a reversed view has a negative stride; "K" preserves it (matching
+        # ``dpnp.tensor.asnumpy``) while "C" returns a C-contiguous copy
+        a = dpnp.arange(10, dtype="int32")[::-1]
+        usm_a = dpnp.get_usm_ndarray(a)
+
+        result_k = dpnp.asnumpy(a, order="K")
+        assert_array_equal(result_k, dpt.asnumpy(usm_a))
+        assert result_k.strides == dpt.asnumpy(usm_a).strides
+
+        result_c = dpnp.asnumpy(a, order="C")
+        assert result_c.flags["C_CONTIGUOUS"]
+        assert_array_equal(result_c, result_k)
+
+
 class TestToFile:
     def _create_data(self):
         x = generate_random_numpy_array((2, 4, 3), dtype=complex)

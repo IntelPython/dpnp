@@ -219,3 +219,85 @@ def test_acosh_zero_nan(dtype):
 
     assert np.isnan(Y_dpt.real).all()
     assert_allclose(np.abs(Y_dpt.imag), np.pi / 2, atol=1e-6, strict=False)
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _inv_hyper_funcs)
+@pytest.mark.parametrize("dtype", _complex_fp_dtypes)
+def test_inv_hyper_large_negative_real(np_call, dpt_call, dtype):
+    """
+    Test inverse hyperbolic functions for large negative real parts.
+
+    Regression acosh test for threshold bug where catastrophic cancellation in
+    z + sqrt(z² - 1) caused log(0) = -infinity for |Re(z)| in [4e7, 9e7+]
+    with negative real parts (gh-2924).
+    """
+
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    # input values that previously returned infinity
+    thr1 = 1 / dpt.finfo(dtype).eps  # acosh, asinh
+    thr2 = np.sqrt(thr1) / 2  # atanh
+    x = [
+        complex(-4e7, 1.0),  # Boundary of bug zone
+        complex(-9e7, 1.0),  # Middle of bug zone
+        complex(-1e8, 1.0),  # Upper range
+        complex(-4.45712982e8, 1.0),  # Original reported value
+        # Exact threshold values
+        complex(thr1, 1.0),
+        complex(thr2, 1.0),
+        # Next values after threshold
+        complex(np.nextafter(thr1, np.inf), 1.0),
+        complex(np.nextafter(thr2, np.inf), 1.0),
+    ]
+
+    xf = np.asarray(x, dtype=dtype)
+    yf = dpt.asarray(x, dtype=dtype, sycl_queue=q)
+
+    result = dpt_call(yf)
+    expected = np_call(xf)
+
+    tol = 8 * dpt.finfo(dtype).resolution
+    assert not dpt.any(dpt.isinf(result))
+    assert_allclose(dpt.asnumpy(result), expected, atol=tol, rtol=tol)
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _inv_hyper_funcs)
+@pytest.mark.parametrize("dtype", _complex_fp_dtypes)
+@pytest.mark.parametrize("magnitude", [4e7, 9e7, 1e8, 4.45e8])
+def test_inv_hyper_all_quadrants_large(np_call, dpt_call, dtype, magnitude):
+    """
+    Test inverse hyperbolic functions for large complex values in all quadrants.
+
+    Ensures the threshold fix works correctly for all sign combinations
+    of real and imaginary parts.
+    """
+
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    # input values with four quadrants with large magnitude
+    thr1 = 1 / dpt.finfo(dtype).eps  # acosh, asinh
+    thr2 = np.sqrt(thr1) / 2  # atanh
+    x = [
+        complex(-4e7, 1.0),  # Boundary of bug zone
+        complex(-9e7, 1.0),  # Middle of bug zone
+        complex(-1e8, 1.0),  # Upper range
+        complex(-4.45712982e8, 1.0),  # Original reported value
+        # Exact threshold values
+        complex(thr1, 1.0),
+        complex(thr2, 1.0),
+        # Next values after threshold
+        complex(np.nextafter(thr1, np.inf), 1.0),
+        complex(np.nextafter(thr2, np.inf), 1.0),
+    ]
+
+    xf = np.asarray(x, dtype=dtype)
+    yf = dpt.asarray(x, dtype=dtype, sycl_queue=q)
+
+    result = dpt_call(yf)
+    expected = np_call(xf)
+
+    tol = 8 * dpt.finfo(dtype).resolution
+    assert not dpt.any(dpt.isinf(result))
+    assert_allclose(dpt.asnumpy(result), expected, atol=tol, rtol=tol)
