@@ -1511,6 +1511,53 @@ class TestCsrMatrix:
         m = csr_matrix((data, indices, indptr), shape=(2, 4))
         assert m.has_sorted_indices
 
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    @with_requires("scipy")
+    def test_sum_duplicates(self):
+        import scipy.sparse as sp
+
+        # Row 0: col 0 twice (2+3), col 1 once. Row 1: col 2 twice (5+6).
+        data_np = numpy.array([2, 1, 3, 5, 6], dtype=numpy.float64)
+        indices_np = numpy.array([0, 1, 0, 2, 2])
+        indptr_np = numpy.array([0, 3, 5])
+        m = csr_matrix(
+            (
+                dpnp.asarray(data_np),
+                dpnp.asarray(indices_np),
+                dpnp.asarray(indptr_np),
+            ),
+            shape=(2, 3),
+        )
+        m.sum_duplicates()
+        ref = sp.csr_matrix((data_np, indices_np, indptr_np), shape=(2, 3))
+        ref.sum_duplicates()
+        assert m.has_canonical_format
+        assert list(dpnp.asnumpy(m.indptr)) == list(ref.indptr)
+        assert list(dpnp.asnumpy(m.indices)) == list(ref.indices)
+        assert list(dpnp.asnumpy(m.data)) == list(ref.data)
+
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    def test_sum_duplicates_idempotent(self):
+        data = dpnp.array([2.0, 3.0, 1.0], dtype=dpnp.float64)
+        indices = dpnp.array([0, 0, 1], dtype=dpnp.int64)
+        indptr = dpnp.array([0, 3], dtype=dpnp.int64)
+        m = csr_matrix((data, indices, indptr), shape=(1, 2))
+        m.sum_duplicates()
+        idx_after = list(dpnp.asnumpy(m.indices))
+        data_after = list(dpnp.asnumpy(m.data))
+        m.sum_duplicates()
+        assert m.has_canonical_format
+        assert list(dpnp.asnumpy(m.indices)) == idx_after
+        assert list(dpnp.asnumpy(m.data)) == data_after
+
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    def test_dense_construction_is_canonical(self):
+        dense = dpnp.asarray(
+            numpy.array([[0.0, 5.0, 0.0], [7.0, 0.0, 3.0]], dtype=numpy.float64)
+        )
+        m = csr_matrix(dense)
+        assert m.has_canonical_format
+
     # Cached-handle reuse must stay correct across matvecs.
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_dot_handle_reuse_multiple_matvecs(self, dtype):

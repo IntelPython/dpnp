@@ -142,9 +142,9 @@ class _CachedSpMV:
         self._A = A  # keep alive so USM pointers stay valid
         self._si = si
         self._trans = int(trans)
-        # SpMV backends require sorted CSR; sort before reading the
-        # component arrays into the handle.
-        A.sort_indices()
+        # SpMV backends require canonical CSR (sorted, no duplicate
+        # columns); canonicalize before reading the component arrays.
+        A.sum_duplicates()
         self._nrows = int(A.shape[0])
         self._ncols = int(A.shape[1])
         self._nnz = int(A.data.shape[0])
