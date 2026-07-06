@@ -33,19 +33,17 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <cmath>
 #include <complex>
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 #include <type_traits>
 #include <vector>
 
-#include "sycl_complex.hpp"
+#include "common.hpp"
+#include "complex_math.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpnp_tensor_types.hpp"
-#include "kernels/elementwise_functions/common.hpp"
 
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -75,58 +73,7 @@ struct AcosFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-            using realT = typename argT::value_type;
-
-            static constexpr realT q_nan =
-                std::numeric_limits<realT>::quiet_NaN();
-
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
-
-            if (std::isnan(x)) {
-                /* acos(NaN + I*+-Inf) = NaN + I*-+Inf */
-                if (std::isinf(y)) {
-                    return resT{q_nan, -y};
-                }
-
-                /* all other cases involving NaN return NaN + I*NaN. */
-                return resT{q_nan, q_nan};
-            }
-            if (std::isnan(y)) {
-                /* acos(+-Inf + I*NaN) = NaN + I*opt(-)Inf */
-                if (std::isinf(x)) {
-                    return resT{q_nan, -std::numeric_limits<realT>::infinity()};
-                }
-                /* acos(0 + I*NaN) = PI/2 + I*NaN with inexact */
-                if (x == realT(0)) {
-                    const realT res_re = sycl::atan(realT(1)) * 2; // PI/2
-                    return resT{res_re, q_nan};
-                }
-
-                /* all other cases involving NaN return NaN + I*NaN. */
-                return resT{q_nan, q_nan};
-            }
-
-            /*
-             * For large x or y including acos(+-Inf + I*+-Inf)
-             */
-            static constexpr realT r_eps =
-                realT(1) / std::numeric_limits<realT>::epsilon();
-            if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
-                using sycl_complexT = exprm_ns::complex<realT>;
-                sycl_complexT log_in =
-                    exprm_ns::log(exprm_ns::complex<realT>(in));
-
-                const realT wx = log_in.real();
-                const realT wy = log_in.imag();
-                const realT rx = sycl::fabs(wy);
-
-                realT ry = wx + sycl::log(realT(2));
-                return resT{rx, (sycl::signbit(y)) ? ry : -ry};
-            }
-
-            /* ordinary cases */
-            return exprm_ns::acos(exprm_ns::complex<realT>(in)); // acos(in);
+            return dpnp::tensor::kernels::complex_math::cacos<argT>(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

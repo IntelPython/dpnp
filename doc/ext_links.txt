@@ -4,6 +4,7 @@
     **********************************************************
 
 .. _NumPy*: https://numpy.org/
+.. _SciPy*: https://scipy.org/
 .. _Python* Array API Standard: https://data-apis.org/array-api/
 .. _OpenCl*: https://www.khronos.org/opencl/
 .. _oneAPI Level Zero: https://spec.oneapi.io/level-zero/latest/index.html

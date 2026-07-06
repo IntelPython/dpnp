@@ -37,17 +37,16 @@
 #include <complex>
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 #include <type_traits>
 #include <vector>
 
 #include <sycl/sycl.hpp>
 
-#include "sycl_complex.hpp"
+#include "common.hpp"
+#include "complex_math.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpnp_tensor_types.hpp"
-#include "kernels/elementwise_functions/common.hpp"
 
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -79,63 +78,8 @@ struct AcoshFunctor
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
 
-            static constexpr realT q_nan =
-                std::numeric_limits<realT>::quiet_NaN();
-            /*
-             * acosh(in) = I*acos(in) or -I*acos(in)
-             * where the sign is chosen so Re(acosh(in)) >= 0.
-             * So, we first calculate acos(in) and then acosh(in).
-             */
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
-
-            resT acos_in;
-            if (std::isnan(x)) {
-                /* acos(NaN + I*+-Inf) = NaN + I*-+Inf */
-                if (std::isinf(y)) {
-                    acos_in = resT{q_nan, -y};
-                }
-                else {
-                    acos_in = resT{q_nan, q_nan};
-                }
-            }
-            else if (std::isnan(y)) {
-                /* acos(+-Inf + I*NaN) = NaN + I*opt(-)Inf */
-                static constexpr realT inf =
-                    std::numeric_limits<realT>::infinity();
-
-                if (std::isinf(x)) {
-                    acos_in = resT{q_nan, -inf};
-                }
-                /* acos(0 + I*NaN) = Pi/2 + I*NaN with inexact */
-                else if (x == realT(0)) {
-                    const realT pi_half = sycl::atan(realT(1)) * 2;
-                    acos_in = resT{pi_half, q_nan};
-                }
-                else {
-                    acos_in = resT{q_nan, q_nan};
-                }
-            }
-
-            static constexpr realT r_eps =
-                realT(1) / std::numeric_limits<realT>::epsilon();
-            /*
-             * For large x or y including acos(+-Inf + I*+-Inf)
-             */
-            if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
-                using sycl_complexT = typename exprm_ns::complex<realT>;
-                const sycl_complexT log_in = exprm_ns::log(sycl_complexT(in));
-                const realT wx = log_in.real();
-                const realT wy = log_in.imag();
-                const realT rx = sycl::fabs(wy);
-                realT ry = wx + sycl::log(realT(2));
-                acos_in = resT{rx, (sycl::signbit(y)) ? ry : -ry};
-            }
-            else {
-                /* ordinary cases */
-                acos_in =
-                    exprm_ns::acos(exprm_ns::complex<realT>(in)); // acos(in);
-            }
+            /* calculate acos value */
+            resT acos_in = dpnp::tensor::kernels::complex_math::cacos<argT>(in);
 
             /* Now we calculate acosh(z) */
             const realT rx = std::real(acos_in);
