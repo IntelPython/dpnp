@@ -69,7 +69,7 @@ def test_array_api_inspection_default_device():
         dev = dpctl.select_default_device()
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No default device available")
-    assert dpt.__array_namespace_info__().default_device() == dev
+    assert dpt.__array_namespace_info__().default_device().sycl_device == dev
 
 
 def test_array_api_inspection_devices():
@@ -79,7 +79,7 @@ def test_array_api_inspection_devices():
         pytest.skip("No default device available")
     devices1 = dpt.__array_namespace_info__().devices()
     assert len(devices1) == len(devices2)
-    assert devices1 == devices2
+    assert tuple(dev.sycl_device for dev in devices1) == devices2
 
 
 def test_array_api_inspection_capabilities():
@@ -142,7 +142,7 @@ def test_array_api_inspection_device_dtypes():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No default device available")
     dtypes = _dtypes_no_fp16_fp64.copy()
-    if dev.has_aspect_fp64:
+    if dev.sycl_device.has_aspect_fp64:
         dtypes["float64"] = dpt.float64
         dtypes["complex128"] = dpt.complex128
 
@@ -210,7 +210,7 @@ def test_array_api_inspection_dtype_kind_errors():
 def test_array_api_inspection_device_types():
     info = dpt.__array_namespace_info__()
     try:
-        dev = info.default_device()
+        dev = info.default_device().sycl_device
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No default device available")
 
