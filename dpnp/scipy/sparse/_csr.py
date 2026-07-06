@@ -27,6 +27,7 @@ densification, and lets the iterative solvers in
 
 from __future__ import annotations
 
+import dpctl.utils as _dpu
 import numpy as _np
 
 import dpnp as _dpnp
@@ -65,7 +66,8 @@ class csr_matrix(SparseABC):
 
     csr_matrix((data, indices, indptr), shape=(M, N))
         from raw CSR component arrays (1-D dpnp arrays on the same
-        SYCL queue).
+        SYCL queue). Components are stored as given; indices are sorted
+        lazily (see ``sort_indices``) when required by the SpMV path.
 
     csr_matrix(other_csr)
         copy of another csr_matrix.
@@ -81,6 +83,8 @@ class csr_matrix(SparseABC):
     shape : tuple of int
     dtype : dpnp dtype
     nnz : int
+    has_sorted_indices : bool
+        Whether column indices are sorted within each row.
     format : str
         Always 'csr'.
     ndim : int
@@ -98,6 +102,7 @@ class csr_matrix(SparseABC):
         self._spmv_val_type_id = -1
         self._spmv_si = None
         self._spmv_exec_q = None
+        self._has_sorted_indices = None
 
         if isinstance(arg1, _dpnp.ndarray):
             self._init_from_dense(arg1, dtype=dtype)
@@ -173,17 +178,73 @@ class csr_matrix(SparseABC):
             data = data.astype(dtype, copy=True)
         elif copy:
             data = data.copy()
-        # copy indices/indptr separately: the dtype cast above only
-        # touches data, so on that branch they'd stay aliased to the
-        # caller's arrays even with copy=True.
         if copy:
             indices = indices.copy()
             indptr = indptr.copy()
 
+        # Store components verbatim (matching scipy): the caller's column
+        # order is preserved and copy=False aliasing is honoured. Sorting
+        # is deferred to sort_indices(), invoked lazily by the SpMV path.
         self.data = data
         self.indices = indices
         self.indptr = indptr
         self._shape = (nrows, ncols)
+        self._has_sorted_indices = None
+
+    @property
+    def has_sorted_indices(self):
+        """Whether column indices are sorted per row (scipy-compatible).
+
+        The result is cached; an unknown state triggers a one-time check.
+        """
+        if self._has_sorted_indices is None:
+            self._has_sorted_indices = self._check_sorted()
+        return self._has_sorted_indices
+
+    def _check_sorted(self):
+        idx = self.indices
+        if idx.shape[0] == 0:
+            return True
+        # Sorted iff no adjacent pair within the same row is decreasing.
+        q = idx.sycl_queue
+        nrows = self._shape[0]
+        row_lengths = self.indptr[1:] - self.indptr[:-1]
+        row_ids = _dpnp.repeat(
+            _dpnp.arange(nrows, dtype=self.indptr.dtype, sycl_queue=q),
+            row_lengths,
+        )
+        same_row = row_ids[1:] == row_ids[:-1]
+        decreasing = idx[1:] < idx[:-1]
+        return not bool(_dpnp.any(same_row & decreasing))
+
+    def sort_indices(self):
+        """Sort column indices within each row, in place (scipy-compatible).
+
+        SpMV backends require sorted CSR; this is a no-op once the
+        indices are known sorted.
+        """
+        if self.has_sorted_indices:
+            return
+        indices = self.indices
+        nnz = indices.shape[0]
+        if nnz == 0:
+            self._has_sorted_indices = True
+            return
+
+        q = indices.sycl_queue
+        nrows = self._shape[0]
+        row_lengths = self.indptr[1:] - self.indptr[:-1]
+        row_ids = _dpnp.repeat(
+            _dpnp.arange(nrows, dtype=indices.dtype, sycl_queue=q),
+            row_lengths,
+        )
+        # Lexsort by (row, col) via two stable passes.
+        order = _dpnp.argsort(indices, kind="stable")
+        order = order[_dpnp.argsort(row_ids[order], kind="stable")]
+
+        self.data = self.data[order]
+        self.indices = self.indices[order]
+        self._has_sorted_indices = True
 
     def _init_from_dense(self, dense, dtype=None):
         if dense.ndim != 2:
@@ -206,6 +267,7 @@ class csr_matrix(SparseABC):
                 nrows + 1, dtype=_dpnp.int64, sycl_queue=q
             )
             self._shape = (nrows, ncols)
+            self._has_sorted_indices = True
             return
 
         values = dense[rows, cols]
@@ -219,6 +281,9 @@ class csr_matrix(SparseABC):
         self.indices = cols.astype(idx_dtype)
         self.indptr = indptr
         self._shape = (nrows, ncols)
+        # dpnp.nonzero yields row-major order, i.e. columns ascending
+        # within each row.
+        self._has_sorted_indices = True
 
     # --- read-only properties ------------------------------------------
 
@@ -286,6 +351,8 @@ class csr_matrix(SparseABC):
             from dpnp.backend.extensions.sparse import _sparse_impl as _si
         except ImportError:
             return None
+
+        self.sort_indices()
 
         exec_q = self.data.sycl_queue
         try:
@@ -366,13 +433,9 @@ class csr_matrix(SparseABC):
                         f"match matrix dtype {self.data.dtype}"
                     )
                 y = _dpnp.empty(nrows, dtype=self.data.dtype, sycl_queue=exec_q)
-                # Do NOT wait on the returned event: any subsequent dpnp
-                # operation on the same queue will serialise behind it
-                # automatically. Blocking here would dominate runtime
-                # for small systems (same rationale as _CachedSpMV in
-                # linalg/_iterative.py).
+                _manager = _dpu.SequentialOrderManager[exec_q]
                 # pylint: disable-next=protected-access
-                _si._sparse_gemv_compute(
+                ht_ev, comp_ev = _si._sparse_gemv_compute(
                     exec_q,
                     handle,
                     val_type_id,
@@ -383,8 +446,9 @@ class csr_matrix(SparseABC):
                     y,
                     nrows,
                     ncols,
-                    [],
+                    _manager.submitted_events,
                 )
+                _manager.add_event_pair(ht_ev, comp_ev)
                 return y
 
         # Dense fallback. Materialises ``self`` once -- this path is

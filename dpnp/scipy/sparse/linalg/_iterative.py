@@ -142,6 +142,9 @@ class _CachedSpMV:
         self._A = A  # keep alive so USM pointers stay valid
         self._si = si
         self._trans = int(trans)
+        # SpMV backends require sorted CSR; sort before reading the
+        # component arrays into the handle.
+        A.sort_indices()
         self._nrows = int(A.shape[0])
         self._ncols = int(A.shape[1])
         self._nnz = int(A.data.shape[0])
@@ -185,11 +188,9 @@ class _CachedSpMV:
         y = dpnp.empty(
             self._out_size, dtype=self._dtype, sycl_queue=self._exec_q
         )
-        # Do NOT wait on the event -- subsequent dpnp ops on the same
-        # queue will serialize behind it automatically. Blocking here
-        # throws away async overlap and dominates small-problem runtime.
+        _manager = dpu.SequentialOrderManager[self._exec_q]
         # pylint: disable-next=protected-access
-        self._si._sparse_gemv_compute(
+        ht_ev, comp_ev = self._si._sparse_gemv_compute(
             self._exec_q,
             self._handle,
             self._val_type_id,
@@ -200,8 +201,9 @@ class _CachedSpMV:
             y,
             self._nrows,
             self._ncols,
-            [],
+            _manager.submitted_events,
         )
+        _manager.add_event_pair(ht_ev, comp_ev)
         return y
 
     def __del__(self):
@@ -275,8 +277,9 @@ class _CachedSpMVPair:
         y = dpnp.empty(
             self._A.shape[0], dtype=self._A.data.dtype, sycl_queue=exec_q
         )
+        _manager = dpu.SequentialOrderManager[exec_q]
         # pylint: disable-next=protected-access
-        _si._sparse_gemv_compute(
+        ht_ev, comp_ev = _si._sparse_gemv_compute(
             exec_q,
             handle,
             val_type_id,
@@ -287,8 +290,9 @@ class _CachedSpMVPair:
             y,
             int(self._A.shape[0]),
             int(self._A.shape[1]),
-            [],
+            _manager.submitted_events,
         )
+        _manager.add_event_pair(ht_ev, comp_ev)
         return y
 
     def rmatvec(self, x):
@@ -690,8 +694,6 @@ def gmres(
     np_dtype = _np_dtype(dtype)
     e_host = numpy.zeros(restart + 1, dtype=np_dtype)
 
-    # eps of the working dtype; scaled per restart into the
-    # happy-breakdown threshold below.
     eps = numpy.finfo(np_dtype).eps
 
     iters = 0
@@ -738,27 +740,15 @@ def gmres(
         for j in range(restart):
             z = psolve(v)
             u = matvec(z)
-            # writes H[:j+1, j] in place, returns the orthogonalised u
             u = compute_hu(u, j)
-            # kept on device so the Arnoldi loop stays sync-free
             h_norm = dpnp.linalg.norm(u)
             H[j + 1, j] = h_norm
             if j < last_j:
-                # clamp the divisor so a breakdown (h_norm == 0) does not
-                # produce NaNs; the affected columns are discarded below
                 v = u / dpnp.where(h_norm == 0, dpnp.ones_like(h_norm), h_norm)
                 V[:, j + 1] = v
 
-        # Solve H y = e on the host: the matrix is tiny ((restart+1) x
-        # restart), so a device SVD launch would cost more than the copy.
-        # This is the single host sync per restart.
         H_host = dpnp.asnumpy(H)
 
-        # Happy breakdown: the first near-zero subdiagonal means the
-        # solution is exact in span(V[:, :built]). Truncate there so the
-        # trailing zero/NaN columns never reach lstsq, which would trip a
-        # DLASCL error on some LAPACK builds. Threshold scales with the
-        # starting residual norm since ||u|| tracks the problem magnitude.
         eps_break = eps * r_norm_host
         subdiag = numpy.abs(numpy.diagonal(H_host, offset=-1))
         breakdown = numpy.nonzero(subdiag <= eps_break)[0]
@@ -875,9 +865,6 @@ def minres(
     # would cascade implicit syncs or 0-D allocations throughout the
     # recurrence -- and the < 0 / == 0 guards below would each trigger
     # an implicit __bool__ sync of their own.
-    #
-    # vdot conjugates r1, so <r1, y> is real for a Hermitian A; inner()
-    # would leave a complex value that float() rejects.
     beta1 = float(dpnp.vdot(r1, y).real)
 
     if beta1 < 0:
@@ -935,7 +922,7 @@ def minres(
         if itn >= 2:
             y = y - (beta / oldb) * r1
 
-        # alpha = <v, y>   -- host sync #1 (vdot conjugates v)
+        # alpha = <v, y>   -- host sync #1
         alpha = float(dpnp.vdot(v, y).real)
 
         y = y - (alpha / beta) * r2
@@ -944,7 +931,7 @@ def minres(
         y = psolve(r2)
         oldb = beta
 
-        # beta = sqrt(<r2, y>)   -- host sync #2 (vdot conjugates r2)
+        # beta = sqrt(<r2, y>)   -- host sync #2
         beta = float(dpnp.vdot(r2, y).real)
         if beta < 0:
             raise ValueError("non-symmetric matrix")

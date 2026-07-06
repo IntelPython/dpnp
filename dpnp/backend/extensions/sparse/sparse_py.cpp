@@ -31,6 +31,7 @@
 
 #include <cstdint>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "gemv.hpp"
@@ -106,10 +107,8 @@ PYBIND11_MODULE(_sparse_impl, m)
     // dtype match val_type_id from init, and that shapes agree with
     // op(A) dimensions (swapped for trans != N).
     //
-    // Only the cheap MKL kernel is dispatched; no analysis overhead.
-    // No host_task keep-alive is submitted -- pybind11 refcounts the
-    // usm_ndarrays across the call, and sequencing of subsequent work
-    // on the same queue happens automatically.
+    // Returns (host_task_event, gemv_event); the host_task_event keeps
+    // x / y alive until the gemv kernel completes.
     // ------------------------------------------------------------------
     m.def(
         "_sparse_gemv_compute",
@@ -118,7 +117,8 @@ PYBIND11_MODULE(_sparse_impl, m)
            const dpnp::tensor::usm_ndarray &x, const double beta,
            const dpnp::tensor::usm_ndarray &y, const std::int64_t num_rows,
            const std::int64_t num_cols,
-           const std::vector<sycl::event> &depends) -> sycl::event {
+           const std::vector<sycl::event> &depends)
+            -> std::pair<sycl::event, sycl::event> {
             return sparse_gemv_compute(exec_q, handle_ptr, val_type_id, trans,
                                        alpha, x, beta, y, num_rows, num_cols,
                                        depends);
@@ -128,7 +128,7 @@ PYBIND11_MODULE(_sparse_impl, m)
         py::arg("y"), py::arg("num_rows"), py::arg("num_cols"),
         py::arg("depends"),
         "Execute sparse::gemv using a pre-built handle. "
-        "Returns the gemv event.");
+        "Returns (host_task_event, gemv_event).");
 
     // ------------------------------------------------------------------
     // _sparse_gemv_release(exec_q, handle, depends) -> event

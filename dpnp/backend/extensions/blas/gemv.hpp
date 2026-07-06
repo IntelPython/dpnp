@@ -35,10 +35,8 @@
 
 namespace dpnp::extensions::blas
 {
-// y = alpha * op(A) * x + beta * y. alpha/beta come in as double and
-// are cast to the matrix value type in the impl, so complex callers
-// should stick to 1 / 0 / -1 to avoid silently dropping the imaginary
-// part.
+// y = alpha * op(A) * x + beta * y. alpha/beta are real-valued (double)
+// and are cast to the matrix value type in the impl.
 //
 // ``trans_op`` selects the operation applied to A:
 //      0 = N  (no transpose)         y = alpha * A   @ x + beta * y

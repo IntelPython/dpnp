@@ -68,8 +68,7 @@ using ext::common::init_dispatch_table;
 
 /**
  * init_impl: builds the sparse matrix handle from the CSR arrays.
- * Returns (handle_ptr, event). All CSR arrays are *not* copied -- they
- * must stay alive until release.
+ * Returns (handle_ptr, event)
  */
 typedef std::pair<std::uintptr_t, sycl::event> (*gemv_init_fn_ptr_t)(
     sycl::queue &,
@@ -185,6 +184,11 @@ static std::pair<std::uintptr_t, sycl::event>
         mkl_sparse::init_csr_matrix(exec_q, &cache->A, num_rows, num_cols, nnz,
                                     mkl::index_base::zero, row_ptr, col_ind,
                                     values);
+        // Column indices are sorted per row at construction (see
+        // scipy/sparse/_csr.py), so advertise the sorted property as an
+        // optimization hint to the backend.
+        mkl_sparse::set_matrix_property(exec_q, cache->A,
+                                        mkl_sparse::matrix_property::sorted);
 
         // values is a placeholder pointer; the real x / y pointers are
         // bound on every compute call via set_dense_vector_data.
@@ -235,23 +239,48 @@ static std::pair<std::uintptr_t, sycl::event>
     const Tv *values = reinterpret_cast<const Tv *>(values_data);
 
     mkl_sparse::matrix_handle_t spmat = nullptr;
-    mkl_sparse::init_matrix_handle(&spmat);
+    try {
+        mkl_sparse::init_matrix_handle(&spmat);
+    } catch (mkl::exception const &e) {
+        throw std::runtime_error(
+            std::string(
+                "sparse_gemv_init: MKL exception in init_matrix_handle: ") +
+            e.what());
+    } catch (sycl::exception const &e) {
+        throw std::runtime_error(
+            std::string(
+                "sparse_gemv_init: SYCL exception in init_matrix_handle: ") +
+            e.what());
+    }
 
-    auto ev_set = mkl_sparse::set_csr_data(
-        exec_q, spmat, num_rows, num_cols, nnz, mkl::index_base::zero,
-        const_cast<Ti *>(row_ptr), const_cast<Ti *>(col_ind),
-        const_cast<Tv *>(values), depends);
+    sycl::event ev_set;
+    try {
+        ev_set = mkl_sparse::set_csr_data(
+            exec_q, spmat, num_rows, num_cols, nnz, mkl::index_base::zero,
+            const_cast<Ti *>(row_ptr), const_cast<Ti *>(col_ind),
+            const_cast<Tv *>(values), depends);
+    } catch (mkl::exception const &e) {
+        mkl_sparse::release_matrix_handle(exec_q, &spmat, {}).wait();
+        throw std::runtime_error(
+            std::string("sparse_gemv_init: MKL exception in set_csr_data: ") +
+            e.what());
+    } catch (sycl::exception const &e) {
+        mkl_sparse::release_matrix_handle(exec_q, &spmat, {}).wait();
+        throw std::runtime_error(
+            std::string("sparse_gemv_init: SYCL exception in set_csr_data: ") +
+            e.what());
+    }
 
     sycl::event ev_opt;
     try {
         ev_opt = mkl_sparse::optimize_gemv(exec_q, mkl_trans, spmat, {ev_set});
     } catch (mkl::exception const &e) {
-        mkl_sparse::release_matrix_handle(exec_q, &spmat, {});
+        mkl_sparse::release_matrix_handle(exec_q, &spmat, {ev_set}).wait();
         throw std::runtime_error(
             std::string("sparse_gemv_init: MKL exception in optimize_gemv: ") +
             e.what());
     } catch (sycl::exception const &e) {
-        mkl_sparse::release_matrix_handle(exec_q, &spmat, {});
+        mkl_sparse::release_matrix_handle(exec_q, &spmat, {ev_set}).wait();
         throw std::runtime_error(
             std::string("sparse_gemv_init: SYCL exception in optimize_gemv: ") +
             e.what());
@@ -283,8 +312,6 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
 {
     auto *cache = reinterpret_cast<SpmvCache *>(handle_ptr);
 
-    // Complex Tv loses the imaginary part here; solvers use alpha=1,
-    // beta=0 so this is exact for them.
     const Tv alpha = static_cast<Tv>(alpha_d);
     const Tv beta = static_cast<Tv>(beta_d);
 
@@ -358,8 +385,6 @@ static sycl::event gemv_compute_impl(sycl::queue &exec_q,
 
     auto spmat = reinterpret_cast<mkl_sparse::matrix_handle_t>(handle_ptr);
 
-    // Complex Tv loses the imaginary part here; solvers use alpha=1,
-    // beta=0 so this is exact for them.
     const Tv alpha = static_cast<Tv>(alpha_d);
     const Tv beta = static_cast<Tv>(beta_d);
 
@@ -455,17 +480,18 @@ std::tuple<std::uintptr_t, int, sycl::event>
     return {handle_ptr, val_id, ev_opt};
 }
 
-sycl::event sparse_gemv_compute(sycl::queue &exec_q,
-                                const std::uintptr_t handle_ptr,
-                                const int val_type_id,
-                                const int trans,
-                                const double alpha,
-                                const dpnp::tensor::usm_ndarray &x,
-                                const double beta,
-                                const dpnp::tensor::usm_ndarray &y,
-                                const std::int64_t num_rows,
-                                const std::int64_t num_cols,
-                                const std::vector<sycl::event> &depends)
+std::pair<sycl::event, sycl::event>
+    sparse_gemv_compute(sycl::queue &exec_q,
+                        const std::uintptr_t handle_ptr,
+                        const int val_type_id,
+                        const int trans,
+                        const double alpha,
+                        const dpnp::tensor::usm_ndarray &x,
+                        const double beta,
+                        const dpnp::tensor::usm_ndarray &y,
+                        const std::int64_t num_rows,
+                        const std::int64_t num_cols,
+                        const std::vector<sycl::event> &depends)
 {
     if (x.get_ndim() != 1)
         throw py::value_error("sparse_gemv_compute: x must be a 1-D array.");
@@ -519,9 +545,14 @@ sycl::event sparse_gemv_compute(sycl::queue &exec_q,
     if (compute_fn == nullptr)
         throw py::value_error("sparse_gemv_compute: unsupported value dtype.");
 
-    return compute_fn(exec_q, handle_ptr, mkl_trans, alpha, x.get_data(), beta,
-                      const_cast<char *>(y.get_data()), op_rows, op_cols,
-                      depends);
+    sycl::event gemv_ev =
+        compute_fn(exec_q, handle_ptr, mkl_trans, alpha, x.get_data(), beta,
+                   const_cast<char *>(y.get_data()), op_rows, op_cols, depends);
+
+    sycl::event args_ev =
+        dpnp::utils::keep_args_alive(exec_q, {x, y}, {gemv_ev});
+
+    return std::make_pair(args_ev, gemv_ev);
 }
 
 #if defined(USE_ONEMATH)

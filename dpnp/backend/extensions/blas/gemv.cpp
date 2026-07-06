@@ -88,12 +88,6 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
     const T *x = reinterpret_cast<const T *>(vectorX);
     T *y = reinterpret_cast<T *>(vectorY);
 
-    // Cast alpha/beta into the matrix value type. For complex T the
-    // single-argument constructor sets the imaginary component to
-    // zero, which is exact for the GMRES use case (alpha and beta are
-    // always one of {-1, 0, 1}) and for the dpnp.dot wrapper (alpha=1,
-    // beta=0). Callers passing fractional or complex scalars through
-    // this path would lose the imaginary component silently.
     const T alpha = static_cast<T>(alpha_d);
     const T beta = static_cast<T>(beta_d);
 
@@ -154,25 +148,21 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
     return gemv_event;
 }
 
-// Validation + dispatch behind the public gemv().
+// Computes y = alpha * op(A) * x + beta * y.
 //
 // ``trans_op`` is a tri-state matching oneapi::mkl::transpose:
 //      0 = N (no transpose),
 //      1 = T (plain transpose),
-//      2 = C (conjugate-transpose, complex only).
-//
-// dpnp.dot only needs N/T. C exists for the GMRES Arnoldi step, which
-// needs V^H directly: post-conjugating a T-mode result is wrong for
-// complex u since conj(V^T @ u) == V^H @ u only holds when u is real.
-static std::pair<sycl::event, sycl::event>
-    gemv_dispatch(sycl::queue &exec_q,
-                  const dpnp::tensor::usm_ndarray &matrixA,
-                  const dpnp::tensor::usm_ndarray &vectorX,
-                  const dpnp::tensor::usm_ndarray &vectorY,
-                  const int trans_op,
-                  const double alpha,
-                  const double beta,
-                  const std::vector<sycl::event> &depends)
+//      2 = C (conjugate-transpose, complex only; F-contiguous input).
+std::pair<sycl::event, sycl::event>
+    gemv(sycl::queue &exec_q,
+         const dpnp::tensor::usm_ndarray &matrixA,
+         const dpnp::tensor::usm_ndarray &vectorX,
+         const dpnp::tensor::usm_ndarray &vectorY,
+         const int trans_op,
+         const double alpha,
+         const double beta,
+         const std::vector<sycl::event> &depends)
 {
     if (trans_op < 0 || trans_op > 2) {
         throw py::value_error("gemv: trans_op must be 0 (N), 1 (T), or 2 (C).");
@@ -221,8 +211,8 @@ static std::pair<sycl::event, sycl::event>
     // F-contigify first (e.g. via dpnp.asarray(A, order="F")).
     if (is_conj_trans && !is_matrixA_f_contig) {
         throw py::value_error(
-            "gemv: trans_op = 2 (conjugate-transpose) requires an "
-            "F-contiguous matrix; pass dpnp.asarray(A, order='F') first.");
+            "Input matrix is not f-contiguous, but "
+            "trans_op = 2 (conjugate-transpose) requested.");
     }
 
     const py::ssize_t *a_shape = matrixA.get_shape_raw();
@@ -365,25 +355,6 @@ static std::pair<sycl::event, sycl::event>
     return std::make_pair(args_ev, gemv_ev);
 }
 
-std::pair<sycl::event, sycl::event>
-    gemv(sycl::queue &exec_q,
-         const dpnp::tensor::usm_ndarray &matrixA,
-         const dpnp::tensor::usm_ndarray &vectorX,
-         const dpnp::tensor::usm_ndarray &vectorY,
-         const int trans_op,
-         const double alpha,
-         const double beta,
-         const std::vector<sycl::event> &depends)
-{
-    // dpnp.dot uses the defaults (trans_op 0/1, alpha 1, beta 0). GMRES
-    // passes the full tri-state and its own scalars to fuse u -= V @ h
-    // (0, -1, 1) and write h = V^H @ u into a Hessenberg slice (2, 1, 0)
-    // in one kernel each. Complex scalars must be real-representable;
-    // callers only pass 1/0/-1 -- see the impl for the imag-loss note.
-    return gemv_dispatch(exec_q, matrixA, vectorX, vectorY, trans_op, alpha,
-                         beta, depends);
-}
-
 template <typename fnT, typename varT>
 struct GemvContigFactory
 {
@@ -404,3 +375,4 @@ void init_gemv_dispatch_vector(void)
         gemv_dispatch_vector);
 }
 } // namespace dpnp::extensions::blas
+<
