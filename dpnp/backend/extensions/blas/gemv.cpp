@@ -49,10 +49,6 @@ namespace type_utils = dpnp::tensor::type_utils;
 
 using ext::common::init_dispatch_vector;
 
-// Impl signature now carries alpha and beta as double. Each per-T impl
-// casts them to T at the very end (T(alpha_d), T(beta_d)) so the same
-// dispatch vector serves both the legacy alpha=1/beta=0 wrapper and
-// the new alpha_beta entry point used by the GMRES Arnoldi fast path.
 typedef sycl::event (*gemv_impl_fn_ptr_t)(sycl::queue &,
                                           oneapi::mkl::transpose,
                                           const std::int64_t,
