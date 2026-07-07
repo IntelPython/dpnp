@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.21.0] - 2026-MM-DD
 
+This release achieves 100% compliance with Python Array API specification (revision [2025.12](https://data-apis.org/array-api/2025.12/)).
 This release is compatible with NumPy 2.5.
 
 ### Added
@@ -30,6 +31,9 @@ This release is compatible with NumPy 2.5.
 * Clarified the summary in `dpnp.reshape` and `dpnp.ndarray.reshape` docstrings [#2964](https://github.com/IntelPython/dpnp/pull/2964)
 * Changed `dpnp.atleast_1d`, `dpnp.atleast_2d`, `dpnp.atleast_3d`, and `dpnp.ogrid` to return a tuple of arrays instead of a list [#2965](https://github.com/IntelPython/dpnp/pull/2965)
 * Improved performance of `dpnp.fft` functions for complex strided input by avoiding oversized allocations and extra copies [#2939](https://github.com/IntelPython/dpnp/pull/2939)
+* Refreshed `dpnp` documentation styling with the Furo theme [#2934](https://github.com/IntelPython/dpnp/pull/2934)
+* Updated Python Array API specification version supported to `2025.12` [#2899](https://github.com/IntelPython/dpnp/pull/2899)
+* Replaced references to the `dpnp.amax`/`dpnp.amin` aliases with the canonical `dpnp.max`/`dpnp.min` in docstrings and code internally [#2990](https://github.com/IntelPython/dpnp/pull/2990)
 
 ### Deprecated
 
@@ -39,6 +43,7 @@ This release is compatible with NumPy 2.5.
 
 * Removed support for arrays of 2-dimensional vectors in `dpnp.cross`, which now requires (arrays of) 3-dimensional vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
 * Removed `dpnp.row_stack` in favor of `dpnp.vstack` [#2956](https://github.com/IntelPython/dpnp/pull/2956)
+* Removed all references to the unimplemented `dpnp.ndarray.resize` method from the documentation [#2989](https://github.com/IntelPython/dpnp/pull/2989)
 
 ### Fixed
 
@@ -55,6 +60,10 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.linalg.svd(..., hermitian=True)` returning a non-unitary `vh` for singular input arrays due to a zero sign appearing [#2954](https://github.com/IntelPython/dpnp/pull/2954)
 * Fixed scalar conversion of size-one `dpnp.tensor.usm_ndarray` (e.g. `int()`, `float()`, indexing) which failed with NumPy 2.5 after the in-place `ndarray.shape` assignment was deprecated [#2958](https://github.com/IntelPython/dpnp/pull/2958)
 * Fixed `dpnp.mgrid` and `dpnp.ogrid` to return consistent results between single-slice and tuple-of-slices syntax when the step is a complex number with a non-integer magnitude (e.g. `2.5j`) [#2971](https://github.com/IntelPython/dpnp/pull/2971)
+* Fixed `icx`/`icpx` warning during `conda build` by stripping the GCC-only `-fno-merge-constants` flag injected by conda-forge into `CFLAGS`/`CXXFLAGS` [#2978](https://github.com/IntelPython/dpnp/pull/2978)
+* Fixed `dpnp.asnumpy` and `dpnp.ndarray.asnumpy` ignoring the `order` keyword, which caused a non-contiguous source array to be returned with a non-contiguous layout even when `order="C"` was requested [#2980](https://github.com/IntelPython/dpnp/pull/2980)
+* Fixed `dpnp.tensor.acosh` and `dpnp.tensor.acos` returning infinity for complex numbers with large negative real parts [#2928](https://github.com/IntelPython/dpnp/pull/2928)
+* Fixed `__array_namespace_info__().devices()` and `.default_device()` to return Python array API compatible device objects [#2979](https://github.com/IntelPython/dpnp/pull/2979)
 
 ### Security
 

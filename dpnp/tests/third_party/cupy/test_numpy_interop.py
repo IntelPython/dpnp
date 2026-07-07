@@ -164,6 +164,8 @@ class TestAsnumpy:
         reason="blocking or not is irrelevant when zero-copy is on",
     )
     @pytest.mark.parametrize("blocking", (True, False))
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="allocation too large.")
     def test_asnumpy_blocking(self, blocking):
         prefactor = 4
         a = cupy.random.random(
