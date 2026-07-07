@@ -7,4 +7,4 @@ dpnp.less\_equal
 
 
 
-.. autofunction:: less_equal
+.. autodata:: less_equal
