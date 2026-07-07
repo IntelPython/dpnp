@@ -77,6 +77,13 @@ class csr_matrix(SparseABC):
     row. This matches the CSR produced by dense construction and the
     solvers, which never generate duplicates.
 
+    Supported operations: construction, ``dot`` (matvec) via cached
+    oneMKL SpMV, ``toarray``, ``copy``, ``T``. This is a solver-support
+    subset of the scipy/cupy CSR API; arithmetic, indexing, reductions,
+    format conversion and element-wise math are not implemented (the
+    most common such methods raise ``NotImplementedError``). Convert
+    with ``toarray()`` and use dpnp for those.
+
     Attributes
     ----------
     data : dpnp.ndarray
@@ -522,3 +529,53 @@ class csr_matrix(SparseABC):
             f"<{self._shape[0]}x{self._shape[1]} csr_matrix "
             f"of dtype {self.dtype} with {self.nnz} stored elements>"
         )
+
+    # --- unsupported scipy/cupy CSR operations -------------------------
+    # This container implements only the subset needed by the
+    # dpnp.scipy.sparse.linalg solvers (construction, matvec via ``dot``,
+    # ``toarray``). The most commonly expected scipy/cupy methods below
+    # raise a clear error instead of ``AttributeError``; convert with
+    # ``toarray()`` and use dpnp for anything else.
+    @staticmethod
+    def _unsupported(name):
+        raise NotImplementedError(
+            f"csr_matrix.{name} is not implemented; this container "
+            "supports construction, dot (matvec) and toarray only. "
+            "Use toarray() and operate with dpnp for other operations."
+        )
+
+    def __getitem__(self, key):
+        self._unsupported("__getitem__")
+
+    def __setitem__(self, key, value):
+        self._unsupported("__setitem__")
+
+    def __add__(self, other):
+        self._unsupported("__add__")
+
+    def __sub__(self, other):
+        self._unsupported("__sub__")
+
+    def __mul__(self, other):
+        self._unsupported("__mul__")
+
+    def transpose(self, axes=None, copy=False):
+        self._unsupported("transpose")
+
+    def conj(self, copy=True):
+        self._unsupported("conj")
+
+    def conjugate(self, copy=True):
+        self._unsupported("conjugate")
+
+    def sum(self, axis=None, dtype=None, out=None):
+        self._unsupported("sum")
+
+    def tocsc(self, copy=False):
+        self._unsupported("tocsc")
+
+    def tocoo(self, copy=False):
+        self._unsupported("tocoo")
+
+    def todok(self, copy=False):
+        self._unsupported("todok")
