@@ -101,9 +101,10 @@ def _res_bound(dtype):
 #
 # These build raw CSR component triples on the host with deliberately
 # adversarial structure (unsorted / reversed / shuffled per-row column
-# indices, duplicate columns, empty and dense rows, explicit stored
-# zeros) so the component constructor path -- and the per-row index sort
-# it performs -- is exercised against a trusted SciPy oracle.
+# indices, empty and dense rows, explicit stored zeros) so the component
+# constructor path -- and the per-row index sort it performs -- is
+# exercised against a trusted SciPy oracle. Column indices are unique per
+# row (duplicate columns are not supported).
 def _np_idx_dtype(idx_dtype):
     return numpy.int32 if idx_dtype == "int32" else numpy.int64
 
@@ -114,16 +115,13 @@ def _random_csr_components(
     density,
     dtype,
     order="sorted",
-    dup=False,
     idx_dtype="int64",
     seed=0,
 ):
     """Build raw (data, indices, indptr) host arrays plus a SciPy oracle.
 
     ``order`` controls per-row column ordering: 'sorted', 'reversed', or
-    'shuffled'. ``dup=True`` injects a duplicate column in non-empty rows
-    (SciPy sums duplicates on matvec). Returns
-    ``(data_np, indices_np, indptr_np, scipy_csr)``.
+    'shuffled'. Returns ``(data_np, indices_np, indptr_np, scipy_csr)``.
     """
     import scipy.sparse as sp
 
@@ -156,18 +154,9 @@ def _random_csr_components(
         if is_complex:
             vals = vals + 1j * rng.standard_normal(k)
 
-        if dup and k >= 1:
-            # SciPy sums duplicate columns on matvec; dpnp must match.
-            dup_val = rng.standard_normal()
-            if is_complex:
-                dup_val = dup_val + 1j * rng.standard_normal()
-            cols = numpy.concatenate([cols, cols[:1]])
-            vals = numpy.concatenate([vals, numpy.array([dup_val])])
-
-        # Occasional explicit stored zero (structural-zero path).
+        # Occasional explicit stored zero on an existing entry.
         if r % 11 == 0:
-            cols = numpy.concatenate([cols, cols[-1:]])
-            vals = numpy.concatenate([vals, numpy.array([0.0])])
+            vals[0] = 0.0
 
         perm = numpy.arange(cols.shape[0])
         if order == "reversed":
@@ -1511,53 +1500,6 @@ class TestCsrMatrix:
         m = csr_matrix((data, indices, indptr), shape=(2, 4))
         assert m.has_sorted_indices
 
-    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
-    @with_requires("scipy")
-    def test_sum_duplicates(self):
-        import scipy.sparse as sp
-
-        # Row 0: col 0 twice (2+3), col 1 once. Row 1: col 2 twice (5+6).
-        data_np = numpy.array([2, 1, 3, 5, 6], dtype=numpy.float64)
-        indices_np = numpy.array([0, 1, 0, 2, 2])
-        indptr_np = numpy.array([0, 3, 5])
-        m = csr_matrix(
-            (
-                dpnp.asarray(data_np),
-                dpnp.asarray(indices_np),
-                dpnp.asarray(indptr_np),
-            ),
-            shape=(2, 3),
-        )
-        m.sum_duplicates()
-        ref = sp.csr_matrix((data_np, indices_np, indptr_np), shape=(2, 3))
-        ref.sum_duplicates()
-        assert m.has_canonical_format
-        assert list(dpnp.asnumpy(m.indptr)) == list(ref.indptr)
-        assert list(dpnp.asnumpy(m.indices)) == list(ref.indices)
-        assert list(dpnp.asnumpy(m.data)) == list(ref.data)
-
-    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
-    def test_sum_duplicates_idempotent(self):
-        data = dpnp.array([2.0, 3.0, 1.0], dtype=dpnp.float64)
-        indices = dpnp.array([0, 0, 1], dtype=dpnp.int64)
-        indptr = dpnp.array([0, 3], dtype=dpnp.int64)
-        m = csr_matrix((data, indices, indptr), shape=(1, 2))
-        m.sum_duplicates()
-        idx_after = list(dpnp.asnumpy(m.indices))
-        data_after = list(dpnp.asnumpy(m.data))
-        m.sum_duplicates()
-        assert m.has_canonical_format
-        assert list(dpnp.asnumpy(m.indices)) == idx_after
-        assert list(dpnp.asnumpy(m.data)) == data_after
-
-    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
-    def test_dense_construction_is_canonical(self):
-        dense = dpnp.asarray(
-            numpy.array([[0.0, 5.0, 0.0], [7.0, 0.0, 3.0]], dtype=numpy.float64)
-        )
-        m = csr_matrix(dense)
-        assert m.has_canonical_format
-
     # Cached-handle reuse must stay correct across matvecs.
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_dot_handle_reuse_multiple_matvecs(self, dtype):
@@ -1571,26 +1513,21 @@ class TestCsrMatrix:
             y = m.dot(dpnp.asarray(x))
             assert_dtype_allclose(y, a @ x)
 
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_forward_and_adjoint_reuse(self, dtype):
-        n = 24
-        a = generate_random_numpy_array((n, n), dtype, seed_value=11)
-        mask = generate_random_numpy_array((n, n), dtype, seed_value=5)
-        a[numpy.abs(mask) < 0.5] = 0
-        m = csr_matrix(dpnp.asarray(a))
-        lo = aslinearoperator(m)
-        for i in range(16):
-            x = generate_random_numpy_array((n,), dtype, seed_value=200 + i)
-            ix = dpnp.asarray(x)
-            assert_dtype_allclose(lo.matvec(ix), a @ x)
-            assert_dtype_allclose(lo.rmatvec(ix), a.conj().T @ x)
+    def test_sparse_rmatvec_not_implemented(self):
+        # Adjoint / rmatvec is not supported for sparse csr operators.
+        n = 8
+        a = generate_random_numpy_array((n, n), dpnp.float32, seed_value=11)
+        lo = aslinearoperator(csr_matrix(dpnp.asarray(a)))
+        x = dpnp.asarray(generate_random_numpy_array((n,), dpnp.float32))
+        with pytest.raises(NotImplementedError):
+            lo.rmatvec(x)
 
 
 @with_requires("scipy")
 class TestCsrStress:
     # Cross-validate device SpMV against a SciPy CSR oracle over an
-    # adversarial matrix population (unsorted / duplicate / degenerate
-    # structure). See _random_csr_components for the generator contract.
+    # adversarial matrix population (unsorted / degenerate structure).
+    # See _random_csr_components for the generator contract.
     SIZES = [
         (1, 1),
         (1, 8),
@@ -1613,7 +1550,6 @@ class TestCsrStress:
             density=0.1,
             dtype=dtype,
             order=order,
-            dup=False,
             idx_dtype=idx_dtype,
             seed=nrows * 131 + ncols,
         )
@@ -1622,47 +1558,10 @@ class TestCsrStress:
         y = m.dot(dpnp.asarray(x))
         assert_dtype_allclose(y, ref @ x)
 
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    @pytest.mark.parametrize("shape", [(16, 16), (24, 8), (100, 100)])
-    def test_spmv_adjoint_structural(self, dtype, shape):
-        nrows, ncols = shape
-        data_np, indices_np, indptr_np, ref = _random_csr_components(
-            nrows,
-            ncols,
-            density=0.1,
-            dtype=dtype,
-            order="shuffled",
-            dup=False,
-            idx_dtype="int64",
-            seed=nrows * 977 + ncols,
-        )
-        m = _dpnp_csr_from_components(data_np, indices_np, indptr_np, shape)
-        lo = aslinearoperator(m)
-        x = generate_random_numpy_array((nrows,), dtype, seed_value=29)
-        assert_dtype_allclose(lo.rmatvec(dpnp.asarray(x)), ref.conj().T @ x)
-
-    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    def test_duplicate_indices_summed(self, dtype):
-        # SciPy sums duplicate column entries on matvec; dpnp must match.
-        n = 32
-        data_np, indices_np, indptr_np, ref = _random_csr_components(
-            n,
-            n,
-            density=0.1,
-            dtype=dtype,
-            order="shuffled",
-            dup=True,
-            idx_dtype="int64",
-            seed=555,
-        )
-        m = _dpnp_csr_from_components(data_np, indices_np, indptr_np, (n, n))
-        x = generate_random_numpy_array((n,), dtype, seed_value=3)
-        assert_dtype_allclose(m.dot(dpnp.asarray(x)), ref @ x)
-
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     def test_reuse_on_adversarial_input(self, dtype):
-        # Combine reuse stress with the hardest structural input:
-        # 100x100, shuffled columns + duplicates + stored zeros.
+        # Reuse stress on the hardest structural input:
+        # 100x100, shuffled columns + stored zeros.
         n = 100
         data_np, indices_np, indptr_np, ref = _random_csr_components(
             n,
@@ -1670,7 +1569,6 @@ class TestCsrStress:
             density=0.05,
             dtype=dtype,
             order="shuffled",
-            dup=True,
             idx_dtype="int64",
             seed=4242,
         )

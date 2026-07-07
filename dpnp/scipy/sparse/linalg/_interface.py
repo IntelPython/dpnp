@@ -76,6 +76,12 @@ def _get_dtype(operators, dtypes=None):
     return dpnp.result_type(*dtypes) if dtypes else None
 
 
+def _is_sparse(A):
+    from dpnp.scipy.sparse import issparse
+
+    return issparse(A)
+
+
 class LinearOperator:
     """Drop-in replacement for cupyx/scipy LinearOperator backed by dpnp arrays.
 
@@ -523,9 +529,19 @@ class MatrixLinearOperator(LinearOperator):
         return self.A.dot(X)
 
     def _rmatmat(self, X):
+        if _is_sparse(self.A):
+            raise NotImplementedError(
+                "rmatvec/adjoint is not supported for sparse csr_matrix "
+                "operators; only the forward matvec is implemented."
+            )
         return dpnp.conj(self.A.T).dot(X)
 
     def _adjoint(self):
+        if _is_sparse(self.A):
+            raise NotImplementedError(
+                "rmatvec/adjoint is not supported for sparse csr_matrix "
+                "operators; only the forward matvec is implemented."
+            )
         if self.__adj is None:
             self.__adj = _AdjointMatrixOperator(self)
         return self.__adj

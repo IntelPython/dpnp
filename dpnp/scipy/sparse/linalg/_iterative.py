@@ -41,16 +41,14 @@ minres : MINRES (symmetric possibly indefinite)
 SpMV fast-path
 --------------
 When a CSR dpnp sparse matrix is passed as A or M, _make_fast_matvec()
-constructs a _CachedSpMV object that:
-  1. Calls _sparse_gemv_init() ONCE to create the oneMKL matrix_handle,
-     register CSR pointers via set_csr_data, and run optimize_gemv
-     (the expensive sparsity-analysis phase).
-  2. Calls _sparse_gemv_compute() on every matvec -- only the cheap
-     oneMKL sparse::gemv kernel fires; no handle setup overhead.
-  3. Calls _sparse_gemv_release() in __del__ to free the handle.
+reuses the matrix's own cached oneMKL matrix_handle (built lazily by
+``csr_matrix._ensure_spmv_handle`` via _sparse_gemv_init: set_csr_data +
+optimize_gemv, the expensive sparsity-analysis phase). Each matvec then
+calls only _sparse_gemv_compute (the cheap sparse::gemv kernel), so
+optimize_gemv runs once per operator, not once per iteration.
 
-This means optimize_gemv runs once per operator, not once per iteration,
-which is the correct usage pattern for oneMKL sparse BLAS.
+Only the forward matvec is implemented for sparse operators; rmatvec /
+adjoint (A^H) is not supported (the solvers never require it).
 
 Supported dtypes for the oneMKL SpMV fast-path:
   values : float32, float64, complex64, complex128
@@ -105,165 +103,20 @@ def _check_dtype(dtype, name: str) -> None:
         )
 
 
-# pylint: disable-next=too-many-instance-attributes
-class _CachedSpMV:
-    """
-    Wrap a CSR matrix with a persistent oneMKL matrix_handle.
-
-    The handle is initialised (set_csr_data + optimize_gemv) exactly once
-    in __init__. Subsequent calls to __call__ only invoke sparse::gemv,
-    paying no analysis overhead. The handle is released in __del__.
-
-    Parameters
-    ----------
-    A : dpnp CSR sparse matrix
-    si : dpnp.backend.extensions.sparse._sparse_impl module
-        Passed in from _make_fast_matvec to keep the import lazy and
-        avoid a circular import during dpnp package initialization.
-    trans : int  0=N, 1=T, 2=C  (fixed at construction)
-    """
-
-    __slots__ = (
-        "_A",
-        "_si",
-        "_exec_q",
-        "_handle",
-        "_trans",
-        "_nrows",
-        "_ncols",
-        "_nnz",
-        "_out_size",
-        "_in_size",
-        "_dtype",
-        "_val_type_id",
-    )
-
-    def __init__(self, A, si, trans: int = 0):
-        self._A = A  # keep alive so USM pointers stay valid
-        self._si = si
-        self._trans = int(trans)
-        # SpMV backends require canonical CSR (sorted, no duplicate
-        # columns); canonicalize before reading the component arrays.
-        A.sum_duplicates()
-        self._nrows = int(A.shape[0])
-        self._ncols = int(A.shape[1])
-        self._nnz = int(A.data.shape[0])
-        self._exec_q = A.data.sycl_queue
-        self._dtype = A.data.dtype
-
-        # Output and input lengths depend on transpose mode.
-        # For trans=0 (N): y has nrows, x has ncols.
-        # For trans=1/2 (T/C): y has ncols, x has nrows.
-        if self._trans == 0:
-            self._out_size = self._nrows
-            self._in_size = self._ncols
-        else:
-            self._out_size = self._ncols
-            self._in_size = self._nrows
-
-        self._handle = None
-        self._val_type_id = -1
-
-        # init_matrix_handle + set_csr_data + optimize_gemv (once).
-        # We must wait on optimize_gemv before any compute call can run;
-        # this is the only place __init__/__call__ blocks.
-        # pylint: disable-next=protected-access
-        handle, val_type_id, ev = self._si._sparse_gemv_init(
-            self._exec_q,
-            self._trans,
-            A.indptr,
-            A.indices,
-            A.data,
-            self._nrows,
-            self._ncols,
-            self._nnz,
-            [],
-        )
-        ev.wait()
-        self._handle = handle
-        self._val_type_id = val_type_id
-
-    def __call__(self, x: dpnp.ndarray) -> dpnp.ndarray:
-        """Y = op(A) * x -- only sparse::gemv fires, fully async."""
-        y = dpnp.empty(
-            self._out_size, dtype=self._dtype, sycl_queue=self._exec_q
-        )
-        _manager = dpu.SequentialOrderManager[self._exec_q]
-        # pylint: disable-next=protected-access
-        ht_ev, comp_ev = self._si._sparse_gemv_compute(
-            self._exec_q,
-            self._handle,
-            self._val_type_id,
-            self._trans,
-            1.0,
-            x,
-            0.0,
-            y,
-            self._nrows,
-            self._ncols,
-            _manager.submitted_events,
-        )
-        _manager.add_event_pair(ht_ev, comp_ev)
-        return y
-
-    def __del__(self):
-        # Guard against partial construction: _handle may not be set if
-        # __init__ raised before the assignment.
-        handle = getattr(self, "_handle", None)
-        si = getattr(self, "_si", None)
-        if handle is None or si is None:
-            return
-
-        # During interpreter shutdown the compiled extension may be
-        # collected before this __del__ runs; in that case
-        # ``si._sparse_gemv_release`` evaluates to ``None`` (or raises
-        # AttributeError on some module proxies). Probe explicitly so
-        # we can distinguish "extension already torn down -- leak the
-        # handle, the OS will reclaim it" from "release call raised --
-        # narrow except below" and not silence both with one broad
-        # ``except Exception``.
-        release_fn = getattr(si, "_sparse_gemv_release", None)
-        if release_fn is None:
-            self._handle = None
-            return
-
-        try:
-            # pylint: disable-next=not-callable
-            release_fn(self._exec_q, handle, [])
-        except (AttributeError, TypeError):
-            # Shutdown-mode races: queue or handle attribute access
-            # may itself raise once the supporting dpctl / pybind11
-            # state is gone. The handle is unrecoverable; leave the
-            # OS to reclaim it at process exit.
-            pass
-        except Exception:  # pylint: disable=broad-exception-caught
-            # Genuine backend error while the interpreter is still
-            # healthy. Swallowing here is still required (raising
-            # from __del__ produces an unraisable-exception warning
-            # and serves no purpose -- the handle is gone either
-            # way), but the explicit broad-except now documents the
-            # intent rather than masking the shutdown race above.
-            pass
-        finally:
-            self._handle = None
-
-
 class _CachedSpMVPair:
-    """Forward + lazily-built adjoint SpMV closures around a csr_matrix.
+    """Forward SpMV closure around a csr_matrix.
 
     The forward handle is owned by the ``csr_matrix`` itself (built via
     ``csr_matrix._ensure_spmv_handle()``) and therefore shared with any
     other call site -- including a user-issued ``A.dot(x)`` outside the
-    solver. The adjoint handle is built on demand and owned by this
-    pair instance; ``__del__`` releases it.
+    solver. rmatvec (adjoint) is not supported.
     """
 
-    __slots__ = ("_A", "_si", "_adjoint")
+    __slots__ = ("_A", "_si")
 
     def __init__(self, A, si):
         self._A = A
         self._si = si
-        self._adjoint = None
 
     def matvec(self, x):
         """Apply the forward operator A @ x via the csr's cached handle."""
@@ -296,15 +149,11 @@ class _CachedSpMVPair:
         return y
 
     def rmatvec(self, x):
-        """Apply the conjugate-transpose operator A^H @ x."""
-        if self._adjoint is None:
-            # Build conjtrans handle on first use. For real dtypes
-            # this is equivalent to trans=1.
-            is_cpx = dpnp.issubdtype(self._A.data.dtype, dpnp.complexfloating)
-            self._adjoint = _CachedSpMV(
-                self._A, self._si, trans=2 if is_cpx else 1
-            )
-        return self._adjoint(x)
+        """Adjoint SpMV is not supported for sparse csr_matrix operators."""
+        raise NotImplementedError(
+            "rmatvec/adjoint is not supported for sparse csr_matrix "
+            "operators; only the forward matvec is implemented."
+        )
 
 
 def _make_fast_matvec(A):
@@ -423,9 +272,6 @@ def _make_system(A, M, x0, b):
                 def _matvec(self, x):
                     return fast_mv_M.matvec(x)
 
-                def _rmatvec(self, x):
-                    return fast_mv_M.rmatvec(x)
-
             M_op = _FastMOp()
 
     # Inject fast CSR SpMV for A if available.
@@ -439,9 +285,6 @@ def _make_system(A, M, x0, b):
 
             def _matvec(self, x):
                 return fast_mv.matvec(x)
-
-            def _rmatvec(self, x):
-                return fast_mv.rmatvec(x)
 
         A_op = _FastOp()
 

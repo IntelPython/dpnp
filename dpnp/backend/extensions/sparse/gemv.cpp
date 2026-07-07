@@ -184,11 +184,6 @@ static std::pair<std::uintptr_t, sycl::event>
         mkl_sparse::init_csr_matrix(exec_q, &cache->A, num_rows, num_cols, nnz,
                                     mkl::index_base::zero, row_ptr, col_ind,
                                     values);
-        // Column indices are sorted per row at construction (see
-        // scipy/sparse/_csr.py), so advertise the sorted property as an
-        // optimization hint to the backend.
-        mkl_sparse::set_matrix_property(exec_q, cache->A,
-                                        mkl_sparse::matrix_property::sorted);
 
         // values is a placeholder pointer; the real x / y pointers are
         // bound on every compute call via set_dense_vector_data.

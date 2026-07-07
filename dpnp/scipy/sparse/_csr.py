@@ -72,6 +72,11 @@ class csr_matrix(SparseABC):
     csr_matrix(other_csr)
         copy of another csr_matrix.
 
+    Duplicate column indices within a row are not supported (unlike
+    scipy, which sums them); each column must appear at most once per
+    row. This matches the CSR produced by dense construction and the
+    solvers, which never generate duplicates.
+
     Attributes
     ----------
     data : dpnp.ndarray
@@ -85,8 +90,6 @@ class csr_matrix(SparseABC):
     nnz : int
     has_sorted_indices : bool
         Whether column indices are sorted within each row.
-    has_canonical_format : bool
-        Whether indices are sorted with no duplicate columns per row.
     format : str
         Always 'csr'.
     ndim : int
@@ -105,7 +108,6 @@ class csr_matrix(SparseABC):
         self._spmv_si = None
         self._spmv_exec_q = None
         self._has_sorted_indices = None
-        self._has_canonical_format = None
 
         if isinstance(arg1, _dpnp.ndarray):
             self._init_from_dense(arg1, dtype=dtype)
@@ -249,83 +251,6 @@ class csr_matrix(SparseABC):
         self.indices = self.indices[order]
         self._has_sorted_indices = True
 
-    @property
-    def has_canonical_format(self):
-        """Whether indices are sorted with no duplicate columns per row."""
-        if self._has_canonical_format is None:
-            if not self.has_sorted_indices:
-                self._has_canonical_format = False
-            else:
-                self._has_canonical_format = not self._has_duplicates()
-        return self._has_canonical_format
-
-    def _row_ids(self):
-        q = self.indices.sycl_queue
-        row_lengths = self.indptr[1:] - self.indptr[:-1]
-        return _dpnp.repeat(
-            _dpnp.arange(self._shape[0], dtype=self.indptr.dtype, sycl_queue=q),
-            row_lengths,
-        )
-
-    def _has_duplicates(self):
-        idx = self.indices
-        if idx.shape[0] < 2:
-            return False
-        row_ids = self._row_ids()
-        same_row = row_ids[1:] == row_ids[:-1]
-        same_col = idx[1:] == idx[:-1]
-        return bool(_dpnp.any(same_row & same_col))
-
-    def sum_duplicates(self):
-        """Sum duplicate column entries per row, in place (scipy-compatible).
-
-        Sorts first if needed; no-op once the matrix is canonical.
-        """
-        if self.has_canonical_format:
-            return
-        self.sort_indices()
-
-        idx = self.indices
-        nnz = idx.shape[0]
-        if nnz == 0:
-            self._has_canonical_format = True
-            return
-
-        q = idx.sycl_queue
-        row_ids = self._row_ids()
-        # First entry of each (row, col) group; segment boundaries.
-        is_new = _dpnp.ones(nnz, dtype=_dpnp.bool, sycl_queue=q)
-        is_new[1:] = (row_ids[1:] != row_ids[:-1]) | (idx[1:] != idx[:-1])
-        if bool(_dpnp.all(is_new)):
-            self._has_canonical_format = True
-            return
-
-        keep = _dpnp.nonzero(is_new)[0]
-        # Segment-sum data via cumulative-sum differences at boundaries.
-        csum = _dpnp.cumsum(self.data)
-        seg_end = _dpnp.empty(keep.shape[0], dtype=csum.dtype, sycl_queue=q)
-        seg_end[:-1] = csum[keep[1:] - 1]
-        seg_end[-1] = csum[-1]
-        new_data = _dpnp.empty_like(seg_end)
-        new_data[0] = seg_end[0]
-        new_data[1:] = seg_end[1:] - seg_end[:-1]
-
-        new_indices = idx[keep]
-        new_row_ids = row_ids[keep]
-        new_indptr = _dpnp.zeros(
-            self._shape[0] + 1, dtype=self.indptr.dtype, sycl_queue=q
-        )
-        counts = _dpnp.bincount(
-            new_row_ids.astype(self.indptr.dtype), minlength=self._shape[0]
-        )
-        new_indptr[1:] = _dpnp.cumsum(counts)
-
-        self.data = new_data
-        self.indices = new_indices.astype(self.indices.dtype)
-        self.indptr = new_indptr
-        self._has_sorted_indices = True
-        self._has_canonical_format = True
-
     def _init_from_dense(self, dense, dtype=None):
         if dense.ndim != 2:
             raise ValueError(
@@ -348,7 +273,6 @@ class csr_matrix(SparseABC):
             )
             self._shape = (nrows, ncols)
             self._has_sorted_indices = True
-            self._has_canonical_format = True
             return
 
         values = dense[rows, cols]
@@ -362,9 +286,8 @@ class csr_matrix(SparseABC):
         self.indices = cols.astype(idx_dtype)
         self.indptr = indptr
         self._shape = (nrows, ncols)
-        # dpnp.nonzero yields row-major order with no duplicates.
+        # dpnp.nonzero yields row-major order, columns ascending per row.
         self._has_sorted_indices = True
-        self._has_canonical_format = True
 
     # --- read-only properties ------------------------------------------
 
@@ -433,7 +356,7 @@ class csr_matrix(SparseABC):
         except ImportError:
             return None
 
-        self.sum_duplicates()
+        self.sort_indices()
 
         exec_q = self.data.sycl_queue
         try:
