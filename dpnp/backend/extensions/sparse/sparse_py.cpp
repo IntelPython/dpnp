@@ -116,8 +116,7 @@ PYBIND11_MODULE(_sparse_impl, m)
            const int val_type_id, const int trans, const double alpha,
            const dpnp::tensor::usm_ndarray &x, const double beta,
            const dpnp::tensor::usm_ndarray &y, const std::int64_t num_rows,
-           const std::int64_t num_cols,
-           const std::vector<sycl::event> &depends)
+           const std::int64_t num_cols, const std::vector<sycl::event> &depends)
             -> std::pair<sycl::event, sycl::event> {
             return sparse_gemv_compute(exec_q, handle_ptr, val_type_id, trans,
                                        alpha, x, beta, y, num_rows, num_cols,
