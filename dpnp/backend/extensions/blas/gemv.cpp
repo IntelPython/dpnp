@@ -210,9 +210,8 @@ std::pair<sycl::event, sycl::event>
     // gemv mode. Callers needing C-mode on row-major input must
     // F-contigify first (e.g. via dpnp.asarray(A, order="F")).
     if (is_conj_trans && !is_matrixA_f_contig) {
-        throw py::value_error(
-            "Input matrix is not f-contiguous, but "
-            "trans_op = 2 (conjugate-transpose) requested.");
+        throw py::value_error("Input matrix is not f-contiguous, but "
+                              "trans_op = 2 (conjugate-transpose) requested.");
     }
 
     const py::ssize_t *a_shape = matrixA.get_shape_raw();
