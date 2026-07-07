@@ -14,7 +14,7 @@
     </script>
     <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Discrete Fourier Transform (dpnp.fft)" href="fft.html"><link rel="prev" title="dpnp.issubdtype" href="generated/dpnp.issubdtype.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>Exceptions and Warnings - Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
@@ -1048,13 +1048,13 @@ specific, such as linear algebra errors.</p>
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading">¶</a></h2>
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpnp.exceptions.AxisError">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">AxisError</span></span><a class="reference internal" href="../_modules/numpy/exceptions.html#AxisError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.exceptions.AxisError" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">AxisError</span></span><a class="reference internal" href="../_modules/numpy/exceptions.html#AxisError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.exceptions.AxisError" title="Link to this definition">¶</a></dt>
 <dd><p>Given when an axis is invalid.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpnp.exceptions.DLPackCreationError">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">DLPackCreationError</span></span><a class="headerlink" href="#dpnp.exceptions.DLPackCreationError" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">DLPackCreationError</span></span><a class="headerlink" href="#dpnp.exceptions.DLPackCreationError" title="Link to this definition">¶</a></dt>
 <dd><p>Given when constructing DLPack capsule from either <a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or
 <a class="reference external" href="https://intelpython.github.io/dpctl/0.21.1/api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.tensor.usm_ndarray</span></code></a> based on a USM allocation
 on a partitioned SYCL device.</p>
@@ -1075,7 +1075,7 @@ on a partitioned SYCL device.</p>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpnp.exceptions.ExecutionPlacementError">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">ExecutionPlacementError</span></span><a class="headerlink" href="#dpnp.exceptions.ExecutionPlacementError" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">ExecutionPlacementError</span></span><a class="headerlink" href="#dpnp.exceptions.ExecutionPlacementError" title="Link to this definition">¶</a></dt>
 <dd><p>Given when execution placement target can not be unambiguously determined
 from input arrays. Make sure that input arrays are associated with the same
 <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or migrate data to the same
@@ -1084,19 +1084,19 @@ from input arrays. Make sure that input arrays are associated with the same
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpnp.exceptions.SyclContextCreationError">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">SyclContextCreationError</span></span><a class="headerlink" href="#dpnp.exceptions.SyclContextCreationError" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">SyclContextCreationError</span></span><a class="headerlink" href="#dpnp.exceptions.SyclContextCreationError" title="Link to this definition">¶</a></dt>
 <dd><p>Given when <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclContext.html#dpctl.SyclContext" title="(in Data Parallel Control (dpctl) v0.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> instance could not be created.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpnp.exceptions.SyclDeviceCreationError">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">SyclDeviceCreationError</span></span><a class="headerlink" href="#dpnp.exceptions.SyclDeviceCreationError" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">SyclDeviceCreationError</span></span><a class="headerlink" href="#dpnp.exceptions.SyclDeviceCreationError" title="Link to this definition">¶</a></dt>
 <dd><p>Given when <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instance could not be created.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpnp.exceptions.SyclQueueCreationError">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">SyclQueueCreationError</span></span><a class="headerlink" href="#dpnp.exceptions.SyclQueueCreationError" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">SyclQueueCreationError</span></span><a class="headerlink" href="#dpnp.exceptions.SyclQueueCreationError" title="Link to this definition">¶</a></dt>
 <dd><p>Given when <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.17.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> instance could not be created.
 The creation can fail if the filter string is invalid, or the backend or
 device type values are not supported.</p>
@@ -1104,7 +1104,7 @@ device type values are not supported.</p>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpnp.exceptions.USMAllocationError">
-<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">USMAllocationError</span></span><a class="headerlink" href="#dpnp.exceptions.USMAllocationError" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dpnp.exceptions.</span></span><span class="sig-name descname"><span class="pre">USMAllocationError</span></span><a class="headerlink" href="#dpnp.exceptions.USMAllocationError" title="Link to this definition">¶</a></dt>
 <dd><p>Given when Unified Shared Memory (USM) allocation call returns a null
 pointer, signaling a failure to perform the allocation.
 Some common reasons for allocation failure are:</p>
@@ -1197,8 +1197,8 @@ Some common reasons for allocation failure are:</p>
     </aside>
   </div>
 </div><script src="../_static/documentation_options.js?v=096cb507"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=ccdb6887"></script>

@@ -14,7 +14,7 @@
     </script>
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.histogramdd" href="dpnp.histogramdd.html"><link rel="prev" title="dpnp.histogram" href="dpnp.histogram.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>dpnp.histogram2d - Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
@@ -1051,11 +1051,11 @@ array of bin edges. This may harm performance in some applications.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em>) -- An array containing the <cite>x</cite> coordinates of the points to be
+<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><a class="reference internal" href="dpnp.dpnp_array.dpnp_array.shape.html#dpnp.dpnp_array.dpnp_array.shape" title="dpnp.dpnp_array.dpnp_array.shape"><em>shape</em></a><em> (</em><em>N</em><em>,</em><em>)</em>) -- An array containing the <cite>x</cite> coordinates of the points to be
 histogrammed.</p></li>
-<li><p><strong>y</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em>) -- An array containing the <cite>y</cite> coordinates of the points to be
+<li><p><strong>y</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><a class="reference internal" href="dpnp.dpnp_array.dpnp_array.shape.html#dpnp.dpnp_array.dpnp_array.shape" title="dpnp.dpnp_array.dpnp_array.shape"><em>shape</em></a><em> (</em><em>N</em><em>,</em><em>)</em>) -- An array containing the <cite>y</cite> coordinates of the points to be
 histogrammed.</p></li>
-<li><p><strong>bins</strong> (<em>{int</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>, </em><em>[</em><em>array</em><em>, </em><em>array</em><em>]</em><em>,         </em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>array</em><em>]</em><em>, </em><em>[</em><em>array</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>}</em><em>, </em><em>optional</em>) -- <p>The bins specification:</p>
+<li><p><strong>bins</strong> (<em>{int</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray</em><em>, </em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>, </em><em>[</em><em>array</em><em>, </em><em>array</em><em>]</em><em>,         </em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>array</em><em>]</em><em>, </em><em>[</em><em>array</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>}</em><em>, </em><em>optional</em>) -- <p>The bins specification:</p>
 <ul>
 <li><p>If int, the number of bins for the two dimensions (nx=ny=bins).</p></li>
 <li><p>If array, the bin edges for the two dimensions
@@ -1069,7 +1069,7 @@ is the number of bins and array is the bin edges.</p></li>
 </ul>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
 </p></li>
-<li><p><strong>range</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>2</em><em>, </em><em>2</em><em>)</em><em>, </em><em>optional</em>) -- <p>The leftmost and rightmost edges of the bins along each dimension
+<li><p><strong>range</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em> of </em><a class="reference internal" href="dpnp.dpnp_array.dpnp_array.shape.html#dpnp.dpnp_array.dpnp_array.shape" title="dpnp.dpnp_array.dpnp_array.shape"><em>shape</em></a><em> (</em><em>2</em><em>, </em><em>2</em><em>)</em><em>, </em><em>optional</em>) -- <p>The leftmost and rightmost edges of the bins along each dimension
 If <code class="docutils literal notranslate"><span class="pre">None</span></code> the ranges are
 <code class="docutils literal notranslate"><span class="pre">[[x.min(),</span> <span class="pre">x.max()],</span> <span class="pre">[y.min(),</span> <span class="pre">y.max()]]</span></code>. All values outside
 of this range will be considered outliers and not tallied in the
@@ -1082,7 +1082,7 @@ If <code class="docutils literal notranslate"><span class="pre">True</span></cod
 <code class="docutils literal notranslate"><span class="pre">bin_count</span> <span class="pre">/</span> <span class="pre">sample_count</span> <span class="pre">/</span> <span class="pre">bin_volume</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>weights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em><em>, </em><em>optional</em>) -- <p>An array of values <code class="docutils literal notranslate"><span class="pre">w_i</span></code> weighing each sample <code class="docutils literal notranslate"><span class="pre">(x_i,</span> <span class="pre">y_i)</span></code>.
+<li><p><strong>weights</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em> of </em><a class="reference internal" href="dpnp.dpnp_array.dpnp_array.shape.html#dpnp.dpnp_array.dpnp_array.shape" title="dpnp.dpnp_array.dpnp_array.shape"><em>shape</em></a><em> (</em><em>N</em><em>,</em><em>)</em><em>, </em><em>optional</em>) -- <p>An array of values <code class="docutils literal notranslate"><span class="pre">w_i</span></code> weighing each sample <code class="docutils literal notranslate"><span class="pre">(x_i,</span> <span class="pre">y_i)</span></code>.
 Weights are normalized to <code class="docutils literal notranslate"><span class="pre">1</span></code> if <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.
 If <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the values of the returned histogram
 are equal to the sum of the weights belonging to the samples
@@ -1218,8 +1218,8 @@ array (vertical), and <cite>y</cite> along the second dimension of the array
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=096cb507"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>

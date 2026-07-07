@@ -7,4 +7,4 @@ dpnp.logical\_or
 
 
 
-.. autofunction:: logical_or
+.. autodata:: logical_or
