@@ -14,7 +14,7 @@
     </script>
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.absolute" href="dpnp.absolute.html"><link rel="prev" title="dpnp.fmod" href="dpnp.fmod.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>dpnp.divmod - Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
@@ -1038,9 +1038,9 @@
         <article role="main" id="furo-main-content">
           <section id="dpnp-divmod">
 <h1>dpnp.divmod<a class="headerlink" href="#dpnp-divmod" title="Link to this heading">¶</a></h1>
-<dl class="py function">
+<dl class="py data">
 <dt class="sig sig-object py" id="dpnp.divmod">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">divmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(None,</span> <span class="pre">None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.divmod" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">divmod</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;DPNPBinaryTwoOutputsFunc</span> <span class="pre">'divmod'&gt;</span></span><a class="headerlink" href="#dpnp.divmod" title="Link to this definition">¶</a></dt>
 <dd><p>Calculates the quotient and the remainder for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the
 input array <cite>x1</cite> with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array
 <cite>x2</cite>.</p>
@@ -1052,15 +1052,15 @@ input array <cite>x1</cite> with the respective element <span class="math notran
 type.</p></li>
 <li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Divisor input array, expected to have a real-valued floating-point data
 type.</p></li>
-<li><p><strong>out1</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array for the quotient to populate. Array must have a shape that
+<li><p><strong>out1</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array for the quotient to populate. Array must have a shape that
 the inputs broadcast to and the expected data type.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>out2</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array for the remainder to populate. Array must have a shape that
+<li><p><strong>out2</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array for the remainder to populate. Array must have a shape that
 the inputs broadcast to and the expected data type.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>out</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>None</em><em>, </em><em>dpnp.ndarray</em><em>, or </em><em>usm_ndarray</em><em>, </em><em>optional</em>) -- <p>A location into which the result is stored. If provided, it must be a tuple
+<li><p><strong>out</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, or </em><em>usm_ndarray</em><em>, </em><em>optional</em>) -- <p>A location into which the result is stored. If provided, it must be a tuple
 and have length equal to the number of outputs. Each provided array must
 have a shape that the inputs broadcast to and the expected data type.
 It is prohibited to pass output arrays through <cite>out</cite> keyword when either
@@ -1176,7 +1176,7 @@ for <code class="docutils literal notranslate"><span class="pre">np.divmod</span
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">dpnp.divmod</a><ul>
-<li><a class="reference internal" href="#dpnp.divmod"><code class="docutils literal notranslate"><span class="pre">divmod()</span></code></a></li>
+<li><a class="reference internal" href="#dpnp.divmod"><code class="docutils literal notranslate"><span class="pre">divmod</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1189,13 +1189,13 @@ for <code class="docutils literal notranslate"><span class="pre">np.divmod</span
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=096cb507"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

@@ -7,4 +7,4 @@ dpnp.bitwise\_xor
 
 
 
-.. autofunction:: bitwise_xor
+.. autodata:: bitwise_xor
