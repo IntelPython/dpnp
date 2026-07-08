@@ -14,7 +14,7 @@
     </script>
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.histogram" href="dpnp.histogram.html"><link rel="prev" title="dpnp.correlate" href="dpnp.correlate.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>dpnp.cov - Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
@@ -1049,7 +1049,7 @@
 <li><p><strong>m</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- A 1-D or 2-D array containing multiple variables and observations.
 Each row of <cite>m</cite> represents a variable, and each column a single
 observation of all those variables. Also see <cite>rowvar</cite> below.</p></li>
-<li><p><strong>y</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An additional set of variables and observations. <cite>y</cite> has the same form
+<li><p><strong>y</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An additional set of variables and observations. <cite>y</cite> has the same form
 as that of <cite>m</cite>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
@@ -1070,13 +1070,13 @@ that <code class="docutils literal notranslate"><span class="pre">ddof=1</span><
 simple average. See the notes for the details.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>fweights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>1-D array of integer frequency weights; the number of times each
+<li><p><strong>fweights</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>1-D array of integer frequency weights; the number of times each
 observation vector should be repeated.
 It is required that <code class="docutils literal notranslate"><span class="pre">fweights</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code>. However, the function will not
 raise an error when <code class="docutils literal notranslate"><span class="pre">fweights</span> <span class="pre">&lt;</span> <span class="pre">0</span></code> for performance reasons.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>aweights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>1-D array of observation vector weights. These relative weights are
+<li><p><strong>aweights</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>1-D array of observation vector weights. These relative weights are
 typically large for observations considered &quot;important&quot; and smaller for
 observations considered less &quot;important&quot;. If <code class="docutils literal notranslate"><span class="pre">ddof=0</span></code> the array of
 weights can be used to assign probabilities to observation vectors.
@@ -1084,7 +1084,7 @@ It is required that <code class="docutils literal notranslate"><span class="pre"
 error when <code class="docutils literal notranslate"><span class="pre">aweights</span> <span class="pre">&lt;</span> <span class="pre">0</span></code> for performance reasons.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Data-type of the result. By default, the return data-type will have
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Data-type of the result. By default, the return data-type will have
 the default floating point data-type of the device on which the input
 arrays reside.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
@@ -1095,7 +1095,7 @@ arrays reside.</p>
 <dd class="field-even"><p><strong>out</strong> -- The covariance matrix of the variables.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1232,13 +1232,13 @@ matrix shows this clearly:</p>
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=096cb507"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

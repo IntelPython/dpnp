@@ -7,4 +7,4 @@ dpnp.logical\_not
 
 
 
-.. autofunction:: logical_not
+.. autodata:: logical_not

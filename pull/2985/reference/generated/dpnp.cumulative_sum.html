@@ -14,7 +14,7 @@
     </script>
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.cumulative_prod" href="dpnp.cumulative_prod.html"><link rel="prev" title="dpnp.nansum" href="dpnp.nansum.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>dpnp.cumulative_sum - Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
@@ -1053,14 +1053,14 @@ is only allowed for one-dimensional arrays. For arrays with more than
 one dimension <cite>axis</cite> is required.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Type of the returned array and of the accumulator in which the elements
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.dtype.str.html#dpnp.dtype.str" title="dpnp.dtype.str"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Type of the returned array and of the accumulator in which the elements
 are summed. If <cite>dtype</cite> is not specified, it defaults to the dtype of
 <cite>x</cite>, unless <cite>x</cite> has an integer dtype with a precision less than that of
 the default platform integer. In that case, the default platform
 integer is used.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Alternative output array in which to place the result. It must have the
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Alternative output array in which to place the result. It must have the
 same shape and buffer length as the expected output but the type will
 be cast if necessary.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
@@ -1079,7 +1079,7 @@ in which case a reference to <cite>out</cite> is returned. The
 result has the same shape as <cite>x</cite> if <code class="docutils literal notranslate"><span class="pre">include_initial=False</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1194,8 +1194,8 @@ result has the same shape as <cite>x</cite> if <code class="docutils literal not
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=096cb507"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>

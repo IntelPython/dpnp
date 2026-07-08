@@ -14,7 +14,7 @@
     </script>
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.logical_xor" href="dpnp.logical_xor.html"><link rel="prev" title="dpnp.logical_and" href="dpnp.logical_and.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>dpnp.logical_or - Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
@@ -1038,9 +1038,9 @@
         <article role="main" id="furo-main-content">
           <section id="dpnp-logical-or">
 <h1>dpnp.logical_or<a class="headerlink" href="#dpnp-logical-or" title="Link to this heading">¶</a></h1>
-<dl class="py function">
+<dl class="py data">
 <dt class="sig sig-object py" id="dpnp.logical_or">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">logical_or</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.logical_or" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">logical_or</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;DPNPBinaryFunc</span> <span class="pre">'logical_or'&gt;</span></span><a class="headerlink" href="#dpnp.logical_or" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the logical OR for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite>
 with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.logical_or.html#numpy.logical_or" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.logical_or</span></code></a>.</p>
@@ -1049,7 +1049,7 @@ with the respective element <span class="math notranslate nohighlight">\(x2_i\)<
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array, may have any data type.</p></li>
 <li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array, also may have any data type.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array to populate.
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array to populate.
 Array must have the correct shape and the expected data type.
 A tuple (possible only as a keyword argument) must have length equal to the
 number of outputs.</p>
@@ -1064,7 +1064,7 @@ number of outputs.</p>
 <dd class="field-even"><p><strong>out</strong> -- An array containing the element-wise logical OR results.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray of bool dtype</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a> of bool dtype</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
@@ -1168,7 +1168,7 @@ boolean <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" titl
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">dpnp.logical_or</a><ul>
-<li><a class="reference internal" href="#dpnp.logical_or"><code class="docutils literal notranslate"><span class="pre">logical_or()</span></code></a></li>
+<li><a class="reference internal" href="#dpnp.logical_or"><code class="docutils literal notranslate"><span class="pre">logical_or</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1181,13 +1181,13 @@ boolean <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" titl
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=096cb507"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>
