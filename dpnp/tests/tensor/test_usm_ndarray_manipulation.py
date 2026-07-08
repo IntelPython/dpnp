@@ -102,7 +102,7 @@ def test_permute_dims_2d_3d(shapes):
 def test_expand_dims_incorrect_type():
     X_list = [1, 2, 3, 4, 5]
     with pytest.raises(TypeError):
-        dpt.permute_dims(X_list, axis=1)
+        dpt.expand_dims(X_list, axis=1)
 
 
 def test_expand_dims_0d():
@@ -152,6 +152,21 @@ def test_expand_dims_tuple(axes):
     Y = dpt.expand_dims(X, axis=axes)
     Ynp = np.expand_dims(Xnp, axis=axes)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_expand_dims_positional_axis():
+    q = get_queue_or_skip()
+
+    Xnp = np.empty((3, 3, 3), dtype="u1")
+    X = dpt.asarray(Xnp, sycl_queue=q)
+
+    Y = dpt.expand_dims(X, 1)  # `axis` is a positional-or-keyword argument
+    Ynp = np.expand_dims(Xnp, 1)
+    assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+    # `axis` has no default value
+    with pytest.raises(TypeError):
+        dpt.expand_dims(X)
 
 
 def test_expand_dims_incorrect_tuple():

@@ -248,10 +248,10 @@ def _get_stats(padded, axis, width_pair, length_pair, stat_func):
         right_length = max_length
 
     if (left_length == 0 or right_length == 0) and stat_func in [
-        dpnp.amax,
-        dpnp.amin,
+        dpnp.max,
+        dpnp.min,
     ]:
-        # amax and amin can't operate on an empty array,
+        # max and min can't operate on an empty array,
         # raise a more descriptive warning here instead of the default one
         raise ValueError("stat_length of 0 yields no value for padding")
 
@@ -740,8 +740,8 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
             return _pad_simple(array, pad_width, 0)[0]
 
     stat_functions = {
-        "maximum": dpnp.amax,
-        "minimum": dpnp.amin,
+        "maximum": dpnp.max,
+        "minimum": dpnp.min,
         "mean": dpnp.mean,
         "median": dpnp.median,
     }

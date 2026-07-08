@@ -1,1 +1,1 @@
-coveralls==4.0.1
+coveralls==4.1.0
