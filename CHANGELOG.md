@@ -65,6 +65,7 @@ This release is compatible with NumPy 2.5.
 * Fixed a flood of deprecation warnings from the DPC++/SYCL headers when building `dpnp.tensor` on Windows [#2984](https://github.com/IntelPython/dpnp/pull/2984)
 * Fixed `dpnp.tensor.acosh` and `dpnp.tensor.acos` returning infinity for complex numbers with large negative real parts [#2928](https://github.com/IntelPython/dpnp/pull/2928)
 * Fixed `__array_namespace_info__().devices()` and `.default_device()` to return Python array API compatible device objects [#2979](https://github.com/IntelPython/dpnp/pull/2979)
+* Fixed `dpnp.interp` with an empty input array `x` to return an empty array with the correct dtype [#2985](https://github.com/IntelPython/dpnp/pull/2985)
 
 ### Security
 
