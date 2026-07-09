@@ -66,6 +66,8 @@ build:
       - dpctl
       - numpy
       - python
+    missing_dso_whitelist:
+      - '*/libDPCTLSyclInterface.so'
 
 test:
     requires:
