@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.20.0dev3</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.21.0dev2</span>
    </div>
    <div id="projectbrief">Data Parallel Extension for NumPy*</div>
   </td>
@@ -139,7 +139,7 @@ $(function(){initNavTree('common__helpers_8hpp_source.html',''); initResizable(t
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment">// dpctl tensor headers</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment">// dpnp tensor headers</span></div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#include &quot;utils/sycl_alloc_utils.hpp&quot;</span></div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">namespace </span>dpnp::extensions::lapack::helper</div>
@@ -193,7 +193,7 @@ $(function(){initNavTree('common__helpers_8hpp_source.html',''); initResizable(t
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        }</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    } <span class="keywordflow">catch</span> (sycl::exception <span class="keyword">const</span> &amp;e) {</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">if</span> (ipiv != <span class="keyword">nullptr</span>)</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            dpctl::tensor::alloc_utils::sycl_free_noexcept(ipiv, exec_q);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            dpnp::tensor::alloc_utils::sycl_free_noexcept(ipiv, exec_q);</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">throw</span> std::runtime_error(</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            std::string(</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                <span class="stringliteral">&quot;Unexpected SYCL exception caught during ipiv allocation: &quot;</span>) +</div>
@@ -237,7 +237,7 @@ $(function(){initNavTree('common__helpers_8hpp_source.html',''); initResizable(t
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        }</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    } <span class="keywordflow">catch</span> (sycl::exception <span class="keyword">const</span> &amp;e) {</div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        <span class="keywordflow">if</span> (scratchpad != <span class="keyword">nullptr</span>) {</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            dpnp::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);</div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        }</div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;Unexpected SYCL exception caught &quot;</span></div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                                             <span class="stringliteral">&quot;during scratchpad allocation: &quot;</span>) +</div>

@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['value_5ftype_5fof_0',['value_type_of',['../structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of.html',1,'dpnp::extensions::lapack::helper']]],
-  ['value_5ftype_5fof_3c_20std_3a_3acomplex_3c_20t_20_3e_20_3e_1',['value_type_of&lt; std::complex&lt; T &gt; &gt;',['../structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html',1,'dpnp::extensions::lapack::helper']]],
-  ['value_5ftype_5fof_5fimpl_2',['value_type_of_impl',['../structext_1_1common_1_1value__type__of__impl.html',1,'ext::common']]],
-  ['value_5ftype_5fof_5fimpl_3c_20t_2c_20false_20_3e_3',['value_type_of_impl&lt; T, false &gt;',['../structext_1_1common_1_1value__type__of__impl_3_01_t_00_01false_01_4.html',1,'ext::common']]],
-  ['value_5ftype_5fof_5fimpl_3c_20t_2c_20true_20_3e_4',['value_type_of_impl&lt; T, true &gt;',['../structext_1_1common_1_1value__type__of__impl_3_01_t_00_01true_01_4.html',1,'ext::common']]]
+  ['unarytwooutputscontigfunctor_0',['UnaryTwoOutputsContigFunctor',['../structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_unary_two_outputs_contig_functor.html',1,'dpnp::extensions::py_internal::elementwise_common']]],
+  ['unarytwooutputsstridedfunctor_1',['UnaryTwoOutputsStridedFunctor',['../structdpnp_1_1extensions_1_1py__internal_1_1elementwise__common_1_1_unary_two_outputs_strided_functor.html',1,'dpnp::extensions::py_internal::elementwise_common']]],
+  ['uncacheddata_2',['UncachedData',['../structstatistics_1_1histogram_1_1_uncached_data.html',1,'statistics::histogram']]],
+  ['ungqrbatchtypepairsupportfactory_3',['UngqrBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['ungqrtypepairsupportfactory_4',['UngqrTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]]
 ];
