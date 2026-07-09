@@ -7,4 +7,4 @@ dpnp.imag
 
 
 
-.. autofunction:: imag
+.. autodata:: imag

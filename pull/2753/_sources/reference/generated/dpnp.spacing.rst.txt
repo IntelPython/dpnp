@@ -7,4 +7,4 @@ dpnp.spacing
 
 
 
-.. autofunction:: spacing
+.. autodata:: spacing
