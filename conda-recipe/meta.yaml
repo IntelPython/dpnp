@@ -64,6 +64,8 @@ build:
       - OVERRIDE_INTEL_IPO  # [win]
     ignore_run_exports:
       - dpctl
+      - numpy
+      - python
 
 test:
     requires:
