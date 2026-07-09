@@ -66,8 +66,12 @@ build:
       - dpctl
       - numpy
       - python
+      # building with Intel DPC++ and do not import the MSVC runtime DLLs
+      - vc14_runtime  # [win]
+      - ucrt          # [win]
     missing_dso_whitelist:
-      - '*/libDPCTLSyclInterface.so'
+      - '*DPCTLSyclInterface*'
+      - '*/dpnp_backend_c.dll'        # [win]
 
 test:
     requires:
