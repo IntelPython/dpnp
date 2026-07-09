@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.21.0dev0</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.21.0dev2</span>
    </div>
    <div id="projectbrief">Data Parallel Extension for NumPy*</div>
   </td>
@@ -163,8 +163,8 @@ $(function(){initNavTree('vm_2common_8hpp_source.html',''); initResizable(true);
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>{</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> output_typesT, <span class="keyword">typename</span> contig_dispatchT&gt;</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keywordtype">bool</span> need_to_call_unary_ufunc(sycl::queue &amp;exec_q,</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                              <span class="keyword">const</span> <a class="code hl_class" href="classdpnp_1_1tensor_1_1usm__ndarray.html">dpnp::tensor::usm_ndarray</a> &amp;src,</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                              <span class="keyword">const</span> <a class="code hl_class" href="classdpnp_1_1tensor_1_1usm__ndarray.html">dpnp::tensor::usm_ndarray</a> &amp;dst,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                              <span class="keyword">const</span> dpnp::tensor::usm_ndarray &amp;src,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                              <span class="keyword">const</span> dpnp::tensor::usm_ndarray &amp;dst,</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                              <span class="keyword">const</span> output_typesT &amp;output_type_vec,</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                              <span class="keyword">const</span> contig_dispatchT &amp;contig_dispatch_vector)</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>{</div>
@@ -257,9 +257,9 @@ $(function(){initNavTree('vm_2common_8hpp_source.html',''); initResizable(true);
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> output_typesT, <span class="keyword">typename</span> contig_dispatchT&gt;</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span><span class="keywordtype">bool</span> need_to_call_unary_two_outputs_ufunc(</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    sycl::queue &amp;exec_q,</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keyword">const</span> <a class="code hl_class" href="classdpnp_1_1tensor_1_1usm__ndarray.html">dpnp::tensor::usm_ndarray</a> &amp;src,</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keyword">const</span> <a class="code hl_class" href="classdpnp_1_1tensor_1_1usm__ndarray.html">dpnp::tensor::usm_ndarray</a> &amp;dst1,</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keyword">const</span> <a class="code hl_class" href="classdpnp_1_1tensor_1_1usm__ndarray.html">dpnp::tensor::usm_ndarray</a> &amp;dst2,</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keyword">const</span> dpnp::tensor::usm_ndarray &amp;src,</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keyword">const</span> dpnp::tensor::usm_ndarray &amp;dst1,</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keyword">const</span> dpnp::tensor::usm_ndarray &amp;dst2,</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keyword">const</span> output_typesT &amp;output_type_vec,</div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keyword">const</span> contig_dispatchT &amp;contig_dispatch_vector)</div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>{</div>
@@ -364,9 +364,9 @@ $(function(){initNavTree('vm_2common_8hpp_source.html',''); initResizable(true);
 <div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
 <div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> output_typesT, <span class="keyword">typename</span> contig_dispatchT&gt;</div>
 <div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span><span class="keywordtype">bool</span> need_to_call_binary_ufunc(sycl::queue &amp;exec_q,</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                               <span class="keyword">const</span> <a class="code hl_class" href="classdpnp_1_1tensor_1_1usm__ndarray.html">dpnp::tensor::usm_ndarray</a> &amp;src1,</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>                               <span class="keyword">const</span> <a class="code hl_class" href="classdpnp_1_1tensor_1_1usm__ndarray.html">dpnp::tensor::usm_ndarray</a> &amp;src2,</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                               <span class="keyword">const</span> <a class="code hl_class" href="classdpnp_1_1tensor_1_1usm__ndarray.html">dpnp::tensor::usm_ndarray</a> &amp;dst,</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                               <span class="keyword">const</span> dpnp::tensor::usm_ndarray &amp;src1,</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>                               <span class="keyword">const</span> dpnp::tensor::usm_ndarray &amp;src2,</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                               <span class="keyword">const</span> dpnp::tensor::usm_ndarray &amp;dst,</div>
 <div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>                               <span class="keyword">const</span> output_typesT &amp;output_type_table,</div>
 <div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>                               <span class="keyword">const</span> contig_dispatchT &amp;contig_dispatch_table)</div>
 <div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>{</div>
@@ -578,7 +578,6 @@ $(function(){initNavTree('vm_2common_8hpp_source.html',''); initResizable(true);
 <div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span><span class="preprocessor">                                    ContigFactory&gt;(contig_dispatch_vector);    \</span></div>
 <div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span><span class="preprocessor">    };</span></div>
 <div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>} <span class="comment">// namespace dpnp::extensions::vm::py_internal</span></div>
-<div class="ttc" id="aclassdpnp_1_1tensor_1_1usm__ndarray_html"><div class="ttname"><a href="classdpnp_1_1tensor_1_1usm__ndarray.html">dpnp::tensor::usm_ndarray</a></div><div class="ttdef"><b>Definition</b> <a href="dpnp4pybind11_8hpp_source.html#l00309">dpnp4pybind11.hpp:310</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

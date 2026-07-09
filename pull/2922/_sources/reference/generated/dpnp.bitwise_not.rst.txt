@@ -7,4 +7,4 @@ dpnp.bitwise\_not
 
 
 
-.. autofunction:: bitwise_not
+.. autodata:: bitwise_not

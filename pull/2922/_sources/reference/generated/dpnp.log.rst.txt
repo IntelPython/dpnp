@@ -7,4 +7,4 @@ dpnp.log
 
 
 
-.. autofunction:: log
+.. autodata:: log
