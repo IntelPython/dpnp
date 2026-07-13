@@ -26,11 +26,13 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import gc
 import os
 import sys
 import warnings
 
 import dpctl
+import dpctl.utils as dpu
 import numpy
 import pytest
 
@@ -78,6 +80,128 @@ def normalize_test_name(nodeid):
         normalized_nodeid = "tests/" + nodeid
 
     return normalized_nodeid
+
+
+def format_memory_size(size_bytes):
+    """Format memory size in human-readable format."""
+    if size_bytes is None:
+        return "N/A"
+
+    if size_bytes >= 1024**3:
+        return f"{size_bytes / (1024**3):.2f} GB"
+    elif size_bytes >= 1024**2:
+        return f"{size_bytes / (1024**2):.2f} MB"
+    elif size_bytes >= 1024:
+        return f"{size_bytes / 1024:.2f} KB"
+    else:
+        return f"{size_bytes} bytes"
+
+
+def get_device_memory_info(device=None):
+    """
+    Safely retrieve device memory information.
+
+    Returns a dict describing the device and its memory, or ``None`` if the
+    information cannot be retrieved.
+
+    The ``free_memory`` key is only populated when the Level-Zero driver
+    reports it, which requires the environment variable ``ZES_ENABLE_SYSMAN``
+    to be set to ``1`` before the driver is initialized (see ``run_test.sh``).
+    """
+    try:
+        if device is None:
+            device = dpctl.select_default_device()
+
+        info = {
+            "device_name": device.name,
+            "device_type": str(device.device_type),
+            "backend": str(device.backend),
+            "global_mem_size": device.global_mem_size,
+            "max_mem_alloc_size": device.max_mem_alloc_size,
+            "local_mem_size": device.local_mem_size,
+            "free_memory": None,
+        }
+
+        # `free_memory` is exposed through the Intel-specific device info dict
+        # (not as a SyclDevice attribute) and only when ZES_ENABLE_SYSMAN=1.
+        try:
+            intel_info = dpu.intel_device_info(device)
+            info["free_memory"] = intel_info.get("free_memory")
+        except Exception:
+            pass
+
+        return info
+    except Exception as e:
+        warnings.warn(f"Failed to get device memory info: {e}")
+        return None
+
+
+def get_queue_event_stats():
+    """
+    Collect the number of outstanding events tracked by the sequential order
+    manager, per SYCL queue.
+
+    A large or steadily growing ``host_task`` count indicates arrays are kept
+    alive by not-yet-retired host tasks (see ``keep_args_alive``), i.e. memory
+    is held on the queue rather than leaked by the Python garbage collector.
+    Returns a list of per-queue dicts (possibly empty).
+    """
+    stats = []
+    try:
+        # `_map` is a ContextVar holding a {SyclQueue: _SequentialOrderManager}.
+        queue_map = dpu.SequentialOrderManager._map.get()
+        for queue, order_manager in queue_map.items():
+            stats.append(
+                {
+                    "device": queue.sycl_device.name,
+                    "submitted_events": order_manager.num_submitted_events,
+                    "host_task_events": order_manager.num_host_task_events,
+                }
+            )
+    except Exception as e:
+        warnings.warn(f"Failed to get queue event stats: {e}")
+    return stats
+
+
+def format_diagnostics(prefix, nodeid):
+    """
+    Build a multi-line diagnostics string covering both OOM hypotheses:
+      * events/host tasks held on the SYCL queue, and
+      * Python GC state (uncollected objects).
+    Intended for logging around a test to investigate
+    ``UR_RESULT_ERROR_OUT_OF_RESOURCES`` failures.
+    """
+    lines = [f"[{prefix}] {nodeid}"]
+
+    mem_info = get_device_memory_info()
+    if mem_info:
+        lines.append(
+            "  Device memory: "
+            f"free={format_memory_size(mem_info['free_memory'])}, "
+            f"global={format_memory_size(mem_info['global_mem_size'])}, "
+            f"max_alloc={format_memory_size(mem_info['max_mem_alloc_size'])}"
+        )
+
+    queue_stats = get_queue_event_stats()
+    if queue_stats:
+        for st in queue_stats:
+            lines.append(
+                "  Queue events: "
+                f"submitted={st['submitted_events']}, "
+                f"host_task={st['host_task_events']} "
+                f"(device={st['device']})"
+            )
+    else:
+        lines.append("  Queue events: none tracked")
+
+    # gc.get_count() -> (gen0, gen1, gen2) allocations since last collection.
+    gc_count = gc.get_count()
+    lines.append(
+        f"  GC: tracked_objects={len(gc.get_objects())}, "
+        f"gen_counts={gc_count}"
+    )
+
+    return "\n".join(lines)
 
 
 def pytest_configure(config):
@@ -157,6 +281,31 @@ def pytest_collection_modifyitems(config, items):
     print(f"DPNP version: {dpnp.__version__}, location: {dpnp}")
     print(f"NumPy version: {numpy.__version__}, location: {numpy}")
     print(f"Python version: {sys.version}")
+
+    # Log device memory information at start up. `free_memory` requires
+    # ZES_ENABLE_SYSMAN=1 (set by run_test.sh) and a driver that reports it.
+    mem_info = get_device_memory_info(dev)
+    if mem_info:
+        print("")
+        print("Device Memory Information:")
+        print(f"  Device: {mem_info['device_name']}")
+        print(f"  Backend: {mem_info['backend']}")
+        print(
+            f"  Global Memory Size: {format_memory_size(mem_info['global_mem_size'])}"
+        )
+        print(
+            f"  Max Allocation Size: {format_memory_size(mem_info['max_mem_alloc_size'])}"
+        )
+        print(
+            f"  Local Memory Size: {format_memory_size(mem_info['local_mem_size'])}"
+        )
+        print(f"  Free Memory: {format_memory_size(mem_info['free_memory'])}")
+        if mem_info["free_memory"] is None:
+            print(
+                "    (free memory not reported; set ZES_ENABLE_SYSMAN=1 "
+                "before launching to enable it)"
+            )
+
     print("")
     if is_gpu or os.getenv("DPNP_QUEUE_GPU") == "1":
         excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
@@ -243,3 +392,53 @@ def suppress_divide_invalid_numpy_warnings(
     suppress_divide_numpy_warnings, suppress_invalid_numpy_warnings
 ):
     yield
+
+
+# Substrings that identify an out-of-resources / out-of-memory device failure,
+# e.g. `RuntimeError: ... UR_RESULT_ERROR_OUT_OF_RESOURCES` on low-memory
+# devices.
+_OOM_MARKERS = (
+    "OUT_OF_RESOURCES",
+    "OUT_OF_HOST_MEMORY",
+    "OUT_OF_DEVICE_MEMORY",
+    "OUT_OF_MEMORY",
+)
+
+
+def _is_oom_failure(excinfo):
+    """Return True if the raised exception looks like a device OOM error."""
+    if excinfo is None:
+        return False
+    if issubclass(excinfo.type, MemoryError):
+        return True
+    text = str(excinfo.value).upper()
+    return any(marker in text for marker in _OOM_MARKERS)
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """
+    Dump device-memory and queue-event diagnostics when a test fails with an
+    out-of-memory / out-of-resources device error.
+
+    Only OOM-type failures are annotated (ordinary assertion failures are left
+    untouched), so the two hypotheses -- events held on the SYCL queue vs.
+    objects not garbage collected -- can be checked from the failure output.
+    """
+    outcome = yield
+    report = outcome.get_result()
+
+    if (
+        report.when == "call"
+        and report.failed
+        and _is_oom_failure(call.excinfo)
+    ):
+        try:
+            diagnostics = format_diagnostics(
+                "OOM DIAGNOSTICS ON FAILURE", item.nodeid
+            )
+            report.sections.append(("Device memory diagnostics", diagnostics))
+        except Exception as e:  # never let diagnostics mask the real failure
+            report.sections.append(
+                ("Device memory diagnostics", f"Failed to collect: {e}")
+            )

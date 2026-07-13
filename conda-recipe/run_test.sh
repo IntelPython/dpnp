@@ -39,6 +39,13 @@ if [ -z "${SKIP_TENSOR_TESTS}" ]; then
     export SKIP_TENSOR_TESTS=1
 fi
 
+# Enable Level-Zero system management so the device free-memory query is
+# reported (see get_device_memory_info in dpnp/tests/conftest.py). Must be set
+# before the Level-Zero driver is initialized, hence exported here.
+if [ -z "${ZES_ENABLE_SYSMAN}" ]; then
+    export ZES_ENABLE_SYSMAN=1
+fi
+
 set -e
 
 $PYTHON -c "import dpnp; print(dpnp.__version__)"
