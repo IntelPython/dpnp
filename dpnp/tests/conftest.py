@@ -442,3 +442,30 @@ def pytest_runtest_makereport(item, call):
             report.sections.append(
                 ("Device memory diagnostics", f"Failed to collect: {e}")
             )
+
+
+# Per-file memory-trend logging.
+#
+# An intermittent OOM (seen once in several runs) is an accumulation signature:
+# memory that creeps up over the session and only occasionally crosses the
+# limit. Sampling once per test file (instead of per test) is cheap -- a few
+# hundred samples over a run -- yet dense enough to read as a trend: watch
+# whether free memory drifts down file-over-file (accumulation, i.e. events
+# held on the queue or objects not collected) or stays flat until one file
+# spikes (that file's footprint / external pressure).
+_last_logged_file = None
+
+
+def pytest_runtest_logstart(nodeid, location):
+    """Log a memory overview the first time each test file is entered."""
+    global _last_logged_file
+    # `location` is (filename, lineno, testname); group by filename.
+    test_file = location[0]
+    if test_file == _last_logged_file:
+        return
+    _last_logged_file = test_file
+
+    # No terminal writer here; a plain print is captured and shown with -s or
+    # on failure, which is sufficient for an offline trend read.
+    print("")
+    print(format_diagnostics("MEMORY AT FILE START", test_file))
