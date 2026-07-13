@@ -184,13 +184,18 @@ def format_diagnostics(prefix, nodeid):
 
     queue_stats = get_queue_event_stats()
     if queue_stats:
-        for st in queue_stats:
-            lines.append(
-                "  Queue events: "
-                f"submitted={st['submitted_events']}, "
-                f"host_task={st['host_task_events']} "
-                f"(device={st['device']})"
-            )
+        # Aggregate across queues -- the order manager keeps one entry per
+        # distinct SyclQueue, so a growing `queues` count is itself a leak
+        # signal (queues accumulating over the run), while the event totals
+        # show how many host tasks are still pinning memory.
+        total_submitted = sum(st["submitted_events"] for st in queue_stats)
+        total_host_task = sum(st["host_task_events"] for st in queue_stats)
+        lines.append(
+            "  Queue events: "
+            f"queues={len(queue_stats)}, "
+            f"submitted_total={total_submitted}, "
+            f"host_task_total={total_host_task}"
+        )
     else:
         lines.append("  Queue events: none tracked")
 
@@ -413,6 +418,27 @@ def _is_oom_failure(excinfo):
         return True
     text = str(excinfo.value).upper()
     return any(marker in text for marker in _OOM_MARKERS)
+
+
+def pytest_runtest_teardown(item, nextitem):
+    """
+    Release transient SYCL queues at the end of each test file.
+
+    Every distinct ``SyclQueue`` a test creates is retained forever as a key in
+    dpctl's ``SequentialOrderManager`` (keyed by queue identity), which pins its
+    host-task events and the backing USM memory for the whole session. Over a
+    full run this accumulates hundreds of queues and steadily drains device
+    memory. Draining and dropping them at each file boundary keeps the footprint
+    flat without paying the cost after every individual test.
+    """
+    # Only act on the last test of the current file (``nextitem`` is None at the
+    # very end of the session, or points at the first test of the next file).
+    if nextitem is not None and item.path == nextitem.path:
+        return
+    try:
+        dpu.SequentialOrderManager.clear()
+    except Exception as e:  # never let cleanup break the run
+        warnings.warn(f"Failed to clear SequentialOrderManager: {e}")
 
 
 @pytest.hookimpl(hookwrapper=True)
