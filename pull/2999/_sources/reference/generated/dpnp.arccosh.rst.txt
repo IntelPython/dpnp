@@ -1,0 +1,10 @@
+﻿
+
+dpnp.arccosh
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: arccosh
