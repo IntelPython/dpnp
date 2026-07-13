@@ -1,0 +1,10 @@
+﻿
+
+dpnp.round
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: round

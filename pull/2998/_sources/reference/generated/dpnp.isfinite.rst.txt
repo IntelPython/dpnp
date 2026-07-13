@@ -1,0 +1,10 @@
+﻿
+
+dpnp.isfinite
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: isfinite
