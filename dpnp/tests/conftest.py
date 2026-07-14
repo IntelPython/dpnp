@@ -30,6 +30,7 @@ import gc
 import os
 import sys
 import warnings
+from collections import Counter
 
 import dpctl
 import dpctl.utils as dpu
@@ -201,10 +202,21 @@ def format_diagnostics(prefix, nodeid):
 
     # gc.get_count() -> (gen0, gen1, gen2) allocations since last collection.
     gc_count = gc.get_count()
+    objects = gc.get_objects()
     lines.append(
-        f"  GC: tracked_objects={len(gc.get_objects())}, "
-        f"gen_counts={gc_count}"
+        f"  GC: tracked_objects={len(objects)}, " f"gen_counts={gc_count}"
     )
+
+    # Breakdown of what dominates the tracked-object set, to tell an actual
+    # leak from benign live pytest/session bookkeeping. Reuses the already
+    # materialized `objects` list, so the only added cost is this Counter pass.
+    type_counts = Counter(
+        f"{type(o).__module__}.{type(o).__qualname__}" for o in objects
+    )
+    top = ", ".join(
+        f"{name}={cnt}" for name, cnt in type_counts.most_common(10)
+    )
+    lines.append(f"  GC top types: {top}")
 
     return "\n".join(lines)
 
