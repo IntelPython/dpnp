@@ -346,7 +346,7 @@ def bincount(x, weights=None, minlength=0):
     array([1, 3, 1, 1, 0, 0, 0, 1])
 
     >>> x = np.array([0, 1, 1, 3, 2, 1, 7, 23])
-    >>> np.bincount(x).size == np.amax(x) + 1
+    >>> np.bincount(x).size == np.max(x) + 1
     array(True)
 
     The input array needs to be of integer dtype, otherwise a

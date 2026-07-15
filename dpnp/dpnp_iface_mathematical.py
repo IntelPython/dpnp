@@ -3011,7 +3011,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         raise ValueError("xp and fp must be 1D arrays")
     if xp.size != fp.size:
         raise ValueError("fp and xp are not of the same length")
-    if xp.size == 0:
+    if xp.size == 0 and x.size != 0:
         raise ValueError("array of sample points is empty")
 
     usm_type, exec_q = get_usm_allocations([x, xp, fp])
@@ -3059,9 +3059,9 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     right = _validate_interp_param(right, "right", exec_q, usm_type, fp.dtype)
 
     usm_type, exec_q = get_usm_allocations([x, xp, fp, period, left, right])
-    output = dpnp.empty(
-        x.shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
-    )
+    output = dpnp.empty_like(x, dtype=out_dtype, usm_type=usm_type)
+    if x.size == 0:
+        return output
 
     left_usm = left.get_array() if left is not None else None
     right_usm = right.get_array() if right is not None else None
