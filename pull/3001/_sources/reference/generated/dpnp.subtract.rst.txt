@@ -1,0 +1,10 @@
+﻿
+
+dpnp.subtract
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: subtract
