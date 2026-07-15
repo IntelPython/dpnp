@@ -7,4 +7,4 @@ dpnp.true\_divide
 
 
 
-.. autofunction:: true_divide
+.. autodata:: true_divide

@@ -7,4 +7,4 @@ dpnp.degrees
 
 
 
-.. autofunction:: degrees
+.. autodata:: degrees

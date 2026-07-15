@@ -7,4 +7,4 @@ dpnp.deg2rad
 
 
 
-.. autofunction:: deg2rad
+.. autodata:: deg2rad

@@ -13,8 +13,8 @@
     </script>
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_manipulation - Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</title>
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>dpnp.dpnp_iface_manipulation - Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -2843,7 +2843,7 @@
 
 <div class="viewcode-block" id="expand_dims">
 <a class="viewcode-back" href="../../reference/generated/dpnp.expand_dims.html#dpnp.expand_dims">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">expand_dims</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">expand_dims</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Expand the shape of an array.</span>
 
@@ -2867,14 +2867,15 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    If `a` has rank (i.e, number of dimensions) `N`, a valid `axis` must reside</span>
-<span class="sd">    in the closed-interval `[-N-1, N]`.</span>
-<span class="sd">    If provided a negative `axis`, the `axis` position at which to insert a</span>
-<span class="sd">    singleton dimension is computed as `N + axis + 1`.</span>
-<span class="sd">    Hence, if provided `-1`, the resolved axis position is `N` (i.e.,</span>
-<span class="sd">    a singleton dimension must be appended to the input array `a`).</span>
-<span class="sd">    If provided `-N-1`, the resolved axis position is `0` (i.e., a</span>
-<span class="sd">    singleton dimension is added to the input array `a`).</span>
+<span class="sd">    If `a` has rank (i.e, number of dimensions) `N`, a valid `axis` value must</span>
+<span class="sd">    reside on the half-open interval `[-M, M)`, where `M = N + len(axis)` (with</span>
+<span class="sd">    `len(axis)` equal to ``1`` when `axis` is an integer).</span>
+<span class="sd">    If provided a negative `axis`, the position at which to insert a singleton</span>
+<span class="sd">    dimension is computed as ``M + axis``.</span>
+<span class="sd">    Hence, if provided ``-1``, the resolved axis position is ``M - 1`` (i.e.,</span>
+<span class="sd">    a singleton dimension is appended to the input array `a`).</span>
+<span class="sd">    If provided ``-M``, the resolved axis position is ``0`` (i.e., a singleton</span>
+<span class="sd">    dimension is prepended to the input array `a`).</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -4200,9 +4201,7 @@
 <span class="sd">    Return a new array with the specified shape.</span>
 
 <span class="sd">    If the new array is larger than the original array, then the new array is</span>
-<span class="sd">    filled with repeated copies of `a`. Note that this behavior is different</span>
-<span class="sd">    from ``a.resize(new_shape)`` which fills with zeros instead of repeated</span>
-<span class="sd">    copies of `a`.</span>
+<span class="sd">    filled with repeated copies of `a`.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.resize`.</span>
 
@@ -4222,7 +4221,6 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.ndarray.resize` : Resize an array in-place.</span>
 <span class="sd">    :obj:`dpnp.reshape` : Reshape an array without changing the total size.</span>
 <span class="sd">    :obj:`dpnp.pad` : Enlarge and pad an array.</span>
 <span class="sd">    :obj:`dpnp.repeat` : Repeat elements of an array.</span>
@@ -5897,9 +5895,9 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=096cb507"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+</div><script src="../../_static/documentation_options.js?v=ad14311e"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
