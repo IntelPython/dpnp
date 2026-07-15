@@ -1057,7 +1057,7 @@ __all__ += [
 ]
 
 # add submodules
-__all__ += ["exceptions", "fft", "linalg", "random", "scipy"]
+__all__ += ["exceptions", "fft", "lib", "linalg", "random", "scipy"]
 
 
 __version__ = get_versions()["version"]
