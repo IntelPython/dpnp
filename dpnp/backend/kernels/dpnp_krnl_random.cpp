@@ -41,9 +41,6 @@
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
-static_assert(INTEL_MKL_VERSION >= __INTEL_MKL_2023_0_0_VERSION_REQUIRED,
-              "OneMKL does not meet minimum version requirement");
-
 namespace mkl_blas = oneapi::mkl::blas;
 namespace mkl_rng = oneapi::mkl::rng;
 namespace mkl_vm = oneapi::mkl::vm;

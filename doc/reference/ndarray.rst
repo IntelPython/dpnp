@@ -168,15 +168,14 @@ Array conversion
 Shape manipulation
 ------------------
 
-For reshape, resize, and transpose, the single tuple argument may be
-replaced with ``n`` integers which will be interpreted as an n-tuple.
+For reshape and transpose, the single tuple argument may be replaced with ``n``
+integers which will be interpreted as an n-tuple.
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
 
    ndarray.reshape
-   ndarray.resize
    ndarray.transpose
    ndarray.swapaxes
    ndarray.flatten

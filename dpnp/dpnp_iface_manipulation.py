@@ -1758,7 +1758,7 @@ def dstack(tup):
     return dpnp.concatenate(arrs, axis=2)
 
 
-def expand_dims(a, axis):
+def expand_dims(a, /, axis):
     """
     Expand the shape of an array.
 
@@ -1782,14 +1782,15 @@ def expand_dims(a, axis):
 
     Notes
     -----
-    If `a` has rank (i.e, number of dimensions) `N`, a valid `axis` must reside
-    in the closed-interval `[-N-1, N]`.
-    If provided a negative `axis`, the `axis` position at which to insert a
-    singleton dimension is computed as `N + axis + 1`.
-    Hence, if provided `-1`, the resolved axis position is `N` (i.e.,
-    a singleton dimension must be appended to the input array `a`).
-    If provided `-N-1`, the resolved axis position is `0` (i.e., a
-    singleton dimension is added to the input array `a`).
+    If `a` has rank (i.e, number of dimensions) `N`, a valid `axis` value must
+    reside on the half-open interval `[-M, M)`, where `M = N + len(axis)` (with
+    `len(axis)` equal to ``1`` when `axis` is an integer).
+    If provided a negative `axis`, the position at which to insert a singleton
+    dimension is computed as ``M + axis``.
+    Hence, if provided ``-1``, the resolved axis position is ``M - 1`` (i.e.,
+    a singleton dimension is appended to the input array `a`).
+    If provided ``-M``, the resolved axis position is ``0`` (i.e., a singleton
+    dimension is prepended to the input array `a`).
 
     See Also
     --------
@@ -3070,9 +3071,7 @@ def resize(a, new_shape):
     Return a new array with the specified shape.
 
     If the new array is larger than the original array, then the new array is
-    filled with repeated copies of `a`. Note that this behavior is different
-    from ``a.resize(new_shape)`` which fills with zeros instead of repeated
-    copies of `a`.
+    filled with repeated copies of `a`.
 
     For full documentation refer to :obj:`numpy.resize`.
 
@@ -3092,7 +3091,6 @@ def resize(a, new_shape):
 
     See Also
     --------
-    :obj:`dpnp.ndarray.resize` : Resize an array in-place.
     :obj:`dpnp.reshape` : Reshape an array without changing the total size.
     :obj:`dpnp.pad` : Enlarge and pad an array.
     :obj:`dpnp.repeat` : Repeat elements of an array.
