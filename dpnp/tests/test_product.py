@@ -1542,7 +1542,11 @@ class TestMatvec:
 
         result = dpnp.matvec(ia, ib, axes=axes)
         expected = numpy.matvec(a, b, axes=axes)
-        assert_dtype_allclose(result, expected)
+
+        # dpnp uses oneMKL gemm_batch while NumPy uses OpenBLAS gemv, so the
+        # summation order differs and the float64 result deviates at the noise
+        # floor (~1e-14), which exceeds the default tolerance
+        assert_dtype_allclose(result, expected, factor=40)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_error(self, xp):
