@@ -14,8 +14,8 @@
     </script>
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.scipy.special.erfc" href="dpnp.scipy.special.erfc.html"><link rel="prev" title="Special functions (dpnp.scipy.special)" href="../scipy_special.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>dpnp.scipy.special.erf - Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</title>
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>dpnp.scipy.special.erf - Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1045,9 +1045,9 @@
         <article role="main" id="furo-main-content">
           <section id="dpnp-scipy-special-erf">
 <h1>dpnp.scipy.special.erf<a class="headerlink" href="#dpnp-scipy-special-erf" title="Link to this heading">¶</a></h1>
-<dl class="py function">
+<dl class="py data">
 <dt class="sig sig-object py" id="dpnp.scipy.special.erf">
-<span class="sig-prename descclassname"><span class="pre">dpnp.scipy.special.</span></span><span class="sig-name descname"><span class="pre">erf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.scipy.special.erf" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.scipy.special.</span></span><span class="sig-name descname"><span class="pre">erf</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;DPNPUnaryFunc</span> <span class="pre">'erf'&gt;</span></span><a class="headerlink" href="#dpnp.scipy.special.erf" title="Link to this definition">¶</a></dt>
 <dd><p>Calculates the Gauss error function of a given input array.</p>
 <p>It is defined as <span class="math notranslate nohighlight">\(\frac{2}{\sqrt{\pi}} \int_{0}^{z} e^{-t^2} \, dt\)</span>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.erf.html#scipy.special.erf" title="(in SciPy v1.18.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.special.erf</span></code></a>.</p>
@@ -1055,7 +1055,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array, expected to have a real-valued floating-point data type.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ndarray}</em><em>, </em><em>optional</em>) -- <p>Optional output array for the function values.
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ndarray}</em><em>, </em><em>optional</em>) -- <p>Optional output array for the function values.
 A tuple (possible only as a keyword argument) must have length equal to the
 number of outputs.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
@@ -1066,7 +1066,7 @@ number of outputs.</p>
 <dd class="field-even"><p><strong>out</strong> -- The values of the error function at the given points <cite>x</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1161,7 +1161,7 @@ number of outputs.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">dpnp.scipy.special.erf</a><ul>
-<li><a class="reference internal" href="#dpnp.scipy.special.erf"><code class="docutils literal notranslate"><span class="pre">erf()</span></code></a></li>
+<li><a class="reference internal" href="#dpnp.scipy.special.erf"><code class="docutils literal notranslate"><span class="pre">erf</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1173,14 +1173,14 @@ number of outputs.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=096cb507"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+</div><script src="../../_static/documentation_options.js?v=ad14311e"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="../../_static/dpnp-custom.js?v=b3bf1689"></script>
     </body>
 </html>

@@ -14,8 +14,8 @@
     </script>
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.histogram2d" href="dpnp.histogram2d.html"><link rel="prev" title="dpnp.cov" href="dpnp.cov.html">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2025.12.19 -->
-        <title>dpnp.histogram - Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</title>
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>dpnp.histogram - Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev2 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1059,7 +1059,7 @@ array of bin edges. This may harm performance in some applications.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input data. The histogram is computed over the flattened array.</p></li>
-<li><p><strong>bins</strong> (<em>{int</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>sequence</em><em> of </em><em>scalars}</em><em>, </em><em>optional</em>) -- <p>If <cite>bins</cite> is an int, it defines the number of equal-width bins in the
+<li><p><strong>bins</strong> (<em>{int</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray</em><em>, </em><em>sequence</em><em> of </em><em>scalars}</em><em>, </em><em>optional</em>) -- <p>If <cite>bins</cite> is an int, it defines the number of equal-width bins in the
 given range.
 If <cite>bins</cite> is a sequence, it defines a monotonically increasing array
 of bin edges, including the rightmost edge, allowing for non-uniform
@@ -1082,7 +1082,7 @@ be equal to <code class="docutils literal notranslate"><span class="pre">1</span
 a probability <em>mass</em> function.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>weights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An array of weights, of the same shape as <cite>a</cite>. Each value in <cite>a</cite> only
+<li><p><strong>weights</strong> (<em>{None</em><em>, </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An array of weights, of the same shape as <cite>a</cite>. Each value in <cite>a</cite> only
 contributes its associated weight towards the bin count (instead of 1).
 If <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the weights are normalized, so that the
 integral of the density over the range remains <code class="docutils literal notranslate"><span class="pre">1</span></code>.
@@ -1210,9 +1210,9 @@ description of the possible semantics. If <cite>weights</cite> are given,
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=096cb507"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+</div><script src="../../_static/documentation_options.js?v=ad14311e"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=ccdb6887"></script>
