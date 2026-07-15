@@ -34,6 +34,7 @@ This release is compatible with NumPy 2.5.
 * Updated Python Array API specification version supported to `2025.12` [#2899](https://github.com/IntelPython/dpnp/pull/2899)
 * Replaced references to the `dpnp.amax`/`dpnp.amin` aliases with the canonical `dpnp.max`/`dpnp.min` in docstrings and code internally [#2990](https://github.com/IntelPython/dpnp/pull/2990)
 * Aligned the signature of `dpnp.tensor.expand_dims` with the Python array API by making `axis` a required argument [#2988](https://github.com/IntelPython/dpnp/pull/2988)
+* Removed dead code branches guarded by outdated oneMKL and DPC++ compiler version checks [#2999](https://github.com/IntelPython/dpnp/pull/2999)
 
 ### Deprecated
 
