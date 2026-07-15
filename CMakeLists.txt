@@ -232,12 +232,18 @@ if(_use_onemath)
         set(ENABLE_CUBLAS_BACKEND True)
         set(ENABLE_CUSOLVER_BACKEND True)
         set(ENABLE_CUFFT_BACKEND True)
+        set(ENABLE_CUSPARSE_BACKEND True)
         # set(ENABLE_CURAND_BACKEND True)
     endif()
     if(_use_onemath_hip)
         set(ENABLE_ROCBLAS_BACKEND True)
         set(ENABLE_ROCSOLVER_BACKEND True)
         set(ENABLE_ROCFFT_BACKEND True)
+        # rocSPARSE is not enabled: it forbids reusing a sparse matrix
+        # handle across spmv calls (oneMath #647 / ROCm/rocSPARSE #332),
+        # which the cached-handle SpMV design in extensions/sparse relies
+        # on. Enable only once oneMath supports rocSPARSE handle reuse.
+        # set(ENABLE_ROCSPARSE_BACKEND True)
         # set(ENABLE_ROCRAND_BACKEND True)
     endif()
 

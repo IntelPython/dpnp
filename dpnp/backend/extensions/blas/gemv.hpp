@@ -35,12 +35,30 @@
 
 namespace dpnp::extensions::blas
 {
+// y = alpha * op(A) * x + beta * y. alpha/beta are real-valued (double)
+// and are cast to the matrix value type in the impl.
+//
+// ``trans_op`` selects the operation applied to A:
+//      0 = N  (no transpose)         y = alpha * A   @ x + beta * y
+//      1 = T  (transpose)            y = alpha * A^T @ x + beta * y
+//      2 = C  (conjugate-transpose)  y = alpha * A^H @ x + beta * y
+//
+// For real-valued A, T and C are equivalent. For complex A they
+// differ, and C is required for any algorithm that performs a
+// Hermitian inner product through gemv -- the GMRES Arnoldi step
+// (Gram-Schmidt over a complex Krylov basis) being the canonical
+// example. ``trans_op = 2`` is currently only supported for
+// F-contiguous (column-major) matrices; the row-major code path
+// for conjugate-transpose would require an explicit element-wise
+// conjugate pass and is not wired up here.
 extern std::pair<sycl::event, sycl::event>
     gemv(sycl::queue &exec_q,
          const dpnp::tensor::usm_ndarray &matrixA,
          const dpnp::tensor::usm_ndarray &vectorX,
          const dpnp::tensor::usm_ndarray &vectorY,
-         const bool transpose,
+         const int trans_op,
+         const double alpha,
+         const double beta,
          const std::vector<sycl::event> &depends);
 
 extern void init_gemv_dispatch_vector(void);
