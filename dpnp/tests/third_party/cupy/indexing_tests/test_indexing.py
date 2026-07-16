@@ -388,7 +388,6 @@ class TestSelect(unittest.TestCase):
         with pytest.raises(TypeError):
             cupy.select(condlist, choicelist, [dtype(2)])
 
-    @pytest.mark.skip("as_strided() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_indexing_overflows(self, xp):
         a = xp.arange(2, dtype=xp.int32)
