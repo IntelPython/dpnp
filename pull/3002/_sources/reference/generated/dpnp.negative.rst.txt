@@ -1,0 +1,10 @@
+﻿
+
+dpnp.negative
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: negative

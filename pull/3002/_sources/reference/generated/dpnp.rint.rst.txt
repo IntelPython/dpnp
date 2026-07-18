@@ -1,0 +1,10 @@
+﻿
+
+dpnp.rint
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: rint
