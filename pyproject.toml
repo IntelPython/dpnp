@@ -121,6 +121,11 @@ omit = [
 
 [tool.coverage.run]
 branch = true
+# Pin the C trace core. On Python 3.14+ coverage.py defaults to the sys.monitoring
+# ("sysmon") core, which (1) does not support plugins such as Cython.Coverage below,
+# and (2) corrupts the exception state when a C/Cython function raises, turning
+# expected exceptions into SystemError (e.g. usm_ndarray.__dlpack__ in test_dlpack.py).
+core = "ctrace"
 omit = [
   "dpnp/tests/*",
   "dpnp/_version.py"
