@@ -42,7 +42,12 @@ function(build_dpnp_cython_ext _trgt _src _dest)
     endif()
 
     if(DPNP_GENERATE_COVERAGE)
-        target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
+        # Pass CYTHON_USE_SYS_MONITORING=0 to force Cython's legacy (settrace-based)
+        # line tracing instead of the sys.monitoring path
+        target_compile_definitions(
+            ${_trgt}
+            PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1 CYTHON_USE_SYS_MONITORING=0
+        )
         target_compile_options(${_trgt} PRIVATE "-fno-sycl-use-footer")
     endif()
 
@@ -110,7 +115,13 @@ function(build_dpnp_tensor_ext _trgt _src _dest)
     endif()
     target_link_libraries(${_trgt} PRIVATE Python::NumPy)
     if(DPNP_GENERATE_COVERAGE)
-        target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
+        # Pass CYTHON_USE_SYS_MONITORING=0 to force Cython's legacy (settrace-based)
+        # line tracing instead of the sys.monitoring path
+        # See https://github.com/cython/cython/issues/6658.
+        target_compile_definitions(
+            ${_trgt}
+            PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1 CYTHON_USE_SYS_MONITORING=0
+        )
         if(BUILD_DPNP_TENSOR_SYCL)
             target_compile_options(${_trgt} PRIVATE -fno-sycl-use-footer)
         endif()
