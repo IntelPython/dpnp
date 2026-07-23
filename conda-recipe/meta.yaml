@@ -51,7 +51,8 @@ requirements:
       - {{ pin_compatible('onemkl-sycl-rng', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-vm', min_pin='x.x', max_pin='x') }}
       - numpy
-      - intel-gpu-ocl-icd-system
+      - ocl-icd-system  # [linux]
+      - khronos-opencl-icd-loader  # [win]
 
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
