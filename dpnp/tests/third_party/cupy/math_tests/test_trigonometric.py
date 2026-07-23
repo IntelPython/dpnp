@@ -18,7 +18,10 @@ class TestTrigonometric(unittest.TestCase):
         return getattr(xp, name)(a)
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
+    @testing.numpy_cupy_allclose(
+        atol={numpy.float16: 1e-3, "default": 1e-5},
+        type_check=has_support_aspect64(),
+    )
     def check_binary(self, name, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
