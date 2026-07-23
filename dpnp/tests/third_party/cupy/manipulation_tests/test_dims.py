@@ -300,7 +300,6 @@ class TestBroadcast(unittest.TestCase):
         arrays = [testing.shaped_arange(s, xp, dtype) for s in shapes]
         return xp.broadcast(*arrays)
 
-    @pytest.mark.skip("broadcast() is not supported yet")
     @testing.for_all_dtypes()
     def test_broadcast(self, dtype):
         broadcast_np = self._broadcast(numpy, dtype, self.shapes)
@@ -340,7 +339,6 @@ class TestBroadcast(unittest.TestCase):
 )
 class TestInvalidBroadcast(unittest.TestCase):
 
-    @pytest.mark.skip("broadcast() is not supported yet")
     @testing.for_all_dtypes()
     def test_invalid_broadcast(self, dtype):
         for xp in (numpy, cupy):
