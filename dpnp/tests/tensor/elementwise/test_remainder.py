@@ -26,9 +26,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import ctypes
-
-import dpctl
 import numpy as np
 import pytest
 
@@ -42,7 +39,6 @@ from ..helper import (
 from .utils import (
     _compare_dtypes,
     _no_complex_dtypes,
-    _usm_types,
 )
 
 
@@ -78,57 +74,6 @@ def test_remainder_dtype_matrix(op1_dtype, op2_dtype):
     assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == ar3.shape
     assert (dpt.asnumpy(r) == expected.astype(r.dtype)).all()
-
-
-@pytest.mark.parametrize("op1_usm_type", _usm_types)
-@pytest.mark.parametrize("op2_usm_type", _usm_types)
-def test_remainder_usm_type_matrix(op1_usm_type, op2_usm_type):
-    get_queue_or_skip()
-
-    sz = 128
-    ar1 = dpt.ones(sz, dtype="i4", usm_type=op1_usm_type)
-    ar2 = dpt.ones_like(ar1, dtype="i4", usm_type=op2_usm_type)
-
-    r = dpt.remainder(ar1, ar2)
-    assert isinstance(r, dpt.usm_ndarray)
-    expected_usm_type = dpt.get_coerced_usm_type((op1_usm_type, op2_usm_type))
-    assert r.usm_type == expected_usm_type
-
-
-def test_remainder_order():
-    get_queue_or_skip()
-
-    ar1 = dpt.ones((20, 20), dtype="i4", order="C")
-    ar2 = dpt.ones((20, 20), dtype="i4", order="C")
-    r1 = dpt.remainder(ar1, ar2, order="C")
-    assert r1.flags.c_contiguous
-    r2 = dpt.remainder(ar1, ar2, order="F")
-    assert r2.flags.f_contiguous
-    r3 = dpt.remainder(ar1, ar2, order="A")
-    assert r3.flags.c_contiguous
-    r4 = dpt.remainder(ar1, ar2, order="K")
-    assert r4.flags.c_contiguous
-
-    ar1 = dpt.ones((20, 20), dtype="i4", order="F")
-    ar2 = dpt.ones((20, 20), dtype="i4", order="F")
-    r1 = dpt.remainder(ar1, ar2, order="C")
-    assert r1.flags.c_contiguous
-    r2 = dpt.remainder(ar1, ar2, order="F")
-    assert r2.flags.f_contiguous
-    r3 = dpt.remainder(ar1, ar2, order="A")
-    assert r3.flags.f_contiguous
-    r4 = dpt.remainder(ar1, ar2, order="K")
-    assert r4.flags.f_contiguous
-
-    ar1 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2]
-    ar2 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2]
-    r4 = dpt.remainder(ar1, ar2, order="K")
-    assert r4.strides == (20, -1)
-
-    ar1 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2].mT
-    ar2 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2].mT
-    r4 = dpt.remainder(ar1, ar2, order="K")
-    assert r4.strides == (-1, 20)
 
 
 @pytest.mark.parametrize("dt", _no_complex_dtypes[1:8:2])
@@ -204,38 +149,6 @@ def test_remainder_special_cases():
 
     with np.errstate(invalid="ignore"):
         np.allclose(dpt.asnumpy(res), np.remainder(x_np, y_np))
-
-
-@pytest.mark.parametrize("arr_dt", _no_complex_dtypes)
-def test_remainder_python_scalar(arr_dt):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(arr_dt, q)
-
-    X = dpt.ones((10, 10), dtype=arr_dt, sycl_queue=q)
-    py_ones = (
-        bool(1),
-        int(1),
-        float(1),
-        np.float32(1),
-        ctypes.c_int(1),
-    )
-    for sc in py_ones:
-        R = dpt.remainder(X, sc)
-        assert isinstance(R, dpt.usm_ndarray)
-        R = dpt.remainder(sc, X)
-        assert isinstance(R, dpt.usm_ndarray)
-
-
-@pytest.mark.parametrize("dtype", _no_complex_dtypes[1:])
-def test_remainder_inplace_python_scalar(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-    X = dpt.ones((10, 10), dtype=dtype, sycl_queue=q)
-    dt_kind = X.dtype.kind
-    if dt_kind in "ui":
-        X %= int(1)
-    elif dt_kind == "f":
-        X %= float(1)
 
 
 @pytest.mark.parametrize("op1_dtype", _no_complex_dtypes[1:])

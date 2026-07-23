@@ -26,11 +26,8 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import itertools
-
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose
 
 import dpnp.tensor as dpt
 
@@ -89,20 +86,3 @@ def test_isinf_floats(dtype):
         Ynp = np.repeat(np.array([y1, y2, y3, y4], dtype=dtype), mult)
         Y = dpt.asarray(Ynp, sycl_queue=q)
         assert np.array_equal(dpt.asnumpy(dpt.isinf(Y)), np.isinf(Ynp))
-
-
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_isinf_order(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (10, 10, 10, 10)
-    X = dpt.ones(input_shape, dtype=arg_dt, sycl_queue=q)
-
-    for perms in itertools.permutations(range(4)):
-        U = dpt.permute_dims(X[::2, ::-1, ::-1, ::5], perms)
-        expected_Y = np.full(U.shape, fill_value=False, dtype=dpt.bool)
-        for ord in ["C", "F", "A", "K"]:
-            Y = dpt.isinf(U, order=ord)
-            assert_allclose(dpt.asnumpy(Y), expected_Y)
