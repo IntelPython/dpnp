@@ -88,6 +88,9 @@ public:
         else if (x_idx >= static_cast<TIdx>(xp_size - 1)) {
             out[id] = right_val;
         }
+        else if (x_val == xp[x_idx]) {
+            out[id] = fp[x_idx];
+        }
         else {
             TValue slope =
                 (fp[x_idx + 1] - fp[x_idx]) / (xp[x_idx + 1] - xp[x_idx]);

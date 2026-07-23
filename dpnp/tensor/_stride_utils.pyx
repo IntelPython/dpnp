@@ -28,20 +28,24 @@
 
 # distutils: language = c++
 # cython: language_level=3
+# cython: linetrace=True
 
-from cpython.mem cimport PyMem_Malloc
+from cpython.mem cimport PyMem_Free, PyMem_Malloc
 from cpython.ref cimport Py_INCREF
 from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
+
+cdef extern from "usm_ndarray_constants.h":
+    int USM_ARRAY_C_CONTIGUOUS_VALUE
+    int USM_ARRAY_F_CONTIGUOUS_VALUE
+
+cdef int USM_ARRAY_C_CONTIGUOUS = USM_ARRAY_C_CONTIGUOUS_VALUE
+cdef int USM_ARRAY_F_CONTIGUOUS = USM_ARRAY_F_CONTIGUOUS_VALUE
 
 cdef int ERROR_MALLOC = 1
 cdef int ERROR_INTERNAL = -1
 cdef int ERROR_INCORRECT_ORDER = 2
 cdef int ERROR_UNEXPECTED_STRIDES = 3
-
-cdef int USM_ARRAY_C_CONTIGUOUS = 1
-cdef int USM_ARRAY_F_CONTIGUOUS = 2
-cdef int USM_ARRAY_WRITABLE = 4
 
 
 cdef Py_ssize_t shape_to_elem_count(int nd, Py_ssize_t *shape_arr):

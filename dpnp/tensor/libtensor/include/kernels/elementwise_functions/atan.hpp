@@ -33,21 +33,18 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <cmath>
-#include <complex>
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 #include <type_traits>
 #include <vector>
 
 #include <sycl/sycl.hpp>
 
-#include "sycl_complex.hpp"
+#include "common.hpp"
+#include "complex_math.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpnp_tensor_types.hpp"
-#include "kernels/elementwise_functions/common.hpp"
 
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -80,67 +77,7 @@ struct AtanFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-            using realT = typename argT::value_type;
-
-            static constexpr realT q_nan =
-                std::numeric_limits<realT>::quiet_NaN();
-            /*
-             * atan(in) = I * conj( atanh(I * conj(in)) )
-             * so we first calculate w = atanh(I * conj(in)) with
-             * x = real(I * conj(in)) = imag(in)
-             * y = imag(I * conj(in)) = real(in)
-             * and then return {imag(w), real(w)} which is atan(in)
-             */
-            const realT x = std::imag(in);
-            const realT y = std::real(in);
-            if (std::isnan(x)) {
-                /* atanh(NaN + I*+-Inf) = sign(NaN)*0 + I*+-Pi/2 */
-                if (std::isinf(y)) {
-                    const realT pi_half = sycl::atan(realT(1)) * 2;
-
-                    const realT atanh_re = sycl::copysign(realT(0), x);
-                    const realT atanh_im = sycl::copysign(pi_half, y);
-                    return resT{atanh_im, atanh_re};
-                }
-                /*
-                 * All other cases involving NaN return NaN + I*NaN.
-                 */
-                return resT{q_nan, q_nan};
-            }
-            else if (std::isnan(y)) {
-                /* atanh(+-Inf + I*NaN) = +-0 + I*NaN */
-                if (std::isinf(x)) {
-                    const realT atanh_re = sycl::copysign(realT(0), x);
-                    const realT atanh_im = q_nan;
-                    return resT{atanh_im, atanh_re};
-                }
-                /* atanh(+-0 + I*NaN) = +-0 + I*NaN */
-                if (x == realT(0)) {
-                    return resT{q_nan, x};
-                }
-                /*
-                 * All other cases involving NaN return NaN + I*NaN.
-                 */
-                return resT{q_nan, q_nan};
-            }
-
-            /*
-             * For large x or y including
-             * atanh(+-Inf + I*+-Inf) = 0 + I*+-PI/2
-             * The sign of pi/2 depends on the sign of imaginary part of the
-             * input.
-             */
-            static constexpr realT r_eps =
-                realT(1) / std::numeric_limits<realT>::epsilon();
-            if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
-                const realT pi_half = sycl::atan(realT(1)) * 2;
-
-                const realT atanh_re = realT(0);
-                const realT atanh_im = sycl::copysign(pi_half, y);
-                return resT{atanh_im, atanh_re};
-            }
-            /* ordinary cases */
-            return exprm_ns::atan(exprm_ns::complex<realT>(in)); // atan(in);
+            return complex_math::catan(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

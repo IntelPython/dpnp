@@ -247,8 +247,7 @@ if(_use_onemath)
         FetchContent_Declare(
             onemath_library
             GIT_REPOSITORY https://github.com/uxlfoundation/oneMath.git
-            GIT_TAG
-                6ff3a43e555dbb20357017d48f0f6c6263259895 # v0.9
+            GIT_TAG 6ff3a43e555dbb20357017d48f0f6c6263259895 # v0.9
         )
     endif()
 
@@ -327,6 +326,19 @@ elseif(UNIX)
 else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
+
+# install dpnp-config.cmake for find_package() support
+foreach(_dest IN ITEMS dpnp/resources/cmake lib/cmake/dpnp)
+    install(FILES ${CMAKE_SOURCE_DIR}/cmake/dpnp-config.cmake DESTINATION ${_dest})
+endforeach()
+
+# install dpnp4pybind11.hpp and usm_ndarray_constants.h into include folder
+install(
+    FILES
+        ${CMAKE_SOURCE_DIR}/dpnp/include/dpnp4pybind11.hpp
+        ${CMAKE_SOURCE_DIR}/dpnp/include/usm_ndarray_constants.h
+    DESTINATION dpnp/include
+)
 
 # Define flags for CMAKE_BUILD_TYPE=Coverage
 set(CMAKE_C_FLAGS_COVERAGE "${CMAKE_C_FLAGS_DEBUG} -O1 -g1 -DDEBUG")

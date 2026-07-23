@@ -38,7 +38,9 @@ from ..helper import (
 )
 from .utils import (
     _all_dtypes,
+    _complex_fp_dtypes,
     _map_to_device_dtype,
+    _real_fp_dtypes,
 )
 
 _trig_funcs = [(np.sin, dpt.sin), (np.cos, dpt.cos), (np.tan, dpt.tan)]
@@ -63,7 +65,7 @@ def test_trig_out_type(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+@pytest.mark.parametrize("dtype", _real_fp_dtypes)
 def test_trig_real_contig(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -96,7 +98,7 @@ def test_trig_real_contig(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["c8", "c16"])
+@pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 def test_trig_complex_contig(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -134,7 +136,7 @@ def test_trig_complex_contig(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+@pytest.mark.parametrize("dtype", _real_fp_dtypes)
 def test_trig_real_strided(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -168,7 +170,7 @@ def test_trig_real_strided(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["c8", "c16"])
+@pytest.mark.parametrize("dtype", _complex_fp_dtypes)
 def test_trig_complex_strided(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -216,7 +218,7 @@ def test_trig_complex_strided(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
+@pytest.mark.parametrize("dtype", _real_fp_dtypes)
 def test_trig_real_special_cases(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -232,3 +234,44 @@ def test_trig_real_special_cases(np_call, dpt_call, dtype):
     tol = 8 * dpt.finfo(dtype).resolution
     Y = dpt_call(yf)
     assert_allclose(dpt.asnumpy(Y), Y_np, atol=tol, rtol=tol)
+
+
+@pytest.mark.parametrize("np_call, dpt_call", _inv_trig_funcs)
+@pytest.mark.parametrize("dtype", _complex_fp_dtypes)
+def test_inv_trig_large_negative_real(np_call, dpt_call, dtype):
+    """
+    Test inverse trigonometric functions for large negative real parts.
+
+    Regression acos test for threshold bug where catastrophic cancellation in
+    z + sqrt(z² - 1) caused log(0) = -infinity for |Re(z)| in [4e7, 9e7+]
+    with negative real parts.
+    """
+
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    # input values that previously returned infinity
+    thr1 = 1 / dpt.finfo(dtype).eps  # acos, asin
+    thr2 = np.sqrt(thr1) / 2  # atan
+    x = [
+        complex(-4e7, 1.0),  # Boundary of bug zone
+        complex(-9e7, 1.0),  # Middle of bug zone
+        complex(-1e8, 1.0),  # Upper range
+        complex(-4.45712982e8, 1.0),  # Original reported value
+        # Exact threshold values
+        complex(thr1, 1.0),
+        complex(thr2, 1.0),
+        # Next values after threshold
+        complex(np.nextafter(thr1, np.inf), 1.0),
+        complex(np.nextafter(thr2, np.inf), 1.0),
+    ]
+
+    xf = np.asarray(x, dtype=dtype)
+    yf = dpt.asarray(x, dtype=dtype, sycl_queue=q)
+
+    result = dpt_call(yf)
+    expected = np_call(xf)
+
+    tol = 8 * dpt.finfo(dtype).resolution
+    assert not dpt.any(dpt.isinf(result))
+    assert_allclose(dpt.asnumpy(result), expected, atol=tol, rtol=tol)

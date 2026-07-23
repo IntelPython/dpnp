@@ -74,7 +74,10 @@ file(GLOB _cython_sources *.pyx)
 foreach(_cy_file ${_cython_sources})
     get_filename_component(_trgt ${_cy_file} NAME_WLE)
     build_dpnp_tensor_ext(${_trgt} ${_cy_file} "dpnp/tensor" RELATIVE_PATH "..")
-    target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_include_directories(
+        ${_trgt}
+        PRIVATE ${CMAKE_SOURCE_DIR}/dpnp/include ${CMAKE_CURRENT_SOURCE_DIR}/include
+    )
 endforeach()
 
 if(WIN32)
@@ -352,10 +355,17 @@ foreach(python_module_name ${_py_trgts})
     target_include_directories(
         ${python_module_name}
         PRIVATE
-            ${CMAKE_SOURCE_DIR}/dpnp/backend/include
-            ${Dpctl_INCLUDE_DIR}
+            ${CMAKE_SOURCE_DIR}/dpnp/include
             ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
             ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/
+    )
+
+    target_include_directories(
+        ${python_module_name}
+        SYSTEM
+        PRIVATE
+            ${SYCL_INCLUDE_DIR}
+            ${Dpctl_INCLUDE_DIR}
             ${CMAKE_BINARY_DIR} # For generated Cython headers
     )
     target_link_options(${python_module_name} PRIVATE ${_linker_options})

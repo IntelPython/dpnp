@@ -160,6 +160,7 @@ def searchsorted(
             ind,
             res,
             axis,
+            axis + 1,
             wrap_out_of_bound_indices_mode,
             sycl_queue=q,
             depends=dep_evs,

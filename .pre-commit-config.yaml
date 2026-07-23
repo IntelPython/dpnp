@@ -57,19 +57,19 @@ repos:
     hooks:
     -   id: pyupgrade
 -   repo: https://github.com/codespell-project/codespell
-    rev: v2.4.2
+    rev: v2.4.3
     hooks:
     -   id: codespell
         args: ["-L", "abd"]  # ignore "abd" used in einsum tests
         additional_dependencies:
             - tomli
 -   repo: https://github.com/psf/black
-    rev: 26.3.1
+    rev: 26.5.1
     hooks:
     -   id: black
         exclude: "dpnp/_version.py"
 -   repo: https://github.com/pycqa/isort
-    rev: 9.0.0a3
+    rev: 9.0.0b1
     hooks:
     -   id: isort
         name: isort (python)
@@ -87,14 +87,14 @@ repos:
         args: ["--config=.flake8"]
         additional_dependencies:
             - flake8-docstrings==1.7.0
-            - flake8-bugbear==24.12.12
+            - flake8-bugbear==25.11.29
 -   repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v22.1.5
+    rev: v22.1.8
     hooks:
     -   id: clang-format
         args: ["-i"]
 -   repo: https://github.com/gitleaks/gitleaks
-    rev: v8.30.0
+    rev: v8.30.1
     hooks:
     -   id: gitleaks
 -   repo: https://github.com/jumanjihouse/pre-commit-hooks
@@ -128,8 +128,13 @@ repos:
     hooks:
     -   id: actionlint
 -   repo: https://github.com/BlankSpruce/gersemi-pre-commit
-    rev: 0.27.5
+    rev: 0.27.7
     hooks:
     -   id: gersemi
         exclude: "dpnp/backend/cmake/Modules/"
         args: ["-i", "-l", "88", "--no-warn-about-unknown-commands"]
+-   repo: https://github.com/MarcoGorelli/cython-lint
+    rev: v0.21.0
+    hooks:
+    -   id: cython-lint
+    -   id: double-quote-cython-strings

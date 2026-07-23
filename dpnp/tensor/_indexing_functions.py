@@ -54,7 +54,7 @@ def _get_indexing_mode(name):
 
 def _range(sh_i, i, nd, q, usm_t, dt):
     ind = dpt.arange(sh_i, dtype=dt, usm_type=usm_t, sycl_queue=q)
-    ind.shape = tuple(sh_i if i == j else 1 for j in range(nd))
+    ind = dpt.reshape(ind, tuple(sh_i if i == j else 1 for j in range(nd)))
     return ind
 
 
@@ -342,7 +342,14 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
     _manager = SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     hev, put_ev = ti._put(
-        x, (indices,), rhs, axis, mode, sycl_queue=exec_q, depends=deps_ev
+        x,
+        (indices,),
+        rhs,
+        axis,
+        axis + 1,
+        mode,
+        sycl_queue=exec_q,
+        depends=deps_ev,
     )
     _manager.add_event_pair(hev, put_ev)
 
@@ -543,7 +550,14 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
     _manager = SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     hev, take_ev = ti._take(
-        x, (indices,), out, axis, mode, sycl_queue=exec_q, depends=deps_ev
+        x,
+        (indices,),
+        out,
+        axis,
+        axis + 1,
+        mode,
+        sycl_queue=exec_q,
+        depends=deps_ev,
     )
     _manager.add_event_pair(hev, take_ev)
 

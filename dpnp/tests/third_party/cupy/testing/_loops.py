@@ -1523,8 +1523,8 @@ def for_contiguous_axes(name="axis"):
     def decorator(impl):
         @_wraps_partial(impl, name)
         def test_func(self, *args, **kw):
-            ndim = len(self.shape)
-            order = self.order
+            ndim = len(kw["shape"])
+            order = kw["order"]
             for i in range(ndim):
                 a = ()
                 if order in ("c", "C"):
@@ -1546,7 +1546,7 @@ def for_contiguous_axes(name="axis"):
                         ", ndim is",
                         ndim,
                         ", shape is",
-                        self.shape,
+                        kw["shape"],
                         ", order is",
                         order,
                     )

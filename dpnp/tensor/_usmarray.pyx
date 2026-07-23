@@ -30,6 +30,8 @@
 # cython: language_level=3
 # cython: linetrace=True
 
+import warnings
+
 import dpctl
 import dpctl.memory as dpmem
 import numpy as np
@@ -46,7 +48,6 @@ from ._print import usm_ndarray_repr, usm_ndarray_str
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
 from cpython.mem cimport PyMem_Free
-from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
 from . cimport _dlpack as c_dlpack
 
@@ -56,9 +57,51 @@ from . import _flags
 from ._dlpack import get_build_dlpack_version
 from ._tensor_impl import default_device_fp_type
 
-include "_stride_utils.pxi"
-include "_types.pxi"
-include "_slicing.pxi"
+from ._slicing cimport _is_buffer
+
+from ._slicing import _basic_slice_meta
+
+from ._stride_utils cimport (
+    ERROR_INCORRECT_ORDER,
+    ERROR_MALLOC,
+    ERROR_UNEXPECTED_STRIDES,
+    _c_contig_strides,
+    _f_contig_strides,
+    _from_input_shape_strides,
+    _make_int_tuple,
+    _make_reversed_int_tuple,
+    _swap_last_two,
+    shape_to_elem_count,
+)
+from ._types cimport (
+    _make_typestr,
+    dtype_to_typenum,
+    type_bytesize,
+)
+
+
+# Public API constants initialized from usm_ndarray_constants.h
+cdef int USM_ARRAY_C_CONTIGUOUS = USM_ARRAY_C_CONTIGUOUS_VALUE
+cdef int USM_ARRAY_F_CONTIGUOUS = USM_ARRAY_F_CONTIGUOUS_VALUE
+cdef int USM_ARRAY_WRITABLE = USM_ARRAY_WRITABLE_VALUE
+
+cdef int UAR_BOOL = UAR_BOOL_VALUE
+cdef int UAR_BYTE = UAR_BYTE_VALUE
+cdef int UAR_UBYTE = UAR_UBYTE_VALUE
+cdef int UAR_SHORT = UAR_SHORT_VALUE
+cdef int UAR_USHORT = UAR_USHORT_VALUE
+cdef int UAR_INT = UAR_INT_VALUE
+cdef int UAR_UINT = UAR_UINT_VALUE
+cdef int UAR_LONG = UAR_LONG_VALUE
+cdef int UAR_ULONG = UAR_ULONG_VALUE
+cdef int UAR_LONGLONG = UAR_LONGLONG_VALUE
+cdef int UAR_ULONGLONG = UAR_ULONGLONG_VALUE
+cdef int UAR_FLOAT = UAR_FLOAT_VALUE
+cdef int UAR_DOUBLE = UAR_DOUBLE_VALUE
+cdef int UAR_CFLOAT = UAR_CFLOAT_VALUE
+cdef int UAR_CDOUBLE = UAR_CDOUBLE_VALUE
+cdef int UAR_TYPE_SENTINEL = UAR_TYPE_SENTINEL_VALUE
+cdef int UAR_HALF = UAR_HALF_VALUE
 
 
 class DLDeviceType(IntEnum):
@@ -130,7 +173,7 @@ cdef object _as_zero_dim_ndarray(object usm_ary):
     usm_ary.sycl_queue.wait()
     host_buf = mem_view.copy_to_host()
     view = host_buf.view(usm_ary.dtype)
-    view.shape = tuple()
+    view = view.reshape(())
     return view
 
 
@@ -664,10 +707,10 @@ cdef class usm_ndarray:
         Elements of the shape tuple give the lengths of the
         respective array dimensions.
 
-        Setting shape is allowed only when reshaping to the requested
-        dimensions can be returned as view, otherwise :exc:`AttributeError`
-        is raised. Use :func:`dpctl.tensor.reshape` to reshape the array
-        in all cases.
+        .. warning::
+            Setting ``a.shape`` has been deprecated and may be removed in
+            the future. Use :func:`dpnp.tensor.reshape` to reshape the array
+            instead.
 
         :Example:
 
@@ -676,7 +719,7 @@ cdef class usm_ndarray:
                 from dpnp import tensor
 
                 x = tensor.arange(899)
-                x.shape = (29, 31)
+                x = tensor.reshape(x, (29, 31))
         """
         if self.nd_ > 0:
             return _make_int_tuple(self.nd_, self.shape_)
@@ -697,10 +740,23 @@ cdef class usm_ndarray:
                 number of elements in the array.
 
         Whether the array can be reshape in-place depends on its
-        strides. Use :func:`dpctl.tensor.reshape` function which
+        strides. Use :func:`dpnp.tensor.reshape` function which
         always succeeds to reshape the array by performing a copy
         if necessary.
+
+        .. deprecated::
+            Setting ``a.shape`` has been deprecated and may be removed in
+            the future. Use :func:`dpnp.tensor.reshape` to reshape the array
+            instead.
         """
+        warnings.warn(
+            "Setting the shape on an array has been deprecated. As an "
+            "alternative, you can create a new array with the desired shape "
+            "using the reshape function.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         cdef int new_nd = -1
         cdef Py_ssize_t nelems = -1
         cdef int err = 0
