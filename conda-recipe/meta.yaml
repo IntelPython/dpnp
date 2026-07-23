@@ -45,6 +45,9 @@ requirements:
       - python-gil     # [py>=314]
       - {{ pin_compatible('dpctl', min_pin='x.x.x', max_pin=None) }}
       - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
+      - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
+      - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
+      - {{ pin_compatible('mkl', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-blas', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-dft', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-lapack', min_pin='x.x', max_pin='x') }}
@@ -59,6 +62,16 @@ build:
     script_env:
       - WHEELS_OUTPUT_FOLDER
       - OVERRIDE_INTEL_IPO  # [win]
+    ignore_run_exports:
+      - dpctl
+      - numpy
+      - python
+      # building with Intel DPC++ and do not import the MSVC runtime DLLs
+      - vc14_runtime  # [win]
+      - ucrt          # [win]
+    missing_dso_whitelist:
+      - '*DPCTLSyclInterface*'
+      - '*/dpnp_backend_c.dll'        # [win]
 
 test:
     requires:
