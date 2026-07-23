@@ -79,6 +79,13 @@ jobs:
           environment-file: ${{ env.build-conda-pkg-env }}
           activate-environment: ${{ env.build-env-name }}
 
+      # Workaround for a conda-build crash during overlinking checks on Windows
+      # with py-lief 0.17: "AttributeError: 'Binary' object has no attribute
+      # 'exported_functions'". Pin py-lief back to 0.16 only on Windows.
+      - name: Pin py-lief on Windows
+        if: runner.os == 'Windows'
+        run: mamba install -y "py-lief<0.17"
+
       - name: List installed packages
         run: mamba list
 
