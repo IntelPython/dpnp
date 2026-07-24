@@ -123,6 +123,9 @@ def test_usm_ndarray_flags():
     f = dpt.usm_ndarray((5, 0, 1), dtype="i4", strides=(1, 0, 1)).flags
     assert f.fc
     assert f.forc
+    assert not dpt.usm_ndarray(
+        (2, 3, 4), dtype="i4", strides=(4, 8, 1)
+    ).flags.forc
 
     x = dpt.empty(5, dtype="u2")
     assert x.flags.writable is True
@@ -1088,10 +1091,14 @@ def test_ctor_invalid_strides():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     # negative displacement
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="result in a negative memory displacement"
+    ):
         dpt.usm_ndarray((2, 3, 4), dtype="i4", strides=(-1, 1, 1))
     # oversized memory footprint
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match="memory footprint exceeds the number of elements"
+    ):
         dpt.usm_ndarray((2, 3, 4), dtype="i4", strides=(1, 16, 128))
 
 

@@ -282,17 +282,16 @@ class TestBasic:
         assert cupy.byte_bounds(a)[0] == a.data.ptr
         assert cupy.byte_bounds(a)[1] - a.data.ptr <= a.data.size
 
-    @pytest.mark.skip("due to dpctl-2239")
     @pytest.mark.parametrize(
         "shape, strides",
         [
-            ((2, 3, 4), (8, 128, 1024)),  # too large
-            ((2, 3, 4), (-8, 8, 8)),  # negative (needs offset)
+            ((2, 3, 4), (4, 512, 4096)),  # too large
+            ((2, 3, 4), (-4, 4, 4)),  # negative (needs offset)
         ],
     )
     def test_ndarray_strides_raises(self, shape, strides):
-        with pytest.raises(ValueError, match=r"ndarray\(\) with strides.*"):
-            cupy.ndarray(shape, strides=strides)
+        with pytest.raises(ValueError):
+            cupy.ndarray(shape, strides=strides, dtype=cupy.float32)
 
     @testing.for_CF_orders()
     @testing.for_all_dtypes()
