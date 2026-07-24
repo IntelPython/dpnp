@@ -228,8 +228,8 @@ def broadcast_arrays(*args):
             broadcasted.
 
     Returns:
-        List[usm_ndarray]:
-            A list of broadcasted arrays. Each array
+        tuple[usm_ndarray, ...]:
+            A tuple of broadcasted arrays. Each array
             must have the same shape. Each array must have the same `dtype`,
             `device` and `usm_type` attributes as its corresponding input
             array.
@@ -245,7 +245,7 @@ def broadcast_arrays(*args):
     if all(X.shape == shape for X in args):
         return args
 
-    return [broadcast_to(X, shape) for X in args]
+    return tuple(broadcast_to(X, shape) for X in args)
 
 
 def broadcast_to(X, /, shape):

@@ -294,8 +294,12 @@ class TestBroadcastArray:
             self.assert_broadcast_arrays_raise(input_shapes)
             self.assert_broadcast_arrays_raise(input_shapes[::-1])
 
+    def test_broadcast_arrays_tuple(self):
+        out = dpnp.broadcast_arrays(dpnp.ones((1, 3)), dpnp.zeros((3, 1)))
+        assert isinstance(out, tuple)
+
     def test_broadcast_arrays_empty_input(self):
-        assert dpnp.broadcast_arrays() == []
+        assert dpnp.broadcast_arrays() == ()
 
     def test_subok_error(self):
         x = dpnp.ones(4)
