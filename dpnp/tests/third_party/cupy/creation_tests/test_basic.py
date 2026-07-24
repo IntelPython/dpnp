@@ -272,15 +272,13 @@ class TestBasic:
     @pytest.mark.parametrize(
         "shape, strides",
         [
-            ((2, 3, 4), (8 * 3 * 4, 8 * 4, 8)),  # contiguous
-            ((2, 3, 4), (8, 0, 8)),  # smaller than contiguous needed
-            ((2, 0, 4), (8, 128, 1024)),  # empty can be OK
+            ((2, 3, 4), (4 * 3 * 4, 4 * 4, 4)),  # contiguous
+            ((2, 3, 4), (4, 0, 4)),  # smaller than contiguous needed
+            ((2, 0, 4), (4, 64, 512)),  # empty can be OK
         ],
     )
     def test_ndarray_strides(self, shape, strides):
-        a = cupy.ndarray(
-            shape, strides=strides, dtype=cupy.default_float_type()
-        )
+        a = cupy.ndarray(shape, strides=strides, dtype=cupy.float32)
         assert cupy.byte_bounds(a)[0] == a.data.ptr
         assert cupy.byte_bounds(a)[1] - a.data.ptr <= a.data.size
 
