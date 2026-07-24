@@ -7,4 +7,4 @@ dpnp.log1p
 
 
 
-.. autofunction:: log1p
+.. autodata:: log1p
