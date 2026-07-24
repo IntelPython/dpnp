@@ -276,6 +276,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
         raise IndexError("cannot take non-empty indices from an empty axis")
     res_sh = x_sh[:axis] + inds.shape + x_sh[axis_end:]
 
+    x_dt = x.dtype
     if out is not None:
         out = dpnp.get_usm_ndarray(out)
 
@@ -288,21 +289,24 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
                 f"Expected output shape is {res_sh}, got {out.shape}"
             )
 
-        if x.dtype != out.dtype:
-            raise TypeError(
-                f"Output array of type {x.dtype} is needed, " f"got {out.dtype}"
-            )
-
         if dpt.get_execution_queue((q, out.sycl_queue)) is None:
             raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
 
-        if ti._array_overlap(x, out):
+        if x_dt != out.dtype:
+            if not dpnp.can_cast(x_dt, out.dtype, casting="same_kind"):
+                raise TypeError(
+                    f"Output array of type {x_dt} is needed, got {out.dtype}"
+                )
+
+            # tensor.take() requires `out` to match the input dtype
+            out = dpt.empty_like(out, dtype=x_dt)
+        elif ti._array_overlap(x, out):
             # Allocate a temporary buffer to avoid memory overlapping.
             out = dpt.empty_like(out)
     else:
-        out = dpt.empty(res_sh, dtype=x.dtype, usm_type=usm_type, sycl_queue=q)
+        out = dpt.empty(res_sh, dtype=x_dt, usm_type=usm_type, sycl_queue=q)
 
     _manager = dpu.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
@@ -419,7 +423,7 @@ def compress(condition, a, axis=None, out=None):
 
     res = _take_index(a_ary, inds[0], axis, exec_q, res_usm_type, out=out)
 
-    return dpnp.get_result_array(res, out=out)
+    return dpnp.get_result_array(res, out=out, casting="same_kind")
 
 
 def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
@@ -841,7 +845,7 @@ def fill_diagonal(a, val, wrap=False):
         written along the diagonal. If array, the flattened `val` is
         written along the diagonal, repeating if necessary to fill all
         diagonal entries.
-    wrap : bool
+    wrap : bool, optional
         It enables the diagonal "wrapped" after N columns. This affects only
         tall matrices.
 
@@ -1041,7 +1045,7 @@ def indices(
         Return a sparse representation of the grid instead of a dense
         representation.
 
-        Default is ``False``.
+        Default: ``False``.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
         `device` can be ``None``, a oneAPI filter selector string, an instance
@@ -1067,12 +1071,12 @@ def indices(
     -------
     out : one dpnp.ndarray or tuple of dpnp.ndarray
         If sparse is ``False``:
-        Returns one array of grid indices,
-        ``grid.shape = (len(dimensions),) + tuple(dimensions)``.
+        Returns one array of grid indices with
+        ``grid.shape == (len(dimensions),) + tuple(dimensions)``.
 
         If sparse is ``True``:
         Returns a tuple of arrays,
-        with grid[i].shape = (1, ..., 1, dimensions[i], 1, ..., 1)
+        with grid[i].shape == (1, ..., 1, dimensions[i], 1, ..., 1)
         with dimensions[i] in the i-th place.
 
     See Also
@@ -1105,6 +1109,7 @@ def indices(
 
     Note that it would be more straightforward in the above example to
     extract the required elements directly with ``x[:2, :3]``.
+
     If sparse is set to ``True``, the grid will be returned in a sparse
     representation.
 
@@ -1300,7 +1305,7 @@ def mask_indices(
         A function whose call signature is similar to that of :obj:`dpnp.triu`,
         :obj:`dpnp.tril`. That is, ``mask_func(x, k=k)`` returns a boolean
         array, shaped like `x`.`k` is an optional argument to the function.
-    k : scalar
+    k : scalar, optional
         An optional argument which is passed through to `mask_func`. Functions
         like :obj:`dpnp.triu`, :obj:`dpnp.tril` take a second argument that is
         interpreted as an offset.
@@ -2170,7 +2175,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
         usm_a, usm_ind, axis, exec_q, res_usm_type, out=out, mode=mode
     )
 
-    return dpnp.get_result_array(usm_res, out=out)
+    return dpnp.get_result_array(usm_res, out=out, casting="same_kind")
 
 
 def take_along_axis(a, indices, axis=-1, mode="wrap"):
@@ -2194,7 +2199,7 @@ def take_along_axis(a, indices, axis=-1, mode="wrap"):
         Indices to take along each 1d slice of `a`. This must match the
         dimension of the input array, but dimensions ``Ni`` and ``Nj``
         only need to broadcast against `a`.
-    axis : {None, int}
+    axis : {None, int}, optional
         The axis to take 1d slices along. If axis is ``None``, the input array
         is treated as if it had first been flattened to 1d. The default is
         ``-1``, which takes 1d slices along the last axis. These behaviors are

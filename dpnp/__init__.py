@@ -67,6 +67,7 @@ from .dpnp_array_api_info import __array_namespace_info__
 from ._version import get_versions
 from . import exceptions as exceptions
 from . import fft as fft
+from . import lib as lib
 from . import linalg as linalg
 from . import random as random
 from . import scipy as scipy
@@ -217,7 +218,6 @@ from .dpnp_iface_manipulation import (
     roll,
     rollaxis,
     rot90,
-    row_stack,
     shape,
     size,
     split,
@@ -720,7 +720,6 @@ __all__ += [
     "roll",
     "rollaxis",
     "rot90",
-    "row_stack",
     "shape",
     "size",
     "split",
@@ -1058,7 +1057,7 @@ __all__ += [
 ]
 
 # add submodules
-__all__ += ["exceptions", "fft", "linalg", "random", "scipy"]
+__all__ += ["exceptions", "fft", "lib", "linalg", "random", "scipy"]
 
 
 __version__ = get_versions()["version"]

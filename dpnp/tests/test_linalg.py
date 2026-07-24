@@ -27,6 +27,8 @@ from .helper import (
 from .qr_helper import check_qr
 from .third_party.cupy import testing
 
+ALL_DTYPES_NO_BOOL = get_all_dtypes(no_none=True, no_bool=True)
+
 
 def vvsort(val, vec, size, xp):
     val_kwargs = {}
@@ -487,7 +489,7 @@ class TestEigenvalue:
         [(2, 2), (2, 3, 3), (2, 2, 3, 3)],
         ids=["(2, 2)", "(2, 3, 3)", "(2, 2, 3, 3)"],
     )
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_eigenvalues(self, func, shape, dtype, order):
         # Set a `hermitian` flag for generate_random_numpy_array() to
@@ -524,7 +526,7 @@ class TestEigenvalue:
         [(0, 0), (2, 0, 0), (0, 3, 3)],
         ids=["(0, 0)", "(2, 0, 0)", "(0, 3, 3)"],
     )
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     def test_eigenvalue_empty(self, func, shape, dtype):
         a_np = numpy.empty(shape, dtype=dtype)
         a_dp = dpnp.array(a_np)
@@ -565,7 +567,7 @@ class TestEigenvalue:
 
 
 class TestEinsum:
-    def test_einsum_trivial_cases(self):
+    def test_trivial_cases(self):
         a = dpnp.arange(25).reshape(5, 5)
         b = dpnp.arange(5)
         a_np = a.asnumpy()
@@ -591,7 +593,7 @@ class TestEinsum:
         expected = numpy.einsum("i,i,i", b_np, b_np, b_np, optimize="greedy")
         assert_dtype_allclose(result, expected)
 
-    def test_einsum_out(self):
+    def test_out(self):
         a = dpnp.ones((5, 5))
         out = dpnp.empty((5,))
         result = dpnp.einsum("ii->i", a, out=out)
@@ -599,7 +601,17 @@ class TestEinsum:
         expected = numpy.einsum("ii->i", a.asnumpy())
         assert_dtype_allclose(result, expected)
 
-    def test_einsum_error1(self):
+    def test_out_0d(self):
+        a = numpy.ones(7, dtype=int)
+        out = numpy.array(0, dtype=a.dtype)
+        ia, iout = dpnp.array(a), dpnp.array(out)
+
+        result = dpnp.einsum("i,i->", ia, ia, out=iout, optimize="optimal")
+        expected = numpy.einsum("i,i->", a, a, out=out, optimize="optimal")
+        assert_dtype_allclose(result, expected)
+        assert result is iout
+
+    def test_error1(self):
         a = dpnp.ones((5, 5))
         out = dpnp.empty((5,), sycl_queue=dpctl.SyclQueue())
         # inconsistent sycl_queue
@@ -621,7 +633,7 @@ class TestEinsum:
 
     @pytest.mark.parametrize("do_opt", [True, False])
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_einsum_error2(self, do_opt, xp):
+    def test_error2(self, do_opt, xp):
         a = xp.asarray(0)
         b = xp.asarray([0])
         c = xp.asarray([0, 0])
@@ -680,7 +692,7 @@ class TestEinsum:
 
     @pytest.mark.parametrize("do_opt", [True, False])
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_einsum_specific_errors(self, do_opt, xp):
+    def test_specific_errors(self, do_opt, xp):
         a = xp.asarray(0)
         # out parameter must be an array
         assert_raises(TypeError, xp.einsum, "", a, out="test", optimize=do_opt)
@@ -1199,35 +1211,35 @@ class TestEinsum:
             numpy.einsum("ij,i->", a, b, optimize=do_opt),
         )
 
-    def test_einsum_sums_int32(self):
+    def test_sums_int32(self):
         self.check_einsum_sums("i4")
         self.check_einsum_sums("i4", True)
 
-    def test_einsum_sums_uint32(self):
+    def test_sums_uint32(self):
         self.check_einsum_sums("u4")
         self.check_einsum_sums("u4", True)
 
-    def test_einsum_sums_int64(self):
+    def test_sums_int64(self):
         self.check_einsum_sums("i8")
 
-    def test_einsum_sums_uint64(self):
+    def test_sums_uint64(self):
         self.check_einsum_sums("u8")
 
-    def test_einsum_sums_float32(self):
+    def test_sums_float32(self):
         self.check_einsum_sums("f4")
 
-    def test_einsum_sums_float64(self):
+    def test_sums_float64(self):
         self.check_einsum_sums("f8")
         self.check_einsum_sums("f8", True)
 
-    def test_einsum_sums_cfloat64(self):
+    def test_sums_cfloat64(self):
         self.check_einsum_sums("c8")
         self.check_einsum_sums("c8", True)
 
-    def test_einsum_sums_cfloat128(self):
+    def test_sums_cfloat128(self):
         self.check_einsum_sums("c16")
 
-    def test_einsum_misc(self):
+    def test_misc(self):
         for opt in [True, False]:
             a = numpy.ones((1, 2))
             b = numpy.ones((2, 2, 1))
@@ -1287,7 +1299,7 @@ class TestEinsum:
         assert_raises(ValueError, dpnp.einsum, a, [0, 52], b, [52, 2], [0, 2])
         assert_raises(ValueError, dpnp.einsum, a, [-1, 5], b, [5, 2], [-1, 2])
 
-    def test_einsum_broadcast(self):
+    def test_broadcast(self):
         a = numpy.arange(2 * 3 * 4).reshape(2, 3, 4)
         b = numpy.arange(3)
         a_dp = dpnp.array(a)
@@ -1365,7 +1377,7 @@ class TestEinsum:
                 expected,
             )
 
-    def test_einsum_stride(self):
+    def test_stride(self):
         a = numpy.arange(2 * 3).reshape(2, 3).astype(numpy.float32)
         b = numpy.arange(2 * 3 * 2731).reshape(2, 3, 2731).astype(numpy.int16)
         a_dp = dpnp.array(a)
@@ -1383,7 +1395,7 @@ class TestEinsum:
         result = dpnp.einsum("cl, cpxy->lpxy", a_dp, b_dp)
         assert_dtype_allclose(result, expected)
 
-    def test_einsum_collapsing(self):
+    def test_collapsing(self):
         x = numpy.random.normal(0, 1, (5, 5, 5, 5))
         y = numpy.zeros((5, 5))
         expected = numpy.einsum("aabb->ab", x, out=y)
@@ -1393,7 +1405,7 @@ class TestEinsum:
         assert result is y_dp
         assert_dtype_allclose(result, expected)
 
-    def test_einsum_tensor(self):
+    def test_tensor(self):
         tensor = numpy.random.random_sample((10, 10, 10, 10))
         tensor_dp = dpnp.array(tensor)
         expected = numpy.einsum("ijij->", tensor)
@@ -1655,7 +1667,7 @@ class TestEinsum:
             tmp = dpnp.einsum("...ft,mf->...mt", d, c, order="a", optimize=opt)
             assert tmp.flags.c_contiguous
 
-    def test_einsum_path(self):
+    def test_path(self):
         # Test einsum path for covergae
         a = numpy.random.rand(1, 2, 3, 4)
         b = numpy.random.rand(4, 3, 2, 1)
@@ -3738,7 +3750,7 @@ class TestSolve:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_solve_nrhs_greater_n(self, dtype):
         # Test checking the case when nrhs > n for
-        # for a.shape = (n x n) and b.shape = (n x nrhs).
+        # for a.shape == (n x n) and b.shape == (n x nrhs).
         a_np = numpy.array([[1, 2], [3, 5]], dtype=dtype)
         b_np = numpy.array([[1, 1, 1], [2, 2, 2]], dtype=dtype)
 
@@ -3972,7 +3984,7 @@ class TestSvd:
     # Additionally checks for equality of singular values
     # between dpnp and numpy decompositions
     def check_decomposition(
-        self, dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
+        self, dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt=False
     ):
         tol = self._tol
         if compute_vt:
@@ -4004,13 +4016,13 @@ class TestSvd:
                     atol=tol,
                 )
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", ALL_DTYPES_NO_BOOL)
     @pytest.mark.parametrize(
         "shape",
         [(2, 2), (3, 4), (5, 3), (16, 16)],
         ids=["(2, 2)", "(3, 4)", "(5, 3)", "(16, 16)"],
     )
-    def test_svd(self, dtype, shape):
+    def test_basic(self, dtype, shape):
         a = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
         dp_a = dpnp.array(a)
 
@@ -4028,7 +4040,7 @@ class TestSvd:
     @pytest.mark.parametrize(
         "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
-    def test_svd_hermitian(self, dtype, compute_vt, shape):
+    def test_hermitian(self, dtype, compute_vt, shape):
         a = generate_random_numpy_array(shape, dtype, hermitian=True)
         dp_a = dpnp.array(a)
 
@@ -4050,6 +4062,16 @@ class TestSvd:
         self.check_decomposition(
             dp_a, dp_u, dp_s, dp_vh, np_u, np_s, np_vh, compute_vt
         )
+
+    @testing.with_requires("numpy>=2.5")
+    def test_hermitian_singular(self):
+        a = numpy.array([[1, 0], [0, 0]])
+        dp_a = dpnp.array(a)
+
+        np_u, _, np_vh = numpy.linalg.svd(a, hermitian=True)
+        u, _, vh = dpnp.linalg.svd(dp_a, hermitian=True)
+        assert_allclose(u, np_u)
+        assert_allclose(vh, np_vh)
 
     def test_svd_errors(self):
         a_dp = dpnp.array([[1, 2], [3, 4]], dtype="float32")

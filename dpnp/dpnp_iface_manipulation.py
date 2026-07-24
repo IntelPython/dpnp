@@ -881,7 +881,7 @@ def atleast_1d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 1``.
+        An array, or tuple of arrays, each with ``a.ndim >= 1``.
         Copies are made only if necessary.
 
     See Also
@@ -899,7 +899,7 @@ def atleast_1d(*arys):
 
     >>> y = np.array([3, 4])
     >>> np.atleast_1d(x, y)
-    [array([1.]), array([3, 4])]
+    (array([1.]), array([3, 4]))
 
     >>> x = np.arange(9.0).reshape(3, 3)
     >>> np.atleast_1d(x)
@@ -926,7 +926,7 @@ def atleast_1d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
 
 
 def atleast_2d(*arys):
@@ -944,7 +944,7 @@ def atleast_2d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 2``.
+        An array, or tuple of arrays, each with ``a.ndim >= 2``.
         Copies are avoided where possible, and views with two or more
         dimensions are returned.
 
@@ -982,7 +982,7 @@ def atleast_2d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
 
 
 def atleast_3d(*arys):
@@ -1000,7 +1000,7 @@ def atleast_3d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 3``. Copies are
+        An array, or tuple of arrays, each with ``a.ndim >= 3``. Copies are
         avoided where possible, and views with three or more dimensions are
         returned.
 
@@ -1044,7 +1044,7 @@ def atleast_3d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
 
 
 def broadcast_arrays(*args, subok=False):
@@ -1753,12 +1753,12 @@ def dstack(tup):
     _check_stack_arrays(tup)
 
     arrs = atleast_3d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
     return dpnp.concatenate(arrs, axis=2)
 
 
-def expand_dims(a, axis):
+def expand_dims(a, /, axis):
     """
     Expand the shape of an array.
 
@@ -1782,14 +1782,15 @@ def expand_dims(a, axis):
 
     Notes
     -----
-    If `a` has rank (i.e, number of dimensions) `N`, a valid `axis` must reside
-    in the closed-interval `[-N-1, N]`.
-    If provided a negative `axis`, the `axis` position at which to insert a
-    singleton dimension is computed as `N + axis + 1`.
-    Hence, if provided `-1`, the resolved axis position is `N` (i.e.,
-    a singleton dimension must be appended to the input array `a`).
-    If provided `-N-1`, the resolved axis position is `0` (i.e., a
-    singleton dimension is added to the input array `a`).
+    If `a` has rank (i.e, number of dimensions) `N`, a valid `axis` value must
+    reside on the half-open interval `[-M, M)`, where `M = N + len(axis)` (with
+    `len(axis)` equal to ``1`` when `axis` is an integer).
+    If provided a negative `axis`, the position at which to insert a singleton
+    dimension is computed as ``M + axis``.
+    Hence, if provided ``-1``, the resolved axis position is ``M - 1`` (i.e.,
+    a singleton dimension is appended to the input array `a`).
+    If provided ``-M``, the resolved axis position is ``0`` (i.e., a singleton
+    dimension is prepended to the input array `a`).
 
     See Also
     --------
@@ -2178,8 +2179,8 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     _check_stack_arrays(tup)
 
     arrs = dpnp.atleast_1d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
 
     # As a special case, dimension 0 of 1-dimensional arrays is "horizontal"
     if arrs and arrs[0].ndim == 1:
@@ -2813,6 +2814,10 @@ def repeat(a, repeats, axis=None):
     >>> np.repeat(x, 4)
     array([3, 3, 3, 3])
 
+    >>> x = np.array([4, 5, 6])
+    >>> np.repeat(x, [1, 2, 3])
+    array([4, 5, 5, 6, 6, 6])
+
     >>> x = np.array([[1, 2], [3, 4]])
     >>> np.repeat(x, 2)
     array([1, 1, 2, 2, 3, 3, 4, 4])
@@ -2951,7 +2956,7 @@ def require(a, dtype=None, requirements=None, *, like=None):
 
 def reshape(a, /, shape, order="C", *, copy=None):
     """
-    Gives a new shape to an array without changing its data.
+    Return a reshaped ndarray without changing data.
 
     For full documentation refer to :obj:`numpy.reshape`.
 
@@ -2959,7 +2964,7 @@ def reshape(a, /, shape, order="C", *, copy=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array to be reshaped.
-    shape : {int, tuple of ints}, optional
+    shape : {int, tuple of ints}
         The new shape should be compatible with the original shape. If
         an integer, then the result will be a 1-D array of that length.
         One shape dimension can be -1. In this case, the value is
@@ -3066,9 +3071,7 @@ def resize(a, new_shape):
     Return a new array with the specified shape.
 
     If the new array is larger than the original array, then the new array is
-    filled with repeated copies of `a`. Note that this behavior is different
-    from ``a.resize(new_shape)`` which fills with zeros instead of repeated
-    copies of `a`.
+    filled with repeated copies of `a`.
 
     For full documentation refer to :obj:`numpy.resize`.
 
@@ -3088,7 +3091,6 @@ def resize(a, new_shape):
 
     See Also
     --------
-    :obj:`dpnp.ndarray.resize` : Resize an array in-place.
     :obj:`dpnp.reshape` : Reshape an array without changing the total size.
     :obj:`dpnp.pad` : Enlarge and pad an array.
     :obj:`dpnp.repeat` : Repeat elements of an array.
@@ -3908,6 +3910,7 @@ def transpose(a, axes=None):
     axes : {None, tuple or list of ints}, optional
         If specified, it must be a tuple or list which contains a permutation
         of [0, 1, ..., N-1] where N is the number of axes of `a`.
+        Negative indices can also be used to specify axes.
         The `i`'th axis of the returned array will correspond to the axis
         numbered ``axes[i]`` of the input. If not specified or ``None``,
         defaults to ``range(a.ndim)[::-1]``, which reverses the order of
@@ -3950,6 +3953,10 @@ def transpose(a, axes=None):
     >>> a = np.ones((2, 3, 4, 5))
     >>> np.transpose(a).shape
     (5, 4, 3, 2)
+
+    >>> a = np.arange(3*4*5).reshape((3, 4, 5))
+    >>> np.transpose(a, (-1, 0, -2)).shape
+    (5, 3, 4)
 
     """
 
@@ -4601,9 +4608,6 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     """
     Stack arrays in sequence vertically (row wise).
 
-    :obj:`dpnp.row_stack` is an alias for :obj:`dpnp.vstack`.
-    They are the same function.
-
     For full documentation refer to :obj:`numpy.vstack`.
 
     Parameters
@@ -4662,9 +4666,6 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     _check_stack_arrays(tup)
 
     arrs = dpnp.atleast_2d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
     return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
-
-
-row_stack = vstack

@@ -785,9 +785,10 @@ def _check_lapack_dev_info(dev_info, error_msg=None):
         Each element of the list indicates the status of OneMKL LAPACK routine
         calls. A non-zero value signifies a failure.
 
-    error_message : str, optional
+    error_msg : str, optional
         Custom error message for detected LAPACK errors.
-        Default: `Singular matrix`
+
+        Default: ``"Singular matrix"``.
 
     Raises
     ------
@@ -914,7 +915,8 @@ def _hermitian_svd(a, compute_uv):
     # the eigenvalues and related arrays to have the correct order
     if compute_uv:
         s, u = dpnp_eigh(a, eigen_mode="V")
-        sgn = dpnp.sign(s)
+        # avoid zero sign
+        sgn = dpnp.copysign(1.0, s)
         s = dpnp.abs(s, out=s)
         sidx = dpnp.argsort(s)[..., ::-1]
         # Rearrange the signs according to sorted indices
@@ -1299,11 +1301,14 @@ def _stacked_identity(
         Data type of the matrix element.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
