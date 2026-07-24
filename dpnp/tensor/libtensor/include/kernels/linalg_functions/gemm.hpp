@@ -653,7 +653,7 @@ public:
             }
         }
 
-        it.barrier(sycl::access::fence_space::local_space);
+        sycl::group_barrier(it.get_group(), sycl::memory_scope::work_group);
 
         std::size_t t_shift = block_s * delta_k * n_wi;
         std::size_t global_s_offset = i * k + t_shift;
@@ -672,7 +672,7 @@ public:
         std::size_t workspace_i_shift = local_i * delta_k;
         workspace[workspace_i_shift + local_s] = private_sum;
 
-        it.barrier(sycl::access::fence_space::local_space);
+        sycl::group_barrier(it.get_group(), sycl::memory_scope::work_group);
 
         if (local_s == 0 && i < n) {
             accV_t local_sum(workspace[workspace_i_shift]);
@@ -1063,7 +1063,7 @@ public:
                 }
             }
 
-            it.barrier(sycl::access::fence_space::local_space);
+            sycl::group_barrier(it.get_group(), sycl::memory_scope::work_group);
 
             const std::uint32_t lo_lhs_st_k = (wg_delta_n * wi_delta_n);
             const std::uint32_t lo_rhs_rk_k = (wg_delta_m * wi_delta_m_vecs);
@@ -1095,7 +1095,7 @@ public:
                 }
             }
 
-            it.barrier(sycl::access::fence_space::local_space);
+            sycl::group_barrier(it.get_group(), sycl::memory_scope::work_group);
         }
 
         if constexpr (m_vec_size == 1) {
@@ -1942,7 +1942,7 @@ public:
             }
         }
 
-        it.barrier(sycl::access::fence_space::local_space);
+        sycl::group_barrier(it.get_group(), sycl::memory_scope::work_group);
 
         i += local_i * wi_delta_n;
         j += local_j * wi_delta_m;
@@ -2115,7 +2115,7 @@ public:
             }
         }
 
-        it.barrier(sycl::access::fence_space::local_space);
+        sycl::group_barrier(it.get_group(), sycl::memory_scope::work_group);
 
         std::size_t t_shift = block_s * delta_k * n_wi;
         std::size_t global_s_offset = i * k + t_shift;
@@ -2134,7 +2134,7 @@ public:
         std::size_t workspace_i_shift = local_i * delta_k;
         workspace[workspace_i_shift + local_s] = private_sum;
 
-        it.barrier(sycl::access::fence_space::local_space);
+        sycl::group_barrier(it.get_group(), sycl::memory_scope::work_group);
 
         if (local_s == 0 && i < n) {
             accV_t local_sum(workspace[workspace_i_shift]);
