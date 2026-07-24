@@ -37,7 +37,7 @@ This release is compatible with NumPy 2.5.
 * Aligned the signature of `dpnp.tensor.expand_dims` with the Python array API by making `axis` a required argument [#2988](https://github.com/IntelPython/dpnp/pull/2988)
 * Removed dead code branches guarded by outdated oneMKL and DPC++ compiler version checks [#2999](https://github.com/IntelPython/dpnp/pull/2999)
 * Replaced the deprecated `nd_item::barrier()` member calls in the `accumulators` and `gemm` kernels with the SYCL 2020 `sycl::group_barrier()` free function [#3006](https://github.com/IntelPython/dpnp/pull/3006)
-* Changed `dpnp.broadcast_arrays` and `dpnp.tensor.broadcast_arrays` to return a tuple instead of a list, aligning with NumPy 2.x behavior and 2025.12 version of the Python array API standard [#2944](https://github.com/IntelPython/dpnp/pull/2944)
+* Changed `dpnp.broadcast_arrays` and `dpnp.tensor.broadcast_arrays` to return a tuple instead of a list, aligning with the 2025.12 Python array API spec [#2944](https://github.com/IntelPython/dpnp/pull/2944)
 
 ### Deprecated
 
