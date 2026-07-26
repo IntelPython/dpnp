@@ -1,5 +1,0 @@
-<map id="dpnp::kernels::i0::impl::bessel_ik_0" name="dpnp::kernels::i0::impl::bessel_ik_0">
-<area shape="rect" id="Node000001" title="Compute the modified Bessel functions." alt="" coords="183,5,303,46"/>
-<area shape="rect" id="Node000002" href="$namespacedpnp_1_1kernels_1_1i0_1_1impl.html#a4797a054c5eb5eb061445fb926910af3" title="Return the regular modified Bessel function of order 0." alt="" coords="5,5,135,46"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,28,135,28,135,23,167,23"/>
-</map>
