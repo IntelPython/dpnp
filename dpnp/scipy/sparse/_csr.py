@@ -54,7 +54,7 @@ import numpy as _np
 import dpnp as _dpnp
 from dpnp.exceptions import ExecutionPlacementError
 
-from ._base import SparseABC, issparse
+from .._lib._sparse import SparseABC, issparse
 
 # Two short blocks intentionally mirror code in
 # dpnp/scipy/sparse/linalg/_iterative.py: the cached-SpMV invocation
