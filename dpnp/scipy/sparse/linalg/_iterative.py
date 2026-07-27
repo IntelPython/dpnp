@@ -127,9 +127,7 @@ class _CachedSpMVPair:
         # caching them redundantly on this object.
         # pylint: disable-next=protected-access
         _si, handle, val_type_id, exec_q = self._A._ensure_spmv_handle()
-        y = dpnp.empty(
-            self._A.shape[0], dtype=self._A.data.dtype, sycl_queue=exec_q
-        )
+        y = dpnp.empty_like(self._A.data, shape=self._A.shape[0])
         _manager = dpu.SequentialOrderManager[exec_q]
         # pylint: disable-next=protected-access
         ht_ev, comp_ev = _si._sparse_gemv_compute(
@@ -160,13 +158,9 @@ def _make_fast_matvec(A):
     """Return a _CachedSpMVPair if A is a CSR matrix with oneMKL support,
     or None if A is not an eligible sparse matrix.
 
-    Falls back to None (caller uses A.dot) on:
-      - A is not a dpnp CSR sparse matrix
-      - the compiled backend extension is unavailable
-      - the (value, index) dtype combination is not registered with
-        the oneMKL dispatch table
-      - handle initialisation raises for any other backend-specific
-        reason
+    Returns None when A is not a dpnp CSR sparse matrix, or when its
+    (value, index) dtype combination is not registered with the oneMKL
+    dispatch table.
     """
     try:
         # Lazy import: dpnp.scipy.sparse may import this module during
@@ -179,9 +173,9 @@ def _make_fast_matvec(A):
     except (ImportError, AttributeError):
         return None
 
-    # Probe the csr_matrix's own SpMV path. This either returns a
-    # fully-built handle (cached on A for sharing with A.dot) or None
-    # when the backend extension / dtype combination is unsupported.
+    # Probe the csr_matrix's own SpMV path: returns a fully-built handle
+    # (cached on A for sharing with A.dot) or None for an unsupported
+    # dtype combination.
     if not hasattr(A, "_ensure_spmv_handle"):
         return None
     # pylint: disable-next=protected-access

@@ -426,6 +426,7 @@ class csr_matrix(SparseABC):
         self.sort_indices()
 
         exec_q = self.data.sycl_queue
+        _manager = _dpu.SequentialOrderManager[exec_q]
         # pylint: disable-next=protected-access
         handle, val_type_id, ev = _si._sparse_gemv_init(
             exec_q,
@@ -436,13 +437,12 @@ class csr_matrix(SparseABC):
             int(self._shape[0]),
             int(self._shape[1]),
             int(self.data.shape[0]),
-            [],
+            _manager.submitted_events,
         )
 
         # set_csr_data + optimize_gemv must complete before the first
         # compute; chain the init event through the queue's order manager
         # so the first _sparse_gemv_compute depends on it (non-blocking).
-        _manager = _dpu.SequentialOrderManager[exec_q]
         _manager.add_event_pair(ev, ev)
 
         self._spmv_si = _si
@@ -534,10 +534,15 @@ class csr_matrix(SparseABC):
             return
 
         try:
-            # Block on the release so the CSR USM buffers are not freed
-            # before the async handle release that reads them completes.
+            # Order the release after any pending compute on the queue,
+            # then block so the CSR USM buffers are not freed before the
+            # async release that reads them completes.
+            exec_q = self._spmv_exec_q
+            _manager = _dpu.SequentialOrderManager[exec_q]
             # pylint: disable-next=not-callable
-            release_fn(self._spmv_exec_q, handle, []).wait()
+            release_ev = release_fn(exec_q, handle, _manager.submitted_events)
+            _manager.add_event_pair(release_ev, release_ev)
+            release_ev.wait()
         except (AttributeError, TypeError):
             # Shutdown-mode races; handle is unrecoverable and the
             # OS will reclaim it at process exit.
