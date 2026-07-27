@@ -443,7 +443,7 @@ class csr_matrix(SparseABC):
                         f"csr_matrix.dot: x dtype {x.dtype} does not "
                         f"match matrix dtype {self.data.dtype}"
                     )
-                y = _dpnp.empty(nrows, dtype=self.data.dtype, sycl_queue=exec_q)
+                y = _dpnp.empty_like(self.data, nrows)
                 _manager = _dpu.SequentialOrderManager[exec_q]
                 # pylint: disable-next=protected-access
                 ht_ev, comp_ev = _si._sparse_gemv_compute(
