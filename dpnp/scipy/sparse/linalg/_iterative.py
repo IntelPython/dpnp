@@ -136,9 +136,9 @@ class _CachedSpMVPair:
             val_type_id,
             0,  # trans=N
             1.0,  # alpha
-            x,
+            dpnp.get_usm_ndarray(x),
             0.0,  # beta
-            y,
+            dpnp.get_usm_ndarray(y),
             int(self._A.shape[0]),
             int(self._A.shape[1]),
             _manager.submitted_events,

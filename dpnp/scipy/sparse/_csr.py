@@ -210,6 +210,11 @@ class csr_matrix(SparseABC):
         data, indices, indptr = arrays
 
         _dpnp.check_supported_arrays_type(data, indices, indptr)
+        # Normalize usm_ndarray inputs to dpnp.ndarray so all internal
+        # operations (sort_indices, toarray, dot) work uniformly.
+        data = _dpnp.asarray(data)
+        indices = _dpnp.asarray(indices)
+        indptr = _dpnp.asarray(indptr)
         if data.ndim != 1 or indices.ndim != 1 or indptr.ndim != 1:
             raise ValueError(
                 "csr_matrix: data, indices, and indptr must be 1-D"
@@ -327,6 +332,8 @@ class csr_matrix(SparseABC):
         self._has_sorted_indices = True
 
     def _init_from_dense(self, dense, dtype=None):
+        # Normalize usm_ndarray to dpnp.ndarray for uniform internal ops.
+        dense = _dpnp.asarray(dense)
         if dense.ndim != 2:
             raise ValueError(
                 f"csr_matrix: dense input must be 2-D, got {dense.ndim}-D"
@@ -431,9 +438,9 @@ class csr_matrix(SparseABC):
         handle, val_type_id, ev = _si._sparse_gemv_init(
             exec_q,
             0,  # trans=N (forward)
-            self.indptr,
-            self.indices,
-            self.data,
+            _dpnp.get_usm_ndarray(self.indptr),
+            _dpnp.get_usm_ndarray(self.indices),
+            _dpnp.get_usm_ndarray(self.data),
             int(self._shape[0]),
             int(self._shape[1]),
             int(self.data.shape[0]),
@@ -503,9 +510,9 @@ class csr_matrix(SparseABC):
             val_type_id,
             0,  # trans=N
             1.0,  # alpha
-            x,
+            _dpnp.get_usm_ndarray(x),
             0.0,  # beta
-            y,
+            _dpnp.get_usm_ndarray(y),
             nrows,
             ncols,
             _manager.submitted_events,
