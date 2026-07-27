@@ -75,6 +75,7 @@ from __future__ import annotations
 import math
 from typing import Callable
 
+import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import numpy
 
@@ -84,6 +85,7 @@ import dpnp
 # dpnp build; pylint cannot statically introspect its exported symbols.
 # pylint: disable-next=no-name-in-module
 import dpnp.backend.extensions.blas._blas_impl as bi
+from dpnp.exceptions import ExecutionPlacementError
 
 from ._interface import IdentityOperator, LinearOperator, aslinearoperator
 
@@ -955,12 +957,12 @@ def _make_compute_hu(V, H):
             "_make_compute_hu: H must be a 2-D column-major (F-order) "
             "dpnp array so column slices are unit-stride USM views"
         )
-    if V.sycl_queue != H.sycl_queue:
-        raise ValueError(
+    exec_q = dpt.get_execution_queue((V.sycl_queue, H.sycl_queue))
+    if exec_q is None:
+        raise ExecutionPlacementError(
             "_make_compute_hu: V and H must share the same SYCL queue"
         )
 
-    exec_q = V.sycl_queue
     dtype = V.dtype
     is_cpx = dpnp.issubdtype(dtype, dpnp.complexfloating)
 
