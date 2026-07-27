@@ -4,12 +4,8 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.lib import stride_tricks
 from dpnp.tests.third_party.cupy import testing
-
-# from cupy.lib import stride_tricks
-
-
-pytest.skip("stride tricks are not supported yet", allow_module_level=True)
 
 
 class TestAsStrided(unittest.TestCase):
@@ -28,6 +24,7 @@ class TestAsStrided(unittest.TestCase):
         expected = cupy.array([[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]])
         testing.assert_array_equal(a_view, expected)
 
+    @pytest.mark.skip(reason="sliding_window_view is not supported yet")
     @testing.numpy_cupy_array_equal()
     def test_rolling_window(self, xp):
         a = testing.shaped_arange((3, 4), xp)
@@ -35,6 +32,7 @@ class TestAsStrided(unittest.TestCase):
         return a_rolling
 
 
+@pytest.mark.skip(reason="sliding_window_view is not supported yet")
 class TestSlidingWindowView(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_1d(self, xp):
