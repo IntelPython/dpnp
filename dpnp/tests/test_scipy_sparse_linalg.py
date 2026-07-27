@@ -1,5 +1,6 @@
 import warnings
 
+import dpctl.tensor as dpt
 import numpy
 import pytest
 from numpy.testing import (
@@ -1499,6 +1500,77 @@ class TestCsrMatrix:
         indptr = dpnp.array([0, 2, 4], dtype=dpnp.int64)
         m = csr_matrix((data, indices, indptr), shape=(2, 4))
         assert m.has_sorted_indices
+
+    @pytest.mark.parametrize("wrap", [dpnp.asarray, dpt.asarray])
+    def test_construct_from_dense_array_types(self, wrap):
+        # Dense construction accepts both dpnp.ndarray and usm_ndarray.
+        a = numpy.array([[0.0, 5.0, 0.0], [7.0, 0.0, 3.0]], dtype=numpy.float32)
+        m = csr_matrix(wrap(a))
+        assert m.shape == (2, 3)
+        assert_allclose(dpnp.asnumpy(m.toarray()), a)
+
+    @pytest.mark.parametrize("wrap", [dpnp.asarray, dpt.asarray])
+    def test_construct_from_component_array_types(self, wrap):
+        # Component construction accepts both dpnp.ndarray and usm_ndarray.
+        data = wrap(numpy.array([1.0, 2.0, 3.0], dtype=numpy.float32))
+        indices = wrap(numpy.array([0, 1, 2], dtype=numpy.int64))
+        indptr = wrap(numpy.array([0, 2, 3], dtype=numpy.int64))
+        m = csr_matrix((data, indices, indptr), shape=(2, 3))
+        expected = numpy.array(
+            [[1.0, 2.0, 0.0], [0.0, 0.0, 3.0]], dtype=numpy.float32
+        )
+        assert_allclose(dpnp.asnumpy(m.toarray()), expected)
+
+    @pytest.mark.parametrize("wrap", [dpnp.asarray, dpt.asarray])
+    def test_dot_accepts_usm_ndarray(self, wrap):
+        a = numpy.array([[1.0, 0.0, 2.0], [0.0, 3.0, 0.0]], dtype=numpy.float32)
+        m = csr_matrix(dpnp.asarray(a))
+        x = numpy.array([1.0, 2.0, 3.0], dtype=numpy.float32)
+        y = m.dot(wrap(x))
+        assert_allclose(dpnp.asnumpy(y), a @ x)
+
+    def test_dot_unsupported_dtype_raises(self):
+        # No dense fallback: an unsupported value dtype must raise.
+        data = dpnp.ones(2, dtype=dpnp.int32)
+        indices = dpnp.array([0, 1], dtype=dpnp.int64)
+        indptr = dpnp.array([0, 1, 2], dtype=dpnp.int64)
+        m = csr_matrix((data, indices, indptr), shape=(2, 2))
+        x = dpnp.ones(2, dtype=dpnp.int32)
+        with pytest.raises(TypeError):
+            m.dot(x)
+
+    def test_dot_2d_raises(self):
+        a = numpy.eye(3, dtype=numpy.float32)
+        m = csr_matrix(dpnp.asarray(a))
+        x = dpnp.ones((3, 2), dtype=dpnp.float32)
+        with pytest.raises(NotImplementedError):
+            m.dot(x)
+
+    @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
+    def test_construct_empty_by_shape_default_dtype(self):
+        m = csr_matrix((5, 3))
+        assert m.shape == (5, 3)
+        assert m.nnz == 0
+        assert m.dtype == dpnp.float64
+        assert_allclose(dpnp.asnumpy(m.toarray()), numpy.zeros((5, 3)))
+
+    def test_construct_empty_by_shape_explicit_dtype(self):
+        m = csr_matrix((4, 4), dtype=dpnp.float32)
+        assert m.shape == (4, 4)
+        assert m.nnz == 0
+        assert m.dtype == dpnp.float32
+
+    def test_construct_components_shape_inferred(self):
+        data = dpnp.array([1.0, 2.0, 3.0], dtype=dpnp.float32)
+        indices = dpnp.array([0, 2, 1], dtype=dpnp.int64)
+        indptr = dpnp.array([0, 2, 3], dtype=dpnp.int64)
+        m = csr_matrix((data, indices, indptr))
+        # 2 rows from indptr; 3 cols from max(indices)+1.
+        assert m.shape == (2, 3)
+        expected = numpy.array(
+            [[1.0, 0.0, 2.0], [0.0, 3.0, 0.0]], dtype=numpy.float32
+        )
+        assert_allclose(dpnp.asnumpy(m.toarray()), expected)
 
     @pytest.mark.parametrize(
         "op",

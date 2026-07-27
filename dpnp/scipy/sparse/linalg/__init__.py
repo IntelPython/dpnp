@@ -36,8 +36,6 @@ The initial implementation focuses on the :class:`LinearOperator` interface
 and a small set of Krylov solvers (``cg``, ``gmres``, ``minres``).
 """
 
-from __future__ import annotations
-
 from ._interface import LinearOperator, aslinearoperator
 from ._iterative import cg, gmres, minres
 
