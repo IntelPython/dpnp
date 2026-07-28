@@ -75,7 +75,6 @@ from __future__ import annotations
 import math
 from typing import Callable
 
-import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import numpy
 
@@ -85,6 +84,7 @@ import dpnp
 # dpnp build; pylint cannot statically introspect its exported symbols.
 # pylint: disable-next=no-name-in-module
 import dpnp.backend.extensions.blas._blas_impl as bi
+import dpnp.tensor as dpt
 from dpnp.exceptions import ExecutionPlacementError
 
 from ._interface import IdentityOperator, LinearOperator, aslinearoperator

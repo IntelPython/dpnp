@@ -47,11 +47,14 @@ densification, and lets the iterative solvers in
 ``_make_fast_matvec`` without rebuilding it.
 """
 
-import dpctl.tensor as _dpt
 import dpctl.utils as _dpu
 import numpy as _np
 
 import dpnp as _dpnp
+
+# pylint: disable-next=no-name-in-module
+import dpnp.backend.extensions.sparse._sparse_impl as _si
+import dpnp.tensor as _dpt
 from dpnp.exceptions import ExecutionPlacementError
 
 from .._lib._sparse import SparseABC, issparse
@@ -427,9 +430,6 @@ class csr_matrix(SparseABC):
         if not self._spmv_supported():
             return None
 
-        # pylint: disable-next=import-outside-toplevel
-        from dpnp.backend.extensions.sparse import _sparse_impl as _si
-
         self.sort_indices()
 
         exec_q = self.data.sycl_queue
@@ -524,20 +524,9 @@ class csr_matrix(SparseABC):
         return self.dot(x)
 
     def __del__(self):
-        # Release the cached oneMKL matrix_handle if one was built. The
-        # staged except clauses guard interpreter shutdown: the compiled
-        # ``_sparse_impl`` extension may be GC'd before this __del__ runs,
-        # so ``_sparse_gemv_release`` can be ``None`` (or raise on access).
+        # Release the cached oneMKL matrix_handle if one was built.
         handle = getattr(self, "_spmv_handle", None)
-        si = getattr(self, "_spmv_si", None)
-        if handle is None or si is None:
-            return
-
-        # ``None`` only when the extension was already collected at
-        # interpreter shutdown; the handle is then unrecoverable.
-        release_fn = getattr(si, "_sparse_gemv_release", None)
-        if release_fn is None:
-            self._spmv_handle = None
+        if handle is None:
             return
 
         try:
@@ -546,13 +535,15 @@ class csr_matrix(SparseABC):
             # async release that reads them completes.
             exec_q = self._spmv_exec_q
             _manager = _dpu.SequentialOrderManager[exec_q]
-            # pylint: disable-next=not-callable
-            release_ev = release_fn(exec_q, handle, _manager.submitted_events)
+            release_ev = _si._sparse_gemv_release(
+                exec_q, handle, _manager.submitted_events
+            )
             _manager.add_event_pair(release_ev, release_ev)
             release_ev.wait()
         except (AttributeError, TypeError):
-            # Shutdown-mode races; handle is unrecoverable and the
-            # OS will reclaim it at process exit.
+            # Interpreter shutdown can null out module/queue state before
+            # __del__ runs; the handle is then unrecoverable (OS reclaims
+            # it at process exit).
             pass
         except Exception:  # pylint: disable=broad-exception-caught
             # Genuine backend error while the interpreter is healthy.
