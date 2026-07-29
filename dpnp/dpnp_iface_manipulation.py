@@ -1128,13 +1128,22 @@ def broadcast_shapes(*args):
 
     shapes = []
     for sh in args:
+        # a bare integer is treated as a one-dimensional shape
         if not isinstance(sh, (tuple, list)):
-            # a bare integer is treated as a one-dimensional shape
-            sh = (operator.index(sh),)
+            sh = (sh,)
 
-        if any(dim < 0 for dim in sh):
-            raise ValueError("negative dimensions are not allowed")
-        shapes.append(sh)
+        new_sh = []
+        for dim in sh:
+            if isinstance(dim, bool):
+                raise TypeError(
+                    "'bool' object cannot be interpreted as an integer"
+                )
+
+            dim = operator.index(dim)
+            if dim < 0:
+                raise ValueError("negative dimensions are not allowed")
+            new_sh.append(dim)
+        shapes.append(tuple(new_sh))
     return dpt.broadcast_shapes(*shapes)
 
 

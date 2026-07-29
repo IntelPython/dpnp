@@ -348,7 +348,13 @@ class TestBroadcastShapes:
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize("shape", [[(-1,)], [(2, -3), (2, 3)], [-1, 2]])
     def test_negative_dim(self, xp, shape):
-        with pytest.raises(ValueError, match="aaa"):
+        with pytest.raises(ValueError, match="negative dimensions"):
+            xp.broadcast_shapes(*shape)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("shape", [[(2.0,)], [(True, 2)], [2.5]])
+    def test_non_integer_dim(self, xp, shape):
+        with pytest.raises(TypeError, match="integer"):
             xp.broadcast_shapes(*shape)
 
 
