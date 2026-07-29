@@ -1126,7 +1126,12 @@ def broadcast_shapes(*args):
 
     """
 
-    return numpy.broadcast_shapes(*args)
+    # a bare integer is treated as a one-dimensional shape
+    shapes = [
+        sh if isinstance(sh, (tuple, list)) else (operator.index(sh),)
+        for sh in args
+    ]
+    return dpt.broadcast_shapes(*shapes)
 
 
 # pylint: disable=redefined-outer-name
