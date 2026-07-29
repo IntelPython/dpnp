@@ -27,7 +27,8 @@
 # MKL_LINK
 #    Values:  static, dynamic, sdl
 #    Default: dynamic
-#       Exceptions: SYCL doesn't support sdl
+#       Exceptions: SYCL doesn't support static and sdl
+#                   OpenMP Offload doesn't support static
 # MKL_THREADING
 #    Values:  sequential,
 #             intel_thread (Intel OpenMP),
@@ -310,8 +311,10 @@ endif()
 #================
 
 # Extensions
-set(SO_VER "2")
-set(SYCL_SO_VER "5")
+set(SO_VER "3")
+set(CLUSTER_SO_VER "2")
+set(SYCL_SO_VER "6")
+set(DIST_SYCL_SO_VER "2")
 if(UNIX)
   set(LIB_PREFIX "lib")
   set(LIB_EXT ".a")
@@ -374,9 +377,9 @@ define_param(MKL_ARCH DEFAULT_MKL_ARCH MKL_ARCH_LIST)
 check_required_vars(MKL_ARCH)
 
 # Define MKL_LINK
-if(SYCL_COMPILER)
+if(SYCL_COMPILER OR (ENABLE_OMP_OFFLOAD AND MKL_LINK STREQUAL "static"))
   set(DEFAULT_MKL_SYCL_LINK dynamic)
-  set(MKL_SYCL_LINK_LIST static dynamic)
+  set(MKL_SYCL_LINK_LIST dynamic)
   if(NOT DEFINED MKL_SYCL_LINK)
     set(MKL_SYCL_LINK ${MKL_LINK})
   endif()
@@ -394,15 +397,6 @@ else()
 endif()
 define_param(MKL_LINK DEFAULT_MKL_LINK MKL_LINK_LIST)
 check_required_vars(MKL_LINK)
-
-if(MKL_LINK STREQUAL "static" AND ENABLE_OMP_OFFLOAD)
-  mkl_message(WARNING "oneMKL SYCL static library is deprecated and will be removed in the oneMKL 2026.0 release")
-elseif(MKL_SYCL_LINK AND MKL_SYCL_LINK STREQUAL "static")
-  mkl_message(STATUS "oneMKL SYCL static library is deprecated and will be removed in the oneMKL 2026.0 release")
-  add_custom_target(MKL_SYCL_STATIC_MESSAGE
-                    COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --red
-                    "Warning: oneMKL SYCL static library is deprecated and will be removed in the oneMKL 2026.0 release")
-endif()
 
 # Define MKL_INTERFACE
 if(SYCL_COMPILER)
@@ -453,6 +447,9 @@ endif()
 # SYCL API supports oneTBB and OpenMP threadings
 if(SYCL_COMPILER)
   set(MKL_SYCL_THREADING_LIST "sequential" "intel_thread" "tbb_thread")
+  if(NOT WIN32)
+    list(APPEND MKL_SYCL_THREADING_LIST gnu_thread)
+  endif()
   set(DEFAULT_MKL_SYCL_THREADING tbb_thread)
   if(NOT DEFINED MKL_SYCL_THREADING)
     set(MKL_SYCL_THREADING ${MKL_THREADING})
@@ -466,11 +463,8 @@ endif()
 # C, Fortran API
 set(MKL_THREADING_LIST "sequential" "intel_thread" "tbb_thread")
 set(DEFAULT_MKL_THREADING intel_thread)
-if(GNU_C_COMPILER OR GNU_Fortran_COMPILER OR CLANG_COMPILER)
+if(NOT WIN32)
   list(APPEND MKL_THREADING_LIST gnu_thread)
-else()
-  # Intel and Microsoft compilers
-  # Nothing to do, only for completeness
 endif()
 define_param(MKL_THREADING DEFAULT_MKL_THREADING MKL_THREADING_LIST)
 check_required_vars(MKL_THREADING)
@@ -555,22 +549,8 @@ endif()
 if(SYCL_COMPILER)
   list(APPEND MKL_SYCL_COPT "-fsycl")
   list(APPEND MKL_SYCL_LOPT "-fsycl")
-  if(MKL_SYCL_LINK STREQUAL "static")
-    if(WIN32)
-      list(APPEND MKL_SYCL_LOPT "-fsycl-device-code-split:per_kernel")
-    else()
-      list(APPEND MKL_SYCL_LOPT "-fsycl-device-code-split=per_kernel")
-    endif()
-  endif()
-endif()
-if(ENABLE_OMP_OFFLOAD)
-  if(MKL_LINK STREQUAL "static")
-    if(WIN32)
-      list(APPEND MKL_OFFLOAD_LOPT "-fsycl-device-code-split:per_kernel")
-    else()
-      list(APPEND MKL_OFFLOAD_LOPT "-fsycl-device-code-split=per_kernel")
-    endif()
-  endif()
+  # Enable Device API accessibility from dynamic libraries
+  list(APPEND MKL_SYCL_LOPT "-fsycl-allow-device-image-dependencies")
 endif()
 
 # For OpenMP Offload
@@ -662,20 +642,12 @@ list(APPEND MKL_SYCL_LIBS mkl_sycl_data_fitting)
 list(APPEND MKL_SYCL_LIBS mkl_sycl_rng)
 list(APPEND MKL_SYCL_LIBS mkl_sycl_stats)
 list(APPEND MKL_SYCL_LIBS mkl_sycl_vm)
-if(NOT MKL_LINK STREQUAL "static")
-  if(WIN32 AND CMAKE_BUILD_TYPE MATCHES "Debug")
-    list(TRANSFORM MKL_SYCL_LIBS APPEND "d")
-  endif()
-  list(APPEND MKL_SYCL ${MKL_SYCL_LIBS})
-  # List for tracking incomplete onemKL package
-  set(MISSED_MKL_SYCL_LIBS)
-else()
-  if(WIN32 AND CMAKE_BUILD_TYPE MATCHES "Debug")
-    set(MKL_SYCL         mkl_sycld)
-  else()
-    set(MKL_SYCL         mkl_sycl)
-  endif()
+if(WIN32 AND CMAKE_BUILD_TYPE MATCHES "Debug")
+  list(TRANSFORM MKL_SYCL_LIBS APPEND "d")
 endif()
+list(APPEND MKL_SYCL ${MKL_SYCL_LIBS})
+# List for tracking incomplete onemKL package
+set(MISSED_MKL_SYCL_LIBS)
 set(MKL_SYCL_DISTRIBUTED_DFT mkl_sycl_distributed_dft)
 
 set(MKL_IFACE_LIB   mkl_${MKL_INTERFACE_FULL})
@@ -716,15 +688,9 @@ set(MKL_CDFT      mkl_cdft_core)
 set(MKL_SCALAPACK mkl_scalapack_${MKL_INTERFACE})
 
 if(UNIX)
-  if(MKL_LINK STREQUAL "static" OR MKL_SYCL_LINK STREQUAL "static")
+  if(MKL_LINK STREQUAL "static")
     set(START_GROUP "-Wl,--start-group")
     set(END_GROUP "-Wl,--end-group")
-    if(SYCL_COMPILER)
-      set(SYCL_EXPORT_DYNAMIC "-Wl,-export-dynamic")
-    endif()
-    if(ENABLE_OMP_OFFLOAD)
-      set(EXPORT_DYNAMIC "-Wl,-export-dynamic")
-    endif()
   endif()
   if(MKL_LINK STREQUAL "dynamic")
     set(MKL_RPATH "-Wl,-rpath=$<TARGET_FILE_DIR:MKL::${MKL_CORE}>")
@@ -816,14 +782,16 @@ foreach(lib ${MKL_REQUESTED_LIBRARIES})
   else()
     find_library(${lib}_file NAMES ${LIB_PREFIX}${lib}${DLL_EXT}
                   ${LIB_PREFIX}${lib}${DLL_EXT}.${SO_VER}
+                  ${LIB_PREFIX}${lib}${DLL_EXT}.${CLUSTER_SO_VER}
                   ${LIB_PREFIX}${lib}${DLL_EXT}.${SYCL_SO_VER}
+                  ${LIB_PREFIX}${lib}${DLL_EXT}.${DIST_SYCL_SO_VER}
                   ${lib}
                   PATHS ${MKL_ROOT}
                   PATH_SUFFIXES "lib"
                   NO_DEFAULT_PATH)
     add_library(MKL::${lib} SHARED IMPORTED)
   endif()
-  if(NOT MKL_LINK STREQUAL "static" AND (${lib} MATCHES "mkl_sycl" AND NOT ${lib} STREQUAL "mkl_sycl_distributed_dft") AND ${${lib}_file} STREQUAL "${lib}_file-NOTFOUND")
+  if((${lib} MATCHES "mkl_sycl" AND NOT ${lib} STREQUAL "mkl_sycl_distributed_dft") AND ${${lib}_file} STREQUAL "${lib}_file-NOTFOUND")
     list(APPEND MISSED_MKL_SYCL_LIBS ${lib})
     set(MKL_SYCL_DOMAIN "")
     string(REGEX REPLACE "mkl_sycl_" "" MKL_SYCL_DOMAIN ${lib})
@@ -901,9 +869,8 @@ endforeach()
 
 # Threading selection
 if(MKL_THREADING STREQUAL "tbb_thread" OR MKL_SYCL_THREADING STREQUAL "tbb_thread")
-  set(TBB_FIND_RELEASE_ONLY TRUE) # Do not use tbb_debug
   find_package(TBB CONFIG COMPONENTS tbb)
-  if(NOT TBB_tbb_FOUND)
+  if(NOT TARGET TBB::tbb)
     if(MKL_THREADING STREQUAL "tbb_thread")
       if(NOT MKL_LINK STREQUAL "sdl")
         mkl_not_found_and_return("TBB not found for the specified MKL_THREADING: ${MKL_THREADING}")
@@ -922,7 +889,17 @@ if(MKL_THREADING STREQUAL "tbb_thread" OR MKL_SYCL_THREADING STREQUAL "tbb_threa
     if(MKL_SYCL_THREADING STREQUAL "tbb_thread")
       set(MKL_SYCL_THREAD_LIB $<TARGET_LINKER_FILE:TBB::tbb>)
     endif()
-    get_property(TBB_LIB TARGET TBB::tbb PROPERTY IMPORTED_LOCATION_RELEASE)
+    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+      get_property(TBB_LIB TARGET TBB::tbb PROPERTY IMPORTED_LOCATION_DEBUG)
+    else()
+      get_property(TBB_LIB TARGET TBB::tbb PROPERTY IMPORTED_LOCATION_RELEASE)
+    endif()
+    if(NOT TBB_LIB)
+      # Fatal error because none of the TBB variants were found
+      mkl_not_found_and_return("TBB not found on the filesystem.")
+    endif()
+    # TBB_LIB will always have a non-empty value here
+    mkl_message(STATUS "Found ${TBB_LIB}")
     get_filename_component(TBB_LIB_DIR ${TBB_LIB} DIRECTORY)
     if(UNIX)
       if(CMAKE_SKIP_BUILD_RPATH)
@@ -954,6 +931,9 @@ if(NOT MKL_THREADING STREQUAL "tbb_thread" AND MKL_THREADING MATCHES "_thread")
   if(MKL_THREADING STREQUAL "gnu_thread")
     if(NOT MKL_LINK STREQUAL "sdl")
       list(APPEND MKL_SUPP_LINK -lgomp)
+      if(MKL_SYCL_THREADING STREQUAL "gnu_thread")
+        set(MKL_SYCL_THREAD_LIB -lgomp)
+      endif()
     endif()
   else()
     # intel_thread
@@ -967,7 +947,8 @@ if(NOT MKL_THREADING STREQUAL "tbb_thread" AND MKL_THREADING MATCHES "_thread")
 
     find_library(OMP_LIBRARY ${OMP_LIBNAME}
       HINTS $ENV{LIB} ${ENV_LIBRARY_PATH} $ENV{MKLROOT} ${MKL_ROOT} $ENV{CMPLR_ROOT}
-      PATH_SUFFIXES "lib" "lib/${MKL_ARCH}"
+      PATH_SUFFIXES "../../compiler/2026.0/lib"
+             "lib" "lib/${MKL_ARCH}"
              "lib/${MKL_ARCH}_lin" "lib/${MKL_ARCH}_win"
              "linux/compiler/lib/${MKL_ARCH}"
              "linux/compiler/lib/${MKL_ARCH}_lin"
@@ -985,7 +966,8 @@ if(NOT MKL_THREADING STREQUAL "tbb_thread" AND MKL_THREADING MATCHES "_thread")
       set(OMP_DLLNAME ${LIB_PREFIX}${MKL_OMP_LIB}.dll)
       find_path(OMP_DLL_DIR ${OMP_DLLNAME}
         HINTS $ENV{LIB} ${ENV_LIBRARY_PATH} $ENV{MKLROOT} ${MKL_ROOT} $ENV{CMPLR_ROOT}
-        PATH_SUFFIXES "bin"
+        PATH_SUFFIXES "../../compiler/2026.0/bin"
+              "bin"
               # Legacy layout support for oneMKL
               "redist/${MKL_ARCH}"
               "redist/${MKL_ARCH}_win" "redist/${MKL_ARCH}_win/compiler"
@@ -1030,22 +1012,12 @@ if(UNIX)
   list(APPEND MKL_SUPP_LINK -lm -ldl -lpthread)
 endif()
 
-if(SYCL_COMPILER OR ENABLE_OMP_OFFLOAD)
-  if(SYCL_COMPILER)
-    if(WIN32 AND CMAKE_BUILD_TYPE MATCHES "Debug")
-      list(APPEND MKL_SYCL_SUPP_LINK ${LINK_PREFIX}sycld${LINK_SUFFIX})
-    else()
-      list(APPEND MKL_SYCL_SUPP_LINK ${LINK_PREFIX}sycl${LINK_SUFFIX})
-    endif()
-    list(APPEND MKL_SYCL_SUPP_LINK ${LINK_PREFIX}OpenCL${LINK_SUFFIX})
-  endif()
-  if(ENABLE_OMP_OFFLOAD)
-    if(WIN32 AND CMAKE_BUILD_TYPE MATCHES "Debug")
-      list(APPEND MKL_SUPP_LINK ${LINK_PREFIX}sycld${LINK_SUFFIX})
-    else()
-      list(APPEND MKL_SUPP_LINK ${LINK_PREFIX}sycl${LINK_SUFFIX})
-    endif()
-    list(APPEND MKL_SUPP_LINK ${LINK_PREFIX}OpenCL${LINK_SUFFIX})
+# icx with OMP Offload feature needs SYCL library explicitly in the link line on Windows
+if(ENABLE_OMP_OFFLOAD AND WIN32)
+  if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    list(APPEND MKL_SUPP_LINK ${LINK_PREFIX}sycld${LINK_SUFFIX})
+  else()
+    list(APPEND MKL_SUPP_LINK ${LINK_PREFIX}sycl${LINK_SUFFIX})
   endif()
 endif()
 
@@ -1059,6 +1031,11 @@ if(SYCL_COMPILER OR ENABLE_OMP_OFFLOAD)
     list(TRANSFORM MISSED_MKL_SYCL_LIBS PREPEND MKL:: OUTPUT_VARIABLE MISSED_MKL_SYCL_TARGETS)
     list(REMOVE_ITEM MKL_SYCL_LINK_LINE ${MISSED_MKL_SYCL_TARGETS})
     list(REMOVE_ITEM MKL_LINK_LINE ${MISSED_MKL_SYCL_TARGETS})
+    if(ENABLE_OMP_OFFLOAD)
+      set(MISSED_MKL_SYCL_TARGETS_STR "")
+      list(JOIN MISSED_MKL_SYCL_TARGETS " " MISSED_MKL_SYCL_TARGETS_STR)
+      mkl_message(WARNING "${MISSED_MKL_SYCL_TARGETS_STR} not found. MKL target will not fully support ENABLE_OMP_OFFLOAD feature.")
+    endif()
   endif()
 endif()
 
@@ -1066,7 +1043,6 @@ if(SYCL_COMPILER)
   if(NOT TARGET MKL::MKL_SYCL)
     add_library(MKL::MKL_SYCL INTERFACE IMPORTED GLOBAL)
     add_library(MKL::MKL_DPCPP ALIAS MKL::MKL_SYCL)
-    add_dependencies(MKL::MKL_SYCL MKL_SYCL_STATIC_MESSAGE)
   endif()
   target_compile_options(MKL::MKL_SYCL INTERFACE $<$<COMPILE_LANGUAGE:CXX>:${MKL_SYCL_COPT}>)
   target_link_libraries(MKL::MKL_SYCL INTERFACE ${MKL_SYCL_LINK_LINE} ${MKL_SYCL_THREAD_LIB} ${MKL_SYCL_SUPP_LINK})
@@ -1081,13 +1057,9 @@ if(SYCL_COMPILER)
     add_library(MKL::MKL_SYCL::${MKL_SYCL_DOMAIN} INTERFACE IMPORTED GLOBAL)
     add_dependencies(MKL::MKL_SYCL::${MKL_SYCL_DOMAIN} MKL_SYCL_STATIC_MESSAGE)
     target_compile_options(MKL::MKL_SYCL::${MKL_SYCL_DOMAIN} INTERFACE $<$<COMPILE_LANGUAGE:CXX>:${MKL_SYCL_COPT}>)
-    # Only dynamic link has domain specific libraries
-    # Domain specific targets still use mkl_sycl for static
-    if(NOT MKL_LINK STREQUAL "static")
-      list(TRANSFORM MKL_SYCL_LINK_LINE REPLACE ".*mkl_sycl.*" "TBD")
-      list(REMOVE_DUPLICATES MKL_SYCL_LINK_LINE)
-      list(TRANSFORM MKL_SYCL_LINK_LINE REPLACE "TBD" "MKL::${lib}")
-    endif()
+    list(TRANSFORM MKL_SYCL_LINK_LINE REPLACE ".*mkl_sycl.*" "TBD")
+    list(REMOVE_DUPLICATES MKL_SYCL_LINK_LINE)
+    list(TRANSFORM MKL_SYCL_LINK_LINE REPLACE "TBD" "MKL::${lib}")
     target_link_libraries(MKL::MKL_SYCL::${MKL_SYCL_DOMAIN} INTERFACE ${MKL_SYCL_LINK_LINE} ${MKL_SYCL_THREAD_LIB} ${MKL_SYCL_SUPP_LINK})
     list(APPEND LINK_TYPES MKL::MKL_SYCL::${MKL_SYCL_DOMAIN})
   endforeach(lib) # MKL_SYCL_LIBS

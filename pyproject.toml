@@ -50,7 +50,7 @@ dependencies = [
   # "dpcpp-cpp-rt>=0.59.0",
   # "intel-cmplr-lib-rt>=0.59.0"
   # WARNING: use the latest dpctl dev version, otherwise stable w/f will fail
-  "dpctl>=0.22.0dev0",
+  "dpctl>=0.23.0dev0",
   "numpy>=1.26.0"
 ]
 description = "Data Parallel Extension for NumPy"
@@ -86,8 +86,10 @@ coverage = [
 docs = [
   "Cython",
   "cupy",
+  "furo",
   "sphinx",
-  "sphinx_rtd_theme",
+  "sphinx-copybutton",
+  "sphinx-design",
   "pyenchant",
   "sphinxcontrib-googleanalytics",
   "sphinxcontrib-spelling"
@@ -119,6 +121,11 @@ omit = [
 
 [tool.coverage.run]
 branch = true
+# Pin the C trace core. On Python 3.14+ coverage.py defaults to the sys.monitoring
+# ("sysmon") core, which (1) does not support plugins such as Cython.Coverage below,
+# and (2) corrupts the exception state when a C/Cython function raises, turning
+# expected exceptions into SystemError (e.g. usm_ndarray.__dlpack__ in test_dlpack.py).
+core = "ctrace"
 omit = [
   "dpnp/tests/*",
   "dpnp/_version.py"
@@ -129,6 +136,9 @@ plugins = [
 source = [
   "dpnp"
 ]
+
+[tool.cython-lint]
+max-line-length = 80
 
 [tool.isort]
 ensure_newline_before_comments = true

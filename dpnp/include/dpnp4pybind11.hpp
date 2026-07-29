@@ -32,9 +32,10 @@
 #include "dpctl4pybind11.hpp"
 
 // Include generated Cython headers for usm_ndarray
-// (struct definition and constants only)
 #include "dpnp/tensor/_usmarray.h"
 #include "dpnp/tensor/_usmarray_api.h"
+// Include usm_ndarray constants (flags, type numbers)
+#include "usm_ndarray_constants.h"
 
 #include <array>
 #include <cassert>
@@ -191,47 +192,47 @@ private:
         this->UsmNDArray_MakeSimpleFromPtr_ = UsmNDArray_MakeSimpleFromPtr;
         this->UsmNDArray_MakeFromPtr_ = UsmNDArray_MakeFromPtr;
 
-        // constants
-        this->USM_ARRAY_C_CONTIGUOUS_ = USM_ARRAY_C_CONTIGUOUS;
-        this->USM_ARRAY_F_CONTIGUOUS_ = USM_ARRAY_F_CONTIGUOUS;
-        this->USM_ARRAY_WRITABLE_ = USM_ARRAY_WRITABLE;
-        this->UAR_BOOL_ = UAR_BOOL;
-        this->UAR_BYTE_ = UAR_BYTE;
-        this->UAR_UBYTE_ = UAR_UBYTE;
-        this->UAR_SHORT_ = UAR_SHORT;
-        this->UAR_USHORT_ = UAR_USHORT;
-        this->UAR_INT_ = UAR_INT;
-        this->UAR_UINT_ = UAR_UINT;
-        this->UAR_LONG_ = UAR_LONG;
-        this->UAR_ULONG_ = UAR_ULONG;
-        this->UAR_LONGLONG_ = UAR_LONGLONG;
-        this->UAR_ULONGLONG_ = UAR_ULONGLONG;
-        this->UAR_FLOAT_ = UAR_FLOAT;
-        this->UAR_DOUBLE_ = UAR_DOUBLE;
-        this->UAR_CFLOAT_ = UAR_CFLOAT;
-        this->UAR_CDOUBLE_ = UAR_CDOUBLE;
-        this->UAR_TYPE_SENTINEL_ = UAR_TYPE_SENTINEL;
-        this->UAR_HALF_ = UAR_HALF;
+        // constants from usm_ndarray_constants.h
+        this->USM_ARRAY_C_CONTIGUOUS_ = USM_ARRAY_C_CONTIGUOUS_VALUE;
+        this->USM_ARRAY_F_CONTIGUOUS_ = USM_ARRAY_F_CONTIGUOUS_VALUE;
+        this->USM_ARRAY_WRITABLE_ = USM_ARRAY_WRITABLE_VALUE;
+        this->UAR_BOOL_ = UAR_BOOL_VALUE;
+        this->UAR_BYTE_ = UAR_BYTE_VALUE;
+        this->UAR_UBYTE_ = UAR_UBYTE_VALUE;
+        this->UAR_SHORT_ = UAR_SHORT_VALUE;
+        this->UAR_USHORT_ = UAR_USHORT_VALUE;
+        this->UAR_INT_ = UAR_INT_VALUE;
+        this->UAR_UINT_ = UAR_UINT_VALUE;
+        this->UAR_LONG_ = UAR_LONG_VALUE;
+        this->UAR_ULONG_ = UAR_ULONG_VALUE;
+        this->UAR_LONGLONG_ = UAR_LONGLONG_VALUE;
+        this->UAR_ULONGLONG_ = UAR_ULONGLONG_VALUE;
+        this->UAR_FLOAT_ = UAR_FLOAT_VALUE;
+        this->UAR_DOUBLE_ = UAR_DOUBLE_VALUE;
+        this->UAR_CFLOAT_ = UAR_CFLOAT_VALUE;
+        this->UAR_CDOUBLE_ = UAR_CDOUBLE_VALUE;
+        this->UAR_TYPE_SENTINEL_ = UAR_TYPE_SENTINEL_VALUE;
+        this->UAR_HALF_ = UAR_HALF_VALUE;
 
         // deduced disjoint types
-        this->UAR_INT8_ = UAR_BYTE;
-        this->UAR_UINT8_ = UAR_UBYTE;
-        this->UAR_INT16_ = UAR_SHORT;
-        this->UAR_UINT16_ = UAR_USHORT;
+        this->UAR_INT8_ = UAR_BYTE_VALUE;
+        this->UAR_UINT8_ = UAR_UBYTE_VALUE;
+        this->UAR_INT16_ = UAR_SHORT_VALUE;
+        this->UAR_UINT16_ = UAR_USHORT_VALUE;
         this->UAR_INT32_ =
             platform_typeid_lookup<std::int32_t, long, int, short>(
-                UAR_LONG, UAR_INT, UAR_SHORT);
+                UAR_LONG_VALUE, UAR_INT_VALUE, UAR_SHORT_VALUE);
         this->UAR_UINT32_ =
             platform_typeid_lookup<std::uint32_t, unsigned long, unsigned int,
-                                   unsigned short>(UAR_ULONG, UAR_UINT,
-                                                   UAR_USHORT);
+                                   unsigned short>(
+                UAR_ULONG_VALUE, UAR_UINT_VALUE, UAR_USHORT_VALUE);
         this->UAR_INT64_ =
             platform_typeid_lookup<std::int64_t, long, long long, int>(
-                UAR_LONG, UAR_LONGLONG, UAR_INT);
+                UAR_LONG_VALUE, UAR_LONGLONG_VALUE, UAR_INT_VALUE);
         this->UAR_UINT64_ =
             platform_typeid_lookup<std::uint64_t, unsigned long,
                                    unsigned long long, unsigned int>(
-                UAR_ULONG, UAR_ULONGLONG, UAR_UINT);
+                UAR_ULONG_VALUE, UAR_ULONGLONG_VALUE, UAR_UINT_VALUE);
 
         py::object py_default_usm_memory =
             ::dpctl::detail::dpctl_capi::get().default_usm_memory_pyobj();

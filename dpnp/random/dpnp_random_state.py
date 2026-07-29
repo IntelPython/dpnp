@@ -60,6 +60,8 @@ class RandomState:
         A random seed to initialize the pseudo-random number generator.
         The `seed` can be ``None`` (the default), an integer scalar, or
         an array of at most three integer scalars.
+
+        Default: ``None``.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
         `device` can be ``None``, a oneAPI filter selector string, an instance
@@ -74,6 +76,7 @@ class RandomState:
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     """
@@ -208,6 +211,8 @@ class RandomState:
         usm_type : {"device", "shared", "host"}, optional
             The type of SYCL USM allocation for the output array.
 
+            Default: ``"device"``.
+
         Returns
         -------
         out : dpnp.ndarray
@@ -300,6 +305,8 @@ class RandomState:
         usm_type : {"device", "shared", "host"}, optional
             The type of SYCL USM allocation for the output array.
 
+            Default: ``"device"``.
+
         Returns
         -------
         out : dpnp.ndarray
@@ -341,6 +348,8 @@ class RandomState:
         ----------
         usm_type : {"device", "shared", "host"}, optional
             The type of SYCL USM allocation for the output array.
+
+            Default: ``"device"``.
 
         Returns
         -------
@@ -441,6 +450,8 @@ class RandomState:
         usm_type : {"device", "shared", "host"}, optional
             The type of SYCL USM allocation for the output array.
 
+            Default: ``"device"``.
+
         Returns
         -------
         out : dpnp.ndarray
@@ -488,6 +499,8 @@ class RandomState:
         usm_type : {"device", "shared", "host"}, optional
             The type of SYCL USM allocation for the output array.
 
+            Default: ``"device"``.
+
         Returns
         -------
         out : dpnp.ndarray
@@ -523,6 +536,8 @@ class RandomState:
         ----------
         usm_type : {"device", "shared", "host"}, optional
             The type of SYCL USM allocation for the output array.
+
+            Default: ``"device"``.
 
         Returns
         -------
@@ -566,6 +581,8 @@ class RandomState:
         ----------
         usm_type : {"device", "shared", "host"}, optional
             The type of SYCL USM allocation for the output array.
+
+            Default: ``"device"``.
 
         Returns
         -------

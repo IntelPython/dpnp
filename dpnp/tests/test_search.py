@@ -9,6 +9,7 @@ from .helper import (
     generate_random_numpy_array,
     get_all_dtypes,
 )
+from .third_party.cupy import testing
 
 
 @pytest.mark.parametrize("func", ["argmax", "argmin"])
@@ -306,20 +307,35 @@ class TestWhere:
         result = dpnp.where(ic, ia, ib)
         assert_array_equal(result, expected)
 
-    def test_error(self):
-        c = dpnp.array([True, True])
-        a = dpnp.ones((4, 5))
-        b = dpnp.ones((5, 5))
-        assert_raises(ValueError, dpnp.where, c, a, a)
-        assert_raises(ValueError, dpnp.where, c[0], a, b)
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_error(self, xp):
+        c = xp.array([True, True])
+        a = xp.ones((4, 5))
+        b = xp.ones((5, 5))
+
+        assert_raises(ValueError, xp.where, c, a, a)
+        assert_raises(ValueError, xp.where, c[0], a, b)
 
     def test_empty_result(self):
         a = numpy.zeros((1, 1))
         ia = dpnp.array(a)
 
-        expected = numpy.vstack(numpy.where(a == 99.0))
-        result = dpnp.vstack(dpnp.where(ia == 99.0))
+        np_res = numpy.where(a == 99.0)
+        dp_res = dpnp.where(ia == 99.0)
+        assert type(dp_res) is type(np_res) is tuple
+
+        expected = numpy.vstack(np_res)
+        result = dpnp.vstack(dp_res)
         assert_array_equal(result, expected)
+
+    @testing.with_requires("numpy>=2.5")
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_scalar_overflow(self, xp):
+        a = xp.array([1], dtype=xp.uint8)
+        b = 1000
+        c = xp.array([True])
+        assert_raises(OverflowError, xp.where, c, a, b)
+        assert_raises(OverflowError, xp.where, c, b, a)
 
     @pytest.mark.parametrize("x_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("y_dt", get_all_dtypes(no_none=True))

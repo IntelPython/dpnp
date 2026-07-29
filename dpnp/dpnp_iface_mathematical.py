@@ -45,7 +45,6 @@ it contains:
 
 
 import builtins
-import warnings
 
 import dpctl.utils as dpu
 import numpy
@@ -665,19 +664,19 @@ def clip(a, /, min=None, max=None, *, out=None, order="K", **kwargs):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array containing elements to clip.
-    min, max : {None, dpnp.ndarray, usm_ndarray}
+    min, max : {None, dpnp.ndarray, usm_ndarray}, optional
         Minimum and maximum value. If ``None``, clipping is not performed on
         the corresponding edge. If both `min` and `max` are ``None``,
         the elements of the returned array stay the same.
         Both are broadcast against `a`.
 
-        Default : ``None``.
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array
         for in-place clipping. `out` must be of the right shape to hold the
         output. Its type is preserved.
 
-        Default : ``None``.
+        Default: ``None``.
     order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
         If `order` is ``None``, the default value ``"K"`` will be used.
@@ -874,11 +873,8 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
 
     The cross product of `a` and `b` in :math:`R^3` is a vector perpendicular
     to both `a` and `b`. If `a` and `b` are arrays of vectors, the vectors
-    are defined by the last axis of `a` and `b` by default, and these axes
-    can have dimensions 2 or 3. Where the dimension of either `a` or `b` is
-    2, the third component of the input vector is assumed to be zero and the
-    cross product calculated accordingly. In cases where both input vectors
-    have dimension 2, the z-component of the cross product is returned.
+    are defined by the last axis of `a` and `b` by default, and these axes must
+    have 3 dimensions.
 
     For full documentation refer to :obj:`numpy.cross`.
 
@@ -897,8 +893,7 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
 
         Default: ``-1``.
     axisc : int, optional
-        Axis of `c` containing the cross product vector(s). Ignored if both
-        input vectors have dimension ``2``, as the return is scalar. By default,
+        Axis of `c` containing the cross product vector(s). By default,
         the last axis.
 
         Default: ``-1``.
@@ -913,9 +908,14 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     out : dpnp.ndarray
         Vector cross product(s).
 
+    Raises
+    ------
+    ValueError
+        When the dimension of the vector(s) in `a` or `b` does not equal 3.
+
     See Also
     --------
-    :obj:`dpnp.linalg.cross` : Array API compatible version.
+    :obj:`dpnp.linalg.cross` : Array API compatible variation.
     :obj:`dpnp.inner` : Inner product.
     :obj:`dpnp.outer` : Outer product.
 
@@ -928,27 +928,6 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     >>> y = np.array([4, 5, 6])
     >>> np.cross(x, y)
     array([-3,  6, -3])
-
-    One vector with dimension 2.
-
-    >>> x = np.array([1, 2])
-    >>> y = np.array([4, 5, 6])
-    >>> np.cross(x, y)
-    array([12, -6, -3])
-
-    Equivalently:
-
-    >>> x = np.array([1, 2, 0])
-    >>> y = np.array([4, 5, 6])
-    >>> np.cross(x, y)
-    array([12, -6, -3])
-
-    Both vectors with dimension 2.
-
-    >>> x = np.array([1, 2])
-    >>> y = np.array([4, 5])
-    >>> np.cross(x, y)
-    array(-3)
 
     Multiple vector cross-products. Note that the direction of the cross
     product vector is defined by the *right-hand rule*.
@@ -992,6 +971,9 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
             "Input arrays with boolean data type are not supported."
         )
 
+    if (a.ndim < 1) or (b.ndim < 1):
+        raise ValueError("At least one array has zero dimension")
+
     # Check axisa and axisb are within bounds
     axisa = normalize_axis_index(axisa, a.ndim, msg_prefix="axisa")
     axisb = normalize_axis_index(axisb, b.ndim, msg_prefix="axisb")
@@ -999,36 +981,18 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     # Move working axis to the end of the shape
     a = dpnp.moveaxis(a, axisa, -1)
     b = dpnp.moveaxis(b, axisb, -1)
-    if a.shape[-1] not in (2, 3) or b.shape[-1] not in (2, 3):
-        raise ValueError(
-            "Incompatible vector dimensions for cross product\n"
-            "(the dimension of vector used in cross product must be 2 or 3)"
-        )
 
-    if a.shape[-1] == 2 or b.shape[-1] == 2:
-        warnings.warn(
-            "Arrays of 2-dimensional vectors are deprecated. Use arrays of "
-            "3-dimensional vectors instead. (deprecated in dpnp 0.17.0)",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-    # Modify the shape of input arrays if necessary
     a_shape = a.shape
     b_shape = b.shape
+    if a_shape[-1] != 3 or b_shape[-1] != 3:
+        raise ValueError(
+            "Both input arrays must be (arrays of) 3-dimensional vectors, "
+            f"but they are {a_shape[-1]} and {b_shape[-1]} dimensional instead."
+        )
 
-    res_shape = dpnp.broadcast_shapes(a_shape[:-1], b_shape[:-1])
-    if a_shape[:-1] != res_shape:
-        a = dpnp.broadcast_to(a, res_shape + (a_shape[-1],))
-        a_shape = a.shape
-    if b_shape[:-1] != res_shape:
-        b = dpnp.broadcast_to(b, res_shape + (b_shape[-1],))
-        b_shape = b.shape
-
-    if a_shape[-1] == 3 or b_shape[-1] == 3:
-        res_shape += (3,)
-        # Check axisc is within bounds
-        axisc = normalize_axis_index(axisc, len(res_shape), msg_prefix="axisc")
+    # Check axisc is within bounds
+    res_shape = *dpnp.broadcast_shapes(a_shape[:-1], b_shape[:-1]), 3
+    axisc = normalize_axis_index(axisc, len(res_shape), msg_prefix="axisc")
 
     # Create the output array
     dtype = dpnp.result_type(a, b)
@@ -1042,9 +1006,6 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     b = b.astype(dtype, copy=False)
 
     cp = dpnp_cross(a, b, cp)
-    if a_shape[-1] == 2 and b_shape[-1] == 2:
-        return cp
-
     return dpnp.moveaxis(cp, -1, axisc)
 
 
@@ -1857,8 +1818,8 @@ See Also
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.
 
-Warning
--------
+Warnings
+--------
 This function is deprecated. It is recommended to use
 :func:`dpnp.trunc` instead, as it provides the same functionality of
 truncating decimal values to their integer parts.
@@ -3050,7 +3011,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         raise ValueError("xp and fp must be 1D arrays")
     if xp.size != fp.size:
         raise ValueError("fp and xp are not of the same length")
-    if xp.size == 0:
+    if xp.size == 0 and x.size != 0:
         raise ValueError("array of sample points is empty")
 
     usm_type, exec_q = get_usm_allocations([x, xp, fp])
@@ -3098,9 +3059,9 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     right = _validate_interp_param(right, "right", exec_q, usm_type, fp.dtype)
 
     usm_type, exec_q = get_usm_allocations([x, xp, fp, period, left, right])
-    output = dpnp.empty(
-        x.shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
-    )
+    output = dpnp.empty_like(x, dtype=out_dtype, usm_type=usm_type)
+    if x.size == 0:
+        return output
 
     left_usm = left.get_array() if left is not None else None
     right_usm = right.get_array() if right is not None else None
@@ -3288,8 +3249,8 @@ order : {None, "C", "F", "A", "K"}, optional
 
     Default: ``"K"``.
 
-Warning
--------
+Warnings
+--------
 Passing more than 2 positional arguments is deprecated.
 If you meant to use the third argument as an output,
 use the `out` keyword argument instead.
@@ -3395,8 +3356,8 @@ out : dpnp.ndarray
     An array containing the element-wise minima. The data type of
     the returned array is determined by the Type Promotion Rules.
 
-Warning
--------
+Warnings
+--------
 Passing more than 2 positional arguments is deprecated.
 If you meant to use the third argument as an output,
 use the `out` keyword argument instead.

@@ -124,7 +124,7 @@ def test_usm_ndarray_flags():
     assert f.fc
     assert f.forc
     assert not dpt.usm_ndarray(
-        (5, 1, 1), dtype="i4", strides=(2, 0, 1)
+        (2, 3, 4), dtype="i4", strides=(4, 8, 1)
     ).flags.forc
 
     x = dpt.empty(5, dtype="u2")
@@ -169,7 +169,7 @@ def test_usm_ndarray_writable_flag_views():
     a = dpt.arange(10, dtype="f4")
     a.flags["W"] = False
 
-    a.shape = (5, 2)
+    a = dpt.reshape(a, (5, 2))
     assert not a.flags.writable
     assert not a.T.flags.writable
     assert not a.mT.flags.writable
@@ -599,77 +599,6 @@ def test_datapi_device():
     X.device.print_device_info()
 
 
-def _pyx_capi_int(X, pyx_capi_name, caps_name=b"int", val_restype=ctypes.c_int):
-    import sys
-
-    mod = sys.modules[X.__class__.__module__]
-    cap = mod.__pyx_capi__.get(pyx_capi_name, None)
-    if cap is None:
-        raise ValueError(
-            "__pyx_capi__ does not export {} capsule".format(pyx_capi_name)
-        )
-    # construct Python callable to invoke these functions
-    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
-    cap_ptr_fn.restype = ctypes.c_void_p
-    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
-    cap_ptr = cap_ptr_fn(cap, caps_name)
-    val_ptr = ctypes.cast(cap_ptr, ctypes.POINTER(val_restype))
-    return val_ptr.contents.value
-
-
-def test_pyx_capi_check_constants():
-    try:
-        X = dpt.usm_ndarray(17, dtype="i1")[1::2]
-    except dpctl.SyclDeviceCreationError:
-        pytest.skip("No SYCL devices available")
-    cc_flag = _pyx_capi_int(X, "USM_ARRAY_C_CONTIGUOUS")
-    assert cc_flag > 0 and 0 == (cc_flag & (cc_flag - 1))
-    fc_flag = _pyx_capi_int(X, "USM_ARRAY_F_CONTIGUOUS")
-    assert fc_flag > 0 and 0 == (fc_flag & (fc_flag - 1))
-    w_flag = _pyx_capi_int(X, "USM_ARRAY_WRITABLE")
-    assert w_flag > 0 and 0 == (w_flag & (w_flag - 1))
-
-    bool_typenum = _pyx_capi_int(X, "UAR_BOOL")
-    assert bool_typenum == dpt.dtype("bool_").num
-
-    byte_typenum = _pyx_capi_int(X, "UAR_BYTE")
-    assert byte_typenum == dpt.dtype(np.byte).num
-    ubyte_typenum = _pyx_capi_int(X, "UAR_UBYTE")
-    assert ubyte_typenum == dpt.dtype(np.ubyte).num
-
-    short_typenum = _pyx_capi_int(X, "UAR_SHORT")
-    assert short_typenum == dpt.dtype(np.short).num
-    ushort_typenum = _pyx_capi_int(X, "UAR_USHORT")
-    assert ushort_typenum == dpt.dtype(np.ushort).num
-
-    int_typenum = _pyx_capi_int(X, "UAR_INT")
-    assert int_typenum == dpt.dtype(np.intc).num
-    uint_typenum = _pyx_capi_int(X, "UAR_UINT")
-    assert uint_typenum == dpt.dtype(np.uintc).num
-
-    long_typenum = _pyx_capi_int(X, "UAR_LONG")
-    assert long_typenum == dpt.dtype("l").num
-    ulong_typenum = _pyx_capi_int(X, "UAR_ULONG")
-    assert ulong_typenum == dpt.dtype("L").num
-
-    longlong_typenum = _pyx_capi_int(X, "UAR_LONGLONG")
-    assert longlong_typenum == dpt.dtype(np.longlong).num
-    ulonglong_typenum = _pyx_capi_int(X, "UAR_ULONGLONG")
-    assert ulonglong_typenum == dpt.dtype(np.ulonglong).num
-
-    half_typenum = _pyx_capi_int(X, "UAR_HALF")
-    assert half_typenum == dpt.dtype(np.half).num
-    float_typenum = _pyx_capi_int(X, "UAR_FLOAT")
-    assert float_typenum == dpt.dtype(np.single).num
-    double_typenum = _pyx_capi_int(X, "UAR_DOUBLE")
-    assert double_typenum == dpt.dtype(np.double).num
-
-    cfloat_typenum = _pyx_capi_int(X, "UAR_CFLOAT")
-    assert cfloat_typenum == dpt.dtype(np.csingle).num
-    cdouble_typenum = _pyx_capi_int(X, "UAR_CDOUBLE")
-    assert cdouble_typenum == dpt.dtype(np.cdouble).num
-
-
 @pytest.mark.parametrize(
     "shape", [(), (1,), (5,), (2, 3), (2, 3, 4), (2, 2, 2, 2, 2)]
 )
@@ -874,6 +803,7 @@ def test_setitem_wingaps():
         assert np.array_equal(dpt.asnumpy(dpt_dst), np_src)
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_shape_setter():
     def cc_strides(sh):
         return np.empty(sh, dtype="u1").strides
@@ -1100,6 +1030,15 @@ def test_astype_gh_2121():
     assert dpt.all(res == expected)
 
 
+def test_astype_gh_2882():
+    get_queue_or_skip()
+
+    x = dpt.asarray([160.0, 120.0], dtype="f4")
+    r = dpt.astype(x, dpt.uint8)
+    expected = dpt.asarray([160, 120], dtype="u1")
+    assert dpt.all(r == expected)
+
+
 def test_copy():
     try:
         X = dpt.usm_ndarray((5, 5), "i4")[2:4, 1:4]
@@ -1144,6 +1083,23 @@ def test_ctor_invalid():
     m = dpm.MemoryUSMShared(64)
     with pytest.raises(ValueError):
         dpt.usm_ndarray((4,), dtype="u1", buffer=m, strides={"not": "valid"})
+
+
+def test_ctor_invalid_strides():
+    try:
+        dpt.usm_ndarray((1,), dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    # negative displacement
+    with pytest.raises(
+        ValueError, match="result in a negative memory displacement"
+    ):
+        dpt.usm_ndarray((2, 3, 4), dtype="i4", strides=(-1, 1, 1))
+    # oversized memory footprint
+    with pytest.raises(
+        ValueError, match="memory footprint exceeds the number of elements"
+    ):
+        dpt.usm_ndarray((2, 3, 4), dtype="i4", strides=(1, 16, 128))
 
 
 def test_reshape():

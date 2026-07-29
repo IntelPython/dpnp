@@ -62,22 +62,22 @@ cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
         kind = chr(kind)
     itemsize = dpnp.dtype(dtype).itemsize
 
-    if dt_c == 'd':
+    if dt_c == "d":
         return DPNP_FT_DOUBLE
-    elif dt_c == 'f':
+    elif dt_c == "f":
         return DPNP_FT_FLOAT
-    elif kind == 'i':
+    elif kind == "i":
         if itemsize == 8:
             return DPNP_FT_LONG
         elif itemsize == 4:
             return DPNP_FT_INT
         else:
             utils.checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
-    elif dt_c == 'F':
+    elif dt_c == "F":
         return DPNP_FT_CMPLX64
-    elif dt_c == 'D':
+    elif dt_c == "D":
         return DPNP_FT_CMPLX128
-    elif dt_c == '?':
+    elif dt_c == "?":
         return DPNP_FT_BOOL
     else:
         utils.checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
@@ -85,7 +85,8 @@ cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
 
 cdef dpnp_DPNPFuncType_to_dtype(size_t type):
     """
-    Type 'size_t' used instead 'DPNPFuncType' because Cython has lack of Enum support (0.29)
+    Type 'size_t' used instead 'DPNPFuncType' because
+    Cython has lack of Enum support (0.29)
     TODO needs to use DPNPFuncType here
     """
     if type == <size_t > DPNP_FT_DOUBLE:

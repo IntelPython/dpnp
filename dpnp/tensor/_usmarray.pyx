@@ -30,6 +30,8 @@
 # cython: language_level=3
 # cython: linetrace=True
 
+import warnings
+
 import dpctl
 import dpctl.memory as dpmem
 import numpy as np
@@ -46,7 +48,6 @@ from ._print import usm_ndarray_repr, usm_ndarray_str
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
 from cpython.mem cimport PyMem_Free
-from cpython.tuple cimport PyTuple_New, PyTuple_SetItem
 
 from . cimport _dlpack as c_dlpack
 
@@ -56,9 +57,51 @@ from . import _flags
 from ._dlpack import get_build_dlpack_version
 from ._tensor_impl import default_device_fp_type
 
-include "_stride_utils.pxi"
-include "_types.pxi"
-include "_slicing.pxi"
+from ._slicing cimport _is_buffer
+
+from ._slicing import _basic_slice_meta
+
+from ._stride_utils cimport (
+    ERROR_INCORRECT_ORDER,
+    ERROR_MALLOC,
+    ERROR_UNEXPECTED_STRIDES,
+    _c_contig_strides,
+    _f_contig_strides,
+    _from_input_shape_strides,
+    _make_int_tuple,
+    _make_reversed_int_tuple,
+    _swap_last_two,
+    shape_to_elem_count,
+)
+from ._types cimport (
+    _make_typestr,
+    dtype_to_typenum,
+    type_bytesize,
+)
+
+
+# Public API constants initialized from usm_ndarray_constants.h
+cdef int USM_ARRAY_C_CONTIGUOUS = USM_ARRAY_C_CONTIGUOUS_VALUE
+cdef int USM_ARRAY_F_CONTIGUOUS = USM_ARRAY_F_CONTIGUOUS_VALUE
+cdef int USM_ARRAY_WRITABLE = USM_ARRAY_WRITABLE_VALUE
+
+cdef int UAR_BOOL = UAR_BOOL_VALUE
+cdef int UAR_BYTE = UAR_BYTE_VALUE
+cdef int UAR_UBYTE = UAR_UBYTE_VALUE
+cdef int UAR_SHORT = UAR_SHORT_VALUE
+cdef int UAR_USHORT = UAR_USHORT_VALUE
+cdef int UAR_INT = UAR_INT_VALUE
+cdef int UAR_UINT = UAR_UINT_VALUE
+cdef int UAR_LONG = UAR_LONG_VALUE
+cdef int UAR_ULONG = UAR_ULONG_VALUE
+cdef int UAR_LONGLONG = UAR_LONGLONG_VALUE
+cdef int UAR_ULONGLONG = UAR_ULONGLONG_VALUE
+cdef int UAR_FLOAT = UAR_FLOAT_VALUE
+cdef int UAR_DOUBLE = UAR_DOUBLE_VALUE
+cdef int UAR_CFLOAT = UAR_CFLOAT_VALUE
+cdef int UAR_CDOUBLE = UAR_CDOUBLE_VALUE
+cdef int UAR_TYPE_SENTINEL = UAR_TYPE_SENTINEL_VALUE
+cdef int UAR_HALF = UAR_HALF_VALUE
 
 
 class DLDeviceType(IntEnum):
@@ -130,7 +173,7 @@ cdef object _as_zero_dim_ndarray(object usm_ary):
     usm_ary.sycl_queue.wait()
     host_buf = mem_view.copy_to_host()
     view = host_buf.view(usm_ary.dtype)
-    view.shape = tuple()
+    view = view.reshape(())
     return view
 
 
@@ -335,12 +378,11 @@ cdef class usm_ndarray:
         if (typenum < 0):
             if typenum == -2:
                 raise ValueError(
-                    "Data type '" + str(dtype) +
-                    "' can only have native byteorder."
+                    f"Data type '{dtype}' can only have native byteorder."
                 )
             elif typenum == -1:
                 raise ValueError(
-                    "Data type '" + str(dtype) + "' is not understood."
+                    f"Data type '{dtype}' is not understood."
                 )
             raise TypeError(
                 f"Expected string or a dtype object, got {type(dtype)}"
@@ -348,7 +390,7 @@ cdef class usm_ndarray:
         itemsize = type_bytesize(typenum)
         if (itemsize < 1):
             raise TypeError(
-                "dtype=" + np.dtype(dtype).name + " is not supported."
+                f"dtype={np.dtype(dtype).name} is not supported."
             )
         # allocate host C-arrays for shape, strides
         err = _from_input_shape_strides(
@@ -363,11 +405,11 @@ cdef class usm_ndarray:
                                   "array failed.")
             elif err == ERROR_INCORRECT_ORDER:
                 raise ValueError(
-                    "Unsupported order='{}' given. "
-                    "Supported values are 'C' or 'F'.".format(order))
+                    f"Unsupported order='{order}' given. "
+                    "Supported values are 'C' or 'F'.")
             elif err == ERROR_UNEXPECTED_STRIDES:
                 raise ValueError(
-                    "strides={} is not understood".format(strides))
+                    f"strides={strides} is not understood")
             else:
                 raise InternalUSMArrayError(
                     " .. while processing shape and strides.")
@@ -378,6 +420,21 @@ cdef class usm_ndarray:
         elif isinstance(buffer, (str, bytes)):
             if isinstance(buffer, bytes):
                 buffer = buffer.decode("UTF-8")
+            if strides is not None and ary_min_displacement < 0:
+                self._cleanup()
+                raise ValueError(
+                    f"strides={strides} result in a negative memory "
+                    "displacement and are not allowed when allocating "
+                    "new memory")
+            if strides is not None and (
+                (ary_max_displacement - ary_min_displacement + 1) > ary_nelems
+            ):
+                self._cleanup()
+                raise ValueError(
+                    f"strides={strides} is incompatible with "
+                    f"shape={shape} when allocating new memory because "
+                    "the memory footprint exceeds the number of elements"
+                )
             _offset = -ary_min_displacement
             if (buffer == "shared"):
                 _buffer = dpmem.MemoryUSMShared(ary_nbytes,
@@ -391,10 +448,9 @@ cdef class usm_ndarray:
             else:
                 self._cleanup()
                 raise ValueError(
-                    "buffer='{}' is not understood. "
+                    f"buffer='{buffer}' is not understood. "
                     "Recognized values are 'device', 'shared',  'host', "
                     "an instance of `MemoryUSM*` object, or a usm_ndarray"
-                    "".format(buffer)
                 )
         elif isinstance(buffer, usm_ndarray):
             if not buffer.flags.writable:
@@ -402,13 +458,14 @@ cdef class usm_ndarray:
             _buffer = buffer.usm_data
         else:
             self._cleanup()
-            raise ValueError("buffer='{}' was not understood.".format(buffer))
+            raise ValueError(f"buffer='{buffer}' was not understood.")
         if (shape_to_elem_count(nd, shape_ptr) > 0 and
             (_offset + ary_min_displacement < 0 or
              (_offset + ary_max_displacement + 1) * itemsize > _buffer.nbytes)):
             self._cleanup()
-            raise ValueError(("buffer='{}' can not accommodate "
-                              "the requested array.").format(buffer))
+            raise ValueError(
+                f"buffer='{buffer}' can not accommodate the requested array."
+            )
         is_fp64 = (typenum == UAR_DOUBLE or typenum == UAR_CDOUBLE)
         is_fp16 = (typenum == UAR_HALF)
         if (is_fp64 or is_fp16):
@@ -597,9 +654,8 @@ cdef class usm_ndarray:
         if (not isinstance(self.base_, dpmem._memory._Memory)):
             raise InternalUSMArrayError(
                 "Invalid instance of usm_ndarray encountered. "
-                "Private field base_ has an unexpected type {}.".format(
-                    type(self.base_)
-                )
+                "Private field base_ has an unexpected type "
+                f"{type(self.base_)}."
             )
         ary_iface = self.base_.__sycl_usm_array_interface__
         mem_ptr = <char *>(<size_t> ary_iface["data"][0])
@@ -650,10 +706,10 @@ cdef class usm_ndarray:
         Elements of the shape tuple give the lengths of the
         respective array dimensions.
 
-        Setting shape is allowed only when reshaping to the requested
-        dimensions can be returned as view, otherwise :exc:`AttributeError`
-        is raised. Use :func:`dpctl.tensor.reshape` to reshape the array
-        in all cases.
+        .. warning::
+            Setting ``a.shape`` has been deprecated and may be removed in
+            the future. Use :func:`dpnp.tensor.reshape` to reshape the array
+            instead.
 
         :Example:
 
@@ -662,7 +718,7 @@ cdef class usm_ndarray:
                 from dpnp import tensor
 
                 x = tensor.arange(899)
-                x.shape = (29, 31)
+                x = tensor.reshape(x, (29, 31))
         """
         if self.nd_ > 0:
             return _make_int_tuple(self.nd_, self.shape_)
@@ -683,10 +739,23 @@ cdef class usm_ndarray:
                 number of elements in the array.
 
         Whether the array can be reshape in-place depends on its
-        strides. Use :func:`dpctl.tensor.reshape` function which
+        strides. Use :func:`dpnp.tensor.reshape` function which
         always succeeds to reshape the array by performing a copy
         if necessary.
+
+        .. deprecated::
+            Setting ``a.shape`` has been deprecated and may be removed in
+            the future. Use :func:`dpnp.tensor.reshape` to reshape the array
+            instead.
         """
+        warnings.warn(
+            "Setting the shape on an array has been deprecated. As an "
+            "alternative, you can create a new array with the desired shape "
+            "using the reshape function.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         cdef int new_nd = -1
         cdef Py_ssize_t nelems = -1
         cdef int err = 0
@@ -747,7 +816,7 @@ cdef class usm_ndarray:
             self.strides_ = strides_ptr
         else:
             raise InternalUSMArrayError(
-                "Encountered in shape setter, error code {err}".format(err)
+                f"Encountered in shape setter, error code {err}"
             )
 
     @property
@@ -1849,7 +1918,7 @@ cdef api object UsmNDArray_MakeSimpleFromPtr(
     cdef int itemsize = type_bytesize(typenum)
     if (itemsize < 1):
         raise ValueError(
-            "dtype with typenum=" + str(typenum) + " is not supported."
+            f"dtype with typenum={typenum} is not supported."
         )
     cdef size_t nbytes = (<size_t> itemsize) * nelems
     cdef c_dpmem._Memory mobj
@@ -1905,7 +1974,7 @@ cdef api object UsmNDArray_MakeFromPtr(
 
     if (itemsize < 1):
         raise ValueError(
-            "dtype with typenum=" + str(typenum) + " is not supported."
+            f"dtype with typenum={typenum} is not supported."
         )
     if (nd < 0):
         raise ValueError("Dimensionality must be non-negative")

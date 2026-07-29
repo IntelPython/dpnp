@@ -24,6 +24,7 @@ from .helper import (
     has_support_aspect16,
     numpy_version,
 )
+from .third_party.cupy import testing
 
 """
 The scope includes tests with only functions which are instances of
@@ -671,6 +672,28 @@ class TestNextafter:
         result = dpnp.nextafter(iv1, iv2)
         expected = numpy.nextafter(v1, v2)
         assert_equal(result, expected)
+
+    @testing.with_requires("numpy>=2.5")
+    @pytest.mark.parametrize(
+        "zero1, zero2",
+        [
+            pytest.param(+0.0, -0.0, id="pos to neg zero"),
+            pytest.param(-0.0, +0.0, id="neg to pos zero"),
+            pytest.param(+0.0, +0.0, id="pos to pos zero"),
+            pytest.param(-0.0, -0.0, id="neg to neg zero"),
+        ],
+    )
+    @pytest.mark.parametrize("dt", get_float_dtypes(no_float16=False))
+    def test_signed_zero(self, zero1, zero2, dt):
+        z1 = numpy.array(zero1, dtype=dt)
+        z2 = numpy.array(zero2, dtype=dt)
+        iz1, iz2 = dpnp.array(z1), dpnp.array(z2)
+
+        result = dpnp.nextafter(iz1, iz2)
+        expected = numpy.nextafter(z1, z2)
+
+        assert_equal(result, expected)
+        assert_equal(dpnp.signbit(result), numpy.signbit(expected))
 
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_float_nan(self, dt):

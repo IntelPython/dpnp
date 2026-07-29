@@ -32,6 +32,29 @@
 cimport dpctl
 
 
+cdef extern from "usm_ndarray_constants.h":
+    int USM_ARRAY_C_CONTIGUOUS_VALUE
+    int USM_ARRAY_F_CONTIGUOUS_VALUE
+    int USM_ARRAY_WRITABLE_VALUE
+
+    int UAR_BOOL_VALUE
+    int UAR_BYTE_VALUE
+    int UAR_UBYTE_VALUE
+    int UAR_SHORT_VALUE
+    int UAR_USHORT_VALUE
+    int UAR_INT_VALUE
+    int UAR_UINT_VALUE
+    int UAR_LONG_VALUE
+    int UAR_ULONG_VALUE
+    int UAR_LONGLONG_VALUE
+    int UAR_ULONGLONG_VALUE
+    int UAR_FLOAT_VALUE
+    int UAR_DOUBLE_VALUE
+    int UAR_CFLOAT_VALUE
+    int UAR_CDOUBLE_VALUE
+    int UAR_TYPE_SENTINEL_VALUE
+    int UAR_HALF_VALUE
+
 cdef public api int USM_ARRAY_C_CONTIGUOUS
 cdef public api int USM_ARRAY_F_CONTIGUOUS
 cdef public api int USM_ARRAY_WRITABLE

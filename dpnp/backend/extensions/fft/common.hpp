@@ -112,12 +112,13 @@ public:
         const typename valT::value_type dim = get_dim();
 
         valT fwd_strides(dim + 1);
-#if INTEL_MKL_VERSION >= 20250000
-        descr_.get_value(mkl_dft::config_param::FWD_STRIDES, &fwd_strides);
-#else
+#if defined(USE_ONEMATH)
+        // oneMath uses a C-style variadic API that expects a raw pointer
         descr_.get_value(mkl_dft::config_param::FWD_STRIDES,
                          fwd_strides.data());
-#endif // INTEL_MKL_VERSION
+#else
+        descr_.get_value(mkl_dft::config_param::FWD_STRIDES, &fwd_strides);
+#endif // USE_ONEMATH
         return fwd_strides;
     }
 
@@ -130,11 +131,12 @@ public:
             throw py::value_error(
                 "Strides length does not match descriptor's dimension");
         }
-#if INTEL_MKL_VERSION >= 20250000
-        descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides);
-#else
+#if defined(USE_ONEMATH)
+        // oneMath uses a C-style variadic API that expects a raw pointer
         descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides.data());
-#endif // INTEL_MKL_VERSION
+#else
+        descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides);
+#endif // USE_ONEMATH
     }
 
     // config_param::BWD_STRIDES
@@ -144,12 +146,13 @@ public:
         const typename valT::value_type dim = get_dim();
 
         valT bwd_strides(dim + 1);
-#if INTEL_MKL_VERSION >= 20250000
-        descr_.get_value(mkl_dft::config_param::BWD_STRIDES, &bwd_strides);
-#else
+#if defined(USE_ONEMATH)
+        // oneMath uses a C-style variadic API that expects a raw pointer
         descr_.get_value(mkl_dft::config_param::BWD_STRIDES,
                          bwd_strides.data());
-#endif // INTEL_MKL_VERSION
+#else
+        descr_.get_value(mkl_dft::config_param::BWD_STRIDES, &bwd_strides);
+#endif // USE_ONEMATH
         return bwd_strides;
     }
 
@@ -162,11 +165,12 @@ public:
             throw py::value_error(
                 "Strides length does not match descriptor's dimension");
         }
-#if INTEL_MKL_VERSION >= 20250000
-        descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides);
-#else
+#if defined(USE_ONEMATH)
+        // oneMath uses a C-style variadic API that expects a raw pointer
         descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides.data());
-#endif // INTEL_MKL_VERSION
+#else
+        descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides);
+#endif // USE_ONEMATH
     }
 
     // config_param::FWD_DISTANCE
@@ -204,32 +208,17 @@ public:
     // config_param::PLACEMENT
     bool get_in_place()
     {
-#if defined(USE_ONEMATH) || INTEL_MKL_VERSION >= 20250000
         mkl_dft::config_value placement;
         descr_.get_value(mkl_dft::config_param::PLACEMENT, &placement);
         return (placement == mkl_dft::config_value::INPLACE);
-#else
-        // TODO: remove branch when MKLD-10506 is implemented
-        DFTI_CONFIG_VALUE placement;
-        descr_.get_value(mkl_dft::config_param::PLACEMENT, &placement);
-        return (placement == DFTI_CONFIG_VALUE::DFTI_INPLACE);
-#endif // USE_ONEMATH or INTEL_MKL_VERSION
     }
 
     void set_in_place(const bool &in_place_request)
     {
-#if defined(USE_ONEMATH) || INTEL_MKL_VERSION >= 20250000
         descr_.set_value(mkl_dft::config_param::PLACEMENT,
                          (in_place_request)
                              ? mkl_dft::config_value::INPLACE
                              : mkl_dft::config_value::NOT_INPLACE);
-#else
-        // TODO: remove branch when MKLD-10506 is implemented
-        descr_.set_value(mkl_dft::config_param::PLACEMENT,
-                         (in_place_request)
-                             ? DFTI_CONFIG_VALUE::DFTI_INPLACE
-                             : DFTI_CONFIG_VALUE::DFTI_NOT_INPLACE);
-#endif // USE_ONEMATH or INTEL_MKL_VERSION
     }
 
     // config_param::PRECISION
@@ -244,16 +233,9 @@ public:
     // config_param::COMMIT_STATUS
     bool is_committed()
     {
-#if defined(USE_ONEMATH) || INTEL_MKL_VERSION >= 20250000
         mkl_dft::config_value committed;
         descr_.get_value(mkl_dft::config_param::COMMIT_STATUS, &committed);
         return (committed == mkl_dft::config_value::COMMITTED);
-#else
-        // TODO: remove branch when MKLD-10506 is implemented
-        DFTI_CONFIG_VALUE committed;
-        descr_.get_value(mkl_dft::config_param::COMMIT_STATUS, &committed);
-        return (committed == DFTI_CONFIG_VALUE::DFTI_COMMITTED);
-#endif // USE_ONEMATH or INTEL_MKL_VERSION
     }
 
 private:

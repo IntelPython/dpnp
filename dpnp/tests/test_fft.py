@@ -234,6 +234,26 @@ class TestFft:
         expected = numpy.fft.fft(a)
         assert_dtype_allclose(result, expected)
 
+    def test_non_contiguous_no_copy(self):
+        a = generate_random_numpy_array((4, 5, 6), dtype=numpy.complex64)
+        # Non-contiguous input with compact footprint (no copy needed)
+        ia = dpnp.moveaxis(dpnp.array(a), 0, -1)
+        a_np = dpnp.asnumpy(ia)
+
+        result = dpnp.fft.fft(ia)
+        expected = numpy.fft.fft(a_np)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("slc", [numpy.s_[::2, :], numpy.s_[:, ::3]])
+    def test_non_contiguous_with_copy(self, slc):
+        # Strided input with oversized footprint (triggers copy)
+        a = generate_random_numpy_array((10, 12), dtype=numpy.complex64)
+        ia = dpnp.array(a)[slc]
+
+        result = dpnp.fft.fft(ia)
+        expected = numpy.fft.fft(a[slc])
+        assert_dtype_allclose(result, expected)
+
     def test_empty_array(self):
         a = numpy.empty((10, 0, 4), dtype=numpy.complex64)
         ia = dpnp.array(a)

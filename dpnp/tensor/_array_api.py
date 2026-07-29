@@ -77,7 +77,7 @@ def _get_device_impl(d):
             raise TypeError(f"Unsupported type for device argument: {type(d)}")
 
 
-__array_api_version__ = "2024.12"
+__array_api_version__ = "2025.12"
 
 
 class Info:
@@ -132,9 +132,9 @@ class Info:
         """
         default_device()
 
-        Returns the default SYCL device.
+        Returns the default device.
         """
-        return dpctl.select_default_device()
+        return dpt.Device.create_device(dpctl.select_default_device())
 
     def default_dtypes(self, *, device=None):
         """
@@ -239,9 +239,9 @@ class Info:
         """
         devices()
 
-        Returns a list of supported devices.
+        Returns a tuple of supported devices.
         """
-        return dpctl.get_devices()
+        return tuple(dpt.Device.create_device(d) for d in dpctl.get_devices())
 
 
 def __array_namespace_info__():
