@@ -31,6 +31,7 @@ import sys
 import warnings
 
 import dpctl
+import dpctl.utils as dpu
 import numpy
 import pytest
 
@@ -184,6 +185,27 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if "slow" in item.keywords:
                 item.add_marker(skip_slow)
+
+
+def pytest_runtest_teardown(item, nextitem):
+    """
+    Release transient SYCL queues at the end of each test file.
+
+    Every distinct ``SyclQueue`` a test creates is retained forever as a key in
+    dpctl's ``SequentialOrderManager`` (keyed by queue identity), which pins its
+    host-task events and the backing USM memory for the whole session. Over a
+    full run this accumulates hundreds of queues and steadily drains device
+    memory. Draining and dropping them at each file boundary keeps the footprint
+    flat without paying the cost after every individual test.
+    """
+    # Only act on the last test of the current file (``nextitem`` is None at the
+    # very end of the session, or points at the first test of the next file).
+    if nextitem is not None and item.path == nextitem.path:
+        return
+    try:
+        dpu.SequentialOrderManager.clear()
+    except Exception as e:  # never let cleanup break the run
+        warnings.warn(f"Failed to clear SequentialOrderManager: {e}")
 
 
 @pytest.fixture
