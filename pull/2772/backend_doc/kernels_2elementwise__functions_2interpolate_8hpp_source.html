@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.21.0dev2</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.21.0dev3</span>
    </div>
    <div id="projectbrief">Data Parallel Extension for NumPy*</div>
   </td>
@@ -191,23 +191,26 @@ $(function(){initNavTree('kernels_2elementwise__functions_2interpolate_8hpp_sour
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (x_idx &gt;= <span class="keyword">static_cast&lt;</span>TIdx<span class="keyword">&gt;</span>(xp_size - 1)) {</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            out[id] = right_val;</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        }</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            TValue slope =</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                (fp[x_idx + 1] - fp[x_idx]) / (xp[x_idx + 1] - xp[x_idx]);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            TValue res = slope * (x_val - xp[x_idx]) + fp[x_idx];</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TValue&gt;::isnan</a>(res)) {</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                res = slope * (x_val - xp[x_idx + 1]) + fp[x_idx + 1];</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TValue&gt;::isnan</a>(res) &amp;&amp; (fp[x_idx] == fp[x_idx + 1])) {</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                    res = fp[x_idx];</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                }</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            }</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            out[id] = res;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        }</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    }</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>};</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (x_val == xp[x_idx]) {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            out[id] = fp[x_idx];</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            TValue slope =</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                (fp[x_idx + 1] - fp[x_idx]) / (xp[x_idx + 1] - xp[x_idx]);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            TValue res = slope * (x_val - xp[x_idx]) + fp[x_idx];</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TValue&gt;::isnan</a>(res)) {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                res = slope * (x_val - xp[x_idx + 1]) + fp[x_idx + 1];</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TValue&gt;::isnan</a>(res) &amp;&amp; (fp[x_idx] == fp[x_idx + 1])) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                    res = fp[x_idx];</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            out[id] = res;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>};</div>
 </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>} <span class="comment">// namespace dpnp::kernels::interpolate</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>} <span class="comment">// namespace dpnp::kernels::interpolate</span></div>
 <div class="ttc" id="aclassdpnp_1_1kernels_1_1interpolate_1_1_interpolate_functor_html"><div class="ttname"><a href="classdpnp_1_1kernels_1_1interpolate_1_1_interpolate_functor.html">dpnp::kernels::interpolate::InterpolateFunctor</a></div><div class="ttdef"><b>Definition</b> <a href="#l00043">interpolate.hpp:44</a></div></div>
 <div class="ttc" id="astructext_1_1common_1_1_is_nan_html"><div class="ttname"><a href="structext_1_1common_1_1_is_nan.html">ext::common::IsNan</a></div><div class="ttdef"><b>Definition</b> <a href="common_2ext_2common_8hpp_source.html#l00096">common.hpp:97</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
