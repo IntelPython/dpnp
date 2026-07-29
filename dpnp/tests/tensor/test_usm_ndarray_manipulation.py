@@ -499,6 +499,12 @@ def test_broadcast_shapes_raises():
         dpt.broadcast_shapes((2, 3), (4, 5))
 
 
+@pytest.mark.parametrize("shapes", [[(2.0,)], [(1.5,), (2,)], [(2,), (3.0, 1)]])
+def test_broadcast_shapes_non_integer_dim(shapes):
+    with pytest.raises(TypeError):
+        dpt.broadcast_shapes(*shapes)
+
+
 def test_flip_axis_incorrect():
     q = get_queue_or_skip()
 

@@ -264,11 +264,14 @@ def broadcast_shapes(*shapes):
             shapes against one another.
 
     Raises:
+        TypeError: if a shape contains a non-integer dimension.
         ValueError: if the input shapes are not broadcast-compatible.
     """
     if len(shapes) == 0:
         return ()
-    return _broadcast_shape_impl([tuple(sh) for sh in shapes])
+
+    normalized = [tuple(operator.index(dim) for dim in sh) for sh in shapes]
+    return _broadcast_shape_impl(normalized)
 
 
 def broadcast_to(X, /, shape):
