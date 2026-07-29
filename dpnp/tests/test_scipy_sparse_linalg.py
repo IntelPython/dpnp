@@ -537,6 +537,18 @@ class TestAsLinearOperator:
         expected = a @ x
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("wrap", [dpnp.asarray, dpt.asarray])
+    def test_dense_array_types_matvec(self, wrap):
+        # aslinearoperator + matvec accept both dpnp.ndarray and
+        # usm_ndarray dense inputs.
+        n = 5
+        a = generate_random_numpy_array((n, n), dpnp.float32, seed_value=42)
+        lo = aslinearoperator(wrap(a))
+        assert lo.shape == (n, n)
+        x = generate_random_numpy_array((n,), dpnp.float32, seed_value=1)
+        result = lo.matvec(wrap(x))
+        assert_dtype_allclose(result, a @ x)
+
     def test_dense_numpy_array_rejected(self):
         # aslinearoperator must NOT silently host -> device upload a
         # numpy.ndarray: dpnp's strict-coercion contract forbids
