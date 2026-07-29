@@ -6,3 +6,42 @@ updates:
       interval: "weekly"
       day: "saturday"
     rebase-strategy: "disabled"
+    labels: ["autoupdate"]
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  # Note: only "==" pins are bumped; ">=" floors and dev pre-releases are not
+  - package-ecosystem: "pip"
+    directory: "/environments"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    rebase-strategy: "disabled"
+    labels: ["autoupdate"]
+    groups:
+      pip:
+        patterns: ["*"]
+
+  # Handles plain conda-forge "pkg=X.Y.Z" pins and pip: sections
+  - package-ecosystem: "conda"
+    directory: "/environments"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    rebase-strategy: "disabled"
+    labels: ["autoupdate"]
+    groups:
+      conda:
+        patterns: ["*"]
+
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    rebase-strategy: "disabled"
+    labels: ["autoupdate"]
+    groups:
+      pre-commit:
+        patterns: ["*"]

@@ -43,7 +43,11 @@ from __future__ import annotations
 
 import warnings
 
+import numpy as _np
+
 import dpnp
+
+from ..._lib._sparse import issparse
 
 # ---------------------------------------------------------------------------
 # helpers
@@ -76,17 +80,45 @@ def _get_dtype(operators, dtypes=None):
     return dpnp.result_type(*dtypes) if dtypes else None
 
 
-def _is_sparse(A):
-    from dpnp.scipy.sparse import issparse
-
-    return issparse(A)
-
-
 class LinearOperator:
-    """Drop-in replacement for cupyx/scipy LinearOperator backed by dpnp arrays.
+    """
+    Common interface for performing matrix-vector products, backed by dpnp
+    arrays.
 
-    Supports the full operator algebra (addition, multiplication, scaling,
-    power, adjoint A.H, transpose A.T) matching CuPy v14.0.1 and SciPy main.
+    Iterative solvers (``cg``, ``gmres``, ``minres``) only require the
+    matrix-vector product ``A @ v`` and never the individual matrix
+    entries. This class is the abstract interface between such solvers and
+    matrix-like objects. Construct it either by passing callables to the
+    constructor, or by subclassing and implementing ``_matvec`` (and
+    optionally ``_rmatvec`` / ``_matmat`` / ``_rmatmat``). It also supports
+    the full operator algebra (``+``, ``@``, scaling, power, adjoint ``A.H``,
+    transpose ``A.T``), each producing a new lazy ``LinearOperator``.
+
+    For full documentation refer to :obj:`scipy.sparse.linalg.LinearOperator`.
+
+    Parameters
+    ----------
+    shape : tuple of int
+        Operator dimensions ``(M, N)``.
+    matvec : callable
+        Returns ``A @ v`` for a 1-D `v`.
+    rmatvec : callable, optional
+        Returns ``A^H @ v`` (conjugate transpose applied to `v`).
+    matmat : callable, optional
+        Returns ``A @ V`` for a dense 2-D `V` of shape ``(N, K)``.
+    dtype : dtype, optional
+        Data type of the operator. Inferred from a trial ``matvec`` when
+        ``None``.
+    rmatmat : callable, optional
+        Returns ``A^H @ V`` for a dense 2-D `V` of shape ``(M, K)``.
+
+    Attributes
+    ----------
+    args : tuple
+        For composite operators (sum, product, ...), the operands of the
+        binary operation.
+    ndim : int
+        Number of dimensions, always ``2``.
     """
 
     ndim = 2
@@ -164,7 +196,20 @@ class LinearOperator:
         return self.H.matmat(X)
 
     def matvec(self, x):
-        """Apply the matrix-vector product."""
+        """
+        Matrix-vector multiplication ``y = A @ x``.
+
+        Parameters
+        ----------
+        x : {dpnp.ndarray, usm_ndarray}
+            An array with shape ``(N,)`` or ``(N, 1)``.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            An array with shape ``(M,)`` or ``(M, 1)`` matching the rank
+            of `x`.
+        """
         M, N = self.shape
         if x.shape not in ((N,), (N, 1)):
             raise ValueError(
@@ -175,7 +220,20 @@ class LinearOperator:
         return y.reshape(M) if x.ndim == 1 else y.reshape(M, 1)
 
     def rmatvec(self, x):
-        """Apply the adjoint matrix-vector product."""
+        """
+        Adjoint matrix-vector multiplication ``y = A^H @ x``.
+
+        Parameters
+        ----------
+        x : {dpnp.ndarray, usm_ndarray}
+            An array with shape ``(M,)`` or ``(M, 1)``.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            An array with shape ``(N,)`` or ``(N, 1)`` matching the rank
+            of `x`.
+        """
         M, N = self.shape
         if x.shape not in ((M,), (M, 1)):
             raise ValueError(
@@ -186,7 +244,19 @@ class LinearOperator:
         return y.reshape(N) if x.ndim == 1 else y.reshape(N, 1)
 
     def matmat(self, X):
-        """Apply the matrix-matrix product."""
+        """
+        Matrix-matrix multiplication ``Y = A @ X``.
+
+        Parameters
+        ----------
+        X : {dpnp.ndarray, usm_ndarray}
+            A 2-D array with shape ``(N, K)``.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            A 2-D array with shape ``(M, K)``.
+        """
         if X.ndim != 2:
             raise ValueError(f"expected 2-D array, got {X.ndim}-D")
         if X.shape[0] != self.shape[1]:
@@ -196,7 +266,19 @@ class LinearOperator:
         return self._matmat(X)
 
     def rmatmat(self, X):
-        """Apply the adjoint matrix-matrix product."""
+        """
+        Adjoint matrix-matrix multiplication ``Y = A^H @ X``.
+
+        Parameters
+        ----------
+        X : {dpnp.ndarray, usm_ndarray}
+            A 2-D array with shape ``(M, K)``.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            A 2-D array with shape ``(N, K)``.
+        """
         if X.ndim != 2:
             raise ValueError(f"expected 2-D array, got {X.ndim}-D")
         if X.shape[0] != self.shape[0]:
@@ -206,26 +288,33 @@ class LinearOperator:
         return self._rmatmat(X)
 
     def dot(self, x):
-        """Dispatch to matvec / matmat / scalar-scale / product.
+        """
+        Matrix-matrix or matrix-vector multiplication.
 
-        Strict-coercion contract (matches the rest of dpnp): the only
-        accepted types are :class:`LinearOperator`, a true scalar
-        (Python / NumPy / dpnp 0-D), or a :class:`dpnp.ndarray` of
-        rank 1 or 2. A host :class:`numpy.ndarray` is rejected with
-        a directed :class:`TypeError`; silently calling
-        ``dpnp.asarray(x)`` here would upload the host array to the
-        device on every matvec, masking real bugs in caller code
-        about device / queue selection. The user must convert
-        explicitly via ``dpnp.asarray(x)`` before passing in.
+        Parameters
+        ----------
+        x : {LinearOperator, scalar, dpnp.ndarray, usm_ndarray}
+            Right operand. A 1-D or 2-D array is applied via ``matvec`` /
+            ``matmat``; a scalar scales the operator; another
+            ``LinearOperator`` forms a product operator.
+
+        Returns
+        -------
+        out : {LinearOperator, dpnp.ndarray}
+            The product operator (scalar / operator operands) or the
+            resulting array (array operand).
+
+        Notes
+        -----
+        A host :class:`numpy.ndarray` is rejected: dpnp does not perform
+        implicit host-to-device copies. Transfer it with ``dpnp.asarray``
+        first.
         """
         if isinstance(x, LinearOperator):
             return _ProductLinearOperator(self, x)
         if dpnp.isscalar(x):
             return _ScaledLinearOperator(self, x)
-        if not isinstance(x, dpnp.ndarray):
-            # pylint: disable-next=import-outside-toplevel
-            import numpy as _np
-
+        if not dpnp.is_supported_array_type(x):
             if isinstance(x, _np.ndarray):
                 raise TypeError(
                     "LinearOperator.dot: got a numpy.ndarray. dpnp "
@@ -233,7 +322,7 @@ class LinearOperator:
                     "copies; pass dpnp.asarray(x) explicitly."
                 )
             raise TypeError(
-                "LinearOperator.dot: expected a dpnp.ndarray, a "
+                "LinearOperator.dot: expected a dpnp or usm_ndarray, a "
                 "scalar, or another LinearOperator; got "
                 f"{type(x).__name__!r}."
             )
@@ -242,8 +331,7 @@ class LinearOperator:
         if x.ndim == 2:
             return self.matmat(x)
         raise ValueError(
-            f"LinearOperator.dot: expected 1-D or 2-D dpnp array, "
-            f"got {x.ndim}-D"
+            f"LinearOperator.dot: expected 1-D or 2-D array, " f"got {x.ndim}-D"
         )
 
     def __call__(self, x):
@@ -529,7 +617,7 @@ class MatrixLinearOperator(LinearOperator):
         return self.A.dot(X)
 
     def _rmatmat(self, X):
-        if _is_sparse(self.A):
+        if issparse(self.A):
             raise NotImplementedError(
                 "rmatvec/adjoint is not supported for sparse csr_matrix "
                 "operators; only the forward matvec is implemented."
@@ -537,7 +625,7 @@ class MatrixLinearOperator(LinearOperator):
         return dpnp.conj(self.A.T).dot(X)
 
     def _adjoint(self):
-        if _is_sparse(self.A):
+        if issparse(self.A):
             raise NotImplementedError(
                 "rmatvec/adjoint is not supported for sparse csr_matrix "
                 "operators; only the forward matvec is implemented."
@@ -594,57 +682,57 @@ class IdentityOperator(LinearOperator):
 
 
 def aslinearoperator(A) -> LinearOperator:
-    """Return ``A`` as a :class:`LinearOperator`.
+    """
+    Return `A` as a :class:`LinearOperator`.
 
-    Dispatch order (matches ``cupyx.scipy.sparse.linalg.aslinearoperator``
-    and ``scipy.sparse.linalg.aslinearoperator``):
+    For full documentation refer to
+    :obj:`scipy.sparse.linalg.aslinearoperator`.
 
-      1. Already a :class:`LinearOperator` -- returned as-is.
-      2. A ``dpnp.scipy.sparse`` sparse matrix (e.g. ``csr_matrix``)
-         -- wrapped as :class:`MatrixLinearOperator`. Inside the iterative
-         solvers this wrapper is further specialised to a cached oneMKL
-         SpMV handle in ``_iterative._make_fast_matvec`` so the dense
-         materialisation in ``csr_matrix.dot`` is bypassed.
-      3. A dense 2-D :class:`dpnp.ndarray` -- wrapped as
-         :class:`MatrixLinearOperator` after promotion via
-         :func:`dpnp.atleast_2d`.
-      4. A duck-typed object with ``.shape`` and ``.matvec``
-         (optionally ``rmatvec`` / ``matmat`` / ``rmatmat`` / ``dtype``).
+    Parameters
+    ----------
+    A : object
+        The object to wrap. It may be any of the following:
+
+          * a :class:`LinearOperator` (returned unchanged);
+          * a ``dpnp.scipy.sparse`` sparse matrix, e.g. ``csr_matrix``
+            (the iterative solvers further specialise this to a cached
+            oneMKL SpMV handle, bypassing densification);
+          * a 2-D array, ``dpnp.ndarray`` or ``usm_ndarray`` (promoted
+            via :func:`dpnp.atleast_2d`);
+          * an object exposing ``.shape`` and ``.matvec`` (and optionally
+            ``rmatvec`` / ``matmat`` / ``rmatmat`` / ``dtype``).
+
+    Returns
+    -------
+    out : LinearOperator
+        The `A` operand wrapped as a :class:`LinearOperator`.
+
+    See Also
+    --------
+    :obj:`dpnp.scipy.sparse.linalg.LinearOperator` : The wrapped type.
 
     Notes
     -----
-    A :class:`numpy.ndarray` is explicitly rejected: silently promoting
-    a host array would force a hidden host->device copy on every
-    matvec, defeating the point of routing through dpnp. Callers must
-    explicitly transfer with ``dpnp.asarray`` first.
+    A host :class:`numpy.ndarray` is rejected: dpnp does not perform
+    implicit host-to-device copies, which would defeat routing through
+    the device. Transfer it with ``dpnp.asarray`` first.
     """
     # 1. Already a LinearOperator -- pass through.
     if isinstance(A, LinearOperator):
         return A
 
-    # 2. dpnp sparse matrix. Import is at module-load time -- if
-    # dpnp.scipy.sparse is unimportable then the package itself is
-    # broken and a hard failure is preferable to silent fallthrough.
-    # The local import avoids the package-init circularity that exists
-    # while dpnp.scipy.sparse.__init__ is still executing (it imports
-    # us via linalg/__init__.py).
-    # pylint: disable-next=import-outside-toplevel
-    from dpnp.scipy.sparse import issparse
-
+    # 2. dpnp sparse matrix.
     if issparse(A):
         return MatrixLinearOperator(A)
 
-    # 3. Dense dpnp array.
-    if isinstance(A, dpnp.ndarray):
+    # 3. Dense dpnp.ndarray or usm_ndarray.
+    if dpnp.is_supported_array_type(A):
         if A.ndim > 2:
             raise ValueError(
-                f"aslinearoperator: dpnp array must be at most 2-D, "
+                f"aslinearoperator: array must be at most 2-D, "
                 f"got {A.ndim}-D"
             )
-        return MatrixLinearOperator(dpnp.atleast_2d(A))
-
-    # pylint: disable-next=import-outside-toplevel
-    import numpy as _np
+        return MatrixLinearOperator(dpnp.atleast_2d(dpnp.asarray(A)))
 
     if isinstance(A, _np.ndarray):
         raise TypeError(

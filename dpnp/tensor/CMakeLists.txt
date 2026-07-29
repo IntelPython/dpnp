@@ -356,9 +356,16 @@ foreach(python_module_name ${_py_trgts})
         ${python_module_name}
         PRIVATE
             ${CMAKE_SOURCE_DIR}/dpnp/include
-            ${Dpctl_INCLUDE_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
             ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/
+    )
+
+    target_include_directories(
+        ${python_module_name}
+        SYSTEM
+        PRIVATE
+            ${SYCL_INCLUDE_DIR}
+            ${Dpctl_INCLUDE_DIR}
             ${CMAKE_BINARY_DIR} # For generated Cython headers
     )
     target_link_options(${python_module_name} PRIVATE ${_linker_options})

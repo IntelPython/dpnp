@@ -84,7 +84,10 @@ import dpnp
 # dpnp build; pylint cannot statically introspect its exported symbols.
 # pylint: disable-next=no-name-in-module
 import dpnp.backend.extensions.blas._blas_impl as bi
+import dpnp.tensor as dpt
+from dpnp.exceptions import ExecutionPlacementError
 
+from ..._lib._sparse import issparse
 from ._interface import IdentityOperator, LinearOperator, aslinearoperator
 
 _SUPPORTED_DTYPES = frozenset("fdFD")
@@ -127,9 +130,7 @@ class _CachedSpMVPair:
         # caching them redundantly on this object.
         # pylint: disable-next=protected-access
         _si, handle, val_type_id, exec_q = self._A._ensure_spmv_handle()
-        y = dpnp.empty(
-            self._A.shape[0], dtype=self._A.data.dtype, sycl_queue=exec_q
-        )
+        y = dpnp.empty_like(self._A.data, shape=self._A.shape[0])
         _manager = dpu.SequentialOrderManager[exec_q]
         # pylint: disable-next=protected-access
         ht_ev, comp_ev = _si._sparse_gemv_compute(
@@ -138,9 +139,9 @@ class _CachedSpMVPair:
             val_type_id,
             0,  # trans=N
             1.0,  # alpha
-            x,
+            dpnp.get_usm_ndarray(x),
             0.0,  # beta
-            y,
+            dpnp.get_usm_ndarray(y),
             int(self._A.shape[0]),
             int(self._A.shape[1]),
             _manager.submitted_events,
@@ -160,28 +161,16 @@ def _make_fast_matvec(A):
     """Return a _CachedSpMVPair if A is a CSR matrix with oneMKL support,
     or None if A is not an eligible sparse matrix.
 
-    Falls back to None (caller uses A.dot) on:
-      - A is not a dpnp CSR sparse matrix
-      - the compiled backend extension is unavailable
-      - the (value, index) dtype combination is not registered with
-        the oneMKL dispatch table
-      - handle initialisation raises for any other backend-specific
-        reason
+    Returns None when A is not a dpnp CSR sparse matrix, or when its
+    (value, index) dtype combination is not registered with the oneMKL
+    dispatch table.
     """
-    try:
-        # Lazy import: dpnp.scipy.sparse may import this module during
-        # package initialisation, so a top-level import would deadlock.
-        # pylint: disable-next=import-outside-toplevel
-        from dpnp.scipy import sparse as _sp
-
-        if not (_sp.issparse(A) and A.format == "csr"):
-            return None
-    except (ImportError, AttributeError):
+    if not (issparse(A) and getattr(A, "format", None) == "csr"):
         return None
 
-    # Probe the csr_matrix's own SpMV path. This either returns a
-    # fully-built handle (cached on A for sharing with A.dot) or None
-    # when the backend extension / dtype combination is unsupported.
+    # Probe the csr_matrix's own SpMV path: returns a fully-built handle
+    # (cached on A for sharing with A.dot) or None for an unsupported
+    # dtype combination.
     if not hasattr(A, "_ensure_spmv_handle"):
         return None
     # pylint: disable-next=protected-access
@@ -316,23 +305,37 @@ def cg(
     callback: Callable | None = None,
     atol=None,
 ) -> tuple[dpnp.ndarray, int]:
-    """Conjugate Gradient -- pure dpnp/oneMKL, Hermitian positive definite A.
+    """
+    Use Conjugate Gradient iteration to solve ``Ax = b`` for a Hermitian
+    positive-definite ``A``.
+
+    For full documentation refer to :obj:`scipy.sparse.linalg.cg`.
 
     Parameters
     ----------
-    A       : array_like or LinearOperator -- HPD (n, n)
-    b       : array_like -- right-hand side (n,)
-    x0      : array_like, optional -- initial guess
-    rtol    : float -- relative tolerance (default 1e-5)
-    tol     : float, optional -- deprecated alias for rtol
-    maxiter : int, optional -- max iterations (default 10*n)
-    M       : LinearOperator or array_like, optional -- SPD preconditioner
-    callback: callable, optional -- callback(xk) after each iteration
-    atol    : float, optional -- absolute tolerance
+    A : {dpnp.ndarray, usm_ndarray, LinearOperator, csr_matrix}
+        The Hermitian positive-definite operator of shape ``(N, N)``.
+    b : {dpnp.ndarray, usm_ndarray}
+        Right-hand side of the linear system, shape ``(N,)`` or ``(N, 1)``.
+    x0 : {None, dpnp.ndarray, usm_ndarray}, optional
+        Initial guess for the solution. Default: ``None`` (zeros).
+    rtol : float, optional
+        Relative convergence tolerance. Default: ``1e-5``.
+    tol : {None, float}, optional
+        Deprecated alias for `rtol`. Default: ``None``.
+    maxiter : {None, int}, optional
+        Maximum number of iterations. Default: ``10 * N``.
+    M : {None, dpnp.ndarray, usm_ndarray, LinearOperator}, optional
+        Symmetric positive-definite preconditioner. Default: ``None``.
+    callback : {None, callable}, optional
+        Called as ``callback(xk)`` after each iteration. Default: ``None``.
+    atol : {None, float}, optional
+        Absolute convergence tolerance. Default: ``None``.
 
     Returns
     -------
-    x    : dpnp.ndarray
+    x : dpnp.ndarray
+        The converged solution.
     info : int
         ``info`` follows the SciPy / CuPy contract:
 
@@ -448,45 +451,50 @@ def gmres(
     callback: Callable | None = None,
     callback_type: str | None = None,
 ) -> tuple[dpnp.ndarray, int]:
-    """Uses Generalized Minimal RESidual iteration to solve ``Ax = b``.
+    """
+    Use Generalized Minimal RESidual iteration to solve ``Ax = b``.
+
+    For full documentation refer to :obj:`scipy.sparse.linalg.gmres`.
 
     Parameters
     ----------
-    A : LinearOperator, dpnp sparse matrix, or 2-D dpnp.ndarray
-        The real or complex matrix of the linear system, shape (n, n).
-    b : dpnp.ndarray
-        Right-hand side of the linear system, shape (n,) or (n, 1).
-    x0 : dpnp.ndarray, optional
-        Starting guess for the solution.
-    rtol, atol : float
-        Tolerance for convergence: ``||r|| <= max(atol, rtol*||b||)``.
-    restart : int, optional
-        Number of iterations between restarts (default 20). Larger values
-        increase iteration cost but may be necessary for convergence.
-    maxiter : int, optional
-        Maximum number of iterations (default 10*n).
-    M : LinearOperator, dpnp sparse matrix, or 2-D dpnp.ndarray, optional
-        Preconditioner for ``A``; should approximate the inverse of ``A``.
-    callback : callable, optional
-        User-specified function to call on every restart. Called as
-        ``callback(arg)``, where ``arg`` is selected by ``callback_type``.
-    callback_type : {'x', 'pr_norm'}, optional
-        If 'x', the current solution vector is passed to the callback.
-        If 'pr_norm', the relative (preconditioned) residual norm.
-        Default is 'pr_norm' when a callback is supplied.
+    A : {dpnp.ndarray, usm_ndarray, LinearOperator, csr_matrix}
+        The real or complex operator of the linear system, shape
+        ``(N, N)``.
+    b : {dpnp.ndarray, usm_ndarray}
+        Right-hand side of the linear system, shape ``(N,)`` or ``(N, 1)``.
+    x0 : {None, dpnp.ndarray, usm_ndarray}, optional
+        Starting guess for the solution. Default: ``None`` (zeros).
+    rtol, atol : float, optional
+        Convergence tolerance: ``||r|| <= max(atol, rtol*||b||)``.
+        Defaults: ``rtol=1e-5``, ``atol=0.0``.
+    restart : {None, int}, optional
+        Number of iterations between restarts. Larger values increase the
+        per-iteration cost but may aid convergence. Default: ``20``.
+    maxiter : {None, int}, optional
+        Maximum number of iterations. Default: ``10 * N``.
+    M : {None, dpnp.ndarray, usm_ndarray, LinearOperator}, optional
+        Preconditioner approximating the inverse of `A`. Default: ``None``.
+    callback : {None, callable}, optional
+        Called on every restart as ``callback(arg)``, where `arg` is
+        selected by `callback_type`. Default: ``None``.
+    callback_type : {None, 'x', 'pr_norm'}, optional
+        ``'x'`` passes the current solution vector; ``'pr_norm'`` passes
+        the relative (preconditioned) residual norm. Default: ``'pr_norm'``
+        when a callback is supplied.
 
     Returns
     -------
     x : dpnp.ndarray
-        The (approximate) solution. Note that this is M @ x in the
-        right-preconditioned formulation, matching CuPy's return value.
+        The approximate solution (``M @ x`` in the right-preconditioned
+        formulation, matching CuPy's return value).
     info : int
-        0 if converged; iteration count if maxiter was reached.
+        ``0`` if converged; the iteration count if `maxiter` was reached.
 
     See Also
     --------
-    scipy.sparse.linalg.gmres
-    cupyx.scipy.sparse.linalg.gmres
+    :obj:`scipy.sparse.linalg.gmres`
+    :obj:`cupyx.scipy.sparse.linalg.gmres`
     """
     A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
     matvec = A_op.matvec
@@ -624,48 +632,48 @@ def minres(
     show: bool = False,
     check: bool = False,
 ) -> tuple[dpnp.ndarray, int]:
-    """Uses MINimum RESidual iteration to solve ``Ax = b``.
+    """
+    Use MINimum RESidual iteration to solve ``Ax = b``.
 
-    Solves the symmetric (possibly indefinite) system ``Ax = b`` or,
-    if *shift* is nonzero, ``(A - shift*I)x = b``.  All computation
-    stays on the SYCL device; only scalar recurrence coefficients and
-    norms are transferred to the host for branching.
+    Solves the symmetric (possibly indefinite) system ``Ax = b`` or, if
+    `shift` is nonzero, ``(A - shift*I)x = b``. All computation stays on
+    the SYCL device; only scalar recurrence coefficients and norms are
+    transferred to the host for branching.
 
-    The algorithm follows SciPy's MINRES (Paige & Saunders, 1975)
-    line-for-line.  Three host syncs per iteration are unavoidable:
-    ``alpha`` and ``beta`` (Lanczos inner products) and ``ynorm``
-    (solution norm for stopping tests).
+    For full documentation refer to :obj:`scipy.sparse.linalg.minres`.
 
     Parameters
     ----------
-    A : dpnp sparse matrix, 2-D dpnp.ndarray, or LinearOperator
-        The real symmetric or complex Hermitian matrix, shape ``(n, n)``.
-    b : dpnp.ndarray
-        Right-hand side, shape ``(n,)`` or ``(n, 1)``.
-    x0 : dpnp.ndarray, optional
-        Starting guess for the solution.
-    shift : float
-        If nonzero, solve ``(A - shift*I)x = b``.  Default 0.
-    rtol : float
-        Relative tolerance for convergence.  Default 1e-5.
-    maxiter : int, optional
-        Maximum number of iterations.  Default ``5*n``.
-    M : dpnp sparse matrix, dpnp.ndarray, or LinearOperator, optional
-        Preconditioner approximating the inverse of ``A``.
-    callback : callable, optional
-        Called as ``callback(xk)`` after each iteration.
-    show : bool
-        If True, print convergence summary each iteration.
-    check : bool
-        If True, verify that ``A`` and ``M`` are symmetric before
-        iterating.  Costs extra matvecs.
+    A : {dpnp.ndarray, usm_ndarray, LinearOperator, csr_matrix}
+        The real symmetric or complex Hermitian operator, shape
+        ``(N, N)``.
+    b : {dpnp.ndarray, usm_ndarray}
+        Right-hand side, shape ``(N,)`` or ``(N, 1)``.
+    x0 : {None, dpnp.ndarray, usm_ndarray}, optional
+        Starting guess for the solution. Default: ``None`` (zeros).
+    shift : float, optional
+        If nonzero, solve ``(A - shift*I)x = b``. Default: ``0.0``.
+    rtol : float, optional
+        Relative convergence tolerance. Default: ``1e-5``.
+    maxiter : {None, int}, optional
+        Maximum number of iterations. Default: ``5 * N``.
+    M : {None, dpnp.ndarray, usm_ndarray, LinearOperator}, optional
+        Preconditioner approximating the inverse of `A`. Default: ``None``.
+    callback : {None, callable}, optional
+        Called as ``callback(xk)`` after each iteration. Default: ``None``.
+    show : bool, optional
+        If ``True``, print a convergence summary each iteration.
+        Default: ``False``.
+    check : bool, optional
+        If ``True``, verify that `A` and `M` are symmetric before
+        iterating (costs extra matvecs). Default: ``False``.
 
     Returns
     -------
     x : dpnp.ndarray
         The converged (or best) solution.
     info : int
-        0 if converged, ``maxiter`` if the iteration limit was reached.
+        ``0`` if converged, ``maxiter`` if the iteration limit was reached.
 
     Notes
     -----
@@ -961,12 +969,12 @@ def _make_compute_hu(V, H):
             "_make_compute_hu: H must be a 2-D column-major (F-order) "
             "dpnp array so column slices are unit-stride USM views"
         )
-    if V.sycl_queue != H.sycl_queue:
-        raise ValueError(
+    exec_q = dpt.get_execution_queue((V.sycl_queue, H.sycl_queue))
+    if exec_q is None:
+        raise ExecutionPlacementError(
             "_make_compute_hu: V and H must share the same SYCL queue"
         )
 
-    exec_q = V.sycl_queue
     dtype = V.dtype
     is_cpx = dpnp.issubdtype(dtype, dpnp.complexfloating)
 

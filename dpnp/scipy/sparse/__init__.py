@@ -32,13 +32,12 @@ Currently this module exposes the :mod:`dpnp.scipy.sparse.linalg` submodule
 and provides a location for future sparse matrix container types.
 """
 
+from .._lib._sparse import issparse
 from . import linalg
-from ._base import SparseABC, issparse
 from ._csr import csr_matrix
 
 __all__ = [
     "linalg",
-    "SparseABC",
     "issparse",
     "csr_matrix",
 ]

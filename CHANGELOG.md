@@ -15,7 +15,9 @@ This release is compatible with NumPy 2.5.
 * Added support for buffer protocol objects as advanced index keys in `dpnp.ndarray` [#2889](https://github.com/IntelPython/dpnp/pull/2889)
 * Added `--includes` and `--include-dir` options to the `dpnp` CLI [#2916](https://github.com/IntelPython/dpnp/pull/2916)
 * Added `dpnp-config.cmake` to make `find_package(Dpnp)` work out of the box, and an example which uses it [#2941](https://github.com/IntelPython/dpnp/pull/2941)
+* Added implementation of `dpnp.lib.stride_tricks.as_strided` [#2991](https://github.com/IntelPython/dpnp/pull/2991)
 * Added implementation of `dpnp.scipy.sparse.linalg import LinearOperator, cg, gmres, minres` [#2841](https://github.com/IntelPython/dpnp/pull/2841)
+
 
 ### Changed
 
@@ -34,6 +36,9 @@ This release is compatible with NumPy 2.5.
 * Refreshed `dpnp` documentation styling with the Furo theme [#2934](https://github.com/IntelPython/dpnp/pull/2934)
 * Updated Python Array API specification version supported to `2025.12` [#2899](https://github.com/IntelPython/dpnp/pull/2899)
 * Replaced references to the `dpnp.amax`/`dpnp.amin` aliases with the canonical `dpnp.max`/`dpnp.min` in docstrings and code internally [#2990](https://github.com/IntelPython/dpnp/pull/2990)
+* Aligned the signature of `dpnp.tensor.expand_dims` with the Python array API by making `axis` a required argument [#2988](https://github.com/IntelPython/dpnp/pull/2988)
+* Removed dead code branches guarded by outdated oneMKL and DPC++ compiler version checks [#2999](https://github.com/IntelPython/dpnp/pull/2999)
+* Replaced the deprecated `nd_item::barrier()` member calls in the `accumulators` and `gemm` kernels with the SYCL 2020 `sycl::group_barrier()` free function [#3006](https://github.com/IntelPython/dpnp/pull/3006)
 
 ### Deprecated
 
@@ -62,8 +67,12 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.mgrid` and `dpnp.ogrid` to return consistent results between single-slice and tuple-of-slices syntax when the step is a complex number with a non-integer magnitude (e.g. `2.5j`) [#2971](https://github.com/IntelPython/dpnp/pull/2971)
 * Fixed `icx`/`icpx` warning during `conda build` by stripping the GCC-only `-fno-merge-constants` flag injected by conda-forge into `CFLAGS`/`CXXFLAGS` [#2978](https://github.com/IntelPython/dpnp/pull/2978)
 * Fixed `dpnp.asnumpy` and `dpnp.ndarray.asnumpy` ignoring the `order` keyword, which caused a non-contiguous source array to be returned with a non-contiguous layout even when `order="C"` was requested [#2980](https://github.com/IntelPython/dpnp/pull/2980)
+* Fixed a flood of deprecation warnings from the DPC++/SYCL headers when building `dpnp.tensor` on Windows [#2984](https://github.com/IntelPython/dpnp/pull/2984)
 * Fixed `dpnp.tensor.acosh` and `dpnp.tensor.acos` returning infinity for complex numbers with large negative real parts [#2928](https://github.com/IntelPython/dpnp/pull/2928)
 * Fixed `__array_namespace_info__().devices()` and `.default_device()` to return Python array API compatible device objects [#2979](https://github.com/IntelPython/dpnp/pull/2979)
+* Fixed `dpnp.interp` with an empty input array `x` to return an empty array with the correct dtype [#2985](https://github.com/IntelPython/dpnp/pull/2985)
+* Fixed `dpnp.interp` returning `nan` when querying at an exact knot point whose adjacent `fp` value is `inf` [#2986](https://github.com/IntelPython/dpnp/pull/2986)
+* Fixed missing strides validation in `dpnp.tensor.usm_ndarray` constructor when allocating new memory [#2927](https://github.com/IntelPython/dpnp/pull/2927)
 
 ### Security
 
