@@ -248,6 +248,29 @@ def broadcast_arrays(*args):
     return [broadcast_to(X, shape) for X in args]
 
 
+def broadcast_shapes(*shapes):
+    """broadcast_shapes(*shapes)
+
+    Broadcasts one or more shapes against one another.
+
+    Args:
+        shapes (Tuple[int, ...]): an arbitrary number of shapes to be
+            broadcasted against one another. Each shape must be a tuple of
+            integers.
+
+    Returns:
+        Tuple[int, ...]:
+            The broadcasted shape resulting from broadcasting the input
+            shapes against one another.
+
+    Raises:
+        ValueError: if the input shapes are not broadcast-compatible.
+    """
+    if len(shapes) == 0:
+        return ()
+    return _broadcast_shape_impl([tuple(sh) for sh in shapes])
+
+
 def broadcast_to(X, /, shape):
     """broadcast_to(x, shape)
 

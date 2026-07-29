@@ -174,6 +174,7 @@ from ._linear_algebra_functions import (
 )
 from ._manipulation_functions import (
     broadcast_arrays,
+    broadcast_shapes,
     broadcast_to,
     concat,
     expand_dims,
@@ -282,6 +283,7 @@ __all__ = [
     "bitwise_right_shift",
     "bitwise_xor",
     "broadcast_arrays",
+    "broadcast_shapes",
     "broadcast_to",
     "can_cast",
     "cbrt",
