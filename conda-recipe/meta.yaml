@@ -36,6 +36,7 @@ requirements:
       - mkl-devel-dpcpp >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
       - onedpl-devel
       - tbb-devel
+      - opencl-headers >=2025.06.13 # [win]
     build:
       - {{ compiler('cxx') }}
       - {{ stdlib('c') }}
