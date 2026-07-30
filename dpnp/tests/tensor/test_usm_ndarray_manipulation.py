@@ -469,6 +469,42 @@ def test_broadcast_arrays_no_args():
         dpt.broadcast_arrays()
 
 
+@pytest.mark.parametrize(
+    "shapes",
+    [
+        [(1,), (3,)],
+        [(1, 3), (3, 3)],
+        [(3, 1), (3, 3)],
+        [(1, 3), (3, 1)],
+        [(6, 7), (5, 6, 1), (7,), (5, 1, 7)],
+        [(1, 2), (3, 1), (3, 2)],
+        [(1, 0), (0, 1)],
+        [()],
+        [(5,)],
+    ],
+)
+def test_broadcast_shapes(shapes):
+    expected = np.broadcast_shapes(*shapes)
+    result = dpt.broadcast_shapes(*shapes)
+    assert result == expected
+
+
+def test_broadcast_shapes_no_args():
+    # matches numpy.broadcast_shapes() returning an empty shape
+    assert dpt.broadcast_shapes() == ()
+
+
+def test_broadcast_shapes_raises():
+    with pytest.raises(ValueError):
+        dpt.broadcast_shapes((2, 3), (4, 5))
+
+
+@pytest.mark.parametrize("shapes", [[(2.0,)], [(1.5,), (2,)], [(2,), (3.0, 1)]])
+def test_broadcast_shapes_non_integer_dim(shapes):
+    with pytest.raises(TypeError):
+        dpt.broadcast_shapes(*shapes)
+
+
 def test_flip_axis_incorrect():
     q = get_queue_or_skip()
 
