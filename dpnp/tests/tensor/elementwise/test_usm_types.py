@@ -41,7 +41,10 @@ class TestUnaryUSMType:
         x = dpt.asarray(
             [1, 2, 3, 4], dtype=dtype, usm_type=usm_type, sycl_queue=q
         )
-        return getattr(dpt, fn)(x)
+        r = getattr(dpt, fn)(x)
+        assert isinstance(r, dpt.usm_ndarray)
+        assert r.usm_type == x.usm_type
+        return
 
     def test_abs(self, usm_type):
         self.unary_elementwise("abs", usm_type)
@@ -195,7 +198,13 @@ class TestBinaryUSMType:
         y = dpt.asarray(
             [1, 2, 3, 4, 5, 6], dtype=dtype, usm_type=op2_usm_type, sycl_queue=q
         )
-        return getattr(dpt, fn)(x, y)
+        r = getattr(dpt, fn)(x, y)
+        assert isinstance(r, dpt.usm_ndarray)
+        expected_usm_type = dpt.get_coerced_usm_type(
+            (op1_usm_type, op2_usm_type)
+        )
+        assert r.usm_type == expected_usm_type
+        return
 
     def test_add(self, op1_usm_type, op2_usm_type):
         self.binary_elementwise("add", op1_usm_type, op2_usm_type)
