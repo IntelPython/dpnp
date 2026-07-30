@@ -165,6 +165,12 @@ class csr_matrix(SparseABC):
         self._spmv_exec_q = None
         self._has_sorted_indices = None
 
+        # Core CSR arrays; populated by the _init_* dispatch below.
+        self.data = None
+        self.indices = None
+        self.indptr = None
+        self._shape = None
+
         if issparse(arg1):
             self._init_from_components(
                 (arg1.data, arg1.indices, arg1.indptr),
@@ -491,6 +497,10 @@ class csr_matrix(SparseABC):
                 f"dtype {self.data.dtype}"
             )
 
+        # nnz == 0: A @ x == 0. oneMKL set_csr_data rejects nnz == 0.
+        if self.data.shape[0] == 0:
+            return _dpnp.zeros_like(self.data, shape=nrows)
+
         handle_info = self._ensure_spmv_handle()
         if handle_info is None:
             raise TypeError(
@@ -594,6 +604,10 @@ class csr_matrix(SparseABC):
             "Use toarray() and operate with dpnp for other operations."
         )
 
+    # Unsupported-op stubs: each just raises via _unsupported(); the
+    # signatures mirror scipy for a clear error, so args are intentionally
+    # unused and docstrings would be pure noise.
+    # pylint: disable=missing-function-docstring,unused-argument
     def __getitem__(self, key):
         self._unsupported("__getitem__")
 
@@ -629,3 +643,5 @@ class csr_matrix(SparseABC):
 
     def todok(self, copy=False):
         self._unsupported("todok")
+
+    # pylint: enable=missing-function-docstring,unused-argument

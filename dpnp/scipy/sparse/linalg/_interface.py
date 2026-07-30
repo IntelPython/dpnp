@@ -176,10 +176,13 @@ class LinearOperator:
         self.dtype = self.matvec(v).dtype
 
     def _matvec(self, x):
-        return self.matmat(x.reshape(-1, 1))
+        # newaxis (not ``.reshape``) so a bare usm_ndarray input works too.
+        return self._matmat(x[..., None])[..., 0]
 
     def _matmat(self, X):
-        return dpnp.hstack([self.matvec(col.reshape(-1, 1)) for col in X.T])
+        return dpnp.stack(
+            [self._matvec(X[:, i]) for i in range(X.shape[1])], axis=-1
+        )
 
     def _rmatvec(self, x):
         if type(self)._adjoint is LinearOperator._adjoint:
@@ -190,8 +193,8 @@ class LinearOperator:
 
     def _rmatmat(self, X):
         if type(self)._adjoint is LinearOperator._adjoint:
-            return dpnp.hstack(
-                [self.rmatvec(col.reshape(-1, 1)) for col in X.T]
+            return dpnp.stack(
+                [self._rmatvec(X[:, i]) for i in range(X.shape[1])], axis=-1
             )
         return self.H.matmat(X)
 
@@ -613,7 +616,18 @@ class MatrixLinearOperator(LinearOperator):
         self.__adj = None
         self.args = (A,)
 
+    def _matvec(self, x):
+        # csr_matrix.dot is 1-D-only (like cupyx); x is already 1-D here.
+        if issparse(self.A):
+            return self.A.dot(x)
+        return super()._matvec(x)
+
     def _matmat(self, X):
+        # No native SpMM: emulate as a column loop of 1-D SpMVs (no densify).
+        if issparse(self.A):
+            return dpnp.stack(
+                [self.A.dot(X[:, i]) for i in range(X.shape[1])], axis=-1
+            )
         return self.A.dot(X)
 
     def _rmatmat(self, X):
