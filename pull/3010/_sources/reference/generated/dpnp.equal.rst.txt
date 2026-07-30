@@ -1,0 +1,10 @@
+﻿
+
+dpnp.equal
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: equal
