@@ -270,7 +270,7 @@ def broadcast_shapes(*shapes):
     if len(shapes) == 0:
         return ()
 
-    normalized = [tuple(operator.index(dim) for dim in sh) for sh in shapes]
+    normalized = [tuple(map(operator.index, sh)) for sh in shapes]
     return _broadcast_shape_impl(normalized)
 
 
