@@ -308,7 +308,7 @@ class TestAsarrayCheckFinite:
         assert_array_equal(b, a)
 
 
-class TestBroadcast:
+class TestBroadcastShapes:
     @pytest.mark.parametrize(
         "shape",
         [
@@ -331,6 +331,31 @@ class TestBroadcast:
         expected = numpy.broadcast_shapes(*shape)
         result = dpnp.broadcast_shapes(*shape)
         assert_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            [1, 2],
+            [(3, 1), 3],
+            [1, (5, 1), 5],
+        ],
+    )
+    def test_scalar(self, shape):
+        expected = numpy.broadcast_shapes(*shape)
+        result = dpnp.broadcast_shapes(*shape)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("shape", [[(-1,)], [(2, -3), (2, 3)], [-1, 2]])
+    def test_negative_dim(self, xp, shape):
+        with pytest.raises(ValueError, match="negative dimensions"):
+            xp.broadcast_shapes(*shape)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("shape", [[(2.0,)], [(True, 2)], [2.5]])
+    def test_non_integer_dim(self, xp, shape):
+        with pytest.raises(TypeError, match="integer"):
+            xp.broadcast_shapes(*shape)
 
 
 class TestCopyTo:
