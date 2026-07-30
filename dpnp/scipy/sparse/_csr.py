@@ -47,6 +47,8 @@ densification, and lets the iterative solvers in
 ``_make_fast_matvec`` without rebuilding it.
 """
 
+import sys
+
 import dpctl.utils as _dpu
 import numpy as _np
 
@@ -165,7 +167,6 @@ class csr_matrix(SparseABC):
         self._spmv_exec_q = None
         self._has_sorted_indices = None
 
-        # Core CSR arrays; populated by the _init_* dispatch below.
         self.data = None
         self.indices = None
         self.indptr = None
@@ -453,9 +454,6 @@ class csr_matrix(SparseABC):
             _manager.submitted_events,
         )
 
-        # set_csr_data + optimize_gemv must complete before the first
-        # compute; chain the init event through the queue's order manager
-        # so the first _sparse_gemv_compute depends on it (non-blocking).
         _manager.add_event_pair(ev, ev)
 
         self._spmv_si = _si
@@ -534,15 +532,15 @@ class csr_matrix(SparseABC):
         return self.dot(x)
 
     def __del__(self):
-        # Release the cached oneMKL matrix_handle if one was built.
         handle = getattr(self, "_spmv_handle", None)
         if handle is None:
             return
-
+        self._spmv_handle = None
+        if sys.is_finalizing():
+            # OS reclaims the handle at process exit; the queue/module
+            # state needed to release it may already be gone.
+            return
         try:
-            # Order the release after any pending compute on the queue,
-            # then block so the CSR USM buffers are not freed before the
-            # async release that reads them completes.
             exec_q = self._spmv_exec_q
             _manager = _dpu.SequentialOrderManager[exec_q]
             release_ev = _si._sparse_gemv_release(
@@ -550,19 +548,8 @@ class csr_matrix(SparseABC):
             )
             _manager.add_event_pair(release_ev, release_ev)
             release_ev.wait()
-        except (AttributeError, TypeError):
-            # Interpreter shutdown can null out module/queue state before
-            # __del__ runs; the handle is then unrecoverable (OS reclaims
-            # it at process exit).
-            pass
         except Exception:  # pylint: disable=broad-exception-caught
-            # Genuine backend error while the interpreter is healthy.
-            # Raising from __del__ produces only an unraisable warning
-            # and the handle is gone either way -- swallow it
-            # deliberately, distinct from the shutdown branch above.
             pass
-        finally:
-            self._spmv_handle = None
 
     def toarray(self):
         """Convert to a dense dpnp 2-D array."""

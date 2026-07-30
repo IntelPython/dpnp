@@ -731,15 +731,12 @@ def aslinearoperator(A) -> LinearOperator:
     implicit host-to-device copies, which would defeat routing through
     the device. Transfer it with ``dpnp.asarray`` first.
     """
-    # 1. Already a LinearOperator -- pass through.
     if isinstance(A, LinearOperator):
         return A
 
-    # 2. dpnp sparse matrix.
     if issparse(A):
         return MatrixLinearOperator(A)
 
-    # 3. Dense dpnp.ndarray or usm_ndarray.
     if dpnp.is_supported_array_type(A):
         if A.ndim > 2:
             raise ValueError(
@@ -754,7 +751,6 @@ def aslinearoperator(A) -> LinearOperator:
             "the target device with dpnp.asarray(A) first."
         )
 
-    # 4. Duck-typed object with .shape and .matvec.
     if hasattr(A, "shape") and hasattr(A, "matvec"):
         shape = tuple(A.shape)
         if len(shape) != 2:

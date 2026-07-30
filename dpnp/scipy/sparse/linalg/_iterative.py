@@ -379,23 +379,11 @@ def cg(
     z = M_op.matvec(r)
     p = z.copy()
 
-    # rz is kept as a 0-D dpnp array on device throughout the loop;
-    # the only time we transfer it to the host is the initial
-    # breakdown guard below (matches the CuPy contract -- a zero
-    # initial preconditioned residual means we are already at the
-    # solution and there is nothing further to do).
     rz = dpnp.real(dpnp.vdot(r, z))
     if float(dpnp.abs(rz)) < rhotol:
         return x, 0
 
     info = maxiter
-    # Per-iter sync count: 1 (rnorm convergence check). The pAp and
-    # rz_new breakdown checks are intentionally not transferred to
-    # the host; IEEE-754 inf / NaN propagation through alpha = rz/pAp
-    # makes pathological values poison the next residual norm, which
-    # the single sync below detects via the `not isfinite(rnorm_host)`
-    # branch. Mirrors CuPy / cuBLAS-style CG which also dispatches
-    # one nrm2 + comparison per iteration.
     for k in range(maxiter):
         rnorm = dpnp.linalg.norm(r)
         rnorm_host = float(rnorm)
@@ -411,11 +399,8 @@ def cg(
             break
 
         Ap = A_op.matvec(p)
-        pAp = dpnp.real(dpnp.vdot(p, Ap))  # 0-D, stays on device
+        pAp = dpnp.real(dpnp.vdot(p, Ap))
 
-        # No sync on pAp -- division by a near-zero pAp will produce
-        # alpha = inf/NaN, propagated below into r and caught by the
-        # rnorm_host check at the top of the next iteration.
         alpha = rz / pAp
         x = x + alpha * p
         r = r - alpha * Ap
@@ -426,8 +411,6 @@ def cg(
         z = M_op.matvec(r)
         rz_new = dpnp.real(dpnp.vdot(r, z))
 
-        # No sync on rz_new either; near-zero rz_new likewise yields
-        # beta = inf/NaN and is caught at the next loop entry.
         beta = rz_new / rz
         p = z + beta * p
         rz = rz_new
@@ -503,9 +486,6 @@ def gmres(
     n = A_op.shape[0]
     if n == 0:
         return dpnp.empty_like(b), 0
-    # b_norm is a 0-D device tensor; cast to host once so the
-    # subsequent comparisons / atol arithmetic are pure-host floats
-    # and do not trigger implicit __bool__ syncs every iteration.
     b_norm = float(dpnp.linalg.norm(b))
     if b_norm == 0.0:
         return b, 0
@@ -548,10 +528,6 @@ def gmres(
     eps = numpy.finfo(np_dtype).eps
 
     iters = 0
-    # r_norm_host tracks the latest residual norm as a Python float so
-    # the convergence test and the final maxiter check below operate on
-    # host scalars (one explicit sync per restart, not an implicit one
-    # per comparison).
     r_norm_host = math.inf
     while True:
         mx = psolve(x)
@@ -562,7 +538,6 @@ def gmres(
         if callback_type == "x":
             callback(mx)
         elif callback_type == "pr_norm" and iters > 0:
-            # b_norm is already host; r_norm_host / b_norm stays on host.
             callback(r_norm_host / b_norm)
 
         if r_norm_host <= atol or iters >= maxiter:
@@ -709,13 +684,6 @@ def minres(
     r1 = b - Ax
     y = psolve(r1)
 
-    # beta1 = <r1, y>   -- one host sync (setup only).
-    # Transferred to host immediately because beta1 seeds ~5 host-side
-    # scalars (beta, qrnorm, phibar, rhs1) used in Python arithmetic
-    # and branches every iteration.  Keeping it as a 0-D device array
-    # would cascade implicit syncs or 0-D allocations throughout the
-    # recurrence -- and the < 0 / == 0 guards below would each trigger
-    # an implicit __bool__ sync of their own.
     beta1 = float(dpnp.vdot(r1, y).real)
 
     if beta1 < 0:
@@ -726,7 +694,7 @@ def minres(
     beta1 = math.sqrt(beta1)
 
     if check:
-        # See if A is symmetric.  All on device; only the bool syncs.
+        # See if A is symmetric.
         w_chk = matvec(y)
         r2_chk = matvec(w_chk)
         s = float(dpnp.vdot(w_chk, w_chk).real)
@@ -773,7 +741,7 @@ def minres(
         if itn >= 2:
             y = y - (beta / oldb) * r1
 
-        # alpha = <v, y>   -- host sync #1
+        # alpha = <v, y>
         alpha = float(dpnp.vdot(v, y).real)
 
         y = y - (alpha / beta) * r2
@@ -782,7 +750,7 @@ def minres(
         y = psolve(r2)
         oldb = beta
 
-        # beta = sqrt(<r2, y>)   -- host sync #2
+        # beta = sqrt(<r2, y>)
         beta = float(dpnp.vdot(r2, y).real)
         if beta < 0:
             raise ValueError("non-symmetric matrix")
@@ -819,7 +787,6 @@ def minres(
         w = (v - oldeps * w1 - delta * w2) * denom
         x = x + phi * w
 
-        # Go round again.
         gmax = max(gmax, gamma)
         gmin = min(gmin, gamma)
         z = rhs1 / gamma
@@ -830,7 +797,7 @@ def minres(
         # Estimate norms and test for convergence.
         # ----------------------------------------------------------
         Anorm = math.sqrt(tnorm2)
-        ynorm = float(dpnp.linalg.norm(x))  # host sync #3
+        ynorm = float(dpnp.linalg.norm(x))
         epsa = Anorm * eps
         epsx = Anorm * ynorm * eps
         epsr = Anorm * ynorm * rtol
