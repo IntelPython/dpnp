@@ -7,4 +7,4 @@ dpnp.sin
 
 
 
-.. autofunction:: sin
+.. autodata:: sin

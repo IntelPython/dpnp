@@ -7,4 +7,4 @@ dpnp.right\_shift
 
 
 
-.. autofunction:: right_shift
+.. autodata:: right_shift

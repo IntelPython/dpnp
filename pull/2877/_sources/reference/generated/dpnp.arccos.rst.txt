@@ -7,4 +7,4 @@ dpnp.arccos
 
 
 
-.. autofunction:: arccos
+.. autodata:: arccos

@@ -7,4 +7,4 @@ dpnp.cos
 
 
 
-.. autofunction:: cos
+.. autodata:: cos

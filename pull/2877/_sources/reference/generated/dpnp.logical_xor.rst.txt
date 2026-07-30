@@ -7,4 +7,4 @@ dpnp.logical\_xor
 
 
 
-.. autofunction:: logical_xor
+.. autodata:: logical_xor

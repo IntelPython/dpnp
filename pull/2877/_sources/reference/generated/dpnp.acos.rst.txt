@@ -7,4 +7,4 @@ dpnp.acos
 
 
 
-.. autofunction:: acos
+.. autodata:: acos
