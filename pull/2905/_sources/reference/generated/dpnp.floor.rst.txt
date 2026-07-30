@@ -7,4 +7,4 @@ dpnp.floor
 
 
 
-.. autofunction:: floor
+.. autodata:: floor

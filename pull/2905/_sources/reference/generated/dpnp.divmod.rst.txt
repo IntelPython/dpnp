@@ -7,4 +7,4 @@ dpnp.divmod
 
 
 
-.. autofunction:: divmod
+.. autodata:: divmod

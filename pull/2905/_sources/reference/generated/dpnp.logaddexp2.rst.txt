@@ -7,4 +7,4 @@ dpnp.logaddexp2
 
 
 
-.. autofunction:: logaddexp2
+.. autodata:: logaddexp2

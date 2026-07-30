@@ -7,4 +7,4 @@ dpnp.scipy.special.erf
 
 
 
-.. autofunction:: erf
+.. autodata:: erf

@@ -7,4 +7,4 @@ dpnp.expm1
 
 
 
-.. autofunction:: expm1
+.. autodata:: expm1

@@ -215,6 +215,23 @@ devices at the same time:
     python scripts/build_locally.py --target-cuda --target-hip=gfx90a
 
 
+Command-Line Interface
+======================
+
+The ``python -m dpnp`` command provides options to query the include paths
+needed when building C++ extensions with dpnp:
+
+.. code-block:: bash
+
+    python -m dpnp --includes            # print -I flag for dpnp include directory
+    python -m dpnp --include-dir         # print path to dpnp include directory
+    python -m dpnp --tensor-includes     # print -I flag for libtensor include directory
+    python -m dpnp --tensor-include-dir  # print path to libtensor include directory
+
+These options are useful when building pybind11 extensions that use
+``dpnp4pybind11.hpp`` or libtensor kernel headers.
+
+
 Testing
 =======
 

@@ -7,4 +7,4 @@ dpnp.equal
 
 
 
-.. autofunction:: equal
+.. autodata:: equal

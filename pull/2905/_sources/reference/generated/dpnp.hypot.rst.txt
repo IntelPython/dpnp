@@ -7,4 +7,4 @@ dpnp.hypot
 
 
 
-.. autofunction:: hypot
+.. autodata:: hypot

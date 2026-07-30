@@ -7,4 +7,4 @@ dpnp.multiply
 
 
 
-.. autofunction:: multiply
+.. autodata:: multiply
