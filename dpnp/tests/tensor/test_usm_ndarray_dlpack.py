@@ -252,7 +252,7 @@ def test_dlpack_from_subdevice():
             sdevs = dev.create_sub_devices(partition=[1, 1])
     except dpctl.SyclSubDeviceCreationError:
         pytest.skip("Default device can not be partitioned")
-    assert isinstance(sdevs, list) and len(sdevs) > 0
+    assert isinstance(sdevs, tuple) and len(sdevs) > 0
     try:
         ctx = sdevs[0].sycl_platform.default_context
     except dpctl.SyclContextCreationError:
@@ -603,7 +603,7 @@ def test_dlpack_from_subdevice_to_kdlcpu():
             sdevs = dev.create_sub_devices(partition=[1, 1])
     except dpctl.SyclSubDeviceCreationError:
         pytest.skip("Default device can not be partitioned")
-    assert isinstance(sdevs, list) and len(sdevs) > 0
+    assert isinstance(sdevs, tuple) and len(sdevs) > 0
     try:
         ctx = sdevs[0].sycl_platform.default_context
     except dpctl.SyclContextCreationError:

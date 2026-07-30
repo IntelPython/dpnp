@@ -728,8 +728,12 @@ def _parse_ellipsis_subscript(subscript, idx, ndim=None, ellipsis_len=None):
         for the output.
     ndim : int, optional
         ndim of the operand
+
+        Default: ``None``.
     ellipsis_len : int, optional
         number of broadcast dimensions of the output.
+
+        Default: ``None``.
 
     Returns
     -------

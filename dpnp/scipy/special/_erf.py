@@ -196,7 +196,7 @@ out : {None, dpnp.ndarray, usm_ndarray, tuple of ndarray}, optional
     A tuple (possible only as a keyword argument) must have length equal to the
     number of outputs.
 
-    Default: ``None``..
+    Default: ``None``.
 
 Returns
 -------

@@ -66,6 +66,8 @@ class TestPermutations(unittest.TestCase):
 
     # Test seed
 
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="relies on global random state")
     @testing.for_all_dtypes()
     def test_permutation_seed1(self, dtype):
         flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
@@ -128,6 +130,8 @@ class TestShuffle(unittest.TestCase):
 
     # Test seed
 
+    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
+    # @pytest.mark.thread_unsafe(reason="relies on global random state")
     @testing.for_all_dtypes()
     def test_shuffle_seed1(self, dtype):
         flag = cupy.issubdtype(dtype, cupy.unsignedinteger)

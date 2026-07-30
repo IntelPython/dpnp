@@ -332,7 +332,9 @@ class dpnp_nd_grid:
     Parameters
     ----------
     sparse : {bool}, optional
-        Whether the grid is sparse or not. Default is False.
+        Whether the grid is sparse or not.
+
+        Default: ``False``.
 
     """
 
@@ -354,11 +356,10 @@ class dpnp_nd_grid:
             if start is None:
                 start = 0
             if isinstance(step, complex):
-                step = abs(step)
-                length = int(step)
+                step_float = abs(step)
+                step = length = int(step_float)
                 if step != 1:
                     step = (stop - start) / float(step - 1)
-                stop = stop + step
                 return (
                     dpnp.arange(
                         0,
@@ -439,4 +440,5 @@ class dpnp_nd_grid:
                 slobj[k] = slice(None, None)
                 nn[k] = nn[k][tuple(slobj)]
                 slobj[k] = dpnp.newaxis
-        return nn
+            return tuple(nn)  # ogrid -> tuple of arrays
+        return nn  # mgrid -> ndarray

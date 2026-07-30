@@ -22,7 +22,7 @@ def test_capabilities():
 
 
 def test_default_device():
-    assert info.default_device() == default_device
+    assert info.default_device().sycl_device == default_device
 
 
 def test_default_dtypes():
@@ -130,4 +130,6 @@ def test_dtypes_invalid_device():
 
 
 def test_devices():
-    assert info.devices() == get_devices()
+    devices = info.devices()
+    assert isinstance(devices, tuple)
+    assert tuple(dev.sycl_device for dev in devices) == get_devices()

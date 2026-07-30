@@ -302,11 +302,12 @@ sycl::event inclusive_scan_base_step_blocked(
                     local_iscan.back(), identity, scan_op);
                 // ensure all finished reading from SLM, to avoid race condition
                 // with subsequent writes into SLM
-                it.barrier(sycl::access::fence_space::local_space);
+                sycl::group_barrier(it.get_group(),
+                                    sycl::memory_scope::work_group);
             }
 
             slm_iscan_tmp[(lid + 1) % wg_size] = wg_iscan_val;
-            it.barrier(sycl::access::fence_space::local_space);
+            sycl::group_barrier(it.get_group(), sycl::memory_scope::work_group);
             const outputT modifier = (lid == 0) ? identity : slm_iscan_tmp[lid];
 
 #pragma unroll
@@ -430,7 +431,8 @@ sycl::event inclusive_scan_base_step_striped(
                         slm_iscan_tmp[local_offset0 + i] = local_iscan[i];
                     }
 
-                    it.barrier(sycl::access::fence_space::local_space);
+                    sycl::group_barrier(it.get_group(),
+                                        sycl::memory_scope::work_group);
                 }
 
                 {
@@ -452,7 +454,8 @@ sycl::event inclusive_scan_base_step_striped(
                             slm_iscan_tmp[block_offset + disp_exchanged];
                     }
 
-                    it.barrier(sycl::access::fence_space::local_space);
+                    sycl::group_barrier(it.get_group(),
+                                        sycl::memory_scope::work_group);
                 }
             }
 
@@ -476,11 +479,12 @@ sycl::event inclusive_scan_base_step_striped(
                     identity, scan_op);
                 // ensure all finished reading from SLM, to avoid race condition
                 // with subsequent writes into SLM
-                it.barrier(sycl::access::fence_space::local_space);
+                sycl::group_barrier(it.get_group(),
+                                    sycl::memory_scope::work_group);
             }
 
             slm_iscan_tmp[(lid + 1) % wg_size] = wg_iscan_val;
-            it.barrier(sycl::access::fence_space::local_space);
+            sycl::group_barrier(it.get_group(), sycl::memory_scope::work_group);
             const outputT modifier = (lid == 0) ? identity : slm_iscan_tmp[lid];
 
 #pragma unroll
@@ -488,7 +492,7 @@ sycl::event inclusive_scan_base_step_striped(
                 local_iscan[m_wi] = scan_op(local_iscan[m_wi], modifier);
             }
 
-            it.barrier(sycl::access::fence_space::local_space);
+            sycl::group_barrier(it.get_group(), sycl::memory_scope::work_group);
 
             // convert back to blocked layout
             {
@@ -499,7 +503,8 @@ sycl::event inclusive_scan_base_step_striped(
                         slm_iscan_tmp[local_offset0 + m_wi] = local_iscan[m_wi];
                     }
 
-                    it.barrier(sycl::access::fence_space::local_space);
+                    sycl::group_barrier(it.get_group(),
+                                        sycl::memory_scope::work_group);
                 }
             }
 

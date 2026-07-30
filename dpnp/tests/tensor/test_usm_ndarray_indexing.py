@@ -2052,3 +2052,13 @@ def test_getitem_impl_fn_invalid_inp():
     no_array_inds = (2, 3)
     with pytest.raises(TypeError):
         _take_multi_index(x, no_array_inds, 0, 0)
+
+
+def test_boolean_mask_validation():
+    x = dpt.reshape(dpt.arange(3**5, dtype="i4"), (3,) * 5)
+    ii = dpt.asarray(1)
+    i0 = dpt.asarray(0, dtype="?")
+    i1 = dpt.asarray(0, dtype="?")
+
+    with pytest.raises(IndexError):
+        x[ii, i0[dpt.newaxis], ii, i1[dpt.newaxis], :]
