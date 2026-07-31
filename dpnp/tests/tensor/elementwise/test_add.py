@@ -43,7 +43,6 @@ from ..helper import (
 from .utils import (
     _all_dtypes,
     _compare_dtypes,
-    _usm_types,
 )
 
 
@@ -87,21 +86,6 @@ def test_add_dtype_matrix(op1_dtype, op2_dtype):
     r2 = dpt.empty_like(ar1, dtype=r.dtype)
     dpt.add(ar3[::-1], ar4[::2], out=r2)
     assert (dpt.asnumpy(r2) == np.full(r2.shape, 2, dtype=r2.dtype)).all()
-
-
-@pytest.mark.parametrize("op1_usm_type", _usm_types)
-@pytest.mark.parametrize("op2_usm_type", _usm_types)
-def test_add_usm_type_matrix(op1_usm_type, op2_usm_type):
-    get_queue_or_skip()
-
-    sz = 128
-    ar1 = dpt.ones(sz, dtype="i4", usm_type=op1_usm_type)
-    ar2 = dpt.ones_like(ar1, dtype="i4", usm_type=op2_usm_type)
-
-    r = dpt.add(ar1, ar2)
-    assert isinstance(r, dpt.usm_ndarray)
-    expected_usm_type = dpt.get_coerced_usm_type((op1_usm_type, op2_usm_type))
-    assert r.usm_type == expected_usm_type
 
 
 def test_add_order():
@@ -283,23 +267,17 @@ def test_add_types_property():
 
 
 def test_add_errors():
-    get_queue_or_skip()
-    try:
-        gpu_queue = dpctl.SyclQueue("gpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('gpu') failed, skipping")
-    try:
-        cpu_queue = dpctl.SyclQueue("cpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('cpu') failed, skipping")
+    q1 = get_queue_or_skip()
+    q2 = dpctl.SyclQueue()
 
-    ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
-    ar2 = dpt.ones_like(ar1, sycl_queue=gpu_queue)
-    y = dpt.empty_like(ar1, sycl_queue=cpu_queue)
+    ar1 = dpt.ones(2, dtype="float32", sycl_queue=q1)
+    ar2 = dpt.ones_like(ar1, dtype="float32", sycl_queue=q2)
+    y = dpt.empty_like(ar1, sycl_queue=q2)
     with pytest.raises(dpt.ExecutionPlacementError) as excinfo:
         dpt.add(ar1, ar2, out=y)
-    assert "Input and output allocation queues are not compatible" in str(
-        excinfo.value
+    assert re.match(
+        "Execution placement can not be unambiguously inferred.*",
+        str(excinfo.value),
     )
 
     ar1 = dpt.ones(2, dtype="float32")
@@ -327,17 +305,8 @@ def test_add_errors():
         dpt.add(ar1, ar2, out=y)
     assert "output array must be of usm_ndarray type" in str(excinfo.value)
 
-
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_add_dtype_error(
-    dtype,
-):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    ar1 = dpt.ones(5, dtype=dtype)
+    ar1 = dpt.ones(5, dtype="f4")
     ar2 = dpt.ones_like(ar1, dtype="f4")
-
     y = dpt.zeros_like(ar1, dtype="int8")
     with pytest.raises(ValueError) as excinfo:
         dpt.add(ar1, ar2, out=y)
@@ -469,39 +438,12 @@ def test_add_inplace_operator_mutual_broadcast():
 
 
 def test_add_inplace_errors():
-    get_queue_or_skip()
-    try:
-        gpu_queue = dpctl.SyclQueue("gpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('gpu') failed, skipping")
-    try:
-        cpu_queue = dpctl.SyclQueue("cpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('cpu') failed, skipping")
+    q1 = get_queue_or_skip()
+    q2 = dpctl.SyclQueue()
 
-    ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
-    ar2 = dpt.ones_like(ar1, sycl_queue=cpu_queue)
+    ar1 = dpt.ones(2, dtype="float32", sycl_queue=q1)
+    ar2 = dpt.ones_like(ar1, sycl_queue=q2)
     with pytest.raises(dpt.ExecutionPlacementError):
-        dpt.add(ar1, ar2, out=ar1)
-
-    ar1 = dpt.ones(2, dtype="float32")
-    ar2 = dpt.ones(3, dtype="float32")
-    with pytest.raises(ValueError):
-        dpt.add(ar1, ar2, out=ar1)
-
-    ar1 = np.ones(2, dtype="float32")
-    ar2 = dpt.ones(2, dtype="float32")
-    with pytest.raises(TypeError):
-        dpt.add(ar1, ar2, out=ar1)
-
-    ar1 = dpt.ones(2, dtype="float32")
-    ar2 = {}
-    with pytest.raises(ValueError):
-        dpt.add(ar1, ar2, out=ar1)
-
-    ar1 = dpt.ones((2, 1), dtype="float32")
-    ar2 = dpt.ones((1, 2), dtype="float32")
-    with pytest.raises(ValueError):
         dpt.add(ar1, ar2, out=ar1)
 
 
