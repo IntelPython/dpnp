@@ -1060,8 +1060,8 @@ def broadcast_arrays(*args, subok=False):
 
     Returns
     -------
-    out : list of dpnp.ndarray
-        A list of arrays which are views on the original arrays from `args`.
+    out : tuple of dpnp.ndarray
+        A tuple of arrays which are views on the original arrays from `args`.
 
     Limitations
     -----------
@@ -1078,9 +1078,9 @@ def broadcast_arrays(*args, subok=False):
     >>> x = np.array([[1, 2, 3]])
     >>> y = np.array([[4], [5]])
     >>> np.broadcast_arrays(x, y)
-    [array([[1, 2, 3],
+    (array([[1, 2, 3],
             [1, 2, 3]]), array([[4, 4, 4],
-            [5, 5, 5]])]
+            [5, 5, 5]]))
 
     """
 
@@ -1088,10 +1088,10 @@ def broadcast_arrays(*args, subok=False):
         raise NotImplementedError(f"subok={subok} is currently not supported")
 
     if len(args) == 0:
-        return []
+        return ()
 
     usm_arrays = dpt.broadcast_arrays(*[dpnp.get_usm_ndarray(a) for a in args])
-    return [dpnp_array._create_from_usm_ndarray(a) for a in usm_arrays]
+    return tuple(dpnp_array._create_from_usm_ndarray(a) for a in usm_arrays)
 
 
 def broadcast_shapes(*args):
