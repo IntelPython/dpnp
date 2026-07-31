@@ -2122,8 +2122,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : list of dpnp.ndarray</span>
-<span class="sd">        A list of arrays which are views on the original arrays from `args`.</span>
+<span class="sd">    out : tuple of dpnp.ndarray</span>
+<span class="sd">        A tuple of arrays which are views on the original arrays from `args`.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
@@ -2140,9 +2140,9 @@
 <span class="sd">    &gt;&gt;&gt; x = np.array([[1, 2, 3]])</span>
 <span class="sd">    &gt;&gt;&gt; y = np.array([[4], [5]])</span>
 <span class="sd">    &gt;&gt;&gt; np.broadcast_arrays(x, y)</span>
-<span class="sd">    [array([[1, 2, 3],</span>
+<span class="sd">    (array([[1, 2, 3],</span>
 <span class="sd">            [1, 2, 3]]), array([[4, 4, 4],</span>
-<span class="sd">            [5, 5, 5]])]</span>
+<span class="sd">            [5, 5, 5]]))</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -2150,10 +2150,10 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;subok=</span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2"> is currently not supported&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">()</span>
 
     <span class="n">usm_arrays</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">usm_arrays</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">usm_arrays</span><span class="p">)</span></div>
 
 
 
