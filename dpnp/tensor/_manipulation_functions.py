@@ -248,6 +248,32 @@ def broadcast_arrays(*args):
     return tuple(broadcast_to(X, shape) for X in args)
 
 
+def broadcast_shapes(*shapes):
+    """broadcast_shapes(*shapes)
+
+    Broadcasts one or more shapes against one another.
+
+    Args:
+        shapes (Tuple[int, ...]): an arbitrary number of shapes to be
+            broadcasted against one another. Each shape must be a tuple of
+            integers.
+
+    Returns:
+        Tuple[int, ...]:
+            The broadcasted shape resulting from broadcasting the input
+            shapes against one another.
+
+    Raises:
+        TypeError: if a shape contains a non-integer dimension.
+        ValueError: if the input shapes are not broadcast-compatible.
+    """
+    if len(shapes) == 0:
+        return ()
+
+    normalized = [tuple(map(operator.index, sh)) for sh in shapes]
+    return _broadcast_shape_impl(normalized)
+
+
 def broadcast_to(X, /, shape):
     """broadcast_to(x, shape)
 

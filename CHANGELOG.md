@@ -16,6 +16,7 @@ This release is compatible with NumPy 2.5.
 * Added `--includes` and `--include-dir` options to the `dpnp` CLI [#2916](https://github.com/IntelPython/dpnp/pull/2916)
 * Added `dpnp-config.cmake` to make `find_package(Dpnp)` work out of the box, and an example which uses it [#2941](https://github.com/IntelPython/dpnp/pull/2941)
 * Added implementation of `dpnp.lib.stride_tricks.as_strided` [#2991](https://github.com/IntelPython/dpnp/pull/2991)
+* Added `dpnp.tensor.broadcast_shapes` to align with the 2025.12 version of the Python array API [#3009](https://github.com/IntelPython/dpnp/pull/3009)
 
 ### Changed
 
