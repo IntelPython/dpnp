@@ -464,6 +464,14 @@ def test_incompatible_shapes_raise_valueerror(shapes):
         assert_broadcast_arrays_raise(input_shapes[::-1])
 
 
+def test_broadcast_arrays_tuple():
+    q = get_queue_or_skip()
+    out = dpt.broadcast_arrays(
+        dpt.ones((1, 3), sycl_queue=q), dpt.zeros((3, 1), sycl_queue=q)
+    )
+    assert isinstance(out, tuple)
+
+
 def test_broadcast_arrays_no_args():
     with pytest.raises(ValueError):
         dpt.broadcast_arrays()
