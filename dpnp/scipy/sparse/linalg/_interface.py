@@ -123,10 +123,12 @@ class LinearOperator:
 
     ndim = 2
 
-    # Opt out of NumPy's ufunc dispatch (NEP 13); defers ``host_array *
-    # linop`` etc. to ``LinearOperator.__rmul__`` / ``__rmatmul__``.
-    # Same convention as ``dpnp.ndarray``.
+    # Opt out of NumPy's ufunc (NEP 13) and function (NEP 18) dispatch;
+    # defers ``host_array * linop`` / ``numpy.dot(linop, x)`` etc. to
+    # ``LinearOperator``'s own operators instead of materializing a host
+    # array. Same convention as ``dpnp.ndarray`` and SciPy's LinearOperator.
     __array_ufunc__ = None
+    __array_function__ = None
 
     def __new__(cls, *args, **kwargs):
         if cls is LinearOperator:

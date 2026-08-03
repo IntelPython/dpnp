@@ -73,6 +73,7 @@ _make_fast_matvec catches this and falls back to A.dot(x).
 from __future__ import annotations
 
 import math
+import warnings
 from typing import Callable
 
 import dpctl.utils as dpu
@@ -201,11 +202,14 @@ def _make_system(A, M, x0, b):
             x (dpnp.ndarray): initial guess
             b (dpnp.ndarray): right hand side.
     """
-    if not isinstance(b, dpnp.ndarray):
-        raise TypeError(f"b must be a dpnp.ndarray, got {type(b).__name__}")
-    if x0 is not None and not isinstance(x0, dpnp.ndarray):
+    if not dpnp.is_supported_array_type(b):
         raise TypeError(
-            f"x0 must be a dpnp.ndarray or None, got {type(x0).__name__}"
+            f"b must be a dpnp.ndarray or usm_ndarray, got {type(b).__name__}"
+        )
+    if x0 is not None and not dpnp.is_supported_array_type(x0):
+        raise TypeError(
+            f"x0 must be a dpnp.ndarray, usm_ndarray or None, "
+            f"got {type(x0).__name__}"
         )
 
     A_op = aslinearoperator(A)
@@ -358,6 +362,12 @@ def cg(
         and broke user code that branched on ``info > 0``.
     """
     if tol is not None:
+        warnings.warn(
+            "'tol' is deprecated in favor of 'rtol' and will be removed in "
+            "a future release; use 'rtol' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         rtol = tol
 
     A_op, M_op, x, b, dtype = _make_system(A, M, x0, b)
