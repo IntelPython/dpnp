@@ -2,6 +2,11 @@
 {% set required_compiler_and_mkl_version = "2026.0" %}
 {% set required_dpctl_version = "0.23.0dev0" %}
 
+{# The conda-forge OpenCL ICD loaders (ocl-icd-system / khronos-opencl-icd-loader) #}
+{# require compiler and runtime 2026.1.1 or newer. Fall back to the legacy Intel #}
+{# package while older compilers are still supported. #}
+{% set use_conda_forge_ocl_icd = required_compiler_and_mkl_version.split('.') | map('int') | list >= [2026, 1, 1] %}
+
 {% set pyproject = load_file_data('pyproject.toml') %}
 {% set py_build_deps = pyproject.get('build-system', {}).get('requires', []) %}
 
@@ -55,8 +60,12 @@ requirements:
       - {{ pin_compatible('onemkl-sycl-rng', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-vm', min_pin='x.x', max_pin='x') }}
       - numpy
+      {% if use_conda_forge_ocl_icd %}
       - ocl-icd-system  # [linux]
       - khronos-opencl-icd-loader  # [win]
+      {% else %}
+      - intel-gpu-ocl-icd-system
+      {% endif %}
 
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
