@@ -117,11 +117,12 @@ class csr_matrix(SparseABC):
     solvers, which never generate duplicates.
 
     Supported operations: construction, ``dot`` (matvec) via cached
-    oneMKL SpMV, ``toarray``, ``copy``, ``T``. This is a solver-support
+    oneMKL SpMV, ``toarray``, ``copy``. This is a solver-support
     subset of the scipy/cupy CSR API; arithmetic, indexing, reductions,
-    format conversion and element-wise math are not implemented (the
-    most common such methods raise ``NotImplementedError``). Convert
-    with ``toarray()`` and use dpnp for those.
+    transpose, format conversion and element-wise math are not
+    implemented (the most common such methods raise
+    ``NotImplementedError``). Convert with ``toarray()`` and use dpnp
+    for those.
 
     Attributes
     ----------
@@ -405,8 +406,8 @@ class csr_matrix(SparseABC):
     @property
     # pylint: disable-next=invalid-name
     def T(self):
-        """Transpose. Materializes via toarray() since CSC isn't implemented."""
-        return csr_matrix(self.toarray().T)
+        """Transpose (not implemented)."""
+        raise NotImplementedError("csr_matrix.T is not implemented.")
 
     # --- SpMV fast-path internals --------------------------------------
 

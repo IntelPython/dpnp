@@ -771,9 +771,10 @@ class TestCg:
         # alias is honoured and is not silently ignored.
         ia = _spd_matrix(self.n, dpnp.float64)
         ib = _rhs(self.n, dpnp.float64)
-        # Use `tol` kwarg explicitly; the result must match what `rtol`
-        # would produce.
-        x_tol, info_tol = cg(ia, ib, tol=1e-8, maxiter=500)
+        # Use `tol` kwarg explicitly; it must emit a DeprecationWarning
+        # yet still produce the same result as `rtol`.
+        with pytest.warns(DeprecationWarning):
+            x_tol, info_tol = cg(ia, ib, tol=1e-8, maxiter=500)
         x_rtol, info_rtol = cg(ia, ib, rtol=1e-8, maxiter=500)
         assert info_tol == 0
         assert info_rtol == 0
@@ -1592,6 +1593,7 @@ class TestCsrMatrix:
             lambda m: m - m,
             lambda m: m * 2,
             lambda m: m.transpose(),
+            lambda m: m.T,
             lambda m: m.conj(),
             lambda m: m.conjugate(),
             lambda m: m.sum(),
