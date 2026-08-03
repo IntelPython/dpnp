@@ -39,7 +39,7 @@ This release is compatible with NumPy 2.5.
 * Removed dead code branches guarded by outdated oneMKL and DPC++ compiler version checks [#2999](https://github.com/IntelPython/dpnp/pull/2999)
 * Replaced the deprecated `nd_item::barrier()` member calls in the `accumulators` and `gemm` kernels with the SYCL 2020 `sycl::group_barrier()` free function [#3006](https://github.com/IntelPython/dpnp/pull/3006)
 * Changed `dpnp.broadcast_arrays` and `dpnp.tensor.broadcast_arrays` to return a tuple instead of a list, aligning with the 2025.12 Python array API spec [#2944](https://github.com/IntelPython/dpnp/pull/2944)
-* Migrated to the OpenCL ICD loader from the conda-forge `ocl-icd-system` (Linux) and `khronos-opencl-icd-loader` (Windows) packages [#2905](https://github.com/IntelPython/dpnp/pull/2905)
+* Bumped the default minimum required DPC++ compiler and oneMKL versions to `2026.1.1` and migrated to the OpenCL ICD loader from the conda-forge `ocl-icd-system` (Linux) and `khronos-opencl-icd-loader` (Windows) packages [#2905](https://github.com/IntelPython/dpnp/pull/2905)
 
 ### Deprecated
 
