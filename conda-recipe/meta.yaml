@@ -1,23 +1,24 @@
 {% set max_compiler_and_mkl_version = environ.get("MAX_BUILD_CMPL_MKL_VERSION", "2027.0a0") %}
-{% set required_compiler_and_mkl_version = environ.get("MIN_BUILD_CMPL_MKL_VERSION", "2026.1.1") %}
+{% set required_compiler_version = environ.get("MIN_BUILD_CMPL_VERSION", "2026.1.1") %}
+{% set required_mkl_version = "2026.0" %}
 {% set required_dpctl_version = "0.23.0dev0" %}
 
-{# DPNP does not support a compiler and runtime older than 2026.0, so reject #}
-{# any MIN_BUILD_CMPL_MKL_VERSION override below that by calling an undefined macro. #}
-{% if required_compiler_and_mkl_version.split('.') | map('int') | list < [2026, 0] %}
-{{ MIN_BUILD_CMPL_MKL_VERSION_must_be_at_least_2026_0() }}
+{# DPNP does not support a compiler older than 2026.0, so reject any #}
+{# MIN_BUILD_CMPL_VERSION override below that by calling an undefined macro. #}
+{% if required_compiler_version.split('.') | map('int') | list < [2026, 0] %}
+{{ MIN_BUILD_CMPL_VERSION_must_be_at_least_2026_0() }}
 {% endif %}
 
-{# The minimum must stay strictly below the (exclusive) maximum, otherwise the #}
-{# ">=min,<max" compiler and oneMKL pins collapse to an unsolvable empty range. #}
-{% if required_compiler_and_mkl_version.split('.') | map('int') | list >= max_compiler_and_mkl_version.split('.') | map('int') | list %}
-{{ MIN_BUILD_CMPL_MKL_VERSION_must_be_below_MAX_BUILD_CMPL_MKL_VERSION() }}
+{# The minimum compiler version must stay strictly below the (exclusive) maximum, #}
+{# otherwise the ">=min,<max" compiler pin collapses to an unsolvable empty range. #}
+{% if required_compiler_version.split('.') | map('int') | list >= max_compiler_and_mkl_version.split('.') | map('int') | list %}
+{{ MIN_BUILD_CMPL_VERSION_must_be_below_MAX_BUILD_CMPL_MKL_VERSION() }}
 {% endif %}
 
 {# The conda-forge OpenCL ICD loaders (ocl-icd-system / khronos-opencl-icd-loader) #}
-{# require compiler and runtime 2026.1.1 or newer. Fall back to the legacy Intel #}
-{# package when building against an older supported compiler. #}
-{% set use_conda_forge_ocl_icd = required_compiler_and_mkl_version.split('.') | map('int') | list >= [2026, 1, 1] %}
+{# require a compiler and runtime of 2026.1.1 or newer. Fall back to the legacy #}
+{# intel-gpu-ocl-icd-system package when building against an older compiler. #}
+{% set use_conda_forge_ocl_icd = required_compiler_version.split('.') | map('int') | list >= [2026, 1, 1] %}
 
 {% set pyproject = load_file_data('pyproject.toml') %}
 {% set py_build_deps = pyproject.get('build-system', {}).get('requires', []) %}
@@ -50,14 +51,14 @@ requirements:
       # versioneer dependency
       - tomli # [py<311]
       # Do not use pyproject.toml for setting dependencies on OneAPI packages
-      - mkl-devel-dpcpp >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
+      - mkl-devel-dpcpp >={{ required_mkl_version }},<{{ max_compiler_and_mkl_version }}
       - onedpl-devel
       - tbb-devel
       - opencl-headers >=2025.06.13 # [win]
     build:
       - {{ compiler('cxx') }}
       - {{ stdlib('c') }}
-      - {{ compiler('dpcpp') }} >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
+      - {{ compiler('dpcpp') }} >={{ required_compiler_version }},<{{ max_compiler_and_mkl_version }}
     run:
       - python
       - python-gil     # [py>=314]
