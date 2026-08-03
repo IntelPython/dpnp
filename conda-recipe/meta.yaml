@@ -16,8 +16,9 @@
 {% endif %}
 
 {# The conda-forge OpenCL ICD loaders (ocl-icd-system / khronos-opencl-icd-loader) #}
-{# require a compiler and runtime of 2026.1.1 or newer. Fall back to the legacy #}
-{# intel-gpu-ocl-icd-system package when building against an older compiler. #}
+{# require DPC++ RT of 2026.1.1 or newer when installing from the Intel channel. #}
+{# So fall back to intel-gpu-ocl-icd-system for older Intel channel DPC++ RTs. #}
+{# Building and installing solely with conda-forge channel works with any 2026.0+ compiler. #}
 {% set use_conda_forge_ocl_icd = required_compiler_version.split('.') | map('int') | list >= [2026, 1, 1] %}
 
 {% set pyproject = load_file_data('pyproject.toml') %}
