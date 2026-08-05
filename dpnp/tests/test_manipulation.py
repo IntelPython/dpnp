@@ -24,8 +24,8 @@ from .helper import (
     get_unsigned_dtypes,
     has_support_aspect64,
 )
-from .third_party.cupy import testing
 from .tensor.helper import get_queue_or_skip
+from .third_party.cupy import testing
 
 
 def _compare_results(result, expected):
@@ -307,7 +307,7 @@ class TestAsarrayCheckFinite:
         assert_array_equal(b, a)
 
 
-class TestBroadcast:
+class TestBroadcastShapes:
     @pytest.mark.parametrize(
         "shape",
         [
@@ -2095,12 +2095,14 @@ class TestBroadcast:
         assert bc.numiter == 3
 
     def test_broadcast_ndim_property(self):
-        # Test that ndim property equals nd property
+        # Test that ndim property matches numpy and equals nd property
         a = dpnp.array([[1, 2], [3, 4]])
         b = dpnp.array([5, 6])
 
         bc = dpnp.broadcast(a, b)
+        bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy())
 
+        assert bc.ndim == bc_np.ndim
         assert bc.ndim == bc.nd
 
     def test_broadcast_complex_shapes(self):
@@ -2116,13 +2118,19 @@ class TestBroadcast:
         assert bc.nd == bc_np.nd
         assert bc.size == bc_np.size
 
-    def test_broadcast_with_array_like(self):
-        # Conversion from array-like inputs is not implemented for broadcast yet.
+    @pytest.mark.parametrize(
+        "arg",
+        [[[1], [2]], 3, numpy.ones((2, 1))],
+        ids=["list", "scalar", "numpy"],
+    )
+    def test_broadcast_unsupported_type(self, arg):
+        # unlike numpy, input arrays are not coerced, so array-like objects,
+        # scalars and host arrays are rejected the same way as they are by
+        # dpnp.broadcast_to and dpnp.broadcast_arrays
         a = dpnp.array([1, 2, 3])
-        b = [[1], [2]]
 
         with pytest.raises(TypeError):
-            dpnp.broadcast(a, b)
+            dpnp.broadcast(a, arg)
 
     @pytest.mark.parametrize(
         "shapes",
@@ -2171,21 +2179,20 @@ class TestBroadcast:
         assert bc.size == 1
         assert bc.numiter == 0
 
-    def test_broadcast_argument_without_shape(self):
-        a = dpnp.array([1, 2, 3])
-
-        with pytest.raises(TypeError):
-            dpnp.broadcast(a, 3)
-
-    def test_broadcast_compute_follows_data(self):
+    def test_broadcast_different_queues(self):
+        # Broadcasting is a shape-only query, so inputs are not required
+        # to share a common execution placement
         q1 = get_queue_or_skip()
         q2 = get_queue_or_skip()
 
         a = dpt.ones((2, 1), sycl_queue=q1)
         b = dpt.ones((1, 2), sycl_queue=q2)
 
-        with pytest.raises(dpt.ExecutionPlacementError):
-            dpnp.broadcast(a, b)
+        bc = dpnp.broadcast(a, b)
+
+        assert bc.shape == (2, 2)
+        assert bc.size == 4
+        assert bc.nd == 2
 
     def test_broadcast_repr(self):
         # Test __repr__ method

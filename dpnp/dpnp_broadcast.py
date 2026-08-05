@@ -29,7 +29,6 @@
 """Implementation of broadcast class."""
 
 import dpnp
-import dpnp.tensor as dpt
 from dpnp.tensor._manipulation_functions import _broadcast_shapes
 
 
@@ -41,16 +40,15 @@ class broadcast:
 
     Parameters
     ----------
-    *args : object
-        Input parameters. Every argument must define ``shape`` attribute.
+    *args : {dpnp.ndarray, usm_ndarray}
+        Input arrays to broadcast against one another.
 
     Returns
     -------
     broadcast : broadcast object
         Broadcast the input parameters against one another, and
         return an object that encapsulates the result.
-        Amongst others, it has ``shape`` and ``nd`` properties, and
-        may be used as an iterator.
+        Amongst others, it has ``shape`` and ``nd`` properties.
 
     See Also
     --------
@@ -73,6 +71,11 @@ class broadcast:
     >>> b.size
     9
 
+    Limitations
+    -----------
+    Input arrays are not coerced, so array-like objects and scalars are not
+    supported and ``TypeError`` exception will be raised.
+
     Notes
     -----
     Iterator functionality is not supported.
@@ -80,24 +83,9 @@ class broadcast:
     """
 
     def __init__(self, *args):
-        for i, arg in enumerate(args):
-            if not hasattr(arg, "shape"):
-                raise TypeError(
-                    f"Argument at position {i} must define shape attribute"
-                )
+        dpnp.check_supported_arrays_type(*args)
 
         self._arrays = tuple(args)
-
-        dpnp_arrays = [arg for arg in self._arrays if isinstance(arg, dpnp.ndarray)]
-        if len(dpnp_arrays) > 1:
-            exec_q = dpt.get_execution_queue(
-                tuple(array.sycl_queue for array in dpnp_arrays)
-            )
-            if exec_q is None:
-                raise dpt.ExecutionPlacementError(
-                    "Execution placement can not be unambiguously inferred "
-                    "from input arguments."
-                )
 
         if len(self._arrays) == 0:
             self._shape = ()
