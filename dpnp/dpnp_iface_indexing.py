@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -1803,59 +1803,96 @@ def put_along_axis(a, ind, values, axis, mode="wrap"):
     dpt.put_along_axis(usm_a, usm_ind, usm_vals, axis=axis, mode=mode)
 
 
-def putmask(x1, mask, values):
+def putmask(a, /, mask, values):
     """
     Changes elements of an array based on conditional and input values.
 
-    Sets ``x1.flat[n] = values[n]`` for each ``n`` where ``mask.flat[n]`` is
-    ``True``. If `values` is not the same size as `x1` and `mask` then it will
-    repeat.
+    Sets ``a.flat[n] = values[n]`` for each ``n`` where ``mask.flat[n]`` is
+    ``True``.
+
+    If `values` is not the same size as `a` and `mask` then it will
+    repeat. This gives behavior different from ``a[mask] = values``.
 
     For full documentation refer to :obj:`numpy.putmask`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Target array.
+    mask : {dpnp.ndarray, usm_ndarray}
+        Boolean mask array. It has to be the same shape as `a`.
+    values : {dpnp.ndarray, usm_ndarray, scalar}
+        Values to put into `a` where `mask` is ``True``. If `values` is smaller
+        than `a` it will be repeated.
+
     Limitations
     -----------
-    Input array ``x1`` and ``mask`` are expected to have the same shape (unlike
+    Input array ``a`` and ``mask`` are expected to have the same shape (unlike
     :obj:`numpy.putmask`, which only requires the same size).
+
+    See Also
+    --------
+    :obj:`dpnp.place` : Change elements of an array based on conditional and
+                        input values.
+    :obj:`dpnp.put` : Replaces specified elements of an array with given values.
+    :obj:`dpnp.take` : Take elements from an array along an axis.
+    :obj:`dpnp.copyto` : Copies values from one array to another.
+
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(6).reshape(2, 3)
+    >>> np.putmask(x, x>2, x**2)
+    >>> x
+    array([[ 0,  1,  2],
+           [ 9, 16, 25]])
+
+    If `values` is smaller than `x1` it is repeated:
+
+    >>> x = np.arange(5)
+    >>> np.putmask(x, x>1, np.array([-33, -44]))
+    >>> x
+    array([  0,   1, -33, -44, -33])
 
     """
 
-    dpnp.check_supported_arrays_type(x1, mask)
+    dpnp.check_supported_arrays_type(a, mask)
     dpnp.check_supported_arrays_type(values, scalar_type=True, all_scalars=True)
 
-    if not x1.shape == mask.shape:
+    if not a.shape == mask.shape:
         raise ValueError("mask and data must be the same size")
 
     mask = dpnp.astype(mask, dpnp.bool, copy=False)
 
     if dpnp.isscalar(values):
-        x1[mask] = values
+        a[mask] = values
 
-    elif not dpnp.can_cast(values.dtype, x1.dtype):
+    elif not dpnp.can_cast(values.dtype, a.dtype):
         raise TypeError(
-            f"Cannot cast array data from {values.dtype} to {x1.dtype} "
+            f"Cannot cast array data from {values.dtype} to {a.dtype} "
             "according to the rule 'safe'"
         )
 
-    elif x1.shape == values.shape:
-        x1[mask] = values[mask]
+    elif a.shape == values.shape:
+        a[mask] = values[mask]
 
     else:
         # numpy putmask cycles values by the C-order flat index of the
         # destination (values.flat[c % N]), independent of memory layout, so
         # values must always be flattened in C-order.
         values_1d = values.ravel(order="C")
-        if x1.dtype != values_1d.dtype:
+        if a.dtype != values_1d.dtype:
             values_1d = dpnp.astype(
-                values_1d, x1.dtype, casting="safe", copy=False
+                values_1d, a.dtype, casting="safe", copy=False
             )
-        _, exec_q = get_usm_allocations([x1, mask, values_1d])
+        _, exec_q = get_usm_allocations([a, mask, values_1d])
 
         _manager = dpu.SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
 
         h_ev, putmask_ev = indexing_ext._putmask(
-            x1.get_array(),
+            a.get_array(),
             mask.get_array(),
             values_1d.get_array(),
             exec_q,
