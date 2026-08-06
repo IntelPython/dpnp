@@ -231,7 +231,6 @@ class TestPutmask(unittest.TestCase):
 
 class TestPutmaskDifferentDtypes(unittest.TestCase):
 
-    @pytest.mark.skip("putmask() is not fully supported")
     @testing.for_all_dtypes_combination(names=["a_dtype", "val_dtype"])
     def test_putmask_differnt_dtypes_raises(self, a_dtype, val_dtype):
         shape = (2, 3)
