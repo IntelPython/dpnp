@@ -139,8 +139,12 @@ jobs:
       - name: Build dpnp
         run: |
           source set_allvars.sh
+          # The open source DPC++ nightly ships an IntelSYCLConfig.cmake that
+          # lacks add_sycl_to_target(), so force the vendored module which
+          # provides it.
           python scripts/build_locally.py --c-compiler=clang --cxx-compiler=clang++ \
-              --compiler-root="${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin" || exit 1
+              --compiler-root="${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin" \
+              --cmake-opts="-DIntelSYCL_DIR=${GITHUB_WORKSPACE}/dpnp/backend/cmake/Modules" || exit 1
 
       - name: Smoke test
         run: |
