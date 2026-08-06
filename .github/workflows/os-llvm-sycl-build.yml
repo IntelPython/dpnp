@@ -119,8 +119,10 @@ jobs:
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
           export OCL_ICD_VENDORS=
           export OCL_ICD_FILENAMES=libintelocl.so
-          # Help CMake find MKL/oneDPL/TBB shipped in the Python environment
-          export MKLROOT=$(python -c "import sys, os; print(os.path.dirname(os.path.dirname(sys.executable)))")
+          # Help CMake find MKL/oneDPL/TBB shipped in the Python environment.
+          PYTHON_PREFIX=$(python -c "import sys, os; print(os.path.dirname(os.path.dirname(sys.executable)))")
+          export MKLROOT=${PYTHON_PREFIX}
+          export oneDPL_ROOT=${PYTHON_PREFIX}
           export TBBROOT=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}
           EOF
           chmod +x set_allvars.sh
