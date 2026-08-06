@@ -56,12 +56,8 @@ import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
 
-# pylint: disable=no-name-in-module
-from .dpnp_algo import (
-    dpnp_putmask,
-)
 from .dpnp_array import dpnp_array
-from .dpnp_utils import call_origin, get_usm_allocations
+from .dpnp_utils import get_usm_allocations
 from .exceptions import ExecutionPlacementError
 from .tensor._copy_utils import _nonzero_impl
 from .tensor._indexing_functions import _get_indexing_mode
@@ -1811,26 +1807,61 @@ def putmask(x1, mask, values):
     """
     Changes elements of an array based on conditional and input values.
 
+    Sets ``x1.flat[n] = values[n]`` for each ``n`` where ``mask.flat[n]`` is
+    ``True``. If `values` is not the same size as `x1` and `mask` then it will
+    repeat.
+
     For full documentation refer to :obj:`numpy.putmask`.
 
     Limitations
     -----------
-    Input arrays ``arr``, ``mask`` and ``values`` are supported
-    as :obj:`dpnp.ndarray`.
+    Input array ``x1`` and ``mask`` are expected to have the same shape (unlike
+    :obj:`numpy.putmask`, which only requires the same size).
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    mask_desc = dpnp.get_dpnp_descriptor(mask, copy_when_nondefault_queue=False)
-    values_desc = dpnp.get_dpnp_descriptor(
-        values, copy_when_nondefault_queue=False
-    )
-    if x1_desc and mask_desc and values_desc:
-        return dpnp_putmask(x1_desc, mask_desc, values_desc)
+    dpnp.check_supported_arrays_type(x1, mask)
+    dpnp.check_supported_arrays_type(values, scalar_type=True, all_scalars=True)
 
-    return call_origin(numpy.putmask, x1, mask, values, dpnp_inplace=True)
+    if not x1.shape == mask.shape:
+        raise ValueError("mask and data must be the same size")
+
+    mask = dpnp.astype(mask, dpnp.bool, copy=False)
+
+    if dpnp.isscalar(values):
+        x1[mask] = values
+
+    elif not dpnp.can_cast(values.dtype, x1.dtype):
+        raise TypeError(
+            f"Cannot cast array data from {values.dtype} to {x1.dtype} "
+            "according to the rule 'safe'"
+        )
+
+    elif x1.shape == values.shape:
+        x1[mask] = values[mask]
+
+    else:
+        # numpy putmask cycles values by the C-order flat index of the
+        # destination (values.flat[c % N]), independent of memory layout, so
+        # values must always be flattened in C-order.
+        values_1d = values.ravel(order="C")
+        if x1.dtype != values_1d.dtype:
+            values_1d = dpnp.astype(
+                values_1d, x1.dtype, casting="safe", copy=False
+            )
+        _, exec_q = get_usm_allocations([x1, mask, values_1d])
+
+        _manager = dpu.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+
+        h_ev, putmask_ev = indexing_ext._putmask(
+            x1.get_array(),
+            mask.get_array(),
+            values_1d.get_array(),
+            exec_q,
+            dep_evs,
+        )
+        _manager.add_event_pair(h_ev, putmask_ev)
 
 
 def ravel_multi_index(multi_index, dims, mode="raise", order="C"):
