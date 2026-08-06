@@ -1,0 +1,157 @@
+name: Build with Open Source LLVM SYCL compiler
+
+on:
+  # To be able to be triggered manually
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  install-compiler:
+    name: Build with nightly build of DPC++ toolchain
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    env:
+      DOWNLOAD_URL_PREFIX: https://github.com/intel/llvm/releases/download
+      DRIVER_PATH: 2026-WW28
+      OCLCPUEXP_FN: oclcpuexp-2026.22.6.1.17_160000_rel.tar.gz
+      TBB_URL: https://github.com/uxlfoundation/oneTBB/releases/download/v2023.1.0/
+      TBB_INSTALL_DIR: oneapi-tbb-2023.1.0
+      TBB_FN: oneapi-tbb-2023.1.0-lin.tgz
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Install hwloc
+        run: sudo apt install hwloc
+
+      - name: Install lld
+        run: sudo apt install lld
+
+      - name: Download and install nightly and components
+        env:
+          ARTIFACT_NAME: sycl_linux
+          USE_LATEST_SYCLOS: 1
+        run: |
+          cd /home/runner/work
+          mkdir -p sycl_bundle
+          cd sycl_bundle
+          if [[ "${USE_LATEST_SYCLOS:-0}" -eq "1" ]]; then
+              # get list of shas and tags from remote, filter nightly tags and reverse order
+              LLVM_TAGS=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/intel/llvm.git | \
+                          grep 'refs/tags/nightly-' | awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }')
+              export LLVM_TAGS
+              # initialize
+              unset DEPLOY_NIGHTLY_TAG
+              unset DEPLOY_NIGHTLY_TAG_SHA
+
+              # go through tags and find the most recent one where nighly build binary is available
+              while IFS= read -r NEXT_LLVM_TAG; do
+                  NEXT_LLVM_TAG_SHA=$(echo "${NEXT_LLVM_TAG}" | awk '{print $1}')
+                  export NEXT_LLVM_TAG_SHA
+                  NEXT_NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print(ul.quote_plus(sys.argv[1]))" \
+                                      "$(echo "${NEXT_LLVM_TAG}" | awk '{gsub(/^refs\/tags\//, "", $2)} {print $2}')")
+                  export NEXT_NIGHTLY_TAG
+                  if wget -S --spider "${DOWNLOAD_URL_PREFIX}/${NEXT_NIGHTLY_TAG}/${ARTIFACT_NAME}.tar.gz" 2>&1 | grep -q 'HTTP/1.1 200 OK';
+                  then
+                      DEPLOY_NIGHTLY_TAG="${NEXT_NIGHTLY_TAG}"
+                      export DEPLOY_NIGHTLY_TAG
+                      DEPLOY_LLVM_TAG_SHA="${NEXT_LLVM_TAG_SHA}"
+                      export DEPLOY_LLVM_TAG_SHA
+                      break
+                  fi
+              done <<< "${LLVM_TAGS}"
+          else
+              # Use latest known to work tag instead
+              DEPLOY_NIGHTLY_TAG="sycl-nightly%2F20230606"
+              export DEPLOY_NIGHTLY_TAG
+              DEPLOY_LLVM_TAG_SHA=f44d0133d4b0077298f034697a1f3818ff1d6134
+              export DEPLOY_LLVM_TAG_SHA
+          fi
+
+          [[ -n "${DEPLOY_NIGHTLY_TAG}" ]] || exit 1
+          [[ -n "${DEPLOY_LLVM_TAG_SHA}" ]] || exit 1
+          echo "Using ${DEPLOY_NIGHTLY_TAG} corresponding to intel/llvm at ${DEPLOY_LLVM_TAG_SHA}"
+
+          rm -rf "${ARTIFACT_NAME}.tar.gz"
+          wget "${DOWNLOAD_URL_PREFIX}/${DEPLOY_NIGHTLY_TAG}/${ARTIFACT_NAME}.tar.gz"
+          wget "${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${OCLCPUEXP_FN}"
+          wget "${TBB_URL}/${TBB_FN}"
+          mkdir -p dpcpp_compiler
+          tar xf "${ARTIFACT_NAME}.tar.gz" -C dpcpp_compiler
+          mkdir -p oclcpuexp
+          tar xf "${OCLCPUEXP_FN}" -C oclcpuexp
+          tar xf "${TBB_FN}"
+          cp oclcpuexp/x64/libOpenCL.so* dpcpp_compiler/lib/
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.14'
+
+      - name: Install dpnp dependencies
+        run: |
+          pip install numpy cython setuptools"<80" pytest scikit-build cmake ninja versioneer[toml]==0.29 \
+              dpctl mkl-devel-dpcpp onedpl-devel
+
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Create set_allvars.sh
+        run: |
+          cat << 'EOF' > set_allvars.sh
+          #!/usr/bin/bash
+          export SYCL_BUNDLE_FOLDER=/home/runner/work/sycl_bundle
+          export PATH=${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin:${PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/lib:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
+          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
+          export OCL_ICD_VENDORS=
+          export OCL_ICD_FILENAMES=libintelocl.so
+          # Help CMake find MKL/oneDPL/TBB shipped in the Python environment
+          export MKLROOT=$(python -c "import sys, os; print(os.path.dirname(os.path.dirname(sys.executable)))")
+          export TBBROOT=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}
+          EOF
+          chmod +x set_allvars.sh
+          cat set_allvars.sh
+
+      - name: Report compiler version
+        run: |
+          source set_allvars.sh
+          clang++ --version
+
+      - name: Run sycl-ls
+        run: |
+          source set_allvars.sh
+          sycl-ls
+
+      - name: Build dpnp
+        run: |
+          source set_allvars.sh
+          python scripts/build_locally.py --c-compiler=clang --cxx-compiler=clang++ \
+              --compiler-root="${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin" || exit 1
+
+      - name: Smoke test
+        run: |
+          source set_allvars.sh
+          python -m dpctl -f
+          python -c "import dpnp; print(dpnp.__version__)"
+
+      - name: Run dpnp/tests
+        env:
+          SYCL_CACHE_PERSISTENT: 1
+          SKIP_TENSOR_TESTS: 0
+        run: |
+          source set_allvars.sh
+          python -m pytest -ra dpnp/tests
