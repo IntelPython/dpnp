@@ -124,6 +124,11 @@ jobs:
           export MKLROOT=${PYTHON_PREFIX}
           export oneDPL_ROOT=${PYTHON_PREFIX}
           export TBBROOT=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}
+          # The open source DPC++ compiler does not bundle oneDPL/MKL headers.
+          # dpnp extensions include e.g. <oneapi/dpl/numeric> without linking the
+          # oneDPL target, so expose the pip package headers on the default
+          # compiler include path.
+          export CPATH=${PYTHON_PREFIX}/include:${CPATH}
           EOF
           chmod +x set_allvars.sh
           cat set_allvars.sh
