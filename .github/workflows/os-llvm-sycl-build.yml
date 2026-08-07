@@ -161,8 +161,13 @@ jobs:
           # released compiler and is ABI-incompatible with the open source
           # nightly. Build dpctl from source with the same nightly so both
           # share one SYCL runtime.
-          python scripts/build_locally.py --c-compiler=clang --cxx-compiler=clang++ \
-              --compiler-root="${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin" || exit 1
+          #
+          # Install non-editable so scikit-build runs CMake's install step and
+          # produces a proper package layout (include/, resources/cmake with the
+          # config) that dpnp's find_package(Dpctl) needs. --no-deps avoids
+          # pulling intel-sycl-rt from PyPI, which would reintroduce the
+          # conflicting released libsycl (the nightly one is on LD_LIBRARY_PATH).
+          CC=clang CXX=clang++ pip install --no-build-isolation --no-deps . || exit 1
         working-directory: ${{ env.dpctl-repo-path }}
 
       - name: Build dpnp
