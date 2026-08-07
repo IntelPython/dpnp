@@ -129,8 +129,11 @@ jobs:
           # The open source DPC++ compiler does not bundle oneDPL/MKL headers.
           # dpnp extensions include e.g. <oneapi/dpl/numeric> without linking the
           # oneDPL target, so expose the pip package headers on the default
-          # compiler include path.
-          export CPATH=${PYTHON_PREFIX}/include:${CPATH}
+          # compiler include path. Use the *_INCLUDE_PATH vars (treated as
+          # -isystem) rather than CPATH (-I) so deprecation warnings from these
+          # headers stay suppressed.
+          export C_INCLUDE_PATH=${PYTHON_PREFIX}/include:${C_INCLUDE_PATH}
+          export CPLUS_INCLUDE_PATH=${PYTHON_PREFIX}/include:${CPLUS_INCLUDE_PATH}
           EOF
           chmod +x set_allvars.sh
           cat set_allvars.sh
