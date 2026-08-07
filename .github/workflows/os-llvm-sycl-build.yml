@@ -99,16 +99,16 @@ jobs:
         with:
           python-version: '3.14'
 
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
       - name: Install dpnp dependencies
         run: |
           pip install numpy cython setuptools"<80" pytest scikit-build cmake ninja versioneer[toml]==0.29 \
               mkl-devel-dpcpp onedpl-devel
           pip install -r ${{ env.dpctl-pkg-txt }}
-
-      - name: Checkout repo
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
 
       - name: Create set_allvars.sh
         run: |
