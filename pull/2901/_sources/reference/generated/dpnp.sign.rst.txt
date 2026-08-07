@@ -7,4 +7,4 @@ dpnp.sign
 
 
 
-.. autofunction:: sign
+.. autodata:: sign

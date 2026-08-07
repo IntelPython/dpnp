@@ -7,4 +7,4 @@ dpnp.scipy.special.erfinv
 
 
 
-.. autofunction:: erfinv
+.. autodata:: erfinv

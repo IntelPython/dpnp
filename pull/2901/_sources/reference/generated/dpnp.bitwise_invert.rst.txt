@@ -7,4 +7,4 @@ dpnp.bitwise\_invert
 
 
 
-.. autofunction:: bitwise_invert
+.. autodata:: bitwise_invert

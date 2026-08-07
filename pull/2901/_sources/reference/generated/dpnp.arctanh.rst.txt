@@ -7,4 +7,4 @@ dpnp.arctanh
 
 
 
-.. autofunction:: arctanh
+.. autodata:: arctanh

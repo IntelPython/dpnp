@@ -7,4 +7,4 @@ dpnp.scipy.special.erfcx
 
 
 
-.. autofunction:: erfcx
+.. autodata:: erfcx

@@ -95,7 +95,7 @@ On Linux:
 .. code-block:: bash
 
     conda create -n build-env dpctl cython dpcpp_linux-64 mkl-devel-dpcpp tbb-devel        \
-          onedpl-devel cmake scikit-build ninja versioneer pytest intel-gpu-ocl-icd-system \
+          onedpl-devel cmake scikit-build ninja versioneer pytest ocl-icd-system           \
           -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
     conda activate build-env
 
@@ -104,7 +104,7 @@ On Windows:
 .. code-block:: bash
 
     conda create -n build-env dpctl cython dpcpp_win-64 mkl-devel-dpcpp tbb-devel          \
-          onedpl-devel cmake scikit-build ninja versioneer pytest intel-gpu-ocl-icd-system \
+          onedpl-devel cmake scikit-build ninja versioneer pytest khronos-opencl-icd-loader\
           -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels
     conda activate build-env
 
@@ -213,6 +213,23 @@ devices at the same time:
 .. code-block:: bash
 
     python scripts/build_locally.py --target-cuda --target-hip=gfx90a
+
+
+Command-Line Interface
+======================
+
+The ``python -m dpnp`` command provides options to query the include paths
+needed when building C++ extensions with dpnp:
+
+.. code-block:: bash
+
+    python -m dpnp --includes            # print -I flag for dpnp include directory
+    python -m dpnp --include-dir         # print path to dpnp include directory
+    python -m dpnp --tensor-includes     # print -I flag for libtensor include directory
+    python -m dpnp --tensor-include-dir  # print path to libtensor include directory
+
+These options are useful when building pybind11 extensions that use
+``dpnp4pybind11.hpp`` or libtensor kernel headers.
 
 
 Testing
