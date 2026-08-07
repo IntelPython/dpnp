@@ -24,7 +24,7 @@ jobs:
       TBB_URL: https://github.com/uxlfoundation/oneTBB/releases/download/v2023.1.0/
       TBB_INSTALL_DIR: oneapi-tbb-2023.1.0
       TBB_FN: oneapi-tbb-2023.1.0-lin.tgz
-      dpctl-pkg-txt: 'environments/dpctl_pkg.txt'
+      dpctl-repo-path: '${{ github.workspace }}/dpctl'
 
     steps:
       - name: Cancel Previous Runs
@@ -104,11 +104,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout dpctl repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: IntelPython/dpctl
+          fetch-depth: 0
+          path: ${{ env.dpctl-repo-path }}
+
       - name: Install dpnp dependencies
         run: |
           pip install numpy cython setuptools"<80" pytest scikit-build cmake ninja versioneer[toml]==0.29 \
               mkl-devel-dpcpp onedpl-devel
-          pip install -r ${{ env.dpctl-pkg-txt }}
 
       - name: Create set_allvars.sh
         run: |
@@ -147,6 +153,17 @@ jobs:
         run: |
           source set_allvars.sh
           sycl-ls
+
+      - name: Build and install dpctl
+        run: |
+          source "${GITHUB_WORKSPACE}/set_allvars.sh"
+          # dpnp pins dpctl>=0.23.0dev0, which is only published for Intel's
+          # released compiler and is ABI-incompatible with the open source
+          # nightly. Build dpctl from source with the same nightly so both
+          # share one SYCL runtime.
+          python scripts/build_locally.py --c-compiler=clang --cxx-compiler=clang++ \
+              --compiler-root="${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin" || exit 1
+        working-directory: ${{ env.dpctl-repo-path }}
 
       - name: Build dpnp
         run: |
