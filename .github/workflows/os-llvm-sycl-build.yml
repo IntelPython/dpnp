@@ -24,6 +24,7 @@ jobs:
       TBB_URL: https://github.com/uxlfoundation/oneTBB/releases/download/v2023.1.0/
       TBB_INSTALL_DIR: oneapi-tbb-2023.1.0
       TBB_FN: oneapi-tbb-2023.1.0-lin.tgz
+      dpctl-pkg-txt: 'environments/dpctl_pkg.txt'
 
     steps:
       - name: Cancel Previous Runs
@@ -101,7 +102,8 @@ jobs:
       - name: Install dpnp dependencies
         run: |
           pip install numpy cython setuptools"<80" pytest scikit-build cmake ninja versioneer[toml]==0.29 \
-              dpctl mkl-devel-dpcpp onedpl-devel
+              mkl-devel-dpcpp onedpl-devel
+          pip install -r ${{ env.dpctl-pkg-txt }}
 
       - name: Checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
