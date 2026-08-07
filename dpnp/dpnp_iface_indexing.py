@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -56,12 +56,8 @@ import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_impl as ti
 
-# pylint: disable=no-name-in-module
-from .dpnp_algo import (
-    dpnp_putmask,
-)
 from .dpnp_array import dpnp_array
-from .dpnp_utils import call_origin, get_usm_allocations
+from .dpnp_utils import get_usm_allocations
 from .exceptions import ExecutionPlacementError
 from .tensor._copy_utils import _nonzero_impl
 from .tensor._indexing_functions import _get_indexing_mode
@@ -1807,30 +1803,102 @@ def put_along_axis(a, ind, values, axis, mode="wrap"):
     dpt.put_along_axis(usm_a, usm_ind, usm_vals, axis=axis, mode=mode)
 
 
-def putmask(x1, mask, values):
+def putmask(a, /, mask, values):
     """
     Changes elements of an array based on conditional and input values.
 
+    Sets ``a.flat[n] = values[n]`` for each ``n`` where ``mask.flat[n]`` is
+    ``True``.
+
+    If `values` is not the same size as `a` and `mask` then it will
+    repeat. This gives behavior different from ``a[mask] = values``.
+
     For full documentation refer to :obj:`numpy.putmask`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Target array.
+    mask : {dpnp.ndarray, usm_ndarray}
+        Boolean mask array. It has to be the same shape as `a`.
+    values : {dpnp.ndarray, usm_ndarray, scalar}
+        Values to put into `a` where `mask` is ``True``. If `values` is smaller
+        than `a` it will be repeated.
 
     Limitations
     -----------
-    Input arrays ``arr``, ``mask`` and ``values`` are supported
-    as :obj:`dpnp.ndarray`.
+    Input array ``a`` and ``mask`` are expected to have the same shape (unlike
+    :obj:`numpy.putmask`, which only requires the same size).
+
+    See Also
+    --------
+    :obj:`dpnp.place` : Change elements of an array based on conditional and
+                        input values.
+    :obj:`dpnp.put` : Replaces specified elements of an array with given values.
+    :obj:`dpnp.take` : Take elements from an array along an axis.
+    :obj:`dpnp.copyto` : Copies values from one array to another.
+
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(6).reshape(2, 3)
+    >>> np.putmask(x, x>2, x**2)
+    >>> x
+    array([[ 0,  1,  2],
+           [ 9, 16, 25]])
+
+    If `values` is smaller than `x1` it is repeated:
+
+    >>> x = np.arange(5)
+    >>> np.putmask(x, x>1, np.array([-33, -44]))
+    >>> x
+    array([  0,   1, -33, -44, -33])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(
-        x1, copy_when_strides=False, copy_when_nondefault_queue=False
-    )
-    mask_desc = dpnp.get_dpnp_descriptor(mask, copy_when_nondefault_queue=False)
-    values_desc = dpnp.get_dpnp_descriptor(
-        values, copy_when_nondefault_queue=False
-    )
-    if x1_desc and mask_desc and values_desc:
-        return dpnp_putmask(x1_desc, mask_desc, values_desc)
+    dpnp.check_supported_arrays_type(a, mask)
+    dpnp.check_supported_arrays_type(values, scalar_type=True, all_scalars=True)
 
-    return call_origin(numpy.putmask, x1, mask, values, dpnp_inplace=True)
+    if not a.shape == mask.shape:
+        raise ValueError("mask and data must be the same size")
+
+    mask = dpnp.astype(mask, dpnp.bool, copy=False)
+
+    if dpnp.isscalar(values):
+        a[mask] = values
+
+    elif not dpnp.can_cast(values.dtype, a.dtype):
+        raise TypeError(
+            f"Cannot cast array data from {values.dtype} to {a.dtype} "
+            "according to the rule 'safe'"
+        )
+
+    elif a.shape == values.shape:
+        a[mask] = values[mask]
+
+    else:
+        # numpy putmask cycles values by the C-order flat index of the
+        # destination (values.flat[c % N]), independent of memory layout, so
+        # values must always be flattened in C-order.
+        values_1d = values.ravel(order="C")
+        if a.dtype != values_1d.dtype:
+            values_1d = dpnp.astype(
+                values_1d, a.dtype, casting="safe", copy=False
+            )
+        _, exec_q = get_usm_allocations([a, mask, values_1d])
+
+        _manager = dpu.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+
+        h_ev, putmask_ev = indexing_ext._putmask(
+            a.get_array(),
+            mask.get_array(),
+            values_1d.get_array(),
+            exec_q,
+            dep_evs,
+        )
+        _manager.add_event_pair(h_ev, putmask_ev)
 
 
 def ravel_multi_index(multi_index, dims, mode="raise", order="C"):

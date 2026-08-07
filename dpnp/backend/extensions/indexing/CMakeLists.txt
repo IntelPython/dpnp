@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2025, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@
 set(python_module_name _indexing_impl)
 set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/choose.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/putmask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/indexing_py.cpp
 )
 
