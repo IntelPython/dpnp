@@ -52,10 +52,16 @@ TYPES1 = [
     "int64",
     "float64",
     "complex64",
-    "longfloat",
+    # numpy.longfloat is an alias of numpy.longdouble that was removed in
+    # NumPy 2.0; use numpy.longdouble, which exists on both 1.x and 2.x.
+    "longdouble",
     "complex128",
 ]
-if "complex256" in numpy.typeDict:
+# numpy.typeDict was removed in NumPy 2.0 in favor of numpy.sctypeDict.
+_numpy_type_dict = getattr(numpy, "typeDict", None)
+if _numpy_type_dict is None:
+    _numpy_type_dict = numpy.sctypeDict
+if "complex256" in _numpy_type_dict:
     TYPES1.append("complex256")
 
 
