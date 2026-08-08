@@ -145,9 +145,12 @@ PYBIND11_MODULE(_blas_impl, m)
     {
         m.def("_gemv", &blas_ns::gemv,
               "Call `gemv` from oneMKL BLAS library to compute "
-              "the matrix-vector product with a general matrix.",
+              "y = alpha * op(A) * x + beta * y. trans_op picks op(A): "
+              "0=N, 1=T, 2=C (C is F-contiguous only). alpha/beta "
+              "default to 1/0.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("vectorX"),
-              py::arg("vectorY"), py::arg("transpose"),
+              py::arg("vectorY"), py::arg("trans_op") = 0,
+              py::arg("alpha") = 1.0, py::arg("beta") = 0.0,
               py::arg("depends") = py::list());
     }
 
