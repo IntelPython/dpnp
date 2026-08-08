@@ -10,6 +10,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 This release is compatible with NumPy 2.5.
 
 ### Added
+* Added `dpnp.broadcast` class implementation [#2901](https://github.com/IntelPython/dpnp/pull/2901)
 
 * Added C API functions for `dpnp.tensor.usm_ndarray` setters and getters to avoid ABI breakage if `dpnp.tensor.usm_ndarray` is modified [#2866](https://github.com/IntelPython/dpnp/pull/2866)
 * Added support for buffer protocol objects as advanced index keys in `dpnp.ndarray` [#2889](https://github.com/IntelPython/dpnp/pull/2889)
