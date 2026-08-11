@@ -1526,6 +1526,7 @@ divide = DPNPBinaryFunc(
     mkl_impl_fn="_div",
     binary_inplace_fn=ti._divide_inplace,
     acceptance_fn=dtu._acceptance_fn_divide,
+    weak_type_resolver=dtu._resolve_weak_types_all_py_ints,
 )
 
 
