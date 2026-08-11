@@ -339,6 +339,25 @@ class TestHistogram(unittest.TestCase):
             with pytest.raises((ValueError, TypeError)):
                 xp.bincount(x, minlength=-1)
 
+    @for_all_dtypes_bincount()
+    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    def test_bincount_empty(self, xp, dtype):
+        x = xp.array([], dtype=dtype)
+        return xp.bincount(x)
+
+    @for_all_dtypes_bincount()
+    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    def test_bincount_empty_with_minlength(self, xp, dtype):
+        x = xp.array([], dtype=dtype)
+        return xp.bincount(x, minlength=2)
+
+    @for_all_dtypes_combination_bincount(names=["x_type", "w_type"])
+    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    def test_bincount_empty_with_weight(self, xp, x_type, w_type):
+        x = xp.array([], dtype=x_type)
+        w = xp.array([], dtype=w_type)
+        return xp.bincount(x, weights=w, minlength=2)
+
 
 # This class compares CUB results against NumPy's
 @unittest.skipUnless(False, "The CUB routine is not enabled")

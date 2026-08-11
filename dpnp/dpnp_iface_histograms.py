@@ -374,6 +374,10 @@ def bincount(x, weights=None, minlength=0):
     queue = x.sycl_queue
     device = queue.sycl_device
 
+    if x.size == 0:
+        # NumPy returns intp dtype for empty input even when weights is given
+        return dpnp.zeros_like(x, shape=int(minlength), dtype=dpnp.intp)
+
     if weights is None:
         ntype = dpnp.dtype(dpnp.intp)
     else:
