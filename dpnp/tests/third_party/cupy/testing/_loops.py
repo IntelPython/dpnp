@@ -991,6 +991,16 @@ def numpy_cupy_raises(
     return decorator
 
 
+def _dtype_supported_by_default_device(dtype):
+    """Skip dtypes the default device cannot represent natively."""
+    dtype = numpy.dtype(dtype).type
+    if dtype in (numpy.float64, numpy.complex128):
+        return has_support_aspect64()
+    if dtype == numpy.float16:
+        return select_default_device().has_aspect_fp16
+    return True
+
+
 def for_dtypes(dtypes, name="dtype", xfail_dtypes=None):
     """Decorator for parameterized dtype test.
 
@@ -1008,16 +1018,7 @@ def for_dtypes(dtypes, name="dtype", xfail_dtypes=None):
         @_wraps_partial(impl, name)
         def test_func(*args, **kw):
             for dtype in dtypes:
-                if (
-                    numpy.dtype(dtype).type in (numpy.float64, numpy.complex128)
-                    and not has_support_aspect64()
-                ):
-                    continue
-
-                if (
-                    numpy.dtype(dtype).type == numpy.float16
-                    and not select_default_device().has_aspect_fp16
-                ):
+                if not _dtype_supported_by_default_device(dtype):
                     continue
 
                 try:
@@ -1331,6 +1332,12 @@ def for_dtypes_combination(types, names=("dtype",), full=None):
         @_wraps_partial(impl, *names)
         def test_func(*args, **kw):
             for dtypes in combination:
+                if not all(
+                    _dtype_supported_by_default_device(dtype)
+                    for dtype in dtypes.values()
+                ):
+                    continue
+
                 kw_copy = kw.copy()
                 kw_copy.update(dtypes)
 
