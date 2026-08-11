@@ -77,6 +77,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.interp` with an empty input array `x` to return an empty array with the correct dtype [#2985](https://github.com/IntelPython/dpnp/pull/2985)
 * Fixed `dpnp.interp` returning `nan` when querying at an exact knot point whose adjacent `fp` value is `inf` [#2986](https://github.com/IntelPython/dpnp/pull/2986)
 * Fixed missing strides validation in `dpnp.tensor.usm_ndarray` constructor when allocating new memory [#2927](https://github.com/IntelPython/dpnp/pull/2927)
+* Fixed comparison functions (`dpnp.equal`, `dpnp.not_equal`, `dpnp.less`, `dpnp.less_equal`, `dpnp.greater`, `dpnp.greater_equal`) and `dpnp.divide` raising `OverflowError` when comparing an integer array against a Python integer scalar outside the array dtype's range [#3017](https://github.com/IntelPython/dpnp/pull/3017)
 
 ### Security
 
