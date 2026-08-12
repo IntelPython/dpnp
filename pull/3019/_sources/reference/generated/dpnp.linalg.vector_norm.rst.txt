@@ -1,0 +1,10 @@
+﻿
+
+dpnp.linalg.vector\_norm
+========================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: vector_norm
