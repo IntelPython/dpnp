@@ -219,7 +219,7 @@ std::pair<sycl::event, sycl::event>
     dpnp::tensor::validation::CheckWritable::throw_if_not_writable(vals);
     dpnp::tensor::validation::CheckWritable::throw_if_not_writable(inds);
 
-    if ((iter_nelems == 0) || (axis_nelems == 0)) {
+    if ((iter_nelems == 0) || (axis_nelems == 0) || (k == 0)) {
         // Nothing to do
         return std::make_pair(sycl::event(), sycl::event());
     }
