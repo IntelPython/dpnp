@@ -88,42 +88,37 @@ def _boolean_reduction(x, axis, keepdims, func, identity):
             usm_type=res_usm_type,
             sycl_queue=exec_q,
         )
-        if keepdims:
-            res_shape = res_shape + (1,) * red_nd
-            inv_perm = sorted(range(nd), key=lambda d: perm[d])
-            res = dpt.permute_dims(dpt.reshape(res, res_shape), inv_perm)
-        return res
+    else:
+        _manager = du.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+        # always allocate the temporary as int32 and usm-device to ensure
+        # that atomic updates are supported
+        res_tmp = dpt.empty(
+            res_shape,
+            dtype=dpt.int32,
+            usm_type="device",
+            sycl_queue=exec_q,
+        )
+        hev0, ev0 = func(
+            src=x_tmp,
+            trailing_dims_to_reduce=red_nd,
+            dst=res_tmp,
+            sycl_queue=exec_q,
+            depends=dep_evs,
+        )
+        _manager.add_event_pair(hev0, ev0)
 
-    _manager = du.SequentialOrderManager[exec_q]
-    dep_evs = _manager.submitted_events
-    # always allocate the temporary as int32 and usm-device to ensure
-    # that atomic updates are supported
-    res_tmp = dpt.empty(
-        res_shape,
-        dtype=dpt.int32,
-        usm_type="device",
-        sycl_queue=exec_q,
-    )
-    hev0, ev0 = func(
-        src=x_tmp,
-        trailing_dims_to_reduce=red_nd,
-        dst=res_tmp,
-        sycl_queue=exec_q,
-        depends=dep_evs,
-    )
-    _manager.add_event_pair(hev0, ev0)
-
-    # copy to boolean result array
-    res = dpt.empty(
-        res_shape,
-        dtype=dpt.bool,
-        usm_type=res_usm_type,
-        sycl_queue=exec_q,
-    )
-    hev1, ev1 = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=res_tmp, dst=res, sycl_queue=exec_q, depends=[ev0]
-    )
-    _manager.add_event_pair(hev1, ev1)
+        # copy to boolean result array
+        res = dpt.empty(
+            res_shape,
+            dtype=dpt.bool,
+            usm_type=res_usm_type,
+            sycl_queue=exec_q,
+        )
+        hev1, ev1 = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=res_tmp, dst=res, sycl_queue=exec_q, depends=[ev0]
+        )
+        _manager.add_event_pair(hev1, ev1)
 
     if keepdims:
         res_shape = res_shape + (1,) * red_nd
