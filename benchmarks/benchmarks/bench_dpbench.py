@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2020, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,19 @@ quantity dpBench itself measures, and the same plain ``time_*`` style used by
 the mkl_fft ASV benchmarks.
 
 A separate benchmark class is generated for each workload -- e.g.
-``BlackScholes.time_black_scholes`` -- and parametrized by the data-size preset.
+``BlackScholes.time_black_scholes`` -- parametrized by the data-size preset and
+the floating-point precision. The presets are chosen per device so that only
+problem sizes fitting into device memory are benchmarked, and a precision the
+device does not support (typically fp64 on an iGPU) is skipped rather than
+failing the run.
+
+``setup`` also validates the dpnp results against the workload's NumPy
+reference, so a numerically wrong kernel fails the benchmark instead of being
+timed. Validation happens outside the timed region and therefore does not
+affect the reported numbers, but it is limited to the cheapest preset: the
+reference runs on the host, and at the larger presets it costs far more than
+the benchmark it guards (measured at ~70 s for ``pairwise_distance`` at
+``M16Gb``) while checking numerics that do not depend on the problem size.
 """
 
 import dpctl
@@ -49,10 +61,11 @@ from . import benchmark_utils as bench_utils
 from .dpbench import _dpbench_runner as runner
 from .dpbench.workloads import WORKLOADS
 
-# Default-device queue, used only to query device capabilities (e.g. fp64
-# support) so unsupported-precision workloads can be skipped. This is the
+# Default-device queue, used to query device capabilities (fp64 support, memory
+# size) so the parameter matrix can be tailored to the device. This is the
 # device dpnp allocates on by default.
 DEVICE_QUEUE = dpctl.SyclQueue()
+DEVICE = DEVICE_QUEUE.sycl_device
 
 
 def _camel_case(name):
@@ -68,19 +81,28 @@ def _make_benchmark_class(workload):
         # in ``asv.conf.json``; larger presets on a busy device can take a
         # while.
 
-        params = list(workload.ASV_PRESETS)
-        param_names = ["preset"]
+        params = [
+            runner.select_presets(workload, DEVICE),
+            list(runner.PRECISIONS),
+        ]
+        param_names = ["preset", "precision"]
 
-        def setup(self, preset):
-            # Skip on devices that do not support the workload's precision
-            # (e.g. no fp64), mirroring the dpctl ASV benchmarks.
-            float_dtype = runner.build_types_dict(workload.PRECISION)["float"]
-            bench_utils.skip_unsupported_dtype(DEVICE_QUEUE, float_dtype)
+        # Preset the results are validated against; see the module docstring.
+        _validated_preset = runner.presets_by_size(workload)[0]
 
-            self._runner = runner.WorkloadRunner(workload, preset)
+        def setup(self, preset, precision):
+            # Skip precisions the device does not support (e.g. fp64 on many
+            # iGPUs), mirroring the dpctl ASV benchmarks.
+            bench_utils.skip_unsupported_dtype(
+                DEVICE_QUEUE, runner.float_dtype(precision)
+            )
+
+            self._runner = runner.WorkloadRunner(workload, preset, precision)
             self._runner.setup()
+            if preset == self._validated_preset:
+                self._runner.validate()
 
-        def time_workload(self, preset):
+        def time_workload(self, preset, precision):
             self._runner.run()
 
     # Name things so ASV displays e.g. ``BlackScholes.time_black_scholes``.

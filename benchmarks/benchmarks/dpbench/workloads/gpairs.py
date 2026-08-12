@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2020, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,9 +28,9 @@
 
 """GPairs (galaxy pair counting) workload.
 
-The dpnp implementation and the data initialization are copied verbatim from
-dpBench (https://github.com/IntelPython/dpbench), and the metadata below
-mirrors ``dpbench/configs/bench_info/gpairs.toml``.
+The dpnp implementation, the NumPy reference and the data initialization are
+copied verbatim from dpBench (https://github.com/IntelPython/dpbench), and the
+metadata below mirrors ``dpbench/configs/bench_info/gpairs.toml``.
 """
 
 import numpy
@@ -40,6 +40,7 @@ import dpnp as np
 # --- dpBench benchmark metadata (see gpairs.toml) ---------------------------
 
 NAME = "gpairs"
+# See the note on ``PRECISION`` in ``black_scholes.py``.
 PRECISION = "double"
 
 INPUT_ARGS = [
@@ -102,7 +103,17 @@ PRESETS = {
         "rmin": 0.1,
     },
 }
-ASV_PRESETS = ["S"]
+
+
+def peak_elements(params):
+    """Estimated peak number of float elements held on the device.
+
+    Dominated by the ``(nopt, nopt)`` distance matrix ``dm``; the kernel also
+    materializes a same-shaped ``outer(w1, w2)`` and a boolean mask of the same
+    extent once per bin, hence the factor of 3.
+    """
+    nopt = params["nopt"]
+    return 3 * nopt * nopt + 8 * nopt
 
 
 def _generate_rbins(dtype, nbins, rmax, rmin):
@@ -154,3 +165,19 @@ def gpairs(nopt, nbins, x1, y1, z1, w1, x2, y2, z2, w2, rbins, results):
     results[:] = _gpairs_impl(x1, y1, z1, w1, x2, y2, z2, w2, rbins)
 
     np.synchronize_array_data(results)
+
+
+def _gpairs_reference_impl(x1, y1, z1, w1, x2, y2, z2, w2, rbins):
+    dm = (
+        numpy.square(x2 - x1[:, None])
+        + numpy.square(y2 - y1[:, None])
+        + numpy.square(z2 - z1[:, None])
+    )
+    return numpy.array(
+        [numpy.outer(w1, w2)[dm <= rbins[k]].sum() for k in range(len(rbins))]
+    )
+
+
+def reference(nopt, nbins, x1, y1, z1, w1, x2, y2, z2, w2, rbins, results):
+    """NumPy reference, copied from dpBench's ``gpairs_numpy.py``."""
+    results[:] = _gpairs_reference_impl(x1, y1, z1, w1, x2, y2, z2, w2, rbins)

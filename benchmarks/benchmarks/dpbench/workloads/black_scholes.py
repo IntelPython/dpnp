@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2020, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,9 +28,9 @@
 
 """Black-Scholes formula workload.
 
-The dpnp implementation and the data initialization are copied verbatim from
-dpBench (https://github.com/IntelPython/dpbench), and the metadata below
-mirrors ``dpbench/configs/bench_info/black_scholes.toml``.
+The dpnp implementation, the NumPy reference and the data initialization are
+copied verbatim from dpBench (https://github.com/IntelPython/dpbench), and the
+metadata below mirrors ``dpbench/configs/bench_info/black_scholes.toml``.
 """
 
 import dpnp as np
@@ -38,6 +38,9 @@ import dpnp as np
 # --- dpBench benchmark metadata (see black_scholes.toml) --------------------
 
 NAME = "black_scholes"
+# Precision requested by the dpBench config. ASV benchmarks every precision in
+# ``_dpbench_runner.PRECISIONS`` that the device supports, so this is only the
+# documented dpBench default.
 PRECISION = "double"
 
 # Arguments passed to the kernel, in order.
@@ -75,16 +78,23 @@ PRESETS = {
     "M": {"nopt": 134217728, "seed": 777777},
     "L": {"nopt": 268435456, "seed": 777777},
 }
-# Presets actually exercised by ASV. Larger presets require several GiB of
-# device memory; add them here to benchmark bigger problem sizes.
-ASV_PRESETS = ["S"]
+
+
+def peak_elements(params):
+    """Estimated peak number of float elements held on the device.
+
+    5 input/output arrays of ``nopt`` elements, plus the ~8 temporaries the
+    kernel below materializes (``a``, ``b``, ``z``, ``c``, ``y``, ``w1``,
+    ``w2``, ``Se``, ...).
+    """
+    return 13 * params["nopt"]
 
 
 def initialize(nopt, seed, types_dict):
-    import numpy as np
+    import numpy
     import numpy.random as default_rng
 
-    dtype: np.dtype = types_dict["float"]
+    dtype: numpy.dtype = types_dict["float"]
     S0L = dtype.type(10.0)
     S0H = dtype.type(50.0)
     XL = dtype.type(10.0)
@@ -100,8 +110,8 @@ def initialize(nopt, seed, types_dict):
     t = default_rng.uniform(TL, TH, nopt).astype(dtype)
     rate = RISK_FREE
     volatility = VOLATILITY
-    call = np.zeros(nopt, dtype=dtype)
-    put = -np.ones(nopt, dtype=dtype)
+    call = numpy.zeros(nopt, dtype=dtype)
+    put = -numpy.ones(nopt, dtype=dtype)
 
     return (price, strike, t, rate, volatility, call, put)
 
@@ -133,3 +143,34 @@ def black_scholes(nopt, price, strike, t, rate, volatility, call, put):
     put[:] = call - P + Se
 
     np.synchronize_array_data(put)
+
+
+def reference(nopt, price, strike, t, rate, volatility, call, put):
+    """NumPy reference, copied from dpBench's ``black_scholes_numpy.py``."""
+    import numpy
+    from scipy.special import erf
+
+    mr = -rate
+    sig_sig_two = volatility * volatility * 2
+
+    P = price
+    S = strike
+    T = t
+
+    a = numpy.log(P / S)
+    b = T * mr
+
+    z = T * sig_sig_two
+    c = 0.25 * z
+    y = numpy.true_divide(1.0, numpy.sqrt(z))
+
+    w1 = (a - b + c) * y
+    w2 = (a - b - c) * y
+
+    d1 = 0.5 + 0.5 * erf(w1)
+    d2 = 0.5 + 0.5 * erf(w2)
+
+    Se = numpy.exp(b) * S
+
+    call[:] = P * d1 - Se * d2
+    put[:] = call - P + Se

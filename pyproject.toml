@@ -76,6 +76,8 @@ requires-python = ">=3.10,<3.15"
 [project.optional-dependencies]
 benchmark = [
   "asv>=0.6",
+  # scipy.special.erf is used by the NumPy reference the black_scholes
+  # benchmark validates its dpnp results against
   "scipy"
 ]
 coverage = [

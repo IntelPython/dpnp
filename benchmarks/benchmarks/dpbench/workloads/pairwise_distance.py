@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2020, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,9 +28,9 @@
 
 """Pairwise-distance workload.
 
-The dpnp implementation and the data initialization are copied verbatim from
-dpBench (https://github.com/IntelPython/dpbench), and the metadata below
-mirrors ``dpbench/configs/bench_info/pairwise_distance.toml``.
+The dpnp implementation, the NumPy reference and the data initialization are
+copied verbatim from dpBench (https://github.com/IntelPython/dpbench), and the
+metadata below mirrors ``dpbench/configs/bench_info/pairwise_distance.toml``.
 """
 
 import dpnp as np
@@ -38,6 +38,7 @@ import dpnp as np
 # --- dpBench benchmark metadata (see pairwise_distance.toml) ----------------
 
 NAME = "pairwise_distance"
+# See the note on ``PRECISION`` in ``black_scholes.py``.
 PRECISION = "double"
 
 INPUT_ARGS = ["X1", "X2", "D"]
@@ -53,11 +54,20 @@ PRESETS = {
     "M": {"npoints": 32768, "dims": 3, "seed": 7777777},
     "L": {"npoints": 44032, "dims": 3, "seed": 7777777},
 }
-ASV_PRESETS = ["S"]
+
+
+def peak_elements(params):
+    """Estimated peak number of float elements held on the device.
+
+    Dominated by the ``(npoints, npoints)`` distance matrix ``D``; the two
+    ``(npoints, dims)`` inputs are negligible in comparison but counted anyway.
+    """
+    npoints = params["npoints"]
+    return npoints * npoints + 2 * npoints * params["dims"]
 
 
 def initialize(npoints, dims, seed, types_dict):
-    import numpy as np
+    import numpy
     import numpy.random as default_rng
 
     dtype = types_dict["float"]
@@ -67,7 +77,7 @@ def initialize(npoints, dims, seed, types_dict):
     return (
         default_rng.random((npoints, dims)).astype(dtype),
         default_rng.random((npoints, dims)).astype(dtype),
-        np.empty((npoints, npoints), dtype),
+        numpy.empty((npoints, npoints), dtype),
     )
 
 
@@ -82,3 +92,17 @@ def pairwise_distance(X1, X2, D):
     np.sqrt(D, D)
 
     np.synchronize_array_data(D)
+
+
+def reference(X1, X2, D):
+    """NumPy reference, copied from dpBench's ``pairwise_distance_numpy.py``."""
+    import numpy
+
+    x1 = numpy.sum(numpy.square(X1), axis=1)
+    x2 = numpy.sum(numpy.square(X2), axis=1)
+    numpy.dot(X1, X2.T, D)
+    D *= -2
+    x3 = x1.reshape(x1.size, 1)
+    numpy.add(D, x3, D)
+    numpy.add(D, x2, D)
+    numpy.sqrt(D, D)

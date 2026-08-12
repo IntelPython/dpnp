@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2020, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,13 +31,15 @@
 Each module exposes a uniform interface consumed by ``_dpbench_runner``:
 
 * ``NAME`` -- workload name; also the name of the kernel function;
-* ``PRECISION`` -- ``"single"`` or ``"double"``;
+* ``PRECISION`` -- the precision dpBench's config requests for this workload;
 * ``INPUT_ARGS`` / ``ARRAY_ARGS`` / ``OUTPUT_ARGS`` -- kernel argument metadata;
 * ``INIT_INPUT_ARGS`` / ``INIT_OUTPUT_ARGS`` -- ``initialize`` argument metadata;
 * ``PRESETS`` -- all dpBench data-size presets (S, M16Gb, M, L);
-* ``ASV_PRESETS`` -- the subset of presets exercised by ASV;
+* ``peak_elements(params)`` -- estimated peak device element count for a preset,
+  used to pick the presets that fit into the device's memory;
 * ``initialize(...)`` -- host data generator;
-* ``<NAME>(...)`` -- the dpnp kernel.
+* ``<NAME>(...)`` -- the dpnp kernel;
+* ``reference(...)`` -- the NumPy kernel the dpnp results are validated against.
 """
 
 from . import black_scholes, gpairs, l2_norm, pairwise_distance, rambo

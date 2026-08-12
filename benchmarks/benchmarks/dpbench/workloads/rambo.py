@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2020, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,9 +28,9 @@
 
 """Rambo workload.
 
-The dpnp implementation and the data initialization are copied verbatim from
-dpBench (https://github.com/IntelPython/dpbench), and the metadata below
-mirrors ``dpbench/configs/bench_info/rambo.toml``.
+The dpnp implementation, the NumPy reference and the data initialization are
+copied from dpBench (https://github.com/IntelPython/dpbench), and the metadata
+below mirrors ``dpbench/configs/bench_info/rambo.toml``.
 """
 
 import dpnp as np
@@ -38,6 +38,7 @@ import dpnp as np
 # --- dpBench benchmark metadata (see rambo.toml) ----------------------------
 
 NAME = "rambo"
+# See the note on ``PRECISION`` in ``black_scholes.py``.
 PRECISION = "double"
 
 INPUT_ARGS = ["nevts", "nout", "C1", "F1", "Q1", "output"]
@@ -53,26 +54,35 @@ PRESETS = {
     "M": {"nevts": 8388608, "nout": 4},
     "L": {"nevts": 16777216, "nout": 4},
 }
-ASV_PRESETS = ["S"]
+
+
+def peak_elements(params):
+    """Estimated peak number of float elements held on the device.
+
+    The ``(nevts, nout, 4)`` output, the three ``(nevts, nout)`` inputs and the
+    ~6 same-shaped temporaries the kernel materializes (``C``, ``S``, ``F``,
+    ``Q``, and the ``sin``/``cos`` results).
+    """
+    return 13 * params["nevts"] * params["nout"]
 
 
 def initialize(nevts, nout, types_dict):
-    import numpy as np
+    import numpy
 
     dtype = types_dict["float"]
 
-    C1 = np.empty((nevts, nout), dtype=dtype)
-    F1 = np.empty((nevts, nout), dtype=dtype)
-    Q1 = np.empty((nevts, nout), dtype=dtype)
+    # dpBench draws these element-by-element in a Python loop; drawing the
+    # whole block at once consumes the same RNG stream in the same order (so
+    # the data is bit-identical) but is orders of magnitude faster, which
+    # matters because ASV re-runs ``setup`` for every benchmark round.
+    numpy.random.seed(777)
+    draws = numpy.random.rand(nevts, nout, 4)
 
-    np.random.seed(777)
-    for i in range(nevts):
-        for j in range(nout):
-            C1[i, j] = np.random.rand()
-            F1[i, j] = np.random.rand()
-            Q1[i, j] = np.random.rand() * np.random.rand()
+    C1 = draws[..., 0].astype(dtype)
+    F1 = draws[..., 1].astype(dtype)
+    Q1 = (draws[..., 2] * draws[..., 3]).astype(dtype)
 
-    return (C1, F1, Q1, np.empty((nevts, nout, 4), dtype))
+    return (C1, F1, Q1, numpy.empty((nevts, nout, 4), dtype))
 
 
 def rambo(nevts, nout, C1, F1, Q1, output):
@@ -87,3 +97,18 @@ def rambo(nevts, nout, C1, F1, Q1, output):
     output[:, :, 3] = Q * C
 
     np.synchronize_array_data(output)
+
+
+def reference(nevts, nout, C1, F1, Q1, output):
+    """NumPy reference, copied from dpBench's ``rambo_numpy.py``."""
+    import numpy
+
+    C = 2.0 * C1 - 1.0
+    S = numpy.sqrt(1 - numpy.square(C))
+    F = 2.0 * numpy.pi * F1
+    Q = -numpy.log(Q1)
+
+    output[:, :, 0] = Q
+    output[:, :, 1] = Q * S * numpy.sin(F)
+    output[:, :, 2] = Q * S * numpy.cos(F)
+    output[:, :, 3] = Q * C
