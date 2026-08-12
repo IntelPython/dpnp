@@ -78,6 +78,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.interp` returning `nan` when querying at an exact knot point whose adjacent `fp` value is `inf` [#2986](https://github.com/IntelPython/dpnp/pull/2986)
 * Fixed missing strides validation in `dpnp.tensor.usm_ndarray` constructor when allocating new memory [#2927](https://github.com/IntelPython/dpnp/pull/2927)
 * Fixed `dpnp.bincount` raising a `ValueError` on an empty input array instead of returning an empty `intp` array [#3018](https://github.com/IntelPython/dpnp/pull/3018)
+* Fixed `dpnp.all` and `dpnp.any` aborting when reducing over an empty axis (e.g. an array with a zero-length dimension) [#3021](https://github.com/IntelPython/dpnp/pull/3021)
 
 ### Security
 
