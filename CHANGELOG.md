@@ -79,6 +79,7 @@ This release is compatible with NumPy 2.5.
 * Fixed missing strides validation in `dpnp.tensor.usm_ndarray` constructor when allocating new memory [#2927](https://github.com/IntelPython/dpnp/pull/2927)
 * Fixed `dpnp.bincount` raising a `ValueError` on an empty input array instead of returning an empty `intp` array [#3018](https://github.com/IntelPython/dpnp/pull/3018)
 * Fixed `dpnp.tensor.top_k` aborting for `k=0` by returning empty result arrays without launching a zero-sized kernel [#3022](https://github.com/IntelPython/dpnp/pull/3022)
+* Fixed `dpnp.repeat` raising an unclear `TypeError` for a nested sequence of `repeats` [#3024](https://github.com/IntelPython/dpnp/issues/3024)
 
 ### Security
 
