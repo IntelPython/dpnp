@@ -293,9 +293,8 @@ class TestRepeatNdarrayErrors:
             with pytest.raises(ValueError):
                 xp.repeat(xp.arange(6), xp.array([[1, 2, 3, 4, 5, 6]]))
 
-    @pytest.mark.skip("different message for nested lists")
     def test_ndim_gt1_list_rejected(self):
-        with pytest.raises(ValueError, match=r"too deep"):
+        with pytest.raises(ValueError, match=r"0- or 1-dimensional"):
             cupy.repeat(cupy.arange(6), [[1, 2, 3, 4, 5, 6]])
 
     def test_bad_axis(self):
