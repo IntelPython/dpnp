@@ -52,8 +52,22 @@ class CubReductionTestBase:
         assert result is expected
 
 
-@pytest.mark.parametrize("shape", [(2,), (2, 3), (2, 3, 4), (2, 3, 4, 5)])
-@pytest.mark.parametrize("order", ["C", "F"])
+_MIN_SIZE = cupy._core._cub_reduction._CUB_REDUCE_SIZE_THRESHOLD
+
+
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (_MIN_SIZE,),
+        (_MIN_SIZE, _MIN_SIZE + 1),
+        (_MIN_SIZE, 3, _MIN_SIZE + 1),
+        (_MIN_SIZE, 3, 4, _MIN_SIZE + 1),
+    ],
+)
+@pytest.mark.parametrize(
+    "order",
+    ["C", "F"],
+)
 class TestSimpleCubReductionKernelContiguity(CubReductionTestBase):
 
     @testing.for_contiguous_axes()
@@ -139,15 +153,15 @@ class TestSimpleCubReductionKernelMisc(CubReductionTestBase):
         b = cupy.empty((), dtype=cupy.int8)
         assert self.can_use([a], [b], (1,), (0,)) is None
 
-    # thread_unsafe marker requires pytest-run-parallel, not used by dpnp
-    # @pytest.mark.thread_unsafe(
-    #     reason="AssertFunctionIsCalled and accelerate mutation.")
+    @pytest.mark.thread_unsafe(
+        reason="AssertFunctionIsCalled and accelerate mutation."
+    )
     def test_can_use_accelerator_set_unset(self):
         # ensure we use CUB block reduction and not CUB device reduction
         old_routine_accelerators = _accelerator.get_routine_accelerators()
         _accelerator.set_routine_accelerators([])
 
-        a = cupy.random.random((10, 10))
+        a = cupy.random.random((10, _cub_reduction._CUB_REDUCE_SIZE_THRESHOLD))
         # this is the only function we can mock; the rest is cdef'd
         func_name = "".join(
             (
