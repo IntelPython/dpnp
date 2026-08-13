@@ -1,5 +1,6 @@
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016, Intel Corporation

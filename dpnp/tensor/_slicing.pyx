@@ -29,6 +29,7 @@
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 
 from operator import index
 from cpython.buffer cimport PyObject_CheckBuffer
