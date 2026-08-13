@@ -73,7 +73,7 @@ static window_fn_ptr_t blackman_dispatch_vector[dpnp_td_ns::num_types];
 static window_fn_ptr_t hamming_dispatch_vector[dpnp_td_ns::num_types];
 static window_fn_ptr_t hanning_dispatch_vector[dpnp_td_ns::num_types];
 
-PYBIND11_MODULE(_window_impl, m)
+PYBIND11_MODULE(_window_impl, m, py::mod_gil_not_used())
 {
     using arrayT = dpnp::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
