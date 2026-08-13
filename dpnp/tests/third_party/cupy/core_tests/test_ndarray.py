@@ -135,6 +135,55 @@ class TestNdarrayInit(unittest.TestCase):
 @testing.parameterize(
     *testing.product(
         {
+            "np_order": ["C", "F"],
+            "np_pinned": [False],  # no pinned memory
+            "pinned_alloc_fails": [False],  # no pinned memory
+            "cp_setup": [
+                ("C", False, (48, 16, 4)),
+                ("C", True, (16, 4)),
+                ("F", False, (4, 8, 24)),
+                ("F", True, (4, 8)),
+            ],
+        }
+    )
+)
+class TestAsarray(unittest.TestCase):
+    def test_asarray(self):
+        cp_order, view, strides = self.cp_setup
+        shape = (2, 3, 4)
+        if self.np_pinned:
+            count = numpy.prod(shape)
+            dtype = numpy.float32()
+            pinned_ptr = cupy.cuda.alloc_pinned_memory(count * dtype.itemsize)
+            a_cpu = numpy.frombuffer(
+                pinned_ptr, dtype=dtype, count=count
+            ).reshape(shape)
+        else:
+            a_cpu = numpy.ndarray(
+                shape, dtype=numpy.float32, order=self.np_order
+            )
+        a_cpu[...] = numpy.arange(a_cpu.size).reshape(a_cpu.shape)
+        if view:
+            a_cpu = a_cpu[:, 1, :]
+        try:
+            if self.pinned_alloc_fails:
+                cupy.cuda.set_pinned_memory_allocator(lambda _: None)
+            a = cupy.asarray(a_cpu, order=cp_order)
+        finally:
+            # None means "no pool", not "the default pool"
+            # cupy.cuda.set_pinned_memory_allocator(
+            #     cupy.get_default_pinned_memory_pool().malloc
+            # )
+            pass
+        assert a.flags.c_contiguous == (cp_order == "C")
+        assert a.flags.f_contiguous == (cp_order == "F")
+        assert a.strides == strides
+        testing.assert_array_equal(a_cpu, a)
+
+
+@testing.parameterize(
+    *testing.product(
+        {
             "shape": [(), (1,), (2, 3), (1, 2, 3)],
             "order": ["C", "F"],
             "dtype": [
@@ -278,14 +327,16 @@ class TestNdarrayCopy:
                 )
 
 
+@pytest.mark.filterwarnings(
+    # Shape setting is deprecated starting NumPy 2.5
+    "ignore::DeprecationWarning"
+)
 class TestNdarrayShape(unittest.TestCase):
 
-    @testing.with_requires("numpy>=2.5")
     @testing.numpy_cupy_array_equal()
     def test_shape_set(self, xp):
         arr = xp.ndarray((2, 3))
-        with testing.assert_warns(DeprecationWarning):
-            arr.shape = (3, 2)
+        arr.shape = (3, 2)
         return xp.array(arr.shape)
 
     @pytest.mark.skip(
@@ -298,15 +349,12 @@ class TestNdarrayShape(unittest.TestCase):
         arr.shape = (3, -1)
         return xp.array(arr.shape)
 
-    @testing.with_requires("numpy>=2.5")
     @testing.numpy_cupy_array_equal()
     def test_shape_set_int(self, xp):
         arr = xp.ndarray((2, 3))
-        with testing.assert_warns(DeprecationWarning):
-            arr.shape = 6
+        arr.shape = 6
         return xp.array(arr.shape)
 
-    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     def test_shape_need_copy(self):
         # from cupy/cupy#5470
         for xp in (numpy, cupy):
@@ -560,6 +608,22 @@ class TestNdarrayTakeErrorShapeMismatch(unittest.TestCase):
             i = testing.shaped_arange(self.indices, xp, numpy.int32) % 3
             o = testing.shaped_arange(self.out_shape, xp)
             with pytest.raises(ValueError):
+                wrap_take(a, i, out=o)
+
+
+@testing.parameterize(
+    {"shape": (3, 4, 5), "indices": (2, 3), "out_shape": (2, 3)},
+    {"shape": (), "indices": (), "out_shape": ()},
+)
+@pytest.mark.skip("no exception since NumPy 2.5")
+class TestNdarrayTakeErrorTypeMismatch(unittest.TestCase):
+
+    def test_output_type_mismatch(self):
+        for xp in (numpy, cupy):
+            a = testing.shaped_arange(self.shape, xp, numpy.int32)
+            i = testing.shaped_arange(self.indices, xp, numpy.int32) % 3
+            o = testing.shaped_arange(self.out_shape, xp, numpy.float32)
+            with pytest.raises(TypeError):
                 wrap_take(a, i, out=o)
 
 
