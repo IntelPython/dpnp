@@ -5,12 +5,13 @@ import unittest
 
 import numpy
 import pytest
-from cupy_tests.random_tests import common_distributions
 
 import dpnp as cupy
 from dpnp import random
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
+
+from . import common_distributions
 
 pytest.skip("random.Generator() is not supported yet", allow_module_level=True)
 
