@@ -29,33 +29,35 @@
 #include "verbose.hpp"
 #include <iostream>
 
-bool _is_verbose_mode = false;
-bool _is_verbose_mode_init = false;
+static bool read_verbose_mode()
+{
+    bool verbose = false;
+    char *env_var = nullptr;
+
+#ifdef _WIN32
+    size_t env_var_size = 0;
+    _dupenv_s(&env_var, &env_var_size, "DPNP_VERBOSE");
+#else
+    env_var = std::getenv("DPNP_VERBOSE");
+#endif
+
+    if (env_var && std::string(env_var) == "1") {
+        verbose = true;
+    }
+
+#ifdef _WIN32
+    if (env_var != nullptr)
+        free(env_var);
+#endif
+
+    return verbose;
+}
 
 bool is_verbose_mode()
 {
-    if (!_is_verbose_mode_init) {
-        _is_verbose_mode = false;
-        char *env_var = nullptr;
-
-#ifdef _WIN32
-        size_t env_var_size = 0;
-        _dupenv_s(&env_var, &env_var_size, "DPNP_VERBOSE");
-#else
-        env_var = std::getenv("DPNP_VERBOSE");
-#endif
-
-        if (env_var && std::string(env_var) == "1") {
-            _is_verbose_mode = true;
-        }
-        _is_verbose_mode_init = true;
-
-#ifdef _WIN32
-        if (env_var != nullptr)
-            free(env_var);
-#endif
-    }
-    return _is_verbose_mode;
+    // initialization of a function-local static is thread-safe
+    static const bool verbose = read_verbose_mode();
+    return verbose;
 }
 
 class barrierKernelClass;
