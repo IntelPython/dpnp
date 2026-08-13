@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import unittest
 
 import numpy
@@ -29,11 +31,7 @@ class TestRepeat(unittest.TestCase):
     {"repeats": [2], "axis": None},
     {"repeats": [2], "axis": 1},
 )
-class TestRepeatListBroadcast(unittest.TestCase):
-    """Test for `repeats` argument using single element list.
-
-    This feature is only supported in NumPy 1.10 or later.
-    """
+class TestRepeatListBroadcast:
 
     @testing.numpy_cupy_array_equal()
     def test_array_repeat(self, xp):
@@ -48,7 +46,7 @@ class TestRepeatListBroadcast(unittest.TestCase):
     {"repeats": [1, 2, 3, 4], "axis": None},
     {"repeats": [1, 2, 3, 4], "axis": 0},
 )
-class TestRepeat1D(unittest.TestCase):
+class TestRepeat1D:
 
     @testing.numpy_cupy_array_equal()
     def test_array_repeat(self, xp):
@@ -60,8 +58,7 @@ class TestRepeat1D(unittest.TestCase):
     {"repeats": [2], "axis": None},
     {"repeats": [2], "axis": 0},
 )
-class TestRepeat1DListBroadcast(unittest.TestCase):
-    """See comment in TestRepeatListBroadcast class."""
+class TestRepeat1DListBroadcast:
 
     @testing.numpy_cupy_array_equal()
     def test_array_repeat(self, xp):
@@ -77,7 +74,7 @@ class TestRepeat1DListBroadcast(unittest.TestCase):
     {"repeats": 2, "axis": -4},
     {"repeats": 2, "axis": 3},
 )
-class TestRepeatFailure(unittest.TestCase):
+class TestRepeatFailure:
 
     def test_repeat_failure(self):
         for xp in (numpy, cupy):
@@ -191,38 +188,6 @@ class TestRepeatNdarrayNonContiguous:
         return xp.repeat(x, xp.array([0, 1, 2, 1, 0]))
 
 
-class TestRepeatNdarrayDtypeEdges:
-
-    @testing.numpy_cupy_array_equal()
-    def test_bool_perelement(self, xp):
-        return xp.repeat(xp.arange(3), xp.array([True, False, True]))
-
-    @testing.numpy_cupy_array_equal()
-    def test_bool_broadcast(self, xp):
-        return xp.repeat(
-            testing.shaped_arange((3, 4), xp), xp.array([True]), axis=0
-        )
-
-    @testing.numpy_cupy_array_equal()
-    def test_uint32_accepted(self, xp):
-        return xp.repeat(
-            xp.arange(4), xp.array([1, 2, 3, 4], dtype=numpy.uint32)
-        )
-
-
-class TestRepeatNdarrayLarge:
-
-    @testing.numpy_cupy_array_equal()
-    def test_large_single(self, xp):
-        return xp.repeat(
-            testing.shaped_arange((3,), xp), xp.array([0, 100000, 0])
-        )
-
-    @testing.numpy_cupy_array_equal()
-    def test_large_broadcast(self, xp):
-        return xp.repeat(testing.shaped_arange((3,), xp), xp.array([50000]))
-
-
 class TestRepeatScalarEquivalence:
     """All scalar-like repeats inputs produce identical results."""
 
@@ -307,6 +272,38 @@ class TestRepeatNdarrayErrors:
         a = cupy.arange(4)
         reps = cupy.array([1, 2, 0, 3])
         testing.assert_array_equal(a.repeat(reps), cupy.repeat(a, reps))
+
+
+class TestRepeatNdarrayDtypeEdges:
+
+    @testing.numpy_cupy_array_equal()
+    def test_bool_perelement(self, xp):
+        return xp.repeat(xp.arange(3), xp.array([True, False, True]))
+
+    @testing.numpy_cupy_array_equal()
+    def test_bool_broadcast(self, xp):
+        return xp.repeat(
+            testing.shaped_arange((3, 4), xp), xp.array([True]), axis=0
+        )
+
+    @testing.numpy_cupy_array_equal()
+    def test_uint32_accepted(self, xp):
+        return xp.repeat(
+            xp.arange(4), xp.array([1, 2, 3, 4], dtype=numpy.uint32)
+        )
+
+
+class TestRepeatNdarrayLarge:
+
+    @testing.numpy_cupy_array_equal()
+    def test_large_single(self, xp):
+        return xp.repeat(
+            testing.shaped_arange((3,), xp), xp.array([0, 100000, 0])
+        )
+
+    @testing.numpy_cupy_array_equal()
+    def test_large_broadcast(self, xp):
+        return xp.repeat(testing.shaped_arange((3,), xp), xp.array([50000]))
 
 
 @testing.parameterize(
