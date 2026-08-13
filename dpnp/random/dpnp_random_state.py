@@ -36,6 +36,8 @@ Set of functions to implement NumPy random module API
 
 """
 
+import threading
+
 import numpy
 
 import dpnp
@@ -113,6 +115,10 @@ class RandomState:
         else:
             # MCG59 is assumed to provide a better performance on GPU than MT19937
             self._random_state = MCG59(self._seed, self._sycl_queue)
+
+        # guard for concurrent access under free-threaded builds
+        self._lock = threading.RLock()
+
         self._fallback_random_state = call_origin(
             numpy.random.RandomState, seed, allow_fallback=True
         )
@@ -275,13 +281,14 @@ class RandomState:
                     )
 
                 validate_usm_type(usm_type, allow_none=False)
-                return self._random_state.normal(
-                    loc=loc,
-                    scale=scale,
-                    size=size,
-                    dtype=dtype,
-                    usm_type=usm_type,
-                ).get_pyobj()
+                with self._lock:
+                    return self._random_state.normal(
+                        loc=loc,
+                        scale=scale,
+                        size=size,
+                        dtype=dtype,
+                        usm_type=usm_type,
+                    ).get_pyobj()
 
         return call_origin(
             self._fallback_random_state.normal,
@@ -654,13 +661,14 @@ class RandomState:
                 )
                 validate_usm_type(usm_type, allow_none=False)
 
-                return self._random_state.uniform(
-                    low=low,
-                    high=high,
-                    size=size,
-                    dtype=dtype,
-                    usm_type=usm_type,
-                ).get_pyobj()
+                with self._lock:
+                    return self._random_state.uniform(
+                        low=low,
+                        high=high,
+                        size=size,
+                        dtype=dtype,
+                        usm_type=usm_type,
+                    ).get_pyobj()
 
         return call_origin(
             self._fallback_random_state.uniform,
