@@ -1464,6 +1464,12 @@ def test_repeat_arg_validation():
     with pytest.raises(ValueError):
         dpt.repeat(x, dpt.ones((1, 1), dtype="i8"))
 
+    # repeats nested sequence must be 0d or 1d
+    with pytest.raises(ValueError, match="0- or 1-dimensional"):
+        dpt.repeat(x, [[4]])
+    with pytest.raises(ValueError, match="0- or 1-dimensional"):
+        dpt.repeat(x, [[1, 2, 3, 4, 5]])
+
     # repeats must be castable to i8
     with pytest.raises(TypeError):
         dpt.repeat(x, dpt.asarray(2.0, dtype="f4"))
