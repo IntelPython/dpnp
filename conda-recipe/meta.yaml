@@ -34,7 +34,7 @@ requirements:
     host:
       - python
       - pip >=25.0
-      - pybind11 >=2.13.6
+      - pybind11 >=3.0.2
       {% for dep in py_build_deps %}
       {% if dep.startswith('dpctl') %}
       - dpctl >={{ required_dpctl_version }}
