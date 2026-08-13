@@ -306,7 +306,8 @@ class TestBroadcast(unittest.TestCase):
         broadcast_cp = self._broadcast(cupy, dtype, self.shapes)
         assert broadcast_np.shape == broadcast_cp.shape
         assert broadcast_np.size == broadcast_cp.size
-        assert broadcast_np.nd == broadcast_cp.nd
+        # `nd` is not exposed by dpnp, since NumPy prefers `ndim` over it
+        assert broadcast_np.ndim == broadcast_cp.ndim
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()

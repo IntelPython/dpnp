@@ -56,6 +56,7 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_pad import dpnp_pad
 from .exceptions import AxisError
+from .tensor._manipulation_functions import _broadcast_shapes
 from .tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
@@ -1047,6 +1048,193 @@ def atleast_3d(*arys):
     return res
 
 
+class broadcast:  # pylint: disable=invalid-name
+    """
+    Produce an object that mimics broadcasting.
+
+    For full documentation refer to :obj:`numpy.broadcast`.
+
+    Parameters
+    ----------
+    *args : {dpnp.ndarray, usm_ndarray}
+        Input arrays to broadcast against one another.
+
+    Returns
+    -------
+    broadcast : broadcast object
+        Broadcast the input parameters against one another, and
+        return an object that encapsulates the result.
+        Amongst others, it has ``shape`` and ``ndim`` properties.
+
+    Limitations
+    -----------
+    Input arrays are not coerced, so array-like objects and scalars are not
+    supported and ``TypeError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against
+                                   each other.
+    :obj:`dpnp.broadcast_shapes` : Broadcast the input shapes into a single
+                                   shape.
+    :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape.
+
+    Notes
+    -----
+    Iterator functionality is not supported.
+
+    The legacy ``nd`` attribute of :obj:`numpy.broadcast` is not provided,
+    ``ndim`` has to be used instead.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[1], [2], [3]])
+    >>> y = np.array([4, 5, 6])
+    >>> b = np.broadcast(x, y)
+    >>> b.shape
+    (3, 3)
+    >>> b.ndim
+    2
+    >>> b.size
+    9
+
+    """
+
+    def __init__(self, *args):
+        dpnp.check_supported_arrays_type(*args)
+
+        self._arrays = args
+        self._values = None
+
+        # _broadcast_shapes() does not accept an empty sequence of arrays
+        self._shape = _broadcast_shapes(*args) if args else ()
+        self._size = math.prod(self._shape)
+        self._ndim = len(self._shape)
+
+    @property
+    def shape(self):
+        """
+        Shape of the broadcasted result.
+
+        Returns
+        -------
+        out : tuple
+            A tuple containing the shape of the broadcasted result.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1], [2], [3]])
+        >>> y = np.array([4, 5, 6])
+        >>> np.broadcast(x, y).shape
+        (3, 3)
+
+        """
+        return self._shape
+
+    @property
+    def size(self):
+        """
+        Total size of the broadcasted result.
+
+        Returns
+        -------
+        out : int
+            The total size (number of elements) of the broadcasted result.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1], [2], [3]])
+        >>> y = np.array([4, 5, 6])
+        >>> np.broadcast(x, y).size
+        9
+
+        """
+        return self._size
+
+    @property
+    def ndim(self):
+        """
+        Number of dimensions of the broadcasted result.
+
+        Returns
+        -------
+        out : int
+            The number of dimensions of the broadcasted result.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1], [2], [3]])
+        >>> y = np.array([4, 5, 6])
+        >>> np.broadcast(x, y).ndim
+        2
+
+        """
+        return self._ndim
+
+    @property
+    def numiter(self):
+        """
+        Number of iterators possessed by the broadcast object.
+
+        Returns
+        -------
+        out : int
+            The number of iterators.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1], [2], [3]])
+        >>> y = np.array([4, 5, 6])
+        >>> np.broadcast(x, y).numiter
+        2
+
+        """
+        return len(self._arrays)
+
+    @property
+    def values(self):
+        """
+        The input arrays broadcast against one another.
+
+        Returns
+        -------
+        out : tuple of dpnp.ndarray
+            A tuple of arrays which are views on the original input arrays.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1], [2], [3]])
+        >>> y = np.array([4, 5, 6])
+        >>> b = np.broadcast(x, y)
+        >>> b.values[0]
+        array([[1, 1, 1],
+               [2, 2, 2],
+               [3, 3, 3]])
+        >>> b.values[1]
+        array([[4, 5, 6],
+               [4, 5, 6],
+               [4, 5, 6]])
+
+        """
+        if self._values is None:
+            self._values = tuple(
+                broadcast_to(a, self._shape) for a in self._arrays
+            )
+        return self._values
+
+    def __repr__(self):
+        return (
+            f"<broadcast shape={self.shape}, "
+            f"ndim={self.ndim}, size={self.size}>"
+        )
+
+
 def broadcast_arrays(*args, subok=False):
     """
     Broadcast any number of arrays against each other.
@@ -1070,6 +1258,9 @@ def broadcast_arrays(*args, subok=False):
 
     See Also
     --------
+    :obj:`dpnp.broadcast` : Produce an object that mimics broadcasting.
+    :obj:`dpnp.broadcast_shapes` : Broadcast the input shapes into a single
+                                   shape.
     :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape.
 
     Examples
@@ -1112,6 +1303,7 @@ def broadcast_shapes(*args):
 
     See Also
     --------
+    :obj:`dpnp.broadcast` : Produce an object that mimics broadcasting.
     :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against
                                    each other.
     :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape.
@@ -1157,8 +1349,11 @@ def broadcast_to(array, /, shape, subok=False):
 
     See Also
     --------
+    :obj:`dpnp.broadcast` : Produce an object that mimics broadcasting.
     :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against
                                    each other.
+    :obj:`dpnp.broadcast_shapes` : Broadcast the input shapes into a single
+                                   shape.
 
     Examples
     --------

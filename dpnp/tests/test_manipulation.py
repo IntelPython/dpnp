@@ -2000,7 +2000,7 @@ class TestBroadcast:
         b_np = numpy.broadcast(x.asnumpy(), y.asnumpy())
 
         assert b.shape == b_np.shape
-        assert b.nd == b_np.nd
+        assert b.ndim == b_np.ndim
         assert b.size == b_np.size
         assert b.numiter == b_np.numiter
 
@@ -2013,7 +2013,7 @@ class TestBroadcast:
         b_np = numpy.broadcast(a.asnumpy(), s.asnumpy())
 
         assert b.shape == b_np.shape
-        assert b.nd == b_np.nd
+        assert b.ndim == b_np.ndim
         assert b.size == b_np.size
 
     def test_broadcast_multiple_arrays(self):
@@ -2025,7 +2025,7 @@ class TestBroadcast:
         b_np = numpy.broadcast(a1.asnumpy(), a2.asnumpy())
 
         assert b.shape == b_np.shape
-        assert b.nd == b_np.nd
+        assert b.ndim == b_np.ndim
         assert b.size == b_np.size
 
     def test_broadcast_same_shape(self):
@@ -2037,7 +2037,7 @@ class TestBroadcast:
         bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy())
 
         assert bc.shape == bc_np.shape
-        assert bc.nd == bc_np.nd
+        assert bc.ndim == bc_np.ndim
         assert bc.size == bc_np.size
 
     def test_broadcast_0d_arrays(self):
@@ -2049,7 +2049,7 @@ class TestBroadcast:
         bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy())
 
         assert bc.shape == bc_np.shape
-        assert bc.nd == bc_np.nd
+        assert bc.ndim == bc_np.ndim
         assert bc.size == bc_np.size
 
     def test_broadcast_empty_arrays(self):
@@ -2061,7 +2061,7 @@ class TestBroadcast:
         bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy())
 
         assert bc.shape == bc_np.shape
-        assert bc.nd == bc_np.nd
+        assert bc.ndim == bc_np.ndim
         assert bc.size == bc_np.size
 
     def test_broadcast_incompatible_shapes(self):
@@ -2090,12 +2090,13 @@ class TestBroadcast:
         bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy(), c.asnumpy())
 
         assert bc.shape == bc_np.shape
-        assert bc.nd == bc_np.nd
+        assert bc.ndim == bc_np.ndim
         assert bc.size == bc_np.size
         assert bc.numiter == 3
 
     def test_broadcast_ndim_property(self):
-        # Test that ndim property matches numpy and equals nd property
+        # unlike numpy, only ndim is exposed, because numpy itself states that
+        # the more consistent ndim is preferred over the legacy nd attribute
         a = dpnp.array([[1, 2], [3, 4]])
         b = dpnp.array([5, 6])
 
@@ -2103,7 +2104,28 @@ class TestBroadcast:
         bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy())
 
         assert bc.ndim == bc_np.ndim
-        assert bc.ndim == bc.nd
+        assert not hasattr(bc, "nd")
+
+    def test_broadcast_values_property(self):
+        # values mimics cupy.broadcast.values and holds the input arrays
+        # broadcast against one another
+        a = dpnp.array([[1], [2], [3]])
+        b = dpnp.array([4, 5, 6])
+
+        bc = dpnp.broadcast(a, b)
+        expected = dpnp.broadcast_arrays(a, b)
+
+        assert isinstance(bc.values, tuple)
+        # the property is evaluated once and then cached
+        assert bc.values is bc.values
+
+        assert len(bc.values) == len(expected)
+        for res, exp in zip(bc.values, expected):
+            assert res.shape == bc.shape
+            assert_array_equal(res, exp)
+
+    def test_broadcast_values_no_args(self):
+        assert dpnp.broadcast().values == ()
 
     def test_broadcast_complex_shapes(self):
         # Test broadcast with complex compatible shapes
@@ -2115,7 +2137,7 @@ class TestBroadcast:
         bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy(), c.asnumpy())
 
         assert bc.shape == bc_np.shape
-        assert bc.nd == bc_np.nd
+        assert bc.ndim == bc_np.ndim
         assert bc.size == bc_np.size
 
     @pytest.mark.parametrize(
@@ -2154,8 +2176,16 @@ class TestBroadcast:
         bc_np = numpy.broadcast(*arrays_np)
 
         assert bc.shape == bc_np.shape
-        assert bc.nd == bc_np.nd
+        assert bc.ndim == bc_np.ndim
         assert bc.size == bc_np.size
+
+        # numpy.broadcast has no counterpart of the values property, so the
+        # broadcasted arrays are compared against numpy.broadcast_arrays
+        expected = numpy.broadcast_arrays(*arrays_np)
+        assert len(bc.values) == len(expected)
+        for res, exp in zip(bc.values, expected):
+            assert res.shape == exp.shape
+            assert_array_equal(res, exp)
 
     def test_broadcast_single_array(self):
         # Test broadcast with a single array
@@ -2165,7 +2195,7 @@ class TestBroadcast:
         bc_np = numpy.broadcast(a.asnumpy())
 
         assert bc.shape == bc_np.shape
-        assert bc.nd == bc_np.nd
+        assert bc.ndim == bc_np.ndim
         assert bc.size == bc_np.size
         assert bc.numiter == 1
 
@@ -2174,7 +2204,6 @@ class TestBroadcast:
         bc = dpnp.broadcast()
 
         assert bc.shape == ()
-        assert bc.nd == 0
         assert bc.ndim == 0
         assert bc.size == 1
         assert bc.numiter == 0
@@ -2192,7 +2221,11 @@ class TestBroadcast:
 
         assert bc.shape == (2, 2)
         assert bc.size == 4
-        assert bc.nd == 2
+        assert bc.ndim == 2
+
+        # each broadcasted array stays on the queue of its input array
+        assert bc.values[0].sycl_queue == q1
+        assert bc.values[1].sycl_queue == q2
 
     def test_broadcast_repr(self):
         # Test __repr__ method
@@ -2205,3 +2238,5 @@ class TestBroadcast:
         assert "broadcast" in repr_str
         assert "shape" in repr_str
         assert str(bc.shape) in repr_str
+        assert f"ndim={bc.ndim}" in repr_str
+        assert f"size={bc.size}" in repr_str
