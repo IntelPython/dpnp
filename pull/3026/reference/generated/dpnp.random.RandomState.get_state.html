@@ -1059,6 +1059,12 @@
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)">object</a></p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Unlike <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.RandomState.get_state.html#numpy.random.RandomState.get_state" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState.get_state</span></code></a>, which returns a
+snapshot of the state as plain data, this returns the live engine the
+generator draws from. Generating from the returned engine advances the
+state seen by this <a class="reference internal" href="dpnp.random.RandomState.html#dpnp.random.RandomState" title="dpnp.random.RandomState"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a>, and does so safely if other
+threads are drawing from it at the same time.</p>
 </dd></dl>
 
 </section>
