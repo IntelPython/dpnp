@@ -1,12 +1,5 @@
 """Blocking oneMKL calls in the BLAS/LAPACK extensions must release the GIL.
 
-Routines such as ``potrf``, ``getrf``, ``syevd`` and ``gesv`` block the calling
-thread for the whole oneMKL call. Holding the GIL across that stalls every
-other Python thread, including the host tasks dpnp queues to manage object
-lifetimes, which reacquire the GIL. Five sibling files already wrap their call
-in ``py::gil_scoped_release`` (gh-2850 did this for ``orgqr``); these tests
-cover the rest.
-
 Progress of a competing thread is compared against ``SyclQueue.wait()``, which
 is ``nogil`` and therefore the best rate achievable on the machine.
 """
@@ -22,16 +15,15 @@ import dpnp
 
 from .helper import has_support_aspect64, is_gpu_device
 
-# Large enough that every routine here actually blocks. Smaller sizes stop
-# discriminating: at n=512 cholesky returns asynchronously, and at n=1024
-# gesv blocks for only ~7 ms and passes even without the fix.
+# Smaller sizes stop discriminating: the calls either stay asynchronous or
+# block too briefly for a stable measurement.
 _SIZE = 2048
 
-# A releasing call matches the nogil reference within a factor of ~2; a call
-# holding the GIL measures ~0.00-0.04 of it.
 _MIN_RATIO = 0.10
 
 _BACKLOG = 2  # queued matmuls, so the measured call has something to wait on
+
+_TRIALS = 5  # samples averaged per measurement
 
 
 class _Ticker:
@@ -55,13 +47,11 @@ class _Ticker:
         return False
 
 
-@pytest.mark.skipif(not is_gpu_device(), reason="requires a GPU device")
 @pytest.mark.skipif(not has_support_aspect64(), reason="requires fp64 support")
 class TestBlockingCallsReleaseGil:
     @pytest.fixture(autouse=True)
     def _switch_interval(self):
-        # Stop CPython handing the GIL over on its own timer, so the
-        # measurement reflects the extension rather than the interpreter.
+        # Stop CPython handing the GIL over on its own timer.
         previous = sys.getswitchinterval()
         sys.setswitchinterval(0.001)
         yield
@@ -69,21 +59,25 @@ class TestBlockingCallsReleaseGil:
 
     @pytest.fixture
     def mats(self):
-        spd = dpnp.eye(_SIZE, dtype="f8") * float(_SIZE)  # positive definite
+        spd = dpnp.eye(_SIZE, dtype="f8") * float(_SIZE)
         return spd, dpnp.eye(_SIZE, dtype="f8") + 0.1
 
     def _assert_releases_gil(self, name, spd, fn):
         queue = spd.sycl_queue
 
         def rate(ticker, func):
-            for _ in range(_BACKLOG):
-                dpnp.matmul(spd, spd)
-            ticker.ticks = 0
-            start = time.perf_counter()
-            func()
-            elapsed_ms = 1000 * (time.perf_counter() - start)
-            queue.wait()
-            return ticker.ticks / max(elapsed_ms, 1e-3)
+            total_ticks = 0
+            total_ms = 0.0
+            for _ in range(_TRIALS):
+                for _ in range(_BACKLOG):
+                    dpnp.matmul(spd, spd)
+                ticker.ticks = 0
+                start = time.perf_counter()
+                func()
+                total_ms += 1000 * (time.perf_counter() - start)
+                total_ticks += ticker.ticks
+                queue.wait()
+            return total_ticks / max(total_ms, 1e-3)
 
         fn()  # warm up JIT
         queue.wait()
@@ -102,7 +96,9 @@ class TestBlockingCallsReleaseGil:
 
     def test_potrf(self, mats):
         spd, _ = mats
-        self._assert_releases_gil("potrf", spd, lambda: dpnp.linalg.cholesky(spd))
+        self._assert_releases_gil(
+            "potrf", spd, lambda: dpnp.linalg.cholesky(spd)
+        )
 
     def test_getrf(self, mats):
         spd, gen = mats
@@ -112,10 +108,6 @@ class TestBlockingCallsReleaseGil:
         spd, _ = mats
         self._assert_releases_gil("syevd", spd, lambda: dpnp.linalg.eigh(spd))
 
-    # No qr/geqrf case: dpnp.linalg.qr() also calls orgqr, already fixed in
-    # gh-2850, and that release alone keeps the competing thread running. The
-    # measurement would pass with or without geqrf's own release.
-
     def test_gesv(self, mats):
         spd, gen = mats
         rhs = dpnp.ones(_SIZE, dtype="f8")
@@ -124,20 +116,16 @@ class TestBlockingCallsReleaseGil:
         )
 
 
+# GPU only: on a CPU device oneMKL already saturates every core, so two threads
+# contend for the same hardware and the ratio stays ~1.0 either way.
 @pytest.mark.skipif(not is_gpu_device(), reason="requires a GPU device")
 @pytest.mark.skipif(not has_support_aspect64(), reason="requires fp64 support")
 def test_multithreaded_linalg_overlaps():
-    """Two threads on two queues must run oneMKL work concurrently.
-
-    Holding the GIL across the blocking call serializes them, so a
-    multithreaded application gets no scaling from a second queue.
-    """
+    """Two threads on two queues must run oneMKL work concurrently."""
     max_ratio = 0.85
 
-    queues = [
-        dpctl.SyclQueue(dpctl.SyclDevice("gpu"), property="in_order")
-        for _ in range(2)
-    ]
+    device = dpctl.select_default_device()
+    queues = [dpctl.SyclQueue(device, property="in_order") for _ in range(2)]
     mats = [
         dpnp.eye(_SIZE, dtype="f8", sycl_queue=q) * float(_SIZE) for q in queues
     ]
