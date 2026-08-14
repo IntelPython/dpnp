@@ -38,8 +38,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13']
         runner: [ubuntu-22.04, ubuntu-24.04, windows-2022]
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            runner: ubuntu-22.04
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            runner: ubuntu-24.04
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            runner: windows-2022
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            runner: ubuntu-22.04
+            python_spec: '3.14.* *_cp314t'
+          - python: '3.14'
+            runner: ubuntu-24.04
+            python_spec: '3.14.* *_cp314t'
+          - python: '3.14'
+            runner: windows-2022
+            python_spec: '3.14.* *_cp314t'
+
+    env:
+      # mamba only takes a build string in a spec which spells out the package name
+      python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
       - name: Cancel Previous Runs
@@ -88,12 +112,12 @@ jobs:
         id: install_dpnp
         continue-on-error: true
         run: |
-          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} ${{ env.test-packages }} ${{ env.channels-list }}
+          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} ${{ env.test-packages }} "${{ env.python-install-spec }}" ${{ env.channels-list }}
 
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} ${{ env.test-packages }} ${{ env.channels-list }}
+          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} ${{ env.test-packages }} "${{ env.python-install-spec }}" ${{ env.channels-list }}
 
       - name: List installed packages
         run: mamba list
