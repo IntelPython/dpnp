@@ -79,7 +79,10 @@ This release is compatible with NumPy 2.5.
 * Fixed missing strides validation in `dpnp.tensor.usm_ndarray` constructor when allocating new memory [#2927](https://github.com/IntelPython/dpnp/pull/2927)
 * Fixed `dpnp.bincount` raising a `ValueError` on an empty input array instead of returning an empty `intp` array [#3018](https://github.com/IntelPython/dpnp/pull/3018)
 * Fixed `dpnp.tensor.top_k` aborting for `k=0` by returning empty result arrays without launching a zero-sized kernel [#3022](https://github.com/IntelPython/dpnp/pull/3022)
+* Fixed comparison functions (`dpnp.equal`, `dpnp.not_equal`, `dpnp.less`, `dpnp.less_equal`, `dpnp.greater`, `dpnp.greater_equal`) and `dpnp.divide` raising `OverflowError` when comparing an integer array against a Python integer scalar outside the array dtype's range [#3017](https://github.com/IntelPython/dpnp/pull/3017)
+* Fixed a crash in boolean-mask advanced indexing (`dpnp.ndarray` get/set item) when the selection is empty (e.g. a scalar `False` index that injects a length-0 axis) [#3019](https://github.com/IntelPython/dpnp/pull/3019)
 * Released the GIL before the remaining blocking OneMKL BLAS and LAPACK calls to prevent host tasks contention, completing the work started in [#2850](https://github.com/IntelPython/dpnp/pull/2850) [#3027](https://github.com/IntelPython/dpnp/pull/3027)
+
 
 ### Security
 
