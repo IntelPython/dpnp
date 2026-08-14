@@ -112,6 +112,10 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
 #if defined(USE_ONEMATH)
     sycl::event getrf_event;
     try {
+        // Release GIL to avoid serialization of host task submissions
+        // to the same queue in OneMKL
+        py::gil_scoped_release lock{};
+
         getrf_event = mkl_lapack::getrf(
             exec_q,
             n,          // The order of the square matrix A (0 ≤ n).
@@ -169,6 +173,10 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     }
 #else
     try {
+        // Release GIL to avoid serialization of host task submissions
+        // to the same queue in OneMKL
+        py::gil_scoped_release lock{};
+
         comp_event = mkl_lapack::gesv(
             exec_q,
             n,    // The order of the square matrix A

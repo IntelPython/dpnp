@@ -94,6 +94,10 @@ static sycl::event geqrf_batch_impl(sycl::queue &exec_q,
 
     sycl::event geqrf_batch_event;
     try {
+        // Release GIL to avoid serialization of host task submissions
+        // to the same queue in OneMKL
+        py::gil_scoped_release lock{};
+
         scratchpad = sycl::malloc_device<T>(scratchpad_size, exec_q);
 
         geqrf_batch_event = mkl_lapack::geqrf_batch(
