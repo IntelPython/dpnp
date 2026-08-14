@@ -30,12 +30,15 @@
 
 #include <stdexcept>
 
+#include <pybind11/pybind11.h>
+
 #include "dot_common.hpp"
 
 namespace dpnp::extensions::blas
 {
 namespace mkl_blas = oneapi::mkl::blas;
 namespace type_utils = dpnp::tensor::type_utils;
+namespace py = pybind11;
 
 template <typename T>
 static sycl::event dotc_impl(sycl::queue &exec_q,
@@ -58,6 +61,11 @@ static sycl::event dotc_impl(sycl::queue &exec_q,
 
     sycl::event dotc_event;
     try {
+        // Release GIL to avoid serialization of host task submissions
+        // to the same queue in OneMKL
+        py::gil_scoped_release lock{};
+
+
         dotc_event =
             mkl_blas::column_major::dotc(exec_q,
                                          n,    // size of the input vectors
