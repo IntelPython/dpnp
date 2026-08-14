@@ -50,6 +50,7 @@ import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 import dpnp.tensor as dpt
 import dpnp.tensor._tensor_elementwise_impl as ti
+from dpnp.tensor._type_utils import _resolve_weak_types_all_py_ints
 
 from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 from .dpnp_array import dpnp_array
@@ -661,6 +662,7 @@ equal = DPNPBinaryFunc(
     ti._equal_result_type,
     ti._equal,
     _EQUAL_DOCSTRING,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 
 
@@ -737,6 +739,7 @@ greater = DPNPBinaryFunc(
     ti._greater_result_type,
     ti._greater,
     _GREATER_DOCSTRING,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 
 
@@ -814,6 +817,7 @@ greater_equal = DPNPBinaryFunc(
     ti._greater_equal_result_type,
     ti._greater_equal,
     _GREATER_EQUAL_DOCSTRING,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 
 
@@ -1750,6 +1754,7 @@ less = DPNPBinaryFunc(
     ti._less_result_type,
     ti._less,
     _LESS_DOCSTRING,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 
 
@@ -1826,6 +1831,7 @@ less_equal = DPNPBinaryFunc(
     ti._less_equal_result_type,
     ti._less_equal,
     _LESS_EQUAL_DOCSTRING,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 
 
@@ -2198,4 +2204,5 @@ not_equal = DPNPBinaryFunc(
     ti._not_equal_result_type,
     ti._not_equal,
     _NOT_EQUAL_DOCSTRING,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
