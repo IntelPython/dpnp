@@ -43,6 +43,7 @@
 #include <cstddef> // for std::size_t for C++ linkage
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <utility>
 #include <vector>
