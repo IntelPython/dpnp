@@ -1089,6 +1089,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.tensor._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_resolve_weak_types_all_py_ints</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
@@ -1715,6 +1716,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_equal</span><span class="p">,</span>
     <span class="n">_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1791,6 +1793,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater</span><span class="p">,</span>
     <span class="n">_GREATER_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1868,6 +1871,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater_equal</span><span class="p">,</span>
     <span class="n">_GREATER_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2834,6 +2838,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_less_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_less</span><span class="p">,</span>
     <span class="n">_LESS_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2910,6 +2915,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_less_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_less_equal</span><span class="p">,</span>
     <span class="n">_LESS_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -3282,6 +3288,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_not_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_not_equal</span><span class="p">,</span>
     <span class="n">_NOT_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
         </article>
