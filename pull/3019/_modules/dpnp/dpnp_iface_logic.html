@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_logic - Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</title>
+        <title>dpnp.dpnp_iface_logic - Data Parallel Extension for NumPy (dpnp) 0.21.0dev4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev4 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev4 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1089,6 +1089,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.tensor._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_resolve_weak_types_all_py_ints</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
@@ -1715,6 +1716,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_equal</span><span class="p">,</span>
     <span class="n">_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1791,6 +1793,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater</span><span class="p">,</span>
     <span class="n">_GREATER_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1868,6 +1871,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater_equal</span><span class="p">,</span>
     <span class="n">_GREATER_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2834,6 +2838,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_less_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_less</span><span class="p">,</span>
     <span class="n">_LESS_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2910,6 +2915,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_less_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_less_equal</span><span class="p">,</span>
     <span class="n">_LESS_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -3282,6 +3288,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_not_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_not_equal</span><span class="p">,</span>
     <span class="n">_NOT_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
         </article>
@@ -3315,7 +3322,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=ad14311e"></script>
+</div><script src="../../_static/documentation_options.js?v=669da1d3"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
