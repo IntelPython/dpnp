@@ -65,7 +65,6 @@ static sycl::event dotu_impl(sycl::queue &exec_q,
         // to the same queue in OneMKL
         py::gil_scoped_release lock{};
 
-
         dotu_event =
             mkl_blas::column_major::dotu(exec_q,
                                          n,    // size of the input vectors

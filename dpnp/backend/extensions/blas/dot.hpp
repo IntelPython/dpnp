@@ -65,7 +65,6 @@ static sycl::event dot_impl(sycl::queue &exec_q,
         // to the same queue in OneMKL
         py::gil_scoped_release lock{};
 
-
         dot_event = mkl_blas::column_major::dot(exec_q,
                                                 n, // size of the input vectors
                                                 x, // Pointer to vector x.
