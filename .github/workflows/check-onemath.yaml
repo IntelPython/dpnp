@@ -15,6 +15,7 @@ env:
   build-with-oneapi-env: 'environments/build_with_oneapi.yml'
   dpctl-pkg-env: 'environments/dpctl_pkg.yml'
   oneapi-pkgs-env: 'environments/oneapi_pkgs.yml'
+  python-pkg-env: 'environments/python.yml'
   test-pkg-env: 'environments/test.yml'
   test-env-name: 'test_onemath'
   rerun-tests-on-failure: 'true'
@@ -29,8 +30,18 @@ jobs:
       # Needed to cancel any previous runs that are not completed for a given workflow
       actions: write
 
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.14']
+        python_spec: ['3.14.* *_cp314', '3.14.* *_cp314t']
+
     runs-on: 'ubuntu-latest'
     timeout-minutes: 5
+
+    env:
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
+      python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
       - name: Cancel Previous Runs
@@ -48,18 +59,29 @@ jobs:
         with:
           packages: conda-merge
 
+      - name: Build Python env file
+        run: |
+          cat > ${{ env.python-pkg-env }} <<EOF
+          name: Python interpreter to test with
+          channels:
+            - conda-forge
+          dependencies:
+            - ${{ env.python-install-spec }}
+          EOF
+
       - name: Merge conda env files
         run: |
           conda-merge ${{ env.dpctl-pkg-env }}         \
                       ${{ env.oneapi-pkgs-env }}       \
                       ${{ env.build-with-oneapi-env }} \
-                      ${{ env.test-pkg-env }} > ${{ env.environment-file }}
+                      ${{ env.test-pkg-env }}          \
+                      ${{ env.python-pkg-env }} > ${{ env.environment-file }}
           cat ${{ env.environment-file }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ env.environment-file-name }}
+          name: ${{ env.environment-file-name }}-${{ env.python-label }}
           path: ${{ env.environment-file }}
 
   test_by_tag:
@@ -71,6 +93,7 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.14']
+        python_spec: ['3.14.* *_cp314', '3.14.* *_cp314t']
         os: [ubuntu-latest] # windows-2022 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
@@ -79,6 +102,9 @@ jobs:
     defaults:
       run:
         shell: ${{ matrix.os == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
+
+    env:
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
 
     steps:
       - name: Checkout DPNP repo
@@ -89,7 +115,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.environment-file-name }}
+          name: ${{ env.environment-file-name }}-${{ env.python-label }}
           path: ${{ env.environment-file-loc }}
 
       - name: Setup miniconda
@@ -100,7 +126,6 @@ jobs:
           miniforge-version: latest
           use-mamba: 'true'
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
           environment-file: ${{ env.environment-file }}
           activate-environment: ${{ env.test-env-name }}
 
@@ -111,7 +136,6 @@ jobs:
           miniforge-version: latest
           use-mamba: 'true'
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
           environment-file: ${{ env.environment-file }}
           activate-environment: ${{ env.test-env-name }}
 
@@ -188,6 +212,7 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.14']
+        python_spec: ['3.14.* *_cp314', '3.14.* *_cp314t']
         os: [ubuntu-latest] # windows-2022 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
@@ -199,6 +224,7 @@ jobs:
 
     env:
       onemkl-source-dir: '${{ github.workspace }}/onemkl/'
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
 
     steps:
       - name: Checkout DPNP repo
@@ -209,7 +235,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.environment-file-name }}
+          name: ${{ env.environment-file-name }}-${{ env.python-label }}
           path: ${{ env.environment-file-loc }}
 
       - name: Checkout oneMKL repo
@@ -232,7 +258,6 @@ jobs:
           miniforge-version: latest
           use-mamba: 'true'
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
           environment-file: ${{ env.environment-file }}
           activate-environment: ${{ env.test-env-name }}
 
@@ -243,7 +268,6 @@ jobs:
           miniforge-version: latest
           use-mamba: 'true'
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
           environment-file: ${{ env.environment-file }}
           activate-environment: ${{ env.test-env-name }}
 
