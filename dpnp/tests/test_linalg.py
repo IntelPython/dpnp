@@ -601,6 +601,7 @@ class TestEinsum:
         expected = numpy.einsum("ii->i", a.asnumpy())
         assert_dtype_allclose(result, expected)
 
+    @testing.with_requires("numpy>=2.4.5")
     def test_out_0d(self):
         a = numpy.ones(7, dtype=int)
         out = numpy.array(0, dtype=a.dtype)
