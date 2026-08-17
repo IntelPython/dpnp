@@ -41,6 +41,9 @@ This release is compatible with NumPy 2.5.
 * Removed dead code branches guarded by outdated oneMKL and DPC++ compiler version checks [#2999](https://github.com/IntelPython/dpnp/pull/2999)
 * Replaced the deprecated `nd_item::barrier()` member calls in the `accumulators` and `gemm` kernels with the SYCL 2020 `sycl::group_barrier()` free function [#3006](https://github.com/IntelPython/dpnp/pull/3006)
 * Changed `dpnp.broadcast_arrays` and `dpnp.tensor.broadcast_arrays` to return a tuple instead of a list, aligning with the 2025.12 Python array API spec [#2944](https://github.com/IntelPython/dpnp/pull/2944)
+* Bumped the default minimum required DPC++ compiler version to `2026.1.1` and migrated to the OpenCL ICD loader from the conda-forge `ocl-icd-system` (Linux) and `khronos-opencl-icd-loader` (Windows) packages [#2905](https://github.com/IntelPython/dpnp/pull/2905)
+* Linked the `dpnp_backend_c` library against only the MKL SYCL domains it uses (`BLAS`, `RNG`, `VM`) [#3012](https://github.com/IntelPython/dpnp/pull/3012)
+* `dpnp` uses pybind11 3.1.0 [#3015](https://github.com/IntelPython/dpnp/pull/3015)
 
 ### Deprecated
 
@@ -51,6 +54,7 @@ This release is compatible with NumPy 2.5.
 * Removed support for arrays of 2-dimensional vectors in `dpnp.cross`, which now requires (arrays of) 3-dimensional vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
 * Removed `dpnp.row_stack` in favor of `dpnp.vstack` [#2956](https://github.com/IntelPython/dpnp/pull/2956)
 * Removed all references to the unimplemented `dpnp.ndarray.resize` method from the documentation [#2989](https://github.com/IntelPython/dpnp/pull/2989)
+* Removed an obsolete oneAPI 2021.x workaround from the Windows conda build script that manually prepended `BUILD_PREFIX` paths onto the `LIB` and `INCLUDE` [#3013](https://github.com/IntelPython/dpnp/pull/3013)
 
 ### Fixed
 
@@ -75,6 +79,10 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.interp` with an empty input array `x` to return an empty array with the correct dtype [#2985](https://github.com/IntelPython/dpnp/pull/2985)
 * Fixed `dpnp.interp` returning `nan` when querying at an exact knot point whose adjacent `fp` value is `inf` [#2986](https://github.com/IntelPython/dpnp/pull/2986)
 * Fixed missing strides validation in `dpnp.tensor.usm_ndarray` constructor when allocating new memory [#2927](https://github.com/IntelPython/dpnp/pull/2927)
+* Fixed `dpnp.bincount` raising a `ValueError` on an empty input array instead of returning an empty `intp` array [#3018](https://github.com/IntelPython/dpnp/pull/3018)
+* Fixed `dpnp.tensor.top_k` aborting for `k=0` by returning empty result arrays without launching a zero-sized kernel [#3022](https://github.com/IntelPython/dpnp/pull/3022)
+* Fixed comparison functions (`dpnp.equal`, `dpnp.not_equal`, `dpnp.less`, `dpnp.less_equal`, `dpnp.greater`, `dpnp.greater_equal`) and `dpnp.divide` raising `OverflowError` when comparing an integer array against a Python integer scalar outside the array dtype's range [#3017](https://github.com/IntelPython/dpnp/pull/3017)
+* Fixed a crash in boolean-mask advanced indexing (`dpnp.ndarray` get/set item) when the selection is empty (e.g. a scalar `False` index that injects a length-0 axis) [#3019](https://github.com/IntelPython/dpnp/pull/3019)
 
 ### Security
 
