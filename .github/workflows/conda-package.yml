@@ -31,7 +31,6 @@ jobs:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-22.04, windows-2022]
-        python_spec: ['']
         include:
           - python: '3.14'
             os: ubuntu-22.04
@@ -60,7 +59,7 @@ jobs:
     env:
       build-conda-pkg-env: 'environments/build_conda_pkg.yml'
       build-env-name: 'build'
-      python-label: ${{ contains(matrix.python_spec, 'cp314t') && '3.14t' || matrix.python }}
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
       python-conda-spec: ${{ matrix.python_spec || matrix.python }}
 
     steps:
@@ -146,7 +145,6 @@ jobs:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-latest]
-        python_spec: ['']
         include:
           - python: '3.14'
             os: ubuntu-latest
@@ -161,8 +159,7 @@ jobs:
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       ver-json-path: '${{ github.workspace }}/version.json'
-      python-label: ${{ contains(matrix.python_spec, 'cp314t') && '3.14t' || matrix.python }}
-      # mamba only takes a build string in a spec which spells out the package name
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
@@ -321,8 +318,7 @@ jobs:
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       ver-json-path: '${{ github.workspace }}/version.json'
       examples-env-name: 'examples_test'
-      python-label: ${{ contains(matrix.python_spec, 'cp314t') && '3.14t' || matrix.python }}
-      # mamba only takes a build string in a spec which spells out the package name
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
@@ -425,7 +421,6 @@ jobs:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13']
         os: [windows-2022]
-        python_spec: ['']
         include:
           - python: '3.14'
             os: windows-2022
@@ -440,8 +435,7 @@ jobs:
       channel-path: '${{ github.workspace }}\channel\'
       pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
       ver-json-path: '${{ github.workspace }}\version.json'
-      python-label: ${{ contains(matrix.python_spec, 'cp314t') && '3.14t' || matrix.python }}
-      # mamba only takes a build string in a spec which spells out the package name
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
@@ -608,7 +602,6 @@ jobs:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-latest, windows-2022]
-        python_spec: ['']
         include:
           - python: '3.14'
             os: ubuntu-latest
@@ -633,7 +626,7 @@ jobs:
     env:
       upload-conda-pkg-env: 'environments/upload_cleanup_conda_pkg.yml'
       upload-env-name: 'upload'
-      python-label: ${{ contains(matrix.python_spec, 'cp314t') && '3.14t' || matrix.python }}
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
 
     if: |
       (github.repository == 'IntelPython/dpnp') &&

@@ -40,7 +40,6 @@ jobs:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13']
         runner: [ubuntu-22.04, ubuntu-24.04, windows-2022]
-        python_spec: ['']
         include:
           - python: '3.14'
             runner: ubuntu-22.04
@@ -62,7 +61,6 @@ jobs:
             python_spec: '3.14.* *_cp314t'
 
     env:
-      # mamba only takes a build string in a spec which spells out the package name
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
