@@ -663,9 +663,8 @@ def repeat(x, repeats, /, *, axis=None):
         usm_type = x.usm_type
         exec_q = x.sycl_queue
 
-        repeats = dpt.asarray(
-            repeats, dtype=dpt.int64, usm_type=usm_type, sycl_queue=exec_q
-        )
+        # inspect the sequence on the host to preserve the scalar fast path
+        repeats = np.asarray(repeats)
         if repeats.ndim > 1:
             raise ValueError(
                 "`repeats` sequence must be 0- or 1-dimensional, got "
@@ -682,6 +681,9 @@ def repeat(x, repeats, /, *, axis=None):
                     "`repeats` sequence must have the same length as the "
                     "repeated axis"
                 )
+            repeats = dpt.asarray(
+                repeats, dtype=dpt.int64, usm_type=usm_type, sycl_queue=exec_q
+            )
             if not dpt.all(repeats >= 0):
                 raise ValueError("`repeats` elements must be positive")
     else:
