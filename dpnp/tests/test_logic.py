@@ -22,8 +22,8 @@ from .helper import (
 from .third_party.cupy import testing
 
 
+@pytest.mark.parametrize("func", ["all", "any"])
 class TestAllAny:
-    @pytest.mark.parametrize("func", ["all", "any"])
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("keepdims", [True, False])
@@ -35,7 +35,6 @@ class TestAllAny:
         result = getattr(dpnp, func)(dp_array, axis=axis, keepdims=keepdims)
         assert_allclose(result, expected)
 
-    @pytest.mark.parametrize("func", ["all", "any"])
     @pytest.mark.parametrize("a_dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("out_dtype", get_all_dtypes(no_none=True))
     def test_all_any_out(self, func, a_dtype, out_dtype):
@@ -49,7 +48,6 @@ class TestAllAny:
         # out kwarg is not used with NumPy, dtype may differ
         assert_array_equal(result, expected, strict=False)
 
-    @pytest.mark.parametrize("func", ["all", "any"])
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
     def test_all_any_empty(self, func, axis, shape):
@@ -60,7 +58,6 @@ class TestAllAny:
         expected = getattr(numpy, func)(np_array, axis=axis)
         assert_allclose(result, expected)
 
-    @pytest.mark.parametrize("func", ["all", "any"])
     def test_all_any_f_contig_full(self, func):
         dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], order="F")
         np_array = dpnp.asnumpy(dp_array)
@@ -69,7 +66,6 @@ class TestAllAny:
         expected = getattr(numpy, func)(np_array)
         assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("func", ["all", "any"])
     def test_all_any_scalar(self, func):
         dp_array = dpnp.array(0)
         np_array = dpnp.asnumpy(dp_array)
@@ -78,7 +74,6 @@ class TestAllAny:
         expected = getattr(np_array, func)()
         assert_allclose(result, expected)
 
-    @pytest.mark.parametrize("func", ["all", "any"])
     @pytest.mark.parametrize("axis", [None, 0, 1])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_all_any_nan_inf(self, func, axis, keepdims):
@@ -89,7 +84,6 @@ class TestAllAny:
         result = getattr(dpnp, func)(dp_array, axis=axis, keepdims=keepdims)
         assert_allclose(result, expected)
 
-    @pytest.mark.parametrize("func", ["all", "any"])
     def test_all_any_error(self, func):
         def check_raises(func_name, exception, *args, **kwargs):
             assert_raises(
