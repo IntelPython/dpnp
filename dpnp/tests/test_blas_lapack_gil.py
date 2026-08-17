@@ -100,14 +100,17 @@ class TestBlockingCallsReleaseGil:
             "potrf", spd, lambda: dpnp.linalg.cholesky(spd)
         )
 
+    @pytest.mark.slow
     def test_getrf(self, mats):
         spd, gen = mats
         self._assert_releases_gil("getrf", spd, lambda: dpnp.linalg.det(gen))
 
+    @pytest.mark.slow
     def test_syevd(self, mats):
         spd, _ = mats
         self._assert_releases_gil("syevd", spd, lambda: dpnp.linalg.eigh(spd))
 
+    @pytest.mark.slow
     def test_gesv(self, mats):
         spd, gen = mats
         rhs = dpnp.ones(_SIZE, dtype="f8")
@@ -118,6 +121,7 @@ class TestBlockingCallsReleaseGil:
 
 # GPU only: on a CPU device oneMKL already saturates every core, so two threads
 # contend for the same hardware and the ratio stays ~1.0 either way.
+@pytest.mark.slow
 @pytest.mark.skipif(not is_gpu_device(), reason="requires a GPU device")
 @pytest.mark.skipif(not has_support_aspect64(), reason="requires fp64 support")
 def test_multithreaded_linalg_overlaps():
