@@ -61,6 +61,15 @@ class TestAllAny:
         assert_allclose(result, expected)
 
     @pytest.mark.parametrize("func", ["all", "any"])
+    def test_all_any_f_contig_full(self, func):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], order="F")
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = getattr(dpnp, func)(dp_array)
+        expected = getattr(numpy, func)(np_array)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("func", ["all", "any"])
     def test_all_any_scalar(self, func):
         dp_array = dpnp.array(0)
         np_array = dpnp.asnumpy(dp_array)
