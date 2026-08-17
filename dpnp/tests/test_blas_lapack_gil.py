@@ -94,6 +94,7 @@ class TestBlockingCallsReleaseGil:
             f">= {_MIN_RATIO}). The oneMKL call needs py::gil_scoped_release."
         )
 
+    @pytest.mark.slow
     def test_potrf(self, mats):
         spd, _ = mats
         self._assert_releases_gil(
