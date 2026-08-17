@@ -2800,14 +2800,15 @@ def repeat(a, repeats, axis=None):
 
     Parameters
     ----------
-    x : {dpnp.ndarray, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     repeats : {int, tuple, list, range, dpnp.ndarray, usm_ndarray}
         The number of repetitions for each element. `repeats` is broadcasted to
         fit the shape of the given axis.
         If `repeats` is an array, it must have an integer data type.
         Otherwise, `repeats` must be a Python integer or sequence of Python
-        integers (i.e., a tuple, list, or range).
+        integers (i.e., a tuple, list, or range). A sequence must be 0- or
+        1-dimensional.
     axis : {None, int}, optional
         The axis along which to repeat values. By default, use the flattened
         input array, and return a flat output array.

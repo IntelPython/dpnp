@@ -576,7 +576,8 @@ def repeat(x, repeats, /, *, axis=None):
 
             If `repeats` is an array, it must have an integer data type.
             Otherwise, `repeats` must be a Python integer or sequence of
-            Python integers (i.e., a tuple, list, or range).
+            Python integers (i.e., a tuple, list, or range). A sequence must
+            be 0- or 1-dimensional.
 
         axis (Optional[int]):
             The axis along which to repeat values. If `axis` is `None`, the
