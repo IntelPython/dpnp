@@ -77,7 +77,6 @@ class TestComparisonOperator:
         b = 3
         return [op(a, b) for op in self.operators]
 
-    @pytest.mark.skip("SAT-8549")
     @pytest.mark.parametrize(
         "dtype", [numpy.int8, numpy.int64, numpy.uint8, numpy.uint64]
     )
@@ -108,7 +107,7 @@ class TestComparisonOperator:
         b = scalar
         return [op(a, b), op(b, a)]
 
-    @pytest.mark.skip("SAT-8549")
+    @pytest.mark.skip("dpnp follows NumPy")
     @pytest.mark.parametrize(
         "scalar,safe_scalar",
         [(2**63, 2), (2**63 + 100, 2), (-(2**63), -1)],
