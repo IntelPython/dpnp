@@ -27,7 +27,7 @@ class TestAllAny:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("keepdims", [True, False])
-    def test_all_any(self, func, dtype, axis, keepdims):
+    def test_basic(self, func, dtype, axis, keepdims):
         dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
         np_array = dpnp.asnumpy(dp_array)
 
@@ -37,7 +37,7 @@ class TestAllAny:
 
     @pytest.mark.parametrize("a_dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("out_dtype", get_all_dtypes(no_none=True))
-    def test_all_any_out(self, func, a_dtype, out_dtype):
+    def test_out(self, func, a_dtype, out_dtype):
         dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=a_dtype)
         np_array = dpnp.asnumpy(dp_array)
 
@@ -50,7 +50,7 @@ class TestAllAny:
 
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
-    def test_all_any_empty(self, func, axis, shape):
+    def test_empty(self, func, axis, shape):
         dp_array = dpnp.empty(shape, dtype=dpnp.int64)
         np_array = dpnp.asnumpy(dp_array)
 
@@ -58,7 +58,7 @@ class TestAllAny:
         expected = getattr(numpy, func)(np_array, axis=axis)
         assert_allclose(result, expected)
 
-    def test_all_any_f_contig_full(self, func):
+    def test_f_contig_full(self, func):
         dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], order="F")
         np_array = dpnp.asnumpy(dp_array)
 
@@ -66,7 +66,7 @@ class TestAllAny:
         expected = getattr(numpy, func)(np_array)
         assert_array_equal(result, expected)
 
-    def test_all_any_scalar(self, func):
+    def test_scalar(self, func):
         dp_array = dpnp.array(0)
         np_array = dpnp.asnumpy(dp_array)
 
@@ -76,7 +76,7 @@ class TestAllAny:
 
     @pytest.mark.parametrize("axis", [None, 0, 1])
     @pytest.mark.parametrize("keepdims", [True, False])
-    def test_all_any_nan_inf(self, func, axis, keepdims):
+    def test_nan_inf(self, func, axis, keepdims):
         dp_array = dpnp.array([[dpnp.nan, 1, 2], [dpnp.inf, -dpnp.inf, 0]])
         np_array = dpnp.asnumpy(dp_array)
 
@@ -84,7 +84,7 @@ class TestAllAny:
         result = getattr(dpnp, func)(dp_array, axis=axis, keepdims=keepdims)
         assert_allclose(result, expected)
 
-    def test_all_any_error(self, func):
+    def test_error(self, func):
         def check_raises(func_name, exception, *args, **kwargs):
             assert_raises(
                 exception, lambda: getattr(dpnp, func_name)(*args, **kwargs)
