@@ -33,13 +33,11 @@ build:
 requirements:
   host:
     - python
-    - if: match(python, ">=3.14")
-      then: python-gil
     - pip >=25.0
-    - pybind11 >=2.13.6
+    - pybind11 >=3.0.2
     - python-build>=1.2.2
     - cmake>=3.31.6
-    - cython>=3.0.12
+    - cython>=3.1.0
     - dpctl >=${{ required_dpctl_version }}
     - if: not win
       then: ninja>=1.11.1
@@ -63,8 +61,6 @@ requirements:
     - ${{ compiler('dpcpp') }} >=${{ required_compiler_version }},<${{ max_compiler_and_mkl_version }}
   run:
     - python
-    - if: match(python, ">=3.14")
-      then: python-gil
     - ${{ pin_compatible('dpctl', lower_bound='x.x.x', upper_bound=None) }}
     - ${{ pin_compatible('dpcpp-cpp-rt', lower_bound='x.x', upper_bound='x') }}
     - ${{ pin_compatible('intel-sycl-rt', lower_bound='x.x', upper_bound='x') }}
