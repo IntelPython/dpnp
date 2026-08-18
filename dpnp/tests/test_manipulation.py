@@ -29,7 +29,9 @@ from .third_party.cupy import testing
 
 
 def _compare_results(result, expected):
-    """Compare lists of arrays."""
+    """Compare lists of arrays returned by the split family of functions."""
+    # split/array_split/{h,v,d}split return a list of arrays
+    assert type(result) is type(expected) is list
     if len(result) != len(expected):
         raise ValueError("Iterables have different lengths")
 
@@ -330,6 +332,31 @@ class TestBroadcastShapes:
         expected = numpy.broadcast_shapes(*shape)
         result = dpnp.broadcast_shapes(*shape)
         assert_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            [1, 2],
+            [(3, 1), 3],
+            [1, (5, 1), 5],
+        ],
+    )
+    def test_scalar(self, shape):
+        expected = numpy.broadcast_shapes(*shape)
+        result = dpnp.broadcast_shapes(*shape)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("shape", [[(-1,)], [(2, -3), (2, 3)], [-1, 2]])
+    def test_negative_dim(self, xp, shape):
+        with pytest.raises(ValueError, match="negative dimensions"):
+            xp.broadcast_shapes(*shape)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("shape", [[(2.0,)], [(True, 2)], [2.5]])
+    def test_non_integer_dim(self, xp, shape):
+        with pytest.raises(TypeError, match="integer"):
+            xp.broadcast_shapes(*shape)
 
 
 class TestCopyTo:

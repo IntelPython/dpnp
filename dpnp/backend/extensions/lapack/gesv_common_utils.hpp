@@ -30,6 +30,8 @@
 
 #include <pybind11/pybind11.h>
 
+#include "dpnp4pybind11.hpp"
+
 // dpnp tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"

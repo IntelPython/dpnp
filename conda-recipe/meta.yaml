@@ -1,6 +1,25 @@
 {% set max_compiler_and_mkl_version = environ.get("MAX_BUILD_CMPL_MKL_VERSION", "2027.0a0") %}
-{% set required_compiler_and_mkl_version = "2026.0" %}
-{% set required_dpctl_version = "0.22.0" %}
+{% set required_compiler_version = environ.get("MIN_BUILD_CMPL_VERSION", "2026.1.1") %}
+{% set required_mkl_version = "2026.0" %}
+{% set required_dpctl_version = "0.23.0dev0" %}
+
+{# DPNP does not support a compiler older than 2026.0, so reject any #}
+{# MIN_BUILD_CMPL_VERSION override below that by calling an undefined macro. #}
+{% if required_compiler_version.split('.') | map('int') | list < [2026, 0] %}
+{{ MIN_BUILD_CMPL_VERSION_must_be_at_least_2026_0() }}
+{% endif %}
+
+{# The minimum compiler version must stay strictly below the (exclusive) maximum, #}
+{# otherwise the ">=min,<max" compiler pin collapses to an unsolvable empty range. #}
+{% if required_compiler_version.split('.') | map('int') | list >= max_compiler_and_mkl_version.split('.') | map('int') | list %}
+{{ MIN_BUILD_CMPL_VERSION_must_be_below_MAX_BUILD_CMPL_MKL_VERSION() }}
+{% endif %}
+
+{# The conda-forge OpenCL ICD loaders (ocl-icd-system / khronos-opencl-icd-loader) #}
+{# require DPC++ RT of 2026.1.1 or newer when installing from the Intel channel. #}
+{# So fall back to intel-gpu-ocl-icd-system for older Intel channel DPC++ RTs. #}
+{# Building and installing solely with conda-forge channel works with any 2026.0+ compiler. #}
+{% set use_conda_forge_ocl_icd = required_compiler_version.split('.') | map('int') | list >= [2026, 1, 1] %}
 
 {% set pyproject = load_file_data('pyproject.toml') %}
 {% set py_build_deps = pyproject.get('build-system', {}).get('requires', []) %}
@@ -14,9 +33,8 @@ source:
 requirements:
     host:
       - python
-      - python-gil     # [py>=314]
       - pip >=25.0
-      - pybind11 >=2.13.6
+      - pybind11 >=3.0.2
       {% for dep in py_build_deps %}
       {% if dep.startswith('dpctl') %}
       - dpctl >={{ required_dpctl_version }}
@@ -33,25 +51,33 @@ requirements:
       # versioneer dependency
       - tomli # [py<311]
       # Do not use pyproject.toml for setting dependencies on OneAPI packages
-      - mkl-devel-dpcpp >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
+      - mkl-devel-dpcpp >={{ required_mkl_version }},<{{ max_compiler_and_mkl_version }}
       - onedpl-devel
       - tbb-devel
+      - opencl-headers >=2025.06.13 # [win]
     build:
       - {{ compiler('cxx') }}
       - {{ stdlib('c') }}
-      - {{ compiler('dpcpp') }} >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
+      - {{ compiler('dpcpp') }} >={{ required_compiler_version }},<{{ max_compiler_and_mkl_version }}
     run:
       - python
-      - python-gil     # [py>=314]
       - {{ pin_compatible('dpctl', min_pin='x.x.x', max_pin=None) }}
       - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
+      - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
+      - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
+      - {{ pin_compatible('mkl', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-blas', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-dft', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-lapack', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-rng', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-vm', min_pin='x.x', max_pin='x') }}
       - numpy
+      {% if use_conda_forge_ocl_icd %}
+      - ocl-icd-system  # [linux]
+      - khronos-opencl-icd-loader  # [win]
+      {% else %}
       - intel-gpu-ocl-icd-system
+      {% endif %}
 
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
@@ -59,6 +85,16 @@ build:
     script_env:
       - WHEELS_OUTPUT_FOLDER
       - OVERRIDE_INTEL_IPO  # [win]
+    ignore_run_exports:
+      - dpctl
+      - numpy
+      - python
+      # building with Intel DPC++ and do not import the MSVC runtime DLLs
+      - vc14_runtime  # [win]
+      - ucrt          # [win]
+    missing_dso_whitelist:
+      - '*DPCTLSyclInterface*'
+      - '*/dpnp_backend_c.dll'        # [win]
 
 test:
     requires:

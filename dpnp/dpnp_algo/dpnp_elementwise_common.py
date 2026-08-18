@@ -122,6 +122,8 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
         requires casting, e.g. the argument of `dpnp.tensor.log` is an
         array with integral data type.
 
+        Default: ``None``.
+
     """
 
     def __init__(
@@ -593,7 +595,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         Function to influence type promotion behavior for Python scalar types
         of this binary function. The function takes 3 arguments:
             o1_dtype - Data type or Python scalar type of the first argument
-            o2_dtype - Data type or Python scalar type of of the second argument
+            o2_dtype - Data type or Python scalar type of the second argument
             sycl_dev - The :class:`dpctl.SyclDevice` where the function
                 evaluation is carried out.
         One of `o1_dtype` and `o2_dtype` must be a ``dtype`` instance.
@@ -759,12 +761,18 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         out : {None, dpnp.ndarray, usm_ndarray}, optional
             Output array to populate.
             Array must have the correct shape and the expected data type.
+
+            Default: ``None``.
         order : {None, "C", "F", "A", "K"}, optional
-            Memory layout of the newly output array, Cannot be provided
-            together with `out`. Default: ``"K"``.
+            Memory layout of the newly output array. Cannot be provided
+            together with `out`.
+
+            Default: ``"K"``.
         dtype : {None, str, dtype object}, optional
             If provided, the destination array will have this dtype. Cannot be
-            provided together with `out`. Default: ``None``.
+            provided together with `out`.
+
+            Default: ``None``.
 
         Returns
         -------

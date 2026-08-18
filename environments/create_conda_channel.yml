@@ -2,4 +2,4 @@ name: Create conda channel with DPNP package
 channels:
   - conda-forge
 dependencies:
-  - conda-index=0.11.0
+  - conda-index=0.12.1

@@ -99,6 +99,10 @@ static sycl::event gesvd_impl(sycl::queue &exec_q,
 
     sycl::event gesvd_event;
     try {
+        // Release GIL to avoid serialization of host task submissions
+        // to the same queue in OneMKL
+        py::gil_scoped_release lock{};
+
         gesvd_event = mkl_lapack::gesvd(
             exec_q,
             jobu,  // Character specifying how to compute the matrix U:

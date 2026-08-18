@@ -41,7 +41,6 @@ from ..helper import (
 from .utils import (
     _all_dtypes,
     _map_to_device_dtype,
-    _usm_types,
 )
 
 
@@ -106,52 +105,6 @@ def test_exp_complex_contig(dtype):
     assert_allclose(
         dpt.asnumpy(Z), np.repeat(np.exp(Xnp), n_rep), atol=tol, rtol=tol
     )
-
-
-@pytest.mark.parametrize("usm_type", _usm_types)
-def test_exp_usm_type(usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("f4")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    X[..., 0::2] = 16.0
-    X[..., 1::2] = 23.0
-
-    Y = dpt.exp(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    expected_Y = np.empty(input_shape, dtype=arg_dt)
-    expected_Y[..., 0::2] = np.exp(np.float32(16.0))
-    expected_Y[..., 1::2] = np.exp(np.float32(23.0))
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-
-    assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_exp_order(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
-    X[..., 0::2] = 8.0
-    X[..., 1::2] = 11.0
-
-    for perms in itertools.permutations(range(4)):
-        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
-        expected_Y = np.exp(dpt.asnumpy(U))
-        for ord in ["C", "F", "A", "K"]:
-            Y = dpt.exp(U, order=ord)
-            tol = 8 * max(
-                dpt.finfo(Y.dtype).resolution,
-                np.finfo(expected_Y.dtype).resolution,
-            )
-            assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])

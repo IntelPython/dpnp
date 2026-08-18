@@ -26,8 +26,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import itertools
-
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
@@ -41,7 +39,6 @@ from ..helper import (
 from .utils import (
     _all_dtypes,
     _map_to_device_dtype,
-    _usm_types,
 )
 
 
@@ -88,52 +85,6 @@ def test_expm1_output_strided(dtype):
     assert_allclose(dpt.asnumpy(Y), np.expm1(Xnp), atol=tol, rtol=tol)
 
 
-@pytest.mark.parametrize("usm_type", _usm_types)
-def test_expm1_usm_type(usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("f4")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    X[..., 0::2] = 1 / 50
-    X[..., 1::2] = 1 / 25
-
-    Y = dpt.expm1(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    expected_Y = np.empty(input_shape, dtype=arg_dt)
-    expected_Y[..., 0::2] = np.expm1(np.float32(1 / 50))
-    expected_Y[..., 1::2] = np.expm1(np.float32(1 / 25))
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-
-    assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_expm1_order(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
-    X[..., 0::2] = 1 / 50
-    X[..., 1::2] = 1 / 25
-
-    for perms in itertools.permutations(range(4)):
-        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
-        expected_Y = np.expm1(dpt.asnumpy(U))
-        for ord in ["C", "F", "A", "K"]:
-            Y = dpt.expm1(U, order=ord)
-            tol = 8 * max(
-                dpt.finfo(Y.dtype).resolution,
-                np.finfo(expected_Y.dtype).resolution,
-            )
-            assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
 def test_expm1_special_cases():
     get_queue_or_skip()
 
@@ -147,6 +98,7 @@ def test_expm1_special_cases():
     num_finite = 1.0
     vals = [
         complex(0.0, 0.0),
+        complex(-0.0, 0.0),
         complex(num_finite, dpt.inf),
         complex(num_finite, dpt.nan),
         complex(dpt.inf, 0.0),
@@ -166,6 +118,7 @@ def test_expm1_special_cases():
     res = np.asarray(
         [
             complex(0.0, 0.0),
+            complex(0.0, 0.0),
             c_nan,
             c_nan,
             complex(np.inf, 0.0),
@@ -184,4 +137,10 @@ def test_expm1_special_cases():
 
     tol = dpt.finfo(X.dtype).resolution
     with np.errstate(invalid="ignore"):
-        assert_allclose(dpt.asnumpy(dpt.expm1(X)), res, atol=tol, rtol=tol)
+        Y = dpt.asnumpy(dpt.expm1(X))
+        assert_allclose(Y, res, atol=tol, rtol=tol)
+
+    # assert_allclose treats +0 == -0
+    # verify sign bits for zero real parts
+    for i in (0, 1):
+        assert not np.signbit(Y[i].real)

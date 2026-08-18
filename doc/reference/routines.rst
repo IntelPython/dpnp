@@ -20,6 +20,7 @@ These functions cover a subset of
    functional
    io
    indexing
+   lib
    linalg
    logic
    math

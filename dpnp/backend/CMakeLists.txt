@@ -76,7 +76,12 @@ if(DPNP_GENERATE_COVERAGE)
     target_link_options(${_trgt} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
 
-target_link_libraries(${_trgt} PUBLIC MKL::MKL_SYCL)
+# Link only the MKL SYCL domains actually used by the backend sources
+# (BLAS: mkl_blas::scal; RNG: engines/distributions; VM: vector math ops)
+target_link_libraries(
+    ${_trgt}
+    PUBLIC MKL::MKL_SYCL::BLAS MKL::MKL_SYCL::RNG MKL::MKL_SYCL::VM
+)
 target_link_libraries(${_trgt} PUBLIC oneDPL)
 
 if(UNIX)

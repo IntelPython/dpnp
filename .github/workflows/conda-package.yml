@@ -29,8 +29,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-22.04, windows-2022]
+        include:
+          - python: '3.14'
+            os: ubuntu-22.04
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            os: windows-2022
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            os: ubuntu-22.04
+            python_spec: '3.14.* *_cp314t'
+          - python: '3.14'
+            os: windows-2022
+            python_spec: '3.14.* *_cp314t'
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -46,6 +59,8 @@ jobs:
     env:
       build-conda-pkg-env: 'environments/build_conda_pkg.yml'
       build-env-name: 'build'
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
+      python-conda-spec: ${{ matrix.python_spec || matrix.python }}
 
     steps:
       - name: Cancel Previous Runs
@@ -54,7 +69,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
@@ -91,26 +106,26 @@ jobs:
       - name: Build conda package
         id: build_conda_pkg
         continue-on-error: true
-        run: conda-build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
+        run: conda-build --no-test --python "${{ env.python-conda-spec }}" --numpy 2.0 ${{ env.channels-list }} conda-recipe
         env:
           MAX_BUILD_CMPL_MKL_VERSION: '2027.0a0'
 
       - name: ReBuild conda package
         if: steps.build_conda_pkg.outcome == 'failure'
-        run: conda-build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
+        run: conda-build --no-test --python "${{ env.python-conda-spec }}" --numpy 2.0 ${{ env.channels-list }} conda-recipe
         env:
           MAX_BUILD_CMPL_MKL_VERSION: '2027.0a0'
 
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-label }}
           path: ${{ env.CONDA_BLD }}${{ env.package-name }}-*.conda
 
       - name: Upload wheels artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+          name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ env.python-label }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.package-name }}-*.whl
 
   test_linux:
@@ -128,8 +143,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-latest]
+        include:
+          - python: '3.14'
+            os: ubuntu-latest
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            os: ubuntu-latest
+            python_spec: '3.14.* *_cp314t'
 
     env:
       dpnp-repo-path: '${{ github.workspace }}/source/'
@@ -137,6 +159,8 @@ jobs:
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       ver-json-path: '${{ github.workspace }}/version.json'
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
+      python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
       - name: Set Swap Space
@@ -145,7 +169,7 @@ jobs:
           swap-size-gb: 8
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
@@ -153,7 +177,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-label }}
           path: ${{ env.pkg-path-in-channel }}
 
       - name: Setup miniconda
@@ -198,14 +222,14 @@ jobs:
         id: install_dpnp
         continue-on-error: true
         run: |
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 
@@ -221,7 +245,7 @@ jobs:
         if: env.rerun-tests-on-failure != 'true'
         run: |
           export SKIP_TENSOR_TESTS=1
-          if [[ "${{ matrix.python }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
+          if [[ "${{ env.python-label }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
             export DPNP_TEST_ALL_INT_TYPES=1
             python -m pytest -ra --pyargs ${{ env.package-name }}.tests
           else
@@ -242,7 +266,7 @@ jobs:
             mamba activate ${{ env.test-env-name }}
             export SKIP_TENSOR_TESTS=1
 
-            if [[ "${{ matrix.python }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
+            if [[ "${{ env.python-label }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
               export DPNP_TEST_ALL_INT_TYPES=1
               python -m pytest -ra --pyargs ${{ env.package-name }}.tests
             else
@@ -269,6 +293,117 @@ jobs:
 
             python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
 
+  test_examples_linux:
+    name: Test examples
+
+    needs: build
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.14']
+        python_spec: ['3.14.* *_cp314', '3.14.* *_cp314t']
+
+    env:
+      dpnp-repo-path: '${{ github.workspace }}/source/'
+      examples-conda-pkg-env: 'source/environments/examples.yml'
+      channel-path: '${{ github.workspace }}/channel/'
+      pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
+      ver-json-path: '${{ github.workspace }}/version.json'
+      examples-env-name: 'examples_test'
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
+      python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
+
+    steps:
+      - name: Checkout DPNP repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: ${{ env.fetch-depth }}
+          path: ${{ env.dpnp-repo-path }}
+
+      - name: Download artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-label }}
+          path: ${{ env.pkg-path-in-channel }}
+
+      - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.examples-conda-pkg-env }}
+          activate-environment: ${{ env.examples-env-name }}
+
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.examples-conda-pkg-env }}
+          activate-environment: ${{ env.examples-env-name }}
+
+      - name: Create conda channel
+        run: |
+          python -m conda_index ${{ env.channel-path }}
+
+      - name: Test conda channel
+        run: |
+          conda search ${{ env.package-name }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          cat ${{ env.ver-json-path }}
+
+      - name: Get package version
+        run: |
+          PACKAGE_VERSION=$(python -c "${{ env.ver-script-part1 }} ${{ env.ver-script-part2 }}")
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> "$GITHUB_ENV"
+
+      - name: Install dpnp
+        id: install_dpnp
+        continue-on-error: true
+        run: |
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
+
+      - name: ReInstall dpnp
+        if: steps.install_dpnp.outcome == 'failure'
+        run: |
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
+
+      - name: List installed packages
+        run: mamba list
+
+      - name: Smoke test
+        run: |
+          python -c "import dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
+
+      - name: Build and run pybind11 examples
+        run: |
+          cd ${{ env.dpnp-repo-path }}/examples/pybind11
+          for d in */; do
+            pushd "$d" > /dev/null
+            CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja || exit 1
+            if [ -d tests ]; then
+              python -m pytest tests || exit 1
+            fi
+            popd > /dev/null
+          done
+
   test_windows:
     name: Test
 
@@ -284,8 +419,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13']
         os: [windows-2022]
+        include:
+          - python: '3.14'
+            os: windows-2022
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            os: windows-2022
+            python_spec: '3.14.* *_cp314t'
 
     env:
       dpnp-repo-path: '${{ github.workspace }}\source'
@@ -293,10 +435,12 @@ jobs:
       channel-path: '${{ github.workspace }}\channel\'
       pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
       ver-json-path: '${{ github.workspace }}\version.json'
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
+      python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
@@ -304,7 +448,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-label }}
           path: ${{ env.pkg-path-in-channel }}
 
       - name: Store a path to package archive
@@ -371,7 +515,7 @@ jobs:
       - name: Install dpnp
         run: |
           @echo on
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -405,7 +549,7 @@ jobs:
         shell: pwsh
         run: |
           $env:SKIP_TENSOR_TESTS=1
-          if (${{ matrix.python }} -eq ${{ env.python-ver-test-all-dtypes }}) {
+          if ("${{ env.python-label }}" -eq "${{ env.python-ver-test-all-dtypes }}") {
             $env:DPNP_TEST_ALL_INT_TYPES=1
             python -m pytest -ra --pyargs ${{ env.package-name }}.tests
           } else {
@@ -423,7 +567,7 @@ jobs:
           shell: pwsh
           command: |
             $env:SKIP_TENSOR_TESTS=1
-            if ( ${{ matrix.python }} -eq ${{ env.python-ver-test-all-dtypes }} ) {
+            if ( "${{ env.python-label }}" -eq "${{ env.python-ver-test-all-dtypes }}" ) {
               $env:DPNP_TEST_ALL_INT_TYPES=1
               python -m pytest -ra --pyargs ${{ env.package-name }}.tests
             } else {
@@ -451,13 +595,26 @@ jobs:
   upload:
     name: Upload
 
-    needs: [test_linux, test_windows]
+    needs: [test_linux, test_windows, test_examples_linux]
 
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-latest, windows-2022]
+        include:
+          - python: '3.14'
+            os: ubuntu-latest
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            os: windows-2022
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            os: ubuntu-latest
+            python_spec: '3.14.* *_cp314t'
+          - python: '3.14'
+            os: windows-2022
+            python_spec: '3.14.* *_cp314t'
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
@@ -469,6 +626,7 @@ jobs:
     env:
       upload-conda-pkg-env: 'environments/upload_cleanup_conda_pkg.yml'
       upload-env-name: 'upload'
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
 
     if: |
       (github.repository == 'IntelPython/dpnp') &&
@@ -476,19 +634,19 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: ${{ env.fetch-depth }}
 
       - name: Download artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-label }}
 
       - name: Download wheels artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+          name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ env.python-label }}
 
       - name: Setup miniconda
         id: setup_miniconda
@@ -552,7 +710,7 @@ jobs:
       dpnp-repo-path: '${{ github.workspace }}/source/'
       array-api-skips-file: '${{ github.workspace }}/source/.github/workflows/array-api-skips.txt'
       create-conda-channel-env: 'source/environments/create_conda_channel.yml'
-      python-ver: '3.13' # it has to be aligned with python in create_conda_channel.yml
+      python-ver: '3.14'
       conda-env-name: 'array-api-conformity'
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
@@ -560,7 +718,7 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: ${{ env.fetch-depth }}
           path: ${{ env.dpnp-repo-path }}
@@ -633,7 +791,7 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Clone array API tests repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 'data-apis/array-api-tests'
           path: ${{ env.array-api-tests-path }}
@@ -662,7 +820,7 @@ jobs:
           python -m pytest --json-report --json-report-file=${{ env.json-report-file }} --disable-deadline --skips-file ${{ env.array-api-skips-file }} array_api_tests || true
         env:
           ARRAY_API_TESTS_MODULE: 'dpnp'
-          ARRAY_API_TESTS_VERSION: '2024.12'
+          ARRAY_API_TESTS_VERSION: '2025.12'
           SYCL_CACHE_PERSISTENT: 1
         working-directory: ${{ env.array-api-tests-path }}
 
@@ -692,7 +850,7 @@ jobs:
 
       - name: Post result to PR
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork }}
-        uses: mshick/add-pr-comment@8e4927817251f1ff60c001f04568532b38e0b4a0 # v3.11.0.8.3.11.0
+        uses: mshick/add-pr-comment@ec328af66588ab8f77cdeb2c264f14aba45bbf59 # v3.12.0.8.3.12.0
         with:
           message-id: array_api_results
           message: |
@@ -716,7 +874,7 @@ jobs:
 
     steps:
       - name: Checkout DPNP repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: ${{ env.fetch-depth }}
 
@@ -742,7 +900,7 @@ jobs:
           activate-environment: ${{ env.cleanup-env-name }}
 
       - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: IntelPython/devops-tools
           fetch-depth: ${{ env.fetch-depth }}

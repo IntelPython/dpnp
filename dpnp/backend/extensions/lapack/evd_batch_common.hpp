@@ -31,6 +31,8 @@
 #include <oneapi/mkl.hpp>
 #include <pybind11/pybind11.h>
 
+#include "dpnp4pybind11.hpp"
+
 // dpnp tensor headers
 #include "utils/type_dispatch.hpp"
 

@@ -1,5 +1,6 @@
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016, Intel Corporation
@@ -38,6 +39,7 @@ and the rest of the library
 
 
 import numbers
+import threading
 
 import numpy
 
@@ -401,10 +403,12 @@ cdef class _Engine:
     cdef engine_struct* engine_base
     cdef c_dpctl.DPCTLSyclQueueRef q_ref
     cdef c_dpctl.SyclQueue q
+    cdef object lock
 
     def __cinit__(self, seed, sycl_queue):
         self.engine_base = NULL
         self.q_ref = NULL
+        self.lock = threading.Lock()
         if sycl_queue is None:
             raise ValueError("SyclQueue isn't defined")
 
@@ -485,17 +489,19 @@ cdef class _Engine:
             <fptr_dpnp_rng_normal_c_1out_t>
             kernel_data.ptr
         )
-        # call FPTR function
-        event_ref = func(
-            self.get_queue_ref(), result.get_data(),
-            loc, scale, result.size,
-            self.get_engine(), NULL,
-        )
+        # call FPTR function, keeping the lock until the submitted kernel is
+        # done, since it reads the engine state for as long as it runs
+        with self.lock:
+            event_ref = func(
+                self.get_queue_ref(), result.get_data(),
+                loc, scale, result.size,
+                self.get_engine(), NULL,
+            )
 
-        if event_ref != NULL:
-            with nogil:
-                c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-            c_dpctl.DPCTLEvent_Delete(event_ref)
+            if event_ref != NULL:
+                with nogil:
+                    c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+                c_dpctl.DPCTLEvent_Delete(event_ref)
         return result
 
     cpdef utils.dpnp_descriptor uniform(
@@ -538,17 +544,19 @@ cdef class _Engine:
             <fptr_dpnp_rng_uniform_c_1out_t>
             kernel_data.ptr
         )
-        # call FPTR function
-        event_ref = func(
-            self.get_queue_ref(), result.get_data(),
-            low, high, result.size,
-            self.get_engine(), NULL,
-        )
+        # call FPTR function, keeping the lock until the submitted kernel is
+        # done, since it reads the engine state for as long as it runs
+        with self.lock:
+            event_ref = func(
+                self.get_queue_ref(), result.get_data(),
+                low, high, result.size,
+                self.get_engine(), NULL,
+            )
 
-        if event_ref != NULL:
-            with nogil:
-                c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-            c_dpctl.DPCTLEvent_Delete(event_ref)
+            if event_ref != NULL:
+                with nogil:
+                    c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+                c_dpctl.DPCTLEvent_Delete(event_ref)
         return result
 
 

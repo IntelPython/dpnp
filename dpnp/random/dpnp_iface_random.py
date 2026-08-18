@@ -37,6 +37,7 @@ Set of functions to implement NumPy random module API
 """
 
 import operator
+import threading
 
 import numpy
 
@@ -47,26 +48,42 @@ from dpnp.dpnp_utils import *
 from .dpnp_algo_random import *
 from .dpnp_random_state import RandomState
 
+# lock the RNG calls for concurrent access
+_legacy_rng_lock = threading.RLock()
+
+
+def _legacy_rng(func, *args, **kwargs):
+    """Call a legacy ``dpnp_rng_*`` generator holding `_legacy_rng_lock`."""
+    with _legacy_rng_lock:
+        return func(*args, **kwargs)
+
+
+# Guards the `_dpnp_random_states` cache, so that concurrent callers asking
+# for the state of the same queue are guaranteed to get the same instance
+# back rather than each building one of their own.
+_random_states_lock = threading.RLock()
+
 
 def _get_random_state(device=None, sycl_queue=None):
     global _dpnp_random_states
 
-    if not isinstance(_dpnp_random_states, dict):
-        _dpnp_random_states = {}
     sycl_queue = dpnp.get_normalized_queue_device(
         device=device, sycl_queue=sycl_queue
     )
-    if sycl_queue not in _dpnp_random_states:
-        rs = RandomState(device=device, sycl_queue=sycl_queue)
-        if sycl_queue == rs.get_sycl_queue():
-            _dpnp_random_states[sycl_queue] = rs
-        else:
-            raise RuntimeError(
-                "Normalized SYCL queue {} mismatched with one returned by RandmoState {}".format(
-                    sycl_queue, rs.get_sycl_queue()
+    with _random_states_lock:
+        if not isinstance(_dpnp_random_states, dict):
+            _dpnp_random_states = {}
+        if sycl_queue not in _dpnp_random_states:
+            rs = RandomState(device=device, sycl_queue=sycl_queue)
+            if sycl_queue == rs.get_sycl_queue():
+                _dpnp_random_states[sycl_queue] = rs
+            else:
+                raise RuntimeError(
+                    "Normalized SYCL queue {} mismatched with one returned by RandmoState {}".format(
+                        sycl_queue, rs.get_sycl_queue()
+                    )
                 )
-            )
-    return _dpnp_random_states[sycl_queue]
+        return _dpnp_random_states[sycl_queue]
 
 
 def _is_type_supported(obj_type):
@@ -115,7 +132,7 @@ def beta(a, b, size=None):
         elif b <= 0:
             pass
         else:
-            return dpnp_rng_beta(a, b, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_beta, a, b, size).get_pyobj()
 
     return call_origin(numpy.random.beta, a, b, size)
 
@@ -166,7 +183,7 @@ def binomial(n, p, size=None):
         elif n < 0:
             pass
         else:
-            return dpnp_rng_binomial(int(n), p, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_binomial, int(n), p, size).get_pyobj()
 
     return call_origin(numpy.random.binomial, n, p, size)
 
@@ -221,7 +238,7 @@ def chisquare(df, size=None):
         else:
             # TODO:
             # float to int, safe
-            return dpnp_rng_chisquare(int(df), size).get_pyobj()
+            return _legacy_rng(dpnp_rng_chisquare, int(df), size).get_pyobj()
 
     return call_origin(numpy.random.chisquare, df, size)
 
@@ -292,7 +309,7 @@ def exponential(scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_rng_exponential(scale, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_exponential, scale, size).get_pyobj()
 
     return call_origin(numpy.random.exponential, scale, size)
 
@@ -333,7 +350,7 @@ def f(dfnum, dfden, size=None):
         elif dfden <= 0:
             pass
         else:
-            return dpnp_rng_f(dfnum, dfden, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_f, dfnum, dfden, size).get_pyobj()
 
     return call_origin(numpy.random.f, dfnum, dfden, size)
 
@@ -376,7 +393,7 @@ def gamma(shape, scale=1.0, size=None):
         elif shape < 0:
             pass
         else:
-            return dpnp_rng_gamma(shape, scale, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_gamma, shape, scale, size).get_pyobj()
 
     return call_origin(numpy.random.gamma, shape, scale, size)
 
@@ -415,7 +432,7 @@ def geometric(p, size=None):
         elif p > 1 or p <= 0:
             pass
         else:
-            return dpnp_rng_geometric(p, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_geometric, p, size).get_pyobj()
 
     return call_origin(numpy.random.geometric, p, size)
 
@@ -456,7 +473,7 @@ def gumbel(loc=0.0, scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_rng_gumbel(loc, scale, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_gumbel, loc, scale, size).get_pyobj()
 
     return call_origin(numpy.random.gumbel, loc, scale, size)
 
@@ -512,7 +529,9 @@ def hypergeometric(ngood, nbad, nsample, size=None):
             _m = int(ngood)
             _l = int(ngood) + int(nbad)
             _s = int(nsample)
-            return dpnp_rng_hypergeometric(_l, _s, _m, size).get_pyobj()
+            return _legacy_rng(
+                dpnp_rng_hypergeometric, _l, _s, _m, size
+            ).get_pyobj()
 
     return call_origin(numpy.random.hypergeometric, ngood, nbad, nsample, size)
 
@@ -552,7 +571,7 @@ def laplace(loc=0.0, scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_rng_laplace(loc, scale, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_laplace, loc, scale, size).get_pyobj()
 
     return call_origin(numpy.random.laplace, loc, scale, size)
 
@@ -591,7 +610,9 @@ def logistic(loc=0.0, scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            result = dpnp_rng_logistic(loc, scale, size).get_pyobj()
+            result = _legacy_rng(
+                dpnp_rng_logistic, loc, scale, size
+            ).get_pyobj()
             if size is None or size == 1:
                 return result[0]
             else:
@@ -637,7 +658,9 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
         elif sigma < 0:
             pass
         else:
-            return dpnp_rng_lognormal(mean, sigma, size).get_pyobj()
+            return _legacy_rng(
+                dpnp_rng_lognormal, mean, sigma, size
+            ).get_pyobj()
 
     return call_origin(numpy.random.lognormal, mean, sigma, size)
 
@@ -707,7 +730,9 @@ def multinomial(n, pvals, size=None):
                 except Exception:
                     shape = tuple(size) + (d,)
 
-            return dpnp_rng_multinomial(int(n), pvals_desc, shape).get_pyobj()
+            return _legacy_rng(
+                dpnp_rng_multinomial, int(n), pvals_desc, shape
+            ).get_pyobj()
 
     return call_origin(numpy.random.multinomial, n, pvals, size)
 
@@ -759,8 +784,8 @@ def multivariate_normal(mean, cov, size=None, check_valid="warn", tol=1e-8):
         else:
             final_shape = list(shape[:])
             final_shape.append(mean_.shape[0])
-            return dpnp_rng_multivariate_normal(
-                mean_, cov_, final_shape
+            return _legacy_rng(
+                dpnp_rng_multivariate_normal, mean_, cov_, final_shape
             ).get_pyobj()
 
     return call_origin(
@@ -814,7 +839,9 @@ def negative_binomial(n, p, size=None):
         elif n <= 0:
             pass
         else:
-            return dpnp_rng_negative_binomial(n, p, size).get_pyobj()
+            return _legacy_rng(
+                dpnp_rng_negative_binomial, n, p, size
+            ).get_pyobj()
 
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
@@ -845,11 +872,14 @@ def normal(
         Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -907,7 +937,9 @@ def noncentral_chisquare(df, nonc, size=None):
         elif nonc < 0:
             pass
         else:
-            return dpnp_rng_noncentral_chisquare(df, nonc, size).get_pyobj()
+            return _legacy_rng(
+                dpnp_rng_noncentral_chisquare, df, nonc, size
+            ).get_pyobj()
 
     return call_origin(numpy.random.noncentral_chisquare, df, nonc, size)
 
@@ -962,7 +994,7 @@ def pareto(a, size=None):
         elif a <= 0:
             pass
         else:
-            return dpnp_rng_pareto(a, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_pareto, a, size).get_pyobj()
 
     return call_origin(numpy.random.pareto, a, size)
 
@@ -1036,7 +1068,7 @@ def poisson(lam=1.0, size=None):
         elif lam < 0:
             pass
         else:
-            return dpnp_rng_poisson(lam, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_poisson, lam, size).get_pyobj()
 
     return call_origin(numpy.random.poisson, lam, size)
 
@@ -1076,7 +1108,7 @@ def power(a, size=None):
         elif a <= 0:
             pass
         else:
-            return dpnp_rng_power(a, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_power, a, size).get_pyobj()
 
     return call_origin(numpy.random.power, a, size)
 
@@ -1106,12 +1138,14 @@ def rand(*args, device=None, usm_type="device", sycl_queue=None):
         Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
         Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1167,11 +1201,14 @@ def randint(
         Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1228,11 +1265,14 @@ def randn(d0, *dn, device=None, usm_type="device", sycl_queue=None):
         Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1283,11 +1323,14 @@ def random(size=None, device=None, usm_type="device", sycl_queue=None):
         Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1334,11 +1377,14 @@ def random_integers(
         Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1402,11 +1448,14 @@ def random_sample(size=None, device=None, usm_type="device", sycl_queue=None):
         Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1452,11 +1501,14 @@ def ranf(size=None, device=None, usm_type="device", sycl_queue=None):
         Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1517,7 +1569,7 @@ def rayleigh(scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_rng_rayleigh(scale, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_rayleigh, scale, size).get_pyobj()
 
     return call_origin(numpy.random.rayleigh, scale, size)
 
@@ -1543,11 +1595,14 @@ def sample(size=None, device=None, usm_type="device", sycl_queue=None):
         Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1598,7 +1653,7 @@ def shuffle(x1):
         if not _is_type_supported(x1_desc.dtype):
             pass
         else:
-            dpnp_rng_shuffle(x1_desc).get_pyobj()
+            _legacy_rng(dpnp_rng_shuffle, x1_desc).get_pyobj()
             return
 
     call_origin(numpy.random.shuffle, x1, dpnp_inplace=True)
@@ -1623,6 +1678,8 @@ def seed(seed=None, device=None, sycl_queue=None):
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for an array with generated numbers.
 
+        Default: ``None``.
+
     Limitations
     -----------
     The `seed` parameter is supported as a scalar or an array of at most three
@@ -1636,9 +1693,10 @@ def seed(seed=None, device=None, sycl_queue=None):
     sycl_queue = dpnp.get_normalized_queue_device(
         device=device, sycl_queue=sycl_queue
     )
-    _dpnp_random_states[sycl_queue] = RandomState(
-        seed=seed, sycl_queue=sycl_queue
-    )
+    with _random_states_lock:
+        _dpnp_random_states[sycl_queue] = RandomState(
+            seed=seed, sycl_queue=sycl_queue
+        )
 
     if not use_origin_backend(seed):
         if dpnp.is_cuda_backend():  # pragma: no cover
@@ -1657,7 +1715,7 @@ def seed(seed=None, device=None, sycl_queue=None):
         else:
             # TODO:
             # migrate to a single approach with RandomState class
-            dpnp_rng_srand(seed)
+            _legacy_rng(dpnp_rng_srand, seed)
 
     # always reseed numpy engine also
     return call_origin(numpy.random.seed, seed, allow_fallback=True)
@@ -1690,7 +1748,7 @@ def standard_cauchy(size=None):
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
-        return dpnp_rng_standard_cauchy(size).get_pyobj()
+        return _legacy_rng(dpnp_rng_standard_cauchy, size).get_pyobj()
 
     return call_origin(numpy.random.standard_cauchy, size)
 
@@ -1719,7 +1777,7 @@ def standard_exponential(size=None):
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
-        return dpnp_rng_standard_exponential(size).get_pyobj()
+        return _legacy_rng(dpnp_rng_standard_exponential, size).get_pyobj()
 
     return call_origin(numpy.random.standard_exponential, size)
 
@@ -1759,7 +1817,7 @@ def standard_gamma(shape, size=None):
         elif shape < 0:
             pass
         else:
-            return dpnp_rng_standard_gamma(shape, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_standard_gamma, shape, size).get_pyobj()
 
     return call_origin(numpy.random.standard_gamma, shape, size)
 
@@ -1783,11 +1841,14 @@ def standard_normal(size=None, device=None, usm_type="device", sycl_queue=None):
         Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1845,7 +1906,7 @@ def standard_t(df, size=None):
         elif df <= 0:
             pass
         else:
-            return dpnp_rng_standard_t(df, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_standard_t, df, size).get_pyobj()
 
     return call_origin(numpy.random.standard_t, df, size)
 
@@ -1894,7 +1955,9 @@ def triangular(left, mode, right, size=None):
         elif left == right:
             pass
         else:
-            return dpnp_rng_triangular(left, mode, right, size).get_pyobj()
+            return _legacy_rng(
+                dpnp_rng_triangular, left, mode, right, size
+            ).get_pyobj()
 
     return call_origin(numpy.random.triangular, left, mode, right, size)
 
@@ -1928,11 +1991,14 @@ def uniform(
         Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -2006,7 +2072,7 @@ def vonmises(mu, kappa, size=None):
         elif kappa < 0:
             pass
         else:
-            return dpnp_rng_vonmises(mu, kappa, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_vonmises, mu, kappa, size).get_pyobj()
 
     return call_origin(numpy.random.vonmises, mu, kappa, size)
 
@@ -2047,7 +2113,7 @@ def wald(mean, scale, size=None):
         elif scale <= 0:
             pass
         else:
-            return dpnp_rng_wald(mean, scale, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_wald, mean, scale, size).get_pyobj()
 
     return call_origin(numpy.random.wald, mean, scale, size)
 
@@ -2084,7 +2150,7 @@ def weibull(a, size=None):
         elif a < 0:
             pass
         else:
-            return dpnp_rng_weibull(a, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_weibull, a, size).get_pyobj()
 
     return call_origin(numpy.random.weibull, a, size)
 
@@ -2121,7 +2187,7 @@ def zipf(a, size=None):
         elif a <= 1:
             pass
         else:
-            return dpnp_rng_zipf(a, size).get_pyobj()
+            return _legacy_rng(dpnp_rng_zipf, a, size).get_pyobj()
 
     return call_origin(numpy.random.zipf, a, size)
 
