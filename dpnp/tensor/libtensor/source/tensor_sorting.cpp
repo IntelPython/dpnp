@@ -43,7 +43,7 @@
 #include "sorting/searchsorted.hpp"
 #include "sorting/topk.hpp"
 
-PYBIND11_MODULE(_tensor_sorting_impl, m)
+PYBIND11_MODULE(_tensor_sorting_impl, m, py::mod_gil_not_used())
 {
     dpnp::tensor::py_internal::init_isin_functions(m);
     dpnp::tensor::py_internal::init_merge_sort_functions(m);
