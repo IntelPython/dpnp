@@ -133,7 +133,7 @@ jobs:
             --channel-priority disabled \
             --target-platform ${{ runner.os == 'Linux' && 'linux-64' || 'win-64' }} \
             --variant-config conda-recipe/conda_build_config.yaml \
-            --variant python=${{ matrix.python }} \
+            --variant "python=${{ env.python-conda-spec }}" \
             --variant numpy=2 \
             "${RATTLER_CHANNELS[@]}"
         env:
@@ -150,7 +150,7 @@ jobs:
             --channel-priority disabled \
             --target-platform ${{ runner.os == 'Linux' && 'linux-64' || 'win-64' }} \
             --variant-config conda-recipe/conda_build_config.yaml \
-            --variant python=${{ matrix.python }} \
+            --variant "python=${{ env.python-conda-spec }}" \
             --variant numpy=2 \
             "${RATTLER_CHANNELS[@]}"
         env:
