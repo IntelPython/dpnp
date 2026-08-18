@@ -82,7 +82,9 @@ namespace vm_ns = dpnp::extensions::vm;
 
 #include <pybind11/pybind11.h>
 
-PYBIND11_MODULE(_vm_impl, m)
+namespace py = pybind11;
+
+PYBIND11_MODULE(_vm_impl, m, py::mod_gil_not_used())
 {
 #if not defined(USE_ONEMATH)
     vm_ns::init_abs(m);
