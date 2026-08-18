@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.scipy.linalg._decomp_lu - Data Parallel Extension for NumPy (dpnp) 0.21.0dev4 documentation</title>
+        <title>dpnp.scipy.linalg._decomp_lu - Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev4 documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev4 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1052,7 +1052,7 @@
 <span class="c1">#   may be used to endorse or promote products derived from this software</span>
 <span class="c1">#   without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"</span>
 <span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
 <span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
 <span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
@@ -1066,7 +1066,7 @@
 <span class="c1"># *****************************************************************************</span>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Interface of the SciPy-compatible Linear Algebra subset for DPNP.</span>
 
 <span class="sd">Notes</span>
@@ -1076,7 +1076,7 @@
 <span class="sd"> - SciPy-like interface functions</span>
 <span class="sd"> - documentation for the functions</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.linalg.dpnp_utils_linalg</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -1096,7 +1096,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">lu</span><span class="p">(</span>
     <span class="n">a</span><span class="p">,</span> <span class="n">permute_l</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite_a</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_finite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p_indices</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute LU decomposition of a matrix with partial pivoting.</span>
 
 <span class="sd">    The decomposition satisfies::</span>
@@ -1217,7 +1217,7 @@
 <span class="sd">    &gt;&gt;&gt; np.allclose(C, p @ l @ u)</span>
 <span class="sd">    array(True)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -1235,7 +1235,7 @@
 <div class="viewcode-block" id="lu_factor">
 <a class="viewcode-back" href="../../../../reference/generated/dpnp.scipy.linalg.lu_factor.html#dpnp.scipy.linalg.lu_factor">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">lu_factor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">overwrite_a</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_finite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute the pivoted LU decomposition of `a` matrix.</span>
 
 <span class="sd">    The decomposition is::</span>
@@ -1294,7 +1294,7 @@
 <span class="sd">    &gt;&gt;&gt; piv</span>
 <span class="sd">    array([1, 1])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -1306,7 +1306,7 @@
 <div class="viewcode-block" id="lu_solve">
 <a class="viewcode-back" href="../../../../reference/generated/dpnp.scipy.linalg.lu_solve.html#dpnp.scipy.linalg.lu_solve">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">lu_solve</span><span class="p">(</span><span class="n">lu_and_piv</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">overwrite_b</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check_finite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Solve a linear system, :math:`a x = b`, given the LU factorization of `a`.</span>
 
 <span class="sd">    For full documentation refer to :obj:`scipy.linalg.lu_solve`.</span>
@@ -1364,7 +1364,7 @@
 <span class="sd">    &gt;&gt;&gt; np.allclose(A @ x - b, np.zeros((4,)))</span>
 <span class="sd">    array(True)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">lu_matrix</span><span class="p">,</span> <span class="n">piv</span> <span class="o">=</span> <span class="n">lu_and_piv</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">lu_matrix</span><span class="p">,</span> <span class="n">piv</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
@@ -1412,7 +1412,7 @@
       
     </aside>
   </div>
-</div><script src="../../../../_static/documentation_options.js?v=669da1d3"></script>
+</div><script src="../../../../_static/documentation_options.js?v=c2e525ca"></script>
     <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>
