@@ -37,7 +37,7 @@
 
 #include "accumulators/accumulators_common.hpp"
 
-PYBIND11_MODULE(_tensor_accumulation_impl, m)
+PYBIND11_MODULE(_tensor_accumulation_impl, m, py::mod_gil_not_used())
 {
     dpnp::tensor::py_internal::init_accumulator_functions(m);
 }

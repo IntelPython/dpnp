@@ -78,7 +78,7 @@ void init_dispatch_tables(void)
     lapack_ext::init_gesvd_batch_dispatch_table();
 }
 
-PYBIND11_MODULE(_lapack_impl, m)
+PYBIND11_MODULE(_lapack_impl, m, py::mod_gil_not_used())
 {
     // Expose oneMKL transpose enum to Python
     py::enum_<oneapi::mkl::transpose>(m, "Transpose")

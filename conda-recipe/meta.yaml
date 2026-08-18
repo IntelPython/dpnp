@@ -33,9 +33,8 @@ source:
 requirements:
     host:
       - python
-      - python-gil     # [py>=314]
       - pip >=25.0
-      - pybind11 >=2.13.6
+      - pybind11 >=3.0.2
       {% for dep in py_build_deps %}
       {% if dep.startswith('dpctl') %}
       - dpctl >={{ required_dpctl_version }}
@@ -62,7 +61,6 @@ requirements:
       - {{ compiler('dpcpp') }} >={{ required_compiler_version }},<{{ max_compiler_and_mkl_version }}
     run:
       - python
-      - python-gil     # [py>=314]
       - {{ pin_compatible('dpctl', min_pin='x.x.x', max_pin=None) }}
       - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}

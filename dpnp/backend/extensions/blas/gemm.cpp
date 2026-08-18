@@ -113,6 +113,10 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
                                                     c, ldc, deps);
             }
         };
+        // Release GIL to avoid serialization of host task submissions
+        // to the same queue in OneMKL
+        py::gil_scoped_release lock{};
+
         gemm_event = gemm_func(
             exec_q,
             transA, // Defines the transpose operation for matrix A:

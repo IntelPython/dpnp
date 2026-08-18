@@ -30,6 +30,7 @@
 #include <cmath>
 #include <exception>
 #include <mkl_vsl.h>
+#include <mutex>
 #include <stdexcept>
 #include <vector>
 
@@ -45,12 +46,17 @@ namespace mkl_blas = oneapi::mkl::blas;
 namespace mkl_rng = oneapi::mkl::rng;
 namespace mkl_vm = oneapi::mkl::vm;
 
+static std::mutex rng_stream_mutex;
 /**
- * Use get/set functions to access/modify this variable
+ * Use get/set functions to access/modify this variable. Both require
+ * `rng_stream_mutex` to be held, and it must stay held for as long as the
+ * stream returned by the getter is in use, since the setter destroys the
+ * stream.
  */
 static VSLStreamStatePtr rng_stream = nullptr;
 
-static void set_rng_stream(size_t seed = 1)
+// only called with rng_stream_mutex held
+static void set_rng_stream_nolock(size_t seed = 1)
 {
     if (rng_stream) {
         vslDeleteStream(&rng_stream);
@@ -60,10 +66,11 @@ static void set_rng_stream(size_t seed = 1)
     vslNewStream(&rng_stream, VSL_BRNG_MT19937, seed);
 }
 
-static VSLStreamStatePtr get_rng_stream()
+// only called with rng_stream_mutex held
+static VSLStreamStatePtr get_rng_stream_nolock()
 {
     if (!rng_stream) {
-        set_rng_stream();
+        set_rng_stream_nolock();
     }
 
     return rng_stream;
@@ -73,7 +80,9 @@ void dpnp_rng_srand_c(size_t seed)
 {
     auto &be = backend_sycl::get();
     be.set_rng_engines_seed(seed);
-    set_rng_stream(seed);
+
+    std::lock_guard<std::mutex> lock(rng_stream_mutex);
+    set_rng_stream_nolock(seed);
 }
 
 template <typename _DistrType, typename _EngineType, typename _DataType>
@@ -1094,9 +1103,18 @@ DPCTLSyclEventRef
             DPNPC_ptr_adapter<_DataType> result_ptr(q_ref, result, size, true,
                                                     true);
             _DataType *result1 = result_ptr.get_ptr();
-            int errcode = viRngMultinomial(
-                VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n,
-                result1, ntrial, p_size, p_data);
+
+            int errcode;
+            {
+                // the lock is held across the call, as the stream is mutated
+                // by the generation and may be destroyed by a concurrent
+                // reseeding
+                std::lock_guard<std::mutex> lock(rng_stream_mutex);
+                errcode =
+                    viRngMultinomial(VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON,
+                                     get_rng_stream_nolock(), n, result1,
+                                     ntrial, p_size, p_data);
+            }
             if (errcode != VSL_STATUS_OK) {
                 throw std::runtime_error(
                     "DPNP RNG Error: dpnp_rng_multinomial_c() failed.");

@@ -175,7 +175,7 @@ void init_dispatch_vectors(void)
 
 } // namespace
 
-PYBIND11_MODULE(_tensor_impl, m)
+PYBIND11_MODULE(_tensor_impl, m, py::mod_gil_not_used())
 {
     init_dispatch_tables();
     init_dispatch_vectors();
