@@ -4,7 +4,7 @@ requires = [
   # TODO: keep in sync with [project.dependencies]
   "build>=1.2.2",
   "cmake>=3.31.6",
-  "cython>=3.0.12",
+  "cython>=3.1.0",
   # WARNING: use only dpctl version available on PyPi
   "dpctl>=0.20.0",
   "ninja>=1.11.1; platform_system!='Windows'",
@@ -34,6 +34,7 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Free Threading :: 2 - Beta",
   "Topic :: Software Development",
   "Topic :: Scientific/Engineering",
   "Operating System :: Microsoft :: Windows",

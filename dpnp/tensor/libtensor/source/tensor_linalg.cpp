@@ -35,7 +35,7 @@
 #include "linalg_functions/dot.hpp"
 #include <pybind11/pybind11.h>
 
-PYBIND11_MODULE(_tensor_linalg_impl, m)
+PYBIND11_MODULE(_tensor_linalg_impl, m, py::mod_gil_not_used())
 {
     dpnp::tensor::py_internal::init_dot(m);
 }

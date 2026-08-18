@@ -64,7 +64,7 @@ static dot_impl_fn_ptr_t dot_dispatch_vector[dpnp_td_ns::num_types];
 static dot_impl_fn_ptr_t dotc_dispatch_vector[dpnp_td_ns::num_types];
 static dot_impl_fn_ptr_t dotu_dispatch_vector[dpnp_td_ns::num_types];
 
-PYBIND11_MODULE(_blas_impl, m)
+PYBIND11_MODULE(_blas_impl, m, py::mod_gil_not_used())
 {
     init_dispatch_vectors_tables();
 
