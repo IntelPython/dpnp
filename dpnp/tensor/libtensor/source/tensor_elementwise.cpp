@@ -39,7 +39,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(_tensor_elementwise_impl, m)
+PYBIND11_MODULE(_tensor_elementwise_impl, m, py::mod_gil_not_used())
 {
     dpnp::tensor::py_internal::init_elementwise_functions(m);
 }

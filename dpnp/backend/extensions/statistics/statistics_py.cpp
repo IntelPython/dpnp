@@ -37,7 +37,7 @@
 #include "histogramdd.hpp"
 #include "sliding_dot_product1d.hpp"
 
-PYBIND11_MODULE(_statistics_impl, m)
+PYBIND11_MODULE(_statistics_impl, m, py::mod_gil_not_used())
 {
     statistics::histogram::populate_bincount(m);
     statistics::histogram::populate_histogram(m);

@@ -37,7 +37,7 @@
 
 #include "reductions/reduction_common.hpp"
 
-PYBIND11_MODULE(_tensor_reductions_impl, m)
+PYBIND11_MODULE(_tensor_reductions_impl, m, py::mod_gil_not_used())
 {
     dpnp::tensor::py_internal::init_reduction_functions(m);
 }

@@ -49,7 +49,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pybind11)
 
-find_package(Python REQUIRED COMPONENTS Development.Module)
+find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
 find_package(Dpctl REQUIRED)
 find_package(IntelSYCL REQUIRED)
 find_package(Dpnp REQUIRED)
