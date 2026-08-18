@@ -57,8 +57,6 @@ jobs:
         shell: ${{ matrix.os == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
     env:
-      build-conda-pkg-env: 'environments/build_conda_pkg.yml'
-      build-env-name: 'build'
       python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
       python-conda-spec: ${{ matrix.python_spec || matrix.python }}
 
@@ -73,31 +71,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+      # rattler-build is a standalone binary with no conda/Python dependency,
+      # so building conda packages with it doesn't need a full conda
+      # distribution on the runner - only rattler-build itself needs to be on
+      # PATH
+      - name: Setup rattler-build
+        uses: prefix-dev/rattler-build-action@v0.2.39
         with:
-          miniforge-version: latest
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.build-conda-pkg-env }}
-          activate-environment: ${{ env.build-env-name }}
+          setup-only: true
 
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
-        with:
-          miniforge-version: latest
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.build-conda-pkg-env }}
-          activate-environment: ${{ env.build-env-name }}
+      - name: Check rattler-build version
+        run: rattler-build --version
 
-      - name: List installed packages
-        run: mamba list
-
-      - name: Store conda paths as envs
+      - name: Store build output paths
         shell: bash -el {0}
         run: |
           echo "CONDA_BLD=$GITHUB_WORKSPACE/output/${{ runner.os == 'Linux' && 'linux-64' || 'win-64' }}/" >> "$GITHUB_ENV"
