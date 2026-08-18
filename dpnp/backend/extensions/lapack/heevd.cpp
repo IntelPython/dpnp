@@ -42,6 +42,7 @@
 
 namespace dpnp::extensions::lapack
 {
+namespace py = pybind11;
 namespace mkl_lapack = oneapi::mkl::lapack;
 namespace type_utils = dpnp::tensor::type_utils;
 
@@ -73,6 +74,10 @@ static sycl::event heevd_impl(sycl::queue &exec_q,
 
     sycl::event heevd_event;
     try {
+        // Release GIL to avoid serialization of host task submissions
+        // to the same queue in OneMKL
+        py::gil_scoped_release lock{};
+
         heevd_event = mkl_lapack::heevd(
             exec_q,
             jobz, // 'jobz == job::vec' means eigenvalues and eigenvectors are
