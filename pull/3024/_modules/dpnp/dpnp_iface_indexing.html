@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_indexing - Data Parallel Extension for NumPy (dpnp) 0.21.0dev4 documentation</title>
+        <title>dpnp.dpnp_iface_indexing - Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev4 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev4 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1052,7 +1052,7 @@
 <span class="c1">#   may be used to endorse or promote products derived from this software</span>
 <span class="c1">#   without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"</span>
 <span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
 <span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
 <span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
@@ -1065,7 +1065,7 @@
 <span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1"># *****************************************************************************</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Interface of the Indexing part of the DPNP</span>
 
 <span class="sd">Notes</span>
@@ -1076,7 +1076,7 @@
 <span class="sd"> - documentation for the functions</span>
 <span class="sd"> - The functions parameters check</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="c1"># pylint: disable=protected-access</span>
 
@@ -1112,41 +1112,41 @@
     <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">multi_index</span><span class="p">)</span> <span class="o">!=</span> <span class="n">ndim</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;parameter multi_index must be a sequence of length </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"parameter multi_index must be a sequence of length </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
     <span class="n">dim_mul</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dims</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="si">}</span><span class="s2"> object cannot be interpreted as an integer&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="si">}</span><span class="s2"> object cannot be interpreted as an integer"</span>
             <span class="p">)</span>
         <span class="n">dim_mul</span> <span class="o">*=</span> <span class="n">d</span>
 
     <span class="k">if</span> <span class="n">dim_mul</span> <span class="o">&gt;</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;invalid dims: array size defined by dims is larger than the &quot;</span>
-            <span class="s2">&quot;maximum possible size&quot;</span>
+            <span class="s2">"invalid dims: array size defined by dims is larger than the "</span>
+            <span class="s2">"maximum possible size"</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"C"</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">,</span> <span class="s2">"F"</span><span class="p">,</span> <span class="s2">"f"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Unrecognized `order` keyword value, expecting &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;C&#39; or &#39;F&#39;, but got &#39;</span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="s2">"Unrecognized `order` keyword value, expecting "</span>
+            <span class="sa">f</span><span class="s2">"'C' or 'F', but got '</span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">'"</span>
         <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_build_choices_list</span><span class="p">(</span><span class="n">choices</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Gather queues and USM types for the input, expected to be an array or</span>
 <span class="sd">    list of arrays. If a single array of dimension greater than one, the array</span>
 <span class="sd">    will be unstacked.</span>
 
 <span class="sd">    Returns a list of :class:`dpnp.tensor.usm_ndarray`s.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">choices</span><span class="p">):</span>
         <span class="n">choices</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">choices</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`choices` must be an array or sequence of arrays&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"`choices` must be an array or sequence of arrays"</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">chc</span><span class="p">)</span> <span class="k">for</span> <span class="n">chc</span> <span class="ow">in</span> <span class="n">choices</span><span class="p">]</span>
 
 
@@ -1156,23 +1156,23 @@
         <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;provided `out` array is read-only&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"provided `out` array is read-only"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">inds</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;The shape of input and output arrays are inconsistent. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Expected output shape is </span><span class="si">{</span><span class="n">inds</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="s2">"The shape of input and output arrays are inconsistent. "</span>
+                <span class="sa">f</span><span class="s2">"Expected output shape is </span><span class="si">{</span><span class="n">inds</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">chcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">chcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is needed, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Output array of type </span><span class="si">{</span><span class="n">chcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is needed, "</span>
+                <span class="sa">f</span><span class="s2">"got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dpt</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
-                <span class="s2">&quot;Input and output allocation queues are not compatible&quot;</span>
+                <span class="s2">"Input and output allocation queues are not compatible"</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
@@ -1196,8 +1196,8 @@
 
 <div class="viewcode-block" id="choose">
 <a class="viewcode-back" href="../../reference/generated/dpnp.choose.html#dpnp.choose">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">choose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">choose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"wrap"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Construct an array from an index array and a set of arrays to choose from.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.choose`.</span>
@@ -1219,15 +1219,15 @@
 <span class="sd">        be of the appropriate shape and dtype.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    mode : {&quot;wrap&quot;, &quot;clip&quot;}, optional</span>
+<span class="sd">    mode : {"wrap", "clip"}, optional</span>
 <span class="sd">        Specifies how out-of-bounds indices will be handled. Possible values</span>
 <span class="sd">        are:</span>
 
-<span class="sd">        - ``&quot;wrap&quot;``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
+<span class="sd">        - ``"wrap"``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
 <span class="sd">          negative indices.</span>
-<span class="sd">        - ``&quot;clip&quot;``: clips indices to (``0 &lt;= i &lt; n``).</span>
+<span class="sd">        - ``"clip"``: clips indices to (``0 &lt;= i &lt; n``).</span>
 
-<span class="sd">        Default: ``&quot;wrap&quot;``.</span>
+<span class="sd">        Default: ``"wrap"``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1246,21 +1246,21 @@
 <span class="sd">    ...   [20, 21, 22, 23], [30, 31, 32, 33]])</span>
 <span class="sd">    &gt;&gt;&gt; np.choose(np.array([2, 3, 1, 0]), choices</span>
 <span class="sd">    ... # the first element of the result will be the first element of the</span>
-<span class="sd">    ... # third (2+1) &quot;array&quot; in choices, namely, 20; the second element</span>
+<span class="sd">    ... # third (2+1) "array" in choices, namely, 20; the second element</span>
 <span class="sd">    ... # will be the second element of the fourth (3+1) choice array, i.e.,</span>
 <span class="sd">    ... # 31, etc.</span>
 <span class="sd">    ... )</span>
 <span class="sd">    array([20, 31, 12, 3])</span>
-<span class="sd">    &gt;&gt;&gt; np.choose(np.array([2, 4, 1, 0]), choices, mode=&#39;clip&#39;</span>
+<span class="sd">    &gt;&gt;&gt; np.choose(np.array([2, 4, 1, 0]), choices, mode='clip'</span>
 <span class="sd">    ... # 4 goes to 3 (4-1)</span>
 <span class="sd">    ... )</span>
 <span class="sd">    array([20, 31, 12, 3])</span>
 <span class="sd">    &gt;&gt;&gt; # because there are 4 choice arrays</span>
-<span class="sd">    &gt;&gt;&gt; np.choose(np.array([2, 4, 1, 0]), choices, mode=&#39;wrap&#39;</span>
+<span class="sd">    &gt;&gt;&gt; np.choose(np.array([2, 4, 1, 0]), choices, mode='wrap'</span>
 <span class="sd">    ... # 4 is clipped to 3</span>
 <span class="sd">    ... )</span>
 <span class="sd">    array([20, 31, 12, 3])</span>
-<span class="sd">    &gt;&gt;&gt; np.choose(np.array([2, -1, 1, 0]), choices, mode=&#39;wrap&#39;</span>
+<span class="sd">    &gt;&gt;&gt; np.choose(np.array([2, -1, 1, 0]), choices, mode='wrap'</span>
 <span class="sd">    ... # -1 goes to 3 (-1+4)</span>
 <span class="sd">    ... )</span>
 <span class="sd">    array([20, 31, 12, 3])</span>
@@ -1273,7 +1273,7 @@
 <span class="sd">    array([[ 10, -10,  10],</span>
 <span class="sd">           [-10,  10, -10],</span>
 <span class="sd">           [ 10, -10,  10]])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">mode</span> <span class="o">=</span> <span class="n">_get_indexing_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
 
     <span class="n">inds</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -1284,7 +1284,7 @@
         <span class="k">if</span> <span class="n">ind_dt</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
             <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;input index array must be of integer data type&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"input index array must be of integer data type"</span><span class="p">)</span>
 
     <span class="n">choices</span> <span class="o">=</span> <span class="n">_build_choices_list</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span>
 
@@ -1315,7 +1315,7 @@
     <span class="n">x_sh</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">axis_end</span> <span class="o">=</span> <span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">x_sh</span><span class="p">[</span><span class="n">axis</span><span class="p">:</span><span class="n">axis_end</span><span class="p">]</span> <span class="ow">and</span> <span class="n">inds</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;cannot take non-empty indices from an empty axis&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">"cannot take non-empty indices from an empty axis"</span><span class="p">)</span>
     <span class="n">res_sh</span> <span class="o">=</span> <span class="n">x_sh</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="n">inds</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="n">x_sh</span><span class="p">[</span><span class="n">axis_end</span><span class="p">:]</span>
 
     <span class="n">x_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
@@ -1323,23 +1323,23 @@
         <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;provided `out` array is read-only&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"provided `out` array is read-only"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_sh</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;The shape of input and output arrays are inconsistent. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Expected output shape is </span><span class="si">{</span><span class="n">res_sh</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="s2">"The shape of input and output arrays are inconsistent. "</span>
+                <span class="sa">f</span><span class="s2">"Expected output shape is </span><span class="si">{</span><span class="n">res_sh</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dpt</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
-                <span class="s2">&quot;Input and output allocation queues are not compatible&quot;</span>
+                <span class="s2">"Input and output allocation queues are not compatible"</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">x_dt</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">x_dt</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">x_dt</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">"same_kind"</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">x_dt</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Output array of type </span><span class="si">{</span><span class="n">x_dt</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
 
             <span class="c1"># tensor.take() requires `out` to match the input dtype</span>
@@ -1371,7 +1371,7 @@
 <div class="viewcode-block" id="compress">
 <a class="viewcode-back" href="../../reference/generated/dpnp.compress.html#dpnp.compress">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compress</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return selected slices of an array along given axis.</span>
 
 <span class="sd">    A slice of `a` is returned for each index along `axis` where `condition`</span>
@@ -1438,7 +1438,7 @@
 
 <span class="sd">    &gt;&gt;&gt; np.compress([False, True], a)</span>
 <span class="sd">    array([2])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1457,7 +1457,7 @@
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">cond_ary</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;`condition` must be a 1-D array or un-nested sequence&quot;</span>
+            <span class="s2">"`condition` must be a 1-D array or un-nested sequence"</span>
         <span class="p">)</span>
 
     <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">a_ary</span><span class="p">,</span> <span class="n">cond_ary</span><span class="p">])</span>
@@ -1467,14 +1467,14 @@
 
     <span class="n">res</span> <span class="o">=</span> <span class="n">_take_index</span><span class="p">(</span><span class="n">a_ary</span><span class="p">,</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">"same_kind"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="diag_indices">
 <a class="viewcode-back" href="../../reference/generated/dpnp.diag_indices.html#dpnp.diag_indices">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">diag_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">diag_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the indices to access the main diagonal of an array.</span>
 
 <span class="sd">    This returns a tuple of indices that can be used to access the main</span>
@@ -1503,10 +1503,10 @@
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">    usm_type : {"device", "shared", "host"}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 
-<span class="sd">        Default: ``&quot;device&quot;``.</span>
+<span class="sd">        Default: ``"device"``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
@@ -1562,7 +1562,7 @@
 <span class="sd">           [[0, 0],</span>
 <span class="sd">            [0, 1]]])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
         <span class="n">n</span><span class="p">,</span>
@@ -1577,7 +1577,7 @@
 <div class="viewcode-block" id="diag_indices_from">
 <a class="viewcode-back" href="../../reference/generated/dpnp.diag_indices_from.html#dpnp.diag_indices_from">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">diag_indices_from</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the indices to access the main diagonal of an n-dimensional array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.diag_indices_from`.</span>
@@ -1623,15 +1623,15 @@
 <span class="sd">    &gt;&gt;&gt; np.diag_indices(a.shape[0])</span>
 <span class="sd">    (array([0, 1, 2, 3]), array([0, 1, 2, 3]))</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;input array must be at least 2-d&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"input array must be at least 2-d"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All dimensions of input must be of equal length&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"All dimensions of input must be of equal length"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">diag_indices</span><span class="p">(</span>
         <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -1645,7 +1645,7 @@
 <div class="viewcode-block" id="diagonal">
 <a class="viewcode-back" href="../../reference/generated/dpnp.diagonal.html#dpnp.diagonal">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">diagonal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return specified diagonals.</span>
 
 <span class="sd">    This function always returns a read/write view, and writing to</span>
@@ -1717,13 +1717,13 @@
 <span class="sd">            [6, 7]]])</span>
 <span class="sd">    &gt;&gt;&gt; a.diagonal(0,  # Main diagonals of two arrays created by skipping</span>
 <span class="sd">    ...            0,  # across the outer(left)-most axis last and</span>
-<span class="sd">    ...            1)  # the &quot;middle&quot; (row) axis first.</span>
+<span class="sd">    ...            1)  # the "middle" (row) axis first.</span>
 <span class="sd">    array([[0, 6],</span>
 <span class="sd">           [1, 7]])</span>
 
 <span class="sd">    The sub-arrays whose main diagonals we just obtained; note that each</span>
 <span class="sd">    corresponds to fixing the right-most (column) axis, and that the</span>
-<span class="sd">    diagonals are &quot;packed&quot; in rows.</span>
+<span class="sd">    diagonals are "packed" in rows.</span>
 
 <span class="sd">    &gt;&gt;&gt; a[:,:,0]  # main diagonal is [0 6]</span>
 <span class="sd">    array([[0, 2],</span>
@@ -1748,24 +1748,24 @@
 <span class="sd">    Note that the order in which the diagonal is retrieved varies depending</span>
 <span class="sd">    on the flip function.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
 
     <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;diag requires an array of at least two dimensions&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"diag requires an array of at least two dimensions"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;`offset` must be an integer data type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"`offset` must be an integer data type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="n">axis1</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis1</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">)</span>
     <span class="n">axis2</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis2</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">axis1</span> <span class="o">==</span> <span class="n">axis2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`axis1` and `axis2` cannot be the same&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`axis1` and `axis2` cannot be the same"</span><span class="p">)</span>
 
     <span class="c1"># get list of the order of all axes excluding the two target axes</span>
     <span class="n">axes_order</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">]]</span>
@@ -1801,7 +1801,7 @@
 <div class="viewcode-block" id="extract">
 <a class="viewcode-back" href="../../reference/generated/dpnp.extract.html#dpnp.extract">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the elements of an array that satisfy some condition.</span>
 
 <span class="sd">    This is equivalent to</span>
@@ -1856,7 +1856,7 @@
 <span class="sd">    &gt;&gt;&gt; a[condition]</span>
 <span class="sd">    array([0, 3, 6, 9])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">condition</span><span class="p">])</span>
@@ -1886,7 +1886,7 @@
 <div class="viewcode-block" id="fill_diagonal">
 <a class="viewcode-back" href="../../reference/generated/dpnp.fill_diagonal.html#dpnp.fill_diagonal">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">fill_diagonal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Fill the main diagonal of the given array of any dimensionality.</span>
 
 <span class="sd">    For an array `a` with ``a.ndim &gt;= 2``, the diagonal is the list of values</span>
@@ -1905,7 +1905,7 @@
 <span class="sd">        written along the diagonal, repeating if necessary to fill all</span>
 <span class="sd">        diagonal entries.</span>
 <span class="sd">    wrap : bool, optional</span>
-<span class="sd">        It enables the diagonal &quot;wrapped&quot; after N columns. This affects only</span>
+<span class="sd">        It enables the diagonal "wrapped" after N columns. This affects only</span>
 <span class="sd">        tall matrices.</span>
 
 <span class="sd">        Default: ``False``.</span>
@@ -1993,13 +1993,13 @@
 <span class="sd">           [0, 2, 0],</span>
 <span class="sd">           [1, 0, 0]])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">usm_val</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;array must be at least 2-d&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"array must be at least 2-d"</span><span class="p">)</span>
 
     <span class="n">end</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span>
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -2008,7 +2008,7 @@
             <span class="n">end</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All dimensions of input must be of equal length&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"All dimensions of input must be of equal length"</span><span class="p">)</span>
         <span class="n">step</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
 
     <span class="c1"># TODO: implement flatiter for slice key</span>
@@ -2034,7 +2034,7 @@
 <div class="viewcode-block" id="flatnonzero">
 <a class="viewcode-back" href="../../reference/generated/dpnp.flatnonzero.html#dpnp.flatnonzero">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">flatnonzero</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return indices that are non-zero in the flattened version of `a`.</span>
 
 <span class="sd">    This is equivalent to ``dpnp.nonzero(dpnp.ravel(a))[0]``.</span>
@@ -2074,7 +2074,7 @@
 <span class="sd">    &gt;&gt;&gt; x.ravel()[np.flatnonzero(x)]</span>
 <span class="sd">    array([-2, -1,  1,  2])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span></div>
 
@@ -2087,10 +2087,10 @@
     <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
     <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return an array representing the indices of a grid.</span>
 
 <span class="sd">    Compute an array where the subarrays contain index values 0, 1, …</span>
@@ -2120,10 +2120,10 @@
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">    usm_type : {"device", "shared", "host"}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 
-<span class="sd">        Default: ``&quot;device&quot;``.</span>
+<span class="sd">        Default: ``"device"``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
@@ -2189,7 +2189,7 @@
 <span class="sd">    &gt;&gt;&gt; j</span>
 <span class="sd">    array([[0, 1, 2]])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dimensions</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dimensions</span><span class="p">)</span>
@@ -2226,7 +2226,7 @@
 <div class="viewcode-block" id="iterable">
 <a class="viewcode-back" href="../../reference/generated/dpnp.iterable.html#dpnp.iterable">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">iterable</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check whether or not an object can be iterated over.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.iterable`.</span>
@@ -2261,7 +2261,7 @@
 <span class="sd">    &gt;&gt;&gt; np.iterable(a)</span>
 <span class="sd">    False</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">iterable</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div>
 
@@ -2270,7 +2270,7 @@
 <div class="viewcode-block" id="ix_">
 <a class="viewcode-back" href="../../reference/generated/dpnp.ix_.html#dpnp.ix_">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ix_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Construct an open mesh from multiple sequences.</span>
+<span class="w">    </span><span class="sd">"""Construct an open mesh from multiple sequences.</span>
 
 <span class="sd">    This function takes N 1-D sequences and returns N outputs with N</span>
 <span class="sd">    dimensions each, such that the shape is 1 in all but one dimension</span>
@@ -2334,7 +2334,7 @@
 <span class="sd">    array([[2, 4],</span>
 <span class="sd">           [7, 9]])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
@@ -2342,7 +2342,7 @@
     <span class="n">nd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">new</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cross index must be 1 dimensional&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Cross index must be 1 dimensional"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">):</span>
             <span class="p">(</span><span class="n">new</span><span class="p">,)</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
         <span class="n">new</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">k</span> <span class="o">+</span> <span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">size</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">nd</span> <span class="o">-</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
@@ -2358,10 +2358,10 @@
     <span class="n">mask_func</span><span class="p">,</span>
     <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the indices to access (n, n) arrays, given a masking function.</span>
 
 <span class="sd">    Assume `mask_func` is a function that, for a square array a of size</span>
@@ -2394,10 +2394,10 @@
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">    usm_type : {"device", "shared", "host"}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 
-<span class="sd">        Default: ``&quot;device&quot;``.</span>
+<span class="sd">        Default: ``"device"``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
@@ -2449,7 +2449,7 @@
 <span class="sd">    &gt;&gt;&gt; a[iu1]</span>
 <span class="sd">    array([1, 2, 5])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">m</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
         <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span>
@@ -2468,7 +2468,7 @@
 <div class="viewcode-block" id="ndindex">
 <a class="viewcode-back" href="../../reference/generated/dpnp.ndindex.html#dpnp.ndindex">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ndindex</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An N-dimensional iterator object to index arrays.</span>
 
 <span class="sd">    Given the shape of an array, an :obj:`dpnp.ndindex` instance iterates over</span>
@@ -2514,7 +2514,7 @@
 <span class="sd">    (2, 0, 0)</span>
 <span class="sd">    (2, 1, 0)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">shape</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ndindex_</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndindex</span><span class="p">(</span><span class="o">*</span><span class="n">shape</span><span class="p">)</span>
@@ -2523,7 +2523,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndindex_</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Standard iterator method, updates the index and returns the index tuple.</span>
 
 <span class="sd">        Returns</span>
@@ -2531,7 +2531,7 @@
 <span class="sd">        val : tuple of ints</span>
 <span class="sd">            Returns a tuple containing the indices of the current iteration.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndindex_</span><span class="o">.</span><span class="fm">__next__</span><span class="p">()</span></div>
 
@@ -2540,7 +2540,7 @@
 <div class="viewcode-block" id="nonzero">
 <a class="viewcode-back" href="../../reference/generated/dpnp.nonzero.html#dpnp.nonzero">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">nonzero</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the indices of the elements that are non-zero.</span>
 
 <span class="sd">    Returns a tuple of arrays, one for each dimension of `a`, containing</span>
@@ -2621,7 +2621,7 @@
 <span class="sd">    &gt;&gt;&gt; (a &gt; 3).nonzero()</span>
 <span class="sd">    (array([1, 1, 1, 2, 2, 2]), array([0, 1, 2, 0, 1, 2]))</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
@@ -2633,7 +2633,7 @@
 <div class="viewcode-block" id="place">
 <a class="viewcode-back" href="../../reference/generated/dpnp.place.html#dpnp.place">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">place</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Change elements of an array based on conditional and input values.</span>
 
 <span class="sd">    Similar to ``dpnp.copyto(a, vals, where=mask)``, the difference is that</span>
@@ -2674,7 +2674,7 @@
 <span class="sd">    array([[ 0,  1,  2],</span>
 <span class="sd">           [44, 55, 44]])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">usm_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
@@ -2695,9 +2695,9 @@
         <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">usm_vals</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">usm_vals</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-        <span class="c1"># dpt.place casts values to a.dtype with &quot;unsafe&quot; rule,</span>
-        <span class="c1"># while numpy.place does that with &quot;safe&quot; casting rule</span>
-        <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_vals</span><span class="p">,</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># dpt.place casts values to a.dtype with "unsafe" rule,</span>
+        <span class="c1"># while numpy.place does that with "safe" casting rule</span>
+        <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_vals</span><span class="p">,</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">"safe"</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">dpt</span><span class="o">.</span><span class="n">place</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_mask</span><span class="p">,</span> <span class="n">usm_vals</span><span class="p">)</span></div>
 
@@ -2705,8 +2705,8 @@
 
 <div class="viewcode-block" id="put">
 <a class="viewcode-back" href="../../reference/generated/dpnp.put.html#dpnp.put">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"wrap"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Puts values of an array into another array along a given axis.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.put`.</span>
@@ -2725,14 +2725,14 @@
 <span class="sd">        this argument is optional.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    mode : {&#39;wrap&#39;, &#39;clip&#39;}, optional</span>
+<span class="sd">    mode : {'wrap', 'clip'}, optional</span>
 <span class="sd">        Specifies how out-of-bounds indices will behave.</span>
 
-<span class="sd">        - &#39;wrap&#39;: clamps indices to (``-n &lt;= i &lt; n``), then wraps negative</span>
+<span class="sd">        - 'wrap': clamps indices to (``-n &lt;= i &lt; n``), then wraps negative</span>
 <span class="sd">          indices.</span>
-<span class="sd">        - &#39;clip&#39;: clips indices to (``0 &lt;= i &lt; n``).</span>
+<span class="sd">        - 'clip': clips indices to (``0 &lt;= i &lt; n``).</span>
 
-<span class="sd">        Default: ``&#39;wrap&#39;``.</span>
+<span class="sd">        Default: ``'wrap'``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -2758,20 +2758,20 @@
 <span class="sd">    array([-44,   1, -55,   3,   4])</span>
 
 <span class="sd">    &gt;&gt;&gt; a = np.arange(5)</span>
-<span class="sd">    &gt;&gt;&gt; np.put(a, 22, -5, mode=&#39;clip&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; np.put(a, 22, -5, mode='clip')</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([ 0,  1,  2,  3, -5])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`axis` must be of integer type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"`axis` must be of integer type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;wrap&quot;</span><span class="p">,</span> <span class="s2">&quot;clip&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"wrap"</span><span class="p">,</span> <span class="s2">"clip"</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;clipmode must be one of &#39;clip&#39; or &#39;wrap&#39; (got &#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+            <span class="sa">f</span><span class="s2">"clipmode must be one of 'clip' or 'wrap' (got '</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">')"</span>
         <span class="p">)</span>
 
     <span class="n">usm_v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
@@ -2796,7 +2796,7 @@
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">usm_ind</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
         <span class="c1"># dpt.put supports only integer dtype for array of indices</span>
-        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_ind</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
+        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_ind</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">"safe"</span><span class="p">)</span>
 
     <span class="n">in_usm_a</span> <span class="o">=</span> <span class="n">usm_a</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -2810,8 +2810,8 @@
 
 <div class="viewcode-block" id="put_along_axis">
 <a class="viewcode-back" href="../../reference/generated/dpnp.put_along_axis.html#dpnp.put_along_axis">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">put_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">put_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"wrap"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Put values into the destination array by matching 1d index and data slices.</span>
 
 <span class="sd">    This iterates over matching 1d slices oriented along the specified axis in</span>
@@ -2837,15 +2837,15 @@
 <span class="sd">    axis : {None, int}</span>
 <span class="sd">        The axis to take 1d slices along. If axis is ``None``, the destination</span>
 <span class="sd">        array is treated as if a flattened 1d view had been created of it.</span>
-<span class="sd">    mode : {&quot;wrap&quot;, &quot;clip&quot;}, optional</span>
+<span class="sd">    mode : {"wrap", "clip"}, optional</span>
 <span class="sd">        Specifies how out-of-bounds indices will be handled. Possible values</span>
 <span class="sd">        are:</span>
 
-<span class="sd">        - ``&quot;wrap&quot;``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
+<span class="sd">        - ``"wrap"``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
 <span class="sd">          negative indices.</span>
-<span class="sd">        - ``&quot;clip&quot;``: clips indices to (``0 &lt;= i &lt; n``).</span>
+<span class="sd">        - ``"clip"``: clips indices to (``0 &lt;= i &lt; n``).</span>
 
-<span class="sd">        Default: ``&quot;wrap&quot;``.</span>
+<span class="sd">        Default: ``"wrap"``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -2872,13 +2872,13 @@
 <span class="sd">    array([[10, 99, 20],</span>
 <span class="sd">           [99, 40, 50]])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;when axis=None, `ind` must have a single dimension.&quot;</span>
+                <span class="s2">"when axis=None, `ind` must have a single dimension."</span>
             <span class="p">)</span>
 
         <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -2900,7 +2900,7 @@
 <div class="viewcode-block" id="putmask">
 <a class="viewcode-back" href="../../reference/generated/dpnp.putmask.html#dpnp.putmask">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">putmask</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Changes elements of an array based on conditional and input values.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.putmask`.</span>
@@ -2910,7 +2910,7 @@
 <span class="sd">    Input arrays ``arr``, ``mask`` and ``values`` are supported</span>
 <span class="sd">    as :obj:`dpnp.ndarray`.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
         <span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
@@ -2928,8 +2928,8 @@
 
 <div class="viewcode-block" id="ravel_multi_index">
 <a class="viewcode-back" href="../../reference/generated/dpnp.ravel_multi_index.html#dpnp.ravel_multi_index">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ravel_multi_index</span><span class="p">(</span><span class="n">multi_index</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ravel_multi_index</span><span class="p">(</span><span class="n">multi_index</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"raise"</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Converts a tuple of index arrays into an array of flat indices, applying</span>
 <span class="sd">    boundary modes to the multi-index.</span>
 
@@ -2941,23 +2941,23 @@
 <span class="sd">        A tuple of integer arrays, one array for each dimension.</span>
 <span class="sd">    dims : tuple or list of ints</span>
 <span class="sd">        The shape of array into which the indices from `multi_index` apply.</span>
-<span class="sd">    mode : {&quot;raise&quot;, &quot;wrap&quot; or &quot;clip&#39;}, optional</span>
+<span class="sd">    mode : {"raise", "wrap" or "clip'}, optional</span>
 <span class="sd">        Specifies how out-of-bounds indices are handled. Can specify either</span>
 <span class="sd">        one mode or a tuple of modes, one mode per index:</span>
 
-<span class="sd">        - &quot;raise&quot; -- raise an error</span>
-<span class="sd">        - &quot;wrap&quot; -- wrap around</span>
-<span class="sd">        - &quot;clip&quot; -- clip to the range</span>
+<span class="sd">        - "raise" -- raise an error</span>
+<span class="sd">        - "wrap" -- wrap around</span>
+<span class="sd">        - "clip" -- clip to the range</span>
 
-<span class="sd">        In ``&quot;clip&quot;`` mode, a negative index which would normally wrap will</span>
+<span class="sd">        In ``"clip"`` mode, a negative index which would normally wrap will</span>
 <span class="sd">        clip to 0 instead.</span>
 
-<span class="sd">        Default: ``&quot;raise&quot;``.</span>
-<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
+<span class="sd">        Default: ``"raise"``.</span>
+<span class="sd">    order : {None, "C", "F"}, optional</span>
 <span class="sd">        Determines whether the multi-index should be viewed as indexing in</span>
 <span class="sd">        row-major (C-style) or column-major (Fortran-style) order.</span>
 
-<span class="sd">        Default: ``&quot;C&quot;``.</span>
+<span class="sd">        Default: ``"C"``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2976,18 +2976,18 @@
 <span class="sd">    &gt;&gt;&gt; arr = np.array([[3, 6, 6], [4, 5, 1]])</span>
 <span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (7, 6))</span>
 <span class="sd">    array([22, 41, 37])</span>
-<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (7, 6), order=&quot;F&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (7, 6), order="F")</span>
 <span class="sd">    array([31, 41, 13])</span>
-<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (4, 6), mode=&quot;clip&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (4, 6), mode="clip")</span>
 <span class="sd">    array([22, 23, 19])</span>
-<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (4, 4), mode=(&quot;clip&quot;, &quot;wrap&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (4, 4), mode=("clip", "wrap"))</span>
 <span class="sd">    array([12, 13, 13])</span>
 
 <span class="sd">    &gt;&gt;&gt; arr = np.array([3, 1, 4, 1])</span>
 <span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (6, 7, 8, 9))</span>
 <span class="sd">    array(1621)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_ravel_multi_index_checks</span><span class="p">(</span><span class="n">multi_index</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
 
@@ -3001,8 +3001,8 @@
     <span class="n">multi_index</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">multi_index</span><span class="p">)</span>
     <span class="n">usm_type_alloc</span><span class="p">,</span> <span class="n">sycl_queue_alloc</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">(</span><span class="n">multi_index</span><span class="p">)</span>
 
-    <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span> <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">order</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="s2">"C"</span> <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">order</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">"C"</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">dims</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
             <span class="n">ravel_strides</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
@@ -3019,22 +3019,22 @@
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue_alloc</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_mode</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dims</span><span class="p">,</span> <span class="n">ravel_strides</span><span class="p">,</span> <span class="n">multi_index</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="s2">"same_kind"</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;multi_index entries could not be cast from dtype(</span><span class="si">{</span><span class="n">idx</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">)&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot; to dtype(</span><span class="si">{</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="si">}</span><span class="s2">) according to the rule &#39;same_kind&#39;&quot;</span>
+                <span class="sa">f</span><span class="s2">"multi_index entries could not be cast from dtype(</span><span class="si">{</span><span class="n">idx</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">)"</span>
+                <span class="sa">f</span><span class="s2">" to dtype(</span><span class="si">{</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="si">}</span><span class="s2">) according to the rule 'same_kind'"</span>
             <span class="p">)</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">_mode</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_mode</span> <span class="o">==</span> <span class="s2">"raise"</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">idx</span> <span class="o">&gt;=</span> <span class="n">d</span><span class="p">,</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid entry in coordinates array&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">_mode</span> <span class="o">==</span> <span class="s2">&quot;clip&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"invalid entry in coordinates array"</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_mode</span> <span class="o">==</span> <span class="s2">"clip"</span><span class="p">:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">_mode</span> <span class="o">==</span> <span class="s2">&quot;wrap&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">_mode</span> <span class="o">==</span> <span class="s2">"wrap"</span><span class="p">:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">%</span> <span class="n">d</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized mode: </span><span class="si">{</span><span class="n">_mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unrecognized mode: </span><span class="si">{</span><span class="n">_mode</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">raveled_indices</span> <span class="o">+=</span> <span class="n">stride</span> <span class="o">*</span> <span class="n">idx</span>
     <span class="k">return</span> <span class="n">raveled_indices</span></div>
 
@@ -3043,7 +3043,7 @@
 <div class="viewcode-block" id="select">
 <a class="viewcode-back" href="../../reference/generated/dpnp.select.html#dpnp.select">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return an array drawn from elements in `choicelist`, depending on</span>
 <span class="sd">    conditions.</span>
 
@@ -3105,15 +3105,15 @@
 <span class="sd">    &gt;&gt;&gt; np.select(condlist, choicelist, 55)</span>
 <span class="sd">    array([ 0,  1,  2,  3,  4, 25])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">choicelist</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;list of cases must be same length as list of conditions&quot;</span>
+            <span class="s2">"list of cases must be same length as list of conditions"</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;select with an empty condition list is not possible&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"select with an empty condition list is not possible"</span><span class="p">)</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">condlist</span><span class="p">)</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">choicelist</span><span class="p">)</span>
@@ -3122,7 +3122,7 @@
         <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">default</span><span class="p">)</span> <span class="ow">and</span> <span class="n">default</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;A default value must be any of scalar or 0-d supported array type&quot;</span>
+            <span class="s2">"A default value must be any of scalar or 0-d supported array type"</span>
         <span class="p">)</span>
 
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
@@ -3134,7 +3134,7 @@
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">cond</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">condlist</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;invalid entry </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> in condlist: should be boolean ndarray&quot;</span>
+                <span class="sa">f</span><span class="s2">"invalid entry </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> in condlist: should be boolean ndarray"</span>
             <span class="p">)</span>
 
     <span class="c1"># Convert conditions to arrays and broadcast conditions and choices</span>
@@ -3165,11 +3165,11 @@
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="take">
 <a class="viewcode-back" href="../../reference/generated/dpnp.take.html#dpnp.take">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"wrap"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Take elements from an array along an axis.</span>
 
-<span class="sd">    When `axis` is not ``None``, this function does the same thing as &quot;fancy&quot;</span>
+<span class="sd">    When `axis` is not ``None``, this function does the same thing as "fancy"</span>
 <span class="sd">    indexing (indexing arrays using arrays); however, it can be easier to use</span>
 <span class="sd">    if you need elements along a given axis. A call such as</span>
 <span class="sd">    ``dpnp.take(a, indices, axis=3)`` is equivalent to</span>
@@ -3194,15 +3194,15 @@
 <span class="sd">        be of the appropriate shape and dtype.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    mode : {&quot;wrap&quot;, &quot;clip&quot;}, optional</span>
+<span class="sd">    mode : {"wrap", "clip"}, optional</span>
 <span class="sd">        Specifies how out-of-bounds indices will be handled. Possible values</span>
 <span class="sd">        are:</span>
 
-<span class="sd">        - ``&quot;wrap&quot;``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
+<span class="sd">        - ``"wrap"``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
 <span class="sd">          negative indices.</span>
-<span class="sd">        - ``&quot;clip&quot;``: clips indices to (``0 &lt;= i &lt; n``).</span>
+<span class="sd">        - ``"clip"``: clips indices to (``0 &lt;= i &lt; n``).</span>
 
-<span class="sd">        Default: ``&quot;wrap&quot;``.</span>
+<span class="sd">        Default: ``"wrap"``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3224,7 +3224,7 @@
 <span class="sd">    &gt;&gt;&gt; np.take(x, indices)</span>
 <span class="sd">    array([4, 3, 6])</span>
 
-<span class="sd">    In this example &quot;fancy&quot; indexing can be used.</span>
+<span class="sd">    In this example "fancy" indexing can be used.</span>
 
 <span class="sd">    &gt;&gt;&gt; x[indices]</span>
 <span class="sd">    array([4, 3, 6])</span>
@@ -3233,7 +3233,7 @@
 <span class="sd">    &gt;&gt;&gt; np.take(x, indices)</span>
 <span class="sd">    array([8, 4, 4, 8, 8])</span>
 
-<span class="sd">    &gt;&gt;&gt; np.take(x, indices, mode=&quot;clip&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; np.take(x, indices, mode="clip")</span>
 <span class="sd">    array([4, 4, 4, 8, 8])</span>
 
 <span class="sd">    If `indices` is not one dimensional, the output also has these dimensions.</span>
@@ -3242,9 +3242,9 @@
 <span class="sd">    array([[4, 3],</span>
 <span class="sd">           [5, 7]])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="c1"># sets mode to 0 for &quot;wrap&quot; and 1 for &quot;clip&quot;, raises otherwise</span>
+    <span class="c1"># sets mode to 0 for "wrap" and 1 for "clip", raises otherwise</span>
     <span class="n">mode</span> <span class="o">=</span> <span class="n">_get_indexing_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -3270,20 +3270,20 @@
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">usm_ind</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
         <span class="c1"># dpt.take supports only integer dtype for array of indices</span>
-        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_ind</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span>
+        <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">usm_ind</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">"safe"</span><span class="p">)</span>
 
     <span class="n">usm_res</span> <span class="o">=</span> <span class="n">_take_index</span><span class="p">(</span>
         <span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_ind</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">usm_res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">"same_kind"</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="take_along_axis">
 <a class="viewcode-back" href="../../reference/generated/dpnp.take_along_axis.html#dpnp.take_along_axis">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">take_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">take_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"wrap"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Take values from the input array by matching 1d index and data slices.</span>
 
 <span class="sd">    This iterates over matching 1d slices oriented along the specified axis in</span>
@@ -3310,15 +3310,15 @@
 <span class="sd">        consistent with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.</span>
 
 <span class="sd">        Default: ``-1``.</span>
-<span class="sd">    mode : {&quot;wrap&quot;, &quot;clip&quot;}, optional</span>
+<span class="sd">    mode : {"wrap", "clip"}, optional</span>
 <span class="sd">        Specifies how out-of-bounds indices will be handled. Possible values</span>
 <span class="sd">        are:</span>
 
-<span class="sd">        - ``&quot;wrap&quot;``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
+<span class="sd">        - ``"wrap"``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
 <span class="sd">          negative indices.</span>
-<span class="sd">        - ``&quot;clip&quot;``: clips indices to (``0 &lt;= i &lt; n``).</span>
+<span class="sd">        - ``"clip"``: clips indices to (``0 &lt;= i &lt; n``).</span>
 
-<span class="sd">        Default: ``&quot;wrap&quot;``.</span>
+<span class="sd">        Default: ``"wrap"``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3381,13 +3381,13 @@
 <span class="sd">    array([[10, 30],</span>
 <span class="sd">           [40, 60]])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;when axis=None, `indices` must have a single dimension.&quot;</span>
+                <span class="s2">"when axis=None, `indices` must have a single dimension."</span>
             <span class="p">)</span>
 
         <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -3408,10 +3408,10 @@
     <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the indices for the lower-triangle of an (n, m) array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.tril_indices`.</span>
@@ -3440,10 +3440,10 @@
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">    usm_type : {"device", "shared", "host"}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 
-<span class="sd">        Default: ``&quot;device&quot;``.</span>
+<span class="sd">        Default: ``"device"``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
@@ -3516,7 +3516,7 @@
 <span class="sd">           [-10, -10, -10, -10],</span>
 <span class="sd">           [-10, -10, -10, -10]])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">tri_</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">tri</span><span class="p">(</span>
         <span class="n">n</span><span class="p">,</span>
@@ -3544,7 +3544,7 @@
 <div class="viewcode-block" id="tril_indices_from">
 <a class="viewcode-back" href="../../reference/generated/dpnp.tril_indices_from.html#dpnp.tril_indices_from">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">tril_indices_from</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the indices for the lower-triangle of arr.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.tril_indices_from`.</span>
@@ -3607,12 +3607,12 @@
 <span class="sd">    &gt;&gt;&gt; a[trili1]</span>
 <span class="sd">    array([ 0,  1,  4,  5,  6,  8,  9, 10, 11, 12, 13, 14, 15])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;input array must be 2-d&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"input array must be 2-d"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">tril_indices</span><span class="p">(</span>
         <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span>
@@ -3631,10 +3631,10 @@
     <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="s2">"device"</span><span class="p">,</span>
     <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the indices for the upper-triangle of an (n, m) array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.triu_indices`.</span>
@@ -3663,7 +3663,7 @@
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">    usm_type : {"device", "shared", "host"}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -3740,13 +3740,13 @@
 <span class="sd">           [  8,   9,  -1,  -1],</span>
 <span class="sd">           [ 12,  13,  14,  -1]])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">k</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="c1"># pylint: disable=raise-missing-from</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`k` must be a integer data type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"`k` must be a integer data type, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">tri_</span> <span class="o">=</span> <span class="o">~</span><span class="n">dpnp</span><span class="o">.</span><span class="n">tri</span><span class="p">(</span>
         <span class="n">n</span><span class="p">,</span>
@@ -3774,7 +3774,7 @@
 <div class="viewcode-block" id="triu_indices_from">
 <a class="viewcode-back" href="../../reference/generated/dpnp.triu_indices_from.html#dpnp.triu_indices_from">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">triu_indices_from</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the indices for the lower-triangle of arr.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.triu_indices_from`.</span>
@@ -3838,12 +3838,12 @@
 <span class="sd">    &gt;&gt;&gt; a[triuim1]</span>
 <span class="sd">    array([ 1,  2,  3,  6,  7, 11])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;input array must be 2-d&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"input array must be 2-d"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">triu_indices</span><span class="p">(</span>
         <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span>
@@ -3857,8 +3857,8 @@
 
 <div class="viewcode-block" id="unravel_index">
 <a class="viewcode-back" href="../../reference/generated/dpnp.unravel_index.html#dpnp.unravel_index">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">unravel_index</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unravel_index</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Converts array of flat indices into a tuple of coordinate arrays.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.unravel_index`.</span>
@@ -3870,11 +3870,11 @@
 <span class="sd">        of an array of dimensions `shape`.</span>
 <span class="sd">    shape : tuple or list of ints</span>
 <span class="sd">        The shape of the array to use for unraveling `indices`.</span>
-<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
+<span class="sd">    order : {None, "C", "F"}, optional</span>
 <span class="sd">        Determines whether the indices should be viewed as indexing in</span>
 <span class="sd">        row-major (C-style) or column-major (Fortran-style) order.</span>
 
-<span class="sd">        Default: ``&quot;C&quot;``.</span>
+<span class="sd">        Default: ``"C"``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3891,34 +3891,34 @@
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; np.unravel_index(np.array([22, 41, 37]), (7, 6))</span>
 <span class="sd">    (array([3, 6, 6]), array([4, 5, 1]))</span>
-<span class="sd">    &gt;&gt;&gt; np.unravel_index(np.array([31, 41, 13]), (7, 6), order=&quot;F&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; np.unravel_index(np.array([31, 41, 13]), (7, 6), order="F")</span>
 <span class="sd">    (array([3, 6, 6]), array([4, 5, 1]))</span>
 
 <span class="sd">    &gt;&gt;&gt; np.unravel_index(np.array(1621), (6, 7, 8, 9))</span>
 <span class="sd">    (array(3), array(1), array(4), array(1))</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"C"</span><span class="p">,</span> <span class="s2">"c"</span><span class="p">,</span> <span class="s2">"F"</span><span class="p">,</span> <span class="s2">"f"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Unrecognized `order` keyword value, expecting &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;C&#39; or &#39;F&#39;, but got &#39;</span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="s2">"Unrecognized `order` keyword value, expecting "</span>
+            <span class="sa">f</span><span class="s2">"'C' or 'F', but got '</span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">'"</span>
         <span class="p">)</span>
-    <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span> <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">order</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="s2">"C"</span> <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">order</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">"C"</span><span class="p">:</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="s2">"same_kind"</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;Iterator operand 0 dtype could not be cast from dtype(&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">) to dtype(</span><span class="si">{</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="si">}</span><span class="s2">) according to the rule &quot;</span>
-            <span class="s2">&quot;&#39;same_kind&#39;&quot;</span>
+            <span class="s2">"Iterator operand 0 dtype could not be cast from dtype("</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">) to dtype(</span><span class="si">{</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="si">}</span><span class="s2">) according to the rule "</span>
+            <span class="s2">"'same_kind'"</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">indices</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid entry in index array&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"invalid entry in index array"</span><span class="p">)</span>
 
     <span class="n">unraveled_coords</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">shape</span><span class="p">:</span>
@@ -3926,9 +3926,9 @@
         <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span> <span class="o">//</span> <span class="n">dim</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">indices</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid entry in index array&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"invalid entry in index array"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">"C"</span><span class="p">:</span>
         <span class="n">unraveled_coords</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">unraveled_coords</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">unraveled_coords</span><span class="p">)</span></div>
 
@@ -3964,7 +3964,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=669da1d3"></script>
+</div><script src="../../_static/documentation_options.js?v=c2e525ca"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
