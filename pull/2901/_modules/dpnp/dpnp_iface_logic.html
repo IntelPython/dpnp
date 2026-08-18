@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_logic - Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</title>
+        <title>dpnp.dpnp_iface_logic - Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -517,6 +517,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.atleast_2d.html">dpnp.atleast_2d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.atleast_3d.html">dpnp.atleast_3d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.html">dpnp.broadcast</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.shape.html">dpnp.broadcast.shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.size.html">dpnp.broadcast.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.ndim.html">dpnp.broadcast.ndim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.numiter.html">dpnp.broadcast.numiter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.values.html">dpnp.broadcast.values</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast_to.html">dpnp.broadcast_to</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast_arrays.html">dpnp.broadcast_arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.expand_dims.html">dpnp.expand_dims</a></li>
@@ -1053,7 +1058,7 @@
 <span class="c1">#   may be used to endorse or promote products derived from this software</span>
 <span class="c1">#   without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"</span>
 <span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
 <span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
 <span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
@@ -1066,7 +1071,7 @@
 <span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1"># *****************************************************************************</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Interface of the Logic part of the DPNP</span>
 
 <span class="sd">Notes</span>
@@ -1077,7 +1082,7 @@
 <span class="sd"> - documentation for the functions</span>
 <span class="sd"> - The functions parameters check</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="c1"># pylint: disable=protected-access</span>
 <span class="c1"># pylint: disable=duplicate-code</span>
@@ -1090,6 +1095,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.tensor._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_resolve_weak_types_all_py_ints</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
@@ -1098,10 +1104,10 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_isclose_scalar_tol</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Specialized implementation of dpnp.isclose() for scalar rtol and atol</span>
 <span class="sd">    using a dedicated SYCL kernel.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
@@ -1125,8 +1131,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">])</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">"same_kind"</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">"same_kind"</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># Convert complex rtol/atol to their real parts</span>
     <span class="c1"># to avoid pybind11 cast errors and match NumPy behavior</span>
@@ -1165,7 +1171,7 @@
 <div class="viewcode-block" id="all">
 <a class="viewcode-back" href="../../reference/generated/dpnp.all.html#dpnp.all">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Test whether all array elements along a given axis evaluate to ``True``.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.all`.</span>
@@ -1248,7 +1254,7 @@
 <span class="sd">    &gt;&gt;&gt; id(z), id(o) # identity of `z` and `o`</span>
 <span class="sd">    (139884456208480, 139884456208480) # may vary</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
@@ -1263,7 +1269,7 @@
 <div class="viewcode-block" id="allclose">
 <a class="viewcode-back" href="../../reference/generated/dpnp.allclose.html#dpnp.allclose">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">allclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-5</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns ``True`` if two arrays are element-wise equal within a tolerance.</span>
 
 <span class="sd">    The tolerance values are positive, typically very small numbers. The</span>
@@ -1339,7 +1345,7 @@
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, b)</span>
 <span class="sd">    array(True)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">isclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="n">equal_nan</span><span class="p">))</span></div>
 
@@ -1348,7 +1354,7 @@
 <div class="viewcode-block" id="any">
 <a class="viewcode-back" href="../../reference/generated/dpnp.any.html#dpnp.any">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Test whether any array element along a given axis evaluates to ``True``.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.any`.</span>
@@ -1431,7 +1437,7 @@
 <span class="sd">    &gt;&gt;&gt; id(z), id(o) # identity of `z` and `o`</span>
 <span class="sd">    &gt;&gt;&gt; (140053638309840, 140053638309840) # may vary</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
@@ -1446,7 +1452,7 @@
 <div class="viewcode-block" id="array_equal">
 <a class="viewcode-back" href="../../reference/generated/dpnp.array_equal.html#dpnp.array_equal">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    ``True`` if two arrays have the same shape and elements, ``False``</span>
 <span class="sd">    otherwise.</span>
 
@@ -1515,7 +1521,7 @@
 <span class="sd">    &gt;&gt;&gt; np.array_equal(a, b, equal_nan=True)</span>
 <span class="sd">    array(True)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a1</span><span class="p">):</span>
@@ -1573,7 +1579,7 @@
 <div class="viewcode-block" id="array_equiv">
 <a class="viewcode-back" href="../../reference/generated/dpnp.array_equiv.html#dpnp.array_equiv">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">array_equiv</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns ``True`` if input arrays are shape consistent and all elements</span>
 <span class="sd">    equal.</span>
 
@@ -1623,7 +1629,7 @@
 <span class="sd">    &gt;&gt;&gt; np.array_equiv(a, b)</span>
 <span class="sd">    array(False)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a2</span><span class="p">):</span>
@@ -1638,7 +1644,7 @@
 
 
 
-<span class="n">_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Calculates equality test results for each element :math:`x1_i` of the input</span>
 <span class="s2">array `x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
 
@@ -1657,10 +1663,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1709,17 +1715,18 @@
 <span class="s2">&gt;&gt;&gt; a == b</span>
 <span class="s2">array([ True,  True, False])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">equal</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;equal&quot;</span><span class="p">,</span>
+    <span class="s2">"equal"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_equal</span><span class="p">,</span>
     <span class="n">_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_GREATER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_GREATER_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the greater-than test results for each element :math:`x1_i` of the</span>
 <span class="s2">input array `x1` with the respective element :math:`x2_i` of the input array</span>
 <span class="s2">`x2`.</span>
@@ -1739,10 +1746,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1785,17 +1792,18 @@
 <span class="s2">&gt;&gt;&gt; a &gt; b</span>
 <span class="s2">array([ True, False])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">greater</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;greater&quot;</span><span class="p">,</span>
+    <span class="s2">"greater"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater</span><span class="p">,</span>
     <span class="n">_GREATER_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_GREATER_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_GREATER_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the greater-than or equal-to test results for each element :math:`x1_i`</span>
 <span class="s2">of the input array `x1` with the respective element :math:`x2_i` of the input</span>
 <span class="s2">array `x2`.</span>
@@ -1815,10 +1823,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1862,20 +1870,21 @@
 <span class="s2">&gt;&gt;&gt; a &gt;= b</span>
 <span class="s2">array([ True,  True, False])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">greater_equal</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;greater_equal&quot;</span><span class="p">,</span>
+    <span class="s2">"greater_equal"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater_equal</span><span class="p">,</span>
     <span class="n">_GREATER_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="isclose">
 <a class="viewcode-back" href="../../reference/generated/dpnp.isclose.html#dpnp.isclose">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isclose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns a boolean array where two arrays are element-wise equal within</span>
 <span class="sd">    a tolerance.</span>
 
@@ -1966,7 +1975,7 @@
 <span class="sd">    &gt;&gt;&gt; np.isclose(a, b, atol=0.0)</span>
 <span class="sd">    array([False,  True])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span>
@@ -1995,7 +2004,7 @@
     <span class="n">_b</span> <span class="o">+=</span> <span class="n">atol</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">less_equal</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">),</span> <span class="n">_b</span><span class="p">)</span>
 
-    <span class="c1"># Handle &quot;inf&quot; values: they are treated as equal if they are in the same</span>
+    <span class="c1"># Handle "inf" values: they are treated as equal if they are in the same</span>
     <span class="c1"># place and of the same sign in both arrays</span>
     <span class="n">result</span> <span class="o">&amp;=</span> <span class="n">isfinite</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">|=</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span>
@@ -2009,7 +2018,7 @@
 <div class="viewcode-block" id="iscomplex">
 <a class="viewcode-back" href="../../reference/generated/dpnp.iscomplex.html#dpnp.iscomplex">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">iscomplex</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns a bool array, where ``True`` if input element is complex.</span>
 
 <span class="sd">    What is tested is whether the input has a non-zero imaginary part, not if</span>
@@ -2041,7 +2050,7 @@
 <span class="sd">    &gt;&gt;&gt; np.iscomplex(a)</span>
 <span class="sd">    array([ True, False, False, False, False,  True])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
@@ -2053,7 +2062,7 @@
 <div class="viewcode-block" id="iscomplexobj">
 <a class="viewcode-back" href="../../reference/generated/dpnp.iscomplexobj.html#dpnp.iscomplexobj">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">iscomplexobj</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check for a complex type or an array of complex numbers.</span>
 
 <span class="sd">    The type of the input is checked, not the value. Even if the input has an</span>
@@ -2092,13 +2101,13 @@
 <span class="sd">    &gt;&gt;&gt; np.iscomplexobj([3, 1+0j, True])</span>
 <span class="sd">    True</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
 
 
-<span class="n">_ISFINITE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ISFINITE_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Test each element :math:`x_i` of the input array `x` to determine if finite.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.isfinite`.</span>
@@ -2114,10 +2123,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2152,10 +2161,10 @@
 <span class="s2">&gt;&gt;&gt; np.isfinite(x)</span>
 <span class="s2">array([False,  True, False])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">isfinite</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;isfinite&quot;</span><span class="p">,</span>
+    <span class="s2">"isfinite"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_isfinite_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_isfinite</span><span class="p">,</span>
     <span class="n">_ISFINITE_DOCSTRING</span><span class="p">,</span>
@@ -2165,7 +2174,7 @@
 <div class="viewcode-block" id="isfortran">
 <a class="viewcode-back" href="../../reference/generated/dpnp.isfortran.html#dpnp.isfortran">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isfortran</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check if the array is Fortran contiguous but *not* C contiguous.</span>
 
 <span class="sd">    This function is obsolete. If you only want to check if an array is Fortran</span>
@@ -2191,14 +2200,14 @@
 <span class="sd">    order in memory (first index varies the fastest).</span>
 
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3], [4, 5, 6]], order=&#39;C&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3], [4, 5, 6]], order='C')</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([[1, 2, 3],</span>
 <span class="sd">           [4, 5, 6]])</span>
 <span class="sd">    &gt;&gt;&gt; np.isfortran(a)</span>
 <span class="sd">    False</span>
 
-<span class="sd">    &gt;&gt;&gt; b = np.array([[1, 2, 3], [4, 5, 6]], order=&#39;F&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[1, 2, 3], [4, 5, 6]], order='F')</span>
 <span class="sd">    &gt;&gt;&gt; b</span>
 <span class="sd">    array([[1, 2, 3],</span>
 <span class="sd">           [4, 5, 6]])</span>
@@ -2207,7 +2216,7 @@
 
 <span class="sd">    The transpose of a C-ordered array is a FORTRAN-ordered array.</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3], [4, 5, 6]], order=&#39;C&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3], [4, 5, 6]], order='C')</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([[1, 2, 3],</span>
 <span class="sd">           [4, 5, 6]])</span>
@@ -2224,10 +2233,10 @@
 <span class="sd">    C-ordered arrays evaluate as ``False`` even if they are also</span>
 <span class="sd">    FORTRAN-ordered.</span>
 
-<span class="sd">    &gt;&gt;&gt; np.isfortran(np.array([1, 2], order=&#39;F&#39;))</span>
+<span class="sd">    &gt;&gt;&gt; np.isfortran(np.array([1, 2], order='F'))</span>
 <span class="sd">    False</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span></div>
@@ -2244,7 +2253,7 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># pylint: disable=unused-argument</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculates ``element in test_elements``, broadcasting over `element` only.</span>
 <span class="sd">    Returns a boolean array of the same shape as `element` that is ``True``</span>
 <span class="sd">    where an element of `element` is in `test_elements` and ``False``</span>
@@ -2271,8 +2280,8 @@
 <span class="sd">        than) ``dpnp.invert(dpnp.isin(a, b))``.</span>
 
 <span class="sd">        Default: ``False``.</span>
-<span class="sd">    kind : {None, &quot;sort&quot;}, optional</span>
-<span class="sd">        Ignored, as the only algorithm implemented is ``&quot;sort&quot;``. Included for</span>
+<span class="sd">    kind : {None, "sort"}, optional</span>
+<span class="sd">        Ignored, as the only algorithm implemented is ``"sort"``. Included for</span>
 <span class="sd">        compatibility with NumPy.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -2312,7 +2321,7 @@
 <span class="sd">    &gt;&gt;&gt; element[mask]</span>
 <span class="sd">    array([0, 6])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">test_elements</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
@@ -2337,7 +2346,7 @@
             <span class="ow">is</span> <span class="kc">None</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="n">ExecutionPlacementError</span><span class="p">(</span>
-                <span class="s2">&quot;Input arrays have incompatible allocation queues&quot;</span>
+                <span class="s2">"Input arrays have incompatible allocation queues"</span>
             <span class="p">)</span>
         <span class="n">usm_element</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
         <span class="n">usm_test</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">test_elements</span><span class="p">)</span>
@@ -2351,7 +2360,7 @@
 
 
 
-<span class="n">_ISINF_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ISINF_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Tests each element :math:`x_i` of the input array `x` to determine if equal to</span>
 <span class="s2">positive or negative infinity.</span>
 
@@ -2368,10 +2377,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2401,17 +2410,17 @@
 <span class="s2">&gt;&gt;&gt; np.isinf(x)</span>
 <span class="s2">array([ True, False,  True])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">isinf</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;isinf&quot;</span><span class="p">,</span>
+    <span class="s2">"isinf"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_isinf_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_isinf</span><span class="p">,</span>
     <span class="n">_ISINF_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_ISNAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ISNAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Tests each element :math:`x_i` of the input array `x` to determine whether the</span>
 <span class="s2">element is ``NaN``.</span>
 
@@ -2428,10 +2437,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2459,10 +2468,10 @@
 <span class="s2">&gt;&gt;&gt; np.isnan(x)</span>
 <span class="s2">array([False, False,  True])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">isnan</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;isnan&quot;</span><span class="p">,</span>
+    <span class="s2">"isnan"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_isnan_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_isnan</span><span class="p">,</span>
     <span class="n">_ISNAN_DOCSTRING</span><span class="p">,</span>
@@ -2472,7 +2481,7 @@
 <div class="viewcode-block" id="isneginf">
 <a class="viewcode-back" href="../../reference/generated/dpnp.isneginf.html#dpnp.isneginf">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isneginf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Test element-wise for negative infinity, return result as bool array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.isneginf`.</span>
@@ -2523,13 +2532,13 @@
 <span class="sd">    array([ True, False, False])</span>
 
 <span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
-<span class="sd">    &gt;&gt;&gt; y = np.zeros(x.shape, dtype=&#39;bool&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.zeros(x.shape, dtype='bool')</span>
 <span class="sd">    &gt;&gt;&gt; np.isneginf(x, y)</span>
 <span class="sd">    array([ True, False, False])</span>
 <span class="sd">    &gt;&gt;&gt; y</span>
 <span class="sd">    array([ True, False, False])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
@@ -2539,8 +2548,8 @@
     <span class="n">x_dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;This operation is not supported for </span><span class="si">{</span><span class="n">x_dtype</span><span class="si">}</span><span class="s2"> values &quot;</span>
-            <span class="s2">&quot;because it would be ambiguous.&quot;</span>
+            <span class="sa">f</span><span class="s2">"This operation is not supported for </span><span class="si">{</span><span class="n">x_dtype</span><span class="si">}</span><span class="s2"> values "</span>
+            <span class="s2">"because it would be ambiguous."</span>
         <span class="p">)</span>
 
     <span class="n">is_inf</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -2554,7 +2563,7 @@
 <div class="viewcode-block" id="isposinf">
 <a class="viewcode-back" href="../../reference/generated/dpnp.isposinf.html#dpnp.isposinf">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isposinf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Test element-wise for positive infinity, return result as bool array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.isposinf`.</span>
@@ -2605,13 +2614,13 @@
 <span class="sd">    array([False, False,  True])</span>
 
 <span class="sd">    &gt;&gt;&gt; x = np.array([-np.inf, 0., np.inf])</span>
-<span class="sd">    &gt;&gt;&gt; y = np.zeros(x.shape, dtype=&#39;bool&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.zeros(x.shape, dtype='bool')</span>
 <span class="sd">    &gt;&gt;&gt; np.isposinf(x, y)</span>
 <span class="sd">    array([False, False,  True])</span>
 <span class="sd">    &gt;&gt;&gt; y</span>
 <span class="sd">    array([False, False,  True])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
@@ -2621,8 +2630,8 @@
     <span class="n">x_dtype</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x_dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;This operation is not supported for </span><span class="si">{</span><span class="n">x_dtype</span><span class="si">}</span><span class="s2"> values &quot;</span>
-            <span class="s2">&quot;because it would be ambiguous.&quot;</span>
+            <span class="sa">f</span><span class="s2">"This operation is not supported for </span><span class="si">{</span><span class="n">x_dtype</span><span class="si">}</span><span class="s2"> values "</span>
+            <span class="s2">"because it would be ambiguous."</span>
         <span class="p">)</span>
 
     <span class="n">is_inf</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -2636,7 +2645,7 @@
 <div class="viewcode-block" id="isreal">
 <a class="viewcode-back" href="../../reference/generated/dpnp.isreal.html#dpnp.isreal">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isreal</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns a bool array, where ``True`` if input element is real.</span>
 
 <span class="sd">    If element has complex type with zero imaginary part, the return value</span>
@@ -2667,7 +2676,7 @@
 <span class="sd">    &gt;&gt;&gt; np.isreal(a)</span>
 <span class="sd">    array([False,  True,  True,  True,  True, False])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
@@ -2679,7 +2688,7 @@
 <div class="viewcode-block" id="isrealobj">
 <a class="viewcode-back" href="../../reference/generated/dpnp.isrealobj.html#dpnp.isrealobj">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isrealobj</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return ``True`` if `x` is a not complex type or an array of complex numbers.</span>
 
 <span class="sd">    The type of the input is checked, not the value. So even if the input has</span>
@@ -2719,7 +2728,7 @@
 <span class="sd">    &gt;&gt;&gt; np.isrealobj([3, 1+0j, True])</span>
 <span class="sd">    False</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="ow">not</span> <span class="n">iscomplexobj</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
@@ -2728,7 +2737,7 @@
 <div class="viewcode-block" id="isscalar">
 <a class="viewcode-back" href="../../reference/generated/dpnp.isscalar.html#dpnp.isscalar">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">isscalar</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns ``True`` if the type of `element` is a scalar type.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.isscalar`.</span>
@@ -2754,16 +2763,16 @@
 <span class="sd">    False</span>
 <span class="sd">    &gt;&gt;&gt; np.isscalar(False)</span>
 <span class="sd">    True</span>
-<span class="sd">    &gt;&gt;&gt; np.isscalar(&quot;dpnp&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; np.isscalar("dpnp")</span>
 <span class="sd">    True</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">element</span><span class="p">)</span></div>
 
 
 
-<span class="n">_LESS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LESS_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the less-than test results for each element :math:`x1_i` of the input</span>
 <span class="s2">array `x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
 
@@ -2782,10 +2791,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2828,17 +2837,18 @@
 <span class="s2">&gt;&gt;&gt; a &lt; b</span>
 <span class="s2">array([ True, False])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">less</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;less&quot;</span><span class="p">,</span>
+    <span class="s2">"less"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_less_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_less</span><span class="p">,</span>
     <span class="n">_LESS_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_LESS_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LESS_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the less-than or equal-to test results for each element :math:`x1_i`</span>
 <span class="s2">of the input array `x1` with the respective element :math:`x2_i` of the input</span>
 <span class="s2">array `x2`.</span>
@@ -2858,10 +2868,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2904,17 +2914,18 @@
 <span class="s2">&gt;&gt;&gt; a &lt;= b</span>
 <span class="s2">array([False,  True,  True])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">less_equal</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;less_equal&quot;</span><span class="p">,</span>
+    <span class="s2">"less_equal"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_less_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_less_equal</span><span class="p">,</span>
     <span class="n">_LESS_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_LOGICAL_AND_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOGICAL_AND_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the logical AND for each element :math:`x1_i` of the input array `x1`</span>
 <span class="s2">with the respective element :math:`x2_i` of the input array `x2`.</span>
 
@@ -2933,10 +2944,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2982,17 +2993,17 @@
 <span class="s2">&gt;&gt;&gt; a &amp; b</span>
 <span class="s2">array([False, False])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">logical_and</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;logical_and&quot;</span><span class="p">,</span>
+    <span class="s2">"logical_and"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logical_and_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logical_and</span><span class="p">,</span>
     <span class="n">_LOGICAL_AND_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_LOGICAL_NOT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOGICAL_NOT_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the logical NOT for each element :math:`x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.logical_not`.</span>
@@ -3008,10 +3019,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3047,17 +3058,17 @@
 <span class="s2">&gt;&gt;&gt; np.logical_not(x &lt; 3)</span>
 <span class="s2">array([False, False, False,  True,  True])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">logical_not</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;logical_not&quot;</span><span class="p">,</span>
+    <span class="s2">"logical_not"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logical_not_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logical_not</span><span class="p">,</span>
     <span class="n">_LOGICAL_NOT_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_LOGICAL_OR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOGICAL_OR_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the logical OR for each element :math:`x1_i` of the input array `x1`</span>
 <span class="s2">with the respective element :math:`x2_i` of the input array `x2`.</span>
 
@@ -3076,10 +3087,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3125,17 +3136,17 @@
 <span class="s2">&gt;&gt;&gt; a | b</span>
 <span class="s2">array([ True, False])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">logical_or</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;logical_or&quot;</span><span class="p">,</span>
+    <span class="s2">"logical_or"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logical_or_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logical_or</span><span class="p">,</span>
     <span class="n">_LOGICAL_OR_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_LOGICAL_XOR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOGICAL_XOR_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the logical XOR for each element :math:`x1_i` of the input array `x1`</span>
 <span class="s2">with the respective element :math:`x2_i` of the input array `x2`.</span>
 
@@ -3154,10 +3165,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3201,17 +3212,17 @@
 <span class="s2">array([[ True, False],</span>
 <span class="s2">       [False,  True]])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">logical_xor</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;logical_xor&quot;</span><span class="p">,</span>
+    <span class="s2">"logical_xor"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logical_xor_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logical_xor</span><span class="p">,</span>
     <span class="n">_LOGICAL_XOR_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_NOT_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_NOT_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Calculates inequality test results for each element :math:`x1_i` of the input</span>
 <span class="s2">array `x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
 
@@ -3230,10 +3241,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3276,13 +3287,14 @@
 <span class="s2">&gt;&gt;&gt; a != b</span>
 <span class="s2">array([False,  True])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">not_equal</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;not_equal&quot;</span><span class="p">,</span>
+    <span class="s2">"not_equal"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_not_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_not_equal</span><span class="p">,</span>
     <span class="n">_NOT_EQUAL_DOCSTRING</span><span class="p">,</span>
+    <span class="n">weak_type_resolver</span><span class="o">=</span><span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
         </article>
@@ -3316,7 +3328,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=ad14311e"></script>
+</div><script src="../../_static/documentation_options.js?v=c2e525ca"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

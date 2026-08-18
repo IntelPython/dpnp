@@ -20,9 +20,9 @@
       .. autosummary::
          :toctree:
       
-         broadcast.nd
          broadcast.ndim
          broadcast.numiter
          broadcast.shape
          broadcast.size
+         broadcast.values
 

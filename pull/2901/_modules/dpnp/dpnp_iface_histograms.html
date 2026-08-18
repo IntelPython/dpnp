@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_histograms - Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</title>
+        <title>dpnp.dpnp_iface_histograms - Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -517,6 +517,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.atleast_2d.html">dpnp.atleast_2d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.atleast_3d.html">dpnp.atleast_3d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.html">dpnp.broadcast</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.shape.html">dpnp.broadcast.shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.size.html">dpnp.broadcast.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.ndim.html">dpnp.broadcast.ndim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.numiter.html">dpnp.broadcast.numiter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.values.html">dpnp.broadcast.values</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast_to.html">dpnp.broadcast_to</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast_arrays.html">dpnp.broadcast_arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.expand_dims.html">dpnp.expand_dims</a></li>
@@ -1053,7 +1058,7 @@
 <span class="c1">#   may be used to endorse or promote products derived from this software</span>
 <span class="c1">#   without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"</span>
 <span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
 <span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
 <span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
@@ -1066,7 +1071,7 @@
 <span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1"># *****************************************************************************</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Interface of histogram-related DPNP functions</span>
 
 <span class="sd">Notes</span>
@@ -1077,7 +1082,7 @@
 <span class="sd"> - documentation for the functions</span>
 <span class="sd"> - The functions parameters check</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
@@ -1106,7 +1111,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_align_dtypes</span><span class="p">(</span><span class="n">a_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">,</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
     <span class="n">a_bin_dtype</span> <span class="o">=</span> <span class="n">result_type_for_device</span><span class="p">([</span><span class="n">a_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">],</span> <span class="n">device</span><span class="p">)</span>
 
-    <span class="c1"># histogram implementation doesn&#39;t support uint64 as histogram type</span>
+    <span class="c1"># histogram implementation doesn't support uint64 as histogram type</span>
     <span class="c1"># we can use int64 instead. Result would be correct even in case of overflow</span>
     <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint64</span><span class="p">:</span>
         <span class="n">ntype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span>
@@ -1115,11 +1120,11 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_ravel_check_a_and_weights</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check input `a` and `weights` arrays, and ravel both.</span>
 <span class="sd">    The returned array have :class:`dpnp.ndarray` type always.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># ensure that `a` array has supported type</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -1133,11 +1138,11 @@
         <span class="c1"># check that arrays have the same allocation queue</span>
         <span class="k">if</span> <span class="n">get_execution_queue</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">weights</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;a and weights must be allocated on the same SYCL queue&quot;</span>
+                <span class="s2">"a and weights must be allocated on the same SYCL queue"</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;weights should have the same shape as a.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"weights should have the same shape as a."</span><span class="p">)</span>
         <span class="n">weights</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 
     <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
@@ -1145,11 +1150,11 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_outer_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">range</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Determine the outer bin edges to use, from either the data or the range</span>
 <span class="sd">    argument.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_finite</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
@@ -1159,27 +1164,27 @@
 
     <span class="k">if</span> <span class="nb">range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;range argument must consist of 2 elements.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"range argument must consist of 2 elements."</span><span class="p">)</span>
 
         <span class="n">first_edge</span><span class="p">,</span> <span class="n">last_edge</span> <span class="o">=</span> <span class="nb">range</span>
         <span class="k">if</span> <span class="n">first_edge</span> <span class="o">&gt;</span> <span class="n">last_edge</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;max must be larger than min in range parameter.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"max must be larger than min in range parameter."</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">_is_finite</span><span class="p">(</span><span class="n">first_edge</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_is_finite</span><span class="p">(</span><span class="n">last_edge</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;supplied range of [</span><span class="si">{</span><span class="n">first_edge</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">last_edge</span><span class="si">}</span><span class="s2">] is not finite&quot;</span>
+                <span class="sa">f</span><span class="s2">"supplied range of [</span><span class="si">{</span><span class="n">first_edge</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">last_edge</span><span class="si">}</span><span class="s2">] is not finite"</span>
             <span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># handle empty arrays. Can&#39;t determine range, so use 0-1.</span>
+        <span class="c1"># handle empty arrays. Can't determine range, so use 0-1.</span>
         <span class="n">first_edge</span><span class="p">,</span> <span class="n">last_edge</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="n">first_edge</span><span class="p">,</span> <span class="n">last_edge</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">a</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">_is_finite</span><span class="p">(</span><span class="n">first_edge</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_is_finite</span><span class="p">(</span><span class="n">last_edge</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;autodetected range of [</span><span class="si">{</span><span class="n">first_edge</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">last_edge</span><span class="si">}</span><span class="s2">] &quot;</span>
-                <span class="s2">&quot;is not finite&quot;</span>
+                <span class="sa">f</span><span class="s2">"autodetected range of [</span><span class="si">{</span><span class="n">first_edge</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">last_edge</span><span class="si">}</span><span class="s2">] "</span>
+                <span class="s2">"is not finite"</span>
             <span class="p">)</span>
 
     <span class="c1"># expand empty range to avoid divide by zero</span>
@@ -1191,7 +1196,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_bin_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the bins used internally by `histogram`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Computes the bins used internally by `histogram`."""</span>
 
     <span class="c1"># parse the overloaded bins argument</span>
     <span class="n">n_equal_bins</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1200,15 +1205,15 @@
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="c1"># TODO: implement support of string bins</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;only integer and array bins are implemented&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"only integer and array bins are implemented"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">n_equal_bins</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`bins` must be an integer or an array&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"`bins` must be an integer or an array"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="k">if</span> <span class="n">n_equal_bins</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`bins` must be positive, when an integer&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`bins` must be positive, when an integer"</span><span class="p">)</span>
 
         <span class="n">first_edge</span><span class="p">,</span> <span class="n">last_edge</span> <span class="o">=</span> <span class="n">_get_outer_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">range</span><span class="p">)</span>
 
@@ -1216,7 +1221,7 @@
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">get_execution_queue</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">bins</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;a and bins must be allocated on the same SYCL queue&quot;</span>
+                    <span class="s2">"a and bins must be allocated on the same SYCL queue"</span>
                 <span class="p">)</span>
 
             <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">bins</span>
@@ -1227,14 +1232,14 @@
 
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">bin_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;`bins` must increase monotonically, when an array&quot;</span>
+                <span class="s2">"`bins` must increase monotonically, when an array"</span>
             <span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`bins` must be 1d, when an array&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"`bins` must be 1d, when an array"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">n_equal_bins</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># numpy&#39;s gh-10322 means that type resolution rules are dependent on</span>
+        <span class="c1"># numpy's gh-10322 means that type resolution rules are dependent on</span>
         <span class="c1"># array shapes. To avoid this causing problems, we pick a type now and</span>
         <span class="c1"># stick with it throughout.</span>
         <span class="c1"># pylint: disable=possibly-used-before-assignment</span>
@@ -1261,20 +1266,20 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_bincount_validate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">minlength</span><span class="p">):</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;object too deep for desired array&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"object too deep for desired array"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;object of too small depth for desired array&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"object of too small depth for desired array"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span>
         <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span>
     <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;x must be an integer array&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"x must be an integer array"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The weights and x don&#39;t have the same length.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The weights and x don't have the same length."</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
             <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
@@ -1282,15 +1287,15 @@
             <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Weights must be integer or float. Got </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Weights must be integer or float. Got </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">minlength</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;use 0 instead of None for minlength&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"use 0 instead of None for minlength"</span><span class="p">)</span>
 
     <span class="n">minlength</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">minlength</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">minlength</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;minlength must be non-negative&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"minlength must be non-negative"</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_bincount_run_native</span><span class="p">(</span>
@@ -1302,13 +1307,13 @@
     <span class="n">min_v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x_casted</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">min_v</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x argument must have no negative arguments&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"x argument must have no negative arguments"</span><span class="p">)</span>
 
     <span class="n">size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">max_v</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">minlength</span><span class="p">)</span>
 
-    <span class="c1"># bincount implementation uses atomics, but atomics doesn&#39;t work with</span>
+    <span class="c1"># bincount implementation uses atomics, but atomics doesn't work with</span>
     <span class="c1"># host usm memory</span>
-    <span class="n">n_usm_type</span> <span class="o">=</span> <span class="s2">&quot;device&quot;</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="o">==</span> <span class="s2">&quot;host&quot;</span> <span class="k">else</span> <span class="n">usm_type</span>
+    <span class="n">n_usm_type</span> <span class="o">=</span> <span class="s2">"device"</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="o">==</span> <span class="s2">"host"</span> <span class="k">else</span> <span class="n">usm_type</span>
 
     <span class="c1"># bincount implementation requires output array to be filled with zeros</span>
     <span class="n">n_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
@@ -1342,7 +1347,7 @@
 <div class="viewcode-block" id="bincount">
 <a class="viewcode-back" href="../../reference/generated/dpnp.bincount.html#dpnp.bincount">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bincount</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    bincount(x, /, weights=None, minlength=0)</span>
 
 <span class="sd">    Count number of occurrences of each value in array of non-negative ints.</span>
@@ -1407,7 +1412,7 @@
 <span class="sd">    &gt;&gt;&gt; np.bincount(x, weights=w)</span>
 <span class="sd">    array([0.3, 0.7, 1.1], dtype=float32)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_bincount_validate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">minlength</span><span class="p">)</span>
 
@@ -1415,6 +1420,10 @@
 
     <span class="n">queue</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">device</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">sycl_device</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># NumPy returns intp dtype for empty input even when weights is given</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">minlength</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ntype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
@@ -1432,14 +1441,14 @@
 
     <span class="k">if</span> <span class="n">x_casted_dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ntype_casted</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Input types (</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ntype</span><span class="si">}</span><span class="s2">) are not supported, &quot;</span>
-            <span class="s2">&quot;and the inputs could not be coerced to any supported types&quot;</span>
+            <span class="sa">f</span><span class="s2">"Input types (</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ntype</span><span class="si">}</span><span class="s2">) are not supported, "</span>
+            <span class="s2">"and the inputs could not be coerced to any supported types"</span>
         <span class="p">)</span>
 
-    <span class="n">x_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x_casted_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    <span class="n">x_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x_casted_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">weights_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ntype_casted</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="n">weights_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ntype_casted</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
 
     <span class="n">n_casted</span> <span class="o">=</span> <span class="n">_bincount_run_native</span><span class="p">(</span>
         <span class="n">x_casted</span><span class="p">,</span> <span class="n">weights_casted</span><span class="p">,</span> <span class="n">minlength</span><span class="p">,</span> <span class="n">ntype_casted</span><span class="p">,</span> <span class="n">usm_type</span>
@@ -1452,7 +1461,7 @@
 <div class="viewcode-block" id="digitize">
 <a class="viewcode-back" href="../../reference/generated/dpnp.digitize.html#dpnp.digitize">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">digitize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Return the indices of the bins to which each value in input array belongs.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.digitize`.</span>
@@ -1497,7 +1506,7 @@
 <span class="sd">    &gt;&gt;&gt; inds</span>
 <span class="sd">    array([1, 4, 3, 2])</span>
 <span class="sd">    &gt;&gt;&gt; for n in range(x.size):</span>
-<span class="sd">    ...     print(bins[inds[n]-1], &quot;&lt;=&quot;, x[n], &quot;&lt;&quot;, bins[inds[n]])</span>
+<span class="sd">    ...     print(bins[inds[n]-1], "&lt;=", x[n], "&lt;", bins[inds[n]])</span>
 <span class="sd">    ...</span>
 <span class="sd">    0. &lt;= 0.2 &lt; 1.</span>
 <span class="sd">    4. &lt;= 6.4 &lt; 10.</span>
@@ -1511,20 +1520,20 @@
 <span class="sd">    &gt;&gt;&gt; np.digitize(x, bins, right=False)</span>
 <span class="sd">    array([1, 3, 3, 4, 5])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;x may not be complex&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"x may not be complex"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">bins</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;object too deep for desired array&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"object too deep for desired array"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">bins</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;object of too small depth for desired array&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"object of too small depth for desired array"</span><span class="p">)</span>
 
     <span class="c1"># This is backwards because the arguments below are swapped</span>
-    <span class="n">side</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span> <span class="k">if</span> <span class="n">right</span> <span class="k">else</span> <span class="s2">&quot;right&quot;</span>
+    <span class="n">side</span> <span class="o">=</span> <span class="s2">"left"</span> <span class="k">if</span> <span class="n">right</span> <span class="k">else</span> <span class="s2">"right"</span>
 
     <span class="c1"># Check if bins are monotonically increasing.</span>
     <span class="c1"># If bins is empty, the array is considered to be increasing.</span>
@@ -1548,7 +1557,7 @@
 <div class="viewcode-block" id="histogram">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogram.html#dpnp.histogram">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">histogram</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute the histogram of a data set.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.histogram`.</span>
@@ -1639,7 +1648,7 @@
 <span class="sd">    &gt;&gt;&gt; np.sum(hist * np.diff(bin_edges))</span>
 <span class="sd">    array(1.)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">_ravel_check_a_and_weights</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
 
@@ -1661,22 +1670,22 @@
 
     <span class="k">if</span> <span class="n">a_bin_dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">hist_dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Input types (</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">bin_edges</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ntype</span><span class="si">}</span><span class="s2">) &quot;</span>
-            <span class="s2">&quot;are not supported, and the inputs could not be coerced to any &quot;</span>
-            <span class="s2">&quot;supported types&quot;</span>
+            <span class="sa">f</span><span class="s2">"Input types (</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">bin_edges</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ntype</span><span class="si">}</span><span class="s2">) "</span>
+            <span class="s2">"are not supported, and the inputs could not be coerced to any "</span>
+            <span class="s2">"supported types"</span>
         <span class="p">)</span>
 
-    <span class="n">a_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
-    <span class="n">bin_edges_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    <span class="n">a_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
+    <span class="n">bin_edges_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
     <span class="n">weights_casted</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">hist_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">hist_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">else</span> <span class="kc">None</span>
     <span class="p">)</span>
 
-    <span class="c1"># histogram implementation uses atomics, but atomics doesn&#39;t work with</span>
+    <span class="c1"># histogram implementation uses atomics, but atomics doesn't work with</span>
     <span class="c1"># host usm memory</span>
-    <span class="n">n_usm_type</span> <span class="o">=</span> <span class="s2">&quot;device&quot;</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="o">==</span> <span class="s2">&quot;host&quot;</span> <span class="k">else</span> <span class="n">usm_type</span>
+    <span class="n">n_usm_type</span> <span class="o">=</span> <span class="s2">"device"</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="o">==</span> <span class="s2">"host"</span> <span class="k">else</span> <span class="n">usm_type</span>
 
     <span class="c1"># histogram implementation requires output array to be filled with zeros</span>
     <span class="n">n_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
@@ -1721,7 +1730,7 @@
 <div class="viewcode-block" id="histogram_bin_edges">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogram_bin_edges.html#dpnp.histogram_bin_edges">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">histogram_bin_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Function to calculate only the edges of the bins used by the</span>
 <span class="sd">    :obj:`dpnp.histogram` function.</span>
 
@@ -1806,7 +1815,7 @@
 <span class="sd">    &gt;&gt;&gt; bins_0, bins_1</span>
 <span class="sd">    (array([0., 1., 2., 3.]), array([0.  , 1.25, 2.5 , 3.75, 5.  ]))</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">_ravel_check_a_and_weights</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
     <span class="n">bin_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_bin_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">)</span>
@@ -1817,7 +1826,7 @@
 <div class="viewcode-block" id="histogram2d">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogram2d.html#dpnp.histogram2d">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">histogram2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute the bi-dimensional histogram of two data samples.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.histogram2d`.</span>
@@ -1906,8 +1915,8 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.random.randn(20).astype(&quot;float32&quot;)</span>
-<span class="sd">    &gt;&gt;&gt; y = np.random.randn(20).astype(&quot;float32&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.random.randn(20).astype("float32")</span>
+<span class="sd">    &gt;&gt;&gt; y = np.random.randn(20).astype("float32")</span>
 <span class="sd">    &gt;&gt;&gt; hist, edges_x, edges_y = np.histogram2d(x, y, bins=(4, 3))</span>
 <span class="sd">    &gt;&gt;&gt; hist.shape</span>
 <span class="sd">    (4, 3)</span>
@@ -1928,7 +1937,7 @@
 
 <span class="sd">    Please note, that resulting values of histogram and edges may vary.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1936,14 +1945,14 @@
 
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;x and y must be 1-dimensional arrays.&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> respectively&quot;</span>
+            <span class="sa">f</span><span class="s2">"x and y must be 1-dimensional arrays."</span>
+            <span class="sa">f</span><span class="s2">"Got </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> respectively"</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;x and y must have the same length.&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="si">}</span><span class="s2"> respectively&quot;</span>
+            <span class="sa">f</span><span class="s2">"x and y must have the same length."</span>
+            <span class="sa">f</span><span class="s2">"Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="si">}</span><span class="s2"> respectively"</span>
         <span class="p">)</span>
 
     <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">weights</span><span class="p">])</span>
@@ -1961,7 +1970,7 @@
 
     <span class="n">bins</span> <span class="o">=</span> <span class="n">_histdd_normalize_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">bins_dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample_dtype</span><span class="p">]</span>
-    <span class="n">bins_dtypes</span> <span class="o">+=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bins</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">)]</span>
+    <span class="n">bins_dtypes</span> <span class="o">+=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bins</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s2">"dtype"</span><span class="p">)]</span>
 
     <span class="n">bins_dtype</span> <span class="o">=</span> <span class="n">result_type_for_device</span><span class="p">(</span><span class="n">bins_dtypes</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
     <span class="n">hist_dtype</span> <span class="o">=</span> <span class="n">_histdd_hist_dtype</span><span class="p">(</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
@@ -1990,29 +1999,29 @@
         <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">b</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;&#39;bins[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&#39; must be positive, when an integer&quot;</span>
+                    <span class="sa">f</span><span class="s2">"'bins[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">' must be positive, when an integer"</span>
                 <span class="p">)</span>
         <span class="k">elif</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># will check for monotonicity later</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;&#39;bins[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]&#39; must be either scalar or 1d array-like,&quot;</span>
-                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot; but it is </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"'bins[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]' must be either scalar or 1d array-like,"</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">" but it is </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_histdd_normalize_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">ndims</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">bins</span><span class="p">),</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;bins&#39; must be an integer, when a scalar&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"'bins' must be an integer, when a scalar"</span><span class="p">)</span>
 
         <span class="n">bins</span> <span class="o">=</span> <span class="p">[</span><span class="n">bins</span><span class="p">]</span> <span class="o">*</span> <span class="n">ndims</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">!=</span> <span class="n">ndims</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The dimension of bins (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span><span class="si">}</span><span class="s2">) must be equal&quot;</span>
-            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot; to the dimension of the sample (</span><span class="si">{</span><span class="n">ndims</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="sa">f</span><span class="s2">"The dimension of bins (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span><span class="si">}</span><span class="s2">) must be equal"</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">" to the dimension of the sample (</span><span class="si">{</span><span class="n">ndims</span><span class="si">}</span><span class="s2">)."</span>
         <span class="p">)</span>
 
     <span class="n">_histdd_validate_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
@@ -2026,8 +2035,8 @@
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span> <span class="o">!=</span> <span class="n">ndims</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;range argument length (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span><span class="si">}</span><span class="s2">) must match&quot;</span>
-            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot; number of dimensions (</span><span class="si">{</span><span class="n">ndims</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="sa">f</span><span class="s2">"range argument length (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span><span class="si">}</span><span class="s2">) must match"</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">" number of dimensions (</span><span class="si">{</span><span class="n">ndims</span><span class="si">}</span><span class="s2">)"</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">range</span>
@@ -2069,7 +2078,7 @@
         <span class="n">edges_count_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span>
     <span class="p">)</span>
 
-    <span class="n">n_usm_type</span> <span class="o">=</span> <span class="s2">&quot;device&quot;</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="o">==</span> <span class="s2">&quot;host&quot;</span> <span class="k">else</span> <span class="n">usm_type</span>
+    <span class="n">n_usm_type</span> <span class="o">=</span> <span class="s2">"device"</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="o">==</span> <span class="s2">"host"</span> <span class="k">else</span> <span class="n">usm_type</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
         <span class="n">shape</span><span class="o">=</span><span class="n">hist_shape</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">hist_dtype</span><span class="p">,</span>
@@ -2153,7 +2162,7 @@
 <div class="viewcode-block" id="histogramdd">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogramdd.html#dpnp.histogramdd">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">histogramdd</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Compute the multidimensional histogram of some data.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.histogramdd`.</span>
@@ -2224,7 +2233,7 @@
 <span class="sd">    &gt;&gt;&gt; H.shape, edges[0].size, edges[1].size, edges[2].size</span>
 <span class="sd">    ((5, 8, 4), 6, 9, 5)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2233,7 +2242,7 @@
     <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">sample</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
     <span class="k">elif</span> <span class="n">sample</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sample must have no more than 2 dimensions&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"sample must have no more than 2 dimensions"</span><span class="p">)</span>
 
     <span class="n">ndim</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
@@ -2253,9 +2262,9 @@
         <span class="n">bin_edges_list</span><span class="p">,</span> <span class="n">edges_count_list</span><span class="p">,</span> <span class="n">sample_dtype</span>
     <span class="p">)</span>
 
-    <span class="n">sample_</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sample_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    <span class="n">sample_</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sample_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
     <span class="n">weights_</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">hist_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">hist_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">"C"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">else</span> <span class="kc">None</span>
     <span class="p">)</span>
@@ -2319,7 +2328,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=ad14311e"></script>
+</div><script src="../../_static/documentation_options.js?v=c2e525ca"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

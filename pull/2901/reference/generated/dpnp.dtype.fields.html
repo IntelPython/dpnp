@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.dtype.fields - Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</title>
+        <title>dpnp.dtype.fields - Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -518,6 +518,11 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.atleast_2d.html">dpnp.atleast_2d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.atleast_3d.html">dpnp.atleast_3d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast.html">dpnp.broadcast</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast.shape.html">dpnp.broadcast.shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast.size.html">dpnp.broadcast.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast.ndim.html">dpnp.broadcast.ndim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast.numiter.html">dpnp.broadcast.numiter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast.values.html">dpnp.broadcast.values</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast_to.html">dpnp.broadcast_to</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast_arrays.html">dpnp.broadcast_arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.expand_dims.html">dpnp.expand_dims</a></li>
@@ -1068,9 +1073,9 @@ of the tuple can be passed directly as arguments to the
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;grades&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,))])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">'name'</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="p">(</span><span class="s1">'grades'</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,))])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
-<span class="go">{&#39;name&#39;: (dtype(&#39;&lt;U16&#39;), 0), &#39;grades&#39;: (dtype((&#39;&lt;f8&#39;, (2,))), 64)}</span>
+<span class="go">{'name': (dtype('&lt;U16'), 0), 'grades': (dtype(('&lt;f8', (2,))), 64)}</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1127,7 +1132,7 @@ of the tuple can be passed directly as arguments to the
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=ad14311e"></script>
+</div><script src="../../_static/documentation_options.js?v=c2e525ca"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

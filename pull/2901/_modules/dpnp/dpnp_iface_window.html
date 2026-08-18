@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_window - Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</title>
+        <title>dpnp.dpnp_iface_window - Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -517,6 +517,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.atleast_2d.html">dpnp.atleast_2d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.atleast_3d.html">dpnp.atleast_3d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.html">dpnp.broadcast</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.shape.html">dpnp.broadcast.shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.size.html">dpnp.broadcast.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.ndim.html">dpnp.broadcast.ndim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.numiter.html">dpnp.broadcast.numiter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.values.html">dpnp.broadcast.values</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast_to.html">dpnp.broadcast_to</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast_arrays.html">dpnp.broadcast_arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.expand_dims.html">dpnp.expand_dims</a></li>
@@ -1053,7 +1058,7 @@
 <span class="c1">#   may be used to endorse or promote products derived from this software</span>
 <span class="c1">#   without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"</span>
 <span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
 <span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
 <span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
@@ -1066,7 +1071,7 @@
 <span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1"># *****************************************************************************</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Interface of the window functions of dpnp</span>
 
 <span class="sd">Notes</span>
@@ -1077,7 +1082,7 @@
 <span class="sd"> - documentation for the functions</span>
 <span class="sd"> - The functions parameters check</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="c1"># pylint: disable=invalid-name</span>
@@ -1096,12 +1101,12 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">M</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;M must be an integer&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"M must be an integer"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
     <span class="n">cfd_kwarg</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
-        <span class="s2">&quot;usm_type&quot;</span><span class="p">:</span> <span class="n">usm_type</span><span class="p">,</span>
-        <span class="s2">&quot;sycl_queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="s2">"device"</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
+        <span class="s2">"usm_type"</span><span class="p">:</span> <span class="n">usm_type</span><span class="p">,</span>
+        <span class="s2">"sycl_queue"</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="k">if</span> <span class="n">M</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -1134,7 +1139,7 @@
 <div class="viewcode-block" id="bartlett">
 <a class="viewcode-back" href="../../reference/generated/dpnp.bartlett.html#dpnp.bartlett">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">bartlett</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Return the Bartlett window.</span>
 
 <span class="sd">    The Bartlett window is very similar to a triangular window, except that the</span>
@@ -1157,7 +1162,7 @@
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">    usm_type : {None, "device", "shared", "host"}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1206,21 +1211,21 @@
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([0.        , 0.66666667, 0.66666667, 0.        ]),</span>
 <span class="sd">     Device(level_zero:gpu:0),</span>
-<span class="sd">     &#39;device&#39;)</span>
+<span class="sd">     'device')</span>
 
-<span class="sd">    &gt;&gt;&gt; y = np.bartlett(4, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.bartlett(4, device="cpu")</span>
 <span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
 <span class="sd">    (array([0.        , 0.66666667, 0.66666667, 0.        ]),</span>
 <span class="sd">     Device(opencl:cpu:0),</span>
-<span class="sd">     &#39;device&#39;)</span>
+<span class="sd">     'device')</span>
 
-<span class="sd">    &gt;&gt;&gt; z = np.bartlett(4, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z = np.bartlett(4, usm_type="host")</span>
 <span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
 <span class="sd">    (array([0.        , 0.66666667, 0.66666667, 0.        ]),</span>
 <span class="sd">     Device(level_zero:gpu:0),</span>
-<span class="sd">     &#39;host&#39;)</span>
+<span class="sd">     'host')</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="n">_call_window_kernel</span><span class="p">(</span>
         <span class="n">M</span><span class="p">,</span> <span class="n">wi</span><span class="o">.</span><span class="n">_bartlett</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
@@ -1231,7 +1236,7 @@
 <div class="viewcode-block" id="blackman">
 <a class="viewcode-back" href="../../reference/generated/dpnp.blackman.html#dpnp.blackman">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">blackman</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Return the Blackman window.</span>
 
 <span class="sd">    The Blackman window is a taper formed by using the first three terms of a</span>
@@ -1254,7 +1259,7 @@
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">    usm_type : {None, "device", "shared", "host"}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1302,21 +1307,21 @@
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
 <span class="sd">     Device(level_zero:gpu:0),</span>
-<span class="sd">     &#39;device&#39;)</span>
+<span class="sd">     'device')</span>
 
-<span class="sd">    &gt;&gt;&gt; y = np.blackman(3, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.blackman(3, device="cpu")</span>
 <span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
 <span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
 <span class="sd">     Device(opencl:cpu:0),</span>
-<span class="sd">     &#39;device&#39;)</span>
+<span class="sd">     'device')</span>
 
-<span class="sd">    &gt;&gt;&gt; z = np.blackman(3, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z = np.blackman(3, usm_type="host")</span>
 <span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
 <span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
 <span class="sd">     Device(level_zero:gpu:0),</span>
-<span class="sd">     &#39;host&#39;)</span>
+<span class="sd">     'host')</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="n">_call_window_kernel</span><span class="p">(</span>
         <span class="n">M</span><span class="p">,</span> <span class="n">wi</span><span class="o">.</span><span class="n">_blackman</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
@@ -1327,7 +1332,7 @@
 <div class="viewcode-block" id="hamming">
 <a class="viewcode-back" href="../../reference/generated/dpnp.hamming.html#dpnp.hamming">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">hamming</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Return the Hamming window.</span>
 
 <span class="sd">    The Hamming window is a taper formed by using a weighted cosine.</span>
@@ -1348,7 +1353,7 @@
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">    usm_type : {None, "device", "shared", "host"}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1393,17 +1398,17 @@
 
 <span class="sd">    &gt;&gt;&gt; x = np.hamming(4) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
-<span class="sd">    (array([0.08, 0.77, 0.77, 0.08]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
+<span class="sd">    (array([0.08, 0.77, 0.77, 0.08]), Device(level_zero:gpu:0), 'device')</span>
 
-<span class="sd">    &gt;&gt;&gt; y = np.hamming(4, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.hamming(4, device="cpu")</span>
 <span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
-<span class="sd">    (array([0.08, 0.77, 0.77, 0.08]), Device(opencl:cpu:0), &#39;device&#39;)</span>
+<span class="sd">    (array([0.08, 0.77, 0.77, 0.08]), Device(opencl:cpu:0), 'device')</span>
 
-<span class="sd">    &gt;&gt;&gt; z = np.hamming(4, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z = np.hamming(4, usm_type="host")</span>
 <span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
-<span class="sd">    (array([0.08, 0.77, 0.77, 0.08]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
+<span class="sd">    (array([0.08, 0.77, 0.77, 0.08]), Device(level_zero:gpu:0), 'host')</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="n">_call_window_kernel</span><span class="p">(</span>
         <span class="n">M</span><span class="p">,</span> <span class="n">wi</span><span class="o">.</span><span class="n">_hamming</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
@@ -1414,7 +1419,7 @@
 <div class="viewcode-block" id="hanning">
 <a class="viewcode-back" href="../../reference/generated/dpnp.hanning.html#dpnp.hanning">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">hanning</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Return the Hanning window.</span>
 
 <span class="sd">    The Hanning window is a taper formed by using a weighted cosine.</span>
@@ -1435,7 +1440,7 @@
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">    usm_type : {None, "device", "shared", "host"}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1480,17 +1485,17 @@
 
 <span class="sd">    &gt;&gt;&gt; x = np.hanning(4) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
-<span class="sd">    (array([0.  , 0.75, 0.75, 0.  ]), Device(level_zero:gpu:0), &#39;device&#39;)</span>
+<span class="sd">    (array([0.  , 0.75, 0.75, 0.  ]), Device(level_zero:gpu:0), 'device')</span>
 
-<span class="sd">    &gt;&gt;&gt; y = np.hanning(4, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.hanning(4, device="cpu")</span>
 <span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
-<span class="sd">    (array([0.  , 0.75, 0.75, 0.  ]), Device(opencl:cpu:0), &#39;device&#39;)</span>
+<span class="sd">    (array([0.  , 0.75, 0.75, 0.  ]), Device(opencl:cpu:0), 'device')</span>
 
-<span class="sd">    &gt;&gt;&gt; z = np.hanning(4, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z = np.hanning(4, usm_type="host")</span>
 <span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
-<span class="sd">    (array([0.  , 0.75, 0.75, 0.  ]), Device(level_zero:gpu:0), &#39;host&#39;)</span>
+<span class="sd">    (array([0.  , 0.75, 0.75, 0.  ]), Device(level_zero:gpu:0), 'host')</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="n">_call_window_kernel</span><span class="p">(</span>
         <span class="n">M</span><span class="p">,</span> <span class="n">wi</span><span class="o">.</span><span class="n">_hanning</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
@@ -1501,7 +1506,7 @@
 <div class="viewcode-block" id="kaiser">
 <a class="viewcode-back" href="../../reference/generated/dpnp.kaiser.html#dpnp.kaiser">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">kaiser</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Return the Kaiser window.</span>
 
 <span class="sd">    The Kaiser window is a taper formed by using a Bessel function.</span>
@@ -1524,7 +1529,7 @@
 <span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">    usm_type : {None, "device", "shared", "host"}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1594,26 +1599,26 @@
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([7.72686638e-06, 9.99999941e-01, 7.72686638e-06]),</span>
 <span class="sd">     Device(level_zero:gpu:0),</span>
-<span class="sd">     &#39;device&#39;)</span>
+<span class="sd">     'device')</span>
 
-<span class="sd">    &gt;&gt;&gt; y = np.kaiser(3, 14, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.kaiser(3, 14, device="cpu")</span>
 <span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
 <span class="sd">    (array([7.72686638e-06, 9.99999941e-01, 7.72686638e-06]),</span>
 <span class="sd">     Device(opencl:cpu:0),</span>
-<span class="sd">     &#39;device&#39;)</span>
+<span class="sd">     'device')</span>
 
-<span class="sd">    &gt;&gt;&gt; z = np.kaiser(3, 14, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z = np.kaiser(3, 14, usm_type="host")</span>
 <span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
 <span class="sd">    (array([7.72686638e-06, 9.99999941e-01, 7.72686638e-06]),</span>
 <span class="sd">     Device(level_zero:gpu:0),</span>
-<span class="sd">     &#39;host&#39;)</span>
+<span class="sd">     'host')</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;beta must be a float&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"beta must be a float"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
     <span class="k">return</span> <span class="n">_call_window_kernel</span><span class="p">(</span>
         <span class="n">M</span><span class="p">,</span>
@@ -1656,7 +1661,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=ad14311e"></script>
+</div><script src="../../_static/documentation_options.js?v=c2e525ca"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

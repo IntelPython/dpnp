@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Interplay with the Data Parallel Control Library - Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</title>
+        <title>Interplay with the Data Parallel Control Library - Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</div></a>
+      <a href="index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -518,6 +518,11 @@
 <li class="toctree-l4"><a class="reference internal" href="reference/generated/dpnp.atleast_2d.html">dpnp.atleast_2d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/generated/dpnp.atleast_3d.html">dpnp.atleast_3d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/generated/dpnp.broadcast.html">dpnp.broadcast</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/generated/dpnp.broadcast.shape.html">dpnp.broadcast.shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/generated/dpnp.broadcast.size.html">dpnp.broadcast.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/generated/dpnp.broadcast.ndim.html">dpnp.broadcast.ndim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/generated/dpnp.broadcast.numiter.html">dpnp.broadcast.numiter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/generated/dpnp.broadcast.values.html">dpnp.broadcast.values</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/generated/dpnp.broadcast_to.html">dpnp.broadcast_to</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/generated/dpnp.broadcast_arrays.html">dpnp.broadcast_arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/generated/dpnp.expand_dims.html">dpnp.expand_dims</a></li>
@@ -1057,7 +1062,7 @@ easily combined with the device management interface provided by dpctl package.<
 <span class="linenos"> 5</span>    <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
 <span class="linenos"> 6</span>    <span class="n">s</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="linenos"> 7</span>
-<span class="linenos"> 8</span>    <span class="n">y</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+<span class="linenos"> 8</span>    <span class="n">y</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">"gpu"</span><span class="p">)</span>
 <span class="linenos"> 9</span>    <span class="n">f</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 <span class="linenos">10</span>
 <span class="linenos">11</span>    <span class="c1"># locate argument where function attains global maximum</span>
@@ -1069,7 +1074,7 @@ easily combined with the device management interface provided by dpctl package.<
 documentation.</p>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="s2">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="s2">"""</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="s2">import time</span>
 <span class="linenos"> 4</span>
@@ -1106,7 +1111,7 @@ documentation.</p>
 <span class="linenos">35</span><span class="s2">    for test_type in get_dtypes():</span>
 <span class="linenos">36</span><span class="s2">        type_name = numpy.dtype(test_type).name</span>
 <span class="linenos">37</span><span class="s2">        print(</span>
-<span class="linenos">38</span><span class="s2">            f&quot;...Test data type is </span><span class="si">{type_name}</span><span class="s2">, each test repetitions </span><span class="si">{test_repetition}</span><span class="s2">&quot;</span>
+<span class="linenos">38</span><span class="s2">            f"...Test data type is </span><span class="si">{type_name}</span><span class="s2">, each test repetitions </span><span class="si">{test_repetition}</span><span class="s2">"</span>
 <span class="linenos">39</span><span class="s2">        )</span>
 <span class="linenos">40</span>
 <span class="linenos">41</span><span class="s2">        for size in [64, 128, 256, 512, 1024, 2048, 4096]:</span>
@@ -1118,14 +1123,14 @@ documentation.</p>
 <span class="linenos">47</span><span class="s2">            if result_dpnp == result_numpy:</span>
 <span class="linenos">48</span><span class="s2">                verification = True</span>
 <span class="linenos">49</span><span class="s2">            else:</span>
-<span class="linenos">50</span><span class="s2">                verification = f&quot;(</span><span class="si">{result_dpnp}</span><span class="s2"> != </span><span class="si">{result_numpy}</span><span class="s2">)&quot;</span>
+<span class="linenos">50</span><span class="s2">                verification = f"(</span><span class="si">{result_dpnp}</span><span class="s2"> != </span><span class="si">{result_numpy}</span><span class="s2">)"</span>
 <span class="linenos">51</span>
-<span class="linenos">52</span><span class="s2">            msg = f&quot;type:</span><span class="si">{type_name}</span><span class="s2">:N:</span><span class="si">{size:4}</span><span class="s2">:NumPy:</span><span class="si">{time_numpy:.3e}</span><span class="s2">:DPNP:</span><span class="si">{time_dpnp:.3e}</span><span class="s2">&quot;</span>
-<span class="linenos">53</span><span class="s2">            msg += f&quot;:ratio:{time_numpy/time_dpnp:6.2f}:verification:</span><span class="si">{verification}</span><span class="s2">&quot;</span>
+<span class="linenos">52</span><span class="s2">            msg = f"type:</span><span class="si">{type_name}</span><span class="s2">:N:</span><span class="si">{size:4}</span><span class="s2">:NumPy:</span><span class="si">{time_numpy:.3e}</span><span class="s2">:DPNP:</span><span class="si">{time_dpnp:.3e}</span><span class="s2">"</span>
+<span class="linenos">53</span><span class="s2">            msg += f":ratio:{time_numpy/time_dpnp:6.2f}:verification:</span><span class="si">{verification}</span><span class="s2">"</span>
 <span class="linenos">54</span><span class="s2">            print(msg)</span>
 <span class="linenos">55</span>
 <span class="linenos">56</span>
-<span class="linenos">57</span><span class="s2">if __name__ == &quot;__main__&quot;:</span>
+<span class="linenos">57</span><span class="s2">if __name__ == "__main__":</span>
 <span class="linenos">58</span><span class="s2">    import dpctl</span>
 <span class="linenos">59</span>
 <span class="linenos">60</span><span class="s2">    dpctl.select_default_device().print_device_info()</span>
@@ -1185,7 +1190,7 @@ documentation.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=ad14311e"></script>
+</div><script src="_static/documentation_options.js?v=c2e525ca"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

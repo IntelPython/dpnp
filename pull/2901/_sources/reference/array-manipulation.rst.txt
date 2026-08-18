@@ -58,6 +58,11 @@ Changing number of dimensions
    atleast_2d
    atleast_3d
    broadcast
+   broadcast.shape
+   broadcast.size
+   broadcast.ndim
+   broadcast.numiter
+   broadcast.values
    broadcast_to
    broadcast_arrays
    expand_dims

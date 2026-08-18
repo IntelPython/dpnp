@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_trigonometric - Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</title>
+        <title>dpnp.dpnp_iface_trigonometric - Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -517,6 +517,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.atleast_2d.html">dpnp.atleast_2d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.atleast_3d.html">dpnp.atleast_3d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.html">dpnp.broadcast</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.shape.html">dpnp.broadcast.shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.size.html">dpnp.broadcast.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.ndim.html">dpnp.broadcast.ndim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.numiter.html">dpnp.broadcast.numiter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.values.html">dpnp.broadcast.values</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast_to.html">dpnp.broadcast_to</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast_arrays.html">dpnp.broadcast_arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.expand_dims.html">dpnp.expand_dims</a></li>
@@ -1053,7 +1058,7 @@
 <span class="c1">#   may be used to endorse or promote products derived from this software</span>
 <span class="c1">#   without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"</span>
 <span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
 <span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
 <span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
@@ -1066,7 +1071,7 @@
 <span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1"># *****************************************************************************</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Interface of the Trigonometric part of the DPNP</span>
 
 <span class="sd">Notes</span>
@@ -1077,7 +1082,7 @@
 <span class="sd"> - documentation for the functions</span>
 <span class="sd"> - The functions parameters check</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="c1"># pylint: disable=protected-access</span>
 <span class="c1"># pylint: disable=no-name-in-module</span>
@@ -1093,7 +1098,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_accumulation_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a dtype used by dpctl for result array in accumulation function.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Get a dtype used by dpctl for result array in accumulation function."""</span>
 
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dtu</span><span class="o">.</span><span class="n">_default_accumulation_dtype_fp_types</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
@@ -1102,7 +1107,7 @@
     <span class="k">return</span> <span class="n">dtu</span><span class="o">.</span><span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
 
-<span class="n">_ACOS_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ACOS_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes inverse cosine for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">The inverse of :obj:`dpnp.cos` so that, if :math:`y = cos(x)`, then</span>
@@ -1122,10 +1127,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1171,21 +1176,21 @@
 <span class="s2">&gt;&gt;&gt; np.acos(x)</span>
 <span class="s2">array([0.0,  3.14159265])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">acos</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;acos&quot;</span><span class="p">,</span>
+    <span class="s2">"acos"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acos_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acos</span><span class="p">,</span>
     <span class="n">_ACOS_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_acos_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_acos&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_acos_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_acos"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">arccos</span> <span class="o">=</span> <span class="n">acos</span>  <span class="c1"># arccos is an alias for acos</span>
 
 
-<span class="n">_ACOSH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ACOSH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes inverse hyperbolic cosine for each element :math:`x_i` for input array</span>
 <span class="s2">`x`.</span>
 
@@ -1206,10 +1211,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1257,21 +1262,21 @@
 <span class="s2">&gt;&gt;&gt; np.acosh(x)</span>
 <span class="s2">array([0.0, 1.65745445, 2.99322285])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">acosh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;acosh&quot;</span><span class="p">,</span>
+    <span class="s2">"acosh"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acosh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acosh</span><span class="p">,</span>
     <span class="n">_ACOSH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_acosh_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_acosh&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_acosh_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_acosh"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">arccosh</span> <span class="o">=</span> <span class="n">acosh</span>  <span class="c1"># arccosh is an alias for acosh</span>
 
 
-<span class="n">_ASIN_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ASIN_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes inverse sine for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">The inverse of :obj:`dpnp.sin`, so that if :math:`y = sin(x)` then</span>
@@ -1290,10 +1295,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1343,21 +1348,21 @@
 <span class="s2">&gt;&gt;&gt; np.asin(x)</span>
 <span class="s2">array([0.0, 1.5707963267948966, -1.5707963267948966])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">asin</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;asin&quot;</span><span class="p">,</span>
+    <span class="s2">"asin"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_asin_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_asin</span><span class="p">,</span>
     <span class="n">_ASIN_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_asin_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_asin&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_asin_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_asin"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">arcsin</span> <span class="o">=</span> <span class="n">asin</span>  <span class="c1"># arcsin is an alias for asin</span>
 
 
-<span class="n">_ASINH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ASINH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes inverse hyperbolic sine for each element :math:`x_i` for input array</span>
 <span class="s2">`x`.</span>
 
@@ -1378,10 +1383,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1427,21 +1432,21 @@
 <span class="s2">&gt;&gt;&gt; np.asinh(x)</span>
 <span class="s2">array([1.72538256, 2.99822295])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">asinh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;asinh&quot;</span><span class="p">,</span>
+    <span class="s2">"asinh"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_asinh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_asinh</span><span class="p">,</span>
     <span class="n">_ASINH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_asinh_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_asinh&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_asinh_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_asinh"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">arcsinh</span> <span class="o">=</span> <span class="n">asinh</span>  <span class="c1"># arcsinh is an alias for asinh</span>
 
 
-<span class="n">_ATAN_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ATAN_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes inverse tangent for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">The inverse of :obj:`dpnp.tan`, so that if :math:`y = tan(x)` then</span>
@@ -1461,10 +1466,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1513,21 +1518,21 @@
 <span class="s2">&gt;&gt;&gt; np.atan(x)</span>
 <span class="s2">array([0.0, 0.78539816])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">atan</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;atan&quot;</span><span class="p">,</span>
+    <span class="s2">"atan"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan</span><span class="p">,</span>
     <span class="n">_ATAN_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_atan_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atan&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_atan_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_atan"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">arctan</span> <span class="o">=</span> <span class="n">atan</span>  <span class="c1"># arctan is an alias for atan</span>
 
 
-<span class="n">_ATAN2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ATAN2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Calculates the inverse tangent of the quotient :math:`\frac</span><span class="si">{x1_i}{x2_i}</span><span class="s2">` for</span>
 <span class="s2">each element :math:`x1_i` of the input array `x1` with the respective element</span>
 <span class="s2">:math:`x2_i` of the input array `x2`.</span>
@@ -1552,10 +1557,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1604,21 +1609,21 @@
 <span class="s2">&gt;&gt;&gt; np.atan2(x1, x2) * 180 / np.pi</span>
 <span class="s2">array([-135.,  -45.,   45.,  135.])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">atan2</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;atan2&quot;</span><span class="p">,</span>
+    <span class="s2">"atan2"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan2_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan2</span><span class="p">,</span>
     <span class="n">_ATAN2_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_atan2_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atan2&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_atan2_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_atan2"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">arctan2</span> <span class="o">=</span> <span class="n">atan2</span>  <span class="c1"># arctan2 is an alias for atan2</span>
 
 
-<span class="n">_ATANH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ATANH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes hyperbolic inverse tangent for each element :math:`x_i` for input</span>
 <span class="s2">array `x`.</span>
 
@@ -1639,10 +1644,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1688,21 +1693,21 @@
 <span class="s2">&gt;&gt;&gt; np.atanh(x)</span>
 <span class="s2">array([0.0, -0.54930614])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">atanh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;atanh&quot;</span><span class="p">,</span>
+    <span class="s2">"atanh"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atanh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atanh</span><span class="p">,</span>
     <span class="n">_ATANH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_atanh_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atanh&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_atanh_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_atanh"</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">arctanh</span> <span class="o">=</span> <span class="n">atanh</span>  <span class="c1"># arctanh is an alias for atanh</span>
 
 
-<span class="n">_CBRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_CBRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the cube-root for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.cbrt`.</span>
@@ -1718,10 +1723,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1750,19 +1755,19 @@
 <span class="s2">&gt;&gt;&gt; np.cbrt(x)</span>
 <span class="s2">array([1., 2., 3.])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">cbrt</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;cbrt&quot;</span><span class="p">,</span>
+    <span class="s2">"cbrt"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cbrt_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cbrt</span><span class="p">,</span>
     <span class="n">_CBRT_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_cbrt_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_cbrt&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_cbrt_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_cbrt"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_COS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_COS_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the cosine for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.cos`.</span>
@@ -1778,10 +1783,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1809,19 +1814,19 @@
 <span class="s2">&gt;&gt;&gt; np.cos(x)</span>
 <span class="s2">array([ 1.000000e+00, -4.371139e-08, -1.000000e+00])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">cos</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;cos&quot;</span><span class="p">,</span>
+    <span class="s2">"cos"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cos_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cos</span><span class="p">,</span>
     <span class="n">_COS_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_cos_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_cos&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_cos_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_cos"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_COSH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_COSH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the hyperbolic cosine for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">The mathematical definition of the hyperbolic cosine is</span>
@@ -1841,10 +1846,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -1873,15 +1878,15 @@
 <span class="s2">&gt;&gt;&gt; np.cosh(x)</span>
 <span class="s2">array([1.0, 2.5091786, 11.591953])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">cosh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;cosh&quot;</span><span class="p">,</span>
+    <span class="s2">"cosh"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cosh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cosh</span><span class="p">,</span>
     <span class="n">_COSH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_cosh_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_cosh&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_cosh_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_cosh"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1890,7 +1895,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">cumlogsumexp</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculates the cumulative logarithm of the sum of elements in the input</span>
 <span class="sd">    array `x`.</span>
 
@@ -1907,7 +1912,7 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Data type of the returned array. If ``None``, the default data type is</span>
-<span class="sd">        inferred from the &quot;kind&quot; of the input array data type.</span>
+<span class="sd">        inferred from the "kind" of the input array data type.</span>
 
 <span class="sd">        - If `x` has a real-valued floating-point data type, the returned array</span>
 <span class="sd">          will have the same data type as `x`.</span>
@@ -1961,7 +1966,7 @@
 <span class="sd">    array([1.        , 1.69314718, 2.09861229, 2.38629436, 2.60943791,</span>
 <span class="sd">           2.79175947, 2.94591015, 3.07944154, 3.19722458, 3.30258509])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1981,7 +1986,7 @@
 
 
 
-<span class="n">_DEG2RAD_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_DEG2RAD_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Convert angles from degrees to radians for each element :math:`x_i` for input</span>
 <span class="s2">array `x`.</span>
 
@@ -1998,10 +2003,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2035,17 +2040,17 @@
 <span class="s2">&gt;&gt;&gt; np.deg2rad(x)</span>
 <span class="s2">array(3.14159265)</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">deg2rad</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;deg2rad&quot;</span><span class="p">,</span>
+    <span class="s2">"deg2rad"</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
     <span class="n">_DEG2RAD_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_DEGREES_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_DEGREES_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Convert angles from radian to degrees for each element :math:`x_i` for input</span>
 <span class="s2">array `x`.</span>
 
@@ -2062,10 +2067,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2106,17 +2111,17 @@
 <span class="s2">&gt;&gt;&gt; np.all(r == out)</span>
 <span class="s2">array(True)</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">degrees</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;degrees&quot;</span><span class="p">,</span>
+    <span class="s2">"degrees"</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
     <span class="n">_DEGREES_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_EXP_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_EXP_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the exponential for each element :math:`x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.exp`.</span>
@@ -2132,10 +2137,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2162,19 +2167,19 @@
 <span class="s2">&gt;&gt;&gt; np.exp(x)</span>
 <span class="s2">array([1.0, 2.718281828, 7.389056099])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">exp</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;exp&quot;</span><span class="p">,</span>
+    <span class="s2">"exp"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp</span><span class="p">,</span>
     <span class="n">_EXP_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_exp_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_exp&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_exp_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_exp"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_EXP2_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_EXP2_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the base-2 exponential for each element :math:`x_i` for input array</span>
 <span class="s2">`x`.</span>
 
@@ -2191,10 +2196,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2222,19 +2227,19 @@
 <span class="s2">&gt;&gt;&gt; np.exp2(x)</span>
 <span class="s2">array([1., 2., 4.])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">exp2</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;exp2&quot;</span><span class="p">,</span>
+    <span class="s2">"exp2"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp2_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp2</span><span class="p">,</span>
     <span class="n">_EXP2_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_exp2_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_exp2&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_exp2_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_exp2"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_EXPM1_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_EXPM1_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the exponential minus ``1`` for each element :math:`x_i` of input</span>
 <span class="s2">array `x`.</span>
 
@@ -2251,10 +2256,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2294,19 +2299,19 @@
 <span class="s2">&gt;&gt;&gt; np.exp(np.array(1e-10)) - 1</span>
 <span class="s2">array(1.000000082740371e-10)</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">expm1</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;expm1&quot;</span><span class="p">,</span>
+    <span class="s2">"expm1"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_expm1_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_expm1</span><span class="p">,</span>
     <span class="n">_EXPM1_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_expm1_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_expm1&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_expm1_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_expm1"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_HYPOT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_HYPOT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the square root of the sum of squares for each element :math:`x1_i` of</span>
 <span class="s2">the input array `x1` with the respective element :math:`x2_i` of the input</span>
 <span class="s2">array `x2`.</span>
@@ -2327,10 +2332,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2375,19 +2380,19 @@
 <span class="s2">       [ 5.,  5.,  5.],</span>
 <span class="s2">       [ 5.,  5.,  5.]])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">hypot</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;hypot&quot;</span><span class="p">,</span>
+    <span class="s2">"hypot"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_hypot_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_hypot</span><span class="p">,</span>
     <span class="n">_HYPOT_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_hypot_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_hypot&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_hypot_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_hypot"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_LOG_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOG_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the natural logarithm for each element :math:`x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.log`.</span>
@@ -2403,10 +2408,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2451,19 +2456,19 @@
 <span class="s2">&gt;&gt;&gt; np.log(x)</span>
 <span class="s2">array([  0.,   1.,   2., -inf])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;log&quot;</span><span class="p">,</span>
+    <span class="s2">"log"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log</span><span class="p">,</span>
     <span class="n">_LOG_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_ln_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_ln&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_ln_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_ln"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_LOG10_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOG10_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the base-10 logarithm for each element :math:`x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.log10`.</span>
@@ -2479,10 +2484,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2530,19 +2535,19 @@
 <span class="s2">&gt;&gt;&gt; np.log10(np.array([1e-15, -3.]))</span>
 <span class="s2">array([-15.,  nan])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">log10</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;log10&quot;</span><span class="p">,</span>
+    <span class="s2">"log10"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log10_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log10</span><span class="p">,</span>
     <span class="n">_LOG10_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_log10_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_log10&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_log10_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_log10"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_LOG1P_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOG1P_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the natural logarithm of (1 + `x`) for each element :math:`x_i` of</span>
 <span class="s2">input array `x`.</span>
 
@@ -2559,10 +2564,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2615,19 +2620,19 @@
 <span class="s2">&gt;&gt;&gt; np.log(array(1 + 1e-99))</span>
 <span class="s2">array(0.0)</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">log1p</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;log1p&quot;</span><span class="p">,</span>
+    <span class="s2">"log1p"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log1p_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log1p</span><span class="p">,</span>
     <span class="n">_LOG1P_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_log1p_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_log1p&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_log1p_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_log1p"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_LOG2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOG2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the base-2 logarithm for each element :math:`x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.log2`.</span>
@@ -2643,10 +2648,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2695,19 +2700,19 @@
 <span class="s2">&gt;&gt;&gt; np.log2(xi)</span>
 <span class="s2">array([ 0.+2.26618007j,  0.+0.j        ,  1.+0.j        ,  2.+2.26618007j])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">log2</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;log2&quot;</span><span class="p">,</span>
+    <span class="s2">"log2"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log2_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log2</span><span class="p">,</span>
     <span class="n">_LOG2_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_log2_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_log2&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_log2_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_log2"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_LOGADDEXP_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOGADDEXP_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Calculates the natural logarithm of the sum of exponentiations</span>
 <span class="s2">:math:`\log(e^</span><span class="si">{x1}</span><span class="s2"> + e^</span><span class="si">{x2}</span><span class="s2">)` for each element :math:`x1_i` of the input array</span>
 <span class="s2">`x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
@@ -2729,10 +2734,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2777,17 +2782,17 @@
 <span class="s2">&gt;&gt;&gt; np.exp(prob12)</span>
 <span class="s2">array(3.5e-50)</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">logaddexp</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;logaddexp&quot;</span><span class="p">,</span>
+    <span class="s2">"logaddexp"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logaddexp_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_logaddexp</span><span class="p">,</span>
     <span class="n">_LOGADDEXP_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_LOGADDEXP2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_LOGADDEXP2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Calculates the base-2 logarithm of the sum of exponentiations</span>
 <span class="s2">:math:`\log_2(2^</span><span class="si">{x1}</span><span class="s2"> + 2^</span><span class="si">{x2}</span><span class="s2">)` for each element :math:`x1_i` of the input</span>
 <span class="s2">array `x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
@@ -2809,10 +2814,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -2856,10 +2861,10 @@
 <span class="s2">&gt;&gt;&gt; 2**prob12</span>
 <span class="s2">array(3.5e-50)</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">logaddexp2</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;logaddexp2&quot;</span><span class="p">,</span>
+    <span class="s2">"logaddexp2"</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_logaddexp2_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_logaddexp2</span><span class="p">,</span>
     <span class="n">_LOGADDEXP2_DOCSTRING</span><span class="p">,</span>
@@ -2869,7 +2874,7 @@
 <div class="viewcode-block" id="logsumexp">
 <a class="viewcode-back" href="../../reference/generated/dpnp.logsumexp.html#dpnp.logsumexp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">logsumexp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculates the natural logarithm of the sum of exponentials of elements in</span>
 <span class="sd">    the input array.</span>
 
@@ -2886,7 +2891,7 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Data type of the returned array. If ``None``, the default data type is</span>
-<span class="sd">        inferred from the &quot;kind&quot; of the input array data type.</span>
+<span class="sd">        inferred from the "kind" of the input array data type.</span>
 
 <span class="sd">        - If `x` has a real-valued floating-point data type, the returned array</span>
 <span class="sd">          will have the same data type as `x`.</span>
@@ -2947,7 +2952,7 @@
 <span class="sd">    &gt;&gt;&gt; np.log(np.sum(np.exp(a)))</span>
 <span class="sd">    array(3.30258509)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">usm_x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
@@ -2962,7 +2967,7 @@
 
 
 
-<span class="n">_RAD2DEG_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_RAD2DEG_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Convert angles from radians to degrees for each element :math:`x_i` for input</span>
 <span class="s2">array `x`.</span>
 
@@ -2979,10 +2984,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3016,17 +3021,17 @@
 <span class="s2">&gt;&gt;&gt; np.rad2deg(x)</span>
 <span class="s2">array(90.)</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">rad2deg</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;rad2deg&quot;</span><span class="p">,</span>
+    <span class="s2">"rad2deg"</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_degrees</span><span class="p">,</span>
     <span class="n">_RAD2DEG_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_RADIANS_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_RADIANS_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Convert angles from degrees to radians for each element :math:`x_i` for input</span>
 <span class="s2">array `x`.</span>
 
@@ -3043,10 +3048,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3088,17 +3093,17 @@
 <span class="s2">&gt;&gt;&gt; ret is out</span>
 <span class="s2">True</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">radians</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;radians&quot;</span><span class="p">,</span>
+    <span class="s2">"radians"</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_radians_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_radians</span><span class="p">,</span>
     <span class="n">_RADIANS_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_RECIPROCAL_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_RECIPROCAL_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the reciprocal for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.reciprocal`.</span>
@@ -3114,10 +3119,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3146,22 +3151,22 @@
 <span class="s2">&gt;&gt;&gt; np.reciprocal(x)</span>
 <span class="s2">array([1.0, 0.5, 0.3003003])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">reciprocal</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;reciprocal&quot;</span><span class="p">,</span>
+    <span class="s2">"reciprocal"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_reciprocal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_reciprocal</span><span class="p">,</span>
     <span class="n">_RECIPROCAL_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_inv_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_inv&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_inv_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_inv"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="reduce_hypot">
 <a class="viewcode-back" href="../../reference/generated/dpnp.reduce_hypot.html#dpnp.reduce_hypot">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reduce_hypot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Calculates the square root of the sum of squares of elements in</span>
 <span class="sd">    the input array.</span>
 
@@ -3178,7 +3183,7 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Data type of the returned array. If ``None``, the default data type is</span>
-<span class="sd">        inferred from the &quot;kind&quot; of the input array data type.</span>
+<span class="sd">        inferred from the "kind" of the input array data type.</span>
 
 <span class="sd">        - If `x` has a real-valued floating-point data type, the returned array</span>
 <span class="sd">          will have the same data type as `x`.</span>
@@ -3232,7 +3237,7 @@
 <span class="sd">    &gt;&gt;&gt; np.sqrt(np.sum(np.square(a)))</span>
 <span class="sd">    array(3.16227766)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">usm_x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
@@ -3247,7 +3252,7 @@
 
 
 
-<span class="n">_RSQRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_RSQRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the reciprocal square-root for each element :math:`x_i` for input</span>
 <span class="s2">array `x`.</span>
 
@@ -3262,10 +3267,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is `None`.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3296,17 +3301,17 @@
 <span class="s2">&gt;&gt;&gt; np.rsqrt(x)</span>
 <span class="s2">array([1.        , 0.35355338, 0.19245009])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">rsqrt</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;rsqrt&quot;</span><span class="p">,</span>
+    <span class="s2">"rsqrt"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_rsqrt_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_rsqrt</span><span class="p">,</span>
     <span class="n">_RSQRT_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_SIN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SIN_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the sine for each element :math:`x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.sin`.</span>
@@ -3322,10 +3327,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3353,19 +3358,19 @@
 <span class="s2">&gt;&gt;&gt; np.sin(x)</span>
 <span class="s2">array([ 0.000000e+00,  1.000000e+00, -8.742278e-08])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">sin</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;sin&quot;</span><span class="p">,</span>
+    <span class="s2">"sin"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sin_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sin</span><span class="p">,</span>
     <span class="n">_SIN_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sin_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sin&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_sin_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_sin"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_SINH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SINH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the hyperbolic sine for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">The mathematical definition of the hyperbolic sine is</span>
@@ -3385,10 +3390,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3416,19 +3421,19 @@
 <span class="s2">&gt;&gt;&gt; np.sinh(x)</span>
 <span class="s2">array([0.0, 2.3012989, 11.548739])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">sinh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;sinh&quot;</span><span class="p">,</span>
+    <span class="s2">"sinh"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sinh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sinh</span><span class="p">,</span>
     <span class="n">_SINH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sinh_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sinh&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_sinh_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_sinh"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_SQRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SQRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the principal square-root for each element :math:`x_i` of input array</span>
 <span class="s2">`x`.</span>
 
@@ -3445,10 +3450,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3493,19 +3498,19 @@
 <span class="s2">&gt;&gt;&gt; np.sqrt(x2)</span>
 <span class="s2">array([ 2., nan, inf])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">sqrt</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;sqrt&quot;</span><span class="p">,</span>
+    <span class="s2">"sqrt"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sqrt_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sqrt</span><span class="p">,</span>
     <span class="n">_SQRT_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sqrt_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sqrt&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_sqrt_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_sqrt"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_SQUARE_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SQUARE_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Squares each element :math:`x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.square`.</span>
@@ -3521,10 +3526,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3552,19 +3557,19 @@
 <span class="s2">&gt;&gt;&gt; np.square(x)</span>
 <span class="s2">array([-1.+0.j,  1.+0.j])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">square</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;square&quot;</span><span class="p">,</span>
+    <span class="s2">"square"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_square_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_square</span><span class="p">,</span>
     <span class="n">_SQUARE_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sqr_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sqr&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_sqr_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_sqr"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_TAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_TAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Computes the tangent for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.tan`.</span>
@@ -3580,10 +3585,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3611,19 +3616,19 @@
 <span class="s2">&gt;&gt;&gt; np.tan(x)</span>
 <span class="s2">array([1.22460635e-16, 1.63317787e+16, -1.22460635e-16])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">tan</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;tan&quot;</span><span class="p">,</span>
+    <span class="s2">"tan"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_tan_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_tan</span><span class="p">,</span>
     <span class="n">_TAN_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_tan_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_tan&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_tan_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_tan"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="n">_TANH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_TANH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"""</span>
 <span class="s2">Computes the hyperbolic tangent for each element :math:`x_i` for input array</span>
 <span class="s2">`x`.</span>
 
@@ -3645,10 +3650,10 @@
 <span class="s2">    number of outputs.</span>
 
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, "C", "F", "A", "K"}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
-<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">    Default: ``"K"``.</span>
 
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -3676,22 +3681,22 @@
 <span class="s2">&gt;&gt;&gt; np.tanh(x)</span>
 <span class="s2">array([0.0, -0.996272, 0.917152, 0.996272])</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">tanh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;tanh&quot;</span><span class="p">,</span>
+    <span class="s2">"tanh"</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_tanh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_tanh</span><span class="p">,</span>
     <span class="n">_TANH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_tanh_to_call&quot;</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_tanh&quot;</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">"_mkl_tanh_to_call"</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">"_tanh"</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="unwrap">
 <a class="viewcode-back" href="../../reference/generated/dpnp.unwrap.html#dpnp.unwrap">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unwrap</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">discont</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">pi</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Unwrap by taking the complement of large deltas with respect to the period.</span>
 
 <span class="sd">    This unwraps a signal `p` by changing elements which have an absolute</span>
@@ -3771,7 +3776,7 @@
 <span class="sd">            180.,  220.,  260.,  300.,  340.,  380.,  420.,  460.,  500.,</span>
 <span class="sd">            540.])</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 
@@ -3845,7 +3850,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=ad14311e"></script>
+</div><script src="../../_static/documentation_options.js?v=c2e525ca"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

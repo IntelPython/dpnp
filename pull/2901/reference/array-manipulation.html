@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="dpnp.copyto" href="generated/dpnp.copyto.html"><link rel="prev" title="dpnp.vander" href="generated/dpnp.vander.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Array manipulation routines - Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</title>
+        <title>Array manipulation routines - Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -173,7 +173,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</div></a>
+      <a href="../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev3 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -518,6 +518,11 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.atleast_2d.html">dpnp.atleast_2d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.atleast_3d.html">dpnp.atleast_3d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.broadcast.html">dpnp.broadcast</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.broadcast.shape.html">dpnp.broadcast.shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.broadcast.size.html">dpnp.broadcast.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.broadcast.ndim.html">dpnp.broadcast.ndim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.broadcast.numiter.html">dpnp.broadcast.numiter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.broadcast.values.html">dpnp.broadcast.values</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.broadcast_to.html">dpnp.broadcast_to</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.broadcast_arrays.html">dpnp.broadcast_arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.expand_dims.html">dpnp.expand_dims</a></li>
@@ -1139,16 +1144,31 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.broadcast.html#dpnp.broadcast" title="dpnp.broadcast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast</span></code></a></p></td>
 <td><p>Produce an object that mimics broadcasting.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.broadcast_to.html#dpnp.broadcast_to" title="dpnp.broadcast_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_to</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.broadcast.shape.html#dpnp.broadcast.shape" title="dpnp.broadcast.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast.shape</span></code></a></p></td>
+<td><p>Shape of the broadcasted result.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.broadcast.size.html#dpnp.broadcast.size" title="dpnp.broadcast.size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast.size</span></code></a></p></td>
+<td><p>Total size of the broadcasted result.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.broadcast.ndim.html#dpnp.broadcast.ndim" title="dpnp.broadcast.ndim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast.ndim</span></code></a></p></td>
+<td><p>Number of dimensions of the broadcasted result.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.broadcast.numiter.html#dpnp.broadcast.numiter" title="dpnp.broadcast.numiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast.numiter</span></code></a></p></td>
+<td><p>Number of iterators possessed by the broadcast object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.broadcast.values.html#dpnp.broadcast.values" title="dpnp.broadcast.values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast.values</span></code></a></p></td>
+<td><p>The input arrays broadcast against one another.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.broadcast_to.html#dpnp.broadcast_to" title="dpnp.broadcast_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_to</span></code></a></p></td>
 <td><p>Broadcast an array to a new shape.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.broadcast_arrays.html#dpnp.broadcast_arrays" title="dpnp.broadcast_arrays"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_arrays</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.broadcast_arrays.html#dpnp.broadcast_arrays" title="dpnp.broadcast_arrays"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_arrays</span></code></a></p></td>
 <td><p>Broadcast any number of arrays against each other.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.expand_dims.html#dpnp.expand_dims" title="dpnp.expand_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_dims</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.expand_dims.html#dpnp.expand_dims" title="dpnp.expand_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_dims</span></code></a></p></td>
 <td><p>Expand the shape of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.squeeze.html#dpnp.squeeze" title="dpnp.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.squeeze.html#dpnp.squeeze" title="dpnp.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code></a></p></td>
 <td><p>Removes singleton dimensions (axes) from array <cite>a</cite>.</p></td>
 </tr>
 </tbody>
@@ -1387,7 +1407,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=ad14311e"></script>
+</div><script src="../_static/documentation_options.js?v=c2e525ca"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
