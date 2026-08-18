@@ -19,6 +19,12 @@ build:
     env:
       WHEELS_OUTPUT_FOLDER: ${{ env.get("WHEELS_OUTPUT_FOLDER", default="") }}
       OVERRIDE_INTEL_IPO: ${{ env.get("OVERRIDE_INTEL_IPO", default="") }}
+      # conda-build used to forward GIT_DESCRIBE_NUMBER into the build script
+      # automatically; rattler-build does not, so bld.bat's
+      # `wheel tags --remove --build %GIT_DESCRIBE_NUMBER%` was silently
+      # getting an empty value on Windows, which made that command fail and
+      # broke the wheel install step further down the script.
+      GIT_DESCRIBE_NUMBER: ${{ env.get("GIT_DESCRIBE_NUMBER") }}
   dynamic_linking:
     missing_dso_allowlist:
       - "*DPCTLSyclInterface*"
