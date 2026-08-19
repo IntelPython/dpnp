@@ -1059,19 +1059,6 @@ class broadcast:  # pylint: disable=invalid-name
     *args : {dpnp.ndarray, usm_ndarray}
         Input arrays to broadcast against one another.
 
-    Attributes
-    ----------
-    shape : tuple of ints
-        Shape of the broadcasted result.
-    size : int
-        Total size (number of elements) of the broadcasted result.
-    ndim : int
-        Number of dimensions of the broadcasted result.
-    numiter : int
-        Number of iterators possessed by the broadcast object.
-    values : tuple of dpnp.ndarray
-        The input arrays broadcast against one another.
-
     Returns
     -------
     broadcast : broadcast object
