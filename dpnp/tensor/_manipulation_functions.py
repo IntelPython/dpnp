@@ -576,7 +576,8 @@ def repeat(x, repeats, /, *, axis=None):
 
             If `repeats` is an array, it must have an integer data type.
             Otherwise, `repeats` must be a Python integer or sequence of
-            Python integers (i.e., a tuple, list, or range).
+            Python integers (i.e., a tuple, list, or range). A sequence must
+            be 0- or 1-dimensional.
 
         axis (Optional[int]):
             The axis along which to repeat values. If `axis` is `None`, the
@@ -663,14 +664,20 @@ def repeat(x, repeats, /, *, axis=None):
         usm_type = x.usm_type
         exec_q = x.sycl_queue
 
-        len_reps = len(repeats)
-        if len_reps == 1:
-            repeats = repeats[0]
+        # inspect the sequence on the host to preserve the scalar fast path
+        repeats = np.asarray(repeats)
+        if repeats.ndim > 1:
+            raise ValueError(
+                "`repeats` sequence must be 0- or 1-dimensional, got "
+                f"{repeats.ndim} dimensions"
+            )
+        if repeats.size == 1:
+            scalar = True
+            repeats = int(repeats[0])
             if repeats < 0:
                 raise ValueError("`repeats` elements must be positive")
-            scalar = True
         else:
-            if len_reps != axis_size:
+            if repeats.size != axis_size:
                 raise ValueError(
                     "`repeats` sequence must have the same length as the "
                     "repeated axis"
