@@ -1,0 +1,635 @@
+# *****************************************************************************
+# Copyright (c) 2026, Intel Corporation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# - Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
+# - Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+# - Neither the name of the copyright holder nor the names of its contributors
+#   may be used to endorse or promote products derived from this software
+#   without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+# THE POSSIBILITY OF SUCH DAMAGE.
+# *****************************************************************************
+
+"""CSR matrix backed by dpnp/USM arrays.
+
+Minimal implementation supporting the operations exercised by
+dpnp.scipy.sparse.linalg solvers (cg, gmres, minres) and
+LinearOperator. Construction from dense arrays or raw CSR
+components; ``dot`` is routed through oneMKL ``sparse::gemv``.
+
+SpMV fast path
+--------------
+On first ``.dot(x)`` with a 1-D ``x`` of a supported dtype, the
+instance lazily allocates an oneMKL ``matrix_handle`` via
+``_sparse_gemv_init`` (which itself runs ``set_csr_data`` plus
+``optimize_gemv`` -- the expensive sparsity-analysis phase). The
+handle is cached on the instance and reused for every subsequent
+matvec; ``__del__`` releases it. This matches the cupyx behaviour
+where ``csr_matrix.dot`` calls cuSPARSE SpMV directly without
+densification, and lets the iterative solvers in
+``dpnp.scipy.sparse.linalg`` reuse the same handle through
+``_make_fast_matvec`` without rebuilding it.
+"""
+
+import sys
+
+import dpctl.utils as _dpu
+import numpy as _np
+
+import dpnp as _dpnp
+
+# pylint: disable-next=no-name-in-module
+import dpnp.backend.extensions.sparse._sparse_impl as _si
+import dpnp.tensor as _dpt
+from dpnp.exceptions import ExecutionPlacementError
+
+from .._lib._sparse import SparseABC, issparse
+
+# Two short blocks intentionally mirror code in
+# dpnp/scipy/sparse/linalg/_iterative.py: the cached-SpMV invocation
+# and the __del__ shutdown-safe release pattern. Both are tightly
+# coupled to oneMKL's contract; extracting a shared helper would add
+# indirection without reducing real duplication.
+# pylint: disable=duplicate-code
+
+# Value dtypes the oneMKL sparse::gemv dispatch table registers
+# (see dpnp/backend/extensions/sparse/types_matrix.hpp). ``dot`` raises
+# for anything outside this set.
+_SPMV_VALUE_DTYPES = frozenset("fdFD")
+# Index dtypes oneMKL accepts (int32, int64). Matches the second
+# dimension of SparseGemvInitTypePairSupportFactory.
+_SPMV_INDEX_DTYPES = frozenset("ilq")
+
+
+def _isshape(arg):
+    """True if arg is a length-2 tuple of non-negative integers."""
+    if not (isinstance(arg, tuple) and len(arg) == 2):
+        return False
+    try:
+        return all(int(v) == v and int(v) >= 0 for v in arg)
+    except (TypeError, ValueError):
+        return False
+
+
+# pylint: disable=invalid-name,too-many-instance-attributes
+# The instance-attribute count exceeds the default
+# pylint cap because the lazily-built oneMKL handle adds four cache
+# fields (handle, val_type_id, si, exec_q) on top of the CSR triple +
+# shape; all are required.
+class csr_matrix(SparseABC):
+    """Compressed Sparse Row matrix on a SYCL device.
+
+    Construction
+    ------------
+    csr_matrix(D)
+        from a 2-D array (``dpnp.ndarray`` or ``usm_ndarray``).
+
+    csr_matrix((M, N), [dtype=...])
+        an empty (all-zero) matrix of shape ``(M, N)``; ``dtype``
+        defaults to float64.
+
+    csr_matrix((data, indices, indptr), [shape=(M, N)])
+        from raw CSR component arrays (1-D, on the same SYCL queue).
+        ``shape`` is inferred from the index arrays when omitted.
+        Components are stored as given; indices are sorted lazily
+        (see ``sort_indices``) when required by the SpMV path.
+
+    csr_matrix(other_csr)
+        copy of another csr_matrix.
+
+    Duplicate column indices within a row are not supported (unlike
+    scipy, which sums them); each column must appear at most once per
+    row. This matches the CSR produced by dense construction and the
+    solvers, which never generate duplicates.
+
+    Supported operations: construction, ``dot`` (matvec) via cached
+    oneMKL SpMV, ``toarray``, ``copy``. This is a solver-support
+    subset of the scipy/cupy CSR API; arithmetic, indexing, reductions,
+    transpose, format conversion and element-wise math are not
+    implemented (the most common such methods raise
+    ``NotImplementedError``). Convert with ``toarray()`` and use dpnp
+    for those.
+
+    Attributes
+    ----------
+    data : {dpnp.ndarray, usm_ndarray}
+        1-D array of nonzero values, shape (nnz,).
+    indices : {dpnp.ndarray, usm_ndarray}
+        1-D array of column indices, shape (nnz,).
+    indptr : {dpnp.ndarray, usm_ndarray}
+        1-D array of row pointers, shape (M+1,).
+    shape : tuple of int
+    dtype : dpnp dtype
+    nnz : int
+    has_sorted_indices : bool
+        Whether column indices are sorted within each row.
+    format : str
+        Always 'csr'.
+    ndim : int
+        Always 2.
+    """
+
+    format = "csr"
+    ndim = 2
+
+    def __init__(
+        self,
+        arg1,
+        shape=None,
+        dtype=None,
+        copy=False,
+        *,
+        device=None,
+        usm_type=None,
+        sycl_queue=None,
+    ):
+        # Lazy SpMV handle state. Assigned BEFORE the dispatch below so
+        # that __del__ never sees a partially-constructed object (it can
+        # be invoked if any of the _init_* helpers raise).
+        self._spmv_handle = None
+        self._spmv_val_type_id = -1
+        self._spmv_si = None
+        self._spmv_exec_q = None
+        self._has_sorted_indices = None
+
+        self.data = None
+        self.indices = None
+        self.indptr = None
+        self._shape = None
+
+        if issparse(arg1):
+            self._init_from_components(
+                (arg1.data, arg1.indices, arg1.indptr),
+                arg1.shape,
+                dtype=dtype if dtype is not None else arg1.dtype,
+                copy=True,
+            )
+        elif _dpnp.is_supported_array_type(arg1):
+            self._init_from_dense(arg1, dtype=dtype)
+        elif isinstance(arg1, tuple) and len(arg1) == 2 and _isshape(arg1):
+            self._init_empty(
+                arg1,
+                dtype=dtype,
+                device=device,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
+            )
+        elif isinstance(arg1, tuple) and len(arg1) == 3:
+            self._init_from_components(arg1, shape, dtype=dtype, copy=copy)
+        else:
+            raise TypeError(
+                f"csr_matrix: cannot construct from {type(arg1).__name__}; "
+                "supported forms are a 2-D array (dpnp.ndarray or "
+                "usm_ndarray), another csr_matrix, a (data, indices, indptr) "
+                "tuple, or a shape tuple (M, N) for an empty matrix."
+            )
+
+    def _init_empty(
+        self, shape, dtype=None, device=None, usm_type=None, sycl_queue=None
+    ):
+        nrows, ncols = int(shape[0]), int(shape[1])
+        dtype = _dpnp.float64 if dtype is None else dtype
+        common = {
+            "device": device,
+            "usm_type": usm_type,
+            "sycl_queue": sycl_queue,
+        }
+        self.data = _dpnp.empty(0, dtype=dtype, **common)
+        idx_dtype = _dpnp.int64
+        self.indices = _dpnp.empty(0, dtype=idx_dtype, **common)
+        self.indptr = _dpnp.zeros(nrows + 1, dtype=idx_dtype, **common)
+        self._shape = (nrows, ncols)
+        self._has_sorted_indices = True
+
+    def _init_from_components(self, arrays, shape, dtype=None, copy=False):
+        data, indices, indptr = arrays
+
+        _dpnp.check_supported_arrays_type(data, indices, indptr)
+        # Normalize usm_ndarray inputs to dpnp.ndarray so all internal
+        # operations (sort_indices, toarray, dot) work uniformly.
+        data = _dpnp.asarray(data)
+        indices = _dpnp.asarray(indices)
+        indptr = _dpnp.asarray(indptr)
+        if data.ndim != 1 or indices.ndim != 1 or indptr.ndim != 1:
+            raise ValueError(
+                "csr_matrix: data, indices, and indptr must be 1-D"
+            )
+        if data.shape[0] != indices.shape[0]:
+            raise ValueError(
+                f"csr_matrix: data length {data.shape[0]} != "
+                f"indices length {indices.shape[0]}"
+            )
+
+        # Infer number of rows from indptr when shape is omitted; number
+        # of columns is max(indices)+1 (matching scipy/cupy).
+        if shape is None:
+            nrows = int(indptr.shape[0]) - 1
+            ncols = int(indices.max()) + 1 if indices.shape[0] > 0 else 0
+        else:
+            nrows, ncols = int(shape[0]), int(shape[1])
+        if indptr.shape[0] != nrows + 1:
+            raise ValueError(
+                f"csr_matrix: indptr length {indptr.shape[0]} != "
+                f"nrows+1 ({nrows + 1})"
+            )
+
+        q = _dpt.get_execution_queue(
+            (data.sycl_queue, indices.sycl_queue, indptr.sycl_queue)
+        )
+        if q is None:
+            raise ExecutionPlacementError(
+                "csr_matrix: data, indices, and indptr must be allocated on "
+                "the same SYCL queue"
+            )
+
+        idx_char = _np.dtype(indices.dtype).char
+        if idx_char not in ("i", "l", "q"):
+            raise TypeError(
+                f"csr_matrix: indices dtype must be int32 or int64, "
+                f"got {indices.dtype}"
+            )
+        if _np.dtype(indptr.dtype).char != idx_char:
+            raise TypeError(
+                f"csr_matrix: indptr dtype ({indptr.dtype}) must match "
+                f"indices dtype ({indices.dtype})"
+            )
+
+        if dtype is not None and _np.dtype(dtype) != _np.dtype(data.dtype):
+            data = data.astype(dtype, copy=True)
+        elif copy:
+            data = data.copy()
+        if copy:
+            indices = indices.copy()
+            indptr = indptr.copy()
+
+        # Store components verbatim (matching scipy): the caller's column
+        # order is preserved and copy=False aliasing is honoured. Sorting
+        # is deferred to sort_indices(), invoked lazily by the SpMV path.
+        self.data = data
+        self.indices = indices
+        self.indptr = indptr
+        self._shape = (nrows, ncols)
+        self._has_sorted_indices = None
+
+    @property
+    def has_sorted_indices(self):
+        """Whether column indices are sorted per row (scipy-compatible).
+
+        The result is cached; an unknown state triggers a one-time check.
+        """
+        if self._has_sorted_indices is None:
+            self._has_sorted_indices = self._check_sorted()
+        return self._has_sorted_indices
+
+    def _check_sorted(self):
+        idx = self.indices
+        if idx.shape[0] == 0:
+            return True
+        # Sorted iff no adjacent pair within the same row is decreasing.
+        q = idx.sycl_queue
+        nrows = self._shape[0]
+        row_lengths = self.indptr[1:] - self.indptr[:-1]
+        row_ids = _dpnp.repeat(
+            _dpnp.arange(nrows, dtype=self.indptr.dtype, sycl_queue=q),
+            row_lengths,
+        )
+        same_row = row_ids[1:] == row_ids[:-1]
+        decreasing = idx[1:] < idx[:-1]
+        return not bool(_dpnp.any(same_row & decreasing))
+
+    def sort_indices(self):
+        """Sort column indices within each row, in place (scipy-compatible).
+
+        SpMV backends require sorted CSR; this is a no-op once the
+        indices are known sorted.
+        """
+        if self.has_sorted_indices:
+            return
+        indices = self.indices
+        nnz = indices.shape[0]
+        if nnz == 0:
+            self._has_sorted_indices = True
+            return
+
+        q = indices.sycl_queue
+        nrows = self._shape[0]
+        row_lengths = self.indptr[1:] - self.indptr[:-1]
+        row_ids = _dpnp.repeat(
+            _dpnp.arange(nrows, dtype=indices.dtype, sycl_queue=q),
+            row_lengths,
+        )
+        # Lexsort by (row, col) via two stable passes.
+        order = _dpnp.argsort(indices, kind="stable")
+        order = order[_dpnp.argsort(row_ids[order], kind="stable")]
+
+        self.data = self.data[order]
+        self.indices = self.indices[order]
+        self._has_sorted_indices = True
+
+    def _init_from_dense(self, dense, dtype=None):
+        # Normalize usm_ndarray to dpnp.ndarray for uniform internal ops.
+        dense = _dpnp.asarray(dense)
+        if dense.ndim != 2:
+            raise ValueError(
+                f"csr_matrix: dense input must be 2-D, got {dense.ndim}-D"
+            )
+        if dtype is not None:
+            dense = dense.astype(dtype, copy=False)
+
+        nrows, ncols = dense.shape
+        q = dense.sycl_queue
+
+        rows, cols = _dpnp.nonzero(dense)
+        nnz = int(rows.shape[0])
+
+        if nnz == 0:
+            self.data = _dpnp.empty(0, dtype=dense.dtype, sycl_queue=q)
+            self.indices = _dpnp.empty(0, dtype=_dpnp.int64, sycl_queue=q)
+            self.indptr = _dpnp.zeros(
+                nrows + 1, dtype=_dpnp.int64, sycl_queue=q
+            )
+            self._shape = (nrows, ncols)
+            self._has_sorted_indices = True
+            return
+
+        values = dense[rows, cols]
+        idx_dtype = _dpnp.int64
+        row_counts = _dpnp.bincount(rows.astype(idx_dtype), minlength=nrows)
+        indptr = _dpnp.empty(nrows + 1, dtype=idx_dtype, sycl_queue=q)
+        indptr[0] = 0
+        indptr[1:] = _dpnp.cumsum(row_counts)
+
+        self.data = values
+        self.indices = cols.astype(idx_dtype)
+        self.indptr = indptr
+        self._shape = (nrows, ncols)
+        # dpnp.nonzero yields row-major order, columns ascending per row.
+        self._has_sorted_indices = True
+
+    # --- read-only properties ------------------------------------------
+
+    @property
+    def shape(self):
+        """Tuple of matrix dimensions ``(M, N)``."""
+        return self._shape
+
+    @property
+    def dtype(self):
+        """Data type of stored values."""
+        return self.data.dtype
+
+    @property
+    def nnz(self):
+        """Number of stored nonzero entries."""
+        return int(self.data.shape[0])
+
+    @property
+    def size(self):
+        """Alias for ``nnz`` (number of stored entries)."""
+        return self.nnz
+
+    @property
+    # pylint: disable-next=invalid-name
+    def T(self):
+        """Transpose (not implemented)."""
+        raise NotImplementedError("csr_matrix.T is not implemented.")
+
+    # --- SpMV fast-path internals --------------------------------------
+
+    def _spmv_supported(self):
+        """True iff value and index dtypes are in the oneMKL dispatch table."""
+        return (
+            _np.dtype(self.data.dtype).char in _SPMV_VALUE_DTYPES
+            and _np.dtype(self.indices.dtype).char in _SPMV_INDEX_DTYPES
+        )
+
+    def _ensure_spmv_handle(self):
+        """Lazily build the cached oneMKL matrix_handle for forward SpMV.
+
+        Returns the ``(si, handle, val_type_id, exec_q)`` quadruple so
+        callers can drive ``_sparse_gemv_compute`` directly. Returns
+        ``None`` only if the value/index dtype combination is not in the
+        oneMKL dispatch table (so callers can decide how to react).
+        """
+        if self._spmv_handle is not None:
+            return (
+                self._spmv_si,
+                self._spmv_handle,
+                self._spmv_val_type_id,
+                self._spmv_exec_q,
+            )
+
+        if not self._spmv_supported():
+            return None
+
+        self.sort_indices()
+
+        exec_q = self.data.sycl_queue
+        _manager = _dpu.SequentialOrderManager[exec_q]
+        # pylint: disable-next=protected-access
+        handle, val_type_id, ev = _si._sparse_gemv_init(
+            exec_q,
+            0,  # trans=N (forward)
+            _dpnp.get_usm_ndarray(self.indptr),
+            _dpnp.get_usm_ndarray(self.indices),
+            _dpnp.get_usm_ndarray(self.data),
+            int(self._shape[0]),
+            int(self._shape[1]),
+            int(self.data.shape[0]),
+            _manager.submitted_events,
+        )
+
+        _manager.add_event_pair(ev, ev)
+
+        self._spmv_si = _si
+        self._spmv_handle = handle
+        self._spmv_val_type_id = val_type_id
+        self._spmv_exec_q = exec_q
+        return (_si, handle, val_type_id, exec_q)
+
+    # --- public API: matvec via cached oneMKL handle -------------------
+
+    def dot(self, x):
+        """Compute ``A @ x`` for a 1-D `x`.
+
+        Dispatches to oneMKL ``sparse::gemv`` via a cached matrix handle
+        (built lazily on the first call and reused afterwards), matching
+        the cupyx ``csr_matrix.dot`` behaviour. Raises for an unsupported
+        value/index dtype (no dense fallback); 2-D `x` (batched SpMM) is
+        not implemented.
+        """
+        if not _dpnp.is_supported_array_type(x):
+            raise TypeError(
+                f"csr_matrix.dot: expected a dpnp or usm_ndarray, "
+                f"got {type(x).__name__}"
+            )
+        if x.ndim != 1:
+            raise NotImplementedError(
+                f"csr_matrix.dot: only 1-D x is supported, got {x.ndim}-D"
+            )
+
+        nrows, ncols = self._shape
+        if x.shape[0] != ncols:
+            raise ValueError(
+                f"csr_matrix.dot: x length {x.shape[0]} does not match "
+                f"number of columns {ncols}"
+            )
+        if x.dtype != self.data.dtype:
+            raise TypeError(
+                f"csr_matrix.dot: x dtype {x.dtype} does not match matrix "
+                f"dtype {self.data.dtype}"
+            )
+
+        # nnz == 0: A @ x == 0. oneMKL set_csr_data rejects nnz == 0.
+        if self.data.shape[0] == 0:
+            return _dpnp.zeros_like(self.data, shape=nrows)
+
+        handle_info = self._ensure_spmv_handle()
+        if handle_info is None:
+            raise TypeError(
+                f"csr_matrix.dot: unsupported dtype combination "
+                f"(value={self.data.dtype}, index={self.indices.dtype}); "
+                "supported: {float32, float64, complex64, complex128} x "
+                "{int32, int64}."
+            )
+
+        _si, handle, val_type_id, exec_q = handle_info
+        y = _dpnp.empty_like(self.data, shape=nrows)
+        _manager = _dpu.SequentialOrderManager[exec_q]
+        # pylint: disable-next=protected-access
+        ht_ev, comp_ev = _si._sparse_gemv_compute(
+            exec_q,
+            handle,
+            val_type_id,
+            0,  # trans=N
+            1.0,  # alpha
+            _dpnp.get_usm_ndarray(x),
+            0.0,  # beta
+            _dpnp.get_usm_ndarray(y),
+            nrows,
+            ncols,
+            _manager.submitted_events,
+        )
+        _manager.add_event_pair(ht_ev, comp_ev)
+        return y
+
+    def __matmul__(self, x):
+        return self.dot(x)
+
+    def __del__(self):
+        handle = getattr(self, "_spmv_handle", None)
+        if handle is None:
+            return
+        self._spmv_handle = None
+        if sys.is_finalizing():
+            # OS reclaims the handle at process exit; the queue/module
+            # state needed to release it may already be gone.
+            return
+        try:
+            exec_q = self._spmv_exec_q
+            _manager = _dpu.SequentialOrderManager[exec_q]
+            release_ev = _si._sparse_gemv_release(
+                exec_q, handle, _manager.submitted_events
+            )
+            _manager.add_event_pair(release_ev, release_ev)
+            release_ev.wait()
+        except Exception:  # pylint: disable=broad-exception-caught
+            pass
+
+    def toarray(self):
+        """Convert to a dense dpnp 2-D array."""
+        nrows = self._shape[0]
+        q = self.data.sycl_queue
+        dense = _dpnp.zeros(self._shape, dtype=self.dtype, sycl_queue=q)
+        if self.nnz == 0:
+            return dense
+
+        row_lengths = self.indptr[1:] - self.indptr[:-1]
+        rows = _dpnp.repeat(
+            _dpnp.arange(nrows, dtype=self.indices.dtype, sycl_queue=q),
+            row_lengths,
+        )
+        dense[rows, self.indices] = self.data
+        return dense
+
+    def copy(self):
+        """Return a deep copy of this matrix."""
+        return csr_matrix(self)
+
+    def __repr__(self):
+        return (
+            f"<{self._shape[0]}x{self._shape[1]} csr_matrix "
+            f"of dtype {self.dtype} with {self.nnz} stored elements>"
+        )
+
+    # --- unsupported scipy/cupy CSR operations -------------------------
+    # This container implements only the subset needed by the
+    # dpnp.scipy.sparse.linalg solvers (construction, matvec via ``dot``,
+    # ``toarray``). The most commonly expected scipy/cupy methods below
+    # raise a clear error; convert with
+    # ``toarray()`` and use dpnp for anything else.
+    @staticmethod
+    def _unsupported(name):
+        raise NotImplementedError(
+            f"csr_matrix.{name} is not implemented; this container "
+            "supports construction, dot (matvec) and toarray only. "
+            "Use toarray() and operate with dpnp for other operations."
+        )
+
+    # Unsupported-op stubs: each just raises via _unsupported(); the
+    # signatures mirror scipy for a clear error, so args are intentionally
+    # unused and docstrings would be pure noise.
+    # pylint: disable=missing-function-docstring,unused-argument
+    def __getitem__(self, key):
+        self._unsupported("__getitem__")
+
+    def __setitem__(self, key, value):
+        self._unsupported("__setitem__")
+
+    def __add__(self, other):
+        self._unsupported("__add__")
+
+    def __sub__(self, other):
+        self._unsupported("__sub__")
+
+    def __mul__(self, other):
+        self._unsupported("__mul__")
+
+    def transpose(self, axes=None, copy=False):
+        self._unsupported("transpose")
+
+    def conj(self, copy=True):
+        self._unsupported("conj")
+
+    def conjugate(self, copy=True):
+        self._unsupported("conjugate")
+
+    def sum(self, axis=None, dtype=None, out=None):
+        self._unsupported("sum")
+
+    def tocsc(self, copy=False):
+        self._unsupported("tocsc")
+
+    def tocoo(self, copy=False):
+        self._unsupported("tocoo")
+
+    def todok(self, copy=False):
+        self._unsupported("todok")
+
+    # pylint: enable=missing-function-docstring,unused-argument
