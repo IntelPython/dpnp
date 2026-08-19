@@ -21,7 +21,7 @@
       :toctree:
    {% for item in all_attributes %}
       {%- if not item.startswith('_') %}
-      {{ name }}.{{ item }}
+      ~{{ name }}.{{ item }}
       {%- endif -%}
    {%- endfor %}
 {% endif %}
