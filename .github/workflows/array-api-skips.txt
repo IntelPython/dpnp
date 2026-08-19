@@ -1,9 +1,7 @@
 # array API tests to be skipped
 
-# test_dunder_dlpack hard-pins the requested dl_device to kDLCPU while drawing
-# copy from {True, False, None}. A dpnp array always reports its device as
-# kDLOneAPI (never kDLCPU), so the copy=False case forces a cross-device export
-# that the array API standard requires be rejected with a BufferError. The test
-# treats any exception as a failure, so it fails on spec-compliant behavior.
-# Other device-backed libraries (e.g. CuPy) skip this test for the same reason.
+# data-apis/array-api-tests/issues#456
 array_api_tests/test_dlpack.py::test_dunder_dlpack
+
+# data-apis/array-api/issues#1006
+array_api_tests/test_special_cases.py::test_unary[tanh(real(x_i) is +infinity and isfinite(imag(x_i)) and imag(x_i) > 0) -> 1 + 0j]
