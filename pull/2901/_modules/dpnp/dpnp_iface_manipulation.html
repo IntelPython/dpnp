@@ -517,11 +517,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.atleast_2d.html">dpnp.atleast_2d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.atleast_3d.html">dpnp.atleast_3d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.html">dpnp.broadcast</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.shape.html">dpnp.broadcast.shape</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.size.html">dpnp.broadcast.size</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.ndim.html">dpnp.broadcast.ndim</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.numiter.html">dpnp.broadcast.numiter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast.values.html">dpnp.broadcast.values</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast_to.html">dpnp.broadcast_to</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.broadcast_arrays.html">dpnp.broadcast_arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/generated/dpnp.expand_dims.html">dpnp.expand_dims</a></li>
@@ -2127,6 +2122,19 @@
 <span class="sd">    *args : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input arrays to broadcast against one another.</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape : tuple of ints</span>
+<span class="sd">        Shape of the broadcasted result.</span>
+<span class="sd">    size : int</span>
+<span class="sd">        Total size (number of elements) of the broadcasted result.</span>
+<span class="sd">    ndim : int</span>
+<span class="sd">        Number of dimensions of the broadcasted result.</span>
+<span class="sd">    numiter : int</span>
+<span class="sd">        Number of iterators possessed by the broadcast object.</span>
+<span class="sd">    values : tuple of dpnp.ndarray</span>
+<span class="sd">        The input arrays broadcast against one another.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    broadcast : broadcast object</span>
@@ -2314,7 +2322,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    args : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    *args : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        A list of arrays to broadcast.</span>
 
 <span class="sd">    Returns</span>
@@ -4132,14 +4140,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    repeats : {int, tuple, list, range, dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        The number of repetitions for each element. `repeats` is broadcasted to</span>
 <span class="sd">        fit the shape of the given axis.</span>
 <span class="sd">        If `repeats` is an array, it must have an integer data type.</span>
 <span class="sd">        Otherwise, `repeats` must be a Python integer or sequence of Python</span>
-<span class="sd">        integers (i.e., a tuple, list, or range).</span>
+<span class="sd">        integers (i.e., a tuple, list, or range). A sequence must be 0- or</span>
+<span class="sd">        1-dimensional.</span>
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        The axis along which to repeat values. By default, use the flattened</span>
 <span class="sd">        input array, and return a flat output array.</span>

@@ -12,7 +12,7 @@
         gtag('js', new Date());
         gtag('config', 'G-554F8VNE28');
     </script>
-    <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.broadcast.shape" href="dpnp.broadcast.shape.html"><link rel="prev" title="dpnp.atleast_3d" href="dpnp.atleast_3d.html">
+    <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpnp.broadcast_to" href="dpnp.broadcast_to.html"><link rel="prev" title="dpnp.atleast_3d" href="dpnp.atleast_3d.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>dpnp.broadcast - Data Parallel Extension for NumPy (dpnp) 0.21.0dev5 documentation</title>
@@ -518,11 +518,6 @@
 <li class="toctree-l4"><a class="reference internal" href="dpnp.atleast_2d.html">dpnp.atleast_2d</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.atleast_3d.html">dpnp.atleast_3d</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpnp.broadcast</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast.shape.html">dpnp.broadcast.shape</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast.size.html">dpnp.broadcast.size</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast.ndim.html">dpnp.broadcast.ndim</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast.numiter.html">dpnp.broadcast.numiter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast.values.html">dpnp.broadcast.values</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast_to.html">dpnp.broadcast_to</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast_arrays.html">dpnp.broadcast_arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.expand_dims.html">dpnp.expand_dims</a></li>
@@ -1060,13 +1055,22 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>*args</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input arrays to broadcast against one another.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>broadcast</strong> -- Broadcast the input parameters against one another, and
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><em>ints</em>) -- Shape of the broadcasted result.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) -- Total size (number of elements) of the broadcasted result.</p></li>
+<li><p><strong>ndim</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) -- Number of dimensions of the broadcasted result.</p></li>
+<li><p><strong>numiter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) -- Number of iterators possessed by the broadcast object.</p></li>
+<li><p><strong>values</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><em>dpnp.ndarray</em></a>) -- The input arrays broadcast against one another.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>broadcast</strong> -- Broadcast the input parameters against one another, and
 return an object that encapsulates the result.
 Amongst others, it has <code class="docutils literal notranslate"><span class="pre">shape</span></code> and <code class="docutils literal notranslate"><span class="pre">ndim</span></code> properties.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>broadcast object</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>broadcast object</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
@@ -1109,12 +1113,12 @@ supported and <code class="docutils literal notranslate"><span class="pre">TypeE
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpnp.broadcast.shape.html">
+          <a class="next-page" href="dpnp.broadcast_to.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpnp.broadcast.shape</div>
+                <div class="title">dpnp.broadcast_to</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
