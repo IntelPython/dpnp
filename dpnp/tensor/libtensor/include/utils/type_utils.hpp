@@ -98,15 +98,34 @@ dstTy convert_impl(const srcTy &v)
     }
     else if constexpr (!std::is_integral_v<srcTy> &&
                        !std::is_same_v<dstTy, bool> &&
-                       std::is_integral_v<dstTy> && std::is_unsigned_v<dstTy>) {
-        // for negative values, cast through signed integer to get two's
-        // complement wrapping
-        using intermediateT =
-            std::conditional_t<sizeof(dstTy) < sizeof(std::int32_t),
-                               std::int32_t, std::int64_t>;
-        return (v < srcTy{0})
-                   ? static_cast<dstTy>(static_cast<intermediateT>(v))
-                   : static_cast<dstTy>(v);
+                       std::is_integral_v<dstTy>) {
+        // Casting an out-of-range floating-point value to an integer type is
+        // undefined behavior. SYCL resolves this by saturating to the
+        // destination's min/max, whereas NumPy emits a plain C cast and
+        // inherits the host compiler's lowering: for narrow integer targets
+        // that truncates toward zero and then wraps modulo the destination
+        // width, e.g. float32(128) -> int8(-128).
+        // So reproduce the wrapping by funneling the value through a wider
+        // signed integer -- for which the float-to-int truncation is well
+        // defined over its range -- and rely on the well-defined integer
+        // narrowing to perform the modular wrap.
+        if constexpr (sizeof(dstTy) < sizeof(std::int64_t)) {
+            return static_cast<dstTy>(static_cast<std::int64_t>(v));
+        }
+        else if constexpr (std::is_unsigned_v<dstTy>) {
+            // 64-bit unsigned destination: no wider signed integer is
+            // available to funnel through, so route only negative values
+            // through int64 to keep two's-complement wrapping well defined;
+            // non-negative values up to the unsigned maximum convert
+            // directly.
+            return (v < srcTy{0})
+                       ? static_cast<dstTy>(static_cast<std::int64_t>(v))
+                       : static_cast<dstTy>(v);
+        }
+        else {
+            // 64-bit signed destination: nothing wider to funnel through
+            return static_cast<dstTy>(v);
+        }
     }
     else {
         return static_cast<dstTy>(v);
