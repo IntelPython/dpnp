@@ -1,0 +1,10 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_ixor\_\_
+=========================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.__ixor__
