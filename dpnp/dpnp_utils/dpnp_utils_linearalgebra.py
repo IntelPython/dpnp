@@ -65,7 +65,7 @@ def _compute_res_dtype(*arrays, dtype=None, out=None, casting="no"):
 
     Parameters
     ----------
-    arrays : {dpnp.ndarray, usm_ndarray}
+    *arrays : {dpnp.ndarray, usm_ndarray}
         Input arrays.
     dtype : dtype
         If not ``None`` and `out` is not defined, data type of the output array.
