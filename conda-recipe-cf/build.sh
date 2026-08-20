@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# This is necessary to help DPC++ find Intel libraries such as SVML, IRNG, etc in build prefix
+# conda-forge folds the Intel compiler runtime libs (libircmt.lib, ...) into the
+# build-only dpcpp_impl package (not visible from the host env), so they live
+# in the build prefix and are off the linker's default LIBRARY_PATH
 export LIBRARY_PATH="$LIBRARY_PATH:${BUILD_PREFIX}/lib"
 
 # Intel LLVM must cooperate with compiler and sysroot from conda
