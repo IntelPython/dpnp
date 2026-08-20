@@ -37,12 +37,8 @@ jobs:
           - python: '3.14'
             os: windows-2022
             python_spec: '3.14.* *_cp314'
-          - python: '3.14'
-            os: ubuntu-22.04
-            python_spec: '3.14.* *_cp314t'
-          - python: '3.14'
-            os: windows-2022
-            python_spec: '3.14.* *_cp314t'
+          # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
+          # free-threaded dpctl is available on conda-forge
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -137,9 +133,8 @@ jobs:
           - python: '3.14'
             os: ubuntu-latest
             python_spec: '3.14.* *_cp314'
-          - python: '3.14'
-            os: ubuntu-latest
-            python_spec: '3.14.* *_cp314t'
+          # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
+          # free-threaded dpctl is available on conda-forge
 
     env:
       dpnp-repo-path: '${{ github.workspace }}/source/'
@@ -302,9 +297,8 @@ jobs:
           - python: '3.14'
             os: windows-2022
             python_spec: '3.14.* *_cp314'
-          - python: '3.14'
-            os: windows-2022
-            python_spec: '3.14.* *_cp314t'
+          # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
+          # free-threaded dpctl is available on conda-forge
 
     env:
       dpnp-repo-path: '${{ github.workspace }}\source'
