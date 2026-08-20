@@ -394,29 +394,19 @@ jobs:
       - name: List installed packages
         run: mamba list
 
-      - name: Activate OCL CPU RT
+      - name: Register the OpenCL CPU driver with the ICD loader
         shell: pwsh
         run: |
-          $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
-          if (Test-Path $script_path) {
-            &$script_path
-          } else {
-            Write-Warning "File $script_path was NOT found!"
-
-            # The conda-forge intel-opencl-rt does not ship the registration
-            # helper, so register the OpenCL CPU driver with the ICD loader manually
-            $vendors = "HKLM:\SOFTWARE\Khronos\OpenCL\Vendors"
-            $drivers = @(Get-ChildItem -Recurse -ErrorAction SilentlyContinue -Filter intelocl64.dll -Path "$env:CONDA_PREFIX\Library\bin")
-            if ($drivers.Count -eq 0) { throw "No OpenCL CPU driver (intelocl64.dll) found under $env:CONDA_PREFIX" }
-            if (-not (Test-Path $vendors)) { New-Item -Path $vendors -Force | Out-Null }
-            foreach ($driver in $drivers) {
-              New-ItemProperty -Path $vendors -Name $driver.FullName -Value 0 -PropertyType DWord -Force | Out-Null
-            }
-            Get-ItemProperty -Path $vendors
+          # conda-forge intel-opencl-rt does not ship a registration helper,
+          # so register the OpenCL CPU driver (intelocl64.dll) with the ICD loader manually
+          $vendors = "HKLM:\SOFTWARE\Khronos\OpenCL\Vendors"
+          $drivers = @(Get-ChildItem -Recurse -ErrorAction SilentlyContinue -Filter intelocl64.dll -Path "$env:CONDA_PREFIX\Library\bin")
+          if ($drivers.Count -eq 0) { throw "No OpenCL CPU driver (intelocl64.dll) found under $env:CONDA_PREFIX" }
+          if (-not (Test-Path $vendors)) { New-Item -Path $vendors -Force | Out-Null }
+          foreach ($driver in $drivers) {
+            New-ItemProperty -Path $vendors -Name $driver.FullName -Value 0 -PropertyType DWord -Force | Out-Null
           }
-          # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
-          $cl_cfg="$env:CONDA_PREFIX\Library\bin\cl.cfg"
-          Get-Content -Tail 5 -Path $cl_cfg
+          Get-ItemProperty -Path $vendors
 
       - name: Smoke test
         run: |
