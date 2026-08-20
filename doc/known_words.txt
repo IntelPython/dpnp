@@ -69,6 +69,7 @@ Nj
 Nk
 normed
 nuc
+numiter
 numpy
 nx
 ny

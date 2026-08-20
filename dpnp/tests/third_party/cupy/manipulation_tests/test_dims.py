@@ -300,14 +300,14 @@ class TestBroadcast(unittest.TestCase):
         arrays = [testing.shaped_arange(s, xp, dtype) for s in shapes]
         return xp.broadcast(*arrays)
 
-    @pytest.mark.skip("broadcast() is not supported yet")
     @testing.for_all_dtypes()
     def test_broadcast(self, dtype):
         broadcast_np = self._broadcast(numpy, dtype, self.shapes)
         broadcast_cp = self._broadcast(cupy, dtype, self.shapes)
         assert broadcast_np.shape == broadcast_cp.shape
         assert broadcast_np.size == broadcast_cp.size
-        assert broadcast_np.nd == broadcast_cp.nd
+        # `nd` is not exposed by dpnp, since NumPy prefers `ndim` over it
+        assert broadcast_np.ndim == broadcast_cp.ndim
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -344,7 +344,6 @@ class TestBroadcast(unittest.TestCase):
 )
 class TestInvalidBroadcast(unittest.TestCase):
 
-    @pytest.mark.skip("broadcast() is not supported yet")
     @testing.for_all_dtypes()
     def test_invalid_broadcast(self, dtype):
         for xp in (numpy, cupy):
