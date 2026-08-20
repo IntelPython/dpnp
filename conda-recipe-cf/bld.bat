@@ -1,3 +1,8 @@
+:: conda-forge folds the Intel compiler runtime libs (libircmt.lib, ...) into the
+:: build-only dpcpp_impl package (not visible from the host env), so they live
+:: in the build prefix and are off the linker's default LIB
+set "LIB=%BUILD_PREFIX%\Library\lib;%LIB%"
+
 "%PYTHON%" setup.py clean --all
 
 set "MKLROOT=%PREFIX%/Library"
