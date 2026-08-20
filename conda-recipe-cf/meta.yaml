@@ -82,10 +82,14 @@ about:
   license_file: LICENSE.txt
   summary: 'Data Parallel Extension for NumPy'
   description: |
-    Data Parallel Extension for NumPy (dpnp) is a Python library that
-    implements a subset of NumPy that can be executed on any data parallel
-    device. The subset is a drop-in replacement of core NumPy functions and
-    numerical data types.
+    <strong>LEGAL NOTICE: Use of this software package is subject to the
+    software license agreement (as set forth above, in the license section of
+    the installed Conda package and/or the README file) and all notices,
+    disclaimers or license terms for third party or open source software
+    included in or with the software.</strong>
+    <br/><br/>
+    EULA: <a href="https://opensource.org/licenses/BSD-3-Clause" target="_blank">BSD-3-Clause</a>
+    <br/><br/>
 
 extra:
   recipe-maintainers:
