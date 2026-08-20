@@ -45,6 +45,7 @@ requirements:
     - versioneer ==0.29
     # versioneer dependency
     - tomli                   # [py<311]
+    - dpctl >={{ required_dpctl_version }}
     - mkl-devel-dpcpp >={{ required_compiler_and_mkl_version }}
     - onedpl-devel
     - tbb-devel
