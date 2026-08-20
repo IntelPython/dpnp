@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# This is necessary to help DPC++ find Intel libraries such as SVML, IRNG, etc in build prefix
+export LIBRARY_PATH="$LIBRARY_PATH:${BUILD_PREFIX}/lib"
+
+# Intel LLVM must cooperate with compiler and sysroot from conda
+echo "--gcc-toolchain=${BUILD_PREFIX} --sysroot=${BUILD_PREFIX}/${HOST}/sysroot -target ${HOST}" > icpx_for_conda.cfg
+
+ICPXCFG="$(pwd)/icpx_for_conda.cfg"
+export ICPXCFG
+
+ICXCFG="$(pwd)/icpx_for_conda.cfg"
+export ICXCFG
+
+if [ -e "_skbuild" ]; then
+    ${PYTHON} setup.py clean --all
+fi
+
+export CC=icx
+export CXX=icpx
+
+# conda-forge's gcc/g++ activation injects -fno-merge-constants into CFLAGS/CXXFLAGS
+# when CONDA_BUILD==1, while icx/icpx doesn't support it and emit the warning.
+# See CMPLRLLVM-19167 / CMPLRLLVM-28729 for more context and PR which added the flag:
+# https://github.com/conda-forge/ctng-compiler-activation-feedstock/pull/193
+export CFLAGS="${CFLAGS//-fno-merge-constants/}"
+export CXXFLAGS="${CXXFLAGS//-fno-merge-constants/}"
+
+export CMAKE_GENERATOR=Ninja
+# Make CMake verbose
+export VERBOSE=1
+
+# set CMAKE to use less threads to avoid OOM
+export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
+
+CMAKE_ARGS="${CMAKE_ARGS} -DDPNP_WITH_REDIST:BOOL=ON"
+
+# -wnx flags mean: --wheel --no-isolation --skip-dependency-check
+${PYTHON} -m build -w -n -x
+
+${PYTHON} -m pip install dist/dpnp*.whl \
+    --no-build-isolation \
+    --no-deps \
+    --only-binary :all: \
+    --no-index \
+    --prefix "${PREFIX}" \
+    -vv

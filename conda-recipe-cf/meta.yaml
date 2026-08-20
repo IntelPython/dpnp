@@ -1,0 +1,93 @@
+{% set required_compiler_and_mkl_version = "2026.0.0" %}
+{% set required_dpctl_version = "0.22.1" %}
+
+{% set pyproject = load_file_data('pyproject.toml') %}
+{% set py_build_deps = pyproject.get('build-system', {}).get('requires', []) %}
+
+package:
+  name: dpnp
+  version: {{ GIT_DESCRIBE_TAG }}
+
+source:
+  path: ..
+
+build:
+  number: {{ GIT_DESCRIBE_NUMBER }}
+  ignore_run_exports:
+    - dpctl
+    - numpy
+    - python
+    # building with Intel DPC++ and do not import the MSVC runtime DLLs
+    - vc14_runtime  # [win]
+    - ucrt          # [win]
+  missing_dso_whitelist:
+    - '*DPCTLSyclInterface*'
+    - '*/dpnp_backend_c.dll'        # [win]
+  skip: true  # [osx or py<39]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('dpcpp') }} >={{ required_compiler_and_mkl_version }}
+    - ninja >=1.11.1          # [linux]
+    - cmake >=3.29.0
+  host:
+    - python
+    - pip >=25.0
+    - pybind11 >=3.0.2
+    - setuptools >=79.0.1
+    - wheel >=0.45.1
+    - python-build >=1.1
+    - scikit-build >=0.18.1
+    - cython >=3.1.0
+    - numpy >=1.26.0
+    - versioneer ==0.29
+    # versioneer dependency
+    - tomli                   # [py<311]
+    - mkl-devel-dpcpp >={{ required_compiler_and_mkl_version }}
+    - onedpl-devel
+    - tbb-devel
+  run:
+    - python
+    - {{ pin_compatible('dpctl', min_pin='x.x.x', max_pin=None) }}
+    - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('mkl', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('onemkl-sycl-blas', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('onemkl-sycl-dft', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('onemkl-sycl-lapack', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('onemkl-sycl-rng', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('onemkl-sycl-vm', min_pin='x.x', max_pin='x') }}
+    - numpy
+    - ocl-icd-system  # [linux]
+    - khronos-opencl-icd-loader  # [win]
+
+test:
+  requires:
+    - pip
+    - pytest
+    - setuptools
+    - scipy # [py<314]
+  commands:
+    - pip check
+    - python -c "import dpnp; print(dpnp.__version__)"
+    - python -m dpctl -f
+
+about:
+  home: https://github.com/IntelPython/dpnp
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+  summary: 'Data Parallel Extension for NumPy'
+  description: |
+    Data Parallel Extension for NumPy (dpnp) is a Python library that
+    implements a subset of NumPy that can be executed on any data parallel
+    device. The subset is a drop-in replacement of core NumPy functions and
+    numerical data types.
+
+extra:
+  recipe-maintainers:
+    - antonwolfy
+    - vlad-perevezentsev
+    - ndgrigorian
