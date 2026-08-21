@@ -133,11 +133,11 @@ jobs:
           # free-threaded dpctl is available on conda-forge
 
     env:
-      dpnp-repo-path: '${{ github.workspace }}/source/'
+      dpnp-repo-path: './source'
       create-conda-channel-env: 'source/environments/create_conda_channel.yml'
-      channel-path: '${{ github.workspace }}/channel/'
-      pkg-path-in-channel: '${{ github.workspace }}/channel/${{ inputs.conda-subdir }}/'
-      ver-json-path: '${{ github.workspace }}/version.json'
+      channel-path: './channel'
+      pkg-path-in-channel: './channel/${{ inputs.conda-subdir }}'
+      ver-json-path: './version.json'
       python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
@@ -259,9 +259,9 @@ jobs:
           retry_on: any
           shell: bash
           command: |
-            . $CONDA/etc/profile.d/conda.sh
-            . $CONDA/etc/profile.d/mamba.sh
-            mamba activate ${{ env.test-env-name }}
+            CONDA_UNIX=$(cygpath -u "$CONDA" 2>/dev/null || echo "$CONDA")
+            . "$CONDA_UNIX/etc/profile.d/conda.sh"
+            conda activate ${{ env.test-env-name }}
             export SKIP_TENSOR_TESTS=1
 
             if [[ "${{ env.python-label }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
@@ -286,8 +286,8 @@ jobs:
           retry_on: any
           shell: bash
           command: |
-            . $CONDA/etc/profile.d/conda.sh
-            . $CONDA/etc/profile.d/mamba.sh
-            mamba activate ${{ env.test-env-name }}
+            CONDA_UNIX=$(cygpath -u "$CONDA" 2>/dev/null || echo "$CONDA")
+            . "$CONDA_UNIX/etc/profile.d/conda.sh"
+            conda activate ${{ env.test-env-name }}
 
             python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
