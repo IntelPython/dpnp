@@ -1,1 +1,7 @@
 # array API tests to be skipped
+
+# data-apis/array-api-tests/issues/456
+array_api_tests/test_dlpack.py::test_dunder_dlpack
+
+# data-apis/array-api/issues/1006
+array_api_tests/test_special_cases.py::test_unary[tanh(real(x_i) is +infinity and isfinite(imag(x_i)) and imag(x_i) > 0) -> 1 + 0j]
