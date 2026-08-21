@@ -372,12 +372,85 @@ class TestView:
         result = ia[8:2:-2].view()
         assert_array_equal(result, expected)
 
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "sl",
+        [
+            slice(3, None),
+            slice(1, 8),
+            slice(2, None, 3),
+            slice(None, None, -1),
+            slice(8, 2, -2),
+            slice(10, None),  # empty result with non-zero offset
+        ],
+    )
+    def test_nonzero_offset_all_dtypes(self, dt, sl):
+        a = numpy.arange(10).astype(dt)
+        ia = dpnp.array(a)
+
+        expected = a[sl].view()
+        result = ia[sl].view()
+        assert_array_equal(result, expected)
+
+    def test_nonzero_offset_0d(self):
+        a = numpy.arange(10, dtype=numpy.int32)
+        ia = dpnp.array(a)
+
+        expected = a[5, ...].view()
+        result = ia[5, ...].view()
+        assert_array_equal(result, expected)
+
+    def test_nonzero_offset_chained_views(self):
+        a = numpy.arange(20, dtype=numpy.int32)
+        ia = dpnp.array(a)
+
+        # offsets accumulated over several slicing steps
+        expected = a[2:][3:].view()
+        result = ia[2:][3:].view()
+        assert_array_equal(result, expected)
+
+        # a view of a view keeps the offset as well
+        expected = a[4:].view().view(numpy.uint32)
+        result = ia[4:].view().view(dpnp.uint32)
+        assert_array_equal(result, expected)
+
+    def test_nonzero_offset_shares_memory(self):
+        a = numpy.arange(10, dtype=numpy.int32)
+        ia = dpnp.array(a)
+
+        iv = ia[3:].view()
+        assert iv.data.ptr == ia[3:].data.ptr
+
+        # writing through the view must modify the parent array
+        iv[0] = -7
+        a[3] = -7
+        assert_array_equal(ia, a)
+
+    def test_nonzero_offset_complex_real(self):
+        a = numpy.arange(8).astype(numpy.complex64)
+        ia = dpnp.array(a)
+
+        expected = a[2:].view(numpy.float32)
+        result = ia[2:].view(dpnp.float32)
+        assert_array_equal(result, expected)
+
+        b = numpy.arange(8).astype(numpy.float32)
+        ib = dpnp.array(b)
+
+        expected = b[2:].view(numpy.complex64)
+        result = ib[2:].view(dpnp.complex64)
+        assert_array_equal(result, expected)
+
     def test_misaligned_offset_error(self):
         ia = dpnp.arange(10, dtype=dpnp.int16)
         # numpy supports such a view, but usm_ndarray cannot address memory
         # at a fraction of its element size
         with pytest.raises(ValueError, match="not a multiple"):
             ia[1:9].view(dpnp.int32)
+
+        ia = dpnp.arange(8, dtype=dpnp.float32)
+        with pytest.raises(ValueError, match="not a multiple"):
+            ia[1:7].view(dpnp.complex64)
 
     def test_subclass_basic(self):
         class MyArray(dpnp.ndarray):
