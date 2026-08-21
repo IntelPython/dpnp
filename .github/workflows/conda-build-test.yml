@@ -1,0 +1,293 @@
+name: Reusable conda build and test
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: Runner image to execute the jobs on
+        required: true
+        type: string
+      conda-subdir:
+        description: Conda platform subdir (e.g. linux-64, win-64)
+        required: true
+        type: string
+      channels-list:
+        description: Conda channels to build and test against
+        required: true
+        type: string
+      recipe-dir:
+        description: Path to the conda recipe directory
+        required: true
+        type: string
+
+permissions: read-all
+
+env:
+  package-name: dpnp
+  module-name: dpnp
+  ver-script-part1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
+  ver-script-part2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
+  fetch-depth: 1
+  python-ver-test-all-dtypes: '3.14'
+  test-env-name: 'test'
+  rerun-tests-on-failure: 'true'
+  rerun-tests-max-attempts: 2
+  rerun-tests-timeout: 45
+
+jobs:
+  build:
+    name: Build
+
+    runs-on: ${{ inputs.runs-on }}
+    timeout-minutes: 90
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
+          # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
+          # free-threaded dpctl is available on conda-forge
+
+    env:
+      build-conda-pkg-env: 'environments/build_conda_pkg.yml'
+      build-env-name: 'build'
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
+      python-conda-spec: ${{ matrix.python_spec || matrix.python }}
+
+    steps:
+      - name: Checkout DPNP repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.build-conda-pkg-env }}
+          activate-environment: ${{ env.build-env-name }}
+
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.build-conda-pkg-env }}
+          activate-environment: ${{ env.build-env-name }}
+
+      - name: List installed packages
+        run: conda list
+
+      - name: Store conda paths as envs
+        run: |
+          echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ inputs.conda-subdir }}/" | tr "\\\\" '/' >> "$GITHUB_ENV"
+
+      - name: Build conda package
+        id: build_conda_pkg
+        continue-on-error: true
+        run: conda-build --no-test --python "${{ env.python-conda-spec }}" --numpy 2.0 ${{ inputs.channels-list }} ${{ inputs.recipe-dir }}
+
+      - name: ReBuild conda package
+        if: steps.build_conda_pkg.outcome == 'failure'
+        run: conda-build --no-test --python "${{ env.python-conda-spec }}" --numpy 2.0 ${{ inputs.channels-list }} ${{ inputs.recipe-dir }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-label }}
+          path: ${{ env.CONDA_BLD }}${{ env.package-name }}-*.conda
+
+  test:
+    name: Test
+
+    needs: build
+
+    runs-on: ${{ inputs.runs-on }}
+    timeout-minutes: 120
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
+          # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
+          # free-threaded dpctl is available on conda-forge
+
+    env:
+      dpnp-repo-path: './source'
+      create-conda-channel-env: 'source/environments/create_conda_channel.yml'
+      channel-path: './channel'
+      pkg-path-in-channel: './channel/${{ inputs.conda-subdir }}'
+      ver-json-path: './version.json'
+      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
+      python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
+
+    steps:
+      - name: Set Swap Space
+        if: runner.os == 'Linux'
+        uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0
+        with:
+          swap-size-gb: 8
+
+      - name: Checkout DPNP repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: ${{ env.fetch-depth }}
+          path: ${{ env.dpnp-repo-path }}
+
+      - name: Download artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-label }}
+          path: ${{ env.pkg-path-in-channel }}
+
+      - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.create-conda-channel-env }}
+          activate-environment: ${{ env.test-env-name }}
+
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
+        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.create-conda-channel-env }}
+          activate-environment: ${{ env.test-env-name }}
+
+      - name: Create conda channel
+        run: |
+          python -m conda_index ${{ env.channel-path }}
+
+      - name: Test conda channel
+        run: |
+          conda search ${{ env.package-name }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          cat ${{ env.ver-json-path }}
+
+      - name: Get package version
+        run: |
+          PACKAGE_VERSION=$(python -c "${{ env.ver-script-part1 }} ${{ env.ver-script-part2 }}")
+          export PACKAGE_VERSION
+
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> "$GITHUB_ENV"
+
+      - name: Install dpnp
+        id: install_dpnp
+        continue-on-error: true
+        run: |
+          conda install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ inputs.channels-list }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
+
+      - name: ReInstall dpnp
+        if: steps.install_dpnp.outcome == 'failure'
+        run: |
+          conda install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ inputs.channels-list }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
+
+      - name: List installed packages
+        run: conda list
+
+      - name: Register the OpenCL CPU driver with the ICD loader
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # conda-forge intel-opencl-rt does not ship a registration helper,
+          # so register the OpenCL CPU driver (intelocl64.dll) with the ICD loader manually
+          $vendors = "HKLM:\SOFTWARE\Khronos\OpenCL\Vendors"
+          $drivers = @(Get-ChildItem -Recurse -ErrorAction SilentlyContinue -Filter intelocl64.dll -Path "$env:CONDA_PREFIX\Library\bin")
+          if ($drivers.Count -eq 0) { throw "No OpenCL CPU driver (intelocl64.dll) found under $env:CONDA_PREFIX" }
+          if (-not (Test-Path $vendors)) { New-Item -Path $vendors -Force | Out-Null }
+          foreach ($driver in $drivers) {
+            New-ItemProperty -Path $vendors -Name $driver.FullName -Value 0 -PropertyType DWord -Force | Out-Null
+          }
+          Get-ItemProperty -Path $vendors
+
+      - name: Smoke test
+        run: |
+          python -c "import dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
+
+      - name: Run tests
+        if: env.rerun-tests-on-failure != 'true'
+        run: |
+          export SKIP_TENSOR_TESTS=1
+          if [[ "${{ env.python-label }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
+            export DPNP_TEST_ALL_INT_TYPES=1
+            python -m pytest -ra --pyargs ${{ env.module-name }}.tests
+          else
+            python -m pytest -n auto -ra --pyargs ${{ env.module-name }}.tests
+          fi
+
+      - name: Run tests
+        if: env.rerun-tests-on-failure == 'true'
+        id: run_tests
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          retry_on: any
+          shell: bash
+          command: |
+            CONDA_UNIX=$(cygpath -u "$CONDA" 2>/dev/null || echo "$CONDA")
+            . "$CONDA_UNIX/etc/profile.d/conda.sh"
+            conda activate ${{ env.test-env-name }}
+            export SKIP_TENSOR_TESTS=1
+
+            if [[ "${{ env.python-label }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
+              export DPNP_TEST_ALL_INT_TYPES=1
+              python -m pytest -ra --pyargs ${{ env.module-name }}.tests
+            else
+              python -m pytest -n auto -ra --pyargs ${{ env.module-name }}.tests
+            fi
+
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure != 'true'
+        run: |
+          python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
+
+      - name: Run tensor tests
+        if: env.rerun-tests-on-failure == 'true'
+        id: run_tests_tensor
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
+          retry_on: any
+          shell: bash
+          command: |
+            CONDA_UNIX=$(cygpath -u "$CONDA" 2>/dev/null || echo "$CONDA")
+            . "$CONDA_UNIX/etc/profile.d/conda.sh"
+            conda activate ${{ env.test-env-name }}
+
+            python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
