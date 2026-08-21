@@ -328,6 +328,57 @@ class TestView:
         expected = a.view(dt)
         assert_allclose(result, expected)
 
+    def test_nonzero_offset(self):
+        # the view must preserve the USM element offset of a sliced array
+        # instead of rebasing onto the start of the allocation
+        a = numpy.arange(10, dtype=numpy.int32)
+        ia = dpnp.array(a)
+
+        expected = a[3:].view()
+        result = ia[3:].view()
+        assert_array_equal(result, expected)
+
+        expected = a[3:].view(numpy.uint32)
+        result = ia[3:].view(dpnp.uint32)
+        assert_array_equal(result, expected)
+
+    def test_nonzero_offset_2d(self):
+        a = numpy.arange(12, dtype=numpy.int32).reshape(3, 4)
+        ia = dpnp.array(a)
+
+        expected = a[1:].view()
+        result = ia[1:].view()
+        assert_array_equal(result, expected)
+
+        # itemsize-decreasing view on an array with non-zero offset
+        expected = a[1:].view(numpy.int16)
+        result = ia[1:].view(dpnp.int16)
+        assert_array_equal(result, expected)
+
+        # itemsize-increasing view on an array with non-zero offset
+        expected = a[1:].view(numpy.int64)
+        result = ia[1:].view(dpnp.int64)
+        assert_array_equal(result, expected)
+
+    def test_nonzero_offset_negative_strides(self):
+        a = numpy.arange(10, dtype=numpy.int32)
+        ia = dpnp.array(a)
+
+        expected = a[::-1].view()
+        result = ia[::-1].view()
+        assert_array_equal(result, expected)
+
+        expected = a[8:2:-2].view()
+        result = ia[8:2:-2].view()
+        assert_array_equal(result, expected)
+
+    def test_misaligned_offset_error(self):
+        ia = dpnp.arange(10, dtype=dpnp.int16)
+        # numpy supports such a view, but usm_ndarray cannot address memory
+        # at a fraction of its element size
+        with pytest.raises(ValueError, match="not a multiple"):
+            ia[1:9].view(dpnp.int32)
+
     def test_subclass_basic(self):
         class MyArray(dpnp.ndarray):
             pass
@@ -338,6 +389,16 @@ class TestView:
         assert isinstance(view, MyArray)
         assert type(view) is MyArray
         assert (view == x).all()
+
+    def test_subclass_nonzero_offset(self):
+        class MyArray(dpnp.ndarray):
+            pass
+
+        x = dpnp.arange(10, dtype=dpnp.int32)
+        view = x[3:].view(type=MyArray)
+
+        assert type(view) is MyArray
+        assert_array_equal(view, numpy.arange(3, 10, dtype=numpy.int32))
 
     def test_dtype_type_subclass(self):
         class MyArray(dpnp.ndarray):
