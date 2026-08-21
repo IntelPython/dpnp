@@ -112,13 +112,13 @@ jobs:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-label }}
           path: ${{ env.CONDA_BLD }}${{ env.package-name }}-*.conda
 
-  test_linux:
+  test:
     name: Test
 
     needs: build
 
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 100
+    timeout-minutes: 120
 
     defaults:
       run:
@@ -128,10 +128,13 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13']
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-2022]
         include:
           - python: '3.14'
             os: ubuntu-latest
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            os: windows-2022
             python_spec: '3.14.* *_cp314'
           # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
           # free-threaded dpctl is available on conda-forge
@@ -140,13 +143,14 @@ jobs:
       dpnp-repo-path: '${{ github.workspace }}/source/'
       create-conda-channel-env: 'source/environments/create_conda_channel.yml'
       channel-path: '${{ github.workspace }}/channel/'
-      pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
+      pkg-path-in-channel: "${{ github.workspace }}/channel/${{ matrix.os == 'ubuntu-latest' && 'linux-64' || 'win-64' }}/"
       ver-json-path: '${{ github.workspace }}/version.json'
       python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
       python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
 
     steps:
       - name: Set Swap Space
+        if: runner.os == 'Linux'
         uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0
         with:
           swap-size-gb: 8
@@ -208,184 +212,11 @@ jobs:
           mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
 
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
-        env:
-          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
-
-      - name: List installed packages
-        run: mamba list
-
-      - name: Smoke test
-        run: |
-          python -c "import dpctl; dpctl.lsplatform()"
-          python -c "import dpnp; print(dpnp.__version__)"
-
-      - name: Run tests
-        if: env.rerun-tests-on-failure != 'true'
-        run: |
-          export SKIP_TENSOR_TESTS=1
-          if [[ "${{ env.python-label }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
-            export DPNP_TEST_ALL_INT_TYPES=1
-            python -m pytest -ra --pyargs ${{ env.package-name }}.tests
-          else
-            python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
-          fi
-
-      - name: Run tests
-        if: env.rerun-tests-on-failure == 'true'
-        id: run_tests_linux
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          timeout_minutes: ${{ env.rerun-tests-timeout }}
-          max_attempts: ${{ env.rerun-tests-max-attempts }}
-          retry_on: any
-          command: |
-            . $CONDA/etc/profile.d/conda.sh
-            . $CONDA/etc/profile.d/mamba.sh
-            mamba activate ${{ env.test-env-name }}
-            export SKIP_TENSOR_TESTS=1
-
-            if [[ "${{ env.python-label }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
-              export DPNP_TEST_ALL_INT_TYPES=1
-              python -m pytest -ra --pyargs ${{ env.package-name }}.tests
-            else
-              python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
-            fi
-
-      - name: Run tensor tests
-        if: env.rerun-tests-on-failure != 'true'
-        run: |
-          python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
-
-      - name: Run tensor tests
-        if: env.rerun-tests-on-failure == 'true'
-        id: run_tests_tensor_linux
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          timeout_minutes: ${{ env.rerun-tests-timeout }}
-          max_attempts: ${{ env.rerun-tests-max-attempts }}
-          retry_on: any
-          command: |
-            . $CONDA/etc/profile.d/conda.sh
-            . $CONDA/etc/profile.d/mamba.sh
-            mamba activate ${{ env.test-env-name }}
-
-            python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
-
-  test_windows:
-    name: Test
-
-    needs: build
-
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 120
-
-    defaults:
-      run:
-        shell: cmd /C CALL {0}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
-        os: [windows-2022]
-        include:
-          - python: '3.14'
-            os: windows-2022
-            python_spec: '3.14.* *_cp314'
-          # TODO: add free-threaded builds ('3.14.* *_cp314t') once a
-          # free-threaded dpctl is available on conda-forge
-
-    env:
-      dpnp-repo-path: '${{ github.workspace }}\source'
-      create-conda-channel-env: 'source\environments\create_conda_channel.yml'
-      channel-path: '${{ github.workspace }}\channel\'
-      pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
-      ver-json-path: '${{ github.workspace }}\version.json'
-      python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
-      python-install-spec: "python ${{ matrix.python_spec || format('{0}.*', matrix.python) }}"
-
-    steps:
-      - name: Checkout DPNP repo
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: ${{ env.fetch-depth }}
-          path: ${{ env.dpnp-repo-path }}
-
-      - name: Download artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-label }}
-          path: ${{ env.pkg-path-in-channel }}
-
-      - name: Store a path to package archive
-        run: |
-          @echo on
-
-          set SEARCH_SCRIPT="DIR ${{ env.pkg-path-in-channel }} /s/b | FINDSTR /r "dpnp-.*\.conda""
-          FOR /F "tokens=* USEBACKQ" %%F IN (`%SEARCH_SCRIPT%`) DO (
-            SET FULL_PACKAGE_PATH=%%F
-          )
-          echo FULL_PACKAGE_PATH: %FULL_PACKAGE_PATH%
-          (echo FULL_PACKAGE_PATH=%FULL_PACKAGE_PATH%) >> %GITHUB_ENV%
-
-      - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
-        with:
-          miniforge-version: latest
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.create-conda-channel-env }}
-          activate-environment: ${{ env.test-env-name }}
-
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
-        with:
-          miniforge-version: latest
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.create-conda-channel-env }}
-          activate-environment: ${{ env.test-env-name }}
-
-      - name: Store conda paths as envs
-        run: |
-          @echo on
-          (echo CONDA_LIB_PATH=%CONDA_PREFIX%\Library\lib\) >> %GITHUB_ENV%
-          (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
-
-      - name: Create conda channel
-        run: |
-          @echo on
-          python -m conda_index ${{ env.channel-path }}
-
-      - name: Test conda channel
-        run: |
-          @echo on
-          conda search ${{ env.package-name }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
-
-      - name: Dump version.json
-        run: more ${{ env.ver-json-path }}
-
-      - name: Get package version
-        run: |
-          @echo on
-          set "SCRIPT=${{ env.ver-script-part1 }} ${{ env.ver-script-part2 }}"
-          FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
-            set PACKAGE_VERSION=%%F
-          )
-          echo PACKAGE_VERSION: %PACKAGE_VERSION%
-          (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
-
-      - name: Install dpnp
-        run: |
-          @echo on
           mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
@@ -395,6 +226,7 @@ jobs:
         run: mamba list
 
       - name: Register the OpenCL CPU driver with the ICD loader
+        if: runner.os == 'Windows'
         shell: pwsh
         run: |
           # conda-forge intel-opencl-rt does not ship a registration helper,
@@ -415,48 +247,54 @@ jobs:
 
       - name: Run tests
         if: env.rerun-tests-on-failure != 'true'
-        shell: pwsh
         run: |
-          $env:SKIP_TENSOR_TESTS=1
-          if ("${{ env.python-label }}" -eq "${{ env.python-ver-test-all-dtypes }}") {
-            $env:DPNP_TEST_ALL_INT_TYPES=1
+          export SKIP_TENSOR_TESTS=1
+          if [[ "${{ env.python-label }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
+            export DPNP_TEST_ALL_INT_TYPES=1
             python -m pytest -ra --pyargs ${{ env.package-name }}.tests
-          } else {
+          else
             python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
-          }
+          fi
 
       - name: Run tests
         if: env.rerun-tests-on-failure == 'true'
-        id: run_tests_win
+        id: run_tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
-          shell: pwsh
+          shell: bash
           command: |
-            $env:SKIP_TENSOR_TESTS=1
-            if ( "${{ env.python-label }}" -eq "${{ env.python-ver-test-all-dtypes }}" ) {
-              $env:DPNP_TEST_ALL_INT_TYPES=1
+            . $CONDA/etc/profile.d/conda.sh
+            . $CONDA/etc/profile.d/mamba.sh
+            mamba activate ${{ env.test-env-name }}
+            export SKIP_TENSOR_TESTS=1
+
+            if [[ "${{ env.python-label }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
+              export DPNP_TEST_ALL_INT_TYPES=1
               python -m pytest -ra --pyargs ${{ env.package-name }}.tests
-            } else {
+            else
               python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
-            }
+            fi
 
       - name: Run tensor tests
         if: env.rerun-tests-on-failure != 'true'
-        shell: pwsh
         run: |
           python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
 
       - name: Run tensor tests
         if: env.rerun-tests-on-failure == 'true'
-        id: run_tests_tensor_win
+        id: run_tests_tensor
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
-          shell: pwsh
+          shell: bash
           command: |
+            . $CONDA/etc/profile.d/conda.sh
+            . $CONDA/etc/profile.d/mamba.sh
+            mamba activate ${{ env.test-env-name }}
+
             python -m pytest -n auto -ra --pyargs dpnp.tests.tensor
