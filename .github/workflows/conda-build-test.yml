@@ -89,7 +89,7 @@ jobs:
           activate-environment: ${{ env.build-env-name }}
 
       - name: List installed packages
-        run: mamba list
+        run: conda list
 
       - name: Store conda paths as envs
         run: |
@@ -202,7 +202,7 @@ jobs:
         id: install_dpnp
         continue-on-error: true
         run: |
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+          conda install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ inputs.channels-list }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -210,13 +210,13 @@ jobs:
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
+          conda install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist "${{ env.python-install-spec }}" ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ inputs.channels-list }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
 
       - name: List installed packages
-        run: mamba list
+        run: conda list
 
       - name: Register the OpenCL CPU driver with the ICD loader
         if: runner.os == 'Windows'
