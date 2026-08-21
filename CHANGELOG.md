@@ -85,6 +85,7 @@ This release is compatible with NumPy 2.5.
 * Fixed a crash in boolean-mask advanced indexing (`dpnp.ndarray` get/set item) when the selection is empty (e.g. a scalar `False` index that injects a length-0 axis) [#3019](https://github.com/IntelPython/dpnp/pull/3019)
 * Released the GIL before the remaining blocking OneMKL BLAS and LAPACK calls to prevent host tasks contention, completing the work started in [#2850](https://github.com/IntelPython/dpnp/pull/2850) [#3027](https://github.com/IntelPython/dpnp/pull/3027)
 * Fixed `dpnp.repeat` raising an unclear `TypeError` for a nested sequence of `repeats` [#3024](https://github.com/IntelPython/dpnp/pull/3024)
+* Fixed `dpnp.all` and `dpnp.any` aborting when reducing over an empty axis (e.g. an array with a zero-length dimension) [#3021](https://github.com/IntelPython/dpnp/pull/3021)
 
 ### Security
 
