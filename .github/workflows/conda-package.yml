@@ -57,8 +57,6 @@ jobs:
         shell: ${{ matrix.os == 'windows-2022' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
     env:
-      build-conda-pkg-env: 'environments/build_conda_pkg.yml'
-      build-env-name: 'build'
       python-label: ${{ endsWith(matrix.python_spec, 't') && format('{0}t', matrix.python) || matrix.python }}
       python-conda-spec: ${{ matrix.python_spec || matrix.python }}
 
@@ -73,46 +71,74 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup miniconda
-        id: setup_miniconda
-        continue-on-error: true
-        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+      # rattler-build is a standalone binary with no conda/Python dependency,
+      # so building conda packages with it doesn't need a full conda
+      # distribution on the runner - only rattler-build itself needs to be on
+      # PATH
+      - name: Setup rattler-build
+        uses: prefix-dev/rattler-build-action@v0.2.39
         with:
-          miniforge-version: latest
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.build-conda-pkg-env }}
-          activate-environment: ${{ env.build-env-name }}
+          setup-only: true
 
-      - name: ReSetup miniconda
-        if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
-        with:
-          miniforge-version: latest
-          use-mamba: 'true'
-          conda-remove-defaults: 'true'
-          environment-file: ${{ env.build-conda-pkg-env }}
-          activate-environment: ${{ env.build-env-name }}
+      - name: Check rattler-build version
+        run: rattler-build --version
 
-      - name: List installed packages
-        run: mamba list
-
-      - name: Store conda paths as envs
+      - name: Store build output paths
         shell: bash -el {0}
         run: |
-          echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\\\" '/' >> "$GITHUB_ENV"
+          echo "CONDA_BLD=$GITHUB_WORKSPACE/output/${{ runner.os == 'Linux' && 'linux-64' || 'win-64' }}/" >> "$GITHUB_ENV"
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> "$GITHUB_ENV"
+
+      - name: Compute version from git describe
+        shell: bash -el {0}
+        run: |
+          DESCRIBE=$(git describe --tags --long)
+          echo "GIT_DESCRIBE_TAG=$(echo "$DESCRIBE" | sed -E 's/-[0-9]+-g[0-9a-f]+$//')" >> "$GITHUB_ENV"
+          echo "GIT_DESCRIBE_NUMBER=$(echo "$DESCRIBE" | sed -E 's/^.*-([0-9]+)-g[0-9a-f]+$/\1/')" >> "$GITHUB_ENV"
+
+      # rattler-build looks for build.bat on Windows (build.sh/build.bat is the
+      # symmetric naming it expects), while conda-build is still used for this
+      # recipe in non-GitHub CI and required bld.bat.
+      # Keep bld.bat as the single real source file and
+      # just copy it under the name rattler-build needs, so both build systems
+      # keep working off the same script without maintaining two duplicates
+      - name: Prepare build.bat for rattler-build
+        if: runner.os == 'Windows'
+        shell: bash -el {0}
+        run: cp conda-recipe/bld.bat conda-recipe/build.bat
 
       - name: Build conda package
         id: build_conda_pkg
         continue-on-error: true
-        run: conda-build --no-test --python "${{ env.python-conda-spec }}" --numpy 2.0 ${{ env.channels-list }} conda-recipe
+        shell: bash -el {0}
+        run: |
+          read -ra RATTLER_CHANNELS <<< "$(echo "${{ env.channels-list }}" | sed 's/--override-channels//')"
+          rattler-build build \
+            --recipe conda-recipe \
+            --no-include-recipe \
+            --channel-priority disabled \
+            --target-platform ${{ runner.os == 'Linux' && 'linux-64' || 'win-64' }} \
+            --variant-config conda-recipe/conda_build_config.yaml \
+            --variant "python=${{ env.python-conda-spec }}" \
+            --variant numpy=2 \
+            "${RATTLER_CHANNELS[@]}"
         env:
           MAX_BUILD_CMPL_MKL_VERSION: '2027.0a0'
 
       - name: ReBuild conda package
         if: steps.build_conda_pkg.outcome == 'failure'
-        run: conda-build --no-test --python "${{ env.python-conda-spec }}" --numpy 2.0 ${{ env.channels-list }} conda-recipe
+        shell: bash -el {0}
+        run: |
+          read -ra RATTLER_CHANNELS <<< "$(echo "${{ env.channels-list }}" | sed 's/--override-channels//')"
+          rattler-build build \
+            --recipe conda-recipe \
+            --no-include-recipe \
+            --channel-priority disabled \
+            --target-platform ${{ runner.os == 'Linux' && 'linux-64' || 'win-64' }} \
+            --variant-config conda-recipe/conda_build_config.yaml \
+            --variant "python=${{ env.python-conda-spec }}" \
+            --variant numpy=2 \
+            "${RATTLER_CHANNELS[@]}"
         env:
           MAX_BUILD_CMPL_MKL_VERSION: '2027.0a0'
 
