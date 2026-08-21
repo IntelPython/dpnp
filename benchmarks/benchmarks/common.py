@@ -44,6 +44,9 @@ nx, ny = 1000, 1000
 nxs, nys = 100, 100
 
 # a set of interesting types to test
+# NOTE: extended-precision types (numpy.longdouble / numpy.complex256, and the
+# removed numpy.longfloat alias) are intentionally absent -- dpnp has no
+# counterpart for them, so dpnp.asarray() rejects such input.
 TYPES1 = [
     "int16",
     "float16",
@@ -52,11 +55,8 @@ TYPES1 = [
     "int64",
     "float64",
     "complex64",
-    "longfloat",
     "complex128",
 ]
-if "complex256" in numpy.typeDict:
-    TYPES1.append("complex256")
 
 
 def memoize(func):
