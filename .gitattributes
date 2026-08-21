@@ -1,1 +1,7 @@
+# Normalize all text files to use LF (\n) line endings.
+# More specific rules below this line may override this default,
+# for example:
+# *.bat   text eol=crlf
+* text=auto eol=lf
+
 dpnp/_version.py export-subst

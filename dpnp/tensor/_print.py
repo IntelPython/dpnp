@@ -29,6 +29,7 @@
 import contextlib
 import itertools
 import operator
+from contextvars import ContextVar
 
 import dpctl
 import numpy as np
@@ -39,7 +40,7 @@ import dpnp.tensor._tensor_impl as ti
 
 __doc__ = "Print functions for :class:`dpctl.tensor.usm_ndarray`."
 
-_print_options = {
+_default_print_options = {
     "linewidth": 75,
     "edgeitems": 3,
     "threshold": 1000,
@@ -50,6 +51,8 @@ _print_options = {
     "infstr": "inf",
     "sign": "-",
 }
+
+_print_options = ContextVar("print_options", default=_default_print_options)
 
 
 def _move_to_next_line(string, s, line_width, prefix):
@@ -75,9 +78,9 @@ def _options_dict(
 ):
     if numpy:
         numpy_options = np.get_printoptions()
-        options = {k: numpy_options[k] for k in _print_options.keys()}
+        options = {k: numpy_options[k] for k in _default_print_options.keys()}
     else:
-        options = _print_options.copy()
+        options = _print_options.get().copy()
 
     if suppress:
         options["suppress"] = True
@@ -116,6 +119,37 @@ def _options_dict(
         options["floatmode"] = floatmode
 
     return options
+
+
+def _set_print_options(
+    linewidth=None,
+    edgeitems=None,
+    threshold=None,
+    precision=None,
+    floatmode=None,
+    suppress=None,
+    nanstr=None,
+    infstr=None,
+    sign=None,
+    numpy=False,
+):
+    """
+    Setter for `print_options` that returns the ContextVar token to restore the
+    previous options without race conditions
+    """
+    options = _options_dict(
+        linewidth=linewidth,
+        edgeitems=edgeitems,
+        threshold=threshold,
+        precision=precision,
+        floatmode=floatmode,
+        suppress=suppress,
+        nanstr=nanstr,
+        infstr=infstr,
+        sign=sign,
+        numpy=numpy,
+    )
+    return _print_options.set(_print_options.get() | options)
 
 
 def set_print_options(
@@ -201,7 +235,7 @@ def set_print_options(
             will be used to initialize dpctl's print options.
             Default: "False"
     """
-    options = _options_dict(
+    _set_print_options(
         linewidth=linewidth,
         edgeitems=edgeitems,
         threshold=threshold,
@@ -213,7 +247,6 @@ def set_print_options(
         sign=sign,
         numpy=numpy,
     )
-    _print_options.update(options)
 
 
 def get_print_options():
@@ -237,7 +270,7 @@ def get_print_options():
         - "infstr" : str, default "inf"
         - "sign" : str, default "-"
     """
-    return _print_options.copy()
+    return _print_options.get().copy()
 
 
 @contextlib.contextmanager
@@ -248,12 +281,11 @@ def print_options(*args, **kwargs):
     Set print options for the scope of a `with` block.
     `as` yields dictionary of print options.
     """
-    options = dpt.get_print_options()
+    token = _set_print_options(*args, **kwargs)
     try:
-        dpt.set_print_options(*args, **kwargs)
-        yield dpt.get_print_options()
+        yield get_print_options()
     finally:
-        dpt.set_print_options(**options)
+        _print_options.reset(token)
 
 
 def _nd_corners(arr_in, edge_items):
@@ -462,7 +494,7 @@ def usm_ndarray_repr(
         raise TypeError(f"Expected dpnp.tensor.usm_ndarray, got {type(x)}")
 
     if line_width is None:
-        line_width = _print_options["linewidth"]
+        line_width = _print_options.get()["linewidth"]
 
     show_dtype = x.dtype not in [
         dpt.bool,

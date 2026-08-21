@@ -31,14 +31,6 @@
 #include <sycl/sycl.hpp>
 
 /**
- * Version of SYCL DPC++ 2025.1 compiler where an issue with
- * sycl::ext::intel::math::cyl_bessel_i0(x) is fully resolved.
- */
-#ifndef __SYCL_COMPILER_BESSEL_I0_SUPPORT
-#define __SYCL_COMPILER_BESSEL_I0_SUPPORT 20241208L
-#endif
-
-/**
  * Include <sycl/ext/intel/math.hpp> only when targeting to Intel devices.
  * This header relies on intel-specific types like _iml_half_internal,
  * which are not suppose to work with other targets (e.g., CUDA, AMD).
@@ -47,15 +39,13 @@
 #define __SYCL_EXT_INTEL_MATH_SUPPORT
 #endif
 
-#if defined(__SYCL_EXT_INTEL_MATH_SUPPORT) &&                                  \
-    (__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT)
+#if defined(__SYCL_EXT_INTEL_MATH_SUPPORT)
 #include <sycl/ext/intel/math.hpp>
 #endif
 
 namespace dpnp::kernels::i0
 {
-#if defined(__SYCL_EXT_INTEL_MATH_SUPPORT) &&                                  \
-    (__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT)
+#if defined(__SYCL_EXT_INTEL_MATH_SUPPORT)
 using sycl::ext::intel::math::cyl_bessel_i0;
 
 #else

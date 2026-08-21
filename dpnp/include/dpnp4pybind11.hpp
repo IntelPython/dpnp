@@ -35,13 +35,15 @@
 #include "dpnp/tensor/_usmarray.h"
 #include "dpnp/tensor/_usmarray_api.h"
 // Include usm_ndarray constants (flags, type numbers)
-#include "../../tensor/include/usm_ndarray_constants.h"
+#include "usm_ndarray_constants.h"
 
 #include <array>
+#include <atomic>
 #include <cassert>
 #include <cstddef> // for std::size_t for C++ linkage
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -123,8 +125,37 @@ public:
 
     static auto &get()
     {
-        static dpnp_capi api{};
-        return api;
+        static std::atomic<dpnp_capi *> global_capi{nullptr};
+        dpnp_capi *capi_ptr = global_capi.load(std::memory_order_acquire);
+
+        // fast path
+        if (capi_ptr) {
+            return *capi_ptr;
+        }
+
+        static std::mutex init_mtx;
+
+        // initialization requires calls into Python C-API, so initializing
+        // thread must hold the GIL, while other threads must not block on the
+        // mutex while holding the GIL, as this creates a deadlock
+        py::gil_scoped_release release;
+        std::lock_guard<std::mutex> lock(init_mtx);
+
+        // double check after acquiring lock
+        capi_ptr = global_capi.load(std::memory_order_relaxed);
+
+        if (!capi_ptr) {
+            // acquire gil to safely call into Python C API
+            py::gil_scoped_acquire acquire;
+
+            // initialize C-API singleton
+            // not freed, as it's kept until process termination
+            capi_ptr = new dpnp_capi();
+
+            global_capi.store(capi_ptr, std::memory_order_release);
+        }
+
+        return *capi_ptr;
     }
 
     py::object default_usm_ndarray_pyobj() { return *default_usm_ndarray_; }

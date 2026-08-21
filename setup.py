@@ -39,6 +39,7 @@ skbuild.setup(
         "dpnp.dpnp_utils",
         "dpnp.exceptions",
         "dpnp.fft",
+        "dpnp.lib",
         "dpnp.linalg",
         "dpnp.memory",
         "dpnp.random",
@@ -48,10 +49,11 @@ skbuild.setup(
     ],
     package_data={
         "dpnp": [
-            "backend/include/*.hpp",
+            "include/*.h*",
             "libdpnp_backend_c.so",
             "dpnp_backend_c.lib",
             "dpnp_backend_c.dll",
+            "resources/cmake/*.cmake",
             "tensor/libtensor/include/kernels/*.h*",
             "tensor/libtensor/include/kernels/*/*.h*",
             "tensor/libtensor/include/utils/*.h*",

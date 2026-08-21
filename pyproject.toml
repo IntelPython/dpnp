@@ -4,7 +4,7 @@ requires = [
   # TODO: keep in sync with [project.dependencies]
   "build>=1.2.2",
   "cmake>=3.31.6",
-  "cython>=3.0.12",
+  "cython>=3.1.0",
   # WARNING: use only dpctl version available on PyPi
   "dpctl>=0.20.0",
   "ninja>=1.11.1; platform_system!='Windows'",
@@ -34,6 +34,7 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Free Threading :: 2 - Beta",
   "Topic :: Software Development",
   "Topic :: Scientific/Engineering",
   "Operating System :: Microsoft :: Windows",
@@ -50,7 +51,7 @@ dependencies = [
   # "dpcpp-cpp-rt>=0.59.0",
   # "intel-cmplr-lib-rt>=0.59.0"
   # WARNING: use the latest dpctl dev version, otherwise stable w/f will fail
-  "dpctl>=0.22.0dev0",
+  "dpctl>=0.23.0dev0",
   "numpy>=1.26.0"
 ]
 description = "Data Parallel Extension for NumPy"
@@ -92,8 +93,10 @@ coverage = [
 docs = [
   "Cython",
   "cupy",
+  "furo",
   "sphinx",
-  "sphinx_rtd_theme",
+  "sphinx-copybutton",
+  "sphinx-design",
   "pyenchant",
   "sphinxcontrib-googleanalytics",
   "sphinxcontrib-spelling"
@@ -125,6 +128,11 @@ omit = [
 
 [tool.coverage.run]
 branch = true
+# Pin the C trace core. On Python 3.14+ coverage.py defaults to the sys.monitoring
+# ("sysmon") core, which (1) does not support plugins such as Cython.Coverage below,
+# and (2) corrupts the exception state when a C/Cython function raises, turning
+# expected exceptions into SystemError (e.g. usm_ndarray.__dlpack__ in test_dlpack.py).
+core = "ctrace"
 omit = [
   "dpnp/tests/*",
   "dpnp/_version.py"

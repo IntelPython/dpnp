@@ -53,11 +53,17 @@ Changing number of dimensions
 .. autosummary::
    :toctree: generated/
    :nosignatures:
+   :template: autosummary/class_with_attributes.rst
+
+   broadcast
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
 
    atleast_1d
    atleast_2d
    atleast_3d
-   broadcast
    broadcast_to
    broadcast_arrays
    expand_dims
@@ -95,7 +101,6 @@ Joining arrays
    hstack
    dstack
    column_stack
-   row_stack
 
 
 Splitting arrays

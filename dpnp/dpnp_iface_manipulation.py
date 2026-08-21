@@ -56,6 +56,7 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_pad import dpnp_pad
 from .exceptions import AxisError
+from .tensor._manipulation_functions import _broadcast_shapes
 from .tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
@@ -881,7 +882,7 @@ def atleast_1d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 1``.
+        An array, or tuple of arrays, each with ``a.ndim >= 1``.
         Copies are made only if necessary.
 
     See Also
@@ -899,7 +900,7 @@ def atleast_1d(*arys):
 
     >>> y = np.array([3, 4])
     >>> np.atleast_1d(x, y)
-    [array([1.]), array([3, 4])]
+    (array([1.]), array([3, 4]))
 
     >>> x = np.arange(9.0).reshape(3, 3)
     >>> np.atleast_1d(x)
@@ -926,7 +927,7 @@ def atleast_1d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
 
 
 def atleast_2d(*arys):
@@ -944,7 +945,7 @@ def atleast_2d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 2``.
+        An array, or tuple of arrays, each with ``a.ndim >= 2``.
         Copies are avoided where possible, and views with two or more
         dimensions are returned.
 
@@ -982,7 +983,7 @@ def atleast_2d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
 
 
 def atleast_3d(*arys):
@@ -1000,7 +1001,7 @@ def atleast_3d(*arys):
     Returns
     -------
     out : dpnp.ndarray
-        An array, or list of arrays, each with ``a.ndim >= 3``. Copies are
+        An array, or tuple of arrays, each with ``a.ndim >= 3``. Copies are
         avoided where possible, and views with three or more dimensions are
         returned.
 
@@ -1044,7 +1045,194 @@ def atleast_3d(*arys):
         res.append(result)
     if len(res) == 1:
         return res[0]
-    return res
+    return tuple(res)
+
+
+class broadcast:  # pylint: disable=invalid-name
+    """
+    Produce an object that mimics broadcasting.
+
+    For full documentation refer to :obj:`numpy.broadcast`.
+
+    Parameters
+    ----------
+    *args : {dpnp.ndarray, usm_ndarray}
+        Input arrays to broadcast against one another.
+
+    Returns
+    -------
+    broadcast : broadcast object
+        Broadcast the input parameters against one another, and
+        return an object that encapsulates the result.
+        Amongst others, it has ``shape`` and ``ndim`` properties.
+
+    Limitations
+    -----------
+    Input arrays are not coerced, so array-like objects and scalars are not
+    supported and ``TypeError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against
+                                   each other.
+    :obj:`dpnp.broadcast_shapes` : Broadcast the input shapes into a single
+                                   shape.
+    :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape.
+
+    Notes
+    -----
+    Iterator functionality is not supported.
+
+    The legacy ``nd`` attribute of :obj:`numpy.broadcast` is not provided,
+    ``ndim`` has to be used instead.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[1], [2], [3]])
+    >>> y = np.array([4, 5, 6])
+    >>> b = np.broadcast(x, y)
+    >>> b.shape
+    (3, 3)
+    >>> b.ndim
+    2
+    >>> b.size
+    9
+
+    """
+
+    def __init__(self, *args):
+        dpnp.check_supported_arrays_type(*args)
+
+        self._arrays = args
+        self._values = None
+
+        # _broadcast_shapes() does not accept an empty sequence of arrays
+        self._shape = _broadcast_shapes(*args) if args else ()
+        self._size = math.prod(self._shape)
+        self._ndim = len(self._shape)
+
+    @property
+    def shape(self):
+        """
+        Shape of the broadcasted result.
+
+        Returns
+        -------
+        out : tuple
+            A tuple containing the shape of the broadcasted result.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1], [2], [3]])
+        >>> y = np.array([4, 5, 6])
+        >>> np.broadcast(x, y).shape
+        (3, 3)
+
+        """
+        return self._shape
+
+    @property
+    def size(self):
+        """
+        Total size of the broadcasted result.
+
+        Returns
+        -------
+        out : int
+            The total size (number of elements) of the broadcasted result.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1], [2], [3]])
+        >>> y = np.array([4, 5, 6])
+        >>> np.broadcast(x, y).size
+        9
+
+        """
+        return self._size
+
+    @property
+    def ndim(self):
+        """
+        Number of dimensions of the broadcasted result.
+
+        Returns
+        -------
+        out : int
+            The number of dimensions of the broadcasted result.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1], [2], [3]])
+        >>> y = np.array([4, 5, 6])
+        >>> np.broadcast(x, y).ndim
+        2
+
+        """
+        return self._ndim
+
+    @property
+    def numiter(self):
+        """
+        Number of iterators possessed by the broadcast object.
+
+        Returns
+        -------
+        out : int
+            The number of iterators.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1], [2], [3]])
+        >>> y = np.array([4, 5, 6])
+        >>> np.broadcast(x, y).numiter
+        2
+
+        """
+        return len(self._arrays)
+
+    @property
+    def values(self):
+        """
+        The input arrays broadcast against one another.
+
+        Returns
+        -------
+        out : tuple of dpnp.ndarray
+            A tuple of arrays which are views on the original input arrays.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[1], [2], [3]])
+        >>> y = np.array([4, 5, 6])
+        >>> b = np.broadcast(x, y)
+        >>> b.values[0]
+        array([[1, 1, 1],
+               [2, 2, 2],
+               [3, 3, 3]])
+        >>> b.values[1]
+        array([[4, 5, 6],
+               [4, 5, 6],
+               [4, 5, 6]])
+
+        """
+        if self._values is None:
+            self._values = tuple(
+                broadcast_to(a, self._shape) for a in self._arrays
+            )
+        return self._values
+
+    def __repr__(self):
+        return (
+            f"<broadcast shape={self.shape}, "
+            f"ndim={self.ndim}, size={self.size}>"
+        )
 
 
 def broadcast_arrays(*args, subok=False):
@@ -1055,13 +1243,13 @@ def broadcast_arrays(*args, subok=False):
 
     Parameters
     ----------
-    args : {dpnp.ndarray, usm_ndarray}
+    *args : {dpnp.ndarray, usm_ndarray}
         A list of arrays to broadcast.
 
     Returns
     -------
-    out : list of dpnp.ndarray
-        A list of arrays which are views on the original arrays from `args`.
+    out : tuple of dpnp.ndarray
+        A tuple of arrays which are views on the original arrays from `args`.
 
     Limitations
     -----------
@@ -1070,6 +1258,9 @@ def broadcast_arrays(*args, subok=False):
 
     See Also
     --------
+    :obj:`dpnp.broadcast` : Produce an object that mimics broadcasting.
+    :obj:`dpnp.broadcast_shapes` : Broadcast the input shapes into a single
+                                   shape.
     :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape.
 
     Examples
@@ -1078,9 +1269,9 @@ def broadcast_arrays(*args, subok=False):
     >>> x = np.array([[1, 2, 3]])
     >>> y = np.array([[4], [5]])
     >>> np.broadcast_arrays(x, y)
-    [array([[1, 2, 3],
+    (array([[1, 2, 3],
             [1, 2, 3]]), array([[4, 4, 4],
-            [5, 5, 5]])]
+            [5, 5, 5]]))
 
     """
 
@@ -1088,10 +1279,10 @@ def broadcast_arrays(*args, subok=False):
         raise NotImplementedError(f"subok={subok} is currently not supported")
 
     if len(args) == 0:
-        return []
+        return ()
 
     usm_arrays = dpt.broadcast_arrays(*[dpnp.get_usm_ndarray(a) for a in args])
-    return [dpnp_array._create_from_usm_ndarray(a) for a in usm_arrays]
+    return tuple(dpnp_array._create_from_usm_ndarray(a) for a in usm_arrays)
 
 
 def broadcast_shapes(*args):
@@ -1112,6 +1303,7 @@ def broadcast_shapes(*args):
 
     See Also
     --------
+    :obj:`dpnp.broadcast` : Produce an object that mimics broadcasting.
     :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against
                                    each other.
     :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape.
@@ -1126,7 +1318,25 @@ def broadcast_shapes(*args):
 
     """
 
-    return numpy.broadcast_shapes(*args)
+    shapes = []
+    for sh in args:
+        # a bare integer is treated as a one-dimensional shape
+        if not isinstance(sh, (tuple, list)):
+            sh = (sh,)
+
+        new_sh = []
+        for dim in sh:
+            if isinstance(dim, bool):
+                raise TypeError(
+                    "'bool' object cannot be interpreted as an integer"
+                )
+
+            dim = operator.index(dim)
+            if dim < 0:
+                raise ValueError("negative dimensions are not allowed")
+            new_sh.append(dim)
+        shapes.append(tuple(new_sh))
+    return dpt.broadcast_shapes(*shapes)
 
 
 # pylint: disable=redefined-outer-name
@@ -1157,8 +1367,11 @@ def broadcast_to(array, /, shape, subok=False):
 
     See Also
     --------
+    :obj:`dpnp.broadcast` : Produce an object that mimics broadcasting.
     :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against
                                    each other.
+    :obj:`dpnp.broadcast_shapes` : Broadcast the input shapes into a single
+                                   shape.
 
     Examples
     --------
@@ -1753,12 +1966,12 @@ def dstack(tup):
     _check_stack_arrays(tup)
 
     arrs = atleast_3d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
     return dpnp.concatenate(arrs, axis=2)
 
 
-def expand_dims(a, axis):
+def expand_dims(a, /, axis):
     """
     Expand the shape of an array.
 
@@ -1782,14 +1995,15 @@ def expand_dims(a, axis):
 
     Notes
     -----
-    If `a` has rank (i.e, number of dimensions) `N`, a valid `axis` must reside
-    in the closed-interval `[-N-1, N]`.
-    If provided a negative `axis`, the `axis` position at which to insert a
-    singleton dimension is computed as `N + axis + 1`.
-    Hence, if provided `-1`, the resolved axis position is `N` (i.e.,
-    a singleton dimension must be appended to the input array `a`).
-    If provided `-N-1`, the resolved axis position is `0` (i.e., a
-    singleton dimension is added to the input array `a`).
+    If `a` has rank (i.e, number of dimensions) `N`, a valid `axis` value must
+    reside on the half-open interval `[-M, M)`, where `M = N + len(axis)` (with
+    `len(axis)` equal to ``1`` when `axis` is an integer).
+    If provided a negative `axis`, the position at which to insert a singleton
+    dimension is computed as ``M + axis``.
+    Hence, if provided ``-1``, the resolved axis position is ``M - 1`` (i.e.,
+    a singleton dimension is appended to the input array `a`).
+    If provided ``-M``, the resolved axis position is ``0`` (i.e., a singleton
+    dimension is prepended to the input array `a`).
 
     See Also
     --------
@@ -2178,8 +2392,8 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     _check_stack_arrays(tup)
 
     arrs = dpnp.atleast_1d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
 
     # As a special case, dimension 0 of 1-dimensional arrays is "horizontal"
     if arrs and arrs[0].ndim == 1:
@@ -2781,14 +2995,15 @@ def repeat(a, repeats, axis=None):
 
     Parameters
     ----------
-    x : {dpnp.ndarray, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     repeats : {int, tuple, list, range, dpnp.ndarray, usm_ndarray}
         The number of repetitions for each element. `repeats` is broadcasted to
         fit the shape of the given axis.
         If `repeats` is an array, it must have an integer data type.
         Otherwise, `repeats` must be a Python integer or sequence of Python
-        integers (i.e., a tuple, list, or range).
+        integers (i.e., a tuple, list, or range). A sequence must be 0- or
+        1-dimensional.
     axis : {None, int}, optional
         The axis along which to repeat values. By default, use the flattened
         input array, and return a flat output array.
@@ -2812,6 +3027,10 @@ def repeat(a, repeats, axis=None):
     >>> x = np.array([3])
     >>> np.repeat(x, 4)
     array([3, 3, 3, 3])
+
+    >>> x = np.array([4, 5, 6])
+    >>> np.repeat(x, [1, 2, 3])
+    array([4, 5, 5, 6, 6, 6])
 
     >>> x = np.array([[1, 2], [3, 4]])
     >>> np.repeat(x, 2)
@@ -2951,7 +3170,7 @@ def require(a, dtype=None, requirements=None, *, like=None):
 
 def reshape(a, /, shape, order="C", *, copy=None):
     """
-    Gives a new shape to an array without changing its data.
+    Return a reshaped ndarray without changing data.
 
     For full documentation refer to :obj:`numpy.reshape`.
 
@@ -2959,7 +3178,7 @@ def reshape(a, /, shape, order="C", *, copy=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array to be reshaped.
-    shape : {int, tuple of ints}, optional
+    shape : {int, tuple of ints}
         The new shape should be compatible with the original shape. If
         an integer, then the result will be a 1-D array of that length.
         One shape dimension can be -1. In this case, the value is
@@ -3066,9 +3285,7 @@ def resize(a, new_shape):
     Return a new array with the specified shape.
 
     If the new array is larger than the original array, then the new array is
-    filled with repeated copies of `a`. Note that this behavior is different
-    from ``a.resize(new_shape)`` which fills with zeros instead of repeated
-    copies of `a`.
+    filled with repeated copies of `a`.
 
     For full documentation refer to :obj:`numpy.resize`.
 
@@ -3088,7 +3305,6 @@ def resize(a, new_shape):
 
     See Also
     --------
-    :obj:`dpnp.ndarray.resize` : Resize an array in-place.
     :obj:`dpnp.reshape` : Reshape an array without changing the total size.
     :obj:`dpnp.pad` : Enlarge and pad an array.
     :obj:`dpnp.repeat` : Repeat elements of an array.
@@ -3908,6 +4124,7 @@ def transpose(a, axes=None):
     axes : {None, tuple or list of ints}, optional
         If specified, it must be a tuple or list which contains a permutation
         of [0, 1, ..., N-1] where N is the number of axes of `a`.
+        Negative indices can also be used to specify axes.
         The `i`'th axis of the returned array will correspond to the axis
         numbered ``axes[i]`` of the input. If not specified or ``None``,
         defaults to ``range(a.ndim)[::-1]``, which reverses the order of
@@ -3950,6 +4167,10 @@ def transpose(a, axes=None):
     >>> a = np.ones((2, 3, 4, 5))
     >>> np.transpose(a).shape
     (5, 4, 3, 2)
+
+    >>> a = np.arange(3*4*5).reshape((3, 4, 5))
+    >>> np.transpose(a, (-1, 0, -2)).shape
+    (5, 3, 4)
 
     """
 
@@ -4601,9 +4822,6 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     """
     Stack arrays in sequence vertically (row wise).
 
-    :obj:`dpnp.row_stack` is an alias for :obj:`dpnp.vstack`.
-    They are the same function.
-
     For full documentation refer to :obj:`numpy.vstack`.
 
     Parameters
@@ -4662,9 +4880,6 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     _check_stack_arrays(tup)
 
     arrs = dpnp.atleast_2d(*tup)
-    if not isinstance(arrs, list):
-        arrs = [arrs]
+    if not isinstance(arrs, tuple):
+        arrs = (arrs,)
     return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
-
-
-row_stack = vstack

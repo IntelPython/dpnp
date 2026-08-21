@@ -45,9 +45,8 @@ year = datetime.now().year
 copyright = f"2020-{year}, Intel Corporation"
 author = "Intel"
 
-version = dpnp.__version__.strip(".dirty")
-# The full version, including alpha/beta/rc tags
-release = dpnp.__version__.strip(".dirty")
+# Strip local version identifiers (e.g. git hash) from the version string
+version = release = dpnp.__version__.split("+")[0]
 
 
 # -- General configuration ---------------------------------------------------
@@ -68,9 +67,14 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx_copybutton",
+    "sphinx_design",
     "sphinxcontrib.googleanalytics",
     "sphinxcontrib.spelling",
 ]
+
+copybutton_prompt_text = r">>> |\.\.\. "
+copybutton_prompt_is_regexp = True
 
 googleanalytics_id = "G-554F8VNE28"
 googleanalytics_enabled = True
@@ -106,7 +110,7 @@ language = "en"
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
+pygments_style = "default"
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -114,23 +118,20 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'alabaster'
-html_theme = "sphinx_rtd_theme"
-html_theme_options = {
-    "sidebarwidth": 30,
-    "nosidebar": False,
-}
-
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
+html_theme = "furo"
+# TODO: Remove html_title and uncomment html_logo once dpnp.svg is available
+html_title = f"Data Parallel Extension for NumPy (dpnp) {release} documentation"
+html_theme_options = {}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path = ["_static"]
+
+# html_logo = "_static/dpnp.svg"
+# html_favicon = "_static/dpnp.svg"
+html_css_files = ["dpnp-custom.css"]
+html_js_files = ["dpnp-custom.js"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -140,15 +141,6 @@ html_static_path = []
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-# html_sidebars = {}
-html_sidebars = {
-    "**": [
-        "globaltoc.html",
-        "relations.html",
-        "sourcelink.html",
-        "searchbox.html",
-    ]
-}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------

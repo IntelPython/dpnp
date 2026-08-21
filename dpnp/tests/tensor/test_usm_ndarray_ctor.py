@@ -124,7 +124,7 @@ def test_usm_ndarray_flags():
     assert f.fc
     assert f.forc
     assert not dpt.usm_ndarray(
-        (5, 1, 1), dtype="i4", strides=(2, 0, 1)
+        (2, 3, 4), dtype="i4", strides=(4, 8, 1)
     ).flags.forc
 
     x = dpt.empty(5, dtype="u2")
@@ -169,7 +169,7 @@ def test_usm_ndarray_writable_flag_views():
     a = dpt.arange(10, dtype="f4")
     a.flags["W"] = False
 
-    a.shape = (5, 2)
+    a = dpt.reshape(a, (5, 2))
     assert not a.flags.writable
     assert not a.T.flags.writable
     assert not a.mT.flags.writable
@@ -803,6 +803,7 @@ def test_setitem_wingaps():
         assert np.array_equal(dpt.asnumpy(dpt_dst), np_src)
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_shape_setter():
     def cc_strides(sh):
         return np.empty(sh, dtype="u1").strides
@@ -1082,6 +1083,23 @@ def test_ctor_invalid():
     m = dpm.MemoryUSMShared(64)
     with pytest.raises(ValueError):
         dpt.usm_ndarray((4,), dtype="u1", buffer=m, strides={"not": "valid"})
+
+
+def test_ctor_invalid_strides():
+    try:
+        dpt.usm_ndarray((1,), dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    # negative displacement
+    with pytest.raises(
+        ValueError, match="result in a negative memory displacement"
+    ):
+        dpt.usm_ndarray((2, 3, 4), dtype="i4", strides=(-1, 1, 1))
+    # oversized memory footprint
+    with pytest.raises(
+        ValueError, match="memory footprint exceeds the number of elements"
+    ):
+        dpt.usm_ndarray((2, 3, 4), dtype="i4", strides=(1, 16, 128))
 
 
 def test_reshape():
