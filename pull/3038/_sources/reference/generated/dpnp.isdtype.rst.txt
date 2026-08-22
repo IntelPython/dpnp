@@ -1,0 +1,10 @@
+﻿
+
+dpnp.isdtype
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: isdtype
