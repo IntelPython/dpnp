@@ -1,0 +1,10 @@
+﻿
+
+dpnp.log
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: log
