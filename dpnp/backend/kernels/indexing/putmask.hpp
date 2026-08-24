@@ -60,7 +60,7 @@ public:
                           const bool *mask,
                           const T *vals,
                           const TwoOffsets_IndexerT &indexer,
-                          std::size_t values_size)
+                          const std::size_t values_size)
         : dst_(dst), mask_u8_(reinterpret_cast<const std::uint8_t *>(mask)),
           vals_(vals), indexer_(indexer), values_size_(values_size)
     {
@@ -73,7 +73,7 @@ public:
             return;
         }
 
-        const std::size_t lin = wid.get(0);
+        const std::size_t lin = wid[0];
         auto offset = indexer_(static_cast<ssize_t>(lin));
 
         const dpnp::tensor::ssize_t dst_off = offset.get_first_offset();
@@ -103,8 +103,8 @@ public:
     PutMaskContigFunctor(T *dst,
                          const bool *mask,
                          const T *values,
-                         std::size_t nelems,
-                         std::size_t val_size)
+                         const std::size_t nelems,
+                         const std::size_t val_size)
         : dst_(dst), mask_u8_(reinterpret_cast<const std::uint8_t *>(mask)),
           values_(values), nelems_(nelems), val_size_(val_size)
     {
@@ -115,6 +115,8 @@ public:
         if (val_size_ == 0 || nelems_ == 0) {
             return;
         }
+
+        const bool values_no_repeat = (val_size_ >= nelems_);
 
         constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
         /* Each work-item processes vec_sz elements, contiguous in memory */
@@ -129,8 +131,6 @@ public:
             const std::size_t base =
                 elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
                                 sg.get_group_id()[0] * sgSize);
-
-            const bool values_no_repeat = (val_size_ >= nelems_);
 
             if (base + elems_per_wi * sgSize <= nelems_) {
                 using dpnp::tensor::sycl_utils::sub_group_load;
@@ -174,10 +174,8 @@ public:
                     sycl::vec<T, vec_sz> out_vec;
 #pragma unroll
                     for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
-                        out_vec[vec_id] =
-                            (mask_vec[vec_id] != static_cast<std::uint8_t>(0))
-                                ? val_vec[vec_id]
-                                : dst_vec[vec_id];
+                        out_vec[vec_id] = (mask_vec[vec_id]) ? val_vec[vec_id]
+                                                             : dst_vec[vec_id];
                     }
 
                     sub_group_store<vec_sz>(sg, out_vec, dst_multi_ptr);
@@ -198,7 +196,6 @@ public:
             const std::size_t gid = ndit.get_global_linear_id();
             const std::size_t gws = ndit.get_global_range(0);
 
-            const bool values_no_repeat = (val_size_ >= nelems_);
             for (std::size_t offset = gid; offset < nelems_; offset += gws) {
                 if (mask_u8_[offset]) {
                     const std::size_t v =
