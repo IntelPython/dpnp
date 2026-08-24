@@ -2,13 +2,11 @@
     "version": 1,
     "project": "dpnp",
     "project_url": "https://github.com/IntelPython/dpnp",
-    "repo": "..",
     "show_commit_url": "https://github.com/IntelPython/dpnp/commit/",
-    "build_command": [],
+    "repo": "..",
     "branches": [
         "HEAD"
     ],
-    "dvcs": "git",
     "environment_type": "conda",
     "conda_channels": [
         "https://software.repos.intel.com/python/conda/",

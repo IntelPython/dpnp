@@ -26,103 +26,130 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""ASV benchmarks for dpnp workloads vendored from dpBench.
+"""Benchmarks for whole dpnp workloads derived from dpBench.
 
-The workloads (kernels + data initialization) and their data-size presets are
-copied from dpBench (https://github.com/IntelPython/dpbench); see
-``benchmarks/benchmarks/dpbench``.
-
-Each vendored kernel ends with ``dpnp.synchronize_array_data`` on its output,
-so a single call blocks until the device work has finished. The ``time_*``
-methods below simply invoke the workload once and let ASV wall-clock-time it
-(handling repeats, samples and statistics natively) -- the same end-to-end
-quantity dpBench itself measures, and the same plain ``time_*`` style used by
-the mkl_fft ASV benchmarks.
-
-A separate benchmark class is generated for each workload -- e.g.
-``BlackScholes.time_black_scholes`` -- parametrized by the data-size preset and
-the floating-point precision. The presets are chosen per device so that only
-problem sizes fitting into device memory are benchmarked, and a precision the
-device does not support (typically fp64 on an iGPU) is skipped rather than
-failing the run.
-
-``setup`` also validates the dpnp results against the workload's NumPy
-reference, so a numerically wrong kernel fails the benchmark instead of being
-timed. Validation happens outside the timed region and therefore does not
-affect the reported numbers, but it is limited to the cheapest preset: the
-reference runs on the host, and at the larger presets it costs far more than
-the benchmark it guards (measured at ~70 s for ``pairwise_distance`` at
-``M16Gb``) while checking numerics that do not depend on the problem size.
+One class per workload, parametrized by data-size preset and floating-point
+precision. See ``dpbench/README.md`` for where the workloads come from.
 """
 
-import dpctl
+from asv_runner.benchmarks.mark import SkipNotImplemented
 
-from . import benchmark_utils as bench_utils
+from ._utils import default_queue, skip_unsupported_dtype
 from .dpbench import _dpbench_runner as runner
-from .dpbench.workloads import WORKLOADS
+from .dpbench.workloads import (
+    black_scholes,
+    gpairs,
+    l2_norm,
+    pairwise_distance,
+    rambo,
+)
 
-# Default-device queue, used to query device capabilities (fp64 support, memory
-# size) so the parameter matrix can be tailored to the device. This is the
-# device dpnp allocates on by default.
-DEVICE_QUEUE = dpctl.SyclQueue()
-DEVICE = DEVICE_QUEUE.sycl_device
+# Static axes, so the parameter matrix is the same on every machine. What a
+# device cannot run is skipped in setup instead.
+_PRESETS = ["S", "M16Gb", "M", "L"]
+_PRECISIONS = list(runner.PRECISIONS)
 
 
-def _camel_case(name):
-    """``black_scholes`` -> ``BlackScholes``, ``l2_norm`` -> ``L2Norm``."""
-    return "".join(part.capitalize() for part in name.split("_"))
+class _Workload:
+    """Shared setup for one dpBench-derived workload.
 
+    Subclasses declare ``WORKLOAD`` and a single ``time_*`` method. Defines no
+    ``time_*`` itself, so ASV does not discover it as a benchmark.
+    """
 
-def _make_benchmark_class(workload):
-    """Build an ASV benchmark class for a single dpBench workload."""
+    WORKLOAD = None
+    params = [_PRESETS, _PRECISIONS]
+    param_names = ["preset", "precision"]
 
-    class WorkloadBenchmark:
-        # The per-benchmark timeout is governed by ``default_benchmark_timeout``
-        # in ``asv.conf.json``; larger presets on a busy device can take a
-        # while.
+    def setup(self, preset, precision):
+        queue = default_queue()
+        skip_unsupported_dtype(queue, runner.float_dtype(precision))
 
-        params = [
-            runner.select_presets(workload, DEVICE),
-            list(runner.PRECISIONS),
-        ]
-        param_names = ["preset", "precision"]
-
-        # Preset the results are validated against; see the module docstring.
-        _validated_preset = runner.presets_by_size(workload)[0]
-
-        def setup(self, preset, precision):
-            # Skip precisions the device does not support (e.g. fp64 on many
-            # iGPUs), mirroring the dpctl ASV benchmarks.
-            bench_utils.skip_unsupported_dtype(
-                DEVICE_QUEUE, runner.float_dtype(precision)
+        if preset not in self.WORKLOAD.PRESETS:
+            raise SkipNotImplemented(
+                f"{self.WORKLOAD.NAME} has no {preset} preset."
             )
 
-            self._runner = runner.WorkloadRunner(workload, preset, precision)
-            self._runner.setup()
-            if preset == self._validated_preset:
-                self._runner.validate()
+        if not runner.preset_fits(self.WORKLOAD, preset, queue.sycl_device):
+            raise SkipNotImplemented(
+                f"Skipping the {preset} preset as its estimated peak footprint"
+                " does not fit this device's memory."
+            )
 
-        def time_workload(self, preset, precision):
-            self._runner.run()
+        self._runner = runner.WorkloadRunner(self.WORKLOAD, preset, precision)
+        self._runner.setup()
 
-    # Name things so ASV displays e.g. ``BlackScholes.time_black_scholes``.
-    WorkloadBenchmark.__name__ = _camel_case(workload.NAME)
-    WorkloadBenchmark.__qualname__ = WorkloadBenchmark.__name__
-
-    time_method = WorkloadBenchmark.time_workload
-    time_method.__name__ = f"time_{workload.NAME}"
-    setattr(WorkloadBenchmark, time_method.__name__, time_method)
-    del WorkloadBenchmark.time_workload
-
-    return WorkloadBenchmark
+        # Validating the larger presets costs far more than the benchmark it
+        # guards, and the numerics do not depend on the problem size.
+        if preset == runner.presets_by_size(self.WORKLOAD)[0]:
+            self._runner.validate()
 
 
-def _generate_benchmark_classes():
-    """Create and register a benchmark class for every vendored workload."""
-    for workload in WORKLOADS:
-        cls = _make_benchmark_class(workload)
-        # Register the class at module scope so ASV can discover it.
-        globals()[cls.__name__] = cls
+# ---------------------------------------------------------------------------
+# Black-Scholes formula (finance)
+# ---------------------------------------------------------------------------
 
 
-_generate_benchmark_classes()
+class BlackScholes(_Workload):
+    """European option pricing over an array of options."""
+
+    WORKLOAD = black_scholes
+
+    def time_black_scholes(self, preset, precision):
+        self._runner.run()
+
+
+# ---------------------------------------------------------------------------
+# L2 norm (distance compute)
+# ---------------------------------------------------------------------------
+
+
+class L2Norm(_Workload):
+    """Row-wise Euclidean norm of an (npoints, dims) point cloud."""
+
+    WORKLOAD = l2_norm
+
+    def time_l2_norm(self, preset, precision):
+        self._runner.run()
+
+
+# ---------------------------------------------------------------------------
+# Pairwise distance (distance compute)
+# ---------------------------------------------------------------------------
+
+
+class PairwiseDistance(_Workload):
+    """Full (npoints, npoints) Euclidean distance matrix via GEMM."""
+
+    WORKLOAD = pairwise_distance
+
+    def time_pairwise_distance(self, preset, precision):
+        self._runner.run()
+
+
+# ---------------------------------------------------------------------------
+# Rambo (particle physics)
+# ---------------------------------------------------------------------------
+
+
+class Rambo(_Workload):
+    """Phase-space four-momenta generation for collision events."""
+
+    WORKLOAD = rambo
+
+    def time_rambo(self, preset, precision):
+        self._runner.run()
+
+
+# ---------------------------------------------------------------------------
+# Galaxy pairs (astrophysics)
+# ---------------------------------------------------------------------------
+
+
+class Gpairs(_Workload):
+    """Weighted galaxy-pair counts binned by separation radius."""
+
+    WORKLOAD = gpairs
+
+    def time_gpairs(self, preset, precision):
+        self._runner.run()

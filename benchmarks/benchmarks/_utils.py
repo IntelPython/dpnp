@@ -26,9 +26,46 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+"""Shared helpers and parameter axes for the dpnp ASV benchmarks."""
+
+import dpctl
+import numpy
 from asv_runner.benchmarks.mark import SkipNotImplemented
 
 import dpnp
+
+# executor axis, keyed by name so ASV's tables stay readable
+_EXECUTORS = {"dpnp": dpnp, "numpy": numpy}
+_EXECUTOR_NAMES = list(_EXECUTORS)
+
+# axes shared across multiple files
+_SIZES_1D = [2**16, 2**20, 2**24]
+_DTYPES = ["float64", "float32", "int64", "int32"]
+
+_DEFAULT_QUEUE = None
+
+
+def default_queue():
+    """Return a queue on dpnp's default device, created on first use.
+
+    Deferring creation keeps benchmark discovery free of a device requirement.
+    """
+    global _DEFAULT_QUEUE
+
+    if _DEFAULT_QUEUE is None:
+        _DEFAULT_QUEUE = dpctl.SyclQueue()
+    return _DEFAULT_QUEUE
+
+
+def make_synchronizer(executor):
+    """Return a callable blocking until ``executor``'s work has finished.
+
+    dpnp enqueues asynchronously, so a timed body that does not block measures
+    submission rather than execution. NumPy is synchronous.
+    """
+    if executor == "dpnp":
+        return dpnp.synchronize_array_data
+    return lambda result: None
 
 
 def skip_unsupported_dtype(q, dtype):

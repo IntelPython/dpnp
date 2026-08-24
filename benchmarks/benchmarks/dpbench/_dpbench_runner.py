@@ -89,32 +89,21 @@ def float_dtype(precision):
     return build_types_dict(precision)["float"]
 
 
-def select_presets(workload, device, precision="double"):
-    """Pick the dpBench presets that fit into ``device``'s global memory.
+def preset_fits(workload, preset, device, precision="double"):
+    """Whether ``preset``'s estimated peak footprint fits ``device``'s memory.
 
-    dpBench leaves preset selection to the user; ASV needs it decided up front
-    because ``params`` is evaluated at import time. Every preset whose
-    estimated peak footprint (see each workload's ``peak_elements``) fits the
-    memory budget is returned, so a large discrete GPU automatically exercises
-    the bigger problem sizes while a small iGPU stays on ``S``.
-
-    ``precision`` is deliberately the *widest* precision benchmarked rather
-    than each one separately: it keeps the preset list identical across the
-    precision parameter, so ASV's parameter matrix stays rectangular and
-    results remain comparable.
+    ``precision`` is the *widest* precision benchmarked, so the verdict is the
+    same for every precision parameter.
     """
+    # The cheapest preset always runs, so that an undersized device fails loudly
+    # on allocation rather than reporting nothing.
+    if preset == presets_by_size(workload)[0]:
+        return True
+
     itemsize = float_dtype(precision).itemsize
     budget = _MEMORY_BUDGET_FRACTION * device.global_mem_size
-
-    fitting = [
-        name
-        for name in presets_by_size(workload)
-        if workload.peak_elements(workload.PRESETS[name]) * itemsize <= budget
-    ]
-    # Always benchmark something: if even the smallest preset is over budget,
-    # fall back to it and let the run fail loudly on allocation instead of
-    # silently reporting no data at all.
-    return fitting or presets_by_size(workload)[:1]
+    peak = workload.peak_elements(workload.PRESETS[preset])
+    return peak * itemsize <= budget
 
 
 def presets_by_size(workload):

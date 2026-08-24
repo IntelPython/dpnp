@@ -26,30 +26,34 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import numpy
+"""Benchmarks for random sampling, dpnp.random against numpy.random."""
 
-import dpnp
+from ._utils import (
+    _EXECUTOR_NAMES,
+    _EXECUTORS,
+    _SIZES_1D,
+    make_synchronizer,
+)
 
-from .common import Benchmark
 
+class Sample:
+    """Random sampling, dpnp against NumPy."""
 
-# asv run --python=python --quick --bench Sample
-class Sample(Benchmark):
-    executors = {"dpnp": dpnp, "numpy": numpy}
-    params = [["dpnp", "numpy"], [2**16, 2**20, 2**24]]
+    params = [_EXECUTOR_NAMES, _SIZES_1D]
     param_names = ["executor", "size"]
 
     def setup(self, executor, size):
-        self.executor = self.executors[executor]
+        self.executor = _EXECUTORS[executor]
+        self.sync = make_synchronizer(executor)
 
     def time_rand(self, executor, size):
         np = self.executor
-        np.random.rand(size)
+        self.sync(np.random.rand(size))
 
     def time_randn(self, executor, size):
         np = self.executor
-        np.random.randn(size)
+        self.sync(np.random.randn(size))
 
     def time_random_sample(self, executor, size):
         np = self.executor
-        np.random.random_sample((size,))
+        self.sync(np.random.random_sample((size,)))
