@@ -218,7 +218,7 @@ class TestPutmask(unittest.TestCase):
         for xp in (numpy, cupy):
             a = xp.array([1, 2, 3])
             mask = xp.array([True, False])
-            with pytest.raises((ValueError, IndexError)):
+            with pytest.raises(ValueError):
                 xp.putmask(a, mask, a**2)
 
     @testing.numpy_cupy_array_equal()

@@ -1198,6 +1198,16 @@ class TestPutMask:
         dpnp.putmask(ia, imask, ivals)
         assert_array_equal(ia, a)
 
+    def test_broadcast_values_diff_dtype(self):
+        a = generate_random_numpy_array((2, 3), dtype="i8")
+        mask = generate_random_numpy_array((2, 3), dtype=dpnp.bool)
+        vals = generate_random_numpy_array((4,), dtype="i4")
+        ia, imask, ivals = dpnp.array(a), dpnp.array(mask), dpnp.array(vals)
+
+        numpy.putmask(a, mask, vals)
+        dpnp.putmask(ia, imask, ivals)
+        assert_array_equal(ia, a)
+
     @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "slice_spec",
