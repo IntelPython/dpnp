@@ -1284,6 +1284,26 @@ class TestPutMask:
         dpnp.putmask(ia, imask, dpnp.array([7], dtype=a.dtype))
         assert_array_equal(ia, a)
 
+    @pytest.mark.parametrize(
+        "vals_shape",
+        [None, (2, 3), (4,)],
+        ids=["scalar", "same-shape", "repeat"],
+    )
+    def test_usm_ndarray_input(self, vals_shape):
+        a = generate_random_numpy_array((2, 3), dtype="i8")
+        mask = generate_random_numpy_array((2, 3), dtype=dpnp.bool)
+        ia, imask = dpt.asarray(a), dpt.asarray(mask)
+
+        if vals_shape is None:
+            values = ivalues = 5
+        else:
+            values = generate_random_numpy_array(vals_shape, dtype="i8")
+            ivalues = dpt.asarray(values)
+
+        numpy.putmask(a, mask, values)
+        dpnp.putmask(ia, imask, ivalues)
+        assert_array_equal(dpnp.asnumpy(ia), a)
+
     def test_errors(self):
         ia = dpnp.arange(6, dtype="i4")
 

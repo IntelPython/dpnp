@@ -1859,45 +1859,47 @@ def putmask(a, /, mask, values):
     dpnp.check_supported_arrays_type(a, mask)
     dpnp.check_supported_arrays_type(values, scalar_type=True, all_scalars=True)
 
-    if not a.shape == mask.shape:
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_mask = dpnp.get_usm_ndarray(mask)
+
+    if usm_a.shape != usm_mask.shape:
         raise ValueError("mask and data must be the same size")
 
-    mask = dpnp.astype(mask, dpnp.bool, copy=False)
+    usm_mask = dpt.astype(usm_mask, dpnp.bool, copy=False)
 
     if dpnp.isscalar(values):
-        a[mask] = values
+        usm_a[usm_mask] = values
+        return
 
-    elif not dpnp.can_cast(values.dtype, a.dtype):
+    usm_values = dpnp.get_usm_ndarray(values)
+
+    if not dpt.can_cast(usm_values.dtype, usm_a.dtype):
         raise TypeError(
-            f"Cannot cast array data from {values.dtype} to {a.dtype} "
+            f"Cannot cast array data from {usm_values.dtype} to {usm_a.dtype} "
             "according to the rule 'safe'"
         )
 
-    elif a.shape == values.shape:
-        a[mask] = values[mask]
+    if usm_a.shape == usm_values.shape:
+        usm_a[usm_mask] = usm_values[usm_mask]
+        return
 
-    else:
-        # numpy putmask cycles values by the C-order flat index of the
-        # destination (values.flat[c % N]), independent of memory layout, so
-        # values must always be flattened in C-order.
-        values_1d = values.ravel(order="C")
-        if a.dtype != values_1d.dtype:
-            values_1d = dpnp.astype(
-                values_1d, a.dtype, casting="safe", copy=False
-            )
-        _, exec_q = get_usm_allocations([a, mask, values_1d])
-
-        _manager = dpu.SequentialOrderManager[exec_q]
-        dep_evs = _manager.submitted_events
-
-        h_ev, putmask_ev = indexing_ext._putmask(
-            a.get_array(),
-            mask.get_array(),
-            values_1d.get_array(),
-            exec_q,
-            dep_evs,
+    # numpy putmask cycles values by the C-order flat index of the
+    # destination (values.flat[c % N]), independent of memory layout, so
+    # values must always be flattened in C-order.
+    usm_values_1d = dpnp.get_usm_ndarray(dpnp.ravel(usm_values, order="C"))
+    if usm_a.dtype != usm_values_1d.dtype:
+        usm_values_1d = dpt.astype(
+            usm_values_1d, usm_a.dtype, casting="safe", copy=False
         )
-        _manager.add_event_pair(h_ev, putmask_ev)
+
+    _, exec_q = get_usm_allocations([usm_a, usm_mask, usm_values_1d])
+    _manager = dpu.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+
+    h_ev, putmask_ev = indexing_ext._putmask(
+        usm_a, usm_mask, usm_values_1d, exec_q, dep_evs
+    )
+    _manager.add_event_pair(h_ev, putmask_ev)
 
 
 def ravel_multi_index(multi_index, dims, mode="raise", order="C"):
