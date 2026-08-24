@@ -19,7 +19,6 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
-    get_integer_dtypes,
     has_support_aspect64,
 )
 from .third_party.cupy import testing
@@ -305,17 +304,6 @@ class TestToList:
         assert_array_equal(ia.tolist(), a.tolist())
 
 
-# dtypes spanning itemsizes of 1, 2, 4, 8 and 16 bytes, to stress the byte
-# offset arithmetic performed when creating a view of an array with a non-zero
-# USM offset
-_view_offset_dtypes = list(
-    dict.fromkeys(
-        get_all_dtypes(no_none=True, no_float16=False)
-        + get_integer_dtypes(all_int_types=True)
-    )
-)
-
-
 class TestView:
     def test_none_dtype(self):
         a = numpy.ones((1, 2, 4), dtype=numpy.int32)
@@ -384,7 +372,9 @@ class TestView:
         result = ia[8:2:-2].view()
         assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("dt", _view_offset_dtypes)
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_float16=False)
+    )
     @pytest.mark.parametrize(
         "sl",
         [
