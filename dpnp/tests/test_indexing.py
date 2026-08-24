@@ -1314,12 +1314,19 @@ class TestPutMask:
         dpnp.putmask(ia, imask, ivalues)
         assert_array_equal(dpnp.asnumpy(ia), a)
 
+    def test_array_like_input(self):
+        a = numpy.arange(6)
+        ia = dpnp.array(a)
+
+        numpy.putmask(a, [1, 0, 1, 0, 1, 0], [7, 8])
+        dpnp.putmask(ia, [1, 0, 1, 0, 1, 0], [7, 8])
+        assert_array_equal(ia, a)
+
     def test_errors(self):
         ia = dpnp.arange(6, dtype="i4")
 
-        # unsupported types for the array and the mask
+        # the array must be a dpnp.ndarray or usm_ndarray
         assert_raises(TypeError, dpnp.putmask, dpnp.asnumpy(ia), ia > 2, 0)
-        assert_raises(TypeError, dpnp.putmask, ia, dpnp.asnumpy(ia) > 2, 0)
 
         # array and mask must have the same shape
         assert_raises(
