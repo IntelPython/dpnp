@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2026, Intel Corporation
+# Copyright (c) 2016, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -1838,7 +1838,6 @@ def putmask(a, /, mask, values):
     :obj:`dpnp.take` : Take elements from an array along an axis.
     :obj:`dpnp.copyto` : Copies values from one array to another.
 
-
     Examples
     --------
     >>> import dpnp as np
@@ -1848,7 +1847,7 @@ def putmask(a, /, mask, values):
     array([[ 0,  1,  2],
            [ 9, 16, 25]])
 
-    If `values` is smaller than `x1` it is repeated:
+    If `values` is smaller than `a` it is repeated:
 
     >>> x = np.arange(5)
     >>> np.putmask(x, x>1, np.array([-33, -44]))
