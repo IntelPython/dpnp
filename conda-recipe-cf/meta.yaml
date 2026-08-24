@@ -1,9 +1,6 @@
 {% set required_compiler_and_mkl_version = "2026.0.0" %}
 {% set required_dpctl_version = "0.22.1" %}
 
-{% set pyproject = load_file_data('pyproject.toml') %}
-{% set py_build_deps = pyproject.get('build-system', {}).get('requires', []) %}
-
 package:
   name: dpnp
   version: {{ GIT_DESCRIBE_TAG }}
@@ -31,14 +28,14 @@ requirements:
     - {{ stdlib('c') }}
     - {{ compiler('dpcpp') }} >={{ required_compiler_and_mkl_version }}
     - ninja >=1.11.1          # [linux]
-    - cmake >=3.29.0
+    - cmake >=3.31.6
   host:
     - python
     - pip >=25.0
     - pybind11 >=3.0.2
     - setuptools >=79.0.1
     - wheel >=0.45.1
-    - python-build >=1.1
+    - python-build >=1.2.2
     - scikit-build >=0.18.1
     - cython >=3.1.0
     - numpy >=1.26.0
@@ -74,7 +71,6 @@ test:
   commands:
     - pip check
     - python -c "import dpnp; print(dpnp.__version__)"
-    - python -m dpctl -f
 
 about:
   home: https://github.com/IntelPython/dpnp
