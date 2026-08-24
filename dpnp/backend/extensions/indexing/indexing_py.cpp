@@ -35,7 +35,7 @@
 #include "choose.hpp"
 #include "putmask.hpp"
 
-PYBIND11_MODULE(_indexing_impl, m)
+PYBIND11_MODULE(_indexing_impl, m, py::mod_gil_not_used())
 {
     dpnp::extensions::indexing::init_choose(m);
     dpnp::extensions::indexing::init_putmask(m);

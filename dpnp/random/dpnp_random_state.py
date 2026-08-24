@@ -113,6 +113,7 @@ class RandomState:
         else:
             # MCG59 is assumed to provide a better performance on GPU than MT19937
             self._random_state = MCG59(self._seed, self._sycl_queue)
+
         self._fallback_random_state = call_origin(
             numpy.random.RandomState, seed, allow_fallback=True
         )
@@ -173,6 +174,14 @@ class RandomState:
         -------
         out : object
             An object representing the internal state of the generator.
+
+        Notes
+        -----
+        Unlike :obj:`numpy.random.RandomState.get_state`, which returns a
+        snapshot of the state as plain data, this returns the live engine the
+        generator draws from. Generating from the returned engine advances the
+        state seen by this :class:`RandomState`, and does so safely if other
+        threads are drawing from it at the same time.
         """
         return self._random_state
 

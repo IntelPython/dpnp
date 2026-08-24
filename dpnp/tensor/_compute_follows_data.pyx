@@ -29,6 +29,7 @@
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 
 """Compute-follows-data utilities for execution queue and USM type management.
 

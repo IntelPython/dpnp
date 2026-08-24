@@ -43,13 +43,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(FetchContent)
 FetchContent_Declare(
     pybind11
-    URL https://github.com/pybind/pybind11/archive/refs/tags/v3.0.4.tar.gz
-    URL_HASH SHA256=74b6a2c2b4573a400cafb6ecbf60c98df300cd3d0041296b913d02b2cbbb2676
+    URL https://github.com/pybind/pybind11/archive/refs/tags/v3.1.0.tar.gz
+    URL_HASH SHA256=ef712655692a2e9bf7bb7874c022564a45f91d847ddee987e720cd9e28849665
     FIND_PACKAGE_ARGS NAMES pybind11
 )
 FetchContent_MakeAvailable(pybind11)
 
-find_package(Python REQUIRED COMPONENTS Development.Module)
+find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
 find_package(Dpctl REQUIRED)
 find_package(IntelSYCL REQUIRED)
 find_package(Dpnp REQUIRED)

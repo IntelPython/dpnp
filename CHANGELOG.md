@@ -17,6 +17,8 @@ This release is compatible with NumPy 2.5.
 * Added `dpnp-config.cmake` to make `find_package(Dpnp)` work out of the box, and an example which uses it [#2941](https://github.com/IntelPython/dpnp/pull/2941)
 * Added implementation of `dpnp.lib.stride_tricks.as_strided` [#2991](https://github.com/IntelPython/dpnp/pull/2991)
 * Added `dpnp.tensor.broadcast_shapes` to align with the 2025.12 version of the Python array API [#3009](https://github.com/IntelPython/dpnp/pull/3009)
+* Added support for free-threaded Python builds [gh-3026](https://github.com/IntelPython/dpnp/pull/3026)
+* Added `dpnp.broadcast` class implementation [#2901](https://github.com/IntelPython/dpnp/pull/2901)
 
 ### Changed
 
@@ -41,6 +43,7 @@ This release is compatible with NumPy 2.5.
 * Changed `dpnp.broadcast_arrays` and `dpnp.tensor.broadcast_arrays` to return a tuple instead of a list, aligning with the 2025.12 Python array API spec [#2944](https://github.com/IntelPython/dpnp/pull/2944)
 * Bumped the default minimum required DPC++ compiler version to `2026.1.1` and migrated to the OpenCL ICD loader from the conda-forge `ocl-icd-system` (Linux) and `khronos-opencl-icd-loader` (Windows) packages [#2905](https://github.com/IntelPython/dpnp/pull/2905)
 * Linked the `dpnp_backend_c` library against only the MKL SYCL domains it uses (`BLAS`, `RNG`, `VM`) [#3012](https://github.com/IntelPython/dpnp/pull/3012)
+* `dpnp` uses pybind11 3.1.0 [#3015](https://github.com/IntelPython/dpnp/pull/3015)
 * Updated the implementation of `dpnp.putmask` by adding dedicated contiguous and strided SYCL kernels [#3014](https://github.com/IntelPython/dpnp/pull/3014)
 
 ### Deprecated
@@ -52,6 +55,7 @@ This release is compatible with NumPy 2.5.
 * Removed support for arrays of 2-dimensional vectors in `dpnp.cross`, which now requires (arrays of) 3-dimensional vectors and raises `ValueError` otherwise [#2950](https://github.com/IntelPython/dpnp/pull/2950)
 * Removed `dpnp.row_stack` in favor of `dpnp.vstack` [#2956](https://github.com/IntelPython/dpnp/pull/2956)
 * Removed all references to the unimplemented `dpnp.ndarray.resize` method from the documentation [#2989](https://github.com/IntelPython/dpnp/pull/2989)
+* Removed an obsolete oneAPI 2021.x workaround from the Windows conda build script that manually prepended `BUILD_PREFIX` paths onto the `LIB` and `INCLUDE` [#3013](https://github.com/IntelPython/dpnp/pull/3013)
 
 ### Fixed
 
@@ -76,6 +80,12 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.interp` with an empty input array `x` to return an empty array with the correct dtype [#2985](https://github.com/IntelPython/dpnp/pull/2985)
 * Fixed `dpnp.interp` returning `nan` when querying at an exact knot point whose adjacent `fp` value is `inf` [#2986](https://github.com/IntelPython/dpnp/pull/2986)
 * Fixed missing strides validation in `dpnp.tensor.usm_ndarray` constructor when allocating new memory [#2927](https://github.com/IntelPython/dpnp/pull/2927)
+* Fixed `dpnp.bincount` raising a `ValueError` on an empty input array instead of returning an empty `intp` array [#3018](https://github.com/IntelPython/dpnp/pull/3018)
+* Fixed `dpnp.tensor.top_k` aborting for `k=0` by returning empty result arrays without launching a zero-sized kernel [#3022](https://github.com/IntelPython/dpnp/pull/3022)
+* Fixed comparison functions (`dpnp.equal`, `dpnp.not_equal`, `dpnp.less`, `dpnp.less_equal`, `dpnp.greater`, `dpnp.greater_equal`) and `dpnp.divide` raising `OverflowError` when comparing an integer array against a Python integer scalar outside the array dtype's range [#3017](https://github.com/IntelPython/dpnp/pull/3017)
+* Fixed a crash in boolean-mask advanced indexing (`dpnp.ndarray` get/set item) when the selection is empty (e.g. a scalar `False` index that injects a length-0 axis) [#3019](https://github.com/IntelPython/dpnp/pull/3019)
+* Released the GIL before the remaining blocking OneMKL BLAS and LAPACK calls to prevent host tasks contention, completing the work started in [#2850](https://github.com/IntelPython/dpnp/pull/2850) [#3027](https://github.com/IntelPython/dpnp/pull/3027)
+* Fixed `dpnp.repeat` raising an unclear `TypeError` for a nested sequence of `repeats` [#3024](https://github.com/IntelPython/dpnp/pull/3024)
 
 ### Security
 

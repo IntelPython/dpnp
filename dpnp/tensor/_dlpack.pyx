@@ -29,6 +29,7 @@
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 
 cdef extern from "numpy/npy_no_deprecated_api.h":
     pass
