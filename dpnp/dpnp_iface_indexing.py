@@ -1819,9 +1819,9 @@ def putmask(a, /, mask, values):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Target array.
-    mask : {dpnp.ndarray, usm_ndarray}
+    mask : array_like
         Boolean mask array. It has to be the same shape as `a`.
-    values : {dpnp.ndarray, usm_ndarray, scalar}
+    values : {array_like, scalar}
         Values to put into `a` where `mask` is ``True``. If `values` is smaller
         than `a` it will be repeated.
 
@@ -1856,22 +1856,28 @@ def putmask(a, /, mask, values):
 
     """
 
-    dpnp.check_supported_arrays_type(a, mask)
-    dpnp.check_supported_arrays_type(values, scalar_type=True, all_scalars=True)
+    dpnp.check_supported_arrays_type(a)
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_mask = dpnp.get_usm_ndarray(mask)
+    usm_mask = dpnp.as_usm_ndarray(
+        mask,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
+    usm_mask = dpt.astype(usm_mask, dpnp.bool, copy=False)
 
     if usm_a.shape != usm_mask.shape:
         raise ValueError("mask and data must be the same size")
-
-    usm_mask = dpt.astype(usm_mask, dpnp.bool, copy=False)
 
     if dpnp.isscalar(values):
         usm_a[usm_mask] = values
         return
 
-    usm_values = dpnp.get_usm_ndarray(values)
+    usm_values = dpnp.as_usm_ndarray(
+        values,
+        usm_type=usm_a.usm_type,
+        sycl_queue=usm_a.sycl_queue,
+    )
 
     if not dpt.can_cast(usm_values.dtype, usm_a.dtype):
         raise TypeError(
