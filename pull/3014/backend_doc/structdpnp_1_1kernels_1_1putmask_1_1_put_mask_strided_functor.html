@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.21.0dev3</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.21.0dev6</span>
    </div>
    <div id="projectbrief">Data Parallel Extension for NumPy*</div>
   </td>
@@ -106,8 +106,8 @@ $(function(){initNavTree('structdpnp_1_1kernels_1_1putmask_1_1_put_mask_strided_
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae6823a8b0eb20f8111094692002263ea" id="r_ae6823a8b0eb20f8111094692002263ea"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae6823a8b0eb20f8111094692002263ea">PutMaskStridedFunctor</a> (T *dst, const bool *mask, const T *vals, const TwoOffsets_IndexerT &amp;indexer, std::size_t values_size)</td></tr>
-<tr class="separator:ae6823a8b0eb20f8111094692002263ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42fe15e88650c71c04a5ee9332a034de" id="r_a42fe15e88650c71c04a5ee9332a034de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42fe15e88650c71c04a5ee9332a034de">PutMaskStridedFunctor</a> (T *dst, const bool *mask, const T *vals, const TwoOffsets_IndexerT &amp;indexer, const std::size_t values_size)</td></tr>
+<tr class="separator:a42fe15e88650c71c04a5ee9332a034de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f6c0cbd823c39a43a2b23f4665eac02" id="r_a3f6c0cbd823c39a43a2b23f4665eac02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f6c0cbd823c39a43a2b23f4665eac02">operator()</a> (sycl::id&lt; 1 &gt; wid) const</td></tr>
 <tr class="separator:a3f6c0cbd823c39a43a2b23f4665eac02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -116,8 +116,8 @@ Public Member Functions</h2></td></tr>
 struct dpnp::kernels::putmask::PutMaskStridedFunctor&lt; T, TwoOffsets_IndexerT &gt;</div>
 <p class="definition">Definition at line <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html#l00049">49</a> of file <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html">putmask.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ae6823a8b0eb20f8111094692002263ea" name="ae6823a8b0eb20f8111094692002263ea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae6823a8b0eb20f8111094692002263ea">&#9670;&#160;</a></span>PutMaskStridedFunctor()</h2>
+<a id="a42fe15e88650c71c04a5ee9332a034de" name="a42fe15e88650c71c04a5ee9332a034de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42fe15e88650c71c04a5ee9332a034de">&#9670;&#160;</a></span>PutMaskStridedFunctor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -150,7 +150,7 @@ template&lt;typename T , typename TwoOffsets_IndexerT &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>values_size</em></span>&#160;)</td>
+          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>values_size</em></span>&#160;)</td>
         </tr>
       </table>
   </td>

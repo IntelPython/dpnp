@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.21.0dev3</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.21.0dev6</span>
    </div>
    <div id="projectbrief">Data Parallel Extension for NumPy*</div>
   </td>
@@ -106,18 +106,18 @@ $(function(){initNavTree('structdpnp_1_1kernels_1_1putmask_1_1_put_mask_contig_f
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aed9f49bdb8d1508ecbf5799bb81fc88a" id="r_aed9f49bdb8d1508ecbf5799bb81fc88a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aed9f49bdb8d1508ecbf5799bb81fc88a">PutMaskContigFunctor</a> (T *dst, const bool *mask, const T *values, std::size_t nelems, std::size_t val_size)</td></tr>
-<tr class="separator:aed9f49bdb8d1508ecbf5799bb81fc88a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e403dd4c984f0a823a8d61b05252278" id="r_a0e403dd4c984f0a823a8d61b05252278"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0e403dd4c984f0a823a8d61b05252278">PutMaskContigFunctor</a> (T *dst, const bool *mask, const T *values, const std::size_t nelems, const std::size_t val_size)</td></tr>
+<tr class="separator:a0e403dd4c984f0a823a8d61b05252278"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90e6348a13d367c8b0fb180e15208246" id="r_a90e6348a13d367c8b0fb180e15208246"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90e6348a13d367c8b0fb180e15208246">operator()</a> (sycl::nd_item&lt; 1 &gt; ndit) const</td></tr>
 <tr class="separator:a90e6348a13d367c8b0fb180e15208246"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T, std::uint8_t vec_sz = 4u, std::uint8_t n_vecs = 2u, bool enable_sg_loadstore = true&gt;<br />
 struct dpnp::kernels::putmask::PutMaskContigFunctor&lt; T, vec_sz, n_vecs, enable_sg_loadstore &gt;</div>
-<p class="definition">Definition at line <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html#l00093">93</a> of file <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html">putmask.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html#l00088">88</a> of file <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html">putmask.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aed9f49bdb8d1508ecbf5799bb81fc88a" name="aed9f49bdb8d1508ecbf5799bb81fc88a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aed9f49bdb8d1508ecbf5799bb81fc88a">&#9670;&#160;</a></span>PutMaskContigFunctor()</h2>
+<a id="a0e403dd4c984f0a823a8d61b05252278" name="a0e403dd4c984f0a823a8d61b05252278"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e403dd4c984f0a823a8d61b05252278">&#9670;&#160;</a></span>PutMaskContigFunctor()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -145,12 +145,12 @@ template&lt;typename T , std::uint8_t vec_sz = 4u, std::uint8_t n_vecs = 2u, boo
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>nelems</em></span>, </td>
+          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>nelems</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>val_size</em></span>&#160;)</td>
+          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>val_size</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -160,7 +160,7 @@ template&lt;typename T , std::uint8_t vec_sz = 4u, std::uint8_t n_vecs = 2u, boo
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html#l00103">103</a> of file <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html">putmask.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html#l00098">98</a> of file <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html">putmask.hpp</a>.</p>
 
 </div>
 </div>
@@ -190,7 +190,7 @@ template&lt;typename T , std::uint8_t vec_sz = 4u, std::uint8_t n_vecs = 2u, boo
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html#l00113">113</a> of file <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html">putmask.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html#l00108">108</a> of file <a class="el" href="kernels_2indexing_2putmask_8hpp_source.html">putmask.hpp</a>.</p>
 
 </div>
 </div>
