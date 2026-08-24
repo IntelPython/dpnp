@@ -143,6 +143,10 @@ std::pair<sycl::event, sycl::event>
     bool is_exception_caught = false;
 
     try {
+        // Release GIL to avoid serialization of host task submissions
+        // to the same queue in OneMKL
+        py::gil_scoped_release lock{};
+
         if (is_forward) {
             using ScaleT_in = typename ScaleType<prec, dom, true>::type_in;
             using ScaleT_out = typename ScaleType<prec, dom, true>::type_out;
