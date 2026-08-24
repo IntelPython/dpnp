@@ -61,6 +61,7 @@ using dpnp::tensor::usm_ndarray;
 
 using ext::common::dtype_from_typenum;
 using ext::validation::array_names;
+using ext::validation::check_c_contig;
 using ext::validation::check_has_dtype;
 using ext::validation::check_num_dims;
 using ext::validation::check_queue;
@@ -146,6 +147,9 @@ std::pair<sycl::event, sycl::event>
 
     check_queue({&dst, &mask, &values}, names, exec_q);
     check_writable({&dst}, names);
+
+    // values must be C-contiguous
+    check_c_contig({&values}, names);
 
     auto types = td_ns::usm_ndarray_types();
     // dst_typeid == values_typeid (check_same_dtype(&dst, &values, names))
