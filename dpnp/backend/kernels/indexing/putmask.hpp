@@ -68,11 +68,6 @@ public:
 
     void operator()(sycl::id<1> wid) const
     {
-        // empty `values` is a no-op (also guards the read below)
-        if (values_size_ == 0) {
-            return;
-        }
-
         const std::size_t lin = wid[0];
         auto offset = indexer_(static_cast<ssize_t>(lin));
 
@@ -112,10 +107,6 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
-        if (val_size_ == 0 || nelems_ == 0) {
-            return;
-        }
-
         const bool values_no_repeat = (val_size_ >= nelems_);
 
         constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;

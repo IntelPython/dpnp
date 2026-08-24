@@ -166,8 +166,10 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("`mask` and `dst` shapes must match");
     }
 
-    // if nelems is zero, return
-    if (nelems == 0) {
+    const std::size_t values_size = values.get_size();
+
+    // empty output or empty `values` is a no-op
+    if (nelems == 0 || values_size == 0) {
         return {sycl::event(), sycl::event()};
     }
 
@@ -176,7 +178,6 @@ std::pair<sycl::event, sycl::event>
     char *dst_p = dst.get_data();
     const char *mask_p = mask.get_data();
     const char *values_p = values.get_data();
-    const std::size_t values_size = values.get_size();
 
     // the contig kernel cycles `values` by the memory-linear index, which
     // matches numpy's C-order `values.flat` only for C-contiguous data
