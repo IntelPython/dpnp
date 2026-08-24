@@ -5,7 +5,8 @@
     "show_commit_url": "https://github.com/IntelPython/dpnp/commit/",
     "repo": "..",
     "branches": [
-        "HEAD"
+        "master",
+        "dev-milestone"
     ],
     "environment_type": "conda",
     "conda_channels": [
