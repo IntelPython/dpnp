@@ -703,10 +703,9 @@ class dpnp_array:
 
         new_itemsize = dpnp.dtype(dtype).itemsize
 
-        # passing `buffer=self._array_obj` gives a view onto the whole
-        # underlying USM allocation, so the element offset of `self` within
-        # that allocation must be forwarded explicitly (in units of the
-        # view's dtype)
+        # `buffer=self._array_obj` views the whole USM allocation, so `self`'s
+        # element offset within it must be forwarded explicitly
+
         byte_offset = self._array_obj._element_offset * self.itemsize
         offset, rem = divmod(byte_offset, new_itemsize)
         if rem:
