@@ -22,7 +22,6 @@ if defined SYCL_RESOURCE_DIR (
   )
 )
 
-
 set "CC=icx"
 set "CXX=icx"
 
