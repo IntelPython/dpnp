@@ -1,0 +1,32 @@
+name: Conda package (conda-forge)
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    name: linux
+    uses: ./.github/workflows/conda-build-test.yml
+    with:
+      runs-on: ubuntu-latest
+      conda-subdir: linux-64
+      channels-list: '-c conda-forge --override-channels'
+      recipe-dir: conda-recipe-cf
+
+  windows:
+    name: windows
+    uses: ./.github/workflows/conda-build-test.yml
+    with:
+      runs-on: windows-2022
+      conda-subdir: win-64
+      channels-list: '-c conda-forge --override-channels'
+      recipe-dir: conda-recipe-cf

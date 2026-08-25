@@ -36,6 +36,7 @@ import pytest
 import dpnp.tensor as dpt
 import dpnp.tensor._dlpack as _dlp
 import dpnp.tensor._usmarray as dpt_arr
+from dpnp.tests.third_party.cupy.testing import with_requires
 
 from .helper import (
     get_queue_or_skip,
@@ -232,6 +233,7 @@ def test_from_dlpack_fortran_contig_array_roundtripping():
     assert dpt.all(dpt.equal(ar2d_c, ar2d_r))
 
 
+@with_requires("dpctl>=0.23.0dev0")
 def test_dlpack_from_subdevice():
     """
     This test checks that array allocated on a sub-device,
@@ -584,6 +586,7 @@ def test_from_dlpack_to_kdlcpu_strides(mod, typestr):
             assert V.strides == W.strides
 
 
+@with_requires("dpctl>=0.23.0dev0")
 def test_dlpack_from_subdevice_to_kdlcpu():
     """
     Check that array allocated on a sub-device can be
