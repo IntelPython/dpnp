@@ -9,6 +9,7 @@ from dpnp.tests.helper import (
     is_win_platform,
     numpy_version,
 )
+from dpnp.tests.third_party.cupy.testing import with_requires
 
 info = dpnp.__array_namespace_info__()
 default_device = select_default_device()
@@ -129,6 +130,7 @@ def test_dtypes_invalid_device():
         info.dtypes(device="str")
 
 
+@with_requires("dpctl>=0.23.0dev0")
 def test_devices():
     devices = info.devices()
     assert isinstance(devices, tuple)

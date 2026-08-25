@@ -88,9 +88,9 @@ def apply_along_axis(func1d, axis, arr, *args, **kwargs):
         Axis along which `arr` is sliced.
     arr : {dpnp.ndarray, usm_ndarray} (Ni..., M, Nk...)
         Input array.
-    args : any
+    *args : any
         Additional arguments to `func1d`.
-    kwargs : any
+    **kwargs : any
         Additional named arguments to `func1d`.
 
     Returns

@@ -18,6 +18,7 @@ This release is compatible with NumPy 2.5.
 * Added implementation of `dpnp.lib.stride_tricks.as_strided` [#2991](https://github.com/IntelPython/dpnp/pull/2991)
 * Added `dpnp.tensor.broadcast_shapes` to align with the 2025.12 version of the Python array API [#3009](https://github.com/IntelPython/dpnp/pull/3009)
 * Added support for free-threaded Python builds [gh-3026](https://github.com/IntelPython/dpnp/pull/3026)
+* Added `dpnp.broadcast` class implementation [#2901](https://github.com/IntelPython/dpnp/pull/2901)
 
 ### Changed
 
@@ -84,6 +85,7 @@ This release is compatible with NumPy 2.5.
 * Fixed a crash in boolean-mask advanced indexing (`dpnp.ndarray` get/set item) when the selection is empty (e.g. a scalar `False` index that injects a length-0 axis) [#3019](https://github.com/IntelPython/dpnp/pull/3019)
 * Released the GIL before the remaining blocking OneMKL BLAS and LAPACK calls to prevent host tasks contention, completing the work started in [#2850](https://github.com/IntelPython/dpnp/pull/2850) [#3027](https://github.com/IntelPython/dpnp/pull/3027)
 * Fixed `dpnp.repeat` raising an unclear `TypeError` for a nested sequence of `repeats` [#3024](https://github.com/IntelPython/dpnp/pull/3024)
+* Fixed `dpnp.ndarray.view` ignoring the USM element offset of a sliced array, which also caused `dpnp.einsum` to silently return wrong results for a single sliced operand with no summed index [#3037](https://github.com/IntelPython/dpnp/pull/3037)
 * Fixed `dpnp.all` and `dpnp.any` aborting when reducing over an empty axis (e.g. an array with a zero-length dimension) [#3021](https://github.com/IntelPython/dpnp/pull/3021)
 
 ### Security
