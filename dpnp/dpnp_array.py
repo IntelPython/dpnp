@@ -701,12 +701,27 @@ class dpnp_array:
         if dtype is None:
             dtype = self.dtype
 
+        new_itemsize = dpnp.dtype(dtype).itemsize
+
+        # `buffer=self._array_obj` views the whole USM allocation, so `self`'s
+        # element offset within it must be forwarded explicitly
+
+        byte_offset = self._array_obj._element_offset * self.itemsize
+        offset, rem = divmod(byte_offset, new_itemsize)
+        if rem:
+            raise ValueError(
+                "The offset of the array data in memory is not a multiple "
+                "of the new data type size and so the requested view is "
+                "not possible"
+            )
+
         # create the underlying usm_ndarray view
         usm_view = dpt.usm_ndarray(
             shape,
             dtype=dtype,
             buffer=self._array_obj,
-            strides=tuple(s // dpnp.dtype(dtype).itemsize for s in strides),
+            strides=tuple(s // new_itemsize for s in strides),
+            offset=offset,
         )
 
         # wrap the view into the appropriate class
