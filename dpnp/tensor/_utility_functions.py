@@ -78,9 +78,8 @@ def _boolean_reduction(x, axis, keepdims, func, identity):
     res_usm_type = x.usm_type
 
     if x_tmp.size == 0:
-        # nothing to reduce over: the result is either empty (a non-reduced
-        # dimension is zero) or filled with the reduction identity (a reduced
-        # dimension is zero, e.g. all([]) is True and any([]) is False)
+        # empty input: fill with the reduction identity
+        # (all([]) → True, any([]) → False)
         res = dpt.full(
             res_shape,
             identity,
