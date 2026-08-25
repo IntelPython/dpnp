@@ -815,18 +815,32 @@ class TestInsert:
         with pytest.raises(TypeError):
             dpnp.insert(a, [], 2, axis="nonsense")
 
+    @testing.with_requires("numpy>=2.5.3")
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
         "idx, values",
         [
+            # single-element obj -> singleton path
             ([4], [3, 4]),
             ([-4], [3, 4]),
+            # multi-element obj -> array path
             ([-6, 0], [9, 8]),
+            ([0, 6], [9, 8]),
+            ([4, 4], [3, 4]),
+            ([-4, -5], [3, 4]),
         ],
     )
-    def test_index_out_of_bounds(self, idx, values):
-        a = dpnp.array([0, 1, 2])
+    def test_index_out_of_bounds(self, xp, idx, values):
+        a = xp.array([0, 1, 2])
         with pytest.raises(IndexError, match="out of bounds"):
-            dpnp.insert(a, idx, values)
+            xp.insert(a, idx, values)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("axis", [0, 1])
+    def test_index_out_of_bounds_ndim(self, xp, axis):
+        a = xp.ones((3, 3))
+        with pytest.raises(IndexError, match="out of bounds"):
+            xp.insert(a, [5, 0], 9, axis=axis)
 
 
 # array_split has more comprehensive test of splitting.
