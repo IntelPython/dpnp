@@ -815,11 +815,18 @@ class TestInsert:
         with pytest.raises(TypeError):
             dpnp.insert(a, [], 2, axis="nonsense")
 
-    @pytest.mark.parametrize("idx", [4, -4])
-    def test_index_out_of_bounds(self, idx):
+    @pytest.mark.parametrize(
+        "idx, values",
+        [
+            ([4], [3, 4]),
+            ([-4], [3, 4]),
+            ([-6, 0], [9, 8]),
+        ],
+    )
+    def test_index_out_of_bounds(self, idx, values):
         a = dpnp.array([0, 1, 2])
         with pytest.raises(IndexError, match="out of bounds"):
-            dpnp.insert(a, [idx], [3, 4])
+            dpnp.insert(a, idx, values)
 
 
 # array_split has more comprehensive test of splitting.

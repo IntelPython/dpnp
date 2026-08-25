@@ -254,6 +254,15 @@ def _insert_array_indices(parameters, indices, values, obj):
         # Can safely cast the empty list to intp
         indices = indices.astype(dpnp.intp)
 
+    if indices.size > 0:
+        min_idx = int(indices.min())
+        max_idx = int(indices.max())
+        if min_idx < -n or max_idx > n:
+            oob = min_idx if min_idx < -n else max_idx
+            raise IndexError(
+                f"index {oob} is out of bounds for axis {axis} with size {n}"
+            )
+
     indices[indices < 0] += n
 
     numnew = len(indices)
