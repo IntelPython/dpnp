@@ -489,8 +489,13 @@ public:
         PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = detail::dpnp_capi::get();
+        // UsmNDArray_GetQueueRef_ returns an owning copy (DPCTLQueue_Copy,
+        // i.e. `new sycl::queue`); wrap it in a unique_ptr to avoid leaking a
+        // queue per call.
         DPCTLSyclQueueRef QRef = api.UsmNDArray_GetQueueRef_(raw_ar);
-        return *(reinterpret_cast<sycl::queue *>(QRef));
+        std::unique_ptr<sycl::queue> q_ptr{
+            reinterpret_cast<sycl::queue *>(QRef)};
+        return *q_ptr;
     }
 
     sycl::device get_device() const
@@ -498,8 +503,12 @@ public:
         PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = detail::dpnp_capi::get();
+        // UsmNDArray_GetQueueRef_ returns an owning copy; wrap it in a
+        // unique_ptr to avoid leaking a queue per call.
         DPCTLSyclQueueRef QRef = api.UsmNDArray_GetQueueRef_(raw_ar);
-        return reinterpret_cast<sycl::queue *>(QRef)->get_device();
+        std::unique_ptr<sycl::queue> q_ptr{
+            reinterpret_cast<sycl::queue *>(QRef)};
+        return q_ptr->get_device();
     }
 
     int get_typenum() const
