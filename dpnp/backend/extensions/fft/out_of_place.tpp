@@ -140,8 +140,7 @@ std::pair<sycl::event, sycl::event>
 
     // the input and output types depend on is_forward, so the untyped
     // pointers are cast to the expected type below. get_data() calls into the
-    // get_data() calls into the Python C-API and so must be called while the
-    // GIL is still held
+    // Python C-API and so must be called while the GIL is still held
     char *in_data = in.get_data();
     char *out_data = out.get_data();
 
