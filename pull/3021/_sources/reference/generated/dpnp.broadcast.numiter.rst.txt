@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.broadcast.numiter
+======================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: broadcast.numiter
