@@ -83,6 +83,8 @@ std::pair<sycl::event, sycl::event>
     // in-place is only used for c2c FFT at this time, passing true or false is
     // indifferent
     using ScaleT = typename ScaleType<prec, dom, true>::type_in;
+    // get_data() calls into the Python C-API and so must be called while the
+    // GIL is still held
     ScaleT *in_out_ptr = in_out.get_data<ScaleT>();
 
     sycl::event fft_event = {};

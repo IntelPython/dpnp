@@ -138,6 +138,12 @@ std::pair<sycl::event, sycl::event>
     dpnp::tensor::validation::CheckWritable::throw_if_not_writable(out);
     dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(out, n_elems);
 
+    // the input and output types depend on is_forward, so the untyped
+    // pointers are cast to the expected type below. get_data() calls into the
+    // Python C-API and so must be called while the GIL is still held
+    char *in_data = in.get_data();
+    char *out_data = out.get_data();
+
     sycl::event fft_event = {};
     std::stringstream error_msg;
     bool is_exception_caught = false;
@@ -150,16 +156,16 @@ std::pair<sycl::event, sycl::event>
         if (is_forward) {
             using ScaleT_in = typename ScaleType<prec, dom, true>::type_in;
             using ScaleT_out = typename ScaleType<prec, dom, true>::type_out;
-            ScaleT_in *in_ptr = in.get_data<ScaleT_in>();
-            ScaleT_out *out_ptr = out.get_data<ScaleT_out>();
+            ScaleT_in *in_ptr = reinterpret_cast<ScaleT_in *>(in_data);
+            ScaleT_out *out_ptr = reinterpret_cast<ScaleT_out *>(out_data);
             fft_event = mkl_dft::compute_forward(descr.get_descriptor(), in_ptr,
                                                  out_ptr, depends);
         }
         else {
             using ScaleT_in = typename ScaleType<prec, dom, false>::type_in;
             using ScaleT_out = typename ScaleType<prec, dom, false>::type_out;
-            ScaleT_in *in_ptr = in.get_data<ScaleT_in>();
-            ScaleT_out *out_ptr = out.get_data<ScaleT_out>();
+            ScaleT_in *in_ptr = reinterpret_cast<ScaleT_in *>(in_data);
+            ScaleT_out *out_ptr = reinterpret_cast<ScaleT_out *>(out_data);
             fft_event = mkl_dft::compute_backward(descr.get_descriptor(),
                                                   in_ptr, out_ptr, depends);
         }
