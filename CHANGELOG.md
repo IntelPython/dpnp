@@ -44,6 +44,7 @@ This release is compatible with NumPy 2.5.
 * Bumped the default minimum required DPC++ compiler version to `2026.1.1` and migrated to the OpenCL ICD loader from the conda-forge `ocl-icd-system` (Linux) and `khronos-opencl-icd-loader` (Windows) packages [#2905](https://github.com/IntelPython/dpnp/pull/2905)
 * Linked the `dpnp_backend_c` library against only the MKL SYCL domains it uses (`BLAS`, `RNG`, `VM`) [#3012](https://github.com/IntelPython/dpnp/pull/3012)
 * `dpnp` uses pybind11 3.1.0 [#3015](https://github.com/IntelPython/dpnp/pull/3015)
+* Updated the implementation of `dpnp.putmask` by adding dedicated contiguous and strided SYCL kernels [#3014](https://github.com/IntelPython/dpnp/pull/3014)
 
 ### Deprecated
 
