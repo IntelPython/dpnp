@@ -70,7 +70,8 @@ class _Workload:
                 f"{self.WORKLOAD.NAME} has no {preset} preset."
             )
 
-        if not runner.preset_fits(self.WORKLOAD, preset, queue.sycl_device):
+        device = queue.sycl_device
+        if not runner.preset_fits(self.WORKLOAD, preset, device, precision):
             raise SkipNotImplemented(
                 f"Skipping the {preset} preset as its estimated peak footprint"
                 " does not fit this device's memory."

@@ -1,0 +1,7 @@
+# Benchmark-only dependencies, installed into the benchmarking environment by
+# CI. asv itself, dpnp and its own dependencies are installed separately.
+#
+# scipy: scipy.special.erf is used by the NumPy reference that the
+# black_scholes benchmark validates its dpnp results against. It is not a dpnp
+# runtime dependency, so it has to be requested here.
+scipy

@@ -8,8 +8,9 @@ Performance benchmarks for [dpnp](https://github.com/IntelPython/dpnp) using
 | File | API | Benchmarks | Params | Sizes |
 |------|-----|------------|--------|-------|
 | `bench_dpbench.py` | `dpnp` (end-to-end workloads) | `BlackScholes`, `L2Norm`, `PairwiseDistance`, `Rambo`, `Gpairs` | `preset`, `precision` | dpBench presets `S`, `M16Gb`, `M`, `L` |
-| `bench_elementwise.py` | `dpnp` vs `numpy` | `Elementwise` (26 unary math functions) | `executor`, `size`, `dtype` | 2^16, 2^20, 2^24 |
-| `bench_linalg.py` | `dpnp` vs `numpy` (`dot`, `matmul`, `inner`, `einsum`) | `MatMul` | `executor`, `order`, `dtype` | 16 to 1024 square |
+| `bench_elementwise.py` | `dpnp` vs `numpy` | `Unary` (31 ufuncs), `Binary` (7 ufuncs) | `executor`, `ufunc`, `size`, `dtype` (float only) | 2^16, 2^20, 2^24 |
+| `bench_linalg.py` | `dpnp` vs `numpy` (`dot`, `matmul`, `inner`, `einsum`; contiguous and transposed) | `MatMul` | `executor`, `order`, `dtype` (float and int) | 16 to 1024 square |
+| `bench_linalg.py` | `dpnp.linalg` vs `numpy.linalg` (`det`, `norm`, `solve`, `svd`) | `Linalg` | `executor`, `order`, `dtype` (float only) | 16 to 1024 square |
 | `bench_random.py` | `dpnp.random` vs `numpy.random` | `Sample` (`rand`, `randn`, `random_sample`) | `executor`, `size` | 2^16, 2^20, 2^24 |
 
 ### dpBench workloads
@@ -50,11 +51,12 @@ are declared statically, so a given benchmark has the same parameter set
 everywhere and results are comparable across devices and across the CI pool.
 What varies per device is which of those points *run*: `setup` calls
 `_dpbench_runner.preset_fits` and raises `SkipNotImplemented` for any preset
-whose estimated peak element count (the workload's `peak_elements`, taken at the
-wider of the two precisions) exceeds **0.25** of the device's `global_mem_size`.
-So a large discrete GPU exercises the bigger problem sizes automatically while a
-small iGPU reports `S` and skips the rest, and a skipped point stays visible as a
-skip rather than vanishing from the matrix.
+whose estimated peak footprint -- the workload's `peak_elements` at the point's
+own precision -- exceeds **0.25** of the device's `global_mem_size`. So a large
+discrete GPU exercises the bigger problem sizes automatically while a small iGPU
+reports `S` and skips the rest, and a skipped point stays visible as a skip
+rather than vanishing from the matrix. Since `single` needs half the memory of
+`double`, it reaches one preset further on a given device.
 
 The cheapest preset always runs. If even that does not fit, it is attempted
 anyway so the failure is a loud allocation error rather than silence.
@@ -100,10 +102,10 @@ interpreter per benchmark and avoids this entirely.
 
 **Every timed body that runs dpnp work must block on it.** dpnp enqueues to a
 SYCL queue and returns before the kernel has run, so a body that does not block
-measures submission rather than execution. Unsynchronized, a 1024x1024 float32
-`dot` measured **0.4 ms** against **36 ms** synchronized on a CPU device -- which
-would have reported dpnp as an order of magnitude faster than NumPy on work
-where it is in fact slightly slower.
+measures submission rather than execution. On a CPU device a 1024x1024 float32
+`dot` measured **0.3 ms** unsynchronized against **18 ms** synchronized -- which
+would have reported dpnp as far faster than NumPy's **10 ms** on work where it is
+in fact 1.7x slower.
 
 The dpBench workloads each end with `dpnp.synchronize_array_data`, and the
 comparison suites obtain a synchronizer from `_utils.make_synchronizer` in
@@ -115,8 +117,13 @@ executor the synchronizer does nothing.
 The first call on a fresh queue pays SYCL kernel/JIT and allocator warmup.
 `WorkloadRunner.setup` therefore runs each workload once before ASV starts
 timing it, so the dpBench suite is warmed explicitly. The `bench_elementwise.py`,
-`bench_linalg.py` and `bench_random.py` suites do **not** warm up and rely on
-ASV's default `warmup_time`.
+`bench_linalg.py` and `bench_random.py` suites each run their operation once in
+`setup` as well, so a `--quick` measurement is not dominated by one-time cost.
+
+`--quick` still takes a single sample, so use it to check that benchmarks run
+rather than to compare them: before the explicit warmups a `--quick`
+`dot(a, a.T)` measured 2.6x its contiguous counterpart, where a repeated
+measurement puts it at 0.7x.
 
 ### Validation
 
@@ -157,7 +164,10 @@ conda install -c conda-forge asv scipy
 ```
 
 `scipy` is needed because `scipy.special.erf` is used by the NumPy reference
-that the `black_scholes` benchmark validates its dpnp results against.
+that the `black_scholes` benchmark validates its dpnp results against. It is not
+a dpnp runtime dependency, so it also has to be listed in `requirements.txt`,
+which is what CI installs into the benchmarking environment. Keep that file and
+the `benchmark` extra in `pyproject.toml` in step.
 
 Do **not** use `pip install ".[benchmark]"` for an environment that already has
 dpnp: dpnp is a scikit-build project, so pip reinstalls the `dpnp` package
@@ -215,11 +225,6 @@ asv run --environment existing:/full/conda/path/envs/dpnp_env/bin/python \
     --launch-method spawn
 ```
 
-`asv.conf.json` sets `branches` to `HEAD` rather than to named branches, so that
-results recorded on a feature branch are picked up. With named branches
-`asv publish` reports `Couldn't find <hash> in branches (...)` and silently
-drops them.
-
 ### Comparing two revisions
 
 `asv continuous` and any `<commit>` range spec cannot be used here: ASV refuses
@@ -241,6 +246,11 @@ View recorded results in a browser:
 asv publish
 asv preview
 ```
+
+The published dashboard only covers the branches listed in `asv.conf.json`
+(`master` and `dev-milestone`). Results recorded for a commit on any other
+branch are dropped with `Couldn't find <hash> in branches (...)`, so use
+`asv compare` for feature-branch and PR work -- it does not consult `branches`.
 
 ## Writing new benchmarks
 

@@ -89,12 +89,8 @@ def float_dtype(precision):
     return build_types_dict(precision)["float"]
 
 
-def preset_fits(workload, preset, device, precision="double"):
-    """Whether ``preset``'s estimated peak footprint fits ``device``'s memory.
-
-    ``precision`` is the *widest* precision benchmarked, so the verdict is the
-    same for every precision parameter.
-    """
+def preset_fits(workload, preset, device, precision):
+    """Whether ``preset``'s estimated peak footprint fits ``device``'s memory."""
     # The cheapest preset always runs, so that an undersized device fails loudly
     # on allocation rather than reporting nothing.
     if preset == presets_by_size(workload)[0]:
@@ -202,17 +198,25 @@ def relative_error(ref, val):
 def validate(expected, actual, rel_error=1e-05):
     """Check that ``actual`` matches ``expected`` closely enough.
 
-    Mirrors ``dpbench.infrastructure.benchmark_validation.validate``: a
-    mismatch is tolerated only while the relative error stays below
-    ``rel_error``. Raises :exc:`ValueError` naming the offending argument
-    instead of returning a bool, so a wrong result fails the benchmark rather
-    than being silently timed.
+    A mismatch is tolerated only while the relative error stays below
+    ``rel_error`` and is finite. Raises :exc:`ValueError` naming the offending
+    argument instead of returning a bool, so a wrong result fails the benchmark
+    rather than being silently timed.
     """
     for name, ref in expected.items():
         val = actual[name]
-        if numpy.allclose(ref, val):
+        # equal_nan, so that a NaN the reference also produces counts as
+        # agreement rather than as the non-finite error rejected below.
+        if numpy.allclose(ref, val, equal_nan=True):
             continue
+
         error = relative_error(ref, val)
+        if not numpy.isfinite(error):
+            raise ValueError(
+                f"Validation failed for {name!r}: results differ and the "
+                "relative error is not finite, so NaN or infinity is present "
+                "in one of them."
+            )
         if error >= rel_error:
             raise ValueError(
                 f"Validation failed for {name!r}: relative error {error:.3e} "
@@ -278,8 +282,7 @@ class WorkloadRunner:
 
     def _reference_outputs(self):
         """Run the NumPy reference on freshly initialized host data."""
-        # A fresh initialization is required: the kernel writes into its output
-        # arrays, so ``self._host_data`` no longer holds their initial values.
+        # setup() does not retain the host data, so re-initialize it here.
         host_data = initialize_host_data(
             self.workload, self.preset, self.precision
         )

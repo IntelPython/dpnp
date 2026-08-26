@@ -28,7 +28,7 @@ config from `dpbench/configs/bench_info/` map onto one module here:
 
 ### Intended differences
 
-1. `black_scholes` calls `dpnp.scipy.special.erf`, where dpnp now keeps `erf`.
+1. `black_scholes` calls `dpnp.scipy.special.erf`; dpBench calls `dpnp.erf`.
 2. Every kernel ends with `dpnp.synchronize_array_data(<output>)`. ASV times the
    `time_*` method directly, so the kernel has to block or only host-side
    dispatch is measured.

@@ -40,7 +40,6 @@ _EXECUTOR_NAMES = list(_EXECUTORS)
 
 # axes shared across multiple files
 _SIZES_1D = [2**16, 2**20, 2**24]
-_DTYPES = ["float64", "float32", "int64", "int32"]
 
 _DEFAULT_QUEUE = None
 
@@ -63,9 +62,15 @@ def make_synchronizer(executor):
     dpnp enqueues asynchronously, so a timed body that does not block measures
     submission rather than execution. NumPy is synchronous.
     """
-    if executor == "dpnp":
-        return dpnp.synchronize_array_data
-    return lambda result: None
+    if executor != "dpnp":
+        return lambda result: None
+
+    def sync(result):
+        # Some results are tuples, e.g. linalg.svd.
+        for array in result if isinstance(result, tuple) else (result,):
+            dpnp.synchronize_array_data(array)
+
+    return sync
 
 
 def skip_unsupported_dtype(q, dtype):

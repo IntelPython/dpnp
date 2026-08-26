@@ -45,6 +45,8 @@ class Sample:
     def setup(self, executor, size):
         self.executor = _EXECUTORS[executor]
         self.sync = make_synchronizer(executor)
+        # Warm up, so the first timed call does not pay device setup.
+        self.sync(self.executor.random.rand(size))
 
     def time_rand(self, executor, size):
         np = self.executor
