@@ -28,14 +28,19 @@
 
 """Benchmarks for random sampling, dpnp.random against numpy.random."""
 
+from functools import partial
+
 from ._utils import (
     _EXECUTOR_NAMES,
     _EXECUTORS,
+    _FLOAT_DTYPES,
     _SIZES_1D,
     default_queue,
     make_synchronizer,
     skip_unsupported_dtype,
 )
+
+_SEED = 1
 
 
 # One name per generator; rand, random, ranf, sample and randn are aliases.
@@ -61,3 +66,43 @@ class Sample:
     def time_standard_normal(self, executor, size):
         np = self.executor
         self.sync(np.random.standard_normal(size))
+
+
+# ---------------------------------------------------------------------------
+# Generators taking an explicit dtype
+# ---------------------------------------------------------------------------
+
+
+class TypedSample:
+    """Uniform and normal sampling at an explicit dtype.
+
+    dpnp reaches these through ``RandomState`` and NumPy through
+    ``default_rng``; the module-level functions in ``Sample`` take no dtype, so
+    only this class can compare float32 on a device without fp64.
+    """
+
+    params = [_EXECUTOR_NAMES, _SIZES_1D, _FLOAT_DTYPES]
+    param_names = ["executor", "size", "dtype"]
+
+    def setup(self, executor, size, dtype):
+        mod = _EXECUTORS[executor]
+        if executor == "dpnp":
+            skip_unsupported_dtype(default_queue(), dtype)
+        self.sync = make_synchronizer(executor)
+        dt = getattr(mod, dtype)
+        if executor == "dpnp":
+            rng = mod.random.RandomState(seed=_SEED)
+            self._uniform = partial(rng.uniform, 0.0, 1.0, size, dtype=dt)
+            self._normal = partial(rng.normal, 0.0, 1.0, size, dtype=dt)
+        else:
+            rng = mod.random.default_rng(_SEED)
+            self._uniform = partial(rng.random, size, dtype=dt)
+            self._normal = partial(rng.standard_normal, size, dtype=dt)
+        # Warm up.
+        self.sync(self._uniform())
+
+    def time_uniform(self, executor, size, dtype):
+        self.sync(self._uniform())
+
+    def time_normal(self, executor, size, dtype):
+        self.sync(self._normal())

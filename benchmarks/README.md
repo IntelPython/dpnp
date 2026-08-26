@@ -12,6 +12,7 @@ Performance benchmarks for [dpnp](https://github.com/IntelPython/dpnp) using
 | `bench_linalg.py` | `dpnp` vs `numpy` (`dot`, `matmul`, `inner`, `einsum`; contiguous and transposed) | `MatMul` | `executor`, `order`, `dtype` (float and int) | 16 to 1024 square |
 | `bench_linalg.py` | `dpnp.linalg` vs `numpy.linalg` (`det`, `norm`, `solve`, `svd`) | `Linalg` | `executor`, `order`, `dtype` (float only) | 16 to 1024 square |
 | `bench_random.py` | `dpnp.random` vs `numpy.random` | `Sample` (`random_sample`, `standard_normal`) | `executor`, `size` | 2^16, 2^20, 2^24 |
+| `bench_random.py` | `dpnp.random.RandomState` vs `numpy.random.default_rng` | `TypedSample` (uniform, normal) | `executor`, `size`, `dtype` (float only) | 2^16, 2^20, 2^24 |
 
 ### dpBench workloads
 
@@ -74,10 +75,11 @@ executor; the `numpy` executor is unaffected. dpBench's own configs request
 `double` throughout, and that value is kept in each workload's `PRECISION` for
 reference.
 
-`bench_random.py` skips its `dpnp` points entirely without fp64. Its functions
-take no `dtype`, so dpnp would return the device's default float while NumPy
-always returns `float64`, and the two sides would not be measuring the same
-work.
+`bench_random.py`'s `Sample` skips its `dpnp` points without fp64: those
+functions take no `dtype`, so dpnp would return the device's default float
+against NumPy's `float64`. `TypedSample` covers the same two distributions
+through dpnp's `RandomState` and NumPy's `default_rng`, which do take a `dtype`,
+so `float32` is still compared there.
 
 No benchmark module opens a SYCL queue at import time, so benchmark discovery
 and `asv check` work on a machine with no usable device; only `setup` needs one.

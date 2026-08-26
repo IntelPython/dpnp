@@ -40,6 +40,8 @@ _EXECUTOR_NAMES = list(_EXECUTORS)
 
 # axes shared across multiple files
 _SIZES_1D = [2**16, 2**20, 2**24]
+# float only, where an integer input would time a promotion, not the kernel
+_FLOAT_DTYPES = ["float64", "float32"]
 
 _DEFAULT_QUEUE = None
 

@@ -34,14 +34,12 @@ The ufunc is a parameter, as in NumPy's own ``bench_ufunc.py``.
 from ._utils import (
     _EXECUTOR_NAMES,
     _EXECUTORS,
+    _FLOAT_DTYPES,
     _SIZES_1D,
     default_queue,
     make_synchronizer,
     skip_unsupported_dtype,
 )
-
-# Float only: an integer input would time the int-to-float promotion.
-_FLOAT_DTYPES = ["float64", "float32"]
 
 # One name per ufunc; rad2deg, deg2rad, abs, true_divide and pow are aliases.
 _UNARY = [

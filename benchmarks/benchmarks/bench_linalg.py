@@ -31,6 +31,7 @@
 from ._utils import (
     _EXECUTOR_NAMES,
     _EXECUTORS,
+    _FLOAT_DTYPES,
     default_queue,
     make_synchronizer,
     skip_unsupported_dtype,
@@ -41,9 +42,6 @@ _ORDERS = [16, 32, 64, 128, 256, 512, 1024]
 
 # Matrix products are native on integers.
 _DTYPES = ["float64", "float32", "int64", "int32"]
-
-# LAPACK has no integer path.
-_FLOAT_DTYPES = ["float64", "float32"]
 
 
 # ---------------------------------------------------------------------------
