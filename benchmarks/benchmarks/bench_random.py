@@ -32,10 +32,13 @@ from ._utils import (
     _EXECUTOR_NAMES,
     _EXECUTORS,
     _SIZES_1D,
+    default_queue,
     make_synchronizer,
+    skip_unsupported_dtype,
 )
 
 
+# One name per generator; rand, random, ranf, sample and randn are aliases.
 class Sample:
     """Random sampling, dpnp against NumPy."""
 
@@ -44,18 +47,17 @@ class Sample:
 
     def setup(self, executor, size):
         self.executor = _EXECUTORS[executor]
+        if executor == "dpnp":
+            # No dtype keyword: without fp64 dpnp returns float32, NumPy f64.
+            skip_unsupported_dtype(default_queue(), "float64")
         self.sync = make_synchronizer(executor)
-        # Warm up, so the first timed call does not pay device setup.
-        self.sync(self.executor.random.rand(size))
-
-    def time_rand(self, executor, size):
-        np = self.executor
-        self.sync(np.random.rand(size))
-
-    def time_randn(self, executor, size):
-        np = self.executor
-        self.sync(np.random.randn(size))
+        # Warm up.
+        self.sync(self.executor.random.random_sample(size))
 
     def time_random_sample(self, executor, size):
         np = self.executor
-        self.sync(np.random.random_sample((size,)))
+        self.sync(np.random.random_sample(size))
+
+    def time_standard_normal(self, executor, size):
+        np = self.executor
+        self.sync(np.random.standard_normal(size))

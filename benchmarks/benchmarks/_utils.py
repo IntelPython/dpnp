@@ -34,7 +34,7 @@ from asv_runner.benchmarks.mark import SkipNotImplemented
 
 import dpnp
 
-# executor axis, keyed by name so ASV's tables stay readable
+# Keyed by name, so ASV's tables stay readable.
 _EXECUTORS = {"dpnp": dpnp, "numpy": numpy}
 _EXECUTOR_NAMES = list(_EXECUTORS)
 
@@ -45,10 +45,7 @@ _DEFAULT_QUEUE = None
 
 
 def default_queue():
-    """Return a queue on dpnp's default device, created on first use.
-
-    Deferring creation keeps benchmark discovery free of a device requirement.
-    """
+    """Return a queue on dpnp's default device, created on first use."""
     global _DEFAULT_QUEUE
 
     if _DEFAULT_QUEUE is None:
@@ -57,11 +54,7 @@ def default_queue():
 
 
 def make_synchronizer(executor):
-    """Return a callable blocking until ``executor``'s work has finished.
-
-    dpnp enqueues asynchronously, so a timed body that does not block measures
-    submission rather than execution. NumPy is synchronous.
-    """
+    """Return a callable blocking until ``executor``'s work has finished."""
     if executor != "dpnp":
         return lambda result: None
 

@@ -36,14 +36,13 @@ from ._utils import (
     skip_unsupported_dtype,
 )
 
-# square matrix orders -- local to this suite
+# square matrix orders
 _ORDERS = [16, 32, 64, 128, 256, 512, 1024]
 
-# Integers are native for the matrix products, which do not promote.
+# Matrix products are native on integers.
 _DTYPES = ["float64", "float32", "int64", "int32"]
 
-# LAPACK has no integer path, so an integer input to a decomposition would time
-# the promotion instead of the factorization.
+# LAPACK has no integer path.
 _FLOAT_DTYPES = ["float64", "float32"]
 
 
@@ -66,10 +65,9 @@ class MatMul:
         dt = getattr(self.np, dtype)
         self.a = self.np.arange(order * order, dtype=dt).reshape((order, order))
         self.b = self.np.arange(order * order, dtype=dt).reshape((order, order))
-        # Non-contiguous operand, which reaches a different BLAS path: the
-        # transpose is expressed as a flag rather than as a copy.
+        # Non-contiguous operand, reaching a different BLAS path.
         self.at = self.a.T
-        # Pay the one-time SYCL and oneMKL initialization before timing.
+        # Warm up.
         self.sync(self.np.dot(self.a, self.b))
 
     def time_dot(self, executor, order, dtype):
@@ -108,17 +106,13 @@ class Linalg:
         if executor == "dpnp":
             skip_unsupported_dtype(default_queue(), dtype)
         dt = getattr(self.np, dtype)
-        # I + 1/order is diagonally dominant, so it is non-singular with a
-        # condition number of 2, and its determinant is 2 at every order rather
-        # than overflowing. An arange matrix is rank 2, which would make solve
-        # and det meaningless.
+        # Non-singular, condition number 2, determinant 2 at every order.
         self.a = (
             self.np.eye(order, dtype=dt)
             + self.np.ones((order, order), dtype=dt) / order
         )
         self.b = self.np.ones(order, dtype=dt)
-        # norm is the cheapest of these, so it warms up the device without
-        # paying for a second factorization.
+        # Warm up; norm is the cheapest of these.
         self.sync(self.np.linalg.norm(self.a))
 
     def time_det(self, executor, order, dtype):

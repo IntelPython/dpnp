@@ -28,8 +28,7 @@
 
 """Benchmarks for whole dpnp workloads derived from dpBench.
 
-One class per workload, parametrized by data-size preset and floating-point
-precision. See ``dpbench/README.md`` for where the workloads come from.
+See ``dpbench/README.md`` for where the workloads come from.
 """
 
 from asv_runner.benchmarks.mark import SkipNotImplemented
@@ -44,8 +43,7 @@ from .dpbench.workloads import (
     rambo,
 )
 
-# Static axes, so the parameter matrix is the same on every machine. What a
-# device cannot run is skipped in setup instead.
+# Static, so the matrix is identical on every machine.
 _PRESETS = ["S", "M16Gb", "M", "L"]
 _PRECISIONS = list(runner.PRECISIONS)
 
@@ -53,8 +51,7 @@ _PRECISIONS = list(runner.PRECISIONS)
 class _Workload:
     """Shared setup for one dpBench-derived workload.
 
-    Subclasses declare ``WORKLOAD`` and a single ``time_*`` method. Defines no
-    ``time_*`` itself, so ASV does not discover it as a benchmark.
+    Defines no ``time_*``, so ASV does not discover it as a benchmark.
     """
 
     WORKLOAD = None
@@ -80,8 +77,7 @@ class _Workload:
         self._runner = runner.WorkloadRunner(self.WORKLOAD, preset, precision)
         self._runner.setup()
 
-        # Validating the larger presets costs far more than the benchmark it
-        # guards, and the numerics do not depend on the problem size.
+        # Cheapest preset only; the numerics do not depend on its size.
         if preset == runner.presets_by_size(self.WORKLOAD)[0]:
             self._runner.validate()
 

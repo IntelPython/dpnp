@@ -11,7 +11,7 @@ Performance benchmarks for [dpnp](https://github.com/IntelPython/dpnp) using
 | `bench_elementwise.py` | `dpnp` vs `numpy` | `Unary` (31 ufuncs), `Binary` (7 ufuncs) | `executor`, `ufunc`, `size`, `dtype` (float only) | 2^16, 2^20, 2^24 |
 | `bench_linalg.py` | `dpnp` vs `numpy` (`dot`, `matmul`, `inner`, `einsum`; contiguous and transposed) | `MatMul` | `executor`, `order`, `dtype` (float and int) | 16 to 1024 square |
 | `bench_linalg.py` | `dpnp.linalg` vs `numpy.linalg` (`det`, `norm`, `solve`, `svd`) | `Linalg` | `executor`, `order`, `dtype` (float only) | 16 to 1024 square |
-| `bench_random.py` | `dpnp.random` vs `numpy.random` | `Sample` (`rand`, `randn`, `random_sample`) | `executor`, `size` | 2^16, 2^20, 2^24 |
+| `bench_random.py` | `dpnp.random` vs `numpy.random` | `Sample` (`random_sample`, `standard_normal`) | `executor`, `size` | 2^16, 2^20, 2^24 |
 
 ### dpBench workloads
 
@@ -74,6 +74,11 @@ executor; the `numpy` executor is unaffected. dpBench's own configs request
 `double` throughout, and that value is kept in each workload's `PRECISION` for
 reference.
 
+`bench_random.py` skips its `dpnp` points entirely without fp64. Its functions
+take no `dtype`, so dpnp would return the device's default float while NumPy
+always returns `float64`, and the two sides would not be measuring the same
+work.
+
 No benchmark module opens a SYCL queue at import time, so benchmark discovery
 and `asv check` work on a machine with no usable device; only `setup` needs one.
 
@@ -129,10 +134,12 @@ measurement puts it at 0.7x.
 
 Each workload ships the NumPy `reference` implementation from dpBench. On the
 cheapest preset, `setup` compares the dpnp results for all `OUTPUT_ARGS`
-against it (mirroring dpBench's `infrastructure/benchmark_validation.py`, same
-`1e-05` relative-error tolerance). A numerically wrong kernel therefore fails
-the benchmark instead of being silently timed. Validation runs outside the
-timed region and does not affect the reported numbers.
+against it with `numpy.testing.assert_allclose`, at a tolerance chosen per
+precision (`rtol` 1e-3 / `atol` 1e-4 for `single`, 1e-6 / 1e-9 for `double`).
+`atol` carries as much weight as `rtol`, because some outputs pass through
+zero, where any absolute error is an enormous relative one. A numerically
+wrong kernel therefore fails the benchmark instead of being silently timed,
+and validation runs outside the timed region.
 
 Only the cheapest preset is validated: the reference runs on the host and at the
 larger presets costs far more than the benchmark it guards -- tens of seconds

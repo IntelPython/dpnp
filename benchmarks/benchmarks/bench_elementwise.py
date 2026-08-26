@@ -28,9 +28,7 @@
 
 """Benchmarks for elementwise ufuncs, dpnp against NumPy.
 
-The ufunc is a parameter rather than a method per function, following NumPy's
-own ``benchmarks/benchmarks/bench_ufunc.py``, so extending the coverage is a
-one-line change.
+The ufunc is a parameter, as in NumPy's own ``bench_ufunc.py``.
 """
 
 from ._utils import (
@@ -42,14 +40,10 @@ from ._utils import (
     skip_unsupported_dtype,
 )
 
-# Float only. These ufuncs return floats, so an integer input would time the
-# int-to-float promotion rather than the kernel, and would not be comparable
-# with the float cells. NumPy's own suite restricts them the same way.
+# Float only: an integer input would time the int-to-float promotion.
 _FLOAT_DTYPES = ["float64", "float32"]
 
-# Only one name per ufunc: rad2deg/deg2rad wrap the same backend functions as
-# degrees/radians, and abs, true_divide and pow are aliases of absolute, divide
-# and power.
+# One name per ufunc; rad2deg, deg2rad, abs, true_divide and pow are aliases.
 _UNARY = [
     "absolute",
     "arccos",
@@ -94,8 +88,7 @@ _BINARY = [
     "subtract",
 ]
 
-# Input ranges keeping each ufunc inside its domain, so that none is timed
-# entirely on an out-of-domain path.
+# Ranges keeping each ufunc inside its domain.
 _RANGES = {
     "arccos": (-1, 1),
     "arccosh": (1, 10),
@@ -110,15 +103,14 @@ _RANGES = {
 }
 _DEFAULT_RANGE = (-10, 10)
 
-# Positive first operand and a small second one, so divide never sees a zero
-# and power stays in range.
+# Positive first operand, small second: no divide by zero, no overflow.
 _BINARY_RANGES = ((1, 10), (1, 2))
 
 
 class _Ufunc:
     """Shared setup for a ufunc benchmark.
 
-    Defines no ``time_*`` method, so ASV does not discover it as a benchmark.
+    Defines no ``time_*``, so ASV does not discover it as a benchmark.
     """
 
     param_names = ["executor", "ufunc", "size", "dtype"]
@@ -149,7 +141,7 @@ class Unary(_Ufunc):
         super().setup(executor, ufunc, size, dtype)
         bounds = _RANGES.get(ufunc, _DEFAULT_RANGE)
         self.a = self._input(size, dtype, bounds)
-        # Warm up, so the first timed call does not pay device setup.
+        # Warm up.
         self.sync(self.fn(self.a))
 
     def time_unary(self, executor, ufunc, size, dtype):

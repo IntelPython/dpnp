@@ -43,12 +43,12 @@ so this module re-implements just the parts that matter for benchmarking:
 * execution -- the dpnp implementation is invoked and blocks on device
   completion (each vendored kernel ends with ``dpnp.synchronize_array_data``),
   matching how dpBench itself times the workload;
-* validation -- the dpnp results are compared against the workload's NumPy
-  reference implementation, mirroring
-  ``dpbench.infrastructure.benchmark_validation``.
+* validation -- the dpnp results are compared elementwise against the
+  workload's NumPy reference implementation.
 """
 
 import numpy
+from numpy.testing import assert_allclose
 
 import dpnp
 
@@ -72,6 +72,12 @@ PRECISIONS = ["single", "double"]
 # display server, and dpnp's own allocator caches freed blocks.
 _MEMORY_BUDGET_FRACTION = 0.25
 
+# atol matters as much as rtol: some outputs pass through zero.
+_VALIDATION_TOL = {
+    "single": {"rtol": 1e-3, "atol": 1e-4},
+    "double": {"rtol": 1e-6, "atol": 1e-9},
+}
+
 
 def build_types_dict(precision):
     """Build the ``types_dict`` passed to a workload's ``initialize``.
@@ -91,8 +97,7 @@ def float_dtype(precision):
 
 def preset_fits(workload, preset, device, precision):
     """Whether ``preset``'s estimated peak footprint fits ``device``'s memory."""
-    # The cheapest preset always runs, so that an undersized device fails loudly
-    # on allocation rather than reporting nothing.
+    # The cheapest preset always runs, so an undersized device fails loudly.
     if preset == presets_by_size(workload)[0]:
         return True
 
@@ -180,48 +185,17 @@ def set_input_args(workload, host_data):
     return inputs
 
 
-def relative_error(ref, val):
-    """Relative error between a reference and a measured array.
-
-    Copied from ``dpbench.infrastructure.benchmark_validation``.
-    """
-    ref_norm = numpy.linalg.norm(ref)
-    if ref_norm == 0:
-        val_norm = numpy.linalg.norm(val)
-        if val_norm == 0:
-            return 0.0
-        ref_norm = val_norm
-
-    return numpy.linalg.norm(ref - val) / ref_norm
-
-
-def validate(expected, actual, rel_error=1e-05):
-    """Check that ``actual`` matches ``expected`` closely enough.
-
-    A mismatch is tolerated only while the relative error stays below
-    ``rel_error`` and is finite. Raises :exc:`ValueError` naming the offending
-    argument instead of returning a bool, so a wrong result fails the benchmark
-    rather than being silently timed.
-    """
+def validate(expected, actual, precision):
+    """Check that ``actual`` matches ``expected`` closely enough."""
+    tol = _VALIDATION_TOL[precision]
     for name, ref in expected.items():
-        val = actual[name]
-        # equal_nan, so that a NaN the reference also produces counts as
-        # agreement rather than as the non-finite error rejected below.
-        if numpy.allclose(ref, val, equal_nan=True):
-            continue
-
-        error = relative_error(ref, val)
-        if not numpy.isfinite(error):
-            raise ValueError(
-                f"Validation failed for {name!r}: results differ and the "
-                "relative error is not finite, so NaN or infinity is present "
-                "in one of them."
-            )
-        if error >= rel_error:
-            raise ValueError(
-                f"Validation failed for {name!r}: relative error {error:.3e} "
-                f"exceeds the {rel_error:.0e} tolerance."
-            )
+        assert_allclose(
+            actual[name],
+            ref,
+            equal_nan=True,
+            err_msg=f"Validation failed for {name!r}",
+            **tol,
+        )
 
 
 class WorkloadRunner:
@@ -263,11 +237,8 @@ class WorkloadRunner:
     def validate(self):
         """Compare the dpnp results against the NumPy reference.
 
-        Runs the workload's ``reference`` implementation on a fresh copy of the
-        same host data and compares every ``OUTPUT_ARGS`` entry, mirroring
-        dpBench's post-run validation step. Called from the benchmark's
-        ``setup``, so a numerically wrong kernel fails the benchmark instead of
-        being timed.
+        Compares every ``OUTPUT_ARGS`` entry against the NumPy reference run
+        on freshly initialized host data.
         """
         expected = {
             arg: value
@@ -278,7 +249,7 @@ class WorkloadRunner:
             arg: dpnp.asnumpy(self.kwargs[arg])
             for arg in self.workload.OUTPUT_ARGS
         }
-        validate(expected, actual)
+        validate(expected, actual, self.precision)
 
     def _reference_outputs(self):
         """Run the NumPy reference on freshly initialized host data."""
