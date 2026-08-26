@@ -1099,9 +1099,20 @@ std::pair<sycl::event, sycl::event>
 
     std::size_t dst_nelems = dst.get_size();
 
+    if (dst_nelems == 0) {
+        // empty result: nothing to write
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
     std::size_t red_nelems(1);
     for (int i = dst_nd; i < src_nd; ++i) {
         red_nelems *= static_cast<std::size_t>(src_shape_ptr[i]);
+    }
+
+    if (red_nelems == 0) {
+        // empty reduction extent: the result is the op identity, which this
+        // kernel cannot produce; the caller must handle it
+        throw py::value_error("Reduction over an empty axis is not supported");
     }
 
     auto const &overlap = dpnp::tensor::overlap::MemoryOverlap();
@@ -1142,9 +1153,8 @@ std::pair<sycl::event, sycl::event>
     bool is_src_f_contig = src.is_f_contiguous();
     bool is_dst_c_contig = dst.is_c_contiguous();
 
-    // TODO: should be dst_nelems == 0?
     if ((is_src_c_contig && is_dst_c_contig) ||
-        (is_src_f_contig && dst_nelems == 0)) {
+        (is_src_f_contig && dst_nelems == 1)) {
         auto fn = axis1_contig_dispatch_vector[src_typeid];
         static constexpr py::ssize_t zero_offset = 0;
 

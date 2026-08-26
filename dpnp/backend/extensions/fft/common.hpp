@@ -61,7 +61,13 @@ public:
                                   "device does not support double precision.");
         }
 
-        descr_.commit(q);
+        {
+            // Release GIL to avoid serialization of host task submissions
+            // to the same queue in OneMKL
+            py::gil_scoped_release lock{};
+
+            descr_.commit(q);
+        }
         queue_ptr_ = std::make_unique<sycl::queue>(q);
     }
 

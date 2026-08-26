@@ -87,6 +87,8 @@ This release is compatible with NumPy 2.5.
 * Released the GIL before the remaining blocking OneMKL BLAS and LAPACK calls to prevent host tasks contention, completing the work started in [#2850](https://github.com/IntelPython/dpnp/pull/2850) [#3027](https://github.com/IntelPython/dpnp/pull/3027)
 * Fixed `dpnp.repeat` raising an unclear `TypeError` for a nested sequence of `repeats` [#3024](https://github.com/IntelPython/dpnp/pull/3024)
 * Fixed `dpnp.ndarray.view` ignoring the USM element offset of a sliced array, which also caused `dpnp.einsum` to silently return wrong results for a single sliced operand with no summed index [#3037](https://github.com/IntelPython/dpnp/pull/3037)
+* Fixed `dpnp.all` and `dpnp.any` aborting when reducing over an empty axis (e.g. an array with a zero-length dimension) [#3021](https://github.com/IntelPython/dpnp/pull/3021)
+* Released the GIL before the blocking OneMKL DFT calls in the FFT extension [#3040](https://github.com/IntelPython/dpnp/pull/3040)
 
 ### Security
 
