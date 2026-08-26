@@ -815,7 +815,7 @@ class TestInsert:
         with pytest.raises(TypeError):
             dpnp.insert(a, [], 2, axis="nonsense")
 
-    @testing.with_requires("numpy>=2.5.3")
+    @testing.with_requires("numpy>=2.6")
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
         "idx, values",
