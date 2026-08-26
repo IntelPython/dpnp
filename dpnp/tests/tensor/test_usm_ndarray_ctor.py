@@ -1573,6 +1573,18 @@ def test_linspace_int():
     assert np.array_equal(dpt.asnumpy(X), Xnp)
 
 
+@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16"])
+@pytest.mark.parametrize("endpoint", [True, False])
+def test_linspace_inf_equal_endpoints(dtype, endpoint):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    val = complex(np.inf, np.inf) if dpt.dtype(dtype).kind == "c" else np.inf
+    X = dpt.linspace(
+        val, val, num=5, endpoint=endpoint, dtype=dtype, sycl_queue=q
+    )
+    assert np.array_equal(dpt.asnumpy(X), np.full(5, val, dtype=dtype))
+
+
 @pytest.mark.parametrize(
     "dt",
     _all_dtypes,
