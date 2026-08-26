@@ -1,0 +1,10 @@
+﻿
+
+dpnp.split
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: split
