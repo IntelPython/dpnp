@@ -261,6 +261,7 @@ def array(
     order="K",
     subok=False,
     ndmin=0,
+    ndmax=0,
     like=None,
     device=None,
     usm_type=None,
@@ -329,6 +330,7 @@ def array(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
+    Parameter `ndmax` is supported only with default value ``0``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises ``NotImplementedError`` exception.
 
@@ -396,7 +398,7 @@ def array(
 
     """
 
-    dpnp.check_limitations(subok=subok, like=like)
+    dpnp.check_limitations(subok=subok, ndmax=ndmax, like=like)
     if not isinstance(ndmin, (int, dpnp.integer)):
         raise TypeError(f"`ndmin` should be an integer, got {type(ndmin)}")
 
