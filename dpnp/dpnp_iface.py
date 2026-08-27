@@ -261,7 +261,7 @@ def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
 
     Parameters
     ----------
-    arrays : {dpnp.ndarray, usm_ndarray}
+    *arrays : {dpnp.ndarray, usm_ndarray}
         Input arrays to check for supported types.
     scalar_type : bool, optional
         A scalar type is also considered as supported if flag is ``True``.

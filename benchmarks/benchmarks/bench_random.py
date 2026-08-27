@@ -26,30 +26,83 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import numpy
+"""Benchmarks for random sampling, dpnp.random against numpy.random."""
 
-import dpnp
+from functools import partial
 
-from .common import Benchmark
+from ._utils import (
+    _EXECUTOR_NAMES,
+    _EXECUTORS,
+    _FLOAT_DTYPES,
+    _SIZES_1D,
+    default_queue,
+    make_synchronizer,
+    skip_unsupported_dtype,
+)
+
+_SEED = 1
 
 
-# asv run --python=python --quick --bench Sample
-class Sample(Benchmark):
-    executors = {"dpnp": dpnp, "numpy": numpy}
-    params = [["dpnp", "numpy"], [2**16, 2**20, 2**24]]
+# One name per generator; rand, random, ranf, sample and randn are aliases.
+class Sample:
+    """Random sampling, dpnp against NumPy."""
+
+    params = [_EXECUTOR_NAMES, _SIZES_1D]
     param_names = ["executor", "size"]
 
     def setup(self, executor, size):
-        self.executor = self.executors[executor]
-
-    def time_rand(self, executor, size):
-        np = self.executor
-        np.random.rand(size)
-
-    def time_randn(self, executor, size):
-        np = self.executor
-        np.random.randn(size)
+        self.executor = _EXECUTORS[executor]
+        if executor == "dpnp":
+            # No dtype keyword: without fp64 dpnp returns float32, NumPy f64.
+            skip_unsupported_dtype(default_queue(), "float64")
+        self.sync = make_synchronizer(executor)
+        # Warm up.
+        self.sync(self.executor.random.random_sample(size))
 
     def time_random_sample(self, executor, size):
         np = self.executor
-        np.random.random_sample((size,))
+        self.sync(np.random.random_sample(size))
+
+    def time_standard_normal(self, executor, size):
+        np = self.executor
+        self.sync(np.random.standard_normal(size))
+
+
+# ---------------------------------------------------------------------------
+# Generators taking an explicit dtype
+# ---------------------------------------------------------------------------
+
+
+class TypedSample:
+    """Uniform and normal sampling at an explicit dtype.
+
+    dpnp reaches these through ``RandomState`` and NumPy through
+    ``default_rng``; the module-level functions in ``Sample`` take no dtype, so
+    only this class can compare float32 on a device without fp64.
+    """
+
+    params = [_EXECUTOR_NAMES, _SIZES_1D, _FLOAT_DTYPES]
+    param_names = ["executor", "size", "dtype"]
+
+    def setup(self, executor, size, dtype):
+        mod = _EXECUTORS[executor]
+        if executor == "dpnp":
+            skip_unsupported_dtype(default_queue(), dtype)
+        self.sync = make_synchronizer(executor)
+        dt = getattr(mod, dtype)
+        if executor == "dpnp":
+            rng = mod.random.RandomState(seed=_SEED)
+            self._uniform = partial(rng.uniform, 0.0, 1.0, size, dtype=dt)
+            self._normal = partial(rng.normal, 0.0, 1.0, size, dtype=dt)
+        else:
+            rng = mod.random.default_rng(_SEED)
+            self._uniform = partial(rng.random, size, dtype=dt)
+            self._normal = partial(rng.standard_normal, size, dtype=dt)
+        # Warm up.
+        self.sync(self._uniform())
+
+    def time_uniform(self, executor, size, dtype):
+        self.sync(self._uniform())
+
+    def time_normal(self, executor, size, dtype):
+        self.sync(self._normal())

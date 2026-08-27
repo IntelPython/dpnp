@@ -26,153 +26,101 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import numpy
+"""Benchmarks for matrix products and decompositions, dpnp against NumPy."""
 
-import dpnp
+from ._utils import (
+    _EXECUTOR_NAMES,
+    _EXECUTORS,
+    _FLOAT_DTYPES,
+    default_queue,
+    make_synchronizer,
+    skip_unsupported_dtype,
+)
 
-from .common import TYPES1, Benchmark, get_indexes_rand, get_squares_
+# square matrix orders
+_ORDERS = [16, 32, 64, 128, 256, 512, 1024]
 
-
-class Eindot(Benchmark):
-    params = [
-        [dpnp, numpy],
-        [16, 32, 64, 128, 256, 512, 1024],
-        ["float64", "float32", "int64", "int32"],
-    ]
-    param_names = ["executor", "size", "dtype"]
-
-    def setup(self, np, size, dtype):
-        dt = getattr(np, dtype)
-        # self.a = np.arange(60000.0).reshape(150, 400)
-        self.a = np.arange(size * size, dtype=dt).reshape((size, size))
-
-        # self.ac = self.a.copy()
-        # self.at = self.a.T
-        # self.atc = self.a.T.copy()
-        # self.b = np.arange(240000.0).reshape(400, 600)
-        self.b = np.arange(size * size, dtype=dt).reshape((size, size))
-        # self.c = np.arange(600)
-        # self.d = np.arange(400)
-
-        # self.a3 = np.arange(480000.).reshape(60, 80, 100)
-        # self.b3 = np.arange(192000.).reshape(80, 60, 40)
-
-    def time_dot_a_b(self, np):
-        np.dot(self.a, self.b)
-
-    def time_dot_d_dot_b_c(self, np, *args):
-        np.dot(self.d, np.dot(self.b, self.c))
-
-    def time_dot_trans_a_at(self, np, *args):
-        np.dot(self.a, self.at)
-
-    def time_dot_trans_a_atc(self, np, *args):
-        np.dot(self.a, self.atc)
-
-    def time_dot_trans_at_a(self, np, *args):
-        np.dot(self.at, self.a)
-
-    def time_dot_trans_atc_a(self, np, *args):
-        np.dot(self.atc, self.a)
-
-    def time_einsum_i_ij_j(self, np, *args):
-        np.einsum("i,ij,j", self.d, self.b, self.c)
-
-    def time_einsum_ij_jk_a_b(self, np, *args):
-        np.einsum("ij,jk", self.a, self.b)
-
-    def time_einsum_ijk_jil_kl(self, np, *args):
-        np.einsum("ijk,jil->kl", self.a3, self.b3)
-
-    def time_inner_trans_a_a(self, np, *args):
-        np.inner(self.a, self.a)
-
-    def time_inner_trans_a_ac(self, np, *args):
-        np.inner(self.a, self.ac)
-
-    def time_matmul_a_b(self, np, *args):
-        np.matmul(self.a, self.b)
-
-    def time_matmul_d_matmul_b_c(self, np, *args):
-        np.matmul(self.d, np.matmul(self.b, self.c))
-
-    def time_matmul_trans_a_at(self, np, *args):
-        np.matmul(self.a, self.at)
-
-    def time_matmul_trans_a_atc(self, np, *args):
-        np.matmul(self.a, self.atc)
-
-    def time_matmul_trans_at_a(self, np, *args):
-        np.matmul(self.at, self.a)
-
-    def time_matmul_trans_atc_a(self, np, *args):
-        np.matmul(self.atc, self.a)
-
-    def time_tensordot_a_b_axes_1_0_0_1(self, np, *args):
-        np.tensordot(self.a3, self.b3, axes=([1, 0], [0, 1]))
+# Matrix products are native on integers.
+_DTYPES = ["float64", "float32", "int64", "int32"]
 
 
-class Linalg(Benchmark):
-    params = [[dpnp, numpy], ["svd", "pinv", "det", "norm"], TYPES1]
-    param_names = ["executor", "op", "type"]
-
-    def setup(self, np, op, typename):
-        np.seterr(all="ignore")
-
-        self.func = getattr(np.linalg, op)
-
-        if op == "cholesky":
-            # we need a positive definite
-            self.a = np.dot(
-                get_squares_()[typename], get_squares_()[typename].T
-            )
-        else:
-            self.a = get_squares_()[typename]
-
-        # check that dtype is supported at all
-        try:
-            self.func(self.a[:2, :2])
-        except TypeError:
-            raise NotImplementedError()
-
-    def time_op(self, np, op, typename):
-        self.func(self.a)
+# ---------------------------------------------------------------------------
+# Square matrix products
+# ---------------------------------------------------------------------------
 
 
-class Lstsq(Benchmark):
-    params = [dpnp, numpy]
-    param_names = ["executor"]
+class MatMul:
+    """Products of two square matrices -- dot, matmul, inner and einsum."""
 
-    def setup(self, np):
-        self.a = get_squares_()["float64"]
-        self.b = get_indexes_rand()[:100].astype(np.float64)
+    params = [_EXECUTOR_NAMES, _ORDERS, _DTYPES]
+    param_names = ["executor", "order", "dtype"]
 
-    def time_numpy_linalg_lstsq_a__b_float64(self, np):
-        np.linalg.lstsq(self.a, self.b, rcond=-1)
+    def setup(self, executor, order, dtype):
+        self.np = _EXECUTORS[executor]
+        self.sync = make_synchronizer(executor)
+        if executor == "dpnp":
+            skip_unsupported_dtype(default_queue(), dtype)
+        dt = getattr(self.np, dtype)
+        self.a = self.np.arange(order * order, dtype=dt).reshape((order, order))
+        self.b = self.np.arange(order * order, dtype=dt).reshape((order, order))
+        # Non-contiguous operand, reaching a different BLAS path.
+        self.at = self.a.T
+        # Warm up.
+        self.sync(self.np.dot(self.a, self.b))
+
+    def time_dot(self, executor, order, dtype):
+        self.sync(self.np.dot(self.a, self.b))
+
+    def time_dot_transposed(self, executor, order, dtype):
+        self.sync(self.np.dot(self.a, self.at))
+
+    def time_matmul(self, executor, order, dtype):
+        self.sync(self.np.matmul(self.a, self.b))
+
+    def time_matmul_transposed(self, executor, order, dtype):
+        self.sync(self.np.matmul(self.a, self.at))
+
+    def time_inner(self, executor, order, dtype):
+        self.sync(self.np.inner(self.a, self.b))
+
+    def time_einsum_ij_jk(self, executor, order, dtype):
+        self.sync(self.np.einsum("ij,jk", self.a, self.b))
 
 
-# class Einsum(Benchmark):
-# param_names = ['dtype']
-# params = [[np.float64]]
-# def setup(self, dtype):
-# self.a = np.arange(2900, dtype=dtype)
-# self.b = np.arange(3000, dtype=dtype)
-# self.c = np.arange(24000, dtype=dtype).reshape(20, 30, 40)
-# self.c1 = np.arange(1200, dtype=dtype).reshape(30, 40)
-# self.d = np.arange(10000, dtype=dtype).reshape(10,100,10)
+# ---------------------------------------------------------------------------
+# LAPACK-backed decompositions and norms
+# ---------------------------------------------------------------------------
 
-# #outer(a,b): trigger sum_of_products_contig_stride0_outcontig_two
-# def time_einsum_outer(self, dtype):
-# np.einsum("i,j", self.a, self.b, optimize=True)
 
-# # multiply(a, b):trigger sum_of_products_contig_two
-# def time_einsum_multiply(self, dtype):
-# np.einsum("..., ...", self.c1, self.c , optimize=True)
+class Linalg:
+    """Square-matrix decompositions -- det, norm, solve and svd."""
 
-# # sum and multiply:trigger sum_of_products_contig_stride0_outstride0_two
-# def time_einsum_sum_mul(self, dtype):
-# np.einsum(",i...->", 300, self.d, optimize=True)
+    params = [_EXECUTOR_NAMES, _ORDERS, _FLOAT_DTYPES]
+    param_names = ["executor", "order", "dtype"]
 
-# # sum and multiply:trigger sum_of_products_stride0_contig_outstride0_two
-# def time_einsum_sum_mul2(self, dtype):
-# np.einsum("i...,->", self.d, 300, optimize=True)
+    def setup(self, executor, order, dtype):
+        self.np = _EXECUTORS[executor]
+        self.sync = make_synchronizer(executor)
+        if executor == "dpnp":
+            skip_unsupported_dtype(default_queue(), dtype)
+        dt = getattr(self.np, dtype)
+        # Non-singular, condition number 2, determinant 2 at every order.
+        self.a = (
+            self.np.eye(order, dtype=dt)
+            + self.np.ones((order, order), dtype=dt) / order
+        )
+        self.b = self.np.ones(order, dtype=dt)
+        # Warm up; norm is the cheapest of these.
+        self.sync(self.np.linalg.norm(self.a))
+
+    def time_det(self, executor, order, dtype):
+        self.sync(self.np.linalg.det(self.a))
+
+    def time_norm(self, executor, order, dtype):
+        self.sync(self.np.linalg.norm(self.a))
+
+    def time_solve(self, executor, order, dtype):
+        self.sync(self.np.linalg.solve(self.a, self.b))
+
+    def time_svd(self, executor, order, dtype):
+        self.sync(self.np.linalg.svd(self.a))

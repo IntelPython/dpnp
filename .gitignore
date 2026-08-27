@@ -4,6 +4,9 @@ build_cython
 cython_debug
 *.egg-info
 
+# Airspeed Velocity (asv) benchmark environments, results and html
+benchmarks/.asv/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 

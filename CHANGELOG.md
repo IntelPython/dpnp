@@ -18,6 +18,7 @@ This release is compatible with NumPy 2.5.
 * Added implementation of `dpnp.lib.stride_tricks.as_strided` [#2991](https://github.com/IntelPython/dpnp/pull/2991)
 * Added `dpnp.tensor.broadcast_shapes` to align with the 2025.12 version of the Python array API [#3009](https://github.com/IntelPython/dpnp/pull/3009)
 * Added support for free-threaded Python builds [gh-3026](https://github.com/IntelPython/dpnp/pull/3026)
+* Added `dpnp.broadcast` class implementation [#2901](https://github.com/IntelPython/dpnp/pull/2901)
 
 ### Changed
 
@@ -43,6 +44,7 @@ This release is compatible with NumPy 2.5.
 * Bumped the default minimum required DPC++ compiler version to `2026.1.1` and migrated to the OpenCL ICD loader from the conda-forge `ocl-icd-system` (Linux) and `khronos-opencl-icd-loader` (Windows) packages [#2905](https://github.com/IntelPython/dpnp/pull/2905)
 * Linked the `dpnp_backend_c` library against only the MKL SYCL domains it uses (`BLAS`, `RNG`, `VM`) [#3012](https://github.com/IntelPython/dpnp/pull/3012)
 * `dpnp` uses pybind11 3.1.0 [#3015](https://github.com/IntelPython/dpnp/pull/3015)
+* Reworked the ASV benchmarks and added end-to-end workload benchmarks derived from dpBench [#2996](https://github.com/IntelPython/dpnp/pull/2996)
 
 ### Deprecated
 
@@ -84,6 +86,9 @@ This release is compatible with NumPy 2.5.
 * Fixed a crash in boolean-mask advanced indexing (`dpnp.ndarray` get/set item) when the selection is empty (e.g. a scalar `False` index that injects a length-0 axis) [#3019](https://github.com/IntelPython/dpnp/pull/3019)
 * Released the GIL before the remaining blocking OneMKL BLAS and LAPACK calls to prevent host tasks contention, completing the work started in [#2850](https://github.com/IntelPython/dpnp/pull/2850) [#3027](https://github.com/IntelPython/dpnp/pull/3027)
 * Fixed `dpnp.repeat` raising an unclear `TypeError` for a nested sequence of `repeats` [#3024](https://github.com/IntelPython/dpnp/pull/3024)
+* Fixed `dpnp.ndarray.view` ignoring the USM element offset of a sliced array, which also caused `dpnp.einsum` to silently return wrong results for a single sliced operand with no summed index [#3037](https://github.com/IntelPython/dpnp/pull/3037)
+* Fixed `dpnp.all` and `dpnp.any` aborting when reducing over an empty axis (e.g. an array with a zero-length dimension) [#3021](https://github.com/IntelPython/dpnp/pull/3021)
+* Released the GIL before the blocking OneMKL DFT calls in the FFT extension [#3040](https://github.com/IntelPython/dpnp/pull/3040)
 * Fixed `astype` casting an out-of-range floating point value to a signed narrow integer type saturating to the destination min/max instead of wrapping like NumPy, generalizing the earlier unsigned-only fix [#3033](https://github.com/IntelPython/dpnp/pull/3033)
 
 ### Security
