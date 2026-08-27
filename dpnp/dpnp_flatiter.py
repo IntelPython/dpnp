@@ -35,9 +35,9 @@ class flatiter:
     """Flat iterator object to iterate over arrays."""
 
     def __init__(self, a):
-        if type(a) is not dpnp.ndarray:
+        if not isinstance(a, dpnp.ndarray):
             raise TypeError(
-                "Argument must be of type dpnp.ndarray, got {}".format(type(a))
+                f"An array must be of type dpnp.ndarray, but got {type(a)}"
             )
         self._arr = a
         self._size = a.size
