@@ -1086,6 +1086,13 @@ does not occur in-place: a new array is returned. If
 <dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>
 </dd>
 </dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function might synchronize in order to validate that the indices are
+within bounds. This may harm performance in some applications. To avoid
+synchronization, pass <cite>obj</cite> as a Python scalar or sequence, or as a NumPy
+array.</p>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
