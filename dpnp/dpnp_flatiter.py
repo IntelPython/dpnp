@@ -102,13 +102,27 @@ class flatiter:
                 "supported"
             )
 
+        a = self._arr
+        exec_q = a.sycl_queue
+        usm_type = a.usm_type
+
         # resolve key to flat positions, reusing regular indexing to validate
-        arr = self._arr
-        flat_index = dpnp.arange(
-            arr.size, sycl_queue=arr.sycl_queue, usm_type=arr.usm_type
-        )
-        positions = dpnp.reshape(flat_index[key], -1)
-        dpnp.put(arr, positions, val)
+        flat_index = dpnp.arange(a.size, sycl_queue=exec_q, usm_type=usm_type)
+        idx = flat_index[key]
+
+        if not dpnp.isscalar(val):
+            val = dpnp.asarray(
+                val, sycl_queue=exec_q, usm_type=usm_type
+            ).ravel()
+            n = idx.size
+            if 0 < val.size != n:
+                # cycles the values over the selection
+                val = val[
+                    dpnp.arange(n, sycl_queue=exec_q, usm_type=usm_type)
+                    % val.size
+                ]
+
+        dpnp.put(a, idx, val)
 
     def __iter__(self):
         return self
