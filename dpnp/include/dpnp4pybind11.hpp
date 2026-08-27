@@ -88,6 +88,7 @@ public:
     int (*UsmNDArray_GetElementSize_)(PyUSMArrayObject *);
     int (*UsmNDArray_GetFlags_)(PyUSMArrayObject *);
     DPCTLSyclQueueRef (*UsmNDArray_GetQueueRef_)(PyUSMArrayObject *);
+    void (*UsmNDArray_RemoveQueueRef_)(DPCTLSyclQueueRef);
     py::ssize_t (*UsmNDArray_GetOffset_)(PyUSMArrayObject *);
     PyObject *(*UsmNDArray_GetUSMData_)(PyUSMArrayObject *);
     void (*UsmNDArray_SetWritableFlag_)(PyUSMArrayObject *, int);
@@ -186,8 +187,9 @@ private:
           UsmNDArray_GetNDim_(nullptr), UsmNDArray_GetShape_(nullptr),
           UsmNDArray_GetStrides_(nullptr), UsmNDArray_GetTypenum_(nullptr),
           UsmNDArray_GetElementSize_(nullptr), UsmNDArray_GetFlags_(nullptr),
-          UsmNDArray_GetQueueRef_(nullptr), UsmNDArray_GetOffset_(nullptr),
-          UsmNDArray_GetUSMData_(nullptr), UsmNDArray_SetWritableFlag_(nullptr),
+          UsmNDArray_GetQueueRef_(nullptr), UsmNDArray_RemoveQueueRef_(nullptr),
+          UsmNDArray_GetOffset_(nullptr), UsmNDArray_GetUSMData_(nullptr),
+          UsmNDArray_SetWritableFlag_(nullptr),
           UsmNDArray_MakeSimpleFromMemory_(nullptr),
           UsmNDArray_MakeSimpleFromPtr_(nullptr),
           UsmNDArray_MakeFromPtr_(nullptr), USM_ARRAY_C_CONTIGUOUS_(0),
@@ -215,6 +217,7 @@ private:
         this->UsmNDArray_GetElementSize_ = UsmNDArray_GetElementSize;
         this->UsmNDArray_GetFlags_ = UsmNDArray_GetFlags;
         this->UsmNDArray_GetQueueRef_ = UsmNDArray_GetQueueRef;
+        this->UsmNDArray_RemoveQueueRef_ = UsmNDArray_RemoveQueueRef;
         this->UsmNDArray_GetOffset_ = UsmNDArray_GetOffset;
         this->UsmNDArray_GetUSMData_ = UsmNDArray_GetUSMData;
         this->UsmNDArray_SetWritableFlag_ = UsmNDArray_SetWritableFlag;
@@ -489,12 +492,15 @@ public:
         PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = detail::dpnp_capi::get();
-        // UsmNDArray_GetQueueRef_ returns an owning copy (DPCTLQueue_Copy,
-        // i.e. `new sycl::queue`); wrap it in a unique_ptr to avoid leaking a
-        // queue per call.
+        // UsmNDArray_GetQueueRef_ returns an owning copy; free it through
+        // RemoveQueueRef (dpctl's DPCTLQueue_Delete)
         DPCTLSyclQueueRef QRef = api.UsmNDArray_GetQueueRef_(raw_ar);
-        std::unique_ptr<sycl::queue> q_ptr{
-            reinterpret_cast<sycl::queue *>(QRef)};
+        auto qref_deleter = [](sycl::queue *q) {
+            detail::dpnp_capi::get().UsmNDArray_RemoveQueueRef_(
+                reinterpret_cast<DPCTLSyclQueueRef>(q));
+        };
+        std::unique_ptr<sycl::queue, decltype(qref_deleter)> q_ptr{
+            reinterpret_cast<sycl::queue *>(QRef), qref_deleter};
         return *q_ptr;
     }
 
@@ -503,11 +509,15 @@ public:
         PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = detail::dpnp_capi::get();
-        // UsmNDArray_GetQueueRef_ returns an owning copy; wrap it in a
-        // unique_ptr to avoid leaking a queue per call.
+        // UsmNDArray_GetQueueRef_ returns an owning copy; free it through
+        // RemoveQueueRef (dpctl's DPCTLQueue_Delete)
         DPCTLSyclQueueRef QRef = api.UsmNDArray_GetQueueRef_(raw_ar);
-        std::unique_ptr<sycl::queue> q_ptr{
-            reinterpret_cast<sycl::queue *>(QRef)};
+        auto qref_deleter = [](sycl::queue *q) {
+            detail::dpnp_capi::get().UsmNDArray_RemoveQueueRef_(
+                reinterpret_cast<DPCTLSyclQueueRef>(q));
+        };
+        std::unique_ptr<sycl::queue, decltype(qref_deleter)> q_ptr{
+            reinterpret_cast<sycl::queue *>(QRef), qref_deleter};
         return q_ptr->get_device();
     }
 
