@@ -2464,6 +2464,13 @@ def insert(arr, obj, values, axis=None):
         does not occur in-place: a new array is returned. If
         `axis` is ``None``, `out` is a flattened array.
 
+    Warnings
+    --------
+    This function might synchronize in order to validate that the indices are
+    within bounds. This may harm performance in some applications. To avoid
+    synchronization, pass `obj` as a Python scalar or sequence, or as a NumPy
+    array.
+
     See Also
     --------
     :obj:`dpnp.append` : Append elements at the end of an array.
