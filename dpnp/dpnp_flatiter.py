@@ -34,57 +34,89 @@ import dpnp
 class flatiter:
     """Flat iterator object to iterate over arrays."""
 
-    def __init__(self, X):
-        if type(X) is not dpnp.ndarray:
+    def __init__(self, a):
+        if type(a) is not dpnp.ndarray:
             raise TypeError(
-                "Argument must be of type dpnp.ndarray, got {}".format(type(X))
+                "Argument must be of type dpnp.ndarray, got {}".format(type(a))
             )
-        self.arr_ = X
-        self.size_ = X.size
-        self.i_ = 0
+        self._arr = a
+        self._size = a.size
+        self._i = 0
 
-    def _multiindex(self, i):
-        nd = self.arr_.ndim
-        if nd == 0:
-            if i == 0:
-                return ()
-            raise KeyError
-        elif nd == 1:
-            return (i,)
-        sh = self.arr_.shape
-        i_ = i
-        multi_index = [0] * nd
-        for k in reversed(range(1, nd)):
-            si = sh[k]
-            q = i_ // si
-            multi_index[k] = i_ - q * si
-            i_ = q
-        multi_index[0] = i_
-        return tuple(multi_index)
+    @staticmethod
+    def _reject_newaxis(key):
+        # newaxis (None) is valid for array indexing but not for flat indexing
+        if key is None or (
+            isinstance(key, tuple) and any(k is None for k in key)
+        ):
+            raise IndexError(
+                "only integers, slices (`:`), ellipsis (`...`) and integer "
+                "or boolean arrays are valid indices"
+            )
+
+    def _check_bounds(self, key):
+        # fancy int indices wrap instead of raising, so check them vs NumPy
+        if key is Ellipsis or isinstance(key, (slice, bool, tuple)):
+            return
+
+        if isinstance(key, int) or (
+            callable(getattr(key, "__index__", None))
+            and not hasattr(key, "ndim")
+        ):
+            return  # scalar int: regular indexing checks it
+
+        try:
+            idx = dpnp.asarray(key, sycl_queue=self._arr.sycl_queue)
+        except Exception:
+            return  # let regular indexing raise
+
+        if idx.dtype.kind not in "iu" or idx.size == 0:
+            return
+
+        size = self._size
+        hi, lo = int(dpnp.max(idx)), int(dpnp.min(idx))
+        if hi >= size:
+            raise IndexError(f"index {hi} is out of bounds for size {size}")
+        if lo < -size:
+            raise IndexError(f"index {lo} is out of bounds for size {size}")
+
+    def _flatten(self):
+        # C-order flat view (copy if non-contiguous)
+        return dpnp.reshape(self._arr, -1)
 
     def __getitem__(self, key):
-        idx = getattr(key, "__index__", None)
-        if not callable(idx):
-            raise TypeError(key)
-        i = idx()
-        mi = self._multiindex(i)
-        return self.arr_.__getitem__(mi)
+        self._reject_newaxis(key)
+        self._check_bounds(key)
+
+        # flat always yields a copy, never a view
+        return self._flatten()[key].copy()
 
     def __setitem__(self, key, val):
-        idx = getattr(key, "__index__", None)
-        if not callable(idx):
-            raise TypeError(key)
-        i = idx()
-        mi = self._multiindex(i)
-        return self.arr_.__setitem__(mi, val)
+        self._reject_newaxis(key)
+        self._check_bounds(key)
+
+        if isinstance(key, tuple) and len(key) == 0:
+            # NumPy rejects arr.flat[()] = val
+            raise IndexError(
+                "Assigning to a flat iterator with a 0-D index is not "
+                "supported"
+            )
+
+        # resolve key to flat positions, reusing regular indexing to validate
+        arr = self._arr
+        flat_index = dpnp.arange(
+            arr.size, sycl_queue=arr.sycl_queue, usm_type=arr.usm_type
+        )
+        positions = dpnp.reshape(flat_index[key], -1)
+        dpnp.put(arr, positions, val)
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        if self.i_ < self.size_:
-            val = self.__getitem__(self.i_)
-            self.i_ = self.i_ + 1
+        if self._i < self._size:
+            val = self.__getitem__(self._i)
+            self._i = self._i + 1
             return val
         else:
             raise StopIteration
