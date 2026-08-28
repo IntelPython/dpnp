@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2020, Intel Corporation
+# Copyright (c) 2026, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,4 +26,9 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""ASV benchmarks for dpnp."""
+"""dpBench-derived ASV benchmarks for dpnp.
+
+This sub-package vendors a handful of dpnp workloads from dpBench
+(https://github.com/IntelPython/dpbench) and exposes them as Airspeed Velocity
+benchmarks. See ``benchmarks/README.md`` for details.
+"""
