@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
+        python: ['3.12', '3.13']
         include:
           - python: '3.14'
             python_spec: '3.14.* *_cp314'
@@ -124,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
+        python: ['3.12', '3.13']
         include:
           - python: '3.14'
             python_spec: '3.14.* *_cp314'
