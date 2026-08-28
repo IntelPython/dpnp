@@ -1337,6 +1337,8 @@ class dpnp_array:
         This is a :obj:`dpnp.flatiter` instance, which acts similarly to, but
         is not a subclass of, Python's built-in iterator object.
 
+        For full documentation refer to :obj:`numpy.ndarray.flat`.
+
         See Also
         --------
         :obj:`dpnp.flatiter` : Flat iterator object to iterate over arrays.
