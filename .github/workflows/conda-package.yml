@@ -114,7 +114,7 @@ jobs:
         run: |
           read -ra RATTLER_CHANNELS <<< "$(echo "${{ env.channels-list }}" | sed 's/--override-channels//')"
           rattler-build build \
-            --recipe conda-recipe \
+            --recipe conda-recipe/rattler_recipe.yaml \
             --no-include-recipe \
             --channel-priority disabled \
             --target-platform ${{ runner.os == 'Linux' && 'linux-64' || 'win-64' }} \
@@ -131,7 +131,7 @@ jobs:
         run: |
           read -ra RATTLER_CHANNELS <<< "$(echo "${{ env.channels-list }}" | sed 's/--override-channels//')"
           rattler-build build \
-            --recipe conda-recipe \
+            --recipe conda-recipe/rattler_recipe.yaml \
             --no-include-recipe \
             --channel-priority disabled \
             --target-platform ${{ runner.os == 'Linux' && 'linux-64' || 'win-64' }} \
