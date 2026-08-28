@@ -51,23 +51,19 @@ Only the forward matvec is implemented for sparse operators; rmatvec /
 adjoint (A^H) is not supported (the solvers never require it).
 
 Supported dtypes for the oneMKL SpMV fast-path:
-  values : float32, float64, complex64, complex128
-  indices: int32, int64
+
+* values : float32, float64, complex64, complex128
+* indices : int32, int64
+
 Complex dtypes require oneMKL sparse BLAS support (available since
 oneMKL 2023.x); if the dispatch table slot is nullptr (types_matrix.hpp
-does not register the pair) a ValueError is raised by the C++ layer.
-_make_fast_matvec catches this and falls back to A.dot(x).
+does not register the pair) _make_fast_matvec returns None and the
+operator is routed through the generic LinearOperator path.
 """
 
-# Math-heavy module: single-letter and CamelCase identifiers such as
-# A, M, X, V, H, Ap, Ax, Anorm, Acond, Vj, A_op, M_op, fast_mv_M,
-# _orig_M are part of the published numerical-linear-algebra API and
-# mirror SciPy/CuPy verbatim, so the snake_case rule is intentionally
-# relaxed for the whole file. The duplicate-code check fires against
-# dpnp/scipy/sparse/_csr.py where the cached-SpMV invocation and
-# __del__ shutdown handling necessarily mirror this module; the
-# duplication is tightly coupled to oneMKL's contract and not worth
-# hiding behind an indirection.
+# Single-letter and CamelCase names mirror the SciPy/CuPy API.
+# duplicate-code fires against _csr.py, which shares the cached-SpMV
+# and __del__ patterns required by oneMKL.
 # pylint: disable=invalid-name,duplicate-code
 
 from __future__ import annotations
@@ -81,8 +77,7 @@ import numpy
 
 import dpnp
 
-# _blas_impl is a compiled (.so / .pyd) C-extension produced by the
-# dpnp build; pylint cannot statically introspect its exported symbols.
+# pylint cannot introspect the compiled extension.
 # pylint: disable-next=no-name-in-module
 import dpnp.backend.extensions.blas._blas_impl as bi
 import dpnp.tensor as dpt
@@ -124,11 +119,7 @@ class _CachedSpMVPair:
 
     def matvec(self, x):
         """Apply the forward operator A @ x via the csr's cached handle."""
-        # _ensure_spmv_handle has already been validated by the caller
-        # (_make_fast_matvec) before this pair was constructed, so it
-        # cannot return None here. We re-fetch on every call only to
-        # pick up the (immutable) handle pointer and exec_q without
-        # caching them redundantly on this object.
+        # Validated by _make_fast_matvec, so it cannot return None here.
         # pylint: disable-next=protected-access
         _si, handle, val_type_id, exec_q = self._A._ensure_spmv_handle()
         y = dpnp.empty_like(self._A.data, shape=self._A.shape[0])
@@ -169,9 +160,7 @@ def _make_fast_matvec(A):
     if not (issparse(A) and getattr(A, "format", None) == "csr"):
         return None
 
-    # Probe the csr_matrix's own SpMV path: returns a fully-built handle
-    # (cached on A for sharing with A.dot) or None for an unsupported
-    # dtype combination.
+    # Returns a handle cached on A, or None for an unsupported dtype.
     if not hasattr(A, "_ensure_spmv_handle"):
         return None
     # pylint: disable-next=protected-access
@@ -184,23 +173,26 @@ def _make_fast_matvec(A):
 
 
 def _make_system(A, M, x0, b):
-    """Make a linear system Ax = b
+    """
+    Make a linear system ``Ax = b``.
 
-    Args:
-        A (dpnp.ndarray or dpnpx.scipy.sparse.spmatrix or
-            dpnpx.scipy.sparse.LinearOperator): sparse or dense matrix.
-        M (dpnp.ndarray or dpnpx.scipy.sparse.spmatrix or
-            dpnpx.scipy.sparse.LinearOperator): preconditioner.
-        x0 (dpnp.ndarray): initial guess to iterative method.
-        b (dpnp.ndarray): right hand side.
+    Parameters
+    ----------
+    A : {dpnp.ndarray, usm_ndarray, csr_matrix, LinearOperator}
+        Sparse or dense matrix of the linear system.
+    M : {None, dpnp.ndarray, usm_ndarray, csr_matrix, LinearOperator}
+        Preconditioner.
+    x0 : {None, dpnp.ndarray, usm_ndarray}
+        Initial guess for the iterative method.
+    b : {dpnp.ndarray, usm_ndarray}
+        Right hand side.
 
-    Returns:
-        tuple:
-            It returns (A, M, x, b).
-            A (LinaerOperator): matrix of linear system
-            M (LinearOperator): preconditioner
-            x (dpnp.ndarray): initial guess
-            b (dpnp.ndarray): right hand side.
+    Returns
+    -------
+    out : tuple
+        A tuple ``(A, M, x, b, dtype)`` holding the operator, the
+        preconditioner, the initial guess, the right hand side and the
+        working data type.
     """
     if not dpnp.is_supported_array_type(b):
         raise TypeError(
@@ -217,7 +209,7 @@ def _make_system(A, M, x0, b):
         raise ValueError("A must be a square operator")
     n = A_op.shape[0]
 
-    b = b.reshape(-1)
+    b = dpnp.reshape(b, -1)
     if b.shape[0] != n:
         raise ValueError(
             f"b length {b.shape[0]} does not match operator dimension {n}"
@@ -234,13 +226,13 @@ def _make_system(A, M, x0, b):
     else:
         dtype = dpnp.float64
 
-    b = b.astype(dtype, copy=False)
+    b = dpnp.astype(b, dtype, copy=False)
     _check_dtype(b.dtype, "b")
 
     if x0 is None:
         x = dpnp.zeros(n, dtype=dtype, sycl_queue=b.sycl_queue)
     else:
-        x = x0.astype(dtype, copy=True).reshape(-1)
+        x = dpnp.reshape(dpnp.astype(x0, dtype, copy=True), -1)
         if x.shape[0] != n:
             raise ValueError(f"x0 length {x.shape[0]} != n={n}")
 
@@ -343,19 +335,14 @@ def cg(
     info : int
         ``info`` follows the SciPy / CuPy contract:
 
-          * ``info == 0``           : converged successfully
-          * ``info > 0``            : did not converge; value is the
-                                       iteration count at which the
-                                       solver stopped (equals
-                                       ``maxiter`` when the iteration
-                                       budget was exhausted, or the
-                                       iteration index when a numerical
-                                       breakdown short-circuited the
-                                       loop).
-          * ``info < 0``            : reserved for illegal-input
-                                       errors; not produced by this
-                                       implementation (illegal inputs
-                                       raise ``ValueError`` instead).
+        * ``info == 0`` : converged successfully
+        * ``info > 0`` : did not converge; value is the iteration count
+          at which the solver stopped (equals ``maxiter`` when the
+          iteration budget was exhausted, or the iteration index when a
+          numerical breakdown short-circuited the loop).
+        * ``info < 0`` : reserved for illegal-input errors; not produced
+          by this implementation (illegal inputs raise ``ValueError``
+          instead).
 
         Previous versions of this routine returned ``-1`` for an
         ``rz``/``pAp`` breakdown, which violated the SciPy contract
@@ -401,10 +388,8 @@ def cg(
             info = 0
             break
         if not math.isfinite(rnorm_host):
-            # IEEE-propagated breakdown: pAp or rz collapsed in the
-            # previous iteration, poisoning r via alpha=inf/NaN. The
-            # current iterate is the best estimate we have; report
-            # info > 0 per SciPy contract.
+            # pAp or rz collapsed last iteration, poisoning r with
+            # inf/NaN. Report info > 0 per the SciPy contract.
             info = k + 1
             break
 
@@ -516,16 +501,9 @@ def gmres(
 
     queue = b.sycl_queue
 
-    # Krylov basis V is F-ordered so column slices V[:, :k] are
-    # F-contiguous USM views, a precondition of the bi._gemv
-    # binding used inside _make_compute_hu.
+    # V and H are F-ordered so column slices are contiguous USM views,
+    # required by the bi._gemv binding in _make_compute_hu.
     V = dpnp.empty((n, restart), dtype=dtype, sycl_queue=queue, order="F")
-    # H is F-ordered for the same reason: compute_hu writes Hessenberg
-    # column slices H[:j+1, j] in-place via the gemv output pointer.
-    # An RHS of length restart+1 is built on the host (e_host) because
-    # we run the small (restart+1) x restart least-squares on the host
-    # every restart -- the device-side SVD launch overhead dominates
-    # for this size class on Intel GPUs, matching CuPy's CPU choice.
     H = dpnp.zeros(
         (restart + 1, restart), dtype=dtype, sycl_queue=queue, order="F"
     )
@@ -553,22 +531,15 @@ def gmres(
         if r_norm_host <= atol or iters >= maxiter:
             break
 
-        # Initialise the Arnoldi basis with the (normalised) residual.
-        # Writing V[:, 0] in one slice is a contiguous USM-to-USM copy
-        # of length n; same shape as CuPy's V[:, 0] = v.
+        # Start the Arnoldi basis from the normalised residual.
         v = r / r_norm
         V[:, 0] = v
-        # Clear the Hessenberg column data the lstsq will read this
-        # restart. Only the upper (j+1) entries per column are written
-        # by compute_hu; without this reset stale values from the
-        # previous restart would leak into the system.
+        # Reset H so stale entries from the previous restart cannot
+        # leak into the least-squares system.
         H[:] = 0
-        # RHS for the Hessenberg system is r_norm * e_1; the rest
-        # of e_host stays zero from the host allocation above.
+        # RHS of the Hessenberg system is r_norm * e_1.
         e_host[0] = r_norm_host
         if iters > 0:
-            # Clear stale tail from previous restart in case maxiter
-            # exceeds restart and we re-enter with a non-zero e_host[1].
             e_host[1:] = 0
 
         # Arnoldi iteration
@@ -684,12 +655,8 @@ def minres(
     itn = 0
     eps = dpnp.finfo(dtype).eps
 
-    # ------------------------------------------------------------------
-    # Set up y and v for the first Lanczos vector v1.
-    #   y  = beta1 * P' * v1, where P = M**(-1).
-    #   v  is really P' * v1.
-    # ------------------------------------------------------------------
-
+    # Set up y and v for the first Lanczos vector v1:
+    #   y = beta1 * P' * v1, where P = M**(-1); v is P' * v1.
     Ax = matvec(x)
     r1 = b - Ax
     y = psolve(r1)
@@ -803,9 +770,7 @@ def minres(
         rhs1 = rhs2 - delta * z
         rhs2 = -epsln * z
 
-        # ----------------------------------------------------------
         # Estimate norms and test for convergence.
-        # ----------------------------------------------------------
         Anorm = math.sqrt(tnorm2)
         ynorm = float(dpnp.linalg.norm(x))
         epsa = Anorm * eps
@@ -861,7 +826,7 @@ def minres(
                 or istop != 0
             )
             if prnt:
-                x1 = float(x[0])
+                x1 = float(dpnp.real(x[0]))
                 print(
                     f"{itn:6g} {x1:12.5e} {test1:10.3e}"
                     f" {test2:10.3e}"
@@ -897,29 +862,14 @@ def _make_compute_hu(V, H):
         H[:j+1, j] = h
         u = u - V[:, :j+1] @ h
 
-    Both calls are dispatched as single oneMKL ``gemv`` kernels via
-    the ``bi._gemv`` binding:
+    Each pass is a single oneMKL ``gemv`` via the ``bi._gemv`` binding:
 
-      * Pass 1 (project) -- ``gemv(trans_op=T or C, alpha=1, beta=0)``
-        with the *output* pointing at the Hessenberg column slice
-        ``H[:j+1, j]``. No temporary ``h`` buffer is allocated; the
-        result lands directly in the matrix. ``trans_op`` is T for
-        real matrices (where V^T == V^H) and C (conjugate-transpose)
-        for complex matrices, so oneMKL produces ``V^H u`` directly.
-      * Pass 2 (subtract) -- ``gemv(trans_op=N, alpha=-1, beta=1)``
-        with input ``H[:j+1, j]`` and in-place output ``u``. No
-        temporary ``tmp`` buffer; the AXPY-style update is fused
-        into the gemv kernel.
-
-    A prior version of this closure tried to emulate ``V^H u`` for
-    complex matrices by issuing ``gemv(transpose=T)`` and then post-
-    conjugating ``h`` in place. That is mathematically wrong: the
-    identity ``conj(V^T u) == V^H u`` holds only when ``u`` is real;
-    for complex ``u`` the result is ``V^H @ conj(u)``, a different
-    vector that silently breaks Krylov-basis orthogonality and
-    prevents GMRES from converging. Using oneMKL's native conjugate-
-    transpose mode -- now exposed via the tri-state ``trans_op``
-    parameter of the binding -- removes the work-around entirely.
+    * Pass 1 (project) -- ``gemv(trans_op=T or C, alpha=1, beta=0)``
+      writing straight into ``H[:j+1, j]``, no temporary buffer.
+      ``trans_op`` is T for real and C for complex matrices, so
+      oneMKL produces ``V^H u`` directly.
+    * Pass 2 (subtract) -- ``gemv(trans_op=N, alpha=-1, beta=1)``
+      with in-place output ``u``, fusing the AXPY update.
 
     Parameters
     ----------
@@ -955,16 +905,8 @@ def _make_compute_hu(V, H):
     dtype = V.dtype
     is_cpx = dpnp.issubdtype(dtype, dpnp.complexfloating)
 
-    # trans_op for pass-1 selects whether we project with V^T (real,
-    # which equals V^H) or with V^H directly via oneMKL's ``conjtrans``
-    # mode. The previous implementation tried to emulate V^H using
-    # transpose=T followed by an element-wise conjugate of h, but the
-    # identity ``conj(V^T @ u) == V^H @ u`` only holds when u is real;
-    # for complex u it produces ``V^H @ conj(u)`` instead, which is a
-    # different vector and silently breaks Gram-Schmidt orthogonality.
-    # bi._gemv now exposes the full {N, T, C} tri-state so
-    # we can ask oneMKL for V^H directly -- one kernel, mathematically
-    # exact, no scratch buffer, no post-hoc conjugate to event-order.
+    # Project with V^T for real matrices (== V^H) and with V^H for
+    # complex ones; conj(V^T @ u) == V^H @ u only holds for real u.
     pass1_trans_op = 2 if is_cpx else 1  # 2 = conjtrans, 1 = transpose
 
     def compute_hu(u, j):
@@ -978,9 +920,6 @@ def _make_compute_hu(V, H):
         _manager = dpu.SequentialOrderManager[exec_q]
 
         # Pass 1: H[:j+1, j] = op(Vj) @ u   (alpha=1, beta=0)
-        # op = V^T for real, V^H for complex. Writes the projection
-        # coefficients straight into the Hessenberg column slice
-        # without any temporary buffer.
         # pylint: disable-next=protected-access
         ht1, ev1 = bi._gemv(
             exec_q,
@@ -995,7 +934,6 @@ def _make_compute_hu(V, H):
         _manager.add_event_pair(ht1, ev1)
 
         # Pass 2: u = -Vj @ H[:j+1, j] + 1 * u   (alpha=-1, beta=1)
-        # Fused AXPY-gemv -- single oneMKL kernel, no tmp buffer.
         # pylint: disable-next=protected-access
         ht2, ev2 = bi._gemv(
             exec_q,

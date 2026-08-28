@@ -148,7 +148,7 @@ class LinearOperator:
 
     def __init__(self, dtype, shape):
         if dtype is not None:
-            dtype = dpnp.dtype(dtype)
+            dtype = dpnp.empty(0, dtype=dtype).dtype
         shape = tuple(int(s) for s in shape)
         if not _isshape(shape):
             raise ValueError(
@@ -215,6 +215,7 @@ class LinearOperator:
             An array with shape ``(M,)`` or ``(M, 1)`` matching the rank
             of `x`.
         """
+        dpnp.check_supported_arrays_type(x)
         M, N = self.shape
         if x.shape not in ((N,), (N, 1)):
             raise ValueError(
@@ -239,6 +240,7 @@ class LinearOperator:
             An array with shape ``(N,)`` or ``(N, 1)`` matching the rank
             of `x`.
         """
+        dpnp.check_supported_arrays_type(x)
         M, N = self.shape
         if x.shape not in ((M,), (M, 1)):
             raise ValueError(
@@ -262,6 +264,7 @@ class LinearOperator:
         out : dpnp.ndarray
             A 2-D array with shape ``(M, K)``.
         """
+        dpnp.check_supported_arrays_type(X)
         if X.ndim != 2:
             raise ValueError(f"expected 2-D array, got {X.ndim}-D")
         if X.shape[0] != self.shape[1]:
@@ -284,6 +287,7 @@ class LinearOperator:
         out : dpnp.ndarray
             A 2-D array with shape ``(N, K)``.
         """
+        dpnp.check_supported_arrays_type(X)
         if X.ndim != 2:
             raise ValueError(f"expected 2-D array, got {X.ndim}-D")
         if X.shape[0] != self.shape[0]:
@@ -709,14 +713,14 @@ def aslinearoperator(A) -> LinearOperator:
     A : object
         The object to wrap. It may be any of the following:
 
-          * a :class:`LinearOperator` (returned unchanged);
-          * a ``dpnp.scipy.sparse`` sparse matrix, e.g. ``csr_matrix``
-            (the iterative solvers further specialise this to a cached
-            oneMKL SpMV handle, bypassing densification);
-          * a 2-D array, ``dpnp.ndarray`` or ``usm_ndarray`` (promoted
-            via :func:`dpnp.atleast_2d`);
-          * an object exposing ``.shape`` and ``.matvec`` (and optionally
-            ``rmatvec`` / ``matmat`` / ``rmatmat`` / ``dtype``).
+        * a :class:`LinearOperator` (returned unchanged);
+        * a ``dpnp.scipy.sparse`` sparse matrix, e.g. ``csr_matrix``
+          (the iterative solvers further specialise this to a cached
+          oneMKL SpMV handle, bypassing densification);
+        * a 2-D array, ``dpnp.ndarray`` or ``usm_ndarray`` (promoted
+          via :func:`dpnp.atleast_2d`);
+        * an object exposing ``.shape`` and ``.matvec`` (and optionally
+          ``rmatvec`` / ``matmat`` / ``rmatmat`` / ``dtype``).
 
     Returns
     -------

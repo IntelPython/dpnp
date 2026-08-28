@@ -102,7 +102,8 @@ class csr_matrix(SparseABC):
 
     csr_matrix((M, N), [dtype=...])
         an empty (all-zero) matrix of shape ``(M, N)``; ``dtype``
-        defaults to float64.
+        defaults to the default floating-point type of the device on
+        which the matrix is allocated.
 
     csr_matrix((data, indices, indptr), [shape=(M, N)])
         from raw CSR component arrays (1-D, on the same SYCL queue).
@@ -118,14 +119,6 @@ class csr_matrix(SparseABC):
     row. This matches the CSR produced by dense construction and the
     solvers, which never generate duplicates.
 
-    Supported operations: construction, ``dot`` (matvec) via cached
-    oneMKL SpMV, ``toarray``, ``copy``. This is a solver-support
-    subset of the scipy/cupy CSR API; arithmetic, indexing, reductions,
-    transpose, format conversion and element-wise math are not
-    implemented (the most common such methods raise
-    ``NotImplementedError``). Convert with ``toarray()`` and use dpnp
-    for those.
-
     Attributes
     ----------
     data : {dpnp.ndarray, usm_ndarray}
@@ -135,14 +128,25 @@ class csr_matrix(SparseABC):
     indptr : {dpnp.ndarray, usm_ndarray}
         1-D array of row pointers, shape (M+1,).
     shape : tuple of int
+        Matrix dimensions ``(M, N)``.
     dtype : dpnp dtype
+        Data type of the stored values.
     nnz : int
+        Number of stored values, including explicit zeros.
     has_sorted_indices : bool
         Whether column indices are sorted within each row.
     format : str
         Always 'csr'.
     ndim : int
         Always 2.
+
+    Supported operations: construction, ``dot`` (matvec) via cached
+    oneMKL SpMV, ``toarray``, ``copy``. This is a solver-support
+    subset of the scipy/cupy CSR API; arithmetic, indexing, reductions,
+    transpose, format conversion and element-wise math are not
+    implemented (the most common such methods raise
+    ``NotImplementedError``). Convert with ``toarray()`` and use dpnp
+    for those.
     """
 
     format = "csr"
@@ -204,7 +208,10 @@ class csr_matrix(SparseABC):
         self, shape, dtype=None, device=None, usm_type=None, sycl_queue=None
     ):
         nrows, ncols = int(shape[0]), int(shape[1])
-        dtype = _dpnp.float64 if dtype is None else dtype
+        if dtype is None:
+            dtype = _dpnp.default_float_type(
+                device=device, sycl_queue=sycl_queue
+            )
         common = {
             "device": device,
             "usm_type": usm_type,
