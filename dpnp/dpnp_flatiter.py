@@ -32,7 +32,41 @@ import dpnp
 
 
 class flatiter:
-    """Flat iterator object to iterate over arrays."""
+    """
+    Flat iterator object to iterate over arrays.
+
+    A flat iterator is returned by :obj:`dpnp.ndarray.flat` for any array. It
+    allows iterating over the array as if it were a 1-D array, either in a
+    for-loop or by calling its ``next`` method.
+
+    Iteration is done in row-major, C-style order (the last index varying the
+    fastest). The iterator can also be indexed using basic slicing or advanced
+    indexing.
+
+    For full documentation refer to :obj:`numpy.flatiter`.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.flat` : Return a flat iterator over an array.
+    :obj:`dpnp.ndarray.flatten` : Return a flattened copy of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(6).reshape(2, 3)
+    >>> for item in x.flat:
+    ...     print(item)
+    0
+    1
+    2
+    3
+    4
+    5
+
+    >>> x.flat[2:4]
+    array([2, 3])
+
+    """
 
     def __init__(self, a):
         if not isinstance(a, dpnp.ndarray):
