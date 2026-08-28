@@ -593,6 +593,17 @@ class TestEinsum:
         expected = numpy.einsum("i,i,i", b_np, b_np, b_np, optimize="greedy")
         assert_dtype_allclose(result, expected)
 
+    def test_sliced_operand_view_path(self):
+        # a single-operand einsum with no summed index returns a view of the
+        # operand; the view must respect the USM offset of a sliced operand
+        a = numpy.arange(24.0, dtype=numpy.float32).reshape(2, 3, 4)
+        ia = dpnp.array(a)
+
+        for subscripts in ["abc->abc", "abc->cab"]:
+            result = dpnp.einsum(subscripts, ia[:, 1:, :])
+            expected = numpy.einsum(subscripts, a[:, 1:, :])
+            assert_dtype_allclose(result, expected)
+
     def test_out(self):
         a = dpnp.ones((5, 5))
         out = dpnp.empty((5,))
