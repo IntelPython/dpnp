@@ -76,7 +76,7 @@ jobs:
       # distribution on the runner - only rattler-build itself needs to be on
       # PATH
       - name: Setup rattler-build
-        uses: prefix-dev/rattler-build-action@v0.2.39
+        uses: prefix-dev/rattler-build-action@1ca5f45832f419a46d1326ccc5861d7e14d67c44 # v0.2.39
         with:
           setup-only: true
 
