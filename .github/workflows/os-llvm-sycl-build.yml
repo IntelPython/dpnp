@@ -6,6 +6,11 @@ on:
 
 permissions: read-all
 
+# Only one build at a time per ref; a newer run supersedes an in-progress one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   install-compiler:
     name: Build with nightly build of DPC++ toolchain
@@ -27,11 +32,6 @@ jobs:
       dpctl-repo-path: '${{ github.workspace }}/dpctl'
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
-        with:
-          access_token: ${{ github.token }}
-
       - name: Install hwloc
         run: sudo apt install hwloc
 
