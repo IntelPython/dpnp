@@ -157,9 +157,7 @@ jobs:
       - name: Build and install dpctl
         run: |
           source "${GITHUB_WORKSPACE}/set_allvars.sh"
-          # dpnp pins dpctl>=0.23.0dev0, which is only published for Intel's
-          # released compiler and is ABI-incompatible with the open source
-          # nightly. Build dpctl from source with the same nightly so both
+          # Build dpctl from source with the same nightly so both
           # share one SYCL runtime.
           #
           # Install non-editable so scikit-build runs CMake's install step and
@@ -173,9 +171,8 @@ jobs:
       - name: Build dpnp
         run: |
           source set_allvars.sh
-          # Build against the oneMath interface (built from source at dpnp's
-          # pinned tag) rather than the prebuilt oneMKL SYCL libraries, so the
-          # math layer is compiled with the same open source nightly compiler.
+          # Build against the oneMath interface, so the math layer is compiled
+          # with the same open source nightly compiler.
           #
           # The open source DPC++ nightly ships an IntelSYCLConfig.cmake that
           # lacks add_sycl_to_target(), so force the vendored module which
