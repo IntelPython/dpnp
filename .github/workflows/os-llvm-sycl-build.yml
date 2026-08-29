@@ -53,7 +53,7 @@ jobs:
               export LLVM_TAGS
               # initialize
               unset DEPLOY_NIGHTLY_TAG
-              unset DEPLOY_NIGHTLY_TAG_SHA
+              unset DEPLOY_LLVM_TAG_SHA
 
               # go through tags and find the most recent one where nighly build binary is available
               while IFS= read -r NEXT_LLVM_TAG; do
