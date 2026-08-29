@@ -44,6 +44,9 @@ jobs:
           releases-only: true
           # Driver releases are tagged like "2026-WW28"; ignore nightly-* tags.
           regex: '^\d{4}-WW\d+$'
+          # Pick the most recently published matching release. Must stay false:
+          # sort-tags: true would semver-sort and mis-parse the YYYY-WWNN tag.
+          sort-tags: false
 
       - name: Find latest oneTBB release tag
         id: tbb
@@ -52,13 +55,16 @@ jobs:
           repository: uxlfoundation/oneTBB
           releases-only: true
           regex: '^v\d+\.\d+\.\d+$'
+          # Most recently published matching release (see note above).
+          sort-tags: false
 
       - name: Resolve asset names and derive values
         id: resolve
+        env:
+          DRIVER_TAG: ${{ steps.driver.outputs.tag }}
+          TBB_TAG: ${{ steps.tbb.outputs.tag }}
         run: |
           set -euo pipefail
-          DRIVER_TAG='${{ steps.driver.outputs.tag }}'
-          TBB_TAG='${{ steps.tbb.outputs.tag }}'
 
           # The oclcpuexp filename embeds its own version and is not derivable
           # from the tag, so read it back from the driver release assets.
@@ -103,7 +109,7 @@ jobs:
           git diff -- "${WF}" || true
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ github.token }}
           add-paths: ${{ env.WF }}
