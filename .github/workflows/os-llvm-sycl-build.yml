@@ -1,6 +1,10 @@
 name: Build with Open Source LLVM SYCL compiler
 
 on:
+  push:
+    branches:
+      - master
+  pull_request:
   # To be able to be triggered manually
   workflow_dispatch:
 
