@@ -1246,6 +1246,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">check_limitations</span><span class="p">(</span>
     <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">ndmax</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1257,6 +1258,7 @@
 
 <span class="sd">    Parameter `subok` for array creation functions is only supported with</span>
 <span class="sd">    default value ``False``.</span>
+<span class="sd">    Parameter `ndmax` is only supported with default value ``0``.</span>
 <span class="sd">    Parameter `like` is only supported with default value ``None``.</span>
 <span class="sd">    Parameter `initial` is only supported with default value ``None``.</span>
 <span class="sd">    Parameter `where` is only supported with default value ``True``.</span>
@@ -1280,6 +1282,11 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">"Keyword argument `subok` is supported only with "</span>
             <span class="sa">f</span><span class="s2">"default value ``False``, but got </span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">ndmax</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">"Keyword argument `ndmax` is supported only with "</span>
+            <span class="sa">f</span><span class="s2">"default value ``0``, but got </span><span class="si">{</span><span class="n">ndmax</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>

@@ -1313,6 +1313,7 @@
     <span class="n">order</span><span class="o">=</span><span class="s2">"K"</span><span class="p">,</span>
     <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">ndmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">ndmax</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1381,6 +1382,7 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
+<span class="sd">    Parameter `ndmax` is supported only with default value ``0``.</span>
 <span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
 <span class="sd">    Otherwise, the function raises ``NotImplementedError`` exception.</span>
 
@@ -1448,7 +1450,7 @@
 
 <span class="sd">    """</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">ndmax</span><span class="o">=</span><span class="n">ndmax</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ndmin</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"`ndmin` should be an integer, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ndmin</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
