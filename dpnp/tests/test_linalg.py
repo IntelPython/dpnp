@@ -1823,7 +1823,7 @@ class TestLstsq:
 
         result = dpnp.linalg.lstsq(a_dp, b_dp)
         # if rcond is not set, FutureWarning is given.
-        # By default Numpy uses None for calculations
+        # By default NumPy uses None for calculations
         expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
         for param_dp, param_np in zip(result, expected):
@@ -1838,7 +1838,7 @@ class TestLstsq:
         b_dp = dpnp.array(b_np)
 
         # if rcond is not set, FutureWarning is given.
-        # By default Numpy uses None for calculations
+        # By default NumPy uses None for calculations
         expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
         result = dpnp.linalg.lstsq(a_dp, b_dp)
 
@@ -1859,7 +1859,7 @@ class TestLstsq:
 
         result = dpnp.linalg.lstsq(a_dp, b_dp)
         # if rcond is not set, FutureWarning is given.
-        # By default Numpy uses None for calculations
+        # By default NumPy uses None for calculations
         expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
 
         for param_dp, param_np in zip(result, expected):
