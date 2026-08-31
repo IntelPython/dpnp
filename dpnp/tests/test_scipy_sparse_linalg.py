@@ -1474,7 +1474,7 @@ class TestCsrMatrix:
         import scipy.sparse as sp
 
         # 3 rows, columns shuffled per row.
-        data = dpnp.array([3, 1, 2, 5, 4, 6], dtype=dpnp.float64)
+        data = dpnp.array([3, 1, 2, 5, 4, 6], dtype=dpnp.float32)
         indices = dpnp.array([2, 0, 1, 3, 1, 4], dtype=dpnp.int64)
         indptr = dpnp.array([0, 3, 4, 6], dtype=dpnp.int64)
         m = csr_matrix((data, indices, indptr), shape=(3, 5))
