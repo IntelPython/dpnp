@@ -1075,7 +1075,12 @@
 
 <span class="sd">"""Implementation of flatiter."""</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
 
 
 <div class="viewcode-block" id="flatiter">
@@ -1127,6 +1132,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_unwrap_tuple</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+        <span class="c1"># a flat iterator is 1-D, so a single-element index tuple is equivalent</span>
+        <span class="c1"># to its element (e.g. `flat[(idx,)]` behaves like `flat[idx]`)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">key</span>
+
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_reject_newaxis</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
         <span class="c1"># newaxis (None) is valid for array indexing but not for flat indexing</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span>
@@ -1148,16 +1161,21 @@
         <span class="p">):</span>
             <span class="k">return</span>  <span class="c1"># scalar int: regular indexing checks it</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">return</span>  <span class="c1"># let regular indexing raise</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">return</span>  <span class="c1"># let regular indexing raise</span>
 
-        <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">"iu"</span> <span class="ow">or</span> <span class="n">idx</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span> <span class="ow">or</span> <span class="n">idx</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size</span>
-        <span class="n">hi</span><span class="p">,</span> <span class="n">lo</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">idx</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span>
+        <span class="n">hi</span><span class="p">,</span> <span class="n">lo</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">hi</span> <span class="o">&gt;=</span> <span class="n">size</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"index </span><span class="si">{</span><span class="n">hi</span><span class="si">}</span><span class="s2"> is out of bounds for size </span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">lo</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">size</span><span class="p">:</span>
@@ -1168,6 +1186,7 @@
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arr</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap_tuple</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reject_newaxis</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_bounds</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
@@ -1175,6 +1194,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatten</span><span class="p">()[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap_tuple</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reject_newaxis</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_bounds</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
@@ -1190,8 +1210,25 @@
         <span class="n">usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
 
         <span class="c1"># resolve key to flat positions, reusing regular indexing to validate</span>
-        <span class="n">flat_index</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="n">flat_index</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="c1"># fast path for a scalar index: avoid building a full index array</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">key</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">key</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"index </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is out of bounds for size </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">"</span>
+                <span class="p">)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="c1"># slice fast path: build only the selected positions</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+                <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flat_index</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+            <span class="p">)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">flat_index</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
             <span class="n">val</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
