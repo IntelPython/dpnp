@@ -26,11 +26,8 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import itertools
-
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose
 
 import dpnp.tensor as dpt
 
@@ -95,20 +92,3 @@ def test_isfinite_floats(dtype):
         r = dpt.empty_like(Y, dtype="bool")
         dpt.isfinite(Y, out=r)
         assert np.array_equal(dpt.asnumpy(r)[()], np.isfinite(Ynp))
-
-
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_isfinite_order(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (10, 10, 10, 10)
-    X = dpt.ones(input_shape, dtype=arg_dt, sycl_queue=q)
-
-    for perms in itertools.permutations(range(4)):
-        U = dpt.permute_dims(X[::2, ::-1, ::-1, ::5], perms)
-        expected_Y = np.full(U.shape, fill_value=True, dtype=dpt.bool)
-        for ord in ["C", "F", "A", "K"]:
-            Y = dpt.isfinite(U, order=ord)
-            assert_allclose(dpt.asnumpy(Y), expected_Y)

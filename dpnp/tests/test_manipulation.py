@@ -24,6 +24,7 @@ from .helper import (
     get_unsigned_dtypes,
     has_support_aspect64,
 )
+from .tensor.helper import get_queue_or_skip
 from .third_party.cupy import testing
 
 
@@ -308,7 +309,7 @@ class TestAsarrayCheckFinite:
         assert_array_equal(b, a)
 
 
-class TestBroadcast:
+class TestBroadcastShapes:
     @pytest.mark.parametrize(
         "shape",
         [
@@ -331,6 +332,31 @@ class TestBroadcast:
         expected = numpy.broadcast_shapes(*shape)
         result = dpnp.broadcast_shapes(*shape)
         assert_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            [1, 2],
+            [(3, 1), 3],
+            [1, (5, 1), 5],
+        ],
+    )
+    def test_scalar(self, shape):
+        expected = numpy.broadcast_shapes(*shape)
+        result = dpnp.broadcast_shapes(*shape)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("shape", [[(-1,)], [(2, -3), (2, 3)], [-1, 2]])
+    def test_negative_dim(self, xp, shape):
+        with pytest.raises(ValueError, match="negative dimensions"):
+            xp.broadcast_shapes(*shape)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("shape", [[(2.0,)], [(True, 2)], [2.5]])
+    def test_non_integer_dim(self, xp, shape):
+        with pytest.raises(TypeError, match="integer"):
+            xp.broadcast_shapes(*shape)
 
 
 class TestCopyTo:
@@ -1987,3 +2013,257 @@ class TestVsplit:
         expected = numpy.vsplit(a, 2)
         result = dpnp.vsplit(a_dp, 2)
         _compare_results(result, expected)
+
+
+class TestBroadcast:
+    """Test cases for dpnp.broadcast class."""
+
+    def test_broadcast_basic(self):
+        # Test basic broadcast with compatible shapes
+        x = dpnp.array([[1], [2], [3]])
+        y = dpnp.array([4, 5, 6])
+
+        b = dpnp.broadcast(x, y)
+        b_np = numpy.broadcast(x.asnumpy(), y.asnumpy())
+
+        assert b.shape == b_np.shape
+        assert b.ndim == b_np.ndim
+        assert b.size == b_np.size
+        assert b.numiter == b_np.numiter
+
+    def test_broadcast_scalar(self):
+        # Test broadcast with scalar
+        a = dpnp.array([1, 2, 3])
+        s = dpnp.array(5)
+
+        b = dpnp.broadcast(a, s)
+        b_np = numpy.broadcast(a.asnumpy(), s.asnumpy())
+
+        assert b.shape == b_np.shape
+        assert b.ndim == b_np.ndim
+        assert b.size == b_np.size
+
+    def test_broadcast_multiple_arrays(self):
+        # Test broadcast with multiple arrays
+        a1 = dpnp.array([1, 2, 3])
+        a2 = dpnp.array([[1], [2]])
+
+        b = dpnp.broadcast(a1, a2)
+        b_np = numpy.broadcast(a1.asnumpy(), a2.asnumpy())
+
+        assert b.shape == b_np.shape
+        assert b.ndim == b_np.ndim
+        assert b.size == b_np.size
+
+    def test_broadcast_same_shape(self):
+        # Test broadcast with arrays of the same shape
+        a = dpnp.array([[1, 2], [3, 4]])
+        b = dpnp.array([[5, 6], [7, 8]])
+
+        bc = dpnp.broadcast(a, b)
+        bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy())
+
+        assert bc.shape == bc_np.shape
+        assert bc.ndim == bc_np.ndim
+        assert bc.size == bc_np.size
+
+    def test_broadcast_0d_arrays(self):
+        # Test broadcast with 0-D arrays
+        a = dpnp.array(5)
+        b = dpnp.array(10)
+
+        bc = dpnp.broadcast(a, b)
+        bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy())
+
+        assert bc.shape == bc_np.shape
+        assert bc.ndim == bc_np.ndim
+        assert bc.size == bc_np.size
+
+    def test_broadcast_empty_arrays(self):
+        # Test broadcast with empty arrays
+        a = dpnp.array([])
+        b = dpnp.array([])
+
+        bc = dpnp.broadcast(a, b)
+        bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy())
+
+        assert bc.shape == bc_np.shape
+        assert bc.ndim == bc_np.ndim
+        assert bc.size == bc_np.size
+
+    def test_broadcast_incompatible_shapes(self):
+        # Test that incompatible shapes raise ValueError
+        a = dpnp.array([1, 2, 3])
+        b = dpnp.array([1, 2])
+
+        with pytest.raises(ValueError):
+            dpnp.broadcast(a, b)
+
+    def test_broadcast_incompatible_shapes_2d(self):
+        # Test incompatible 2D shapes
+        a = dpnp.array([[1, 2, 3], [4, 5, 6]])
+        b = dpnp.array([[1], [2], [3], [4]])
+
+        with pytest.raises(ValueError):
+            dpnp.broadcast(a, b)
+
+    def test_broadcast_three_arrays(self):
+        # Test broadcast with three arrays
+        a = dpnp.array([1, 2, 3])
+        b = dpnp.array([[1], [2]])
+        c = dpnp.array(5)
+
+        bc = dpnp.broadcast(a, b, c)
+        bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy(), c.asnumpy())
+
+        assert bc.shape == bc_np.shape
+        assert bc.ndim == bc_np.ndim
+        assert bc.size == bc_np.size
+        assert bc.numiter == 3
+
+    def test_broadcast_ndim_property(self):
+        # unlike numpy, only ndim is exposed, because numpy itself states that
+        # the more consistent ndim is preferred over the legacy nd attribute
+        a = dpnp.array([[1, 2], [3, 4]])
+        b = dpnp.array([5, 6])
+
+        bc = dpnp.broadcast(a, b)
+        bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy())
+
+        assert bc.ndim == bc_np.ndim
+        assert not hasattr(bc, "nd")
+
+    def test_broadcast_values_property(self):
+        # values mimics cupy.broadcast.values and holds the input arrays
+        # broadcast against one another
+        a = dpnp.array([[1], [2], [3]])
+        b = dpnp.array([4, 5, 6])
+
+        bc = dpnp.broadcast(a, b)
+        expected = dpnp.broadcast_arrays(a, b)
+
+        assert isinstance(bc.values, tuple)
+        # the property is evaluated once and then cached
+        assert bc.values is bc.values
+
+        assert len(bc.values) == len(expected)
+        for res, exp in zip(bc.values, expected):
+            assert res.shape == bc.shape
+            assert_array_equal(res, exp)
+
+    def test_broadcast_values_no_args(self):
+        assert dpnp.broadcast().values == ()
+
+    def test_broadcast_complex_shapes(self):
+        # Test broadcast with complex compatible shapes
+        a = dpnp.array([[[1]]])
+        b = dpnp.array([[1, 2, 3]])
+        c = dpnp.array([[1], [2]])
+
+        bc = dpnp.broadcast(a, b, c)
+        bc_np = numpy.broadcast(a.asnumpy(), b.asnumpy(), c.asnumpy())
+
+        assert bc.shape == bc_np.shape
+        assert bc.ndim == bc_np.ndim
+        assert bc.size == bc_np.size
+
+    @pytest.mark.parametrize(
+        "arg",
+        [[[1], [2]], 3, numpy.ones((2, 1))],
+        ids=["list", "scalar", "numpy"],
+    )
+    def test_broadcast_unsupported_type(self, arg):
+        # unlike numpy, input arrays are not coerced, so array-like objects,
+        # scalars and host arrays are rejected the same way as they are by
+        # dpnp.broadcast_to and dpnp.broadcast_arrays
+        a = dpnp.array([1, 2, 3])
+
+        with pytest.raises(TypeError):
+            dpnp.broadcast(a, arg)
+
+    @pytest.mark.parametrize(
+        "shapes",
+        [
+            ((), ()),
+            ((1,), (1,)),
+            ((2,), (2,)),
+            ((0,), (1,)),
+            ((2, 3), (1, 3)),
+            ((2, 1, 3, 4), (3, 1, 4)),
+            ((4, 3, 2, 3), (2, 3)),
+            ((2, 0, 1, 1, 3), (2, 1, 0, 0, 3)),
+        ],
+    )
+    def test_broadcast_parametrized_shapes(self, shapes):
+        # Test various compatible shape combinations
+        arrays_dp = [dpnp.ones(s) for s in shapes]
+        arrays_np = [numpy.ones(s) for s in shapes]
+
+        bc = dpnp.broadcast(*arrays_dp)
+        bc_np = numpy.broadcast(*arrays_np)
+
+        assert bc.shape == bc_np.shape
+        assert bc.ndim == bc_np.ndim
+        assert bc.size == bc_np.size
+
+        # numpy.broadcast has no counterpart of the values property, so the
+        # broadcasted arrays are compared against numpy.broadcast_arrays
+        expected = numpy.broadcast_arrays(*arrays_np)
+        assert len(bc.values) == len(expected)
+        for res, exp in zip(bc.values, expected):
+            assert res.shape == exp.shape
+            assert_array_equal(res, exp)
+
+    def test_broadcast_single_array(self):
+        # Test broadcast with a single array
+        a = dpnp.array([[1, 2], [3, 4]])
+
+        bc = dpnp.broadcast(a)
+        bc_np = numpy.broadcast(a.asnumpy())
+
+        assert bc.shape == bc_np.shape
+        assert bc.ndim == bc_np.ndim
+        assert bc.size == bc_np.size
+        assert bc.numiter == 1
+
+    def test_broadcast_no_args(self):
+        # Test broadcast with no arguments.
+        bc = dpnp.broadcast()
+
+        assert bc.shape == ()
+        assert bc.ndim == 0
+        assert bc.size == 1
+        assert bc.numiter == 0
+
+    def test_broadcast_different_queues(self):
+        # Broadcasting is a shape-only query, so inputs are not required
+        # to share a common execution placement
+        q1 = get_queue_or_skip()
+        q2 = get_queue_or_skip()
+
+        a = dpt.ones((2, 1), sycl_queue=q1)
+        b = dpt.ones((1, 2), sycl_queue=q2)
+
+        bc = dpnp.broadcast(a, b)
+
+        assert bc.shape == (2, 2)
+        assert bc.size == 4
+        assert bc.ndim == 2
+
+        # each broadcasted array stays on the queue of its input array
+        assert bc.values[0].sycl_queue == q1
+        assert bc.values[1].sycl_queue == q2
+
+    def test_broadcast_repr(self):
+        # Test __repr__ method
+        a = dpnp.array([1, 2, 3])
+        b = dpnp.array([[1], [2]])
+
+        bc = dpnp.broadcast(a, b)
+        repr_str = repr(bc)
+
+        assert "broadcast" in repr_str
+        assert "shape" in repr_str
+        assert str(bc.shape) in repr_str
+        assert f"ndim={bc.ndim}" in repr_str
+        assert f"size={bc.size}" in repr_str

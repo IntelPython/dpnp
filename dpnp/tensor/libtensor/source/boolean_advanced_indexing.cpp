@@ -217,6 +217,11 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Inconsistent array dimensions");
     }
 
+    if (ortho_nelems == 0 || masked_src_nelems == 0) {
+        // nothing to do
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
     dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(
         dst, ortho_nelems * masked_dst_nelems);
 
@@ -540,6 +545,11 @@ std::pair<sycl::event, sycl::event>
     if (!same_ortho_dims ||
         (masked_dst_nelems != static_cast<std::size_t>(cumsum_sz))) {
         throw py::value_error("Inconsistent array dimensions");
+    }
+
+    if (ortho_nelems == 0 || masked_dst_nelems == 0) {
+        // nothing to do
+        return std::make_pair(sycl::event(), sycl::event());
     }
 
     dpnp::tensor::validation::AmpleMemory::throw_if_not_ample(

@@ -39,6 +39,7 @@ skbuild.setup(
         "dpnp.dpnp_utils",
         "dpnp.exceptions",
         "dpnp.fft",
+        "dpnp.lib",
         "dpnp.linalg",
         "dpnp.memory",
         "dpnp.random",

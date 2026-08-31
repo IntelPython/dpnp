@@ -28,6 +28,8 @@
 
 # distutils: language = c++
 # cython: language_level=3
+# cython: linetrace=True
+# cython: freethreading_compatible = True
 
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 from cpython.ref cimport Py_INCREF

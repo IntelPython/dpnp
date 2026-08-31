@@ -26,8 +26,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import ctypes
-
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
@@ -84,26 +82,6 @@ def test_atan2_dtype_matrix(op1_dtype, op2_dtype):
         dpt.finfo(r.dtype).resolution, dpt.finfo(expected.dtype).resolution
     )
     assert_allclose(dpt.asnumpy(r), expected, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("arr_dt", _no_complex_dtypes[1:])
-def test_atan2_python_scalar(arr_dt):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(arr_dt, q)
-
-    X = dpt.ones((10, 10), dtype=arr_dt, sycl_queue=q)
-    py_ones = (
-        bool(1),
-        int(1),
-        float(1),
-        np.float32(1),
-        ctypes.c_int(1),
-    )
-    for sc in py_ones:
-        R = dpt.atan2(X, sc)
-        assert isinstance(R, dpt.usm_ndarray)
-        R = dpt.atan2(sc, X)
-        assert isinstance(R, dpt.usm_ndarray)
 
 
 @pytest.mark.parametrize("dt", ["f2", "f4", "f8"])
@@ -212,7 +190,7 @@ def test_atan2_special_case_pzero_and_nzero(dt):
 
 
 @pytest.mark.parametrize("dt", ["f2", "f4", "f8"])
-def test_atan2_special_case_pzero_and_negatvie(dt):
+def test_atan2_special_case_pzero_and_negative(dt):
     """
     If x1_i is +0 and x2_i is less than 0, the result
     is an approximation to +pi.

@@ -228,8 +228,8 @@ def broadcast_arrays(*args):
             broadcasted.
 
     Returns:
-        List[usm_ndarray]:
-            A list of broadcasted arrays. Each array
+        tuple[usm_ndarray, ...]:
+            A tuple of broadcasted arrays. Each array
             must have the same shape. Each array must have the same `dtype`,
             `device` and `usm_type` attributes as its corresponding input
             array.
@@ -245,7 +245,33 @@ def broadcast_arrays(*args):
     if all(X.shape == shape for X in args):
         return args
 
-    return [broadcast_to(X, shape) for X in args]
+    return tuple(broadcast_to(X, shape) for X in args)
+
+
+def broadcast_shapes(*shapes):
+    """broadcast_shapes(*shapes)
+
+    Broadcasts one or more shapes against one another.
+
+    Args:
+        shapes (Tuple[int, ...]): an arbitrary number of shapes to be
+            broadcasted against one another. Each shape must be a tuple of
+            integers.
+
+    Returns:
+        Tuple[int, ...]:
+            The broadcasted shape resulting from broadcasting the input
+            shapes against one another.
+
+    Raises:
+        TypeError: if a shape contains a non-integer dimension.
+        ValueError: if the input shapes are not broadcast-compatible.
+    """
+    if len(shapes) == 0:
+        return ()
+
+    normalized = [tuple(map(operator.index, sh)) for sh in shapes]
+    return _broadcast_shape_impl(normalized)
 
 
 def broadcast_to(X, /, shape):
@@ -355,36 +381,48 @@ def concat(arrays, /, *, axis=0):
     return res
 
 
-def expand_dims(X, /, *, axis=0):
+def expand_dims(X, /, axis):
     """expand_dims(x, axis)
 
     Expands the shape of an array by inserting a new axis (dimension)
-    of size one at the position specified by axis.
+    of size one at the position (or positions) specified by axis.
 
     Args:
         x (usm_ndarray):
             input array
-        axis (Union[int, Tuple[int]]):
-            axis position in the expanded axes (zero-based). If `x` has rank
-            (i.e, number of dimensions) `N`, a valid `axis` must reside
-            in the closed-interval `[-N-1, N]`. If provided a negative
-            `axis`, the `axis` position at which to insert a singleton
-            dimension is computed as `N + axis + 1`. Hence, if
-            provided `-1`, the resolved axis position is `N` (i.e.,
-            a singleton dimension must be appended to the input array `x`).
-            If provided `-N-1`, the resolved axis position is `0` (i.e., a
-            singleton dimension is prepended to the input array `x`).
+        axis (Union[int, Tuple[int, ...]]):
+            axis position(s) (zero-based). If ``axis`` is an integer, ``axis``
+            **must** be equivalent to the tuple ``(axis,)``. If ``axis`` is
+            a tuple,
+
+            - a valid axis position **must** reside on the half-open interval
+              ``[-M, M)``, where ``M = N + len(axis)`` and ``N`` is the number
+              of dimensions in ``x``.
+            - if the i-th entry is a negative integer, the axis position of the
+              inserted singleton dimension in the output array **must** be
+              computed as ``M + axis[i]``.
+            - each entry of ``axis`` must resolve to a unique positive axis
+              position.
+            - for each entry of ``axis``, the corresponding dimension in the
+              expanded output array **must** be a singleton dimension.
+            - for the remaining dimensions of the expanded output array, the
+              output array dimensions **must** correspond to the dimensions of
+              ``x`` in order.
 
     Returns:
         usm_ndarray:
             Returns a view, if possible, and a copy otherwise with the number
             of dimensions increased.
             The expanded array has the same data type as the input array `x`.
+            If ``axis`` is an integer, the output array must have ``N + 1``
+            dimensions. If ``axis`` is a tuple, the output array must have
+            ``N + len(axis)`` dimensions.
             The expanded array is located on the same device as the input
             array, and has the same USM allocation type.
 
     Raises:
-        IndexError: if `axis` value is invalid.
+        AxisError: if an `axis` value is out of range.
+        ValueError: if `axis` contains a repeated value.
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
@@ -538,7 +576,8 @@ def repeat(x, repeats, /, *, axis=None):
 
             If `repeats` is an array, it must have an integer data type.
             Otherwise, `repeats` must be a Python integer or sequence of
-            Python integers (i.e., a tuple, list, or range).
+            Python integers (i.e., a tuple, list, or range). A sequence must
+            be 0- or 1-dimensional.
 
         axis (Optional[int]):
             The axis along which to repeat values. If `axis` is `None`, the
@@ -625,14 +664,20 @@ def repeat(x, repeats, /, *, axis=None):
         usm_type = x.usm_type
         exec_q = x.sycl_queue
 
-        len_reps = len(repeats)
-        if len_reps == 1:
-            repeats = repeats[0]
+        # inspect the sequence on the host to preserve the scalar fast path
+        repeats = np.asarray(repeats)
+        if repeats.ndim > 1:
+            raise ValueError(
+                "`repeats` sequence must be 0- or 1-dimensional, got "
+                f"{repeats.ndim} dimensions"
+            )
+        if repeats.size == 1:
+            scalar = True
+            repeats = int(repeats[0])
             if repeats < 0:
                 raise ValueError("`repeats` elements must be positive")
-            scalar = True
         else:
-            if len_reps != axis_size:
+            if repeats.size != axis_size:
                 raise ValueError(
                     "`repeats` sequence must have the same length as the "
                     "repeated axis"

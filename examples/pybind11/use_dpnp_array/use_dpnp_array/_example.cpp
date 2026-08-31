@@ -76,7 +76,7 @@ bool is_writable(const dpnp::tensor::usm_ndarray &arr)
     return arr.is_writable();
 }
 
-PYBIND11_MODULE(_use_dpnp_array, m)
+PYBIND11_MODULE(_use_dpnp_array, m, py::mod_gil_not_used())
 {
     m.def("get_ndim", &get_ndim);
     m.def("get_shape", &get_shape);

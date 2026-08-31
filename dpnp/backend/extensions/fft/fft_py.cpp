@@ -68,7 +68,7 @@ void register_descriptor(py::module &m, const char *name)
         .def("commit", &DwT::commit);
 }
 
-PYBIND11_MODULE(_fft_impl, m)
+PYBIND11_MODULE(_fft_impl, m, py::mod_gil_not_used())
 {
     constexpr mkl_dft::domain complex_dom = mkl_dft::domain::COMPLEX;
     constexpr mkl_dft::domain real_dom = mkl_dft::domain::REAL;

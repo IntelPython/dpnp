@@ -196,6 +196,7 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
 
 def check_limitations(
     subok=False,
+    ndmax=0,
     like=None,
     initial=None,
     where=True,
@@ -207,6 +208,7 @@ def check_limitations(
 
     Parameter `subok` for array creation functions is only supported with
     default value ``False``.
+    Parameter `ndmax` is only supported with default value ``0``.
     Parameter `like` is only supported with default value ``None``.
     Parameter `initial` is only supported with default value ``None``.
     Parameter `where` is only supported with default value ``True``.
@@ -230,6 +232,11 @@ def check_limitations(
         raise NotImplementedError(
             "Keyword argument `subok` is supported only with "
             f"default value ``False``, but got {subok}."
+        )
+    if ndmax != 0:
+        raise NotImplementedError(
+            "Keyword argument `ndmax` is supported only with "
+            f"default value ``0``, but got {ndmax}."
         )
     if initial is not None:
         raise NotImplementedError(
@@ -261,7 +268,7 @@ def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
 
     Parameters
     ----------
-    arrays : {dpnp.ndarray, usm_ndarray}
+    *arrays : {dpnp.ndarray, usm_ndarray}
         Input arrays to check for supported types.
     scalar_type : bool, optional
         A scalar type is also considered as supported if flag is ``True``.
