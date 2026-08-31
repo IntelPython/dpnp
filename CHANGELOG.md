@@ -91,6 +91,7 @@ This release is compatible with NumPy 2.5.
 * Fixed `dpnp.all` and `dpnp.any` aborting when reducing over an empty axis (e.g. an array with a zero-length dimension) [#3021](https://github.com/IntelPython/dpnp/pull/3021)
 * Released the GIL before the blocking OneMKL DFT calls in the FFT extension [#3040](https://github.com/IntelPython/dpnp/pull/3040)
 * Fixed `astype` casting an out-of-range floating point value to a signed narrow integer type saturating to the destination min/max instead of wrapping like NumPy, generalizing the earlier unsigned-only fix [#3033](https://github.com/IntelPython/dpnp/pull/3033)
+* Fixed `dpnp.insert` silently ignoring out-of-bounds negative indices in a multi-element `obj`, so a mix of in-bounds and out-of-bounds indices now consistently raises `IndexError` [#3041](https://github.com/IntelPython/dpnp/pull/3041)
 
 ### Security
 
