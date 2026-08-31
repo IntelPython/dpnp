@@ -76,8 +76,24 @@ class TestFlatiter:
 
     @pytest.mark.parametrize(
         "key",
-        [slice(1, 4), slice(None), [0, 2, 4], [-1, -2], Ellipsis],
-        ids=["slice", "full_slice", "list", "neg_list", "..."],
+        [
+            slice(1, 4),
+            slice(None),
+            slice(None, None, 2),
+            slice(None, None, -1),
+            [0, 2, 4],
+            [-1, -2],
+            Ellipsis,
+        ],
+        ids=[
+            "slice",
+            "full_slice",
+            "step_slice",
+            "neg_step_slice",
+            "list",
+            "neg_list",
+            "...",
+        ],
     )
     def test_flat_setitem_index_types(self, key):
         a = np.arange(1, 7).reshape(2, 3)
@@ -85,6 +101,21 @@ class TestFlatiter:
         a.flat[key] = 0
         ia.flat[key] = 0
         assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("index", [0, 5, -1, -6])
+    def test_flat_setitem_scalar(self, index):
+        a = np.arange(1, 7)
+        ia = dpnp.array(a)
+        a.flat[index] = 99
+        ia.flat[index] = 99
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("xp", [dpnp, np])
+    @pytest.mark.parametrize("index", [6, -7], ids=["oob", "neg_oob"])
+    def test_flat_setitem_scalar_out_of_bounds(self, xp, index):
+        a = xp.arange(1, 7)
+        with pytest.raises(IndexError, match="out of bounds"):
+            a.flat[index] = 0
 
     def test_flat_index_array(self):
         a = np.arange(1, 7).reshape(2, 3)

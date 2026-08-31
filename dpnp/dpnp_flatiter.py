@@ -141,8 +141,25 @@ class flatiter:
         usm_type = a.usm_type
 
         # resolve key to flat positions, reusing regular indexing to validate
-        flat_index = dpnp.arange(a.size, sycl_queue=exec_q, usm_type=usm_type)
-        idx = flat_index[key]
+        if isinstance(key, int) and not isinstance(key, bool):
+            # fast path for a scalar index: avoid building a full index array
+            pos = key + a.size if key < 0 else key
+            if not 0 <= pos < a.size:
+                raise IndexError(
+                    f"index {key} is out of bounds for size {a.size}"
+                )
+            idx = dpnp.asarray(pos, sycl_queue=exec_q, usm_type=usm_type)
+        elif isinstance(key, slice):
+            # slice fast path: build only the selected positions
+            start, stop, step = key.indices(a.size)
+            idx = dpnp.arange(
+                start, stop, step, sycl_queue=exec_q, usm_type=usm_type
+            )
+        else:
+            flat_index = dpnp.arange(
+                a.size, sycl_queue=exec_q, usm_type=usm_type
+            )
+            idx = flat_index[key]
 
         if not dpnp.isscalar(val):
             val = dpnp.asarray(
