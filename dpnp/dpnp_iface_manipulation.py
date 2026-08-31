@@ -259,6 +259,10 @@ def _check_index_bounds(obj, indices, n, axis):
         min_idx, max_idx = dpnp.stack([indices.min(), indices.max()]).asnumpy()
     else:
         host_obj = numpy.asarray(obj)
+        if host_obj.dtype == dpnp.bool:
+            # a boolean mask selects positions, which (for an oversized mask)
+            # can fall out of bounds, so validate the flatnonzero result
+            host_obj = numpy.flatnonzero(host_obj)
         min_idx, max_idx = host_obj.min(), host_obj.max()
 
     min_idx, max_idx = int(min_idx), int(max_idx)

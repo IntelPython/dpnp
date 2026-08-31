@@ -842,6 +842,20 @@ class TestInsert:
         with pytest.raises(IndexError, match="out of bounds"):
             xp.insert(a, [5, 0], 9, axis=axis)
 
+    @pytest.mark.parametrize(
+        "obj",
+        [
+            [True, False, False, False, True],
+            numpy.array([True, False, False, False, True]),
+            dpnp.array([True, False, False, False, True]),
+        ],
+        ids=["list", "numpy", "dpnp"],
+    )
+    def test_bool_mask_out_of_bounds(self, obj):
+        a = dpnp.array([0, 1, 2])
+        with pytest.raises(IndexError, match="out of bounds"):
+            dpnp.insert(a, obj, 9)
+
 
 # array_split has more comprehensive test of splitting.
 # only do simple test on hsplit, vsplit, and dsplit
