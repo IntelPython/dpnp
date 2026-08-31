@@ -124,6 +124,21 @@ class TestFlatiter:
         # int array index
         assert_array_equal(ia.flat[dpnp.array([0, 3, 5])], a.flat[[0, 3, 5]])
 
+    def test_flat_usm_ndarray_index(self):
+        a = np.arange(1, 7)
+        ia = dpnp.array(a)
+
+        # a usm_ndarray index is validated and used like a dpnp array
+        usm_key = dpnp.array([0, 2, 4]).get_array()
+        assert_array_equal(ia.flat[usm_key], a.flat[[0, 2, 4]])
+        with pytest.raises(IndexError, match="out of bounds"):
+            _ = ia.flat[dpnp.array([100]).get_array()]
+
+    @pytest.mark.parametrize("xp", [dpnp, np])
+    def test_flat_empty_index(self, xp):
+        a = xp.arange(1, 7)
+        assert_array_equal(a.flat[xp.array([], dtype=xp.intp)], a.flat[[]])
+
     def test_flat_single_element_tuple(self):
         a = np.arange(1, 7)
         ia = dpnp.array(a)

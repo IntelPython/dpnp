@@ -28,7 +28,12 @@
 
 """Implementation of flatiter."""
 
+import numpy
+
 import dpnp
+import dpnp.tensor as dpt
+
+from .dpnp_array import dpnp_array
 
 
 class flatiter:
@@ -107,16 +112,21 @@ class flatiter:
         ):
             return  # scalar int: regular indexing checks it
 
-        try:
-            idx = dpnp.asarray(key, sycl_queue=self._arr.sycl_queue)
-        except Exception:
-            return  # let regular indexing raise
+        if isinstance(key, dpnp_array):
+            idx = key
+        elif isinstance(key, dpt.usm_ndarray):
+            idx = dpnp_array._create_from_usm_ndarray(key)
+        else:
+            try:
+                idx = numpy.asarray(key)
+            except Exception:
+                return  # let regular indexing raise
 
-        if idx.dtype.kind not in "iu" or idx.size == 0:
+        if not dpnp.issubdtype(idx.dtype, dpnp.integer) or idx.size == 0:
             return
 
         size = self._size
-        hi, lo = int(dpnp.max(idx)), int(dpnp.min(idx))
+        hi, lo = int(idx.max()), int(idx.min())
         if hi >= size:
             raise IndexError(f"index {hi} is out of bounds for size {size}")
         if lo < -size:
