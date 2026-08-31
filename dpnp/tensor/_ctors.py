@@ -121,7 +121,7 @@ def _asarray_from_numpy_ndarray(
     copy_q = normalize_queue_device(sycl_queue=None, device=sycl_queue)
     if ary.dtype.char not in "?bBhHiIlLqQefdFD":
         raise TypeError(
-            f"Numpy array of data type {ary.dtype} is not supported. "
+            f"NumPy array of data type {ary.dtype} is not supported. "
             "Please convert the input to an array with numeric data type."
         )
     if dtype is None:
