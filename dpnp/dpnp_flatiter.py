@@ -78,6 +78,14 @@ class flatiter:
         self._i = 0
 
     @staticmethod
+    def _unwrap_tuple(key):
+        # a flat iterator is 1-D, so a single-element index tuple is equivalent
+        # to its element (e.g. `flat[(idx,)]` behaves like `flat[idx]`)
+        if isinstance(key, tuple) and len(key) == 1:
+            return key[0]
+        return key
+
+    @staticmethod
     def _reject_newaxis(key):
         # newaxis (None) is valid for array indexing but not for flat indexing
         if key is None or (
@@ -119,6 +127,7 @@ class flatiter:
         return dpnp.reshape(self._arr, -1)
 
     def __getitem__(self, key):
+        key = self._unwrap_tuple(key)
         self._reject_newaxis(key)
         self._check_bounds(key)
 
@@ -126,6 +135,7 @@ class flatiter:
         return self._flatten()[key].copy()
 
     def __setitem__(self, key, val):
+        key = self._unwrap_tuple(key)
         self._reject_newaxis(key)
         self._check_bounds(key)
 

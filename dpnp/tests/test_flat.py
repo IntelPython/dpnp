@@ -124,6 +124,26 @@ class TestFlatiter:
         # int array index
         assert_array_equal(ia.flat[dpnp.array([0, 3, 5])], a.flat[[0, 3, 5]])
 
+    def test_flat_single_element_tuple(self):
+        a = np.arange(1, 7)
+        ia = dpnp.array(a)
+
+        # a 1-element index tuple is equivalent to the bare index
+        assert_array_equal(ia.flat[(0,)], a.flat[(0,)])
+        assert_array_equal(ia.flat[(slice(1, 4),)], a.flat[(slice(1, 4),)])
+        assert_array_equal(
+            ia.flat[(dpnp.array([0, 2]),)], a.flat[(np.array([0, 2]),)]
+        )
+
+    @pytest.mark.parametrize("xp", [dpnp, np])
+    def test_flat_tuple_array_out_of_bounds(self, xp):
+        a = xp.array([1, 2, 3])
+        idx = (xp.array([5]),)
+        with pytest.raises(IndexError, match="out of bounds"):
+            _ = a.flat[idx]
+        with pytest.raises(IndexError, match="out of bounds"):
+            a.flat[idx] = 0
+
     @testing.with_requires("numpy>=2.4")
     def test_flat_bool_mask(self):
         a = np.arange(1, 7).reshape(2, 3)
