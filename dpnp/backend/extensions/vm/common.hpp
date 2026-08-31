@@ -365,7 +365,7 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
  */
 #define MACRO_POPULATE_DISPATCH_VECTORS(__name__)                              \
     template <typename fnT, typename T>                                        \
-    struct ContigFactory                                                       \
+    struct __name__##_ContigFactory                                            \
     {                                                                          \
         fnT get()                                                              \
         {                                                                      \
@@ -380,7 +380,7 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
     };                                                                         \
                                                                                \
     template <typename fnT, typename T>                                        \
-    struct TypeMapFactory                                                      \
+    struct __name__##_TypeMapFactory                                           \
     {                                                                          \
         std::enable_if_t<std::is_same<fnT, int>::value, int> get()             \
         {                                                                      \
@@ -391,10 +391,11 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
                                                                                \
     static void populate_dispatch_vectors(void)                                \
     {                                                                          \
-        ext_ns::init_dispatch_vector<int, TypeMapFactory>(                     \
+        ext_ns::init_dispatch_vector<int, __name__##_TypeMapFactory>(          \
             output_typeid_vector);                                             \
         ext_ns::init_dispatch_vector<unary_contig_impl_fn_ptr_t,               \
-                                     ContigFactory>(contig_dispatch_vector);   \
+                                     __name__##_ContigFactory>(                \
+            contig_dispatch_vector);                                           \
     };
 
 /**
@@ -404,7 +405,7 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
  */
 #define MACRO_POPULATE_DISPATCH_2OUTS_VECTORS(__name__)                        \
     template <typename fnT, typename T>                                        \
-    struct ContigFactory                                                       \
+    struct __name__##_ContigFactory                                            \
     {                                                                          \
         fnT get()                                                              \
         {                                                                      \
@@ -423,7 +424,7 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
     };                                                                         \
                                                                                \
     template <typename fnT, typename T>                                        \
-    struct TypeMapFactory                                                      \
+    struct __name__##_TypeMapFactory                                           \
     {                                                                          \
         std::enable_if_t<std::is_same<fnT, std::pair<int, int>>::value,        \
                          std::pair<int, int>>                                  \
@@ -438,10 +439,12 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
                                                                                \
     static void populate_dispatch_vectors(void)                                \
     {                                                                          \
-        ext_ns::init_dispatch_vector<std::pair<int, int>, TypeMapFactory>(     \
+        ext_ns::init_dispatch_vector<std::pair<int, int>,                      \
+                                     __name__##_TypeMapFactory>(               \
             output_typeid_vector);                                             \
         ext_ns::init_dispatch_vector<unary_two_outputs_contig_impl_fn_ptr_t,   \
-                                     ContigFactory>(contig_dispatch_vector);   \
+                                     __name__##_ContigFactory>(                \
+            contig_dispatch_vector);                                           \
     };
 
 /**
@@ -451,7 +454,7 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
  */
 #define MACRO_POPULATE_DISPATCH_TABLES(__name__)                               \
     template <typename fnT, typename T1, typename T2>                          \
-    struct ContigFactory                                                       \
+    struct __name__##_ContigFactory                                            \
     {                                                                          \
         fnT get()                                                              \
         {                                                                      \
@@ -467,7 +470,7 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
     };                                                                         \
                                                                                \
     template <typename fnT, typename T1, typename T2>                          \
-    struct TypeMapFactory                                                      \
+    struct __name__##_TypeMapFactory                                           \
     {                                                                          \
         std::enable_if_t<std::is_same<fnT, int>::value, int> get()             \
         {                                                                      \
@@ -478,9 +481,10 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
                                                                                \
     static void populate_dispatch_tables(void)                                 \
     {                                                                          \
-        ext_ns::init_dispatch_table<int, TypeMapFactory>(                      \
+        ext_ns::init_dispatch_table<int, __name__##_TypeMapFactory>(           \
             output_typeid_vector);                                             \
         ext_ns::init_dispatch_table<binary_contig_impl_fn_ptr_t,               \
-                                    ContigFactory>(contig_dispatch_vector);    \
+                                    __name__##_ContigFactory>(                 \
+            contig_dispatch_vector);                                           \
     };
 } // namespace dpnp::extensions::vm::py_internal

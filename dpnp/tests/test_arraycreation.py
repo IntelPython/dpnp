@@ -55,6 +55,20 @@ class TestArray:
         assert a.flags.f_contiguous == ia.flags.f_contiguous
         assert_array_equal(ia, a)
 
+    @testing.with_requires("numpy>=2.4")
+    def test_ndmax_default(self):
+        # dpnp supports only the default `ndmax=0`, treating it as a no-op;
+        # the NumPy no-op is `ndmax >= ndim` (an explicit `ndmax=0` caps the
+        # result at zero dimensions and raises)
+        x = [[1, 2, 3], [4, 5, 6]]
+        a = numpy.array(x, ndmax=numpy.ndim(x))
+        ia = dpnp.array(x, ndmax=0)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize("ndmax", [1, 2, 3])
+    def test_ndmax_unsupported(self, ndmax):
+        assert_raises(NotImplementedError, dpnp.array, [[1, 2, 3]], ndmax=ndmax)
+
     def test_error(self):
         x = numpy.ones((3, 4))
         assert_raises(TypeError, dpnp.array, x, ndmin=3.0)

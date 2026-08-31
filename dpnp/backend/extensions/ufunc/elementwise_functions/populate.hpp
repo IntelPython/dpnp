@@ -59,7 +59,7 @@ namespace ext_ns = ext::common;
     }                                                                          \
                                                                                \
     template <typename fnT, typename T>                                        \
-    struct ContigFactory                                                       \
+    struct __name__##_ContigFactory                                            \
     {                                                                          \
         fnT get()                                                              \
         {                                                                      \
@@ -76,7 +76,7 @@ namespace ext_ns = ext::common;
     };                                                                         \
                                                                                \
     template <typename fnT, typename T>                                        \
-    struct TypeMapFactory                                                      \
+    struct __name__##_TypeMapFactory                                           \
     {                                                                          \
         std::enable_if_t<std::is_same<fnT, int>::value, int> get()             \
         {                                                                      \
@@ -103,7 +103,7 @@ namespace ext_ns = ext::common;
     }                                                                          \
                                                                                \
     template <typename fnT, typename T>                                        \
-    struct StridedFactory                                                      \
+    struct __name__##_StridedFactory                                           \
     {                                                                          \
         fnT get()                                                              \
         {                                                                      \
@@ -122,12 +122,12 @@ namespace ext_ns = ext::common;
     void populate_##__name__##_dispatch_vectors(void)                          \
     {                                                                          \
         ext_ns::init_dispatch_vector<unary_contig_impl_fn_ptr_t,               \
-                                     ContigFactory>(                           \
+                                     __name__##_ContigFactory>(                \
             __name__##_contig_dispatch_vector);                                \
         ext_ns::init_dispatch_vector<unary_strided_impl_fn_ptr_t,              \
-                                     StridedFactory>(                          \
+                                     __name__##_StridedFactory>(               \
             __name__##_strided_dispatch_vector);                               \
-        ext_ns::init_dispatch_vector<int, TypeMapFactory>(                     \
+        ext_ns::init_dispatch_vector<int, __name__##_TypeMapFactory>(          \
             __name__##_output_typeid_vector);                                  \
     };
 
@@ -151,7 +151,7 @@ namespace ext_ns = ext::common;
     }                                                                          \
                                                                                \
     template <typename fnT, typename T>                                        \
-    struct ContigFactory                                                       \
+    struct __name__##_ContigFactory                                            \
     {                                                                          \
         fnT get()                                                              \
         {                                                                      \
@@ -170,7 +170,7 @@ namespace ext_ns = ext::common;
     };                                                                         \
                                                                                \
     template <typename fnT, typename T>                                        \
-    struct TypeMapFactory                                                      \
+    struct __name__##_TypeMapFactory                                           \
     {                                                                          \
         std::enable_if_t<std::is_same<fnT, std::pair<int, int>>::value,        \
                          std::pair<int, int>>                                  \
@@ -202,7 +202,7 @@ namespace ext_ns = ext::common;
     }                                                                          \
                                                                                \
     template <typename fnT, typename T>                                        \
-    struct StridedFactory                                                      \
+    struct __name__##_StridedFactory                                           \
     {                                                                          \
         fnT get()                                                              \
         {                                                                      \
@@ -223,12 +223,13 @@ namespace ext_ns = ext::common;
     void populate_##__name__##_dispatch_vectors(void)                          \
     {                                                                          \
         ext_ns::init_dispatch_vector<unary_two_outputs_contig_impl_fn_ptr_t,   \
-                                     ContigFactory>(                           \
+                                     __name__##_ContigFactory>(                \
             __name__##_contig_dispatch_vector);                                \
         ext_ns::init_dispatch_vector<unary_two_outputs_strided_impl_fn_ptr_t,  \
-                                     StridedFactory>(                          \
+                                     __name__##_StridedFactory>(               \
             __name__##_strided_dispatch_vector);                               \
-        ext_ns::init_dispatch_vector<std::pair<int, int>, TypeMapFactory>(     \
+        ext_ns::init_dispatch_vector<std::pair<int, int>,                      \
+                                     __name__##_TypeMapFactory>(               \
             __name__##_output_typeid_vector);                                  \
     };
 
@@ -256,7 +257,7 @@ namespace ext_ns = ext::common;
     }                                                                          \
                                                                                \
     template <typename fnT, typename T1, typename T2>                          \
-    struct ContigFactory                                                       \
+    struct __name__##_ContigFactory                                            \
     {                                                                          \
         fnT get()                                                              \
         {                                                                      \
@@ -275,7 +276,7 @@ namespace ext_ns = ext::common;
     };                                                                         \
                                                                                \
     template <typename fnT, typename T1, typename T2>                          \
-    struct TypeMapFactory                                                      \
+    struct __name__##_TypeMapFactory                                           \
     {                                                                          \
         std::enable_if_t<std::is_same<fnT, int>::value, int> get()             \
         {                                                                      \
@@ -305,7 +306,7 @@ namespace ext_ns = ext::common;
     }                                                                          \
                                                                                \
     template <typename fnT, typename T1, typename T2>                          \
-    struct StridedFactory                                                      \
+    struct __name__##_StridedFactory                                           \
     {                                                                          \
         fnT get()                                                              \
         {                                                                      \
@@ -325,12 +326,12 @@ namespace ext_ns = ext::common;
     void populate_##__name__##_dispatch_tables(void)                           \
     {                                                                          \
         ext_ns::init_dispatch_table<binary_contig_impl_fn_ptr_t,               \
-                                    ContigFactory>(                            \
+                                    __name__##_ContigFactory>(                 \
             __name__##_contig_dispatch_table);                                 \
         ext_ns::init_dispatch_table<binary_strided_impl_fn_ptr_t,              \
-                                    StridedFactory>(                           \
+                                    __name__##_StridedFactory>(                \
             __name__##_strided_dispatch_table);                                \
-        ext_ns::init_dispatch_table<int, TypeMapFactory>(                      \
+        ext_ns::init_dispatch_table<int, __name__##_TypeMapFactory>(           \
             __name__##_output_typeid_table);                                   \
     };
 
@@ -358,7 +359,7 @@ namespace ext_ns = ext::common;
     }                                                                          \
                                                                                \
     template <typename fnT, typename T1, typename T2>                          \
-    struct ContigFactory                                                       \
+    struct __name__##_ContigFactory                                            \
     {                                                                          \
         fnT get()                                                              \
         {                                                                      \
@@ -380,7 +381,7 @@ namespace ext_ns = ext::common;
     };                                                                         \
                                                                                \
     template <typename fnT, typename T1, typename T2>                          \
-    struct TypeMapFactory                                                      \
+    struct __name__##_TypeMapFactory                                           \
     {                                                                          \
         std::enable_if_t<std::is_same<fnT, std::pair<int, int>>::value,        \
                          std::pair<int, int>>                                  \
@@ -415,7 +416,7 @@ namespace ext_ns = ext::common;
     }                                                                          \
                                                                                \
     template <typename fnT, typename T1, typename T2>                          \
-    struct StridedFactory                                                      \
+    struct __name__##_StridedFactory                                           \
     {                                                                          \
         fnT get()                                                              \
         {                                                                      \
@@ -438,11 +439,12 @@ namespace ext_ns = ext::common;
     void populate_##__name__##_dispatch_tables(void)                           \
     {                                                                          \
         ext_ns::init_dispatch_table<binary_two_outputs_contig_impl_fn_ptr_t,   \
-                                    ContigFactory>(                            \
+                                    __name__##_ContigFactory>(                 \
             __name__##_contig_dispatch_table);                                 \
         ext_ns::init_dispatch_table<binary_two_outputs_strided_impl_fn_ptr_t,  \
-                                    StridedFactory>(                           \
+                                    __name__##_StridedFactory>(                \
             __name__##_strided_dispatch_table);                                \
-        ext_ns::init_dispatch_table<std::pair<int, int>, TypeMapFactory>(      \
+        ext_ns::init_dispatch_table<std::pair<int, int>,                       \
+                                    __name__##_TypeMapFactory>(                \
             __name__##_output_typeid_table);                                   \
     };
