@@ -500,21 +500,21 @@ class TestFftn:
         a = dpnp.array(3, dtype=dtype)  # 0-D input
 
         # axes is None
-        # For 0-D array, stock Numpy and dpnp return input array
+        # For 0-D array, stock NumPy and dpnp return input array
         # while Intel NumPy return a complex zero
         result = dpnp.fft.fftn(a)
         expected = a.asnumpy()
         assert_dtype_allclose(result, expected)
 
         # axes=()
-        # For 0-D array with axes=(), stock Numpy and dpnp return input array
+        # For 0-D array with axes=(), stock NumPy and dpnp return input array
         # Intel NumPy does not support empty axes and raises an Error
         result = dpnp.fft.fftn(a, axes=())
         expected = a.asnumpy()
         assert_dtype_allclose(result, expected)
 
         # axes=(0,)
-        # For 0-D array with non-empty axes, stock Numpy and dpnp raise
+        # For 0-D array with non-empty axes, stock NumPy and dpnp raise
         # IndexError, while Intel NumPy raises ZeroDivisionError
         assert_raises(IndexError, dpnp.fft.fftn, a, axes=(0,))
 
@@ -522,7 +522,7 @@ class TestFftn:
     def test_empty_axes(self, dtype):
         a = dpnp.ones((2, 3, 4), dtype=dtype)
 
-        # For axes=(), stock Numpy and dpnp return input array
+        # For axes=(), stock NumPy and dpnp return input array
         # Intel NumPy does not support empty axes and raises an Error
         result = dpnp.fft.fftn(a, axes=())
         expected = a.asnumpy()
