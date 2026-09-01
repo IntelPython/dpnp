@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
 
     <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>dpnp.dpnp_iface_manipulation - Data Parallel Extension for NumPy (dpnp) 0.21.0dev6 documentation</title>
+        <title>dpnp.dpnp_iface_manipulation - Data Parallel Extension for NumPy (dpnp) 0.21.0dev7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -172,7 +172,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev6 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Data Parallel Extension for NumPy (dpnp) 0.21.0dev7 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,7 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
-  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev6 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Extension for NumPy (dpnp) 0.21.0dev7 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -1285,6 +1285,39 @@
     <span class="k">return</span> <span class="n">InsertDeleteParams</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">a_shape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span>
     <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_index_bounds</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Raise ``IndexError`` if any index in `obj` is out of bounds for `axis`.</span>
+
+<span class="sd">    Mirrors the size-1 path in ``_insert_singleton_index``: when `obj` lives on</span>
+<span class="sd">    the host (a Python sequence/scalar or NumPy array) the bounds are validated</span>
+<span class="sd">    with NumPy, avoiding a device sync entirely. A slice cannot be out of bounds</span>
+<span class="sd">    (``obj.indices(n)`` is clamped to ``[0, n]``), so it is skipped. Only a</span>
+<span class="sd">    device array `obj` needs a single host transfer to read its extremes.</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">slice</span><span class="p">)</span> <span class="ow">or</span> <span class="n">indices</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="n">min_idx</span><span class="p">,</span> <span class="n">max_idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">indices</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">indices</span><span class="o">.</span><span class="n">max</span><span class="p">()])</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">host_obj</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">host_obj</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+            <span class="c1"># a boolean mask selects positions, which (for an oversized mask)</span>
+            <span class="c1"># can fall out of bounds, so validate the flatnonzero result</span>
+            <span class="n">host_obj</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">host_obj</span><span class="p">)</span>
+        <span class="n">min_idx</span><span class="p">,</span> <span class="n">max_idx</span> <span class="o">=</span> <span class="n">host_obj</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">host_obj</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="n">min_idx</span><span class="p">,</span> <span class="n">max_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">min_idx</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_idx</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">min_idx</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">n</span> <span class="ow">or</span> <span class="n">max_idx</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="n">oob</span> <span class="o">=</span> <span class="n">min_idx</span> <span class="k">if</span> <span class="n">min_idx</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">n</span> <span class="k">else</span> <span class="n">max_idx</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"index </span><span class="si">{</span><span class="n">oob</span><span class="si">}</span><span class="s2"> is out of bounds for axis </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> with size </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_insert_array_indices</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -3556,6 +3589,13 @@
 <span class="sd">        does not occur in-place: a new array is returned. If</span>
 <span class="sd">        `axis` is ``None``, `out` is a flattened array.</span>
 
+<span class="sd">    Warnings</span>
+<span class="sd">    --------</span>
+<span class="sd">    This function might synchronize in order to validate that the indices are</span>
+<span class="sd">    within bounds. This may harm performance in some applications. To avoid</span>
+<span class="sd">    synchronization, pass `obj` as a Python scalar or sequence, or as a NumPy</span>
+<span class="sd">    array.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.append` : Append elements at the end of an array.</span>
@@ -3643,8 +3683,10 @@
             <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># the size-1 path validates the bounds itself while reading the index</span>
         <span class="k">return</span> <span class="n">_insert_singleton_index</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
 
+    <span class="n">_check_index_bounds</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">axis</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_insert_array_indices</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span></div>
 
 
@@ -6127,7 +6169,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=f51dafa0"></script>
+</div><script src="../../_static/documentation_options.js?v=51652bb9"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
