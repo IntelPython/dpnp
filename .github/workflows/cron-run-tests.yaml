@@ -38,23 +38,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
-        runner: [ubuntu-22.04, ubuntu-24.04, windows-2022]
+        python: ['3.12', '3.13']
+        runner: [ubuntu-latest, windows-2022]
         include:
           - python: '3.14'
-            runner: ubuntu-22.04
-            python_spec: '3.14.* *_cp314'
-          - python: '3.14'
-            runner: ubuntu-24.04
+            runner: ubuntu-latest
             python_spec: '3.14.* *_cp314'
           - python: '3.14'
             runner: windows-2022
             python_spec: '3.14.* *_cp314'
           - python: '3.14'
-            runner: ubuntu-22.04
-            python_spec: '3.14.* *_cp314t'
-          - python: '3.14'
-            runner: ubuntu-24.04
+            runner: ubuntu-latest
             python_spec: '3.14.* *_cp314t'
           - python: '3.14'
             runner: windows-2022
