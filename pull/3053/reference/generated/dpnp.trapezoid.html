@@ -1061,9 +1061,9 @@
 they are not sorted.</p>
 <p>Integrate <cite>y</cite> (<cite>x</cite>) along each 1d slice on the given axis, compute
 <span class="math notranslate nohighlight">\(\int y(x) dx\)</span>.
-When <cite>x</cite> is specified, this integrates along the parametric curve,
-computing <span class="math notranslate nohighlight">\(\int_t y(t) dt =
-\int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt\)</span>.</p>
+When <cite>x</cite> is specified, this integrates along the parametric curve <span class="math notranslate nohighlight">\(C\)</span>
+given by <span class="math notranslate nohighlight">\((x(t), y(t))\)</span>, computing the line integral
+<span class="math notranslate nohighlight">\(\int_C y \, dx = \int y(t) \frac{dx}{dt} \, dt\)</span>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.trapezoid.html#numpy.trapezoid" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.trapezoid</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1082,9 +1082,9 @@ the sample points are assumed to be evenly spaced <cite>dx</cite> apart.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- Definite integral of <cite>y</cite> = n-dimensional array as approximated along
-a single axis by the trapezoidal rule. The result is an <cite>n</cite>-1
-dimensional array.</p>
+<dd class="field-even"><p><strong>out</strong> -- Definite integral of <cite>y</cite> = n-dimensional array as approximated along a
+single axis by the trapezoidal rule. The result is an <cite>n</cite>-1 dimensional
+array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray">dpnp.ndarray</a></p>

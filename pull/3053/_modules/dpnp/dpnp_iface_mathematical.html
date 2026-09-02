@@ -6113,9 +6113,9 @@
 
 <span class="sd">    Integrate `y` (`x`) along each 1d slice on the given axis, compute</span>
 <span class="sd">    :math:`\int y(x) dx`.</span>
-<span class="sd">    When `x` is specified, this integrates along the parametric curve,</span>
-<span class="sd">    computing :math:`\int_t y(t) dt =</span>
-<span class="sd">    \int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt`.</span>
+<span class="sd">    When `x` is specified, this integrates along the parametric curve :math:`C`</span>
+<span class="sd">    given by :math:`(x(t), y(t))`, computing the line integral</span>
+<span class="sd">    :math:`\int_C y \, dx = \int y(t) \frac{dx}{dt} \, dt`.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.trapezoid`.</span>
 
@@ -6140,9 +6140,9 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        Definite integral of `y` = n-dimensional array as approximated along</span>
-<span class="sd">        a single axis by the trapezoidal rule. The result is an `n`-1</span>
-<span class="sd">        dimensional array.</span>
+<span class="sd">        Definite integral of `y` = n-dimensional array as approximated along a</span>
+<span class="sd">        single axis by the trapezoidal rule. The result is an `n`-1 dimensional</span>
+<span class="sd">        array.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
