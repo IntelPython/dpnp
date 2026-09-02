@@ -20,7 +20,8 @@ on:
         required: true
         type: string
 
-permissions: read-all
+permissions:
+  contents: read
 
 env:
   package-name: dpnp
