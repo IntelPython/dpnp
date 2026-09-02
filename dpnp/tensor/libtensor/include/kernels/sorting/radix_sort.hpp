@@ -117,12 +117,15 @@ std::uint32_t ceil_log2(SizeT n)
 //----------------------------------------------------------
 
 template <bool is_ascending>
-bool order_preserving_cast(bool val)
+bool order_preserving_cast(const bool &val)
 {
+    // by reference: a bool copy lets the compiler assume a 0/1 byte, and the
+    // bucket index below reads only the low radix bits, see gh-2121
+    const bool v = dpnp::tensor::type_utils::normalize_bool(val);
     if constexpr (is_ascending)
-        return val;
+        return v;
     else
-        return !val;
+        return !v;
 }
 
 template <bool is_ascending,
