@@ -277,6 +277,29 @@ class TestExtins:
     def test_place_wrong_array_type(self, xp):
         assert_raises(TypeError, xp.place, [1, 2, 3], [True, False], [0, 1])
 
+    # NumPy treats any non-zero byte of a bool as True, see gh-2121
+    def test_extract_nonstandard_bool_bytes(self):
+        raw = numpy.array([0, 1, 2, 255, 0, 1], dtype=numpy.uint8)
+        a = numpy.arange(raw.size, dtype=numpy.int32)
+        mask = raw.view(numpy.bool_)
+        ia = dpnp.asarray(a)
+        imask = dpnp.asarray(raw).view(dpnp.bool)
+
+        result = dpnp.extract(imask, ia)
+        expected = numpy.extract(mask, a)
+        assert_array_equal(result, expected)
+
+    def test_place_nonstandard_bool_bytes(self):
+        raw = numpy.array([0, 1, 2, 255, 0, 1], dtype=numpy.uint8)
+        a = numpy.arange(raw.size, dtype=numpy.int32)
+        mask = raw.view(numpy.bool_)
+        ia = dpnp.asarray(a)
+        imask = dpnp.asarray(raw).view(dpnp.bool)
+
+        dpnp.place(ia, imask, [-1])
+        numpy.place(a, mask, [-1])
+        assert_array_equal(ia, a)
+
     @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
     def test_both(self, dt):
         a = numpy.random.rand(10).astype(dt)
@@ -615,6 +638,42 @@ class TestNonzero:
         a = numpy.array([[1, 0, 0], [4, 0, 6]], dtype=dtype)
         ia = dpnp.array(a)
         assert_array_equal(a.nonzero(), ia.nonzero())
+
+    # NumPy treats any non-zero byte of a bool as True, see gh-2121
+    @pytest.mark.parametrize(
+        "bytes_val",
+        [
+            [0, 1, 2, 255, 0, 1],
+            [2] * 8,
+            [255],
+            [0] * 8,
+            [0, 128] * 64,
+            list(range(256)),
+        ],
+        ids=["mixed", "all_twos", "single_255", "all_zeros", "long", "range"],
+    )
+    def test_nonstandard_bool_bytes(self, bytes_val):
+        a = numpy.array(bytes_val, dtype=numpy.uint8).view(numpy.bool_)
+        ia = dpnp.asarray(numpy.array(bytes_val, dtype=numpy.uint8)).view(
+            dpnp.bool
+        )
+
+        assert_array_equal(numpy.nonzero(a), dpnp.nonzero(ia))
+        assert_array_equal(numpy.where(a), dpnp.where(ia))
+
+    def test_nonstandard_bool_bytes_strided(self):
+        raw = numpy.arange(24, dtype=numpy.uint8)
+        a = raw.view(numpy.bool_)[::3]
+        ia = dpnp.asarray(raw).view(dpnp.bool)[::3]
+
+        assert_array_equal(numpy.nonzero(a), dpnp.nonzero(ia))
+
+    def test_nonstandard_bool_bytes_2d(self):
+        raw = numpy.array([[0, 1, 2], [255, 0, 7]], dtype=numpy.uint8)
+        a = raw.view(numpy.bool_)
+        ia = dpnp.asarray(raw).view(dpnp.bool)
+
+        assert_array_equal(numpy.nonzero(a), dpnp.nonzero(ia))
 
 
 class TestPut:

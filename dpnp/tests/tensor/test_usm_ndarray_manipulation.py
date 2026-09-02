@@ -1412,6 +1412,18 @@ def test_repeat_strided_repeats():
     assert dpt.all(res == x)
 
 
+def test_repeat_nonstandard_bool_bytes():
+    # NumPy treats any non-zero byte of a bool as True, see gh-2121
+    get_queue_or_skip()
+
+    raw = dpt.asarray([0, 1, 2, 255, 0, 1], dtype="u1")
+    reps = dpt.usm_ndarray(raw.shape, dtype="?", buffer=raw.usm_data)
+    x = dpt.arange(reps.size, dtype="i4")
+
+    res = dpt.repeat(x, reps)
+    assert_array_equal(dpt.asnumpy(res), np.array([1, 2, 3, 5], dtype="i4"))
+
+
 def test_repeat_size1_repeats():
     get_queue_or_skip()
 
